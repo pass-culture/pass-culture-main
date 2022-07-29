@@ -40,12 +40,12 @@ const OfferItem = ({
   audience,
 }: OfferItemProps) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const { logEvent } = useAnalytics()
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const editionOfferLink = useOfferEditionURL(
     isEducational,
     id,
-    useSummaryPage,
+    isOfferFormV3,
     !!isShowcase
   )
   const editionStockLink = useOfferStockEditionURL(

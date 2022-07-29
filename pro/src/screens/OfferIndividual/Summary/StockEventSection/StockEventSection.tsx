@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
@@ -28,6 +29,7 @@ const StockEventSection = ({
   isCreation,
   offerId,
 }: IStockEventSectionProps): JSX.Element => {
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const [showAllStocks, setShowAllStocks] = useState(false)
   const [displayedStocks, setDisplayedStocks] = useState(
     stocks.slice(0, NB_UNFOLDED_STOCK)
@@ -40,9 +42,16 @@ const StockEventSection = ({
   }, [showAllStocks])
 
   const iconName = showAllStocks ? 'ico-arrow-up-b' : 'ico-arrow-down-b'
-  const editLink = isCreation
-    ? `/offre/${offerId}/individuel/creation/stocks`
-    : `/offre/${offerId}/individuel/stocks`
+  const stocksUrls = isOfferFormV3
+    ? {
+        creation: `/offre/:${offerId}/v3/creation/individuelle/stocks`,
+        edition: `/offre/${offerId}/v3/individuelle/stocks`,
+      }
+    : {
+        creation: `/offre/${offerId}/individuel/creation/stocks`,
+        edition: `/offre/${offerId}/individuel/stocks`,
+      }
+  const editLink = isCreation ? stocksUrls.creation : stocksUrls.edition
   const { logEvent } = useAnalytics()
   const logEditEvent = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {

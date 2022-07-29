@@ -1,5 +1,5 @@
 import React from 'react'
-import { matchPath, useLocation, useHistory, useParams } from 'react-router-dom'
+import { useLocation, useHistory, useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -20,11 +20,7 @@ const OfferIndividualSummary = ({
   const history = useHistory()
   const homePath = useHomePath()
   const location = useLocation()
-  const isCreation =
-    matchPath(
-      location.pathname,
-      '/offre/:offer_id/individuel/creation/recapitulatif'
-    ) !== null
+  const isCreation = location.pathname.includes('creation')
 
   const { offerId } = useParams<{ offerId: string }>()
   const {

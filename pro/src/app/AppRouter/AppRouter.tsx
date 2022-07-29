@@ -15,7 +15,7 @@ const AppRouter = (): JSX.Element => {
   const [activeRoutesWithoutLayout, setActiveRoutesWithoutLayout] = useState<
     IRoute[]
   >([])
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   useEffect(() => {
     setActiveRoutes(
@@ -41,9 +41,9 @@ const AppRouter = (): JSX.Element => {
       <Redirect
         from="/offres/:offerId([A-Z0-9]+)/edition"
         to={
-          useSummaryPage
-            ? '/offre/:offerId([A-Z0-9]+)/individuel/recapitulatif'
-            : '/offre/:offerId([A-Z0-9]+)/individuel/edition'
+          isOfferFormV3
+            ? '/offre/:offerId([A-Z0-9]+)/v3/individuelle/recapitulatif'
+            : '/offre/:offerId([A-Z0-9]+)/individuel/recapitulatif'
         }
       />
       <Redirect

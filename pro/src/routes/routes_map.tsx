@@ -32,6 +32,8 @@ import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
 import { OfferIndividualConfirmation } from 'routes/OfferIndividualConfirmation'
 import { OfferIndividualCreation } from 'routes/OfferIndividualCreation'
+import { OfferIndividualEditionStocks } from 'routes/OfferIndividualEditionStocks'
+import { OfferIndividualSummary } from 'routes/OfferIndividualSummary'
 import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
 import SignUpValidation from 'routes/SignUpValidation'
@@ -360,6 +362,20 @@ const routes: IRoute[] = [
       '/offre/v3/creation/individuelle',
       '/offre/:offerId/v3/creation/individuelle',
     ],
+    title: 'Résumé de votre offre',
+    featureName: 'OFFER_FORM_V3',
+  },
+  {
+    component: OfferIndividualEditionStocks,
+    exact: true,
+    path: '/offre/:offerId/v3/individuelle/stocks',
+    title: 'Editez vos stocks',
+    featureName: 'OFFER_FORM_V3',
+  },
+  {
+    component: OfferIndividualSummary,
+    exact: true,
+    path: '/offre/:offerId/v3/individuelle/recapitulatif',
     title: 'Résumé de votre offre',
     featureName: 'OFFER_FORM_V3',
   },

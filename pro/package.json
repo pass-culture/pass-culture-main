@@ -27,6 +27,7 @@
     "test:unit:one": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --bail",
     "testcafe": "testcafe --cache --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chrome:headless'",
     "testcafe-firefox": "testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'firefox:headless'",
+    "testcafe-chromium:debug": "testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium' --live --sf",
     "testcafe-chromium": "testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium:headless'",
     "storybook": "NODE_PATH=src start-storybook -p 6006",
     "build-storybook": "NODE_PATH=src build-storybook -o docs-build",
