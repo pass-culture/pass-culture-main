@@ -134,7 +134,9 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
 
-    interventionArea = sa.Column(MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}")  # type: ignore [misc]
+    interventionArea: list[str] = sa.Column(
+        MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
+    )
 
     domains: RelationshipProperty[list["EducationalDomain"]] = relationship(
         "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
@@ -250,6 +252,7 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
             contactPhone=offer.extraData.get("contactPhone", "").strip(),
             offerVenue=offer.extraData.get("offerVenue"),
             students=students,  # type: ignore [arg-type]
+            interventionArea=[],
         )
 
     @classmethod
@@ -277,6 +280,7 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
             "contactPhone",
             "offerVenue",
             "students",
+            "interventionArea",
         ]
         offer_mapping = {x: getattr(collective_offer_template, x) for x in list_of_common_attributes}
         return cls(
@@ -404,6 +408,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
             "contactPhone",
             "offerVenue",
             "students",
+            "interventionArea",
         ]
         collective_offer_mapping = {x: getattr(collective_offer, x) for x in list_of_common_attributes}
         return cls(
@@ -441,6 +446,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
             offerVenue=offer.extraData.get("offerVenue"),
             students=students,  # type: ignore [arg-type]
             priceDetail=price_detail,
+            interventionArea=[],  # type: ignore [arg-type]
         )
 
 
