@@ -16,9 +16,6 @@ const isPhoneValid = (phone: string | undefined): boolean => {
   return Boolean(isValid)
 }
 
-const returnFalse = (): boolean => false
-const returnTrue = (): boolean => true
-
 export const validationSchema = yup.object().shape({
   category: yup.string().required('Veuillez sélectionner une catégorie'),
   subCategory: yup
@@ -102,7 +99,26 @@ export const validationSchema = yup.object().shape({
     schema.test({
       name: 'search-domains-invalid',
       message: 'error',
-      test: domains.length === 0 ? returnFalse : returnTrue,
+      test: () => domains.length > 0,
     })
   ),
 })
+
+export const validationSchemaWithInterventionArea = validationSchema.concat(
+  yup.object().shape({
+    interventionArea: yup.array().when('addressType', {
+      is: OfferAddressType.OFFERER_VENUE,
+      then: yup.array(),
+      otherwise: yup.array().min(1, 'Veuillez renseigner une zone de mobilité'),
+    }),
+    'search-interventionArea': yup
+      .string()
+      .when('interventionArea', (interventionArea, schema) =>
+        schema.test({
+          name: 'search-interventionArea-invalid',
+          message: 'error',
+          test: () => interventionArea.length > 0,
+        })
+      ),
+  })
+)
