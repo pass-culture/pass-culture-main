@@ -128,6 +128,7 @@ class CDSStocks(LocalProvider):
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
         bookingLimitDatetime = utils_date.get_day_start(datetime_in_utc.date(), pytz.timezone(local_tz))
         cds_stock.beginningDatetime = datetime_in_utc
+        is_internet_sale_gauge_active = self._get_cds_internet_sale_gauge()
 
         is_new_stock_to_insert = cds_stock.id is None
         if is_new_stock_to_insert:
@@ -137,17 +138,19 @@ class CDSStocks(LocalProvider):
             cds_stock.bookingLimitDatetime = bookingLimitDatetime
 
         if "quantity" not in cds_stock.fieldsUpdated:
-            if self._get_cds_internet_sale_gauge():
+            if is_internet_sale_gauge_active:
                 cds_stock.quantity = show.internet_remaining_place
-            cds_stock.quantity = show.remaining_place
+            else:
+                cds_stock.quantity = show.remaining_place
 
         if "price" not in cds_stock.fieldsUpdated:
             cds_stock.price = show_price
 
         if not is_new_stock_to_insert:
-            if self._get_cds_internet_sale_gauge():
+            if is_internet_sale_gauge_active:
                 cds_stock.quantity = show.internet_remaining_place + cds_stock.dnBookedQuantity
-            cds_stock.quantity = show.remaining_place + cds_stock.dnBookedQuantity
+            else:
+                cds_stock.quantity = show.remaining_place + cds_stock.dnBookedQuantity
 
     def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
         if movie_information.description:

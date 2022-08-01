@@ -22,6 +22,9 @@ class CinemasCDS(BaseModel):
     id: str
     is_internet_sale_gauge_active: bool = Field(alias="internetsalegaugeactive")
 
+    class Config:
+        allow_population_by_field_name = True
+
 
 class ShowCDS(BaseModel):
     id: int
