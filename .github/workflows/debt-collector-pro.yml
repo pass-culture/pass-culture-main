@@ -1,3 +1,5 @@
+name: Debt collector PRO
+
 on:
   pull_request:
     branches:
@@ -20,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v2
         if: steps.changes.outputs.src == 'true'
         with:
-          node-version: '14'
+          node-version: "14"
       - name: Install and Build 🔧
         if: steps.changes.outputs.src == 'true'
         run: |
@@ -38,7 +40,7 @@ jobs:
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
+          comment-author: "github-actions[bot]"
           body-includes: Debt collector report
       - id: get-comment-body
         if: steps.changes.outputs.src == 'true'
