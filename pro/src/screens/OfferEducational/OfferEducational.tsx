@@ -15,10 +15,7 @@ import OfferEducationalActions from 'new_components/OfferEducationalActions'
 
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'
-import {
-  validationSchema,
-  validationSchemaWithDomains,
-} from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalProps {
   educationalCategories: IEducationalCategory[]
@@ -38,7 +35,7 @@ export interface IOfferEducationalProps {
   setIsOfferActive?: (isActive: boolean) => void
   isOfferBooked?: boolean
   isOfferActive?: boolean
-  getEducationalDomainsAdapter?: GetEducationalDomainsAdapter
+  getEducationalDomainsAdapter: GetEducationalDomainsAdapter
 }
 
 const OfferEducational = ({
@@ -60,9 +57,7 @@ const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema: getEducationalDomainsAdapter
-      ? validationSchemaWithDomains
-      : validationSchema,
+    validationSchema,
   })
 
   const shouldShowOfferActions =
@@ -78,10 +73,9 @@ const OfferEducational = ({
   }, [initialValues, resetForm])
 
   useEffect(() => {
-    if (getEducationalDomainsAdapter)
-      getEducationalDomainsAdapter().then(result => {
-        setDomainsOptions(result.payload)
-      })
+    getEducationalDomainsAdapter().then(result => {
+      setDomainsOptions(result.payload)
+    })
   }, [])
 
   return (
