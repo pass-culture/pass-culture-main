@@ -504,8 +504,6 @@ def create_collective_stock(
     *,
     offer_id: int | None = None,
 ) -> educational_models.CollectiveStock | None:
-    from pcapi.core.offers.api import update_offer_fraud_information
-
     offer_id = offer_id or stock_data.offer_id
     beginning = stock_data.beginning_datetime
     booking_limit_datetime = stock_data.booking_limit_datetime
@@ -539,11 +537,6 @@ def create_collective_stock(
         extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
     )
 
-    if (
-        not FeatureToggle.ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION.is_active()
-        and collective_offer.validation == OfferValidationStatus.DRAFT
-    ):
-        update_offer_fraud_information(collective_offer, user)
     search.async_index_collective_offer_ids([collective_offer.id])
 
     return collective_stock
