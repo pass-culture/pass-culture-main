@@ -992,15 +992,11 @@ class PriceBookingsTest:
             dateUsed=self.few_minutes_ago,
             stock=self.individual_stock_factory(),
         )
-        print("individual = %s" % [b.id for b in bookings_models.Booking.query.all()])
         UsedCollectiveBookingFactory.create_batch(
             3,
             dateUsed=self.few_minutes_ago,
             collectiveStock=self.collective_stock_factory(),
         )
-        import pcapi.core.educational.models as educational_models
-
-        print("collective = %s" % [b.id for b in educational_models.CollectiveBooking.query.all()])
         api.price_bookings(min_date=self.few_minutes_ago, batch_size=1)
         assert models.Pricing.query.count() == 2 + 3
 
