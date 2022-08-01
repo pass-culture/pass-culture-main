@@ -107,7 +107,7 @@ def activate_beneficiary(user: users_models.User) -> users_models.User:
     return activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)  # type: ignore [arg-type]
 
 
-def _has_completed_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
+def has_completed_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     return db.session.query(
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,
@@ -133,7 +133,7 @@ def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
 
 
 def should_complete_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
-    return not _has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user)
+    return not has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user)
 
 
 def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:

@@ -792,18 +792,10 @@ def create_profile_completion_fraud_check(
     eligibility: users_models.EligibilityType | None,
     fraud_check_content: models.ProfileCompletionContent,
 ) -> None:
-    existing_profile_completion_fraud_check = models.BeneficiaryFraudCheck.query.filter(
-        models.BeneficiaryFraudCheck.user == user,
-        models.BeneficiaryFraudCheck.type == models.FraudCheckType.PROFILE_COMPLETION,
-        models.BeneficiaryFraudCheck.eligibilityType == eligibility,
-    ).first()
-    if existing_profile_completion_fraud_check:
+    if subscription_api.has_completed_profile(user, eligibility):
         logger.error(
             "Profile completion fraud check for user already exists.",
-            extra={
-                "user_id": user.id,
-                "existing_profile_completion_fraud_check": existing_profile_completion_fraud_check.id,
-            },
+            extra={"user_id": user.id},
         )
         return
     fraud_check = models.BeneficiaryFraudCheck(
