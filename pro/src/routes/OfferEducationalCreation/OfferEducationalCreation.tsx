@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
+// @debt deprecated "Mathilde: should not import utility from legacy page"
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import {
   DEFAULT_EAC_FORM_VALUES,
@@ -22,8 +22,6 @@ import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
 import postCollectiveOfferAdapter from './adapters/postCollectiveOfferAdapter'
-
-// @debt deprecated "Mathilde: should not import utility from legacy page"
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
@@ -44,14 +42,9 @@ const OfferEducationalCreation = (): JSX.Element => {
 
   const notify = useNotification()
 
-  const enableEducationalDomains = useActiveFeature(
-    'ENABLE_EDUCATIONAL_DOMAINS'
-  )
-
   const createOffer = async (offer: IOfferEducationalFormValues) => {
     const { payload, isOk, message } = await postCollectiveOfferAdapter({
       offer,
-      enableEducationalDomains,
     })
 
     if (!isOk) {
@@ -67,7 +60,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         const results = await Promise.all([
           getCategoriesAdapter(null),
           getOfferersAdapter(offererId),
-          ...(enableEducationalDomains ? [getEducationalDomainsAdapter()] : []),
+          getEducationalDomainsAdapter(),
         ])
 
         if (results.some(res => !res.isOk)) {
@@ -111,9 +104,7 @@ const OfferEducationalCreation = (): JSX.Element => {
             mode={Mode.CREATION}
             notify={notify}
             onSubmit={createOffer}
-            getEducationalDomainsAdapter={
-              enableEducationalDomains && getEducationalDomainsAdapter
-            }
+            getEducationalDomainsAdapter={getEducationalDomainsAdapter}
           />
           <RouteLeavingGuardOfferCreation isCollectiveFlow />
         </>
