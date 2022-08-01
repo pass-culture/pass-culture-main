@@ -3,3 +3,9 @@ export type AuthToken = {
   name: string
   picture: string
 }
+
+export type tokenApiPayload = {
+  email: string
+  perms: string[]
+  exp: number
+}
