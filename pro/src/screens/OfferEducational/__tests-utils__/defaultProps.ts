@@ -70,6 +70,7 @@ const editionFormValues = {
     otherAddress: 'other adress string',
     venueId: '',
   },
+  interventionArea: [],
   participants: {
     quatrieme: true,
     troisieme: true,
