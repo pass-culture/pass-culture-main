@@ -1285,6 +1285,8 @@ workflows:
           requires:
             - restart-pcapi
             - deploy-pro
+            - deploy-adage-front
+            - deploy-backoffice-front
       - restart-pcapi:
           requires:
             - deploy-pcapi
@@ -1325,6 +1327,8 @@ workflows:
           requires:
             - restart-pcapi
             - deploy-pro
+            - deploy-adage-front
+            - deploy-backoffice-front
       - restart-pcapi:
           requires:
             - deploy-pcapi
