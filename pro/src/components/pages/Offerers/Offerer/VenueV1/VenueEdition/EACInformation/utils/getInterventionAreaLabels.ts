@@ -6,8 +6,8 @@ import {
   MAINLAND_OPTION_LABEL,
   MAINLAND_OPTION_VALUE,
   domtomOptions,
-  interventionOptions,
-} from 'core/Venue'
+  venueInterventionOptions,
+} from 'core/shared/interventionOptions'
 
 export const getInterventionAreaLabels = (
   interventionArea: string[]
@@ -30,7 +30,7 @@ export const getInterventionAreaLabels = (
   }
 
   if (labels.length === 0) {
-    interventionOptions.forEach(interventionOption => {
+    venueInterventionOptions.forEach(interventionOption => {
       if (interventionArea.includes(interventionOption.value.toString())) {
         labels.push(interventionOption.label)
       }
