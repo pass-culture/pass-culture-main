@@ -1,5 +1,6 @@
 <html>
-    <body>
+
+<body>
     <p id="offer">
         Une nouvelle offre : "{{ offer.name }}"
     </p>
@@ -20,21 +21,22 @@
     </p>
     <p id="venue_details">
         Lien vers le lieu : {{ pro_venue_link }}
-        <br >
-        Catégorie du lieu : {{ venue.venueType.label }}
-        <br >
+        <br>
+        Catégorie du lieu : {{ venue.venueTypeCode.value }}
+        <br>
         Adresse du lieu : {{ venue.city }} {{ venue.postalCode }}
     </p>
     <p id="pro_user_information">
         Information de l'utilisateur pro ayant créé l'offre
-        <br >
+        <br>
         Nom : {{ author.lastName }}
-        <br >
+        <br>
         Prénom : {{ author.firstName }}
-        <br >
+        <br>
         Téléphone : {{ author.phoneNumber }}
-        <br >
+        <br>
         Email : {{ author.email }}
     </p>
-    </body>
+</body>
+
 </html>
