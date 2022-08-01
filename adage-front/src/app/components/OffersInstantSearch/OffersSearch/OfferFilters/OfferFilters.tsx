@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { VenueResponse } from 'api/gen'
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'app/adapters/getEducationalDomainsOptionsAdapter'
-import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters, Option } from 'app/types'
@@ -35,9 +34,6 @@ export const OfferFilters = ({
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { removeQuery } = useContext(AlgoliaQueryContext)
-  const displayEducationalDomains = useActiveFeature(
-    'ENABLE_EDUCATIONAL_DOMAINS'
-  )
 
   const handleResetFilters = () => {
     removeVenueFilter()
@@ -51,9 +47,7 @@ export const OfferFilters = ({
     const loadFiltersOptions = async () => {
       const [categoriesResponse, domainsResponse] = await Promise.all([
         getEducationalCategoriesOptionsAdapter(null),
-        displayEducationalDomains
-          ? getEducationalDomainsOptionsAdapter()
-          : Promise.resolve({ isOk: true, payload: [], message: null }),
+        getEducationalDomainsOptionsAdapter(),
       ])
 
       if (categoriesResponse.isOk) {
@@ -66,7 +60,7 @@ export const OfferFilters = ({
     }
 
     loadFiltersOptions()
-  }, [displayEducationalDomains])
+  }, [])
 
   return (
     <div className={className}>
@@ -98,21 +92,19 @@ export const OfferFilters = ({
           options={categoriesOptions}
           pluralLabel="Catégories"
         />
-        {displayEducationalDomains && (
-          <MultiSelectAutocomplete<number>
-            className="offer-filters-filter"
-            initialValues={currentFilters.domains}
-            label="Domaine"
-            onChange={domains =>
-              dispatchCurrentFilters({
-                type: 'POPULATE_DOMAINS_FILTER',
-                domainFilters: domains,
-              })
-            }
-            options={domainsOptions}
-            pluralLabel="Domaines"
-          />
-        )}
+        <MultiSelectAutocomplete<number>
+          className="offer-filters-filter"
+          initialValues={currentFilters.domains}
+          label="Domaine"
+          onChange={domains =>
+            dispatchCurrentFilters({
+              type: 'POPULATE_DOMAINS_FILTER',
+              domainFilters: domains,
+            })
+          }
+          options={domainsOptions}
+          pluralLabel="Domaines"
+        />
         <MultiSelectAutocomplete
           className="offer-filters-filter"
           initialValues={currentFilters.students}
