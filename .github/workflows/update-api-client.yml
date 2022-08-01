@@ -6,6 +6,6 @@ on:
       - master
 jobs:
   update-api-client:
-    uses: ./.github/workflows/reusable-update-api-client.yml
+    uses: ./.github/workflows/update-api-client-template.yml
     with:
       trigger-only-on-change: true
