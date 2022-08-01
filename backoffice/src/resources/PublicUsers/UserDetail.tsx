@@ -1,50 +1,44 @@
+import { Card } from '@material-ui/core'
 import {
-  alpha,
   Box,
   Button,
-  Card,
   CircularProgress,
   Grid,
   LinearProgress,
   Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Stack,
   Tab,
   Tabs,
   Typography,
 } from '@mui/material'
-import { captureException } from '@sentry/react'
 import moment from 'moment'
 import React, { useState } from 'react'
 import {
   Identifier,
   useAuthenticated,
   useGetOne,
-  useNotify,
-  usePermissions,
   useRedirect,
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 
-import { searchPermission } from '../../helpers/functions'
 import { Colors } from '../../layout/Colors'
 import { eventMonitoring } from '../../libs/monitoring/sentry'
-import {
-  getHttpApiErrorMessage,
-  PcApiHttpError,
-} from '../../providers/apiHelpers'
-import { dataProvider } from '../../providers/dataProvider'
 
 import { BeneficiaryBadge } from './Components/BeneficiaryBadge'
-import { FraudCheckCard } from './Components/FraudCheckCard'
+import { CheckHistoryCard } from './Components/CheckHistoryCard'
 import { ManualReviewModal } from './Components/ManualReviewModal'
+import { StatusAvatar } from './Components/StatusAvatar'
 import { StatusBadge } from './Components/StatusBadge'
 import { UserDetailsCard } from './Components/UserDetailsCard'
-import { UserHistoryCard } from './Components/UserHistoryCard'
 import {
-  EligibilityFraudCheck,
-  EligibilitySubscriptionItem,
-  PermissionsEnum,
-  PublicUserRolesEnum,
+  CheckHistory,
+  SubscriptionItem,
+  SubscriptionItemStatus,
+  SubscriptionItemType,
   UserBaseInfo,
 } from './types'
 
@@ -56,6 +50,7 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
+
   return (
     <div
       style={{ width: '100%' }}
@@ -89,12 +84,6 @@ const cardStyle = {
 
 export const UserDetail = () => {
   useAuthenticated()
-  const { permissions } = usePermissions()
-  const formattedPermissions: PermissionsEnum[] = permissions
-  const canReviewPublicUser = !!searchPermission(
-    formattedPermissions,
-    PermissionsEnum.reviewPublicAccount
-  )
   const { id } = useParams() // this component is rendered in the /books/:id path
   const redirect = useRedirect()
   const [tabValue, setTabValue] = useState(1)
@@ -109,26 +98,7 @@ export const UserDetail = () => {
     // redirect to the list if the book is not found
     { onError: () => redirect('/public_users/search') }
   )
-  const notify = useNotify()
-  async function resendValidationEmail() {
-    try {
-      const response = await dataProvider.postResendValidationEmail(
-        'public_accounts',
-        userBaseInfo
-      )
-      const responseData = await response.json()
-      if (response.code === 400) {
-        notify(Object.values(responseData)[0] as string, { type: 'error' })
-      }
-    } catch (error) {
-      if (error instanceof PcApiHttpError) {
-        notify(getHttpApiErrorMessage(error), { type: 'error' })
-      } else {
-        notify('La confirmation a été envoyée avec succès', { type: 'success' })
-      }
-      captureException(error)
-    }
-  }
+
   if (isLoading) {
     return <CircularProgress size={18} thickness={2} />
   } else if (!userBaseInfo) {
@@ -149,57 +119,15 @@ export const UserDetail = () => {
 
   const digitalCreditProgression = (remainingCredit / initialCredit) * 100
 
-  let subscriptionItems: EligibilitySubscriptionItem[] = []
-  let idsCheckHistory: EligibilityFraudCheck[] = []
+  let subscriptionItems: SubscriptionItem[] = []
+  let idsCheckHistory: CheckHistory[] = []
 
-  const idCheckHistoryLengthAge18 = AGE18?.idCheckHistory?.length
-  const idCheckHistoryLengthUnderage = UNDERAGE?.idCheckHistory?.length
-
-  if (idCheckHistoryLengthAge18 > 0 && idCheckHistoryLengthUnderage === 0) {
-    idsCheckHistory.push({
-      role: PublicUserRolesEnum.beneficiary,
-      items: AGE18.idCheckHistory,
-    })
-    subscriptionItems.push({
-      role: PublicUserRolesEnum.beneficiary,
-      items: AGE18.subscriptionItems,
-    })
-  } else if (
-    idCheckHistoryLengthUnderage > 0 &&
-    idCheckHistoryLengthAge18 === 0
-  ) {
-    idsCheckHistory.push({
-      role: PublicUserRolesEnum.underageBeneficiary,
-      items: UNDERAGE.idCheckHistory,
-    })
-    subscriptionItems.push({
-      role: PublicUserRolesEnum.underageBeneficiary,
-      items: UNDERAGE.subscriptionItems,
-    })
-  } else if (
-    idCheckHistoryLengthAge18 > 0 &&
-    idCheckHistoryLengthUnderage > 0
-  ) {
-    idsCheckHistory.push(
-      {
-        role: PublicUserRolesEnum.beneficiary,
-        items: AGE18.idCheckHistory,
-      },
-      {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: UNDERAGE.idCheckHistory,
-      }
-    )
-    subscriptionItems.push(
-      { role: PublicUserRolesEnum.beneficiary, items: AGE18.subscriptionItems },
-      {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: UNDERAGE.subscriptionItems,
-      }
-    )
-  } else {
-    idsCheckHistory = []
-    subscriptionItems = []
+  if (AGE18?.idCheckHistory?.length > 0) {
+    idsCheckHistory = AGE18.idCheckHistory
+    subscriptionItems = AGE18.subscriptionItems
+  } else if (UNDERAGE?.idCheckHistory?.length > 0) {
+    idsCheckHistory = UNDERAGE.idCheckHistory
+    subscriptionItems = UNDERAGE.subscriptionItems
   }
 
   return (
@@ -236,14 +164,6 @@ export const UserDetail = () => {
                   <strong>E-mail : </strong>
                   {userBaseInfo.email}
                 </Typography>
-                <Button
-                  variant={'outlined'}
-                  onClick={resendValidationEmail}
-                  size={'small'}
-                  sx={{ mb: 2 }}
-                >
-                  Renvoyer l'email de validation
-                </Button>
                 <Typography variant="body1" gutterBottom component="div">
                   <strong>Tél : </strong>
                   {userBaseInfo.phoneNumber}
@@ -264,19 +184,14 @@ export const UserDetail = () => {
           <Grid item xs={2}>
             <div>
               <Stack spacing={2}>
-                <Button
-                  variant={'contained'}
-                  disabled
-                  style={{ visibility: 'hidden' }}
-                >
+                <Button variant={'contained'} disabled>
                   Suspendre le compte
                 </Button>
-                {canReviewPublicUser && (
-                  <ManualReviewModal
-                    user={userBaseInfo}
-                    eligibilityFraudChecks={idsCheckHistory}
-                  />
-                )}
+
+                <ManualReviewModal
+                  user={userBaseInfo}
+                  checkHistory={idsCheckHistory}
+                />
               </Stack>
             </div>
           </Grid>
@@ -353,14 +268,11 @@ export const UserDetail = () => {
             <Typography variant={'h5'}>
               Dossier{' '}
               <strong>
-                {idsCheckHistory.length > 0 &&
-                  idsCheckHistory[0].items.length > 0 &&
-                  idsCheckHistory[0].items[0].type}
+                {idsCheckHistory[0] && idsCheckHistory[0]['type']}
               </strong>{' '}
               importé le :{' '}
-              {idsCheckHistory.length > 0 &&
-                idsCheckHistory[0].items.length > 0 &&
-                moment(idsCheckHistory[0].items[0].dateCreated).format(
+              {idsCheckHistory[0] &&
+                moment(idsCheckHistory[0]['dateCreated']).format(
                   'D/MM/YYYY à HH:mm'
                 )}
             </Typography>
@@ -368,13 +280,7 @@ export const UserDetail = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ mt: 3 }}>
-        <Box
-          sx={{
-            borderBottom: 1,
-            borderColor: 'divider',
-            width: '100%',
-          }}
-        >
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}>
           <Tabs
             value={tabValue}
             onChange={handleChange}
@@ -382,110 +288,176 @@ export const UserDetail = () => {
             variant="fullWidth"
           >
             <Tab label="" {...a11yProps(0)} disabled />
-            <Tab
-              label="Informations Personnelles"
-              {...a11yProps(1)}
-              sx={{ bgcolor: alpha(Colors.GREY, 0.1) }}
-            />
+            <Tab label="Informations Personnelles" {...a11yProps(1)} />
             <Tab label="" {...a11yProps(2)} disabled />
           </Tabs>
-          <TabPanel value={tabValue} index={0}>
-            Bientôt disponible
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <Stack spacing={3}>
-              <Card style={cardStyle}>
-                <Typography
-                  variant={'body1'}
-                  sx={{ color: Colors.GREY, mb: 4 }}
-                >
-                  Accès
-                </Typography>
-                <Grid container spacing={5}>
-                  <Grid item xs={4}>
-                    <Link
-                      role={'link'}
-                      href={'#details-user'}
-                      color={Colors.GREY}
-                      variant="body2"
-                    >
-                      DÉTAILS UTILISATEUR
-                    </Link>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Link
-                      role={'link'}
-                      href={'#parcours-register'}
-                      color={Colors.GREY}
-                      variant="body2"
-                    >
-                      PARCOURS D'INSCRIPTION
-                    </Link>
-                  </Grid>
-                  {idsCheckHistory.length > 0 &&
-                    idsCheckHistory.map(idCheckHistory => (
-                      <Grid item xs={4} key={idCheckHistory.role}>
-                        {idCheckHistory.items.length > 0 &&
-                          idCheckHistory.items.map(fraudCheck => (
-                            <div
-                              style={{ marginRight: '1rem' }}
-                              key={fraudCheck.thirdPartyId}
-                            >
-                              <Link
-                                role={'link'}
-                                href={`#${fraudCheck.thirdPartyId}`}
-                                color={Colors.GREY}
-                                variant="body2"
-                              >
-                                {fraudCheck.type.toUpperCase()}
-                              </Link>
-                            </div>
-                          ))}
-                      </Grid>
-                    ))}
-                </Grid>
-              </Card>
-              <div id="details-user">
-                {idsCheckHistory.length > 0 &&
-                  idsCheckHistory[0].items.length > 0 && (
-                    <UserDetailsCard
-                      user={userBaseInfo}
-                      firstFraudCheck={idsCheckHistory[0].items[0]}
-                    />
-                  )}
-              </div>
-              <div id="parcours-register">
-                {subscriptionItems.map(subscriptionItem => (
-                  <div key={subscriptionItem.role}>
-                    <UserHistoryCard subscriptionItem={subscriptionItem} />
-                  </div>
-                ))}
-              </div>
-              {idsCheckHistory.length > 0 &&
-                idsCheckHistory.map(idCheckHistory => (
-                  <div key={idCheckHistory.role}>
-                    {idCheckHistory.items.length > 0 &&
-                      idCheckHistory.items.map(fraudCheck => (
-                        <div
-                          id={fraudCheck.thirdPartyId}
-                          key={fraudCheck.thirdPartyId}
-                        >
-                          <FraudCheckCard
-                            eligibilityFraudCheck={{
-                              role: idCheckHistory.role,
-                              items: [fraudCheck],
-                            }}
-                          />
-                        </div>
-                      ))}
-                  </div>
-                ))}
-            </Stack>
-          </TabPanel>
-          <TabPanel value={tabValue} index={2}>
-            Bientôt disponible
-          </TabPanel>
         </Box>
+        <TabPanel value={tabValue} index={0}>
+          Bientôt disponible
+        </TabPanel>
+        <TabPanel value={tabValue} index={1}>
+          <Stack spacing={3}>
+            <Card style={cardStyle}>
+              <Typography variant={'body1'} sx={{ color: Colors.GREY, mb: 4 }}>
+                Accès
+              </Typography>
+              <Grid container spacing={5}>
+                <Grid item xs={4}>
+                  <Link
+                    role={'link'}
+                    href={'#details-user'}
+                    color={Colors.GREY}
+                    variant="body2"
+                  >
+                    DÉTAILS UTILISATEUR
+                  </Link>
+                </Grid>
+                <Grid item xs={4}>
+                  <Link
+                    role={'link'}
+                    href={'#parcours-register'}
+                    color={Colors.GREY}
+                    variant="body2"
+                  >
+                    PARCOURS D'INSCRIPTION
+                  </Link>
+                </Grid>
+                {idsCheckHistory.map(idCheckHistory => (
+                  <Grid item xs={4} key={idCheckHistory.thirdPartyId}>
+                    <Link
+                      role={'link'}
+                      href={`#${idCheckHistory.thirdPartyId}`}
+                      color={Colors.GREY}
+                      variant="body2"
+                    >
+                      {idCheckHistory.type.toUpperCase()}
+                    </Link>
+                  </Grid>
+                ))}
+              </Grid>
+            </Card>
+            <div id="details-user">
+              <UserDetailsCard
+                user={userBaseInfo}
+                firstIdCheckHistory={idsCheckHistory[0]}
+              />
+            </div>
+            <div id="parcours-register">
+              <Card style={cardStyle}>
+                <Typography variant={'h5'}>
+                  Parcours d'inscription
+                  <span style={{ marginLeft: '3rem' }}>{beneficiaryBadge}</span>
+                </Typography>
+                {subscriptionItems.length > 0 && (
+                  <Grid container spacing={5} sx={{ mt: 4 }}>
+                    <Grid item xs={6}>
+                      <List sx={{ width: '100%' }}>
+                        <ListItem>
+                          <ListItemText> Validation email</ListItemText>
+                          <ListItemAvatar>
+                            <StatusAvatar
+                              subscriptionItem={subscriptionItems.find(
+                                subscriptionItem =>
+                                  subscriptionItem.type ===
+                                  SubscriptionItemType.EMAIL_VALIDATION
+                              )}
+                            />
+                          </ListItemAvatar>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText>Validation Téléphone</ListItemText>
+                          <ListItemAvatar>
+                            <StatusAvatar
+                              subscriptionItem={subscriptionItems.find(
+                                (item: {
+                                  type: string
+                                  status: SubscriptionItemStatus
+                                }) =>
+                                  item.type ===
+                                  SubscriptionItemType.PHONE_VALIDATION
+                              )}
+                            />
+                          </ListItemAvatar>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText>Profil Utilisateur</ListItemText>
+                          <ListItemAvatar>
+                            {' '}
+                            <StatusAvatar
+                              subscriptionItem={subscriptionItems.find(
+                                item =>
+                                  item.type ===
+                                  SubscriptionItemType.PROFILE_COMPLETION
+                              )}
+                            />
+                          </ListItemAvatar>
+                        </ListItem>
+                      </List>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <List sx={{ width: '100%' }}>
+                        <ListItem>
+                          <ListItemText>Complétion Profil</ListItemText>
+                          <ListItemAvatar>
+                            <StatusAvatar
+                              subscriptionItem={subscriptionItems.find(
+                                (item: {
+                                  type: string
+                                  status: SubscriptionItemStatus
+                                }) =>
+                                  item.type ===
+                                  SubscriptionItemType.PROFILE_COMPLETION
+                              )}
+                            />
+                          </ListItemAvatar>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText>ID Check</ListItemText>
+                          <ListItemAvatar>
+                            <StatusAvatar
+                              subscriptionItem={subscriptionItems.find(
+                                item =>
+                                  item.type ===
+                                  SubscriptionItemType.IDENTITY_CHECK
+                              )}
+                            />
+                          </ListItemAvatar>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText>Honor Statement</ListItemText>
+                          <ListItemAvatar>
+                            <StatusAvatar
+                              subscriptionItem={subscriptionItems.find(
+                                (item: {
+                                  type: string
+                                  status: SubscriptionItemStatus
+                                }) =>
+                                  item.type ===
+                                  SubscriptionItemType.HONOR_STATEMENT
+                              )}
+                            />
+                          </ListItemAvatar>
+                        </ListItem>
+                      </List>
+                    </Grid>
+                  </Grid>
+                )}
+              </Card>
+            </div>
+            {idsCheckHistory.map(idCheckHistory => (
+              <div
+                id={idCheckHistory.thirdPartyId}
+                key={idCheckHistory.thirdPartyId}
+              >
+                <CheckHistoryCard idCheckHistory={idCheckHistory} />
+              </div>
+            ))}
+          </Stack>
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
+          Bientôt disponible
+        </TabPanel>
       </Grid>
     </Grid>
   )

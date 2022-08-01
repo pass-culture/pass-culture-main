@@ -2,18 +2,14 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox'
 import ReviewsIcon from '@mui/icons-material/Reviews'
 import { Divider } from '@mui/material'
 import Box from '@mui/material/Box'
-import * as React from 'react'
 import { useState } from 'react'
+import * as React from 'react'
 import {
+  useTranslate,
   MenuItemLink,
   MenuProps,
-  usePermissions,
   useSidebarState,
-  useTranslate,
 } from 'react-admin'
-
-import { searchPermission } from '../helpers/functions'
-import { PermissionsEnum } from '../resources/PublicUsers/types'
 
 import { SubMenu } from './SubMenu'
 
@@ -24,8 +20,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
     menuPros: false,
     menuJeunes: true,
   })
-  const { permissions } = usePermissions()
-  const formattedPermissions: PermissionsEnum[] = permissions
+
   const translate = useTranslate()
   const [open] = useSidebarState()
 
@@ -122,20 +117,16 @@ export const Menu = ({ dense = false }: MenuProps) => {
       {/*  />*/}
       {/*</SubMenu>*/}
       {/*<Divider />*/}
-      {!!searchPermission(
-        formattedPermissions,
-        PermissionsEnum.managePermissions
-      ) && (
-        <MenuItemLink
-          to="/roles"
-          state={{ _scrollToTop: true }}
-          primaryText={translate('menu.roleManagement', {
-            smart_count: 2,
-          })}
-          leftIcon={<ReviewsIcon />}
-          dense={dense}
-        />
-      )}
+
+      <MenuItemLink
+        to="/roles"
+        state={{ _scrollToTop: true }}
+        primaryText={translate('menu.roleManagement', {
+          smart_count: 2,
+        })}
+        leftIcon={<ReviewsIcon />}
+        dense={dense}
+      />
     </Box>
   )
 }

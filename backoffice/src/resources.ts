@@ -4,9 +4,9 @@ import { RolesList } from './resources/Roles/RolesList'
 type ResourceType = {
   name: string
   list?: () => JSX.Element
-  view?: () => JSX.Element
   edit?: () => JSX.Element
   create?: () => JSX.Element
+  view?: () => JSX.Element
 }
 
 export const resources: ResourceType[] = [

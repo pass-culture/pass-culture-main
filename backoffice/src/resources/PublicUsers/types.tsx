@@ -5,14 +5,6 @@ export enum PublicUserRolesEnum {
   underageBeneficiary = 'UNDERAGE_BENEFICIARY',
 }
 
-export enum PermissionsEnum {
-  managePermissions = 'MANAGE_PERMISSIONS',
-  readPublicAccount = 'READ_PUBLIC_ACCOUNT',
-  reviewPublicAccount = 'REVIEW_PUBLIC_ACCOUNT',
-  managePublicAccount = 'MANAGE_PUBLIC_ACCOUNT',
-  searchPublicAccount = 'SEARCH_PUBLIC_ACCOUNT',
-}
-
 export interface UserApiResponse extends RaRecord {
   id: Identifier
   firstName: string

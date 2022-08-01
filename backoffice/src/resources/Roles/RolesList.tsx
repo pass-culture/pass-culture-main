@@ -17,12 +17,10 @@ import {
   useAuthenticated,
   useGetList,
   useNotify,
-  usePermissions,
   useRefresh,
   useTranslate,
 } from 'react-admin'
 
-import { searchPermission } from '../../helpers/functions'
 import { Colors } from '../../layout/Colors'
 import { theme } from '../../layout/theme'
 import {
@@ -30,7 +28,6 @@ import {
   PcApiHttpError,
 } from '../../providers/apiHelpers'
 import { dataProvider } from '../../providers/dataProvider'
-import { PermissionsEnum } from '../PublicUsers/types'
 
 import { AddRoleModal } from './Components/AddRoleModal'
 import { Permission, Role } from './types'
@@ -40,13 +37,11 @@ export const RolesList = () => {
 
   const refresh = useRefresh()
   const notify = useNotify()
-  const { permissions } = usePermissions()
-  const formattedAuthorizations: PermissionsEnum[] = permissions
 
   const { data: roles, total: totalRoles } = useGetList<Role>('roles')
-  const { data: _permissions } = useGetList<Permission>('permissions')
+  const { data: permissions } = useGetList<Permission>('permissions')
   const rolesList: Role[] = roles ? roles : []
-  const permissionsList: Permission[] = _permissions ? _permissions : []
+  const permissionsList: Permission[] = permissions ? permissions : []
   const translate = useTranslate()
 
   const managePermissions = (role: Role, permission: Permission) => {
@@ -158,25 +153,15 @@ export const RolesList = () => {
       updateRole(_role, _previousRole)
     }
   }
-
-  const permissionGranted = !!searchPermission(
-    formattedAuthorizations,
-    PermissionsEnum.managePermissions
-  )
-
   return (
     <Grid container spacing={0} direction="column" sx={{ pt: 3 }}>
       <Typography variant={'h3'} color={Colors.GREY} sx={{ mb: 3, mt: 3 }}>
-        {permissionGranted &&
-          translate('menu.roleManagement', {
-            smart_count: 2,
-          })}
+        {translate('menu.roleManagement', {
+          smart_count: 2,
+        })}
       </Typography>
-      {permissionGranted && _permissions && (
-        <AddRoleModal permissions={_permissions} />
-      )}
-      {permissionGranted &&
-        totalRoles &&
+      {permissions && <AddRoleModal permissions={permissions} />}
+      {totalRoles &&
         totalRoles > 0 &&
         rolesList.map((role: Role) => (
           <Accordion key={role.id} sx={{ mt: 3, boxShadow: theme.shadows[2] }}>
@@ -198,26 +183,13 @@ export const RolesList = () => {
                 Supprimer le role
               </Button>
               <Grid container spacing={2}>
-                {_permissions?.map((permission: Permission) => {
+                {permissions?.map((permission: Permission) => {
                   return managePermissions(role, permission)
                 })}
               </Grid>
             </AccordionDetails>
           </Accordion>
         ))}
-
-      {permissionGranted && (
-        <>
-          <Typography variant={'h5'} color={Colors.GREY} sx={{ mb: 3, mt: 3 }}>
-            Vous n'avez pas accès à cette page !
-          </Typography>
-          <div>
-            <Button variant={'outlined'} onClick={() => history.back()}>
-              Retour à la page précédente
-            </Button>
-          </div>
-        </>
-      )}
     </Grid>
   )
 }

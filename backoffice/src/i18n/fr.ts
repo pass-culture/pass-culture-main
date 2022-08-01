@@ -29,9 +29,6 @@ const messages: TranslationMessages = {
       api: 'Il semblerait que le token API ne soit pas renseigné...',
       notFound: 'Votre token semble absent !',
     },
-    permissions: {
-      notFound: 'Aucune permission ne semble vous être attribuée',
-    },
   },
 }
 
