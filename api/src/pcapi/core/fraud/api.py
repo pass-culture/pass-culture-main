@@ -793,7 +793,7 @@ def create_profile_completion_fraud_check(
     fraud_check_content: models.ProfileCompletionContent,
 ) -> None:
     if subscription_api.has_completed_profile(user, eligibility):
-        logger.error(
+        logger.warning(
             "Profile completion fraud check for user already exists.",
             extra={"user_id": user.id},
         )
