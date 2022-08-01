@@ -26,7 +26,7 @@ import styles from './OfferEducationalForm.module.scss'
 
 type IOfferEducationalFormProps = Omit<
   IOfferEducationalProps,
-  'onSubmit' | 'initialValues' | 'isEdition'
+  'onSubmit' | 'initialValues' | 'isEdition' | 'getEducationalDomainsAdapter'
 > & {
   mode: Mode
   domainsOptions: SelectOption[]
