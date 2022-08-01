@@ -591,7 +591,7 @@ class CDSStocksQuantityTest:
 
         # Then
         assert len(created_stocks) == 1
-        assert first_stock.quantity == 78
+        assert first_stock.quantity == 11
         assert first_stock.dnBookedQuantity == 1
 
 
