@@ -20,10 +20,12 @@ import {
   useAuthenticated,
   useGetOne,
   useNotify,
+  usePermissions,
   useRedirect,
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 
+import { searchPermission } from '../../helpers/functions'
 import { Colors } from '../../layout/Colors'
 import { eventMonitoring } from '../../libs/monitoring/sentry'
 import {
@@ -40,8 +42,9 @@ import { UserDetailsCard } from './Components/UserDetailsCard'
 import { UserHistoryCard } from './Components/UserHistoryCard'
 import {
   EligibilityFraudCheck,
-  PublicUserRolesEnum,
   EligibilitySubscriptionItem,
+  PermissionsEnum,
+  PublicUserRolesEnum,
   UserBaseInfo,
 } from './types'
 
@@ -53,7 +56,6 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
-
   return (
     <div
       style={{ width: '100%' }}
@@ -87,6 +89,12 @@ const cardStyle = {
 
 export const UserDetail = () => {
   useAuthenticated()
+  const { permissions } = usePermissions()
+  const formattedPermissions: PermissionsEnum[] = permissions
+  const canReviewPublicUser = !!searchPermission(
+    formattedPermissions,
+    PermissionsEnum.reviewPublicAccount
+  )
   const { id } = useParams() // this component is rendered in the /books/:id path
   const redirect = useRedirect()
   const [tabValue, setTabValue] = useState(1)
@@ -263,11 +271,12 @@ export const UserDetail = () => {
                 >
                   Suspendre le compte
                 </Button>
-
-                <ManualReviewModal
-                  user={userBaseInfo}
-                  eligibilityFraudChecks={idsCheckHistory}
-                />
+                {canReviewPublicUser && (
+                  <ManualReviewModal
+                    user={userBaseInfo}
+                    eligibilityFraudChecks={idsCheckHistory}
+                  />
+                )}
               </Stack>
             </div>
           </Grid>
