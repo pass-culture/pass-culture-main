@@ -8,6 +8,7 @@ import { useGetOffererNames } from 'core/Offerers/adapters'
 import { useGetCategories, useGetOffer } from 'core/Offers/adapters'
 import { useGetOfferIndividualVenues } from 'core/Venue/adapters'
 import { useHomePath } from 'hooks'
+import useIsLoading from 'hooks/useIsLoading'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
@@ -42,17 +43,25 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
   } = useGetOfferIndividualVenues()
   const {
     data: categoriesData,
-    isLoading: categoriesStatus,
+    isLoading: categoriesIsLoading,
     error: categoriesError,
   } = useGetCategories()
+
+  const isLoading = useIsLoading([
+    offererNamesIsLoading,
+    offerIsLoading,
+    venueListIsLoading,
+    categoriesIsLoading,
+  ])
 
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
 
   if (
+    isLoading ||
     offererNamesIsLoading === true ||
     venueListIsLoading === true ||
-    categoriesStatus === true ||
+    categoriesIsLoading === true ||
     offerIsLoading === true
   ) {
     return <Spinner />
