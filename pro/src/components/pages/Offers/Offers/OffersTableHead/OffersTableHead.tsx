@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
@@ -31,9 +30,6 @@ const OffersTableHead = ({
   audience,
 }: OffersTableHeadProps): JSX.Element => {
   const savedSearchFilters = useSelector(searchFiltersSelector)
-  const enableEducationalInstitutionAssociation = useActiveFeature(
-    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
-  )
 
   return (
     <thead>
@@ -68,12 +64,7 @@ const OffersTableHead = ({
         </th>
         {audience === Audience.INDIVIDUAL && <th />}
         <th>Lieu</th>
-        <th>
-          {audience === Audience.COLLECTIVE &&
-          enableEducationalInstitutionAssociation
-            ? 'Etablissement'
-            : 'Stocks'}
-        </th>
+        <th>{audience === Audience.COLLECTIVE ? 'Etablissement' : 'Stocks'}</th>
         <th className="th-with-filter">
           <StatusFiltersButton
             applyFilters={applyFilters}

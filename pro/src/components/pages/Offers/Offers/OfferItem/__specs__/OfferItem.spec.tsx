@@ -248,17 +248,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // given
         props.audience = Audience.COLLECTIVE
         props.offer.educationalInstitution = null
-        store = configureTestStore({
-          features: {
-            initialized: true,
-            list: [
-              {
-                nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
-                isActive: true,
-              },
-            ],
-          },
-        })
 
         // when
         renderOfferItem(props, store)
@@ -278,17 +267,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
           city: 'Alès',
           postalCode: '30100',
         }
-        store = configureTestStore({
-          features: {
-            initialized: true,
-            list: [
-              {
-                nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
-                isActive: true,
-              },
-            ],
-          },
-        })
 
         // when
         renderOfferItem(props, store)
