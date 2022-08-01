@@ -67,6 +67,7 @@ class Returns200Test:
                 "publicName": offer.venue.publicName,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
             },
+            "interventionArea": offer.interventionArea,
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
