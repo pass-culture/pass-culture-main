@@ -1,10 +1,13 @@
 import { api } from 'apiClient/api'
 import { IOfferIndividual } from 'core/Offers/types'
-import { useAdapter } from 'hooks'
 
 import { serializeOfferApi } from './serializers'
 
-type GetOfferAdapter = Adapter<string | undefined, IOfferIndividual, null>
+export type GetOfferIndividualAdapter = Adapter<
+  string | undefined,
+  IOfferIndividual,
+  null
+>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -12,7 +15,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getOfferAdapter: GetOfferAdapter = async offerId => {
+const getOfferIndividualAdapter: GetOfferIndividualAdapter = async offerId => {
   if (offerId === undefined) {
     return FAILING_RESPONSE
   }
@@ -30,7 +33,4 @@ const getOfferAdapter: GetOfferAdapter = async offerId => {
   }
 }
 
-const useGetOfferIndividual = (offerId?: string) =>
-  useAdapter<IOfferIndividual, null>(() => getOfferAdapter(offerId))
-
-export default useGetOfferIndividual
+export default getOfferIndividualAdapter
