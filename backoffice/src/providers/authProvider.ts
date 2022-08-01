@@ -1,3 +1,4 @@
+import decodeJwt from 'jwt-decode'
 import { UserManager } from 'oidc-client'
 import { AuthProvider, useTranslate } from 'react-admin'
 
@@ -5,7 +6,7 @@ import { env } from '../libs/environment/env'
 import { eventMonitoring } from '../libs/monitoring/sentry'
 
 import { getProfileFromToken } from './getProfileFromToken'
-import { AuthToken } from './types'
+import { AuthToken, tokenApiPayload } from './types'
 
 const userManager = new UserManager({
   authority: env.AUTH_ISSUER,
@@ -62,6 +63,9 @@ export const authProvider: AuthProvider = {
       }
 
       await userManager.clearStaleState()
+      const decodedToken: tokenApiPayload = decodeJwt(tokenApi)
+      const permissions = JSON.stringify(decodedToken.perms)
+      localStorage.setItem('permissions', permissions)
       cleanup()
     } catch (error) {
       eventMonitoring.captureException(error)
@@ -111,6 +115,13 @@ export const authProvider: AuthProvider = {
   },
   // authorization
   getPermissions() {
-    throw new Error('Unknown method')
+    const permissionString = localStorage.getItem('permissions')
+    try {
+      return permissionString
+        ? Promise.resolve(JSON.parse(permissionString))
+        : Promise.reject()
+    } catch (error) {
+      throw new Error(translate('errors.permissions.notFound'))
+    }
   },
 }
