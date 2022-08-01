@@ -3,6 +3,7 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -22,6 +23,7 @@ class MakeOfferCreationNotificationEmailTest:
             author=author,
             isEducational=isEducationalOffer,
             product__name="Le vent se lève",
+            venue__venueTypeCode=VenueTypeCode.MOVIE,
             venue__city="Montreuil",
             venue__postalCode="93100",
             venue__managingOfferer__name="Cinéma de Montreuil",
@@ -63,6 +65,7 @@ class MakeOfferCreationNotificationEmailTest:
             assert "Offre EAC : False" in offer_is_eac
 
         venue_details = str(parsed_email.find("p", {"id": "venue_details"}))
+        assert "Catégorie du lieu : Cinéma - Salle de projections" in venue_details
         assert (
             f"Lien vers le lieu : http://localhost:3001/structures/{humanize(offerer.id)}/lieux/{humanize(offer.venue.id)}"
             in venue_details
@@ -101,6 +104,7 @@ class MakeOfferRejectionNotificationEmailTest:
             author=author,
             isEducational=isEducationalOffer,
             product__name="Le vent se lève",
+            venue__venueTypeCode=VenueTypeCode.MOVIE,
             venue__city="Montreuil",
             venue__postalCode="93100",
             venue__managingOfferer__name="Cinéma de Montreuil",
@@ -140,6 +144,7 @@ class MakeOfferRejectionNotificationEmailTest:
             assert "Offre EAC : False" in offer_is_eac
 
         venue_details = str(parsed_email.find("p", {"id": "venue_details"}))
+        assert "Catégorie du lieu : Cinéma - Salle de projections" in venue_details
         assert (
             f"Lien vers le lieu : http://localhost:3001/structures/{humanize(offerer.id)}/lieux/{humanize(offer.venue.id)}"
             in venue_details
