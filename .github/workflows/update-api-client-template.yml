@@ -1,3 +1,5 @@
+name: Update API Client template
+
 on:
   workflow_call:
     inputs:
