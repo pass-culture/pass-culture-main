@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
-import { useGetCategories, useGetOffer } from 'core/Offers/adapters'
+import { useGetCategories, useGetOfferIndividual } from 'core/Offers/adapters'
 import { useHomePath } from 'hooks'
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
@@ -23,7 +23,7 @@ const OfferIndividualCreation = (): JSX.Element | null => {
     data: offer,
     isLoading: offerIsLoading,
     error: offerError,
-  } = useGetOffer(offerId)
+  } = useGetOfferIndividual(offerId)
   const {
     data: categoriesData,
     isLoading: categoriesIsLoading,
