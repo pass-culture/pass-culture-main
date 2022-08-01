@@ -18,7 +18,6 @@ def get_by_siren_stub(offerer):
             },
             "activite_principale": "59.14Z",
         },
-        "other_etablissements_sirets": ["39525144000032", "39525144000065"],
     }
 
 
@@ -70,9 +69,6 @@ def test_write_object_validation_email():
     assert summary_section.select("strong")[1].a.text == "cliquez ici"
 
     api_entreprise_data = html.select_one("pre.api-entreprise-data").text
-    assert "'other_etablissements_sirets':['39525144000032','39525144000065']" in api_entreprise_data.replace(
-        " ", ""
-    ).replace("\n", "")
     assert "etablissement_siege" in api_entreprise_data
 
 
