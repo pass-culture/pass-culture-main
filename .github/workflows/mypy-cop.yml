@@ -1,3 +1,5 @@
+name: MyPy cop
+
 on:
   pull_request:
     branches:
@@ -46,8 +48,8 @@ jobs:
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'mypy cop report'
+          comment-author: "github-actions[bot]"
+          body-includes: "mypy cop report"
       - name: Create comment
         if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id == '' && steps.mypy-ignore-counter.outputs.this_branch_ignore_count != steps.mypy-ignore-counter.outputs.master_ignore_count }}
         uses: peter-evans/create-or-update-comment@v1

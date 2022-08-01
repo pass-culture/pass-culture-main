@@ -1,3 +1,5 @@
+name: Reset cache on master on dependency update
+
 on:
   push:
     branches:
