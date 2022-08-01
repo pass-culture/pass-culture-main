@@ -2,14 +2,23 @@ import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { OfferAddressType } from 'apiClient/v1'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   IUserOfferer,
   IUserVenue,
 } from 'core/OfferEducational'
+import { handleAllFranceDepartmentOptions } from 'core/shared'
+import { offerInterventionOptions } from 'core/shared/interventionOptions'
 import FormLayout from 'new_components/FormLayout'
-import { RadioGroup, Select, TextArea, Banner } from 'ui-kit'
+import {
+  RadioGroup,
+  Select,
+  TextArea,
+  Banner,
+  MultiSelectAutocomplete,
+} from 'ui-kit'
 
 import {
   EVENT_ADDRESS_OFFERER_LABEL,
@@ -48,7 +57,15 @@ const FormEventAddress = ({
 }: IFormEventAddressProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
+
+  const enableInterventionZone = useActiveFeature(
+    'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER'
+  )
+
   const [currentVenue, setCurrentVenue] = useState<IUserVenue | null>(null)
+  const [previousInterventionValues, setPreviousInterventionValues] = useState<
+    string[] | null
+  >(null)
 
   useEffect(() => {
     if (
@@ -92,6 +109,16 @@ const FormEventAddress = ({
     }
   }, [currentOfferer, values.eventAddress])
 
+  useEffect(() => {
+    handleAllFranceDepartmentOptions(
+      values.interventionArea,
+      previousInterventionValues,
+      (value: string[]) => setFieldValue('interventionArea', value)
+    )
+
+    setPreviousInterventionValues(values.interventionArea)
+  }, [values.interventionArea])
+
   return (
     <FormLayout.Section
       description="Ces informations sont visibles par les enseignants et les chefs d’établissement."
@@ -127,6 +154,20 @@ const FormEventAddress = ({
           )}
         </FormLayout.Row>
       )}
+
+      {values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
+        enableInterventionZone && (
+          <FormLayout.Row>
+            <MultiSelectAutocomplete
+              hideTags
+              options={offerInterventionOptions}
+              fieldName="interventionArea"
+              label="Zones de Mobilités pour l'événement"
+              placeholder="Sélectionner une ou plusieurs zone(s) de mobilité(s)"
+              className={styles.row}
+            />
+          </FormLayout.Row>
+        )}
 
       {values.eventAddress.addressType === OfferAddressType.OTHER && (
         <FormLayout.Row>
