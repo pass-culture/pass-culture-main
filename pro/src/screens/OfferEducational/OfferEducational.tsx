@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   CanOffererCreateCollectiveOffer,
   GetEducationalDomainsAdapter,
@@ -15,7 +16,10 @@ import OfferEducationalActions from 'new_components/OfferEducationalActions'
 
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'
-import { validationSchema } from './validationSchema'
+import {
+  validationSchema,
+  validationSchemaWithInterventionArea,
+} from './validationSchema'
 
 export interface IOfferEducationalProps {
   educationalCategories: IEducationalCategory[]
@@ -53,11 +57,17 @@ const OfferEducational = ({
   isOfferActive = false,
   getEducationalDomainsAdapter,
 }: IOfferEducationalProps): JSX.Element => {
+  const enableInterventionZone = useActiveFeature(
+    'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER'
+  )
+
   const [domainsOptions, setDomainsOptions] = useState<SelectOption[]>([])
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema,
+    validationSchema: enableInterventionZone
+      ? validationSchemaWithInterventionArea
+      : validationSchema,
   })
 
   const shouldShowOfferActions =
