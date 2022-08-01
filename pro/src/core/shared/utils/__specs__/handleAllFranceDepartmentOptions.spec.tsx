@@ -2,23 +2,22 @@ import {
   ALL_FRANCE_OPTION_VALUE,
   MAINLAND_OPTION_VALUE,
   allDepartmentValues,
-} from 'core/Venue'
-
-import { handleAllFranceDepartmentOptions } from '../CollectiveDataForm/utils/handleAllFranceDepartmentOptions'
+} from '../../interventionOptions'
+import { handleAllFranceDepartmentOptions } from '../handleAllFranceDepartmentOptions'
 
 describe('handleAllFranceDepartmentOptions', () => {
   it('should do nothing', () => {
     const currentValues = ['01', '02', '03']
     const previousValues = ['01', '02']
-    const mockedFormikSetFieldValue = jest.fn()
+    const mockedSetValue = jest.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
       previousValues,
-      mockedFormikSetFieldValue
+      mockedSetValue
     )
 
-    expect(mockedFormikSetFieldValue).not.toHaveBeenCalled()
+    expect(mockedSetValue).not.toHaveBeenCalled()
   })
 
   it('should add "Toute la France" in selected values', () => {
@@ -27,18 +26,19 @@ describe('handleAllFranceDepartmentOptions', () => {
       ...allDepartmentValues.filter(value => value === '01'),
       'culturalPartner',
     ]
-    const mockedFormikSetFieldValue = jest.fn()
+    const mockedSetValue = jest.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
       previousValues,
-      mockedFormikSetFieldValue
+      mockedSetValue
     )
 
-    expect(mockedFormikSetFieldValue).toHaveBeenCalledWith(
-      'collectiveInterventionArea',
-      [...currentValues, MAINLAND_OPTION_VALUE, ALL_FRANCE_OPTION_VALUE]
-    )
+    expect(mockedSetValue).toHaveBeenCalledWith([
+      ...currentValues,
+      MAINLAND_OPTION_VALUE,
+      ALL_FRANCE_OPTION_VALUE,
+    ])
   })
 
   it('should remove "Toute la France" from selected values', () => {
@@ -52,16 +52,15 @@ describe('handleAllFranceDepartmentOptions', () => {
       ALL_FRANCE_OPTION_VALUE,
       'culturalPartner',
     ]
-    const mockedFormikSetFieldValue = jest.fn()
+    const mockedSetValue = jest.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
       previousValues,
-      mockedFormikSetFieldValue
+      mockedSetValue
     )
 
-    expect(mockedFormikSetFieldValue).toHaveBeenCalledWith(
-      'collectiveInterventionArea',
+    expect(mockedSetValue).toHaveBeenCalledWith(
       currentValues.filter(value => value !== ALL_FRANCE_OPTION_VALUE)
     )
   })
@@ -69,23 +68,20 @@ describe('handleAllFranceDepartmentOptions', () => {
   it('should select all departments', () => {
     const currentValues = [ALL_FRANCE_OPTION_VALUE, 'culturalPartner', '01']
     const previousValues = ['culturalPartner', '01']
-    const mockedFormikSetFieldValue = jest.fn()
+    const mockedSetValue = jest.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
       previousValues,
-      mockedFormikSetFieldValue
+      mockedSetValue
     )
 
-    expect(mockedFormikSetFieldValue).toHaveBeenCalledWith(
-      'collectiveInterventionArea',
-      [
-        ALL_FRANCE_OPTION_VALUE,
-        'culturalPartner',
-        ...allDepartmentValues,
-        MAINLAND_OPTION_VALUE,
-      ]
-    )
+    expect(mockedSetValue).toHaveBeenCalledWith([
+      ALL_FRANCE_OPTION_VALUE,
+      'culturalPartner',
+      ...allDepartmentValues,
+      MAINLAND_OPTION_VALUE,
+    ])
   })
 
   it('should unselect all departments', () => {
@@ -95,17 +91,14 @@ describe('handleAllFranceDepartmentOptions', () => {
       'culturalPartner',
       ...allDepartmentValues,
     ]
-    const mockedFormikSetFieldValue = jest.fn()
+    const mockedSetValue = jest.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
       previousValues,
-      mockedFormikSetFieldValue
+      mockedSetValue
     )
 
-    expect(mockedFormikSetFieldValue).toHaveBeenCalledWith(
-      'collectiveInterventionArea',
-      ['culturalPartner']
-    )
+    expect(mockedSetValue).toHaveBeenCalledWith(['culturalPartner'])
   })
 })

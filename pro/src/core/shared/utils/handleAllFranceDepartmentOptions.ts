@@ -1,13 +1,9 @@
-import type { FormikErrors } from 'formik'
-
 import {
   ALL_FRANCE_OPTION_VALUE,
   MAINLAND_OPTION_VALUE,
   allDepartmentValues,
   mainlandValues,
-} from 'core/Venue'
-
-import { CollectiveDataFormValues } from '../type'
+} from '../interventionOptions'
 
 const areAllMainlandDepartmentsSelected = (formikValues: string[]) =>
   mainlandValues.every(departmentValue =>
@@ -22,11 +18,7 @@ export const areAllDepartmentsSelected = (formikValues: string[]) =>
 export const handleAllFranceDepartmentOptions = (
   formikValues: string[],
   previousFormikValues: string[] | null,
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined
-  ) => Promise<void> | Promise<FormikErrors<CollectiveDataFormValues>>
+  setValue: (value: string[]) => void
 ) => {
   let allDepartmentsSelected = areAllDepartmentsSelected(formikValues)
   let allMainlandDepartmentsSelected =
@@ -45,8 +37,7 @@ export const handleAllFranceDepartmentOptions = (
     allMainlandDepartmentsSelected
 
   if (userUnselectedAllFrance) {
-    return setFieldValue(
-      'collectiveInterventionArea',
+    return setValue(
       formikValues.filter(
         value =>
           !allDepartmentValues.includes(value) &&
@@ -56,8 +47,7 @@ export const handleAllFranceDepartmentOptions = (
   }
 
   if (userUnselectedMainland) {
-    return setFieldValue(
-      'collectiveInterventionArea',
+    return setValue(
       formikValues.filter(
         value =>
           !(mainlandValues.includes(value) || value == ALL_FRANCE_OPTION_VALUE)
@@ -109,7 +99,7 @@ export const handleAllFranceDepartmentOptions = (
 
   // This is to avoid infinite loop as formik values are immutable
   if (newValues.size !== formikValues.length) {
-    return setFieldValue('collectiveInterventionArea', [...newValues])
+    return setValue([...newValues])
   }
 
   return
