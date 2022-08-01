@@ -37,7 +37,8 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
 
     def get_show_remaining_places(self, show_id: int) -> int:
         show = self.get_show(show_id)
-        if self.get_internet_sale_gauge_active():
+        internet_sale_gauge_active = self.get_internet_sale_gauge_active()
+        if internet_sale_gauge_active:
             return show.internet_remaining_place
         return show.remaining_place
 
