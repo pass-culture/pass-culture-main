@@ -7,7 +7,6 @@ import { connectSearchBox } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { INITIAL_QUERY } from 'app/constants'
-import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters } from 'app/types'
@@ -47,10 +46,6 @@ export const OffersSearchComponent = ({
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
 
-  const enableEducationalInstitutionAssociation = useActiveFeature(
-    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
-  )
-
   const { trackSiteSearch } = useMatomo()
 
   const userUAICode = user.uai
@@ -63,11 +58,10 @@ export const OffersSearchComponent = ({
       populateFacetFilters({
         ...currentFilters,
         venueFilter,
-        uai: enableEducationalInstitutionAssociation
-          ? tab === OfferTab.ASSOCIATED_TO_INSTITUTION
+        uai:
+          tab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
-            : uaiCodeAllInstitutionsTab
-          : null,
+            : uaiCodeAllInstitutionsTab,
       })
     )
   }
@@ -93,11 +87,10 @@ export const OffersSearchComponent = ({
       populateFacetFilters({
         ...filters,
         venueFilter,
-        uai: enableEducationalInstitutionAssociation
-          ? activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+        uai:
+          activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
-            : uaiCodeAllInstitutionsTab
-          : null,
+            : uaiCodeAllInstitutionsTab,
       })
     )
     setQueryTag(query)
@@ -131,9 +124,7 @@ export const OffersSearchComponent = ({
 
   return (
     <>
-      {enableEducationalInstitutionAssociation && !!user.uai && (
-        <Tabs selectedKey={activeTab} tabs={tabs} />
-      )}
+      {!!user.uai && <Tabs selectedKey={activeTab} tabs={tabs} />}
       <SearchBox refine={refine} />
       <OfferFilters
         className="search-filters"

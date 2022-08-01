@@ -67,15 +67,7 @@ jest.mock('api/api', () => ({
 }))
 const mockedApi = api as jest.Mocked<typeof api>
 
-const features = [
-  {
-    name: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
-    nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
-    isActive: true,
-    description: '',
-    id: '1',
-  },
-]
+const features = []
 
 const renderApp = () => {
   render(
