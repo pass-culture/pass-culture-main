@@ -55,18 +55,7 @@ export const EDITED_OFFER_READ_ONLY_FIELDS = [
   'offererId',
   'venueId',
 ]
-export const EXTRA_DATA_FIELDS = [
-  'author',
-  'isbn',
-  'musicType',
-  'musicSubType',
-  'performer',
-  'showType',
-  'showSubType',
-  'speaker',
-  'stageDirector',
-  'visa',
-]
+
 export const MANDATORY_FIELDS = [
   'name',
   'venueId',

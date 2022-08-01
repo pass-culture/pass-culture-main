@@ -22,7 +22,7 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
+import { OFFER_WITHDRAWAL_TYPE_OPTIONS, EXTRA_DATA_FIELDS } from 'core/Offers'
 import { OfferRefundWarning } from 'new_components/Banner'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SubmitButton } from 'ui-kit'
@@ -34,7 +34,6 @@ import {
   BASE_OFFER_FIELDS,
   CAN_CREATE_FROM_ISBN_SUBCATEGORIES,
   DEFAULT_FORM_VALUES,
-  EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
   NOT_REIMBURSED,
   PLATFORM,
