@@ -206,7 +206,7 @@ export const RolesList = () => {
           </Accordion>
         ))}
 
-      {permissionGranted && (
+      {!permissionGranted && (
         <>
           <Typography variant={'h5'} color={Colors.GREY} sx={{ mb: 3, mt: 3 }}>
             Vous n'avez pas accès à cette page !
