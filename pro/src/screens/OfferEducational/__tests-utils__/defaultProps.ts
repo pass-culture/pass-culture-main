@@ -55,6 +55,7 @@ export const defaultCreationProps: IOfferEducationalProps = {
     information: jest.fn(),
   },
   mode: Mode.CREATION,
+  getEducationalDomainsAdapter: jest.fn(),
 }
 
 const editionFormValues = {
@@ -107,4 +108,5 @@ export const defaultEditionProps: IOfferEducationalProps = {
     information: jest.fn(),
   },
   mode: Mode.EDITION,
+  getEducationalDomainsAdapter: jest.fn(),
 }
