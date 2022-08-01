@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
-import { useGetCategories, useGetOfferIndividual } from 'core/Offers/adapters'
+import {
+  getOfferIndividualAdapter,
+  useGetCategories,
+} from 'core/Offers/adapters'
+import { IOfferIndividual } from 'core/Offers/types'
 import { useHomePath } from 'hooks'
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
@@ -18,12 +22,28 @@ const OfferIndividualCreation = (): JSX.Element | null => {
   const homePath = useHomePath()
 
   const { offerId } = useParams<{ offerId: string }>()
+  const [offerIsLoading, setOfferIsLoading] = useState<boolean>(true)
+  const [offer, setOffer] = useState<IOfferIndividual | undefined>()
 
-  const {
-    data: offer,
-    isLoading: offerIsLoading,
-    error: offerError,
-  } = useGetOfferIndividual(offerId)
+  useEffect(() => {
+    async function loadOffer() {
+      const response = await getOfferIndividualAdapter(offerId)
+      if (response.isOk) {
+        setOffer(response.payload)
+      } else {
+        notify.error(response.message)
+        history.push(homePath)
+      }
+      setOfferIsLoading(false)
+    }
+    if (offerId) {
+      loadOffer()
+    } else {
+      setOffer(undefined)
+      setOfferIsLoading(false)
+    }
+  }, [offerId])
+
   const {
     data: categoriesData,
     isLoading: categoriesIsLoading,
@@ -31,10 +51,8 @@ const OfferIndividualCreation = (): JSX.Element | null => {
   } = useGetCategories()
   const { currentStep, stepList } = useOfferFormSteps(offer)
 
-  if (categoriesError !== undefined || (offerId && offerError !== undefined)) {
-    const loadingError = [categoriesError, offerError].find(
-      error => error !== undefined
-    )
+  if (categoriesError !== undefined) {
+    const loadingError = [categoriesError].find(error => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
       history.push(homePath)
