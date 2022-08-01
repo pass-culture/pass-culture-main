@@ -7,6 +7,6 @@ on:
 
 jobs:
   prepare-cache-master:
-    uses: ./.github/workflows/reusable-update-api-client.yml
+    uses: ./.github/workflows/update-api-client-template.yml
     with:
       trigger-only-on-change: false
