@@ -39,11 +39,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
   ]),
-  getFeatures: jest
-    .fn()
-    .mockResolvedValue([
-      { name: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION', isActive: true },
-    ]),
+  getFeatures: jest.fn().mockResolvedValue([]),
 }))
 
 jest.mock('api/api', () => ({
