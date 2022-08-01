@@ -49,7 +49,6 @@ from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
-from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.utils import rest
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.human_ids import dehumanize
@@ -686,7 +685,7 @@ def get_educational_domains_from_ids(
 
 
 def create_collective_offer(
-    offer_data: PostCollectiveOfferBodyModel | PostEducationalOfferBodyModel,
+    offer_data: PostCollectiveOfferBodyModel,
     user: User,
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOffer:
@@ -708,23 +707,16 @@ def create_collective_offer(
         domains=educational_domains,  # type: ignore [arg-type]
         durationMinutes=offer_data.duration_minutes,
         subcategoryId=offer_data.subcategory_id,
-        students=offer_data.extra_data.students
-        if isinstance(offer_data, PostEducationalOfferBodyModel)
-        else offer_data.students,
-        contactEmail=offer_data.extra_data.contact_email
-        if isinstance(offer_data, PostEducationalOfferBodyModel)
-        else offer_data.contact_email,
-        contactPhone=offer_data.extra_data.contact_phone
-        if isinstance(offer_data, PostEducationalOfferBodyModel)
-        else offer_data.contact_phone,
-        offerVenue=offer_data.extra_data.offer_venue.dict()  # type: ignore [arg-type]
-        if isinstance(offer_data, PostEducationalOfferBodyModel)
-        else offer_data.offer_venue.dict(),
+        students=offer_data.students,
+        contactEmail=offer_data.contact_email,
+        contactPhone=offer_data.contact_phone,
+        offerVenue=offer_data.offer_venue.dict(),  # type: ignore [arg-type]
         validation=OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
         motorDisabilityCompliant=offer_data.motor_disability_compliant,
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
+        interventionArea=offer_data.intervention_area or [],
     )
     db.session.add(collective_offer)
     db.session.commit()

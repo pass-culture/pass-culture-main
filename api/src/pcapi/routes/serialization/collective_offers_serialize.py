@@ -76,6 +76,7 @@ class CollectiveOfferResponseModel(BaseModel):
     isShowcase: bool | None
     offerId: str | None
     educationalInstitution: EducationalInstitutionResponseModel | None
+    interventionArea: list[str]
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -117,6 +118,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         isShowcase=is_offer_template,
         offerId=humanize(offer.offerId),
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
+        interventionArea=offer.interventionArea,
     )
 
 
@@ -262,6 +264,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     venueId: str
     status: OfferStatus
     domains: list[OfferDomain]
+    interventionArea: list[str]
 
     _humanize_id = humanize_field("id")
     _humanize_offerId = humanize_field("offerId")
@@ -331,6 +334,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     offer_venue: CollectiveOfferVenueBodyModel
     contact_email: str
     contact_phone: str
+    intervention_area: list[str] | None
 
     @validator("name", pre=True)
     def validate_name(cls: BaseModel, name: str, values: str) -> str:  # pylint: disable=no-self-argument

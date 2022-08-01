@@ -43,6 +43,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -68,6 +69,7 @@ class Returns200Test:
             "venueId": humanize(venue.id),
             "otherAddress": "17 rue aléatoire",
         }
+        assert offer.interventionArea == ["75", "92", "93"]
         assert len(offer.students) == 2
         assert offer.students[0].value == "Lycée - Seconde"
         assert offer.students[1].value == "Lycée - Première"
@@ -104,6 +106,7 @@ class Returns403Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -141,6 +144,7 @@ class Returns403Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -179,6 +183,7 @@ class Returns400Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -214,6 +219,7 @@ class Returns400Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -249,6 +255,7 @@ class Returns400Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -285,6 +292,7 @@ class Returns400Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -325,6 +333,7 @@ class Returns404Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
         }
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
