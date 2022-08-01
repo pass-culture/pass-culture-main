@@ -6,7 +6,6 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'api/gen'
-import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
@@ -28,9 +27,6 @@ export const Offer = ({
 }): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const offerIsShowcase = !isOfferCollectiveOffer(offer)
-  const displayEducationalDomains = useActiveFeature(
-    'ENABLE_EDUCATIONAL_DOMAINS'
-  )
 
   return (
     <li className="offer" data-testid="offer-listitem">
@@ -62,12 +58,11 @@ export const Offer = ({
             {getOfferVenueAndOffererName(offer.venue)}
           </p>
           <ul className="offer-domains-list">
-            {displayEducationalDomains &&
-              offer?.domains?.map(domain => (
-                <li className="offer-domains-list-item" key={domain.id}>
-                  <Tag label={domain.name} />
-                </li>
-              ))}
+            {offer?.domains?.map(domain => (
+              <li className="offer-domains-list-item" key={domain.id}>
+                <Tag label={domain.name} />
+              </li>
+            ))}
           </ul>
         </div>
         <OfferSummary offer={offer} />
