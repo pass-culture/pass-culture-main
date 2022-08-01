@@ -69,5 +69,7 @@ export const computeInitialValuesFromOffer = (
     notificationEmail:
       offer.bookingEmail ?? DEFAULT_EAC_FORM_VALUES.notificationEmail,
     domains,
+    // FIXME : set offer.interventionArea when backend is ready
+    interventionArea: DEFAULT_EAC_FORM_VALUES.interventionArea,
   }
 }

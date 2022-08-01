@@ -48,6 +48,7 @@ export type IOfferEducationalFormValues = {
     otherAddress: string
     venueId: string
   }
+  interventionArea: string[]
   participants: {
     quatrieme: boolean
     troisieme: boolean

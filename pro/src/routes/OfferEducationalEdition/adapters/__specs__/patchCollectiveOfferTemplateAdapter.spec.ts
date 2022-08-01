@@ -31,6 +31,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
           otherAddress: '1 rue des polissons, Paris 75017',
           venueId: '',
         },
+        interventionArea: [],
         participants: {
           quatrieme: false,
           troisieme: false,
@@ -66,6 +67,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
           otherAddress: '1 rue des polissons, Paris 75017',
           venueId: '',
         },
+        interventionArea: [],
         participants: {
           quatrieme: false,
           troisieme: false,
