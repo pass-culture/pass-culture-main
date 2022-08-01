@@ -12,7 +12,7 @@ import MultiSelectAutocomplete, {
 
 describe('MultiSelectAutocomplete', () => {
   const props: MultiSelectAutocompleteProps = {
-    label: 'Département',
+    singularLabel: 'Département',
     fieldName: 'departement',
     options: [
       { value: '01', label: 'Ain' },
@@ -34,7 +34,7 @@ describe('MultiSelectAutocomplete', () => {
       { value: '14', label: 'Calvados' },
       { value: '15', label: 'Cantal' },
     ],
-    pluralLabel: 'Départements',
+    label: 'Départements',
   }
   const initialValues = { departement: ['01', '02'] }
 
@@ -44,7 +44,7 @@ describe('MultiSelectAutocomplete', () => {
         <MultiSelectAutocomplete {...props} />
       </Formik>
     )
-    expect(screen.getByLabelText('Département')).toBeInTheDocument()
+    expect(screen.getByLabelText('Départements')).toBeInTheDocument()
   })
 
   it('should display the number of selected options', async () => {
