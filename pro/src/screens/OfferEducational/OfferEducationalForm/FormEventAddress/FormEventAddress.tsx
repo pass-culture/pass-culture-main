@@ -162,8 +162,8 @@ const FormEventAddress = ({
               hideTags
               options={offerInterventionOptions}
               fieldName="interventionArea"
-              label="Zones de Mobilités pour l'événement"
-              placeholder="Sélectionner une ou plusieurs zone(s) de mobilité(s)"
+              label="Zones de Mobilités pour l’événement"
+              singularLabel="Zone de Mobilité pour l’événement"
               className={styles.row}
             />
           </FormLayout.Row>

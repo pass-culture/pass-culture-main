@@ -142,7 +142,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderEACOfferForm(props, store)
 
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel/)
+        await screen.findByLabelText(/Domaines artistiques et culturels/)
       )
 
       await userEvent.click(screen.getByLabelText(/Catégorie/))
@@ -156,7 +156,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderEACOfferForm(props, store)
 
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel/)
+        await screen.findByLabelText(/Domaines artistiques et culturels/)
       )
 
       await userEvent.click(await screen.findByLabelText(/Domain 2/))
