@@ -987,8 +987,13 @@ class PriceBookingsTest:
 
     @auto_override_features
     def test_loop(self):
-        bookings_factories.UsedBookingFactory.create_batch(
-            2,
+        bookings_factories.UsedBookingFactory(
+            id=2,
+            dateUsed=self.few_minutes_ago - datetime.timedelta(minutes=1),
+            stock=self.individual_stock_factory(),
+        )
+        bookings_factories.UsedBookingFactory(
+            id=1,
             dateUsed=self.few_minutes_ago,
             stock=self.individual_stock_factory(),
         )
@@ -997,7 +1002,10 @@ class PriceBookingsTest:
             dateUsed=self.few_minutes_ago,
             collectiveStock=self.collective_stock_factory(),
         )
-        api.price_bookings(min_date=self.few_minutes_ago, batch_size=1)
+        api.price_bookings(
+            min_date=self.few_minutes_ago - datetime.timedelta(minutes=1),
+            batch_size=1,
+        )
         assert models.Pricing.query.count() == 2 + 3
 
     @auto_override_features
