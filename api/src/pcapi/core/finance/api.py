@@ -169,33 +169,46 @@ def price_bookings(
     collective_booking_query = _get_bookings_to_price(educational_models.CollectiveBooking, window, use_pricing_point)
     loops = math.ceil(max(booking_query.count(), collective_booking_query.count()) / batch_size)
 
-    def _get_loop_query(query: BaseQuery, last_id: int | None) -> BaseQuery:
+    def _get_loop_query(
+        query: BaseQuery,
+        last_booking: bookings_models.Booking | educational_models.CollectiveBooking | None,
+        use_pricing_point: bool,
+    ) -> BaseQuery:
         # We cannot use OFFSET and LIMIT because the loop "consumes"
         # bookings that have been priced (so the query will not return
         # them in the next loop), but keeps bookings that cannot be
         # priced (so the query WILL return them in the next loop).
-        # Actually, filtering by id is probably faster.
-        if last_id:
-            if bookings_models.Booking in [d["entity"] for d in query.column_descriptions]:
-                query = query.filter(bookings_models.Booking.id > last_id)
+        if last_booking:
+            if isinstance(last_booking, bookings_models.Booking):
+                if use_pricing_point:
+                    clause = sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(
+                        *_booking_comparison_tuple(last_booking)
+                    )
+                else:
+                    clause = sqla.func.ROW(*_LEGACY_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(
+                        *_legacy_booking_comparison_tuple(last_booking)
+                    )
             else:
-                query = query.filter(educational_models.CollectiveBooking.id > last_id)
+                clause = sqla.func.ROW(
+                    educational_models.CollectiveBooking.dateUsed, educational_models.CollectiveBooking.id
+                ) > sqla.func.ROW(last_booking.dateUsed, last_booking.id)
+            query = query.filter(clause)
         return query.limit(batch_size)
 
-    last_booking_id = None
-    last_collective_booking_id = None
+    last_booking = None
+    last_collective_booking = None
     while loops > 0:
         bookings = itertools.chain.from_iterable(
             (
-                _get_loop_query(booking_query, last_booking_id),
-                _get_loop_query(collective_booking_query, last_collective_booking_id),
+                _get_loop_query(booking_query, last_booking, use_pricing_point),
+                _get_loop_query(collective_booking_query, last_collective_booking, use_pricing_point),
             )
         )
         for booking in bookings:
             if isinstance(booking, bookings_models.Booking):
-                last_booking_id = booking.id
+                last_booking = booking
             else:
-                last_collective_booking_id = booking.id
+                last_collective_booking = booking
             try:
                 business_unit_id = pricing_point_id = None
                 if use_pricing_point:
