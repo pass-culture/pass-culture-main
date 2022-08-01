@@ -9,9 +9,9 @@ import {
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 
-import { useGetOffer } from '..'
+import { useGetOfferIndividual } from '..'
 
-describe('useGetOffer', () => {
+describe('useGetOfferIndividual', () => {
   it('should return loading payload then success payload', async () => {
     const apiOffer: GetIndividualOfferResponseModel = {
       activeMediation: null,
@@ -149,7 +149,9 @@ describe('useGetOffer', () => {
 
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
 
-    const { result, waitForNextUpdate } = renderHook(() => useGetOffer('YA'))
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useGetOfferIndividual('YA')
+    )
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()
