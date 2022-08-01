@@ -148,6 +148,7 @@ class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin
     educationalPriceDetail: str | None
     domains: list[OfferDomain]
     institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
+    interventionArea: list[str]
 
     @classmethod
     def from_orm(cls: Any, offer: CollectiveOffer):  # type: ignore
@@ -186,6 +187,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStr
     educationalPriceDetail: str | None
     offerId: str | None
     domains: list[OfferDomain]
+    interventionArea: list[str]
 
     @classmethod
     def from_orm(cls: Any, offer: CollectiveOfferTemplate):  # type: ignore
