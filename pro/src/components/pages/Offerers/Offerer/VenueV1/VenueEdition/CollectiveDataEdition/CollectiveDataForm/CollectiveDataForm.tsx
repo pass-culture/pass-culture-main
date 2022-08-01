@@ -4,7 +4,7 @@ import { Link, useHistory } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
-import { interventionOptions } from 'core/Venue'
+import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import FormLayout from 'new_components/FormLayout'
 import {
@@ -169,7 +169,7 @@ const CollectiveDataForm = ({
           <FormLayout.Row>
             <MultiSelectAutocomplete
               hideTags
-              options={interventionOptions}
+              options={venueInterventionOptions}
               fieldName="collectiveInterventionArea"
               label="Périmètre d’intervention :"
               placeholder="Sélectionner un ou plusieurs territoire(s) d'intervention"

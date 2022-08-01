@@ -14,7 +14,7 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useNotification from 'components/hooks/useNotification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { domtomOptions, mainlandOptions } from 'core/Venue'
+import { domtomOptions, mainlandOptions } from 'core/shared/interventionOptions'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 

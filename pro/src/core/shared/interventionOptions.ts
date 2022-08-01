@@ -117,17 +117,23 @@ export const CULTURAL_PARTNER_OPTION_LABEL = 'Uniquement dans mon lieu'
 
 export const otherInterventionOptions: SelectOption[] = [
   {
-    value: CULTURAL_PARTNER_OPTION_VALUE,
-    label: CULTURAL_PARTNER_OPTION_LABEL,
-  },
-  {
     value: ALL_FRANCE_OPTION_VALUE,
     label: ALL_FRANCE_OPTION_LABEL,
   },
   { value: MAINLAND_OPTION_VALUE, label: MAINLAND_OPTION_LABEL },
 ]
 
-export const interventionOptions: SelectOption[] = [
+export const venueInterventionOptions: SelectOption[] = [
+  {
+    value: CULTURAL_PARTNER_OPTION_VALUE,
+    label: CULTURAL_PARTNER_OPTION_LABEL,
+  },
+  ...otherInterventionOptions,
+  ...mainlandOptions,
+  ...domtomOptions,
+]
+
+export const offerInterventionOptions: SelectOption[] = [
   ...otherInterventionOptions,
   ...mainlandOptions,
   ...domtomOptions,

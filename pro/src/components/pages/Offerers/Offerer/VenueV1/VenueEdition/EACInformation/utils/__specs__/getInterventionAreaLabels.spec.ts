@@ -9,7 +9,7 @@ import {
   domtomOptions,
   mainlandOptions,
   mainlandValues,
-} from 'core/Venue'
+} from 'core/shared/interventionOptions'
 
 import { getInterventionAreaLabels } from '../getInterventionAreaLabels'
 
