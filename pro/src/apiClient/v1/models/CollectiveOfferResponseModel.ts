@@ -11,6 +11,7 @@ export type CollectiveOfferResponseModel = {
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: string;
+  interventionArea: Array<string>;
   isActive: boolean;
   isEditable: boolean;
   isEducational: boolean;

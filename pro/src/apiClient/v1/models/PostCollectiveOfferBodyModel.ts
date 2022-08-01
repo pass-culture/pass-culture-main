@@ -13,6 +13,7 @@ export type PostCollectiveOfferBodyModel = {
   description?: string | null;
   domains?: Array<number> | null;
   durationMinutes?: number | null;
+  interventionArea?: Array<string> | null;
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
   name: string;

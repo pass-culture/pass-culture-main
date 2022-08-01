@@ -24,6 +24,7 @@ export type GetCollectiveOfferResponseModel = {
   hasBookingLimitDatetimesPassed: boolean;
   id: string;
   institution?: EducationalInstitutionResponseModel | null;
+  interventionArea: Array<string>;
   isActive: boolean;
   isBookable: boolean;
   isEditable: boolean;
