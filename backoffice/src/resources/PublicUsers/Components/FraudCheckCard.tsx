@@ -10,7 +10,7 @@ import {
 import moment from 'moment'
 import React, { useState } from 'react'
 
-import { snakeCaseToTitleCase } from '../../../tools/textTools'
+import { snakeCaseToTitleCase } from '../../../helpers/textTools'
 import { EligibilityFraudCheck } from '../types'
 
 import { BeneficiaryBadge } from './BeneficiaryBadge'

@@ -19,6 +19,7 @@ export function App() {
       enabled: process.env.NODE_ENV !== 'development',
     })
   }, [])
+
   return (
     <>
       <BrowserRouter>
