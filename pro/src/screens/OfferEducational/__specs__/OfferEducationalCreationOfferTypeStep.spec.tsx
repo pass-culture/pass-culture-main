@@ -136,18 +136,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
           ],
         }),
       }
-      store = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              name: 'ENABLE_EDUCATIONAL_DOMAINS',
-              nameKey: 'ENABLE_EDUCATIONAL_DOMAINS',
-            },
-          ],
-        },
-      }
     })
 
     it('should require user to select a domain', async () => {
