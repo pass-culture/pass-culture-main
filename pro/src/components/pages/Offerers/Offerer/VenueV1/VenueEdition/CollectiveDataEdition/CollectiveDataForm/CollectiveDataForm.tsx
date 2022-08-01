@@ -4,6 +4,7 @@ import { Link, useHistory } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
+import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import FormLayout from 'new_components/FormLayout'
@@ -22,7 +23,6 @@ import styles from './CollectiveDataForm.module.scss'
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from './initialValues'
 import { CollectiveDataFormValues } from './type'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
-import { handleAllFranceDepartmentOptions } from './utils/handleAllFranceDepartmentOptions'
 import { validationSchema } from './validationSchema'
 
 const studentOptions = [
@@ -112,7 +112,8 @@ const CollectiveDataForm = ({
     handleAllFranceDepartmentOptions(
       formik.values.collectiveInterventionArea,
       previousInterventionValues,
-      formik.setFieldValue
+      (value: string[]) =>
+        formik.setFieldValue('collectiveInterventionArea', value)
     )
 
     setPreviousInterventionValues(formik.values.collectiveInterventionArea)
