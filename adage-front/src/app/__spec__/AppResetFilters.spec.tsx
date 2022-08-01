@@ -27,12 +27,6 @@ import {
   queryTag,
 } from './__test_utils__/elements'
 
-jest.mock('utils/config', () => ({
-  ALGOLIA_APP_ID: 'algolia-app-id',
-  ALGOLIA_API_KEY: 'algolia-api-key',
-  ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'algolia-index-name',
-}))
-
 jest.mock('react-instantsearch-dom', () => {
   return {
     ...jest.requireActual('react-instantsearch-dom'),
