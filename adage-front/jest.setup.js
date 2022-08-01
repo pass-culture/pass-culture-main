@@ -7,3 +7,6 @@ import fetch from "jest-fetch-mock"
 require("jest-fetch-mock").enableMocks()
 
 global.fetch = fetch
+require('dotenv').config({
+  path: '.env.test',
+})
