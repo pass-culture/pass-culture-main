@@ -55,7 +55,11 @@ export const defaultCreationProps: IOfferEducationalProps = {
     information: jest.fn(),
   },
   mode: Mode.CREATION,
-  getEducationalDomainsAdapter: jest.fn(),
+  getEducationalDomainsAdapter: jest.fn().mockResolvedValue({
+    isOk: true,
+    payload: [{ id: 1, name: 'domain1' }],
+    message: null,
+  }),
 }
 
 const editionFormValues = {
@@ -108,5 +112,9 @@ export const defaultEditionProps: IOfferEducationalProps = {
     information: jest.fn(),
   },
   mode: Mode.EDITION,
-  getEducationalDomainsAdapter: jest.fn(),
+  getEducationalDomainsAdapter: jest.fn().mockResolvedValue({
+    isOk: true,
+    payload: [{ value: 1, label: 'domain1' }],
+    message: null,
+  }),
 }
