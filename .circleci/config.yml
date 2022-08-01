@@ -914,7 +914,8 @@ jobs:
                 name: Send failure notification
                 command: |
                   VERSION_TO_DEPLOY=$(git describe --contains | sed 's/..$//')
-                  BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+                  BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* may have *FAILED* (an 
+                  old cache could still be valid) :collision:'"
                   curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
                 when: on_fail
 
@@ -961,7 +962,8 @@ jobs:
                     circleci step halt;
                   fi
                   VERSION_TO_DEPLOY=$(git describe --contains | sed 's/..$//')
-                  BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Adage-front* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+                  BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Adage-front* deployment *"$VERSION_TO_DEPLOY"* may
+                  have *FAILED* (an old cache could still be valid) :collision:'"
                   curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
                 when: on_fail
 
