@@ -242,7 +242,6 @@ const routes = [
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite',
     title: 'Visibilité d’une offre collective',
-    featureName: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
   },
   {
     component: CollectiveOfferConfirmation,
@@ -285,7 +284,6 @@ const routes = [
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite/edition',
     title: 'Edition de la visibilité d’une offre collective',
-    featureName: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
   },
   {
     component: LostPassword,

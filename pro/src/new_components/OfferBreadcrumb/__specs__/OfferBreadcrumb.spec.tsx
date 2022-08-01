@@ -22,17 +22,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
   describe('Individual offer', () => {
     beforeEach(() => {
-      store = configureTestStore({
-        features: {
-          initialized: true,
-          list: [
-            {
-              nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
-              isActive: false,
-            },
-          ],
-        },
-      })
+      store = configureTestStore({})
     })
 
     it('should display breadcrumb for individual offer in creation', async () => {
@@ -104,57 +94,9 @@ describe('src | new_components | OfferBreadcrumb', () => {
     })
   })
 
-  describe('Collective offer - without domain association', () => {
-    beforeEach(() => {
-      store = configureTestStore({
-        features: {
-          initialized: true,
-          list: [
-            {
-              nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
-              isActive: false,
-            },
-          ],
-        },
-      })
-    })
-
-    it('should display breadcrumb for collective offer - without visibility step', async () => {
-      render(
-        <Router history={history}>
-          <Provider store={store}>
-            <OfferBreadcrumb
-              activeStep={OfferBreadcrumbStep.DETAILS}
-              isCreatingOffer={true}
-              offerId="A1"
-              isOfferEducational={true}
-            />
-          </Provider>
-        </Router>
-      )
-
-      const listItems = await screen.findAllByRole('listitem')
-
-      expect(listItems).toHaveLength(3)
-      expect(listItems[0]).toHaveTextContent("Détails de l'offre")
-      expect(listItems[1]).toHaveTextContent('Date et prix')
-      expect(listItems[2]).toHaveTextContent('Confirmation')
-    })
-  })
-
   describe('Collective offer - with domain association', () => {
     beforeEach(() => {
-      store = configureTestStore({
-        features: {
-          initialized: true,
-          list: [
-            {
-              nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
-              isActive: true,
-            },
-          ],
-        },
-      })
+      store = configureTestStore({})
     })
 
     it('should display breadcrumb for collective offer - with visibility step', async () => {
