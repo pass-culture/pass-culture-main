@@ -45,9 +45,6 @@ const OfferItem = ({
     id,
     !!isShowcase
   )
-  const enableEducationalInstitutionAssociation = useActiveFeature(
-    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
-  )
 
   function handleOnChangeSelected() {
     selectOffer(offer.id, !isSelected, !!isShowcase)
@@ -59,10 +56,7 @@ const OfferItem = ({
   const computeRemainingStockOrEducationalInstitutionValue = (
     stocks: Offer['stocks']
   ) => {
-    if (
-      audience === Audience.COLLECTIVE &&
-      enableEducationalInstitutionAssociation
-    ) {
+    if (audience === Audience.COLLECTIVE) {
       return offer.educationalInstitution?.name ?? 'Tous les établissements'
     }
 

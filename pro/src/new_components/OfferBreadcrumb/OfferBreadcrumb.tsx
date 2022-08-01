@@ -41,9 +41,6 @@ const OfferBreadcrumb = ({
   className,
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
-  const enableEducationalInstitutionAssociation = useActiveFeature(
-    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
-  )
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId, false)
@@ -74,9 +71,7 @@ const OfferBreadcrumb = ({
         label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
         url: stockEditionUrl,
       },
-      ...(isOfferEducational &&
-      enableEducationalInstitutionAssociation &&
-      !isTemplateId
+      ...(isOfferEducational && !isTemplateId
         ? [
             {
               id: OfferBreadcrumbStep.VISIBILITY,
@@ -96,7 +91,7 @@ const OfferBreadcrumb = ({
         id: OfferBreadcrumbStep.STOCKS,
         label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
       },
-      ...(isOfferEducational && enableEducationalInstitutionAssociation
+      ...(isOfferEducational
         ? {
             [OfferBreadcrumbStep.VISIBILITY]: {
               id: OfferBreadcrumbStep.VISIBILITY,
