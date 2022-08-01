@@ -90,7 +90,6 @@ class CommonTest:
         assert caplog.records[0].message == "Profile completion fraud check for user already exists."
         assert caplog.records[0].extra == {
             "user_id": user.id,
-            "existing_profile_completion_fraud_check": profile_completion_fraud_check.id,
         }
 
 

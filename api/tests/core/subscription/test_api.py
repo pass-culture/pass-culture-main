@@ -21,6 +21,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.models import api_errors
 import pcapi.notifications.push.testing as push_testing
@@ -1387,3 +1388,35 @@ class ShouldValidatePhoneTest:
         )
 
         assert not subscription_api._should_validate_phone(user, user.eligibility)
+
+
+@pytest.mark.usefixtures("db_session")
+class CompleteProfileTest:
+    def test_when_profile_was_proviously_cancelled(self):
+        """
+        This was a bug when a user previously completed profile but the BeneficiaryCancelled
+        was cancelled because of "eligibility_changed" scenaria
+        """
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            reasonCodes=[fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED],
+        )
+
+        subscription_api.complete_profile(user, "address", "city", "12400", "étudiant", "harry", "cover")
+
+        assert subscription_api.has_completed_profile(user, EligibilityType.AGE18)
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                userId=user.id,
+                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.AGE18,
+            ).count()
+            == 1
+        )
