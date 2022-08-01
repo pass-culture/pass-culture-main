@@ -40,7 +40,7 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
       {subscriptionItem.items.length > 0 && (
         <Grid container spacing={5} sx={{ mt: 4 }} style={gridStyle}>
           <Grid item xs={6}>
-            <List sx={{ width: '100%' }}>
+            <List sx={{ width: '50%' }}>
               <ListItem>
                 <ListItemText> Validation email</ListItemText>
                 <ListItemAvatar>
@@ -69,11 +69,9 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
               <ListItem>
                 <ListItemText>Profil Utilisateur</ListItemText>
                 <ListItemAvatar>
-                  {' '}
                   <StatusAvatar
                     item={subscriptionItem.items.find(
-                      item =>
-                        item.type === SubscriptionItemType.PROFILE_COMPLETION
+                      item => item.type === SubscriptionItemType.USER_PROFILING
                     )}
                   />
                 </ListItemAvatar>
@@ -82,7 +80,7 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
           </Grid>
 
           <Grid item xs={6}>
-            <List sx={{ width: '100%' }}>
+            <List sx={{ width: '50%' }}>
               <ListItem>
                 <ListItemText>Complétion Profil</ListItemText>
                 <ListItemAvatar>

@@ -56,6 +56,7 @@ export enum SubscriptionItemStatus {
 export enum SubscriptionItemType {
   EMAIL_VALIDATION = 'email-validation',
   PHONE_VALIDATION = 'phone-validation',
+  USER_PROFILING = 'user-profiling',
   PROFILE_COMPLETION = 'profile-completion',
   IDENTITY_CHECK = 'identity-check',
   HONOR_STATEMENT = 'honor-statement',
