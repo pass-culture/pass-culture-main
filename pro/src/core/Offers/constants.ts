@@ -90,3 +90,16 @@ export enum OFFER_FORM_STEP_IDS {
   SUMMARY = 'recapitulatif',
   CONFIRMATION = 'confirmation',
 }
+
+export const EXTRA_DATA_FIELDS = [
+  'author',
+  'isbn',
+  'musicType',
+  'musicSubType',
+  'performer',
+  'showType',
+  'showSubType',
+  'speaker',
+  'stageDirector',
+  'visa',
+]
