@@ -6,7 +6,6 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -44,9 +43,6 @@ const OfferEducationalEdition = (): JSX.Element => {
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const history = useHistory()
 
-  const enableEducationalDomains = useActiveFeature(
-    'ENABLE_EDUCATIONAL_DOMAINS'
-  )
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
@@ -217,9 +213,7 @@ const OfferEducationalEdition = (): JSX.Element => {
           notify={notify}
           onSubmit={editOffer}
           setIsOfferActive={setIsOfferActive}
-          getEducationalDomainsAdapter={
-            enableEducationalDomains && getEducationalDomainsAdapter
-          }
+          getEducationalDomainsAdapter={getEducationalDomainsAdapter}
         />
       ) : (
         <Spinner />
