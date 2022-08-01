@@ -30,9 +30,7 @@ def get_by_offerer(offerer: "Offerer") -> dict:
         raise ApiEntrepriseException("Error getting API entreprise DATA for SIREN : {}".format(offerer.siren))
 
     response_json = response.json()
-    etablissements = response_json["unite_legale"].pop("etablissements")
-    response_json["other_etablissements_sirets"] = []
-    response_json["other_etablissements_sirets"] = _extract_etablissements_communs_siren(etablissements)
+    response_json["unite_legale"].pop("etablissements")
     return response_json
 
 
@@ -50,13 +48,6 @@ def get_by_siret(siret: str) -> dict:
         raise ApiEntrepriseException(f"Error getting API entreprise DATA for SIRET : {siret}")
 
     return response.json()["etablissement"]
-
-
-def _extract_etablissements_communs_siren(etablissements: list[dict]) -> list[dict]:
-    etablissements_communs = [
-        etablissement for etablissement in etablissements if etablissement["etablissement_siege"] == "false"
-    ]
-    return [etablissement["siret"] for etablissement in etablissements_communs]
 
 
 def get_offerer_legal_category(offerer: "Offerer") -> dict:
