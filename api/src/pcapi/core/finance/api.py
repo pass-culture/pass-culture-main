@@ -249,7 +249,11 @@ def price_bookings(
                     },
                 )
         loops -= 1
-        db.session.expunge_all()
+        # Keep last booking in the session, we'll need it when calling
+        # `_get_loop_query()` for the next loop.
+        for booking in bookings:
+            if booking not in (last_booking, last_collective_booking):
+                db.session.expunge(booking)
 
 
 def _get_pricing_point_link(
