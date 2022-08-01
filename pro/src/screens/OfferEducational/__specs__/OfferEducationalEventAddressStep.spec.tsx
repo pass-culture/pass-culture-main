@@ -3,6 +3,8 @@ import '@testing-library/jest-dom'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { RootState } from 'store/reducers'
+
 import {
   categoriesFactory,
   defaultCreationProps,
@@ -15,6 +17,7 @@ import { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {
   let props: IOfferEducationalProps
+  let store: Partial<RootState>
 
   describe('when there is only one venue managed by the offerer', () => {
     beforeEach(() => {
@@ -24,6 +27,17 @@ describe('screens | OfferEducational : event address step', () => {
         educationalSubCategories: subCategoriesFactory([
           { categoryId: 'CAT_1', id: 'SUBCAT_1' },
         ]),
+      }
+      store = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              nameKey: 'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER',
+              isActive: true,
+            },
+          ],
+        },
       }
     })
 
@@ -46,10 +60,14 @@ describe('screens | OfferEducational : event address step', () => {
       expect(
         screen.getByText('Venue name', { exact: false, selector: 'p' })
       ).toBeInTheDocument()
+
+      expect(
+        screen.queryByLabelText('Zones de Mobilités pour l’événement')
+      ).not.toBeInTheDocument()
     })
 
-    it('should display text area when user selects "other"', async () => {
-      renderEACOfferForm(props)
+    it('should display text area + intervention area multiselect when user selects "other"', async () => {
+      renderEACOfferForm(props, store)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
       expect(screen.getByLabelText('Autre')).toBeChecked()
@@ -61,10 +79,14 @@ describe('screens | OfferEducational : event address step', () => {
       expect(
         screen.getByLabelText('Adresse de l’évènement')
       ).toBeInTheDocument()
+
+      expect(
+        screen.queryByLabelText('Zones de Mobilités pour l’événement')
+      ).toBeInTheDocument()
     })
 
     it('should not display neither event venue address nor text area if user selects "school"', async () => {
-      renderEACOfferForm(props)
+      renderEACOfferForm(props, store)
 
       await userEvent.click(
         await screen.findByLabelText('Dans l’établissement scolaire')
@@ -80,6 +102,10 @@ describe('screens | OfferEducational : event address step', () => {
       expect(
         screen.queryByLabelText('Adresse de l’évènement')
       ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByLabelText('Zones de Mobilités pour l’événement')
+      ).toBeInTheDocument()
     })
   })
   // TO DO: move this test, it does not belong to Address step
