@@ -1,4 +1,4 @@
-import { PostCollectiveOfferBodyModel } from 'apiClient/v1'
+import { OfferAddressType, PostCollectiveOfferBodyModel } from 'apiClient/v1'
 import {
   EducationalOfferModelPayload,
   IOfferEducationalFormValues,
@@ -56,4 +56,8 @@ export const createCollectiveOfferPayload = (
   contactEmail: offer.email,
   contactPhone: offer.phone,
   domains: offer.domains.map(domainIdString => Number(domainIdString)),
+  interventionArea:
+    offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
+      ? []
+      : offer.interventionArea,
 })
