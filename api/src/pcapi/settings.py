@@ -44,6 +44,7 @@ if IS_PROD or IS_INTEGRATION:
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
     _default_object_storage_provider = None  # it must be explicitly set
+    _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_STAGING or IS_TESTING:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"
@@ -52,6 +53,7 @@ elif IS_STAGING or IS_TESTING:
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
     _default_object_storage_provider = None  # it must be explicitly set
+    _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_RUNNING_TESTS:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
@@ -60,6 +62,7 @@ elif IS_RUNNING_TESTS:
     _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.testing.TestingBackend"
     _default_object_storage_provider = "local"
+    _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
 elif IS_DEV:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
@@ -68,6 +71,7 @@ elif IS_DEV:
     _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
     _default_object_storage_provider = "local"
+    _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
 else:
     raise RuntimeError("Unknown environment")
 
@@ -397,3 +401,7 @@ FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST = os.environ.get(
 
 # BACKOFFICE
 BACKOFFICE_USER_EMAIL = os.environ.get("BACKOFFICE_USER_EMAIL", "dummy.backoffice@example.com")
+
+# SIRENE
+SIRENE_BACKEND = os.environ.get("SIRENE_BACKEND", _default_sirene_backend)
+INSEE_SIRENE_API_TOKEN = os.environ.get("INSEE_SIRENE_API_TOKEN", "")
