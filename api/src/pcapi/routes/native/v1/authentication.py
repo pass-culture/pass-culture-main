@@ -147,7 +147,9 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
         user = users_repo.get_user_with_valid_token(
             body.email_validation_token, [TokenType.EMAIL_VALIDATION], use_token=True
         )
-    except users_exceptions.InvalidToken:
+    except users_exceptions.InvalidToken as exception:
+        if isinstance(exception, users_exceptions.ExpiredToken):
+            users_api.request_email_confirmation(exception.user)
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
     user.validate_email()
