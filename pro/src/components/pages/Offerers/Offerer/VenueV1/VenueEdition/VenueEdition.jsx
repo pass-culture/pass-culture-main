@@ -497,18 +497,20 @@ const VenueEdition = () => {
           nonHumanizedId={venue.nonHumanizedId}
         />
       )}
-      {venue.businessUnit && !venue.businessUnit.siret && (
-        <Banner
-          className="banner-invalid-bu"
-          href={`/structures/${offererId}/point-de-remboursement/`}
-          icon="ico-right-circle-arrow"
-          linkTitle="Rattacher votre lieu à un point de remboursement valide"
-        >
-          Ce lieu n’est pas rattaché à un point de remboursement valide. Pour
-          continuer à percevoir vos remboursements, veuillez renseigner un SIRET
-          de référence pour votre point de remboursement.
-        </Banner>
-      )}
+      {!isNewBankInformationCreation &&
+        venue.businessUnit &&
+        !venue.businessUnit.siret && (
+          <Banner
+            className="banner-invalid-bu"
+            href={`/structures/${offererId}/point-de-remboursement/`}
+            icon="ico-right-circle-arrow"
+            linkTitle="Rattacher votre lieu à un point de remboursement valide"
+          >
+            Ce lieu n’est pas rattaché à un point de remboursement valide. Pour
+            continuer à percevoir vos remboursements, veuillez renseigner un
+            SIRET de référence pour votre point de remboursement.
+          </Banner>
+        )}
       <PageTitle title={pageTitle} />
       <Titles
         action={actionLink || undefined}
