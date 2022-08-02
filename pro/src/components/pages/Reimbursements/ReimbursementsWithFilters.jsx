@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -37,7 +38,9 @@ const buildAndSortVenueFilterOptions = venues =>
 const Reimbursements = ({ currentUser }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [venuesOptions, setVenuesOptions] = useState([])
-  const [businessUnitsOptions, setBusinessUnitsOptions] = useState([])
+  const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState(
+    []
+  )
   const steps = [
     {
       id: STEP_ID_INVOICES,
@@ -53,6 +56,10 @@ const Reimbursements = ({ currentUser }) => {
 
   const stepName = location.pathname.match(/[a-z]+$/)
   const activeStep = stepName ? mapPathToStep[stepName[0]] : STEP_ID_INVOICES
+
+  const isNewBankInformationCreation = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
+  )
 
   const match = useRouteMatch()
 
@@ -71,12 +78,14 @@ const Reimbursements = ({ currentUser }) => {
     }
   }, [setVenuesOptions])
 
-  const loadBusinessUnits = useCallback(async () => {
+  const loadReimbursementPoints = useCallback(async () => {
     try {
-      const businessUnitsResponse = await pcapi.getBusinessUnits()
-      setBusinessUnitsOptions(
+      const reimbursementPointsResponse = isNewBankInformationCreation
+        ? await pcapi.getReimbursementPoints()
+        : await pcapi.getBusinessUnits()
+      setReimbursementPointsOptions(
         sortByDisplayName(
-          businessUnitsResponse.map(item => ({
+          reimbursementPointsResponse.map(item => ({
             id: item['id'].toString(),
             displayName: item['name'],
           }))
@@ -87,15 +96,15 @@ const Reimbursements = ({ currentUser }) => {
       // eslint-disable-next-line
       console.error(err)
     }
-  }, [setBusinessUnitsOptions])
+  }, [setReimbursementPointsOptions])
 
   const hasNoResults = !isLoading && !venuesOptions.length
   const hasResults = !isLoading && venuesOptions.length > 0
 
   useEffect(() => {
-    loadBusinessUnits()
+    loadReimbursementPoints()
     loadVenues()
-  }, [loadVenues, loadBusinessUnits])
+  }, [loadVenues, loadReimbursementPoints])
 
   return (
     <>
@@ -141,7 +150,7 @@ const Reimbursements = ({ currentUser }) => {
           <Switch>
             <Route exact path={`${match.path}/justificatifs`}>
               <ReimbursementsInvoices
-                businessUnitsOptions={businessUnitsOptions}
+                reimbursementPointsOptions={reimbursementPointsOptions}
                 isCurrentUserAdmin={currentUser.isAdmin}
               />
             </Route>

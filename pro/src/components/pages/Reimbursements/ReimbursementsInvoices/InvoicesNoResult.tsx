@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { ReactComponent as SearchSvg } from 'icons/ico-search-gray.svg'
 
 type filtersType = {
+  reimbursementPoint: string
   businessUnit: string
   periodStart: Date
   periodEnd: Date
