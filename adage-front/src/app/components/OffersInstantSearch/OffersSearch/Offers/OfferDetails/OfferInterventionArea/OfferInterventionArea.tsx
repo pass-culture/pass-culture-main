@@ -8,7 +8,9 @@ import {
   departmentOptions,
 } from 'app/constants/departmentOptions'
 
-const getInterventionAreaLabels = (interventionArea: string[]): string => {
+export const getInterventionAreaLabels = (
+  interventionArea: string[]
+): string => {
   const labels: string[] = []
 
   if (interventionArea.includes(ALL_FRANCE_OPTION_VALUE)) {

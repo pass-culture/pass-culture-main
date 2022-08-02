@@ -116,6 +116,7 @@ describe('offer', () => {
       contactEmail: '',
       contactPhone: '',
       domains: [],
+      interventionArea: ['75', '92'],
     }
 
     offerInCayenne = {
@@ -161,6 +162,7 @@ describe('offer', () => {
       contactEmail: '',
       contactPhone: '',
       domains: [],
+      interventionArea: ['973'],
     }
 
     offersProps = {
@@ -266,6 +268,9 @@ describe('offer', () => {
 
       // Info that are in offer details component
       expect(screen.queryByText('Le détail de mon prix')).toBeInTheDocument()
+      expect(
+        screen.queryByText('Zone de Mobiltié de l’acteur culturel')
+      ).toBeInTheDocument()
       expect(screen.queryByText('Moteur', { exact: false })).toBeInTheDocument()
       expect(
         screen.queryByText('Psychique ou cognitif', { exact: false })
