@@ -1,9 +1,9 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 
 const ReturnOrSubmitControl = ({
@@ -14,7 +14,7 @@ const ReturnOrSubmitControl = ({
   offererId,
   readOnly,
 }) => {
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   return (
     <div className="control">
       <div
@@ -37,7 +37,7 @@ const ReturnOrSubmitControl = ({
               disabled={!canSubmit || isRequestPending}
               type="submit"
               onClick={() => {
-                logEvent(Events.CLICKED_SAVE_VENUE, {
+                logEvent?.(Events.CLICKED_SAVE_VENUE, {
                   from: location.pathname,
                 })
               }}

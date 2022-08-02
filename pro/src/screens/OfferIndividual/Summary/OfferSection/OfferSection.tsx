@@ -1,7 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -10,7 +10,6 @@ import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
 import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { RootState } from 'store/reducers'
 import { AccessibilityLabel } from 'ui-kit'
 
 import styles from './OfferSummary.module.scss'
@@ -66,9 +65,9 @@ const OfferSummary = ({
   const editLink = isCreation
     ? `/offre/${offer.id}/individuel/creation`
     : `/offre/${offer.id}/individuel/edition`
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const logEditEvent = () => {
-    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,

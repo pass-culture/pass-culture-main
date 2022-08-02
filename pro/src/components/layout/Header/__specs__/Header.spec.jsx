@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -18,7 +19,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderHeader = props => {
-  const stubStore = configureTestStore({ app: { logEvent: mockLogEvent } })
+  const stubStore = configureTestStore({})
 
   return render(
     <Provider store={stubStore}>
@@ -59,6 +60,12 @@ describe('navigation menu', () => {
   })
 
   describe('trackers should have been called 1 time with pathname', () => {
+    beforeEach(() => {
+      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+    })
+
     it('when clicking on Pro', async () => {
       // given
       renderHeader({ isUserAdmin: false })

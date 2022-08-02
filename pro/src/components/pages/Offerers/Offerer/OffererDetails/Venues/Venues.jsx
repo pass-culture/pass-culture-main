@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -13,7 +13,7 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   return (
     <div className="section op-content-section">
       <h2 className="main-list-title">Lieux</h2>
@@ -27,7 +27,7 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
           className="tertiary-link"
           to={venueCreationUrl}
           onClick={() => {
-            logEvent(Events.CLICKED_ADD_VENUE_IN_OFFERER, {
+            logEvent?.(Events.CLICKED_ADD_VENUE_IN_OFFERER, {
               from: location.pathname,
             })
           }}

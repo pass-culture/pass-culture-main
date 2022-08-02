@@ -3,23 +3,19 @@ import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
-import { configureTestStore } from 'store/testUtils'
 
 import Support from '../Support'
 
 const mockLogEvent = jest.fn()
 
 const renderSupport = async () => {
-  const store = configureTestStore({ app: { logEvent: mockLogEvent } })
   return render(
     <MemoryRouter initialEntries={['/accueil']}>
-      <Provider store={store}>
-        <Support />
-      </Provider>
+      <Support />
     </MemoryRouter>
   )
 }
@@ -47,6 +43,9 @@ describe('homepage: ProfileAndSupport: Support', () => {
       )
     })
     it('should trigger events when clicking on link', async () => {
+      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
       await renderSupport()
       const contactLink = screen.getByText('Contacter le support')
       const cguLink = screen.getByText('Conditions Générales d’Utilisation')

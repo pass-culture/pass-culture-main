@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import * as useNotification from 'components/hooks/useNotification'
 import { Events } from 'core/FirebaseEvents/constants'
 import {
@@ -48,7 +49,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       nbSelectedOffers: 2,
     }
     store = configureTestStore({
-      app: { logEvent: mockLogEvent },
       offers: {
         searchFilters: {
           nameOrIsbn: 'keyword',
@@ -57,6 +57,10 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         },
       },
     })
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should have buttons to activate and deactivate offers, and to abort action', () => {

@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -65,7 +66,7 @@ const VenueEdition = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const notify = useNotification()
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
@@ -502,7 +503,7 @@ const VenueEdition = () => {
     <Link
       className="primary-button with-icon"
       onClick={() =>
-        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_FORM_NAVIGATION_IN.VENUE,
           to: OFFER_FORM_HOMEPAGE,
           used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_BUTTON,

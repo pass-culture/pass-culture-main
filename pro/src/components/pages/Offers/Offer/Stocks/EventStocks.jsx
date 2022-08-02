@@ -11,6 +11,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
@@ -52,7 +53,7 @@ const EventStocks = ({
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const history = useHistory()
   const location = useLocation()
@@ -171,7 +172,7 @@ const EventStocks = ({
 
   const onCancelClick = () => {
     if (isOfferDraft && !useSummaryPage) return
-    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.STOCKS,
       to: OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -227,7 +228,7 @@ const EventStocks = ({
                 )
               }
 
-              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OfferBreadcrumbStep.STOCKS,
                 to: OfferBreadcrumbStep.SUMMARY,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,

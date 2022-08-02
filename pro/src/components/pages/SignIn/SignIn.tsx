@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
@@ -14,7 +15,6 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import { BannerRGS } from 'new_components/Banner'
-import { RootState } from 'store/reducers'
 import { setCurrentUser } from 'store/user/actions'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -27,7 +27,7 @@ const SignIn = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const history = useHistory()
   const location = useLocation()
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const dispatch = useDispatch()
   const notification = useNotification()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -118,7 +118,7 @@ const SignIn = (): JSX.Element => {
                 className="tertiary-link"
                 id="lostPasswordLink"
                 onClick={() =>
-                  logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, {
+                  logEvent?.(Events.CLICKED_FORGOTTEN_PASSWORD, {
                     from: location.pathname,
                   })
                 }
@@ -132,7 +132,7 @@ const SignIn = (): JSX.Element => {
               <Link
                 className="secondary-link"
                 onClick={() =>
-                  logEvent(Events.CLICKED_CREATE_ACCOUNT, {
+                  logEvent?.(Events.CLICKED_CREATE_ACCOUNT, {
                     from: location.pathname,
                   })
                 }

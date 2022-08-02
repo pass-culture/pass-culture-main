@@ -1,8 +1,8 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useLogEventOnUnload from 'components/hooks/useLogEventOnUnload'
 import useNotification from 'components/hooks/useNotification'
@@ -13,7 +13,6 @@ import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { BannerInvisibleSiren, BannerRGS } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { RootState } from 'store/reducers'
 import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
@@ -30,7 +29,7 @@ const SignupForm = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
   const location = useLocation()
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
@@ -67,7 +66,7 @@ const SignupForm = (): JSX.Element => {
   }
 
   const onHandleSuccess = () => {
-    logEvent(Events.SIGNUP_FORM_SUCCESS)
+    logEvent?.(Events.SIGNUP_FORM_SUCCESS, {})
     history.replace('/inscription/confirmation')
   }
 
@@ -111,7 +110,7 @@ const SignupForm = (): JSX.Element => {
     errorsRef.current = formik.errors
   }, [formik.touched, formik.errors])
 
-  const logFormAbort = () => {
+  const logFormAbort = (): void | undefined => {
     const filledFields = Object.keys(touchedRef.current)
     if (filledFields.length === 0) return
     // formik.errors contains every fields with errors even if they have not been touched.
@@ -123,7 +122,7 @@ const SignupForm = (): JSX.Element => {
         )
       )
     )
-    return logEvent(Events.SIGNUP_FORM_ABORT, {
+    return logEvent?.(Events.SIGNUP_FORM_ABORT, {
       filled: filledFields,
       filledWithErrors: filledWithErrors,
     })

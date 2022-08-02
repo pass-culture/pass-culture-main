@@ -12,6 +12,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -84,7 +85,6 @@ describe('offererDetailsLegacy', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      app: { logEvent: mockLogEvent },
       user: {
         currentUser: {
           id: 'fake_id',
@@ -198,6 +198,10 @@ describe('offererDetailsLegacy', () => {
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 3,
     })
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should display offerer select', async () => {
@@ -831,7 +835,6 @@ describe('offererDetailsLegacy', () => {
             { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
           ],
         },
-        app: { logEvent: mockLogEvent },
       })
     })
     it('should display invalid business unit banner when a BU does not have a siret', async () => {
