@@ -288,7 +288,7 @@ class OfferView(BaseAdminView):
         res = super().update_model(form, offer)
 
         if tags_updated:
-            search.reindex_offer_ids([offer.id])  # type: ignore [list-item]
+            search.reindex_offer_ids([offer.id])
 
         return res
 
@@ -319,7 +319,7 @@ class OfferView(BaseAdminView):
 
                 flash("Le statut de l'offre a bien été modifié", "success")
 
-        search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
+        search.async_index_offer_ids([offer.id])
 
     def get_query(self) -> BaseQuery:
         return self.session.query(self.model).filter(self.model.validation != OfferValidationStatus.DRAFT).from_self()
@@ -381,7 +381,7 @@ def _related_offers_link(view: BaseAdminView, context: Context, model: Offer, na
 
 
 def _metabase_offer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
-    url = _metabase_offer_url(model.id)  # type: ignore [arg-type]
+    url = _metabase_offer_url(model.id)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre</a>').format(escape(url))
 
 

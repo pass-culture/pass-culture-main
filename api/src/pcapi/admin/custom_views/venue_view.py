@@ -234,7 +234,7 @@ class VenueView(BaseAdminView):
     def delete_model(self, venue: Venue) -> bool:
         emails = _get_emails_by_venue(venue)
         try:
-            delete_cascade_venue_by_id(venue.id)  # type: ignore [arg-type]
+            delete_cascade_venue_by_id(venue.id)
             for email in emails:
                 update_external_pro(email)
             return True
@@ -301,20 +301,20 @@ class VenueView(BaseAdminView):
         # home page) and waiting N minutes for the next indexing
         # cron tasks is painful.
         if "criteria" in changed_attributes:
-            search.reindex_venue_ids([venue.id])  # type: ignore [list-item]
+            search.reindex_venue_ids([venue.id])
 
             # remove criteria to avoid an unnecessary call to
             # async_index_offers_of_venue_ids: no need to update the
             # offers if the only change is the venue's tags.
             changed_attributes.remove("criteria")
         else:
-            search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
+            search.async_index_venue_ids([venue.id])
 
         if has_siret_changed and old_siret:
             update_stock_id_at_providers(venue, old_siret)
 
         if changed_attributes:
-            search.async_index_offers_of_venue_ids([venue.id])  # type: ignore [list-item]
+            search.async_index_offers_of_venue_ids([venue.id])
 
         # Update pro attributes for all related emails: bookingEmail (no distinct former and new because bookingEmail
         # cannot be changed from backoffice) and pro users

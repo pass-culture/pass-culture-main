@@ -227,9 +227,7 @@ def get_venue_stats(humanized_venue_id: str) -> venues_serialize.VenueStatsRespo
         validated_bookings_count,
         active_offers_count,
         sold_out_offers_count,
-    ) = offerers_repository.get_venue_stats(
-        venue.id  # type: ignore [arg-type]
-    )
+    ) = offerers_repository.get_venue_stats(venue.id)
 
     return venues_serialize.VenueStatsResponseModel(
         activeBookingsQuantity=active_bookings_quantity,

@@ -97,7 +97,7 @@ def update_venue(
             extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
         )
     if "businessUnitId" in modifications:
-        set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)  # type: ignore [arg-type]
+        set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)
 
     if feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
         link_venue_to_reimbursement_point(venue, reimbursement_point_id)
@@ -107,11 +107,11 @@ def update_venue(
     venue.populate_from_dict(modifications)
 
     repository.save(venue)
-    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
+    search.async_index_venue_ids([venue.id])
 
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
     if indexing_modifications_fields or contact_data:
-        search.async_index_offers_of_venue_ids([venue.id])  # type: ignore [list-item]
+        search.async_index_offers_of_venue_ids([venue.id])
 
     # Former booking email address shall no longer receive emails about data related to this venue.
     # If booking email was only in this object, this will clear all columns here and it will never be updated later.
@@ -183,11 +183,11 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     repository.save(venue)
 
     if venue_data.businessUnitId:
-        set_business_unit_to_venue_id(venue_data.businessUnitId, venue.id)  # type: ignore [arg-type]
+        set_business_unit_to_venue_id(venue_data.businessUnitId, venue.id)
     if venue.siret:
-        link_venue_to_pricing_point(venue, pricing_point_id=venue.id)  # type: ignore [arg-type]
+        link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
-    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
+    search.async_index_venue_ids([venue.id])
 
     users_external.update_external_pro(venue.bookingEmail)
 
@@ -491,13 +491,13 @@ def save_venue_banner(
 
     repository.save(venue)
 
-    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
+    search.async_index_venue_ids([venue.id])
 
 
 def delete_venue_banner(venue: models.Venue) -> None:
     rm_previous_venue_thumbs(venue)
     repository.save(venue)
-    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
+    search.async_index_venue_ids([venue.id])
 
 
 def can_offerer_create_educational_offer(offerer_id: int | None) -> None:

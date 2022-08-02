@@ -153,7 +153,7 @@ def book_offer(
     if not send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
         logger.warning("Could not send booking=%s confirmation email to beneficiary", booking.id)
 
-    search.async_index_offer_ids([stock.offerId])  # type: ignore [list-item]
+    search.async_index_offer_ids([stock.offerId])
 
     update_external_user(individual_booking.user)
     update_external_pro(stock.offer.venue.bookingEmail)
@@ -338,7 +338,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
     cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
-    search.async_index_offer_ids([stock.offerId])  # type: ignore [list-item]
+    search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
 
 

@@ -69,11 +69,11 @@ class BulkUpdate:
             if missing_criteria_ids:
                 missing_base_criteria[base_object.id] = missing_criteria_ids
 
-        return missing_base_criteria  # type: ignore [return-value]
+        return missing_base_criteria
 
     def fetch_base_objects(self) -> BaseQuery:
         return self.base_cls.query.options(joinedload(self.base_cls.criteria)).filter(
-            self.base_cls.id.in_(self.base_ids)  # type: ignore [union-attr]
+            self.base_cls.id.in_(self.base_ids)  # type: ignore [attr-defined]
         )
 
     def delete_mapper_objects(self, prefetched_criteria: bool = True) -> None:
