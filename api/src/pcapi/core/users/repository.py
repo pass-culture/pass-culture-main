@@ -64,15 +64,16 @@ def find_pro_user_by_email(email: str) -> models.User | None:
 
 def get_user_with_valid_token(
     token_value: str, token_types: list[models.TokenType], use_token: bool = True
-) -> models.User | None:
+) -> models.User:
     token = models.Token.query.filter(
         models.Token.value == token_value, models.Token.type.in_(token_types), models.Token.isUsed == False
     ).one_or_none()
+
     if not token:
-        return None
+        raise exceptions.InvalidToken()
 
     if token.expirationDate and token.expirationDate < datetime.utcnow():
-        return None
+        raise exceptions.InvalidToken()
 
     if use_token:
         token.isUsed = True

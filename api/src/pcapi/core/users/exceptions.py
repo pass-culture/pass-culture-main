@@ -76,3 +76,7 @@ class UnsuspensionTimeLimitExceeded(Exception):
 
 class NotSuspended(Exception):
     pass
+
+
+class InvalidToken(Exception):
+    pass

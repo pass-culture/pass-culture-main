@@ -74,8 +74,9 @@ def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_
 @blueprint.pro_private_api.route("/users/token/<token>", methods=["GET"])
 @spectree_serialize(on_error_statuses=[404], on_success_status=204, api=blueprint.pro_private_schema)
 def check_activation_token_exists(token: str) -> None:
-    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
-    if user is None:
+    try:
+        users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
+    except users_exceptions.InvalidToken:
         flask.abort(404)
 
 
