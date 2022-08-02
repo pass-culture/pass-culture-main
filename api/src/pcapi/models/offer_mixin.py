@@ -29,6 +29,7 @@ class OfferValidationType(enum.Enum):
 
     AUTO = "AUTO"
     MANUAL = "MANUAL"
+    CGU_INCOMPATIBLE_PRODUCT = "CGU_INCOMPATIBLE_PRODUCT"
 
 
 @declarative_mixin

@@ -29,6 +29,7 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.serialization import offers_serialize
@@ -1500,14 +1501,14 @@ class DeactivateInappropriateProductTest:
         factories.OfferFactory(product=product2)
 
         # When
-        api.deactivate_inappropriate_products("isbn-de-test")
+        api.reject_inappropriate_products("isbn-de-test")
 
         # Then
         products = models.Product.query.all()
         offers = models.Offer.query.all()
 
         assert not any(product.isGcuCompatible for product in products)
-        assert not any(offer.isActive for offer in offers)
+        assert all(offer.validation == OfferValidationStatus.REJECTED for offer in offers)
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 

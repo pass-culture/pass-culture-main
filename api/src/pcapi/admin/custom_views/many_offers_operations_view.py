@@ -16,9 +16,10 @@ from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.categories import categories
 from pcapi.core.criteria.models import Criterion
 from pcapi.core.offers.api import add_criteria_to_offers
-from pcapi.core.offers.api import deactivate_inappropriate_products
+from pcapi.core.offers.api import reject_inappropriate_products
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
+from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 class SearchForm(SecureForm):
@@ -145,13 +146,19 @@ class ManyOffersOperationsView(BaseCustomAdminView):
         offer_criteria_form = OfferCriteriaForm()
 
         offers = list(itertools.chain.from_iterable(p.offers for p in products))
-        active_offers_number = len([offer for offer in offers if offer.isActive])
-        inactive_offers_number = len(offers) - active_offers_number
+        rejected_offers = [offer for offer in offers if offer.validation == OfferValidationStatus.REJECTED]
+        pending_offers = [offer for offer in offers if offer.validation == OfferValidationStatus.PENDING]
+        active_offers = [
+            offer for offer in offers if (offer.validation == OfferValidationStatus.APPROVED and offer.isActive)
+        ]
+        inactive_offers = [
+            offer for offer in offers if (offer.validation == OfferValidationStatus.APPROVED and not offer.isActive)
+        ]
         current_criteria_on_offers = _get_current_criteria_on_active_offers(offers)
         current_criteria_on_all_offers = []
 
         for _, value in current_criteria_on_offers.items():
-            if value["count"] == active_offers_number:
+            if value["count"] == len(active_offers):
                 current_criteria_on_all_offers.append(value["criterion"])
 
         if len(current_criteria_on_all_offers) > 0:
@@ -160,8 +167,10 @@ class ManyOffersOperationsView(BaseCustomAdminView):
         context = {
             "name": products[0].name,
             "type": _get_product_type(products[0]),
-            "active_offers_number": active_offers_number,
-            "inactive_offers_number": inactive_offers_number,
+            "active_offers_number": len(active_offers),
+            "inactive_offers_number": len(inactive_offers),
+            "pending_offers_number": len(pending_offers),
+            "rejected_offers_number": len(rejected_offers),
             "isbn": isbn,
             "offer_criteria_form": offer_criteria_form,
             "current_criteria_on_offers": current_criteria_on_offers,
@@ -199,7 +208,7 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             flash("Veuillez renseigner un ISBN", "error")
             return redirect(url_for(".search"))
 
-        is_operation_successful = deactivate_inappropriate_products(isbn)
+        is_operation_successful = reject_inappropriate_products(isbn)
         if is_operation_successful:
             flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
         else:
