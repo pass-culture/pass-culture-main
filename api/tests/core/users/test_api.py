@@ -150,21 +150,20 @@ class ValidateJwtTokenTest:
 
 class DeleteExpiredTokensTest:
     def test_deletion(self):
-        user = users_factories.UserFactory()
-        token_type = users_models.TokenType.RESET_PASSWORD
-        life_time = datetime.timedelta(hours=24)
-
-        never_expire_token = users_api.generate_and_save_token(user, token_type)
-        not_expired_token = users_api.generate_and_save_token(
-            user, token_type, expiration=datetime.datetime.utcnow() + life_time
+        never_expire_token = users_factories.TokenFactory(expirationDate=None)
+        not_expired_token = users_factories.TokenFactory(
+            expirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=1)
         )
-        # Generate an expired token
-        with freeze_time(datetime.datetime.utcnow() - life_time):
-            users_api.generate_and_save_token(user, token_type, expiration=datetime.datetime.utcnow() + life_time)
+        expiration_after_delay = users_factories.TokenFactory(
+            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=6)
+        )
+        users_factories.TokenFactory(  # to delete
+            expirationDate=datetime.datetime.utcnow() - users_constants.TOKEN_DELETION_AFTER_EXPIRATION_DELAY
+        )
 
         users_api.delete_expired_tokens()
 
-        assert set(users_models.Token.query.all()) == {never_expire_token, not_expired_token}
+        assert set(users_models.Token.query.all()) == {never_expire_token, not_expired_token, expiration_after_delay}
 
 
 class DeleteUserTokenTest:
