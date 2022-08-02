@@ -12,7 +12,7 @@ import InvoicesNoResult from './InvoicesNoResult'
 import InvoicesServerError from './InvoicesServerError'
 import NoInvoicesYet from './NoInvoicesYet'
 
-type businessUnitsOptionsType = [
+type reimbursementPointsOptionsType = [
   {
     id: string
     displayName: string
@@ -21,12 +21,12 @@ type businessUnitsOptionsType = [
 
 interface IReimbursementsInvoicesProps {
   isCurrentUserAdmin: boolean
-  businessUnitsOptions: businessUnitsOptionsType
+  reimbursementPointsOptions: reimbursementPointsOptionsType
 }
 
 const ReimbursementsInvoices = ({
   isCurrentUserAdmin,
-  businessUnitsOptions,
+  reimbursementPointsOptions,
 }: IReimbursementsInvoicesProps): JSX.Element => {
   const columns = [
     {
@@ -36,7 +36,7 @@ const ReimbursementsInvoices = ({
     },
     {
       title: 'Point de remboursement',
-      sortBy: 'businessUnitName',
+      sortBy: 'reimbursementPointName',
       selfDirection: 'default',
     },
     {
@@ -56,7 +56,7 @@ const ReimbursementsInvoices = ({
     },
   ]
 
-  const ALL_BUSINESS_UNITS_OPTION_ID = 'all'
+  const ALL_REIMBURSEMENT_POINT_OPTION_ID = 'all'
 
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
@@ -66,7 +66,8 @@ const ReimbursementsInvoices = ({
       today.getDate()
     )
     return {
-      businessUnit: ALL_BUSINESS_UNITS_OPTION_ID,
+      reimbursementPoint: ALL_REIMBURSEMENT_POINT_OPTION_ID,
+      businessUnit: ALL_REIMBURSEMENT_POINT_OPTION_ID,
       periodStart: oneMonthAgo,
       periodEnd: today,
     }
@@ -81,14 +82,15 @@ const ReimbursementsInvoices = ({
   const isCalledOnceRef = useRef(false)
 
   const {
-    businessUnit: selectedBusinessUnit,
+    reimbursementPoint: selectedReimbursementPoint,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
 
   const isPeriodFilterSelected = selectedPeriodStart && selectedPeriodEnd
   const requireBUFilterForAdmin =
-    isCurrentUserAdmin && selectedBusinessUnit === ALL_BUSINESS_UNITS_OPTION_ID
+    isCurrentUserAdmin &&
+    selectedReimbursementPoint === ALL_REIMBURSEMENT_POINT_OPTION_ID
 
   const hasNoSearchResult =
     !hasError && invoices.length === 0 && hasSearchedOnce
@@ -113,7 +115,8 @@ const ReimbursementsInvoices = ({
         setHasSearchedOnce(false)
       }
       const invoicesFilters = {
-        businessUnitId: filters.businessUnit,
+        reimbursementPointId: filters.reimbursementPoint,
+        businessUnitId: filters.reimbursementPoint,
         periodBeginningDate: filters.periodStart,
         periodEndingDate: filters.periodEnd,
       }
@@ -131,7 +134,7 @@ const ReimbursementsInvoices = ({
     },
     [
       INITIAL_FILTERS,
-      filters.businessUnit,
+      filters.reimbursementPoint,
       filters.periodEnd,
       filters.periodStart,
     ]
@@ -156,8 +159,8 @@ const ReimbursementsInvoices = ({
         initialFilters={INITIAL_FILTERS}
         loadInvoices={loadInvoices}
         selectLabel="Point de remboursement"
-        selectName="businessUnit"
-        selectableOptions={businessUnitsOptions}
+        selectName="reimbursementPoint"
+        selectableOptions={reimbursementPointsOptions}
         setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
       >

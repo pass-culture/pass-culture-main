@@ -29,6 +29,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getInvoices: jest.fn(),
   getBusinessUnits: jest.fn(),
+  getReimbursementPoints: jest.fn(),
 }))
 
 const initialStore = {
@@ -168,7 +169,11 @@ describe('reimbursementsWithFilters', () => {
     invoices = BASE_INVOICES
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
     pcapi.getInvoices.mockResolvedValue(invoices)
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    pcapi.getBusinessUnits.mockResolvedValue([
+      { id: 1, name: 'Point de remboursement 1' },
+      { id: 2, name: 'Point de remboursement 2' },
+    ])
+    pcapi.getReimbursementPoints.mockResolvedValue([])
   })
 
   it('should display a refund invoices section', async () => {

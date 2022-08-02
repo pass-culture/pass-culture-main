@@ -12,6 +12,7 @@ type selectableOptionsType = [
 ]
 
 type filtersType = {
+  reimbursementPoint: string
   businessUnit: string
   periodStart: Date
   periodEnd: Date
@@ -51,7 +52,7 @@ const InvoicesFilters = ({
   setFilters,
 }: IReimbursementsSectionHeaderProps): JSX.Element => {
   const {
-    businessUnit: selectedBusinessUnit,
+    reimbursementPoint: selectedReimbursementPoint,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
@@ -62,12 +63,12 @@ const InvoicesFilters = ({
     loadInvoices(true)
   }
 
-  const setBusinessUnitFilter = useCallback(
+  const setReimbursementPointFilter = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const businessUnitId = event.target.value
+      const reimbursementPointId = event.target.value
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
-        businessUnit: businessUnitId,
+        reimbursementPoint: reimbursementPointId,
       }))
       setAreFiltersDefault(false)
     },
@@ -116,12 +117,12 @@ const InvoicesFilters = ({
             displayName: defaultSelectDisplayName,
             id: defaultSelectId,
           }}
-          handleSelection={setBusinessUnitFilter}
+          handleSelection={setReimbursementPointFilter}
           isDisabled={hasNoInvoicesYet}
           label={selectLabel}
           name={selectName}
           options={selectableOptions}
-          selectedValue={selectedBusinessUnit}
+          selectedValue={selectedReimbursementPoint}
         />
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
