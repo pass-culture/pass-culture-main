@@ -98,9 +98,9 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 def reset_password(body: ResetPasswordRequest) -> None:
     check_password_strength("newPassword", body.new_password)
 
-    user = users_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
-
-    if not user:
+    try:
+        user = users_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
+    except users_exceptions.InvalidToken:
         raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
     user.setPassword(body.new_password)
@@ -143,11 +143,11 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
 @blueprint.native_v1.route("/validate_email", methods=["POST"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
-    user = users_repo.get_user_with_valid_token(
-        body.email_validation_token, [TokenType.EMAIL_VALIDATION], use_token=True
-    )
-
-    if not user:
+    try:
+        user = users_repo.get_user_with_valid_token(
+            body.email_validation_token, [TokenType.EMAIL_VALIDATION], use_token=True
+        )
+    except users_exceptions.InvalidToken:
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
     user.validate_email()

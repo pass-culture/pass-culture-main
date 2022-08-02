@@ -14,6 +14,7 @@ from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import AccountState
@@ -358,7 +359,7 @@ def test_change_password_failures(client):
     assert user.password == crypto.hash_password(settings.TEST_DEFAULT_PASSWORD)
 
 
-@patch("pcapi.core.users.repository.get_user_with_valid_token", return_value=None)
+@patch("pcapi.core.users.repository.get_user_with_valid_token", side_effect=users_exceptions.InvalidToken)
 def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, client):
     token = "email-validation-token"
 
