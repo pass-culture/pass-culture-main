@@ -202,12 +202,34 @@ const VenueEdition = () => {
   }, [venue?.initialIsVirtual, history, isBankInformationWithSiretActive])
 
   useEffect(() => {
-    if (history.location.state?.collectiveDataEditionSuccess) {
-      notify.success(history.location.state.collectiveDataEditionSuccess)
+    if (history.location.state) {
+      const { collectiveDataEditionSuccess, scrollToElementId, ...state } =
+        history.location.state
+
+      if (collectiveDataEditionSuccess) {
+        notify.success(collectiveDataEditionSuccess)
+      }
+
+      if (scrollToElementId) {
+        // wait for react to mount component
+
+        const element = document.getElementById(scrollToElementId)
+        element?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center',
+        })
+      }
+
       // remove state to avoid notification in case of page reload
-      history.replace()
+      history.replace(history.location, { ...state, scrollToElementId })
     }
-  }, [history.location.state?.collectiveDataEditionSuccess])
+  }, [
+    history.location.state,
+    // element depends on these 2 variables otherwise it is not in the DOM so we need them in the dependency array
+    enableAdageVenueInformation,
+    canOffererCreateCollectiveOffer,
+  ])
 
   const onConfirmDeleteBusinessUnit = submit => {
     deleteBusinessUnitConfirmed.current = true
