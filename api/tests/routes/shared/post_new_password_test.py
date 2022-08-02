@@ -51,7 +51,7 @@ def test_change_password_validates_email(client):
 def test_fail_if_token_has_expired(client):
     user = users_factories.UserFactory(password="Old_P4ssword")
     token = users_factories.TokenFactory(
-        userId=user.id,
+        user=user,
         type=TokenType.RESET_PASSWORD,
         expirationDate=datetime.utcnow() - timedelta(hours=24),
     )
