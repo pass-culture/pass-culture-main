@@ -16,7 +16,7 @@ def create_show_cds(
     is_cancelled: bool = False,
     is_deleted: bool = False,
     is_disabled_seatmap: bool = False,
-    is_empty_seatmap: bool = False,
+    is_empty_seatmap: str | bool = False,
     remaining_place: int = 88,
     internet_remaining_place: int = 100,
     showtime: datetime.datetime = datetime.datetime.utcnow(),
@@ -180,7 +180,7 @@ class CineDigitalServiceGetShowTest:
             cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
         )
         show = cine_digital_service.get_show(1)
-        assert show.is_empty_seatmap == True
+        assert show.is_empty_seatmap is True
 
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
     def test_should_return_false_if_seatmap_is_not_empty(self, mocked_get_resource):
@@ -204,7 +204,7 @@ class CineDigitalServiceGetShowTest:
             cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
         )
         show = cine_digital_service.get_show(1)
-        assert show.is_empty_seatmap == False
+        assert show.is_empty_seatmap is False
 
 
 class CineDigitalServiceGetShowsRemainingPlacesTest:
@@ -869,7 +869,11 @@ class CineDigitalServiceBookTicketTest:
             ),
         ]
 
-        mocked_get_show.return_value = create_show_cds(id_=181, shows_tariff_pos_type_ids=[42])
+        mocked_get_show.return_value = create_show_cds(
+            id_=181,
+            shows_tariff_pos_type_ids=[42],
+            is_empty_seatmap='["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]]',
+        )
         mocked_get_screen.return_value = create_screen_cds()
 
         json_create_transaction = {
@@ -945,7 +949,11 @@ class CineDigitalServiceBookTicketTest:
             ),
         ]
 
-        mocked_get_show.return_value = create_show_cds(id_=181, shows_tariff_pos_type_ids=[42])
+        mocked_get_show.return_value = create_show_cds(
+            id_=181,
+            shows_tariff_pos_type_ids=[42],
+            is_empty_seatmap='["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]]',
+        )
         mocked_get_screen.return_value = create_screen_cds()
 
         json_create_transaction = {
