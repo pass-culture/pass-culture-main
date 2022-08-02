@@ -55,6 +55,7 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
     conditions = sa.Column(sa.String(120), nullable=True)
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
+    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
     mediaUrls = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
     url = sa.Column(sa.String(255), nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
@@ -361,6 +362,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     url = sa.Column(sa.String(255), nullable=True)
 
+    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
     mediaUrls = sa.Column(sa.ARRAY(sa.String(220)), nullable=False, default=[])
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
