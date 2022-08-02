@@ -80,6 +80,13 @@ executors:
           username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
+  pcapi:
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
+        auth:
+          username: _json_key # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+
 ###################
 #  COMMANDS
 ###################
@@ -819,8 +826,10 @@ jobs:
               docker build ./api \
                 -f ./api/Dockerfile \
                 --target pcapi \
-                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>> \
+                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
               docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+              docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
       - run:
             name: Build & push pcapi-console image
             command: |
@@ -838,6 +847,20 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
           when: on_fail
 
+  generate-pcapi-helm-values-files:
+    executor: pcapi
+    working_directory: /usr/src/app
+    steps:
+      - run:
+          name: Generate pcapi helm secret values files
+          command: |
+            mkdir -p /tmp/workspace
+            flask print_secret_keys > /tmp/workspace/pcapi-secrets.yaml
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - pcapi-secrets.yaml
+
   deploy-pcapi:
     executor: helm
     parameters:
@@ -849,6 +872,8 @@ jobs:
         default: ${APP_VERSION}
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - clone-pass-culture-deployment-repo
       - authenticate-gcp:
           gcp-key-name: GCP_METIER_KEY
@@ -861,6 +886,7 @@ jobs:
           command: |
             PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
             PCAPI_VALUES_FILE=~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml \
+            PCAPI_SECRETS_FILE=/tmp/workspace/pcapi-secrets.yaml \
             helmfile -e <<parameters.helm_environment>> sync --set image.tag=<<parameters.app_version>>
       - run:
           name: Send failure notification
@@ -1156,13 +1182,19 @@ workflows:
            - GCP
            - GCP_EHP
          app_version: ${CIRCLE_SHA1}
+      - generate-pcapi-helm-values-files:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
       - deploy-pcapi:
          filters:
            branches:
              only:
                - master
          requires:
-           - build-and-push-image
+           - generate-pcapi-helm-values-files
          context:
            - GCP
            - GCP_EHP
@@ -1249,12 +1281,18 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - deploy-pcapi:
+      - generate-pcapi-helm-values-files:
           filters:
             branches:
               only:
                 - staging
                 - integration
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-pcapi:
+          requires:
+            - generate-pcapi-helm-values-files
           context:
             - GCP
             - GCP_EHP
@@ -1298,11 +1336,17 @@ workflows:
 
   gcp-prod:
     jobs:
-      - deploy-pcapi:
+      - generate-pcapi-helm-values-files:
           filters:
             branches:
               only:
                 - production
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-pcapi:
+          requires:
+            - generate-pcapi-helm-values-files
           context:
             - GCP
             - GCP_PROD
