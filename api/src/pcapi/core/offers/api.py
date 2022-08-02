@@ -184,7 +184,7 @@ def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offe
     offer = Offer(  # type: ignore [call-arg]
         product=product,
         subcategoryId=product.subcategoryId,
-        name=offer_data.name,
+        name=offer_data.name,  # type: ignore [arg-type]
         description=offer_data.description if offer_data.description else product.description,
         url=offer_data.url if offer_data.url else product.url,
         conditions=offer_data.conditions if offer_data.conditions else product.conditions,
@@ -314,7 +314,7 @@ def update_offer(
         repository.save(offer.product)
         logger.info("Product has been updated", extra={"product": offer.product.id})
 
-    search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
+    search.async_index_offer_ids([offer.id])
 
     return offer
 
@@ -489,7 +489,7 @@ def _edit_stock(
     validation.check_stock_is_updatable(stock)
     validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
     validation.check_stock_price(price, stock.offer)
-    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)  # type: ignore [arg-type]
+    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
     validation.check_activation_codes_expiration_datetime_on_stock_edition(
         stock.activationCodes,
         booking_limit_datetime,
@@ -649,7 +649,7 @@ def publish_offer(offer_id: int, user: User) -> Offer:
     offer = offers_repository.get_offer_by_id(offer_id)
     offer.isActive = True  # type: ignore [assignment]
     update_offer_fraud_information(offer, user)
-    search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
+    search.async_index_offer_ids([offer.id])
     return offer
 
 
@@ -775,7 +775,7 @@ def create_mediation(
             else:
                 repository.delete(previous_mediation)
 
-        search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
+        search.async_index_offer_ids([offer.id])
 
         return mediation
 
@@ -976,7 +976,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
         )
         return False
     if isinstance(offer, Offer):
-        search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
+        search.async_index_offer_ids([offer.id])
     elif isinstance(offer, CollectiveOffer):
         search.async_index_collective_offer_ids([offer.id])
     elif isinstance(offer, CollectiveOfferTemplate):
@@ -1138,7 +1138,7 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "booking_provider": booking_provider.id},
     )
-    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)  # type: ignore [arg-type]
+    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
 
     for show_id, remaining_places in shows_remaining_places.items():
         stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))  # type: ignore [arg-type]

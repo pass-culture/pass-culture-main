@@ -50,7 +50,7 @@ def check_educational_year_exists(educational_year: models.EducationalYear | Non
 
 def check_stock_is_bookable(stock: offers_models.Stock) -> None:
     if not stock.isBookable:
-        raise exceptions.StockNotBookable(stock.id)  # type: ignore [arg-type]
+        raise exceptions.StockNotBookable(stock.id)
     if not stock.offer.isEducational:
         raise exceptions.OfferIsNotEducational(stock.offer.id)
     if not stock.offer.isEvent:
@@ -59,7 +59,7 @@ def check_stock_is_bookable(stock: offers_models.Stock) -> None:
 
 def check_collective_stock_is_bookable(stock: offers_models.Stock) -> None:
     if not stock.isBookable:
-        raise exceptions.StockNotBookable(stock.id)  # type: ignore [arg-type]
+        raise exceptions.StockNotBookable(stock.id)
 
 
 def check_collective_booking_status(collective_booking: models.CollectiveBooking) -> None:

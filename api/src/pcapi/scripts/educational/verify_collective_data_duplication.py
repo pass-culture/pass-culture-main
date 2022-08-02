@@ -144,7 +144,7 @@ def verify_collective_offers_duplication() -> Tuple[
             array_of_missing_ids = (
                 missing_collective_offer_templates_offer_ids if is_showcase else missing_collective_offers_offer_ids
             )
-            array_of_missing_ids.append(educational_offer.id)  # type: ignore [arg-type]
+            array_of_missing_ids.append(educational_offer.id)
             continue
         extraData: dict = educational_offer.extraData  # type: ignore [assignment]
         contact_phone = extraData.get("contactPhone", None) if extraData else None
@@ -179,7 +179,7 @@ def verify_collective_offers_duplication() -> Tuple[
                 )
 
                 if collective_offer_students != value:
-                    array_if_invalid_ids.append((educational_offer.id, key))  # type: ignore [arg-type]
+                    array_if_invalid_ids.append((educational_offer.id, key))
                     break
 
                 continue
@@ -195,7 +195,7 @@ def verify_collective_offers_duplication() -> Tuple[
 
                 for offer_venue_key, offer_venue_value in offer_venue_data_to_verify.items():
                     if associated_collective_offer_or_offer_template.offerVenue[offer_venue_key] != offer_venue_value:  # type: ignore [attr-defined]
-                        array_if_invalid_ids.append((educational_offer.id, key))  # type: ignore [arg-type]
+                        array_if_invalid_ids.append((educational_offer.id, key))
                         break
 
                 continue
@@ -204,7 +204,7 @@ def verify_collective_offers_duplication() -> Tuple[
             if key == "contactPhone" and value is None:
                 continue
             if getattr(associated_collective_offer_or_offer_template, key) != value:
-                array_if_invalid_ids.append((educational_offer.id, key))  # type: ignore [arg-type]
+                array_if_invalid_ids.append((educational_offer.id, key))
                 break
 
     if len(missing_collective_offer_templates_offer_ids) > 0:
@@ -270,7 +270,7 @@ def verify_collective_stocks_duplication() -> Tuple[bool, list[int], list[Tuple[
         associated_collective_stock = collective_stocks_per_id.get(educational_stock.id)
 
         if associated_collective_stock is None:
-            missing_collective_stocks_stock_ids.append(educational_stock.id)  # type: ignore [arg-type]
+            missing_collective_stocks_stock_ids.append(educational_stock.id)
             continue
 
         data_to_verify = {
@@ -283,7 +283,7 @@ def verify_collective_stocks_duplication() -> Tuple[bool, list[int], list[Tuple[
 
         for key, value in data_to_verify.items():
             if getattr(associated_collective_stock, key) != value:
-                invalid_collective_stocks_stock_ids.append((educational_stock.id, key))  # type: ignore [arg-type]
+                invalid_collective_stocks_stock_ids.append((educational_stock.id, key))
                 break
 
     if len(missing_collective_stocks_stock_ids) > 0:

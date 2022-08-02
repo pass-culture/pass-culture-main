@@ -64,6 +64,7 @@ class PostOfferBodyModel(BaseModel):
     venue_id: str
     product_id: str | None
     subcategory_id: str
+    # FIXME (cgaunet, 2022-08-02): This field should not be nullable
     name: str | None
     booking_email: str | None
     external_ticket_office_url: HttpUrl | None

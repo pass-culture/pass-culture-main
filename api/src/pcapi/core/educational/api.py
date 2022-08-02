@@ -757,7 +757,7 @@ def create_collective_offer_template_from_collective_offer(
 
 
 def get_collective_offer_id_from_educational_stock(stock: Stock) -> int:
-    collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)  # type: ignore [arg-type]
+    collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)
     return collective_offer.id
 
 

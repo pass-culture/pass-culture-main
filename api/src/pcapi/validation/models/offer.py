@@ -4,7 +4,7 @@ from pcapi.models.api_errors import ApiErrors
 
 
 def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
-    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)  # type: ignore [arg-type]
+    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)
 
     if offer.isDigital:
         if not venue.isVirtual:  # type: ignore [union-attr]

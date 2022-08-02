@@ -61,7 +61,7 @@ def create_offer_with_event_product(
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active  # type: ignore [assignment]
-    offer.id = idx
+    offer.id = idx  # type: ignore [assignment]
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
     offer.idAtProvider = id_at_provider
@@ -128,7 +128,7 @@ def create_offer_with_thing_product(
             is_national=is_national,
             description=description,
         )
-        offer.name = thing_name
+        offer.name = thing_name  # type: ignore [assignment]
         offer.subcategoryId = thing_subcategory_id
         offer.mediaUrls = media_urls  # type: ignore [call-overload]
         offer.extraData = {"author": author_name}  # type: ignore [assignment]
@@ -142,7 +142,7 @@ def create_offer_with_thing_product(
     offer.isActive = is_active  # type: ignore [assignment]
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
-    offer.id = idx
+    offer.id = idx  # type: ignore [assignment]
     offer.withdrawalDetails = withdrawal_details
     offer.isDuo = False
     offer.validation = validation  # type: ignore [assignment]
@@ -269,7 +269,7 @@ def create_stock_from_offer(
     date_modified: datetime = datetime.utcnow(),
 ) -> Stock:
     stock = Stock()
-    stock.id = idx
+    stock.id = idx  # type: ignore [assignment]
     stock.offer = offer
     stock.price = price
     stock.quantity = quantity
@@ -315,7 +315,7 @@ def create_stock_with_event_offer(
         is_national=False,
         thumb_count=thumb_count,
     )
-    stock.offer.id = offer_id
+    stock.offer.id = offer_id  # type: ignore [assignment]
     stock.isSoftDeleted = is_soft_deleted  # type: ignore [assignment]
 
     return stock

@@ -309,7 +309,7 @@ def _create_stock(infos: dict, offer: offers_models.Offer, user: users_models.Us
         "bookingLimitDatetime": date_in_utc,
     }
 
-    return offers_api.upsert_stocks(offer.id, [stock_serialize.StockCreationBodyModel(**stock_data)], user)[0]  # type: ignore [arg-type]
+    return offers_api.upsert_stocks(offer.id, [stock_serialize.StockCreationBodyModel(**stock_data)], user)[0]
 
 
 def _duration_str_to_minutes(duration: str) -> int | None:

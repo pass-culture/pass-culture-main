@@ -50,7 +50,7 @@ UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
 class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):  # type: ignore [valid-type, misc]
-    name = sa.Column(sa.String(140), nullable=False)
+    name: str = sa.Column(sa.String(140), nullable=False)
     description = sa.Column(sa.Text, nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
     ageMin = sa.Column(sa.Integer, nullable=True)
@@ -120,15 +120,13 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "stock"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
 
     dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
 
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
     offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="stocks")  # type: ignore [misc]
 
@@ -140,7 +138,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type
 
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
 
-    dnBookedQuantity = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
+    dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
 
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
 
@@ -333,19 +331,17 @@ class WithdrawalTypeEnum(enum.Enum):
 class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "offer"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
-    productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
+    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
 
     product: Product = sa.orm.relationship(Product, foreign_keys=[productId], backref="offers")
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
     venue = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")  # type: ignore [misc]
 
     bookingEmail = sa.Column(sa.String(120), nullable=True)
 
-    name = sa.Column(sa.String(140), nullable=False)
+    name: str = sa.Column(sa.String(140), nullable=False)
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
 
     description = sa.Column(sa.Text, nullable=True)
