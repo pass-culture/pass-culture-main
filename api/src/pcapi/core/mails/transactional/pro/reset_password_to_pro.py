@@ -22,7 +22,7 @@ def get_reset_password_to_pro_email_data(user: User, token: Token) -> Sendinblue
 def send_reset_password_email_to_pro(user: User) -> bool:
     token = create_reset_password_token(user)
     data = get_reset_password_to_pro_email_data(user, token)
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)
 
 
 def get_reset_password_link_to_admin_email_data(

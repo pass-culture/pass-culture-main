@@ -32,10 +32,10 @@ def send_duplicate_beneficiary_email(
         logger.error("No duplicate beneficiary found", extra={"user_id": rejected_user.id})
         anonymized_email = "***"
     else:
-        anonymized_email = _anonymize_email(duplicate_beneficiary.email)  # type: ignore [arg-type]
+        anonymized_email = _anonymize_email(duplicate_beneficiary.email)
 
     return mails.send(
-        recipients=[rejected_user.email],  # type: ignore [list-item]
+        recipients=[rejected_user.email],
         data=sendinblue_models.SendinblueTransactionalEmailData(
             template=TransactionalEmail.SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY.value,
             params={"DUPLICATE_BENEFICIARY_EMAIL": anonymized_email},

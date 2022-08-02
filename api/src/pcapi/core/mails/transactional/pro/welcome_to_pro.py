@@ -12,4 +12,4 @@ def get_welcome_to_pro_email_data() -> SendinblueTransactionalEmailData:
 
 def send_welcome_to_pro_email(user: User) -> bool:
     data = get_welcome_to_pro_email_data()
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)

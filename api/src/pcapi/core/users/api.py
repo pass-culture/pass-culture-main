@@ -630,7 +630,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
 
 def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
     new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))  # type: ignore [call-arg]
-    new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)  # type: ignore [arg-type]
+    new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)
     new_pro_user.notificationSubscriptions = asdict(models.NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type, call-overload]
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()

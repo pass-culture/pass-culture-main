@@ -25,4 +25,4 @@ def get_recredit_to_underage_beneficiary_email_data(
 
 def send_recredit_email_to_underage_beneficiary(user: users_models.User, recredit_amount: Decimal) -> bool:
     data = get_recredit_to_underage_beneficiary_email_data(user, recredit_amount)
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)

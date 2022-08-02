@@ -198,7 +198,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)
     departementCode = sa.Column(sa.String(3), nullable=True)
-    email = sa.Column(sa.String(120), nullable=False, unique=True)
+    email: str = sa.Column(sa.String(120), nullable=False, unique=True)
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
     extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")  # type: ignore [misc]
     firstName = sa.Column(sa.String(128), nullable=True)
@@ -221,7 +221,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     phoneNumber = sa.Column(sa.String(20), nullable=True, index=True)
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
-    publicName = sa.Column(sa.String(255), nullable=False)
+    publicName: str = sa.Column(sa.String(255), nullable=False)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
     UserOfferers: list["UserOfferer"] = orm.relationship("UserOfferer", back_populates="user")
     roles = sa.Column(  # type: ignore [misc]
@@ -637,13 +637,13 @@ class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
     user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True))  # type: ignore [misc]
 
-    oldUserEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
-    oldDomainEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
 
-    newUserEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
-    newDomainEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    newUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    newDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
 
-    creationDate = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     eventType = sa.Column(sa.Enum(EmailHistoryEventTypeEnum), nullable=False)
 
@@ -654,7 +654,7 @@ class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc
         new_email: str,
         event_type: EmailHistoryEventTypeEnum,
     ) -> "UserEmailHistory":
-        old_user_email, old_domain_email = split_email(user.email)  # type: ignore [arg-type]
+        old_user_email, old_domain_email = split_email(user.email)
         new_user_email, new_domain_email = split_email(new_email)
         return cls(
             user=user,

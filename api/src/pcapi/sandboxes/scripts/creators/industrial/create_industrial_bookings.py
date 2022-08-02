@@ -46,7 +46,7 @@ def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: 
         ):
             continue
 
-        if "has-booked-some" in user.email:  # type: ignore [operator]
+        if "has-booked-some" in user.email:
             _create_has_booked_some_bookings(bookings_by_name, active_offers_with_stocks, user, user_name)
         else:
             token = _create_bookings_for_other_beneficiaries(
@@ -67,14 +67,14 @@ def _create_bookings_for_other_beneficiaries(
     user: User,
     user_name: str,
 ) -> int:
-    user_should_have_no_more_money = "has-no-more-money" in user.email  # type: ignore [operator]
+    user_should_have_no_more_money = "has-no-more-money" in user.email
     for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
         # FIXME (viconnex, 2020-12-22) trying to adapt previous code - not sure of the result and intention
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
             continue
 
         user_has_only_activation_booked = (
-            "has-booked-activation" in user.email or "has-confirmed-activation" in user.email  # type: ignore [operator]
+            "has-booked-activation" in user.email or "has-confirmed-activation" in user.email
         )
 
         is_activation_offer = offer.product.subcategoryId in (
@@ -94,9 +94,9 @@ def _create_bookings_for_other_beneficiaries(
 
             if is_activation_offer:
                 is_used = (
-                    "has-confirmed-activation" in user.email  # type: ignore [operator]
-                    or "has-booked-some" in user.email  # type: ignore [operator]
-                    or "has-no-more-money" in user.email  # type: ignore [operator]
+                    "has-confirmed-activation" in user.email
+                    or "has-booked-some" in user.email
+                    or "has-no-more-money" in user.email
                 )
             else:
                 is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
