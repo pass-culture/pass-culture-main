@@ -872,7 +872,7 @@ def add_criteria_to_offers(
     return True
 
 
-def deactivate_inappropriate_products(isbn: str) -> bool:
+def reject_inappropriate_products(isbn: str) -> bool:
     products = Product.query.filter(Product.extraData["isbn"].astext == isbn).all()
     if not products:
         return False
@@ -881,9 +881,19 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
         product.isGcuCompatible = False
         db.session.add(product)
 
-    offers = Offer.query.filter(Offer.productId.in_(p.id for p in products)).filter(Offer.isActive.is_(True))
+    offers = Offer.query.filter(
+        Offer.productId.in_(p.id for p in products),
+        Offer.validation != OfferValidationStatus.REJECTED,
+    )
     offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id).all()]
-    offers.update(values={"isActive": False}, synchronize_session="fetch")
+    offers.update(
+        values={
+            "validation": OfferValidationStatus.REJECTED,
+            "lastValidationDate": datetime.datetime.utcnow(),
+            "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+        },
+        synchronize_session="fetch",
+    )
 
     try:
         db.session.commit()
@@ -894,7 +904,7 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
         )
         return False
     logger.info(
-        "Deactivated inappropriate products",
+        "Rejected inappropriate products",
         extra={"isbn": isbn, "products": [p.id for p in products], "offers": offer_ids},
     )
 

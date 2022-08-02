@@ -1,11 +1,11 @@
 <div style="margin-top: 40px;">
-    {% if product_compatibility["status"] != 'incompatible_products' or active_offers_number > 0 %}
+    {% if product_compatibility["status"] != 'incompatible_products' or active_offers_number + inactive_offers_number + pending_offers_number > 0 %}
     <form
         action="{{ url_for('many_offers_operations.product_gcu_compatibility') }}?isbn={{ isbn }}"
         method="POST"
-        onSubmit="return confirm('Êtes-vous sûr de vouloir rendre le produit incompatible et rendre inactif les offres associées ?');"
+        onSubmit="return confirm('Êtes-vous sûr de vouloir rendre le produit incompatible et rejeter les offres associées ?');"
     >
-        <input 
+        <input
             class="btn btn-danger"
             type="submit"
             value="Rendre le livre et les offres associées incompatibles avec les CGU"
