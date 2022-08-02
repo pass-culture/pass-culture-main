@@ -106,6 +106,7 @@ class Returns200Test:
             "withdrawalDetails": None,
             "domainLabels": [domain.name for domain in offer.domains],
             "domainIds": [domain.id for domain in offer.domains],
+            "interventionArea": offer.interventionArea,
         }
         assert (
             CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one().status

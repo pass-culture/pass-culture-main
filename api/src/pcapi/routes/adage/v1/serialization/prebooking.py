@@ -79,6 +79,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     withdrawalDetails: str | None
     domain_ids: list[int]
     domain_labels: list[str]
+    interventionArea: list[str]
 
     class Config:
         title = "Prebooking detailed response"
@@ -199,6 +200,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         withdrawalDetails=None,
         domain_ids=[domain.id for domain in domains],  # type: ignore [attr-defined]
         domain_labels=[domain.name for domain in domains],  # type: ignore [attr-defined]
+        interventionArea=offer.interventionArea,
     )
 
 

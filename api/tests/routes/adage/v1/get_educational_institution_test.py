@@ -111,6 +111,7 @@ class Returns200Test:
                     "withdrawalDetails": None,
                     "domainIds": [domain.id for domain in offer.domains],
                     "domainLabels": [domain.name for domain in offer.domains],
+                    "interventionArea": offer.interventionArea,
                 }
             ],
         }

@@ -86,6 +86,7 @@ class Returns200Test:
                     "withdrawalDetails": None,
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
+                    "interventionArea": offer1.interventionArea,
                 },
                 {
                     "address": offer2.offerVenue["otherAddress"],
@@ -131,6 +132,7 @@ class Returns200Test:
                     "withdrawalDetails": None,
                     "domainIds": [domain.id for domain in offer2.domains],
                     "domainLabels": [domain.name for domain in offer2.domains],
+                    "interventionArea": offer2.interventionArea,
                 },
             ]
         }
@@ -207,6 +209,7 @@ class Returns200Test:
                     "withdrawalDetails": None,
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
+                    "interventionArea": offer1.interventionArea,
                 }
             ]
         }
@@ -283,6 +286,7 @@ class Returns200Test:
                     "withdrawalDetails": None,
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
+                    "interventionArea": offer1.interventionArea,
                 }
             ]
         }
@@ -359,6 +363,7 @@ class Returns200Test:
                     "withdrawalDetails": None,
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
+                    "interventionArea": offer1.interventionArea,
                 }
             ]
         }
@@ -435,6 +440,7 @@ class Returns200Test:
                     "withdrawalDetails": None,
                     "domainIds": [domain.id for domain in offer1.domains],
                     "domainLabels": [domain.name for domain in offer1.domains],
+                    "interventionArea": offer1.interventionArea,
                 }
             ]
         }
