@@ -420,6 +420,45 @@ def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePage
     return models.MaintenancePageType.WITHOUT_DMS
 
 
+def _get_eligible_and_ok_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+    """Finds latest created activable identity fraud check for a user."""
+    user_identity_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
+        and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
+        and users_api.is_user_age_compatible_with_eligibility(user.age, fraud_check.eligibilityType)
+    ]
+    if not user_identity_fraud_checks:
+        return None
+
+    return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]
+
+
+def _get_activable_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+    """Return the activable fraud_check if the user succeded all steps"""
+    fraud_check = _get_eligible_and_ok_identity_fraud_check(user)
+    if not fraud_check:
+        return None
+
+    if _should_validate_phone(user, fraud_check.eligibilityType):
+        return None
+
+    subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)
+    if subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO):
+        return None
+
+    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)
+    if profile_completion.status != models.SubscriptionItemStatus.OK:
+        return None
+
+    if not fraud_api.has_performed_honor_statement(user, fraud_check.eligibilityType):  # type: ignore [arg-type]
+        return None
+
+    return fraud_check
+
+
 def activate_beneficiary_if_no_missing_step(user: users_models.User, always_update_attributes: bool = True) -> bool:
     activable_fraud_check = _get_activable_identity_fraud_check(user)
 
@@ -522,45 +561,6 @@ def update_user_birth_date(user: users_models.User, birth_date: datetime.date | 
     if user.dateOfBirth != birth_date and birth_date is not None:
         user.dateOfBirth = birth_date
         pcapi_repository.repository.save(user)
-
-
-def _get_eligible_and_ok_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
-    """Finds latest created activable identity fraud check for a user."""
-    user_identity_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-        and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
-        and users_api.is_user_age_compatible_with_eligibility(user.age, fraud_check.eligibilityType)
-    ]
-    if not user_identity_fraud_checks:
-        return None
-
-    return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]
-
-
-def _get_activable_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
-    """Return the activable fraud_check if the user succeded all steps"""
-    fraud_check = _get_eligible_and_ok_identity_fraud_check(user)
-    if not fraud_check:
-        return None
-
-    if _should_validate_phone(user, fraud_check.eligibilityType):
-        return None
-
-    subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)
-    if subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO):
-        return None
-
-    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)
-    if profile_completion.status != models.SubscriptionItemStatus.OK:
-        return None
-
-    if not fraud_api.has_performed_honor_statement(user, fraud_check.eligibilityType):  # type: ignore [arg-type]
-        return None
-
-    return fraud_check
 
 
 def _get_jouve_subscription_item_status(
