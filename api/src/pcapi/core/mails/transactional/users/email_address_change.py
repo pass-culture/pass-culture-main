@@ -15,7 +15,7 @@ def get_information_email_change_data(first_name: str) -> SendinblueTransactiona
 
 def send_information_email_change_email(user: User) -> bool:
     data = get_information_email_change_data(user.firstName)  # type: ignore [arg-type]
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)
 
 
 def get_confirmation_email_change_data(first_name: str, confirmation_link: str) -> SendinblueTransactionalEmailData:

@@ -28,6 +28,6 @@ def send_user_emails_for_email_change(user: User, new_email: str, expiration_dat
         return True  # type: ignore [return-value]
 
     success = send_information_email_change_email(user)
-    link_for_email_change = _build_link_for_email_change(user.email, new_email, expiration_date)  # type: ignore [arg-type]
+    link_for_email_change = _build_link_for_email_change(user.email, new_email, expiration_date)
     success &= send_confirmation_email_change_email(user, new_email, link_for_email_change)
     return success  # type: ignore [return-value]

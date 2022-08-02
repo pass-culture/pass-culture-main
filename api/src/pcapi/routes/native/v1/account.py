@@ -363,7 +363,7 @@ def profiling_fraud_score(user: users_models.User, body: serializers.UserProfili
         profiling_infos = handler.get_user_profiling_fraud_data(
             session_id=body.sessionId,  # type: ignore [arg-type]
             user_id=user.id,
-            user_email=user.email,  # type: ignore [arg-type]
+            user_email=user.email,
             birth_date=user.dateOfBirth.date() if user.dateOfBirth else None,
             phone_number=user.phoneNumber,
             workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,

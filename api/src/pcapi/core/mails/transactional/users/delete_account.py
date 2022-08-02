@@ -15,4 +15,4 @@ def get_user_request_to_delete_account_email_data(user: User) -> SendinblueTrans
 
 def send_user_request_to_delete_account_reception_email(user: User) -> bool:
     data = get_user_request_to_delete_account_email_data(user)
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)

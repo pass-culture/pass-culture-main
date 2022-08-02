@@ -274,7 +274,7 @@ def _process_accepted_application(
     if field_errors:
         subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=False)
         dms_subscription_emails.send_pre_subscription_from_dms_error_email_to_beneficiary(
-            user.email,  # type: ignore [arg-type]
+            user.email,
             field_errors,
         )
         _update_fraud_check_with_field_errors(fraud_check, field_errors, fraud_models.FraudCheckStatus.ERROR)
@@ -324,7 +324,7 @@ def _process_accepted_application(
     )
 
     if not has_completed_all_steps:
-        dms_subscription_emails.send_complete_subscription_after_dms_email(user.email)  # type: ignore [arg-type]
+        dms_subscription_emails.send_complete_subscription_after_dms_email(user.email)
 
 
 def _handle_validation_errors(

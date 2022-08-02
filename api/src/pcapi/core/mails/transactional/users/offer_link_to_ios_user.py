@@ -20,4 +20,4 @@ def get_offer_link_to_ios_user_email_data(user: User, offer: Offer) -> Sendinblu
 
 def send_offer_link_to_ios_user_email(user: User, offer: Offer) -> bool:
     data = get_offer_link_to_ios_user_email_data(user, offer)
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)
