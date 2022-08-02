@@ -16,6 +16,7 @@ def create_show_cds(
     is_cancelled: bool = False,
     is_deleted: bool = False,
     is_disabled_seatmap: bool = False,
+    is_empty_seatmap: bool = False,
     remaining_place: int = 88,
     internet_remaining_place: int = 100,
     showtime: datetime.datetime = datetime.datetime.utcnow(),
@@ -30,6 +31,7 @@ def create_show_cds(
         is_cancelled=is_cancelled,
         is_deleted=is_deleted,
         is_disabled_seatmap=is_disabled_seatmap,
+        is_empty_seatmap=is_empty_seatmap,
         remaining_place=remaining_place,
         internet_remaining_place=internet_remaining_place,
         showtime=showtime,
@@ -71,6 +73,7 @@ class CineDigitalServiceGetShowTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 10,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -87,6 +90,7 @@ class CineDigitalServiceGetShowTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 30,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -101,6 +105,7 @@ class CineDigitalServiceGetShowTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 100,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -133,6 +138,7 @@ class CineDigitalServiceGetShowTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 10,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -151,6 +157,54 @@ class CineDigitalServiceGetShowTest:
             str(cds_exception.value)
             == "Show #4 not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
         )
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_true_if_seatmap_is_empty(self, mocked_get_resource):
+        json_shows = [
+            {
+                "id": 1,
+                "remaining_place": 88,
+                "internet_remaining_place": 10,
+                "disableseatmap": False,
+                "seatmap": "[[]]",
+                "showtime": datetime.datetime(2022, 3, 28),
+                "is_cancelled": False,
+                "is_deleted": False,
+                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+                "screenid": {"id": 10},
+                "mediaid": {"id": 52},
+            },
+        ]
+        mocked_get_resource.return_value = json_shows
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
+        )
+        show = cine_digital_service.get_show(1)
+        assert show.is_empty_seatmap == True
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_false_if_seatmap_is_not_empty(self, mocked_get_resource):
+        json_shows = [
+            {
+                "id": 1,
+                "remaining_place": 88,
+                "internet_remaining_place": 10,
+                "disableseatmap": False,
+                "seatmap": "[[1,1,1,1],[2,2,2,2]]",
+                "showtime": datetime.datetime(2022, 3, 28),
+                "is_cancelled": False,
+                "is_deleted": False,
+                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+                "screenid": {"id": 10},
+                "mediaid": {"id": 52},
+            },
+        ]
+        mocked_get_resource.return_value = json_shows
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
+        )
+        show = cine_digital_service.get_show(1)
+        assert show.is_empty_seatmap == False
 
 
 class CineDigitalServiceGetShowsRemainingPlacesTest:
@@ -174,6 +228,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 10,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -188,6 +243,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 30,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -202,6 +258,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 100,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -248,6 +305,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 10,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -262,6 +320,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 30,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -276,6 +335,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "remaining_place": 88,
                 "internet_remaining_place": 100,
                 "disableseatmap": False,
+                "is_empty_seatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -717,6 +777,7 @@ class CineDigitalServiceGetVoucherForShowTest:
             is_cancelled=False,
             is_deleted=False,
             is_disabled_seatmap=True,
+            is_empty_seatmap=True,
             remaining_place=88,
             internet_remaining_place=20,
             showtime=datetime.datetime.utcnow(),
@@ -746,6 +807,7 @@ class CineDigitalServiceGetVoucherForShowTest:
             is_cancelled=False,
             is_deleted=False,
             is_disabled_seatmap=False,
+            is_empty_seatmap=False,
             remaining_place=88,
             internet_remaining_place=20,
             showtime=datetime.datetime.utcnow(),
@@ -966,7 +1028,7 @@ class CineDigitalServiceBookTicketTest:
         ]
 
         mocked_get_show.return_value = create_show_cds(
-            id_=181, shows_tariff_pos_type_ids=[42], is_disabled_seatmap=True
+            id_=181, shows_tariff_pos_type_ids=[42], is_disabled_seatmap=True, is_empty_seatmap=True
         )
         mocked_get_screen.return_value = create_screen_cds()
 
