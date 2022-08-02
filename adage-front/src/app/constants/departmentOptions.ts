@@ -1,5 +1,14 @@
 import { Option } from 'app/types'
 
+export const domtomOptions = [
+  { value: '971', label: '971 - Guadeloupe' },
+  { value: '972', label: '972 - Martinique' },
+  { value: '973', label: '973 - Guyane' },
+  { value: '974', label: '974 - La Réunion' },
+  { value: '975', label: '975 - Saint-Pierre-Et-Miquelon' },
+  { value: '976', label: '976 - Mayotte' },
+]
+
 export const departmentOptions: Option[] = [
   { value: '01', label: '01 - Ain' },
   { value: '02', label: '02 - Aisne' },
@@ -97,10 +106,19 @@ export const departmentOptions: Option[] = [
   { value: '93', label: '93 - Seine-Saint-Denis' },
   { value: '94', label: '94 - Val-de-Marne' },
   { value: '95', label: '95 - Val-d’Oise' },
-  { value: '971', label: '971 - Guadeloupe' },
-  { value: '972', label: '972 - Martinique' },
-  { value: '973', label: '973 - Guyane' },
-  { value: '974', label: '974 - La Réunion' },
-  { value: '975', label: '975 - Saint-Pierre-Et-Miquelon' },
-  { value: '976', label: '976 - Mayotte' },
+  ...domtomOptions,
 ]
+
+export const ALL_FRANCE_OPTION_VALUE = 'all'
+export const MAINLAND_OPTION_VALUE = 'mainland'
+export const ALL_FRANCE_OPTION_LABEL = 'France métropolitaine et d’outre-mer'
+export const MAINLAND_OPTION_LABEL = 'France métropolitaine'
+
+export const departmentLabelByValue: Record<string, string> = {
+  [ALL_FRANCE_OPTION_VALUE]: ALL_FRANCE_OPTION_LABEL,
+  [MAINLAND_OPTION_VALUE]: MAINLAND_OPTION_LABEL,
+  ...departmentOptions.reduce((mapping, departmentOption) => {
+    mapping[departmentOption.value] = departmentOption.label
+    return mapping
+  }, {}),
+}
