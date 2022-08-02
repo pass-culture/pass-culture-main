@@ -134,6 +134,7 @@ describe('offers', () => {
         addressType: OfferAddressType.OffererVenue,
       },
       students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
+      interventionArea: ['75', '92'],
     }
 
     offerInCayenne = {
@@ -178,6 +179,7 @@ describe('offers', () => {
         addressType: OfferAddressType.OffererVenue,
       },
       students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
+      interventionArea: ['973'],
     }
 
     otherOffer = {
@@ -222,6 +224,7 @@ describe('offers', () => {
         addressType: OfferAddressType.OffererVenue,
       },
       students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
+      interventionArea: ['75', '92'],
     }
 
     offersProps = {
