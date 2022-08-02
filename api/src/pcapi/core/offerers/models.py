@@ -135,8 +135,6 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
-    id = Column(BigInteger, primary_key=True)
-
     name = Column(String(140), nullable=False)
 
     siret = Column(String(14), nullable=True, unique=True)

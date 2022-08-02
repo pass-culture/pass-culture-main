@@ -261,7 +261,7 @@ def synchronize_stocks(
             "ref_count": len(products_references),
         },
     ):
-        offers_by_venue_reference = offers_repository.get_offers_map_by_venue_reference(products_references, venue.id)  # type: ignore [arg-type]
+        offers_by_venue_reference = offers_repository.get_offers_map_by_venue_reference(products_references, venue.id)
 
     offers_update_mapping = [
         {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
@@ -406,7 +406,7 @@ def _get_stocks_to_upsert(
                 continue
 
             new_stocks.append(stock)
-            offer_ids.add(stock.offerId)  # type: ignore [arg-type]
+            offer_ids.add(stock.offerId)
 
     return update_stock_mapping, new_stocks, offer_ids
 

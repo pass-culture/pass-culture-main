@@ -160,7 +160,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         is_booking_email=bool(venues),
         marketing_email_subscription=marketing_email_subscription,
         offerers_names=set(offerers_names),  # type: ignore[arg-type]
-        venues_ids={venue.id for venue in all_venues},  # type: ignore [misc]
+        venues_ids={venue.id for venue in all_venues},
         venues_names={venue.publicName or venue.name for venue in all_venues},  # type: ignore [misc]
         venues_types={venue.venueTypeCode.name for venue in all_venues if venue.venueTypeCode},
         venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},  # type: ignore [misc]
