@@ -7,6 +7,7 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'api/gen'
 
+import OfferInterventionArea from './OfferInterventionArea'
 import OfferSection from './OfferSection'
 import OfferVenue from './OfferVenue'
 
@@ -62,6 +63,7 @@ const OfferDetails = ({
     contactEmail,
     contactPhone,
     educationalPriceDetail,
+    interventionArea,
   } = offer
 
   const durationString = computeDurationString(durationMinutes)
@@ -78,7 +80,7 @@ const OfferDetails = ({
       {durationString && (
         <OfferSection title="Durée">{durationString}</OfferSection>
       )}
-      {students && students.length > 0 && (
+      {students?.length > 0 && (
         <OfferSection title="Public Cible">
           <ul className="offer-details-list">
             {students?.map(student => (
@@ -87,6 +89,13 @@ const OfferDetails = ({
           </ul>
         </OfferSection>
       )}
+
+      {interventionArea?.length > 0 && (
+        <OfferSection title="Zone de Mobiltié de l’acteur culturel">
+          <OfferInterventionArea interventionArea={interventionArea} />
+        </OfferSection>
+      )}
+
       {educationalPriceDetail && (
         <OfferSection title="Détails">{educationalPriceDetail}</OfferSection>
       )}
