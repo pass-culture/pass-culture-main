@@ -293,11 +293,12 @@ class GetInvoicesQueryTest:
 
 
 class LegacyGetInvoicesQueryTest:
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
     def test_basics(self):
         business_unit1 = factories.BusinessUnitFactory()
-        invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
+        invoice1 = factories.InvoiceFactory(businessUnit=business_unit1, reimbursementPoint=None)
         business_unit2 = factories.BusinessUnitFactory()
-        invoice2 = factories.InvoiceFactory(businessUnit=business_unit2)
+        invoice2 = factories.InvoiceFactory(businessUnit=business_unit2, reimbursementPoint=None)
         venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
         offerer = venue1.managingOfferer
         pro = users_factories.ProFactory()
@@ -319,6 +320,7 @@ class LegacyGetInvoicesQueryTest:
         invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
 
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
     def test_filter_on_date(self):
         business_unit = factories.BusinessUnitFactory()
         venue = offerers_factories.VenueFactory(businessUnit=business_unit)
@@ -344,6 +346,7 @@ class LegacyGetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice_within]
 
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
     def test_filter_on_business_unit(self):
         business_unit1 = factories.BusinessUnitFactory()
         invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
@@ -359,6 +362,7 @@ class LegacyGetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice1]
 
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
     def test_wrong_business_unit(self):
         # Make sure that specifying a business unit id that belongs to
         # another offerer does not return anything.
@@ -378,6 +382,7 @@ class LegacyGetInvoicesQueryTest:
         )
         assert not invoices.count()
 
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
     def test_admin_filter_on_business_unit(self):
         invoice1 = factories.InvoiceFactory()
         _venue1 = offerers_factories.VenueFactory(businessUnit=invoice1.businessUnit)
@@ -391,6 +396,7 @@ class LegacyGetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice1]
 
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
     def test_admin_without_filter(self):
         invoice = factories.InvoiceFactory()
         _venue = offerers_factories.VenueFactory(businessUnit=invoice.businessUnit)
