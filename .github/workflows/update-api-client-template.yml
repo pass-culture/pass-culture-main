@@ -3,7 +3,10 @@ name: Update API Client template
 on:
   workflow_call:
     inputs:
-      trigger-only-on-change:
+      trigger-only-on-api-change:
+        required: true
+        type: boolean
+      trigger-only-on-dependency-change:
         required: true
         type: boolean
 
@@ -14,31 +17,55 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
         with:
-          persist-credentials: false
           ref: ${{ github.head_ref }}
 
       - name: Check changes in API
         uses: dorny/paths-filter@v2
-        if: ${{ inputs.trigger-only-on-change }}
-        id: changesApi
+        if: ${{ inputs.trigger-only-on-api-change }}
+        id: changes-api
         with:
           filters: |
             src:
               - 'api/**'
 
+      - name: Get changed files
+        if: ${{ inputs.trigger-only-on-dependency-change }}
+        id: files
+        uses: jitterbit/get-changed-files@v1
+
+      - name: Check if dependencies changed
+        id: check-dependency-change
+        run: |
+          for changed_file in ${{ steps.files.outputs.all }}; do
+            if [[ "$changed_file" == "pro/yarn.lock" || "$changed_file" == "api/requirements.txt" ]];
+              then
+                echo ::set-output name=dependency-change::'true'
+            fi
+          done
+
+      - name: Should run cache
+        id: evaluate-variables
+        run: |
+          if ${{ (!inputs.trigger-only-on-api-change && !inputs.trigger-only-on-dependency-change) || (inputs.trigger-only-on-api-change && steps.changes-api.outputs.src == 'true') || (inputs.trigger-only-on-dependency-change && steps.check-dependency-change.outputs.dependency-change == 'true') }};
+            then
+              echo ::set-output name=should-run-cache::'true'
+            else
+              echo ::set-output name=should-run-cache::'false'
+          fi
+
       - uses: actions/setup-node@v2
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           node-version: "14"
 
       - name: Install dockerize
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           sudo chown -R $USER .
           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
 
       - name: Cache
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: satackey/action-docker-layer-caching@v0.0.11
         with:
           key: docker-cache-${{ hashFiles('api/requirements.txt') }}
@@ -47,17 +74,17 @@ jobs:
             docker-cache
 
       - name: Run API
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           sudo chown -R 1000:1000 .
           ./pc start-backend &
 
       - name: Update permission
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: cd pro && sudo chown -R $USER .
 
       - uses: actions/cache@v2
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           path: pro/node_modules
           key: ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
@@ -66,24 +93,24 @@ jobs:
             ${{ runner.os }}-node-14-yarn-
 
       - name: Install dependencies
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd pro
           sudo chown -R $USER .
           yarn install
 
       - name: Wait for backend
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
 
       - name: Update api client
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd pro
           yarn generate:api:client:local
 
       - name: Check if there are changes
-        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: changes
         run: |
           if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
