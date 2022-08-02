@@ -448,6 +448,7 @@ describe('CollectiveDataEdition', () => {
       state: {
         collectiveDataEditionSuccess:
           'Vos informations ont bien été enregistrées',
+        scrollToElementId: 'venue-collective-data',
       },
     })
   })

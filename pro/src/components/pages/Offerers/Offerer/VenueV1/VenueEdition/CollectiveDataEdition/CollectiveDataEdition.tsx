@@ -111,7 +111,10 @@ const CollectiveDataEdition = (): JSX.Element => {
   return (
     <div className={styles['collective-data-edition']}>
       <GoBackLink
-        to={`/structures/${offererId}/lieux/${venueId}`}
+        to={{
+          pathname: `/structures/${offererId}/lieux/${venueId}`,
+          state: { scrollToElementId: 'venue-collective-data' },
+        }}
         title="Retour page lieu"
       />
 

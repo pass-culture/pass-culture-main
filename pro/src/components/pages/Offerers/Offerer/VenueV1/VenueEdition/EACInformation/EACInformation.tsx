@@ -21,7 +21,7 @@ const EACInformation = ({
 }): JSX.Element => {
   const collectiveDataIsNotEmpty = venue && venueHasCollectiveInformation(venue)
   return (
-    <div className="section vp-content-section">
+    <div className="section vp-content-section" id="venue-collective-data">
       <h2 className="main-list-title">Mes informations pour les enseignants</h2>
       {collectiveDataIsNotEmpty ? (
         <CollectiveData venue={venue} />
