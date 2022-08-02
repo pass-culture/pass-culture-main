@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 from flask_jwt_extended import decode_token
@@ -368,6 +369,30 @@ def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, clien
     mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=True)
 
     assert response.status_code == 400
+
+
+def test_validate_email_with_expired_token(client):
+    user = users_factories.UserFactory(isEmailValidated=False)
+    token = users_factories.TokenFactory(
+        userId=user.id,
+        type=TokenType.EMAIL_VALIDATION,
+        expirationDate=datetime.utcnow() - timedelta(days=1),
+    )
+
+    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+
+    assert response.status_code == 400
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 201
+    assert mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
+
+    assert (
+        Token.query.filter(
+            Token.userId == user.id, Token.type == TokenType.EMAIL_VALIDATION, Token.expirationDate > datetime.utcnow()
+        ).first()
+        is not None
+    )
 
 
 @freeze_time("2018-06-01")

@@ -73,7 +73,7 @@ def get_user_with_valid_token(
         raise exceptions.InvalidToken()
 
     if token.expirationDate and token.expirationDate < datetime.utcnow():
-        raise exceptions.InvalidToken()
+        raise exceptions.ExpiredToken(user=token.user)
 
     if use_token:
         token.isUsed = True
