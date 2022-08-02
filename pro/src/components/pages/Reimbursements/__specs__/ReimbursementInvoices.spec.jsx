@@ -113,6 +113,12 @@ describe('reimbursementsWithFilters', () => {
       name: /Lancer la recherche/i,
     })
     await userEvent.click(button)
+    expect(pcapi.getInvoices).toBeCalledWith({
+      businessUnitId: 'all',
+      periodBeginningDate: new Date('2020-11-15T00:00:00.000Z'),
+      periodEndingDate: new Date('2020-12-15T12:00:00.000Z'),
+      reimbursementPointId: 'all',
+    })
     expect(screen.queryAllByRole('row').length).toEqual(4)
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
     const reimbursementCells = screen
