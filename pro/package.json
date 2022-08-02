@@ -63,6 +63,7 @@
     "prop-types": "^15.8.1",
     "re-reselect": "^4.0.0",
     "react": "^16.10.2",
+    "react-dom": "^16.5.2",
     "react-autocomplete": "^1.8.1",
     "react-autosize-textarea": "^7.1.0",
     "react-avatar-editor": "^13.0.0",
