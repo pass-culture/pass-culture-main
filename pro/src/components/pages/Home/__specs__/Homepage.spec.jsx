@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -67,7 +68,6 @@ describe('homepage', () => {
         },
         initialized: true,
       },
-      app: { logEvent: mockLogEvent },
     })
     baseOfferers = [
       {
@@ -159,6 +159,10 @@ describe('homepage', () => {
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 3,
     })
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   describe('it should render', () => {

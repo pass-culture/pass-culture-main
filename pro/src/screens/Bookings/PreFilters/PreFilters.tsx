@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import {
   DEFAULT_PRE_FILTERS,
@@ -17,7 +17,6 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { Events } from '../../../core/FirebaseEvents/constants'
-import { RootState } from '../../../store/reducers'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
@@ -62,7 +61,7 @@ const PreFilters = ({
     'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON'
   )
 
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const [selectedPreFilters, setSelectedPreFilters] = useState<TPreFilters>({
     ...appliedPreFilters,
@@ -231,7 +230,7 @@ const PreFilters = ({
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
                 updateUrl && updateUrl(selectedPreFilters)
-                logEvent(Events.CLICKED_SHOW_BOOKINGS, {
+                logEvent?.(Events.CLICKED_SHOW_BOOKINGS, {
                   from: location.pathname,
                 })
               }}

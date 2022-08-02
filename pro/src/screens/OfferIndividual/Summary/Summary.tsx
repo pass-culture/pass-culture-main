@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
@@ -64,7 +65,7 @@ const Summary = ({
   const [isDisabled, setIsDisabled] = useState(false)
   const location = useLocation()
   const notification = useNotification()
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const handleOfferPublication = () => {
     setIsDisabled(true)
     const url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
@@ -72,7 +73,7 @@ const Summary = ({
       .publishOffer(offerId)
       .then(() => {
         setIsDisabled(false)
-        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OfferBreadcrumbStep.SUMMARY,
           to: OfferBreadcrumbStep.CONFIRMATION,
           used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -88,7 +89,7 @@ const Summary = ({
 
   const history = useHistory()
   const handleNextStep = () => {
-    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.CONFIRMATION,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -97,7 +98,7 @@ const Summary = ({
     history.push(`/offre/${offerId}/v3/creation/individuelle/confirmation`)
   }
   const handlePreviousStep = () => {
-    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
       to: 'THIS ONE?',
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -177,7 +178,7 @@ const Summary = ({
                   variant={ButtonVariant.SECONDARY}
                   to={`/offre/${offerId}/individuel/creation/stocks`}
                   onClick={() =>
-                    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OfferBreadcrumbStep.SUMMARY,
                       to: OfferBreadcrumbStep.STOCKS,
                       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -201,7 +202,7 @@ const Summary = ({
                   variant={ButtonVariant.PRIMARY}
                   to={backOfferUrl}
                   onClick={() =>
-                    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OfferBreadcrumbStep.SUMMARY,
                       to: OFFER_FORM_NAVIGATION_OUT.OFFER,
                       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,

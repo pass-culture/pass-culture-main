@@ -5,12 +5,11 @@ import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
-import { configureTestStore } from 'store/testUtils'
 
 import ReimbursementPoint from '../ReimbursementPoint'
 
@@ -20,15 +19,14 @@ jest.mock('apiClient/api', () => ({
     getVenue: jest.fn(),
   },
 }))
-const renderReimbursementPoint = async (props, store) => {
+
+const mockLogEvent = jest.fn()
+
+const renderReimbursementPoint = async props => {
   const rtlReturn = await render(
-    <Provider store={store}>
-      <MemoryRouter path={'/structures'}>
-        <Form onSubmit={() => {}}>
-          {() => <ReimbursementPoint {...props} />}
-        </Form>
-      </MemoryRouter>
-    </Provider>
+    <MemoryRouter path={'/structures'}>
+      <Form onSubmit={() => {}}>{() => <ReimbursementPoint {...props} />}</Form>
+    </MemoryRouter>
   )
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -36,7 +34,6 @@ const renderReimbursementPoint = async (props, store) => {
 
   return rtlReturn
 }
-const mockLogEvent = jest.fn()
 
 describe('src | Venue | ReimbursementPoint', () => {
   const history = createBrowserHistory()
@@ -51,12 +48,8 @@ describe('src | Venue | ReimbursementPoint', () => {
     name: 'fake offerer name',
   }
   let props
-  let store
   beforeEach(() => {
     props = { initialVenue, offerer }
-    store = configureTestStore({
-      app: { logEvent: mockLogEvent },
-    })
   })
 
   it('should display reimbursement point secion  when offerer has at least one', async () => {
@@ -72,7 +65,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     ])
 
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
 
     // Then
     expect(
@@ -93,7 +86,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     ])
 
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
 
     // Then
     expect(
@@ -106,7 +99,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
 
     // Then
     expect(
@@ -119,7 +112,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
 
     // Then
     expect(
@@ -131,9 +124,14 @@ describe('src | Venue | ReimbursementPoint', () => {
   it('should track button on click in modal', async () => {
     // Given
     jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
     history.push('/structures')
+
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
     await userEvent.click(
       screen.getByRole('button', {
         name: 'Ajouter des coordonnées bancaires',
@@ -185,7 +183,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     props.initialVenue = venueWithReimbursementPoint
 
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
 
     // Then
     expect(
@@ -207,7 +205,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
 
     // Then
     expect(
@@ -229,7 +227,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     jest.spyOn(api, 'getVenue').mockResolvedValue(props.initialVenue)
 
     // When
-    await renderReimbursementPoint(props, store)
+    await renderReimbursementPoint(props)
 
     const addReimbursementPointButton = screen.getByRole('button', {
       name: 'Ajouter des coordonnées bancaires',

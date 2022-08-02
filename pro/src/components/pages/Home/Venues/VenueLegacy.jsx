@@ -1,9 +1,9 @@
 import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'core/Bookings'
 import {
@@ -35,7 +35,7 @@ const Venue = ({
     soldOutOffersCount: '',
     validatedBookingsQuantity: '',
   })
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const venueStatData = [
     {
@@ -173,7 +173,7 @@ const Venue = ({
                 <Link
                   className="tertiary-link"
                   onClick={() =>
-                    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OFFER_FORM_NAVIGATION_IN.HOME,
                       to: OFFER_FORM_HOMEPAGE,
                       used: isVirtual

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { RootState } from 'store/reducers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ROOT_PATH } from 'utils/config'
@@ -44,9 +43,9 @@ const StockEventSection = ({
   const editLink = isCreation
     ? `/offre/${offerId}/individuel/creation/stocks`
     : `/offre/${offerId}/individuel/stocks`
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const logEditEvent = () => {
-    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,

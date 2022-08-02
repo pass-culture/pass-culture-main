@@ -1,8 +1,8 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
@@ -21,7 +21,6 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { computeVenueDisplayName } from 'repository/venuesService'
-import { RootState } from 'store/reducers'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -42,7 +41,7 @@ const OfferItem = ({
 }: OfferItemProps) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const editionOfferLink = useOfferEditionURL(
     isEducational,
     id,
@@ -125,7 +124,7 @@ const OfferItem = ({
             className="name"
             title={`${offer.name} - éditer l'offre`}
             onClick={() =>
-              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OFFER_FORM_NAVIGATION_IN.OFFERS,
                 to: OfferBreadcrumbStep.SUMMARY,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
@@ -146,7 +145,7 @@ const OfferItem = ({
           className="name"
           title={`${offer.name} - éditer l'offre`}
           onClick={() =>
-            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OFFER_FORM_NAVIGATION_IN.OFFERS,
               to: OfferBreadcrumbStep.SUMMARY,
               used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
@@ -191,7 +190,7 @@ const OfferItem = ({
         <Link
           className="secondary-link with-icon"
           onClick={() =>
-            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OFFER_FORM_NAVIGATION_IN.OFFERS,
               to: OfferBreadcrumbStep.STOCKS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
@@ -209,7 +208,7 @@ const OfferItem = ({
           <Link
             className="secondary-link"
             onClick={() =>
-              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OFFER_FORM_NAVIGATION_IN.OFFERS,
                 to: OfferBreadcrumbStep.SUMMARY,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_PEN,

@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 import { Link } from 'react-router-dom'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { configureTestStore } from 'store/testUtils'
 
@@ -15,7 +16,7 @@ import UtmTracker from '../UtmTracker'
 const mockLogEvent = jest.fn()
 
 const renderTracker = (initialEntries: string) => {
-  const store = configureTestStore({ app: { logEvent: mockLogEvent } })
+  const store = configureTestStore({})
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[initialEntries]}>
@@ -34,6 +35,12 @@ const renderTracker = (initialEntries: string) => {
 }
 
 describe('UtmTracker', () => {
+  beforeEach(() => {
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
+  })
   it('should log an event when utm parameters exists', async () => {
     // When
     renderTracker(

@@ -1,13 +1,12 @@
 import React, { FunctionComponent, useCallback, MouseEventHandler } from 'react'
-import { useSelector } from 'react-redux'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { RootState } from 'store/reducers'
 
 interface Props {
   className?: string
@@ -22,7 +21,7 @@ export const DisplayInAppLink: FunctionComponent<Props> = ({
   children,
   trackOffer = false,
 }) => {
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const openWindow: MouseEventHandler = useCallback(
     event => {
       event.preventDefault()
@@ -32,7 +31,7 @@ export const DisplayInAppLink: FunctionComponent<Props> = ({
         ?.focus()
 
       if (trackOffer) {
-        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OfferBreadcrumbStep.CONFIRMATION,
           to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
           used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,

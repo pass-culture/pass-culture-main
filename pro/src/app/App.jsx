@@ -1,15 +1,13 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { matchPath } from 'react-router'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import useAnalytics from 'components/hooks/useAnalytics'
+import { useConfigureAnalytics } from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
 import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
-import { setLogEvent } from 'store/app/actions'
 import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 export const App = props => {
@@ -19,19 +17,12 @@ export const App = props => {
     isMaintenanceActivated,
     loadFeatures,
   } = props
-  const dispatch = useDispatch()
   const [isReady, setIsReady] = useState(false)
   const { isUserInitialized, currentUser } = useCurrentUser()
-  const { logEvent } = useAnalytics(currentUser?.id)
   const currentPathname = window.location.pathname
   const history = useHistory()
   const location = useLocation()
-
-  useEffect(() => {
-    if (logEvent) {
-      dispatch(setLogEvent(logEvent))
-    }
-  }, [dispatch, logEvent])
+  useConfigureAnalytics(currentUser?.id)
 
   useEffect(() => {
     if (!isFeaturesInitialized) {

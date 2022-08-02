@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -53,7 +53,7 @@ const OffererDetails = ({
   const isNewBankInformationActive = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
     if (!selectedOfferer) return false
@@ -120,7 +120,7 @@ const OffererDetails = ({
   )
 
   const toggleVisibility = () => {
-    logEvent(Events.CLICKED_TOGGLE_HIDE_OFFERER_NAME, {
+    logEvent?.(Events.CLICKED_TOGGLE_HIDE_OFFERER_NAME, {
       isExpanded: isExpanded,
     })
     setIsExpanded(currentVisibility => !currentVisibility)
@@ -189,7 +189,7 @@ const OffererDetails = ({
               className="tertiary-link"
               to={`/structures/${selectedOfferer.id}`}
               onClick={() =>
-                logEvent(Events.CLICKED_MODIFY_OFFERER, {
+                logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
                   offerer_id: selectedOfferer.id,
                 })
               }

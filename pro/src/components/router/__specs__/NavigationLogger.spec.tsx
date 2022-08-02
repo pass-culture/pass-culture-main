@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 import { Link } from 'react-router-dom'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
 import NavigationLogger from '../NavigationLogger'
@@ -16,7 +17,12 @@ const mockLogEvent = jest.fn()
 describe('useLogNavigation', () => {
   it('should log an event on location changes', async () => {
     // When
-    const store = configureTestStore({ app: { logEvent: mockLogEvent } })
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
+
+    const store = configureTestStore({})
     render(
       <Provider store={store}>
         <MemoryRouter>

@@ -9,6 +9,7 @@ import Spinner from 'components/layout/Spinner'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import NavigationLogger from 'components/router/NavigationLogger'
 import UtmTracking from 'components/router/UtmTracker'
+import { AnalyticsContextProvider } from 'context/analyticsContext'
 import configureStore from 'store'
 import {
   selectActiveFeatures,
@@ -21,13 +22,15 @@ const { store } = configureStore()
 const Root = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <AppContainer>
-          <NavigationLogger />
-          <UtmTracking />
-          <AppRouter />
-        </AppContainer>
-      </BrowserRouter>
+      <AnalyticsContextProvider>
+        <BrowserRouter>
+          <AppContainer>
+            <NavigationLogger />
+            <UtmTracking />
+            <AppRouter />
+          </AppContainer>
+        </BrowserRouter>
+      </AnalyticsContextProvider>
     </Provider>
   )
 }

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Field } from 'react-final-form'
-import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
+import useAnalytics from 'components/hooks/useAnalytics'
 import Spinner from 'components/layout/Spinner'
 import { Events } from 'core/FirebaseEvents/constants'
 import InfoDialog from 'new_components/InfoDialog'
@@ -98,7 +98,7 @@ const ReimbursementPoint = ({
     }
     loadReimbursementPoints(offerer.nonHumanizedId)
   }, [isCreatingVenue, offerer.id, readOnly, venue])
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   if (isLoading) return <Spinner />
 
   return (
@@ -122,7 +122,7 @@ const ReimbursementPoint = ({
               subTitle="Sélectionner un lieu avec SIRET parmi la liste puis valider votre sélection."
               closeDialog={() => {
                 setIsNoSiretDialogOpen(false)
-                logEvent(Events.CLICKED_NO_PRICING_POINT_SELECTED_YET, {
+                logEvent?.(Events.CLICKED_NO_PRICING_POINT_SELECTED_YET, {
                   from: location.pathname,
                 })
               }}
@@ -139,7 +139,7 @@ const ReimbursementPoint = ({
                 id="add-new-reimbursement-point"
                 onClick={() => {
                   openDMSApplication()
-                  logEvent(Events.CLICKED_ADD_BANK_INFORMATIONS, {
+                  logEvent?.(Events.CLICKED_ADD_BANK_INFORMATIONS, {
                     from: location.pathname,
                   })
                 }}

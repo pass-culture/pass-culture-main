@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
-import { useSelector } from 'react-redux'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID, Tutorial } from 'new_components/Tutorial'
@@ -13,10 +13,10 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
     currentUser && !currentUser.hasSeenProTutorials
   )
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const saveHasSeenProTutorials = useCallback(() => {
-    logEvent(Events.FIRST_LOGIN)
+    logEvent?.(Events.FIRST_LOGIN)
     pcapi
       .setHasSeenTutos()
       .then(() => {

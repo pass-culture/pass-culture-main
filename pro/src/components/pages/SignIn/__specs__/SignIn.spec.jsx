@@ -9,6 +9,7 @@ import { MemoryRouter, Route } from 'react-router'
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { ApiError } from 'apiClient/v1'
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { Events } from 'core/FirebaseEvents/constants'
 import { configureTestStore } from 'store/testUtils'
@@ -145,7 +146,9 @@ describe('src | components | pages | SignIn', () => {
       })
       it('should trigger a tracking event', async () => {
         const mockLogEvent = jest.fn()
-        store.app.logEvent = mockLogEvent
+        jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+          logEvent: mockLogEvent,
+        }))
         store.user = { initialized: true, currentUser: null }
         renderSignIn(store)
         await userEvent.click(

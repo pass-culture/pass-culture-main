@@ -1,14 +1,12 @@
 import React, { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
 import Icon from 'components/layout/Icon'
 import { TPreFilters } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
-
-import { RootState } from '../../store/reducers'
 
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
@@ -29,7 +27,7 @@ const MultiDownloadButtonsModal = ({
   downloadFunction,
   filters,
 }: MultiDownloadButtonsModalType): JSX.Element => {
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const [isDownloadModalOptionOpen, setIsDownloadModalOptionOpen] =
     useState(false)
@@ -47,7 +45,7 @@ const MultiDownloadButtonsModal = ({
           className="primary-button"
           disabled={isDownloading || isLocalLoading || isFiltersDisabled}
           onClick={() => {
-            logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS, {
+            logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS, {
               from: location.pathname,
             })
             setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
@@ -67,7 +65,7 @@ const MultiDownloadButtonsModal = ({
           <button
             className={style['insideModalButton']}
             onClick={() => {
-              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
+              logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
                 from: location.pathname,
               })
               downloadFunction(filters, 'XLS')
@@ -81,7 +79,7 @@ const MultiDownloadButtonsModal = ({
           <button
             className={style['insideModalButton']}
             onClick={() => {
-              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
+              logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
                 from: location.pathname,
               })
               downloadFunction(filters, 'CSV')
@@ -96,7 +94,7 @@ const MultiDownloadButtonsModal = ({
           <a
             className={style['insideModalButton']}
             onClick={() => {
-              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_OTHER_FORMAT, {
+              logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_OTHER_FORMAT, {
                 from: location.pathname,
               })
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
