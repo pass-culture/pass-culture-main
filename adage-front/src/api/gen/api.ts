@@ -86,6 +86,7 @@ export interface CollectiveOfferResponseModel {
   educationalInstitution?: EducationalInstitutionResponseModel | null
   educationalPriceDetail?: string | null
   id: number
+  interventionArea: Array<string>
   isExpired: boolean
   isSoldOut: boolean
   mentalDisabilityCompliant: boolean
@@ -109,6 +110,7 @@ export interface CollectiveOfferTemplateResponseModel {
   durationMinutes?: number | null
   educationalPriceDetail?: string | null
   id: number
+  interventionArea: Array<string>
   isExpired: boolean
   isSoldOut: boolean
   mentalDisabilityCompliant: boolean
