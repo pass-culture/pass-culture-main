@@ -153,21 +153,8 @@ def create_account(
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
-    return initialize_account(
-        user, password, apps_flyer_user_id, apps_flyer_platform, send_activation_mail, remote_updates
-    )
-
-
-def initialize_account(
-    user: models.User,
-    password: str,
-    apps_flyer_user_id: str = None,
-    apps_flyer_platform: str = None,
-    send_activation_mail: bool = True,
-    remote_updates: bool = True,
-) -> models.User:
-
     user.setPassword(password)
+
     if apps_flyer_user_id and apps_flyer_platform:
         if user.externalIds is None:
             user.externalIds = {}
@@ -175,6 +162,7 @@ def initialize_account(
 
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
+
     delete_all_users_tokens(user)
 
     if remote_updates:
