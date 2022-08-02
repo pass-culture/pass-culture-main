@@ -41,6 +41,7 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
 
   beforeEach(() => {
     initialValues = {
+      subCategoryFields: ['withdrawalType', 'withdrawalDelay'],
       isEvent: true,
       withdrawalDetails: '',
       withdrawalType: undefined,

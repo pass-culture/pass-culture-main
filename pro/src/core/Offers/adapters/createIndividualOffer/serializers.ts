@@ -38,6 +38,17 @@ export const serializeExtraData = (
   return extraData
 }
 
+const serializeDurationMinutes = (durationHour: string): number | null => {
+  if (durationHour.trim().length === 0) {
+    return null
+  }
+  const [hours, minutes] = durationHour
+    .split(':')
+    .map((s: string) => parseInt(s, 10))
+
+  return minutes + hours * 60
+}
+
 export const serializePostOffer = (
   formValues: IOfferIndividualFormValues
 ): PostOfferBodyModel => {
@@ -59,5 +70,6 @@ export const serializePostOffer = (
     withdrawalDelay: formValues.withdrawalDelay,
     withdrawalDetails: formValues.withdrawalDetails,
     withdrawalType: formValues.withdrawalType,
+    durationMinutes: serializeDurationMinutes(formValues.durationMinutes || ''),
   }
 }

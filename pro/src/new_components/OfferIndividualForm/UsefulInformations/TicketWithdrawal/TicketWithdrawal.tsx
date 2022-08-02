@@ -5,7 +5,6 @@ import { WithdrawalTypeEnum } from 'apiClient/v1'
 import FormLayout from 'new_components/FormLayout'
 import { RadioGroup, Select } from 'ui-kit'
 
-import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '..'
 import { IOfferIndividualFormValues } from '../../types'
 
 import {
@@ -18,25 +17,9 @@ import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
 
 const TicketWithdrawal = (): JSX.Element => {
   const {
-    values: { subcategoryId, withdrawalType },
+    values: { withdrawalType },
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
-
-  useEffect(
-    function onSubCategoryChange() {
-      if (!WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(subcategoryId)) {
-        setFieldValue(
-          'withdrawalType',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalType']
-        )
-        setFieldValue(
-          'withdrawalDelay',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
-        )
-      }
-    },
-    [subcategoryId]
-  )
 
   useEffect(
     function onWithdrawalTypeChange() {
