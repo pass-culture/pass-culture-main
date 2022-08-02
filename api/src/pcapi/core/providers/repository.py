@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 from typing import cast
 
 from flask_sqlalchemy import BaseQuery
@@ -128,3 +129,15 @@ class AllocineVenue:
         if not self.has_theater():
             raise exceptions.NoAllocineTheater
         return cast(models.AllocineTheater, self.allocine_theater)
+
+
+def find_latest_sync_part_end_event(provider: models.Provider) -> models.LocalProviderEvent:
+    return (
+        models.LocalProviderEvent.query.filter(
+            models.LocalProviderEvent.provider == provider,
+            models.LocalProviderEvent.type == models.LocalProviderEventType.SyncPartEnd,
+            models.LocalProviderEvent.date > datetime.datetime.utcnow() - datetime.timedelta(days=25),
+        )
+        .order_by(models.LocalProviderEvent.date.desc())
+        .first()
+    )
