@@ -22,7 +22,6 @@ from pcapi import settings
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.constants import SuspensionReason
-from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -233,6 +232,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     subscriptionState = sa.Column(sa.Enum(SubscriptionState, create_constraint=False), nullable=True)
 
     def _add_role(self, role: UserRole) -> None:
+        from pcapi.core.users.exceptions import InvalidUserRoleException
+
         if self.roles is None:
             self.roles = []
         if self.roles and role in self.roles:
@@ -247,12 +248,16 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         self.roles = updated_roles
 
     def add_admin_role(self) -> None:
+        from pcapi.core.users.exceptions import InvalidUserRoleException
+
         if self.is_beneficiary:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
 
         self._add_role(UserRole.ADMIN)
 
     def add_beneficiary_role(self) -> None:
+        from pcapi.core.users.exceptions import InvalidUserRoleException
+
         if self.has_admin_role:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.BENEFICIARY)
@@ -261,6 +266,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         self._add_role(UserRole.PRO)
 
     def add_underage_beneficiary_role(self) -> None:
+        from pcapi.core.users.exceptions import InvalidUserRoleException
+
         if self.has_admin_role:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.UNDERAGE_BENEFICIARY)
