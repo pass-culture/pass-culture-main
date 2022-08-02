@@ -24,6 +24,7 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import external as users_external
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
@@ -111,7 +112,9 @@ def generate_and_save_token(
 
 
 def delete_expired_tokens() -> None:
-    models.Token.query.filter(models.Token.expirationDate < datetime.datetime.utcnow()).delete()
+    models.Token.query.filter(
+        models.Token.expirationDate < datetime.datetime.utcnow() - users_constants.TOKEN_DELETION_AFTER_EXPIRATION_DELAY
+    ).delete()
 
 
 def delete_all_users_tokens(user: models.User) -> None:

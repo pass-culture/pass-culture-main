@@ -278,6 +278,8 @@ class TokenFactory(BaseFactory):
     class Meta:
         model = models.Token
 
+    type = users_models.TokenType.EMAIL_VALIDATION
+    user = factory.SubFactory(UserFactory)
     value = factory.Sequence("XYZ{0}".format)
 
 

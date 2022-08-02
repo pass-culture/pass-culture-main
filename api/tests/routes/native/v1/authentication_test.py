@@ -374,7 +374,7 @@ def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, clien
 def test_validate_email_with_expired_token(client):
     user = users_factories.UserFactory(isEmailValidated=False)
     token = users_factories.TokenFactory(
-        userId=user.id,
+        user=user,
         type=TokenType.EMAIL_VALIDATION,
         expirationDate=datetime.utcnow() - timedelta(days=1),
     )
@@ -401,7 +401,7 @@ def test_validate_email_when_eligible(client):
         isEmailValidated=False,
         dateOfBirth=datetime(2000, 6, 1),
     )
-    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
 
     response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 
@@ -431,7 +431,7 @@ def test_validate_email_when_eligible(client):
 
 def test_validate_email_second_time_is_forbidden(client):
     user = users_factories.UserFactory(isEmailValidated=False)
-    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
 
     response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 
@@ -446,7 +446,7 @@ def test_validate_email_second_time_is_forbidden(client):
 @freeze_time("2018-06-01")
 def test_validate_email_when_not_eligible(client):
     user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
-    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
 
     assert not user.isEmailValidated
 
@@ -478,7 +478,7 @@ def test_validate_email_dms_orphan(execute_query, client):
     email = "dms_orphan@example.com"
 
     user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1), email=email)
-    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
 
     assert not user.isEmailValidated
 
