@@ -8,6 +8,7 @@ from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_email_to_pro
 from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_user
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_password_and_external_user
 from pcapi.core.users.api import update_user_password
@@ -72,9 +73,9 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
 
     check_password_strength("newPassword", new_password)
 
-    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
-
-    if not user:
+    try:
+        user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
+    except users_exceptions.InvalidToken:
         errors = ApiErrors()
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
         raise errors

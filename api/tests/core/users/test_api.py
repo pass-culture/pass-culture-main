@@ -121,9 +121,8 @@ class ValidateJwtTokenTest:
 
         users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
 
-        associated_user = get_user_with_valid_token("wrong-token-value", [token_type])
-
-        assert associated_user is None
+        with pytest.raises(users_exceptions.InvalidToken):
+            get_user_with_valid_token("wrong-token-value", [token_type])
 
     def test_get_user_with_valid_token_wrong_type(self):
         user = users_factories.UserFactory()
@@ -133,9 +132,8 @@ class ValidateJwtTokenTest:
 
         assert users_models.Token.query.filter_by(value=self.token_value).first() is not None
 
-        associated_user = get_user_with_valid_token(self.token_value, ["other_type"])
-
-        assert associated_user is None
+        with pytest.raises(users_exceptions.InvalidToken):
+            get_user_with_valid_token(self.token_value, ["other_type"])
 
     def test_get_user_with_valid_token_with_expired_date(self):
         user = users_factories.UserFactory()
@@ -146,9 +144,8 @@ class ValidateJwtTokenTest:
 
         assert users_models.Token.query.filter_by(value=self.token_value).first() is not None
 
-        associated_user = get_user_with_valid_token(self.token_value, [token_type])
-
-        assert associated_user is None
+        with pytest.raises(users_exceptions.InvalidToken):
+            get_user_with_valid_token(self.token_value, [token_type])
 
 
 class DeleteExpiredTokensTest:
