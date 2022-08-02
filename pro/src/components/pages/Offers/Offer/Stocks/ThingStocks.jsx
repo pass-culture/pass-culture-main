@@ -5,6 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
@@ -134,10 +135,10 @@ const ThingStocks = ({
     return !stockHasErrors
   }
 
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const onCancelClick = () => {
     if (isOfferDraft && !useSummaryPage) return
-    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.STOCKS,
       to: OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -182,7 +183,7 @@ const ThingStocks = ({
                   'Votre offre a bien été créée et vos stocks sauvegardés.'
                 )
             }
-            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OfferBreadcrumbStep.STOCKS,
               to: OfferBreadcrumbStep.SUMMARY,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,

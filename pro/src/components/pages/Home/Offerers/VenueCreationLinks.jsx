@@ -3,6 +3,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -18,7 +19,7 @@ const VenueCreationLinks = ({
   offererId,
 }) => {
   const isVenueCreationAvailable = useSelector(isAPISireneAvailable)
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const location = useLocation()
 
   const venueCreationUrl = isVenueCreationAvailable
@@ -31,8 +32,8 @@ const VenueCreationLinks = ({
         <Link
           className={insideCard ? 'primary-link' : 'secondary-link'}
           onClick={() => {
-            logEvent(Events.CLICKED_CREATE_VENUE, { from: location.pathname })
-            logEvent(Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER, {
+            logEvent?.(Events.CLICKED_CREATE_VENUE, { from: location.pathname })
+            logEvent?.(Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER, {
               from: location.pathname,
             })
           }}
@@ -44,7 +45,7 @@ const VenueCreationLinks = ({
         <Link
           className="secondary-link"
           onClick={() =>
-            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OFFER_FORM_NAVIGATION_IN.HOME,
               to: OFFER_FORM_HOMEPAGE,
               used: OFFER_FORM_NAVIGATION_MEDIUM.HOME_BUTTON,

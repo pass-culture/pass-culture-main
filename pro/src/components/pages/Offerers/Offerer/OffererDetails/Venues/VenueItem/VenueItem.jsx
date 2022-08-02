@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import {
   Events,
@@ -21,7 +21,7 @@ const buildLinkIdFromVenue = ({ publicName, name }) => {
 const VenueItem = ({ venue }) => {
   const { address, city, id, managingOffererId, name, postalCode, publicName } =
     venue || {}
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
 
   return (
@@ -40,7 +40,7 @@ const VenueItem = ({ venue }) => {
             <Link
               className="has-text-primary"
               onClick={() =>
-                logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                   from: OFFER_FORM_NAVIGATION_IN.OFFERER,
                   to: OFFER_FORM_HOMEPAGE,
                   used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERER_LINK,

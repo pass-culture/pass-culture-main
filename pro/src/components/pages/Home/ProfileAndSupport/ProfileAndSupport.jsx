@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Icon from 'components/layout/Icon'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -52,12 +52,12 @@ export const formatPhoneNumber = phoneNumber => {
 
 const ProfileAndSupport = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const { currentUser: user } = useCurrentUser()
 
   const showProfileInfoModal = useCallback(() => {
-    logEvent(Events.CLICKED_EDIT_PROFILE)
+    logEvent?.(Events.CLICKED_EDIT_PROFILE)
     setIsEditingProfile(true)
   }, [logEvent])
 

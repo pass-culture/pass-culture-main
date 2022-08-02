@@ -7,10 +7,10 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select from 'components/layout/inputs/Select'
@@ -98,7 +98,7 @@ const OfferForm = ({
   const formRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
@@ -555,7 +555,7 @@ const OfferForm = ({
 
         const nextStepRedirect = await onSubmit(submittedValues)
         if (nextStepRedirect !== null) {
-          logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OfferBreadcrumbStep.DETAILS,
             to: OfferBreadcrumbStep.STOCKS,
             used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -582,7 +582,7 @@ const OfferForm = ({
 
   const onCancelClick = () => {
     if (isEdition)
-      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OfferBreadcrumbStep.DETAILS,
         to: OfferBreadcrumbStep.SUMMARY,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,

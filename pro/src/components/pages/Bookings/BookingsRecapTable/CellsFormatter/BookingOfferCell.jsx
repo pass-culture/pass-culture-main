@@ -1,9 +1,9 @@
 import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useSelector } from 'react-redux'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 import {
   Events,
@@ -15,7 +15,7 @@ import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 
 const BookingOfferCell = ({ offer }) => {
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const editionUrl = useOfferEditionURL(
     offer.offer_is_educational,
     offer.offer_identifier,
@@ -37,7 +37,7 @@ const BookingOfferCell = ({ offer }) => {
       rel="noopener noreferrer"
       target="_blank"
       onClick={() =>
-        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_FORM_NAVIGATION_IN.BOOKINGS,
           to: OfferBreadcrumbStep.SUMMARY,
           used: OFFER_FORM_NAVIGATION_MEDIUM.BOOKINGS_TITLE,

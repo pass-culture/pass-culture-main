@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { signout } from 'repository/pcapi/pcapi'
 import { resetIsInitialized } from 'store/user/actions'
@@ -19,10 +20,10 @@ import { ReactComponent as SignoutSvg } from './assets/signout.svg'
 const Header = ({ isUserAdmin }) => {
   const dispatch = useDispatch()
   const history = useHistory()
-  const logEvent = useSelector(state => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const location = useLocation()
   const onSignoutClick = useCallback(() => {
-    logEvent(Events.CLICKED_LOGOUT, { from: location.pathname })
+    logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
     signout().then(() => {
       dispatch(resetIsInitialized())
       history.push('/connexion')
@@ -37,7 +38,7 @@ const Header = ({ isUserAdmin }) => {
             className="nav-item"
             isUserAdmin={isUserAdmin}
             onClick={() => {
-              logEvent(Events.CLICKED_PRO, { from: location.pathname })
+              logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
             }}
           />
         </div>
@@ -46,7 +47,7 @@ const Header = ({ isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              logEvent(Events.CLICKED_HOME, { from: location.pathname })
+              logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
             }}
             role="menuitem"
             to={isUserAdmin ? '/structures' : '/accueil'}
@@ -58,7 +59,7 @@ const Header = ({ isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              logEvent(Events.CLICKED_TICKET, { from: location.pathname })
+              logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
             }}
             role="menuitem"
             to="/guichet"
@@ -70,7 +71,7 @@ const Header = ({ isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              logEvent(Events.CLICKED_OFFER, { from: location.pathname })
+              logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
             }}
             role="menuitem"
             to="/offres"
@@ -82,7 +83,7 @@ const Header = ({ isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              logEvent(Events.CLICKED_BOOKING, { from: location.pathname })
+              logEvent?.(Events.CLICKED_BOOKING, { from: location.pathname })
             }}
             role="menuitem"
             to="/reservations"
@@ -94,7 +95,7 @@ const Header = ({ isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              logEvent(Events.CLICKED_REIMBURSEMENT, {
+              logEvent?.(Events.CLICKED_REIMBURSEMENT, {
                 from: location.pathname,
               })
             }}

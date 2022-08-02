@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
@@ -11,7 +12,6 @@ import { Audience } from 'core/shared'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { searchFiltersSelector } from 'store/offers/selectors'
-import { RootState } from 'store/reducers'
 
 import { NBSP } from '../../Offer/Thumbnail/_constants'
 
@@ -19,7 +19,6 @@ import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateA
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
-
 interface IActionBarProps {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
@@ -75,7 +74,7 @@ const ActionsBar = ({
   nbSelectedOffers,
   audience,
 }: IActionBarProps): JSX.Element => {
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
   const location = useLocation()
@@ -144,14 +143,14 @@ const ActionsBar = ({
           cancelText={'Annuler'}
           confirmText={'Désactiver'}
           onCancel={() => {
-            logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
+            logEvent?.(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
               from: location.pathname,
               has_selected_all_offers: areAllOffersSelected,
             })
             setIsConfirmDialogOpen(false)
           }}
           onConfirm={() => {
-            logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
+            logEvent?.(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
               from: location.pathname,
               has_selected_all_offers: areAllOffersSelected,
             })

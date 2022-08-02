@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { HTTP_STATUS } from 'apiClient/helpers'
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -57,9 +58,12 @@ describe('src | components | pages | Signup | SignupForm', () => {
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-      app: { logEvent: mockLogEvent },
     }
     pcapi.signup.mockResolvedValue({})
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should redirect to accueil page if the user is logged in', async () => {
@@ -360,7 +364,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
         ).resolves.toBeInTheDocument()
         expect(mockLogEvent).toHaveBeenNthCalledWith(
           1,
-          Events.SIGNUP_FORM_SUCCESS
+          Events.SIGNUP_FORM_SUCCESS,
+          {}
         )
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })

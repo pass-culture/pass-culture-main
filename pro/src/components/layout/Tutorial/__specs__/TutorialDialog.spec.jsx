@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -41,6 +42,10 @@ describe('tutorial modal', () => {
     store = configureTestStore({})
   })
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
     store = configureTestStore({
       user: {
         currentUser: {
@@ -48,7 +53,6 @@ describe('tutorial modal', () => {
           hasSeenProTutorials: false,
         },
       },
-      app: { logEvent: mockLogEvent },
     })
     renderTutorialDialog(store, {})
     const closeButton = screen.getByTitle('Fermer la modale')

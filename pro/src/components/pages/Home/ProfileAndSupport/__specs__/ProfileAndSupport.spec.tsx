@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
+import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { configureTestStore } from 'store/testUtils'
 
@@ -22,9 +23,6 @@ const renderProfileAndSupport = () => {
       initialized: true,
       currentUser,
     },
-    app: {
-      logEvent: mockLogEvent,
-    },
   })
   return render(
     <Provider store={store}>
@@ -35,10 +33,14 @@ const renderProfileAndSupport = () => {
   )
 }
 
-describe('src | components | pages | Home | ProfileAndSupport', () => {
+describe('ProfileAndSupport', () => {
   describe('when the user click on Modifier', () => {
     it('should open a modal with text fields', async () => {
       // When
+      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+        setLogEvent: null,
+      }))
       renderProfileAndSupport()
       const editButton = screen.getByRole('button', { name: 'Modifier' })
       userEvent.click(editButton)

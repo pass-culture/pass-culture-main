@@ -1,7 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
@@ -14,7 +14,6 @@ import type { Step } from 'new_components/Breadcrumb'
 import Breadcrumb, {
   BreadcrumbStyle,
 } from 'new_components/Breadcrumb/Breadcrumb'
-import { RootState } from 'store/reducers'
 
 export enum OfferBreadcrumbStep {
   DETAILS = 'details',
@@ -42,7 +41,7 @@ const OfferBreadcrumb = ({
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId, false)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
@@ -136,7 +135,7 @@ const OfferBreadcrumb = ({
   if (!isOfferEducational)
     steps.map((step, index) => {
       steps[index].onClick = () => {
-        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: activeStep,
           to: step.id,
           used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
