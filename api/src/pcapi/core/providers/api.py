@@ -108,11 +108,14 @@ def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> Non
         for price_rule in venue_provider.priceRules:
             repository.delete(price_rule)
 
+    # Save data now: it won't be available after we have deleted the object.
+    venue_id = venue_provider.venueId
+    provider_name = venue_provider.provider.name
     repository.delete(venue_provider)
     logger.info(
         "Deleted VenueProvider for venue %d",
-        venue_provider.venueId,
-        extra={"venue_id": venue_provider.venueId, "provider_name": venue_provider.provider.name},
+        venue_id,
+        extra={"venue_id": venue_id, "provider_name": provider_name},
     )
 
 
