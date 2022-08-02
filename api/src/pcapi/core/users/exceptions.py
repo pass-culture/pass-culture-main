@@ -1,3 +1,6 @@
+from . import models
+
+
 class CredentialsException(Exception):
     pass
 
@@ -80,3 +83,11 @@ class NotSuspended(Exception):
 
 class InvalidToken(Exception):
     pass
+
+
+class ExpiredToken(InvalidToken):
+    user: models.User
+
+    def __init__(self, user: models.User):
+        self.user = user
+        super().__init__()
