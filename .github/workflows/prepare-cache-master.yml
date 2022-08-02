@@ -9,4 +9,5 @@ jobs:
   prepare-cache-master:
     uses: ./.github/workflows/update-api-client-template.yml
     with:
-      trigger-only-on-change: false
+      trigger-only-on-api-change: false
+      trigger-only-on-dependency-change: true
