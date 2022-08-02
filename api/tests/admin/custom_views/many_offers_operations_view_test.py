@@ -201,20 +201,25 @@ class ManyOffersOperationsViewTest:
         # Then
         assert result == expected_result
 
+    @pytest.mark.parametrize("already_set_incompatible", [False, True])
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_product_gcu_compatibility(
-        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app, db_session
+        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app, db_session, already_set_incompatible
     ):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
         offerer = offerers_factories.OffererFactory()
         product_1 = offers_factories.ThingProductFactory(
-            description="premier produit inapproprié", extraData={"isbn": "isbn-de-test"}
+            description="premier produit inapproprié",
+            extraData={"isbn": "isbn-de-test"},
+            isGcuCompatible=not already_set_incompatible,
         )
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.OfferFactory(product=product_1, venue=venue, isActive=not already_set_incompatible)
         offers_factories.OfferFactory(product=product_1, venue=venue)
-        offers_factories.OfferFactory(product=product_1, venue=venue)
+
+        initially_active_ids = [offer.id for offer in Offer.query.all() if offer.isActive]
 
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
@@ -232,7 +237,7 @@ class ManyOffersOperationsViewTest:
         assert not first_product.isGcuCompatible
         assert not first_offer.isActive
         assert not second_offer.isActive
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id for offer in offers])
+        mocked_async_index_offer_ids.assert_called_once_with(initially_active_ids)
 
     def test_get_products_compatible_status(self):
         # Given
