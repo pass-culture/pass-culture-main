@@ -234,7 +234,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         show_voucher_type: cds_serializers.VoucherTypeCDS,
     ) -> list[cds_serializers.TicketSaleCDS]:
         seats_to_book = []
-        if not show.is_disabled_seatmap or not show.is_empty_seatmap:
+        if not show.is_disabled_seatmap and not show.is_empty_seatmap:
             seats_to_book = (
                 self.get_available_seat(show.id, screen)
                 if booking_quantity == 1
@@ -251,15 +251,9 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
                 cinema_id=self.cinema_id,
                 operation_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
                 is_cancelled=False,
-                seat_col=seats_to_book[i].seatCol
-                if not show.is_disabled_seatmap or not show.is_empty_seatmap
-                else None,
-                seat_row=seats_to_book[i].seatRow
-                if not show.is_disabled_seatmap or not show.is_empty_seatmap
-                else None,
-                seat_number=seats_to_book[i].seatNumber
-                if not show.is_disabled_seatmap or not show.is_empty_seatmap
-                else None,
+                seat_col=seats_to_book[i].seatCol if bool(seats_to_book) else None,
+                seat_row=seats_to_book[i].seatRow if bool(seats_to_book) else None,
+                seat_number=seats_to_book[i].seatNumber if bool(seats_to_book) else None,
                 tariff=cds_serializers.IdObjectCDS(id=show_voucher_type.tariff.id),
                 show=cds_serializers.IdObjectCDS(id=show.id),
                 disabled_person=False,
