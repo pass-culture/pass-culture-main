@@ -114,6 +114,7 @@ class Returns201Test:
 
 
 class Returns400Test:
+    @testing.override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
     def test_business_unit_not_exist(self, client):
         # given
         user = ProFactory()
