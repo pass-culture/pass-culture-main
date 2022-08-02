@@ -11,8 +11,6 @@ import { IOfferIndividualFormValues } from '../types'
 import { TicketWithdrawal } from './TicketWithdrawal'
 import { Venue } from './Venue'
 
-import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '.'
-
 export interface IUsefulInformationsProps {
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
@@ -25,7 +23,7 @@ const UsefulInformations = ({
   isUserAdmin,
 }: IUsefulInformationsProps): JSX.Element => {
   const {
-    values: { subcategoryId },
+    values: { subCategoryFields },
   } = useFormikContext<IOfferIndividualFormValues>()
 
   return (
@@ -35,9 +33,7 @@ const UsefulInformations = ({
     >
       <Venue offererNames={offererNames} venueList={venueList} />
 
-      {WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(subcategoryId) && (
-        <TicketWithdrawal />
-      )}
+      {subCategoryFields.includes('withdrawalType') && <TicketWithdrawal />}
 
       <FormLayout.Row>
         <TextArea

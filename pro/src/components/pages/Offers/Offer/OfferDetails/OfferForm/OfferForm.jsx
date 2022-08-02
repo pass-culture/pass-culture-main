@@ -21,7 +21,11 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WITHDRAWAL_TYPE_OPTIONS, EXTRA_DATA_FIELDS } from 'core/Offers'
+import {
+  OFFER_WITHDRAWAL_TYPE_OPTIONS,
+  EXTRA_DATA_FIELDS,
+  WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
+} from 'core/Offers'
 import { OfferRefundWarning } from 'new_components/Banner'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SubmitButton } from 'ui-kit'
@@ -40,7 +44,6 @@ import {
   TEXT_INPUT_DEFAULT_VALUE,
   WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS,
   WITHDRAWAL_ON_SITE_DELAY_OPTIONS,
-  WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from '../_constants'
 
 import AccessibilityCheckboxList, {
