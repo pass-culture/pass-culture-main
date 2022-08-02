@@ -1,5 +1,5 @@
 <div style="margin-top: 40px;">
-    {% if product_compatibility["status"] != 'incompatible_products' %}
+    {% if product_compatibility["status"] != 'incompatible_products' or active_offers_number > 0 %}
     <form
         action="{{ url_for('many_offers_operations.product_gcu_compatibility') }}?isbn={{ isbn }}"
         method="POST"
