@@ -11,11 +11,11 @@ from pcapi.core.offers.api import deactivate_permanently_unavailable_products
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.repository import local_provider_event_queries
 from pcapi.utils.string_processing import trim_with_elipsis
 
 
@@ -190,7 +190,7 @@ class TiteLiveThings(LocalProvider):
         self.data_lines = get_lines_from_thing_file(str(self.products_file))
 
     def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:  # type: ignore [valid-type]
-        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
+        latest_sync_part_end_event = providers_repository.find_latest_sync_part_end_event(self.provider)
         if latest_sync_part_end_event is None:
             return iter(ordered_thing_files)
         for index, filename in enumerate(ordered_thing_files):
