@@ -5,6 +5,7 @@ from pydantic import Field
 
 import pcapi.core.booking_providers.models as booking_providers_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import validator
 
 
 class IdObjectCDS(BaseModel):
@@ -31,6 +32,7 @@ class ShowCDS(BaseModel):
     is_cancelled: bool = Field(alias="canceled")
     is_deleted: bool = Field(alias="deleted")
     is_disabled_seatmap: bool = Field(alias="disableseatmap")
+    is_empty_seatmap: str | bool = Field(alias="seatmap")
     remaining_place: int = Field(alias="remainingplace")
     internet_remaining_place: int = Field(alias="internetremainingplace")
     showtime: datetime.datetime
@@ -40,6 +42,19 @@ class ShowCDS(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+    @validator("is_empty_seatmap")
+    def string_with_no_digit_to_true(cls, value: str | bool) -> bool:  # pylint: disable=no-self-argument
+        """
+        2022/08/02 a seatmap should be similar to [[1,1,1,0],[1,1,1,0]]
+        when empty, it can be "[[],[]]" or ""
+        """
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            if not any(char.isdigit() for char in value):
+                return True
+        return False
 
 
 class MediaCDS(BaseModel):
