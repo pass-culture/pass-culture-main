@@ -90,7 +90,6 @@ from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
@@ -143,7 +142,7 @@ def list_offers_for_pro_user(
 
 
 def create_offer(
-    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
+    offer_data: PostOfferBodyModel,
     user: User,
     save_as_active: bool = True,
 ) -> Offer:
@@ -178,8 +177,8 @@ def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcatego
     )
 
 
-def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel | CompletedEducationalOfferModel) -> Offer:
-    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])  # type: ignore [index]
+def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offer:
+    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
     extra_data = product.extraData
     extra_data.update(offer_data.extra_data)
     offer = Offer(  # type: ignore [call-arg]
@@ -187,19 +186,18 @@ def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel | Comple
         subcategoryId=product.subcategoryId,
         name=offer_data.name,
         description=offer_data.description if offer_data.description else product.description,
-        url=offer_data.url if offer_data.url else product.url,  # type: ignore [union-attr]
-        mediaUrls=offer_data.url if offer_data.url else product.url,  # type: ignore [union-attr, arg-type]
-        conditions=offer_data.conditions if offer_data.conditions else product.conditions,  # type: ignore [union-attr]
-        ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,  # type: ignore [union-attr]
-        ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,  # type: ignore [union-attr]
-        isNational=offer_data.is_national if offer_data.is_national else product.isNational,  # type: ignore [union-attr]
+        url=offer_data.url if offer_data.url else product.url,
+        conditions=offer_data.conditions if offer_data.conditions else product.conditions,
+        ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,
+        ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,
+        isNational=offer_data.is_national if offer_data.is_national else product.isNational,
         extraData=extra_data,
     )
     return offer
 
 
 def _initialize_offer_with_new_data(
-    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
+    offer_data: PostOfferBodyModel,
     subcategory: subcategories.Subcategory,
     venue: Venue,
 ) -> Offer:
@@ -218,7 +216,7 @@ def _initialize_offer_with_new_data(
 
 def _complete_common_offer_fields(
     offer: Offer,
-    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
+    offer_data: PostOfferBodyModel,
     venue: Venue,
 ) -> None:
     offer.venue = venue
@@ -233,13 +231,13 @@ def _complete_common_offer_fields(
 
 
 def _check_offer_data_is_valid(
-    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
+    offer_data: PostOfferBodyModel,
     offer_is_educational: bool,
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
     check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)
     if not offer_is_educational:
-        validation.check_offer_extra_data(None, offer_data.subcategory_id, offer_data.extra_data)  # type: ignore [arg-type]
+        validation.check_offer_extra_data(None, offer_data.subcategory_id, offer_data.extra_data)
 
 
 def update_offer(

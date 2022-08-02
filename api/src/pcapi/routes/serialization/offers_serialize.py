@@ -9,7 +9,6 @@ from pydantic import validator
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -120,67 +119,6 @@ class OfferAddressType(enum.Enum):
     OTHER = "other"
 
 
-class EducationalOfferExtraDataOfferVenueBodyModel(BaseModel):
-    addressType: OfferAddressType
-    otherAddress: str
-    venueId: str
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PostEducationalOfferExtraDataBodyModel(BaseModel):
-    students: list[StudentLevels]
-    offer_venue: EducationalOfferExtraDataOfferVenueBodyModel
-    contact_email: str
-    contact_phone: str
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PostEducationalOfferBodyModel(BaseModel):
-    offerer_id: str
-    venue_id: str
-    subcategory_id: str
-    name: str
-    booking_email: str | None
-    description: str | None
-    duration_minutes: int | None
-    audio_disability_compliant: bool = False
-    mental_disability_compliant: bool = False
-    motor_disability_compliant: bool = False
-    visual_disability_compliant: bool = False
-    extra_data: PostEducationalOfferExtraDataBodyModel
-    withdrawal_type: WithdrawalTypeEnum | None
-    withdrawal_delay: int | None
-
-    @validator("name", pre=True)
-    def validate_name(cls, name, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        check_offer_name_length_is_valid(name)
-        return name
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class EducationalOfferExtraDataBodyModel(PostEducationalOfferExtraDataBodyModel):
-    is_showcase: bool = False
-
-
-class EducationalOfferBodyModel(PostEducationalOfferBodyModel):
-    extra_data: EducationalOfferExtraDataBodyModel
-
-
-class CompletedEducationalOfferModel(EducationalOfferBodyModel):
-    is_duo: bool = False
-    is_educational: bool = True
-    external_ticket_office_url: str | None = None
-
-
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: str | None
     description: str | None
@@ -206,36 +144,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if name:
             check_offer_name_length_is_valid(name)
-        return name
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class EducationalOfferPartialExtraDataBodyModel(BaseModel):
-    students: list[str] | None
-    offerVenue: EducationalOfferExtraDataOfferVenueBodyModel | None
-    contactEmail: str | None
-    contactPhone: str | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PatchEducationalOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmail: str | None
-    description: str | None
-    name: str | None
-    extraData: EducationalOfferPartialExtraDataBodyModel | None
-    durationMinutes: int | None
-    subcategoryId: SubcategoryIdEnum | None
-
-    @validator("name", allow_reuse=True)
-    def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        assert name is not None and name.strip() != ""
-        check_offer_name_length_is_valid(name)
         return name
 
     class Config:
