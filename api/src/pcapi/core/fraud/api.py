@@ -727,7 +727,7 @@ def handle_dms_redirection_review(
     else:
         review.reason += " ; Redirigé vers DMS"
 
-    send_subscription_document_error_email(user.email, "unread-document")  # type: ignore [arg-type]
+    send_subscription_document_error_email(user.email, "unread-document")
     subscription_messages.on_redirect_to_dms_from_idcheck(user)
 
 

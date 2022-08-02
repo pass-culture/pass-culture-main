@@ -105,25 +105,25 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
             subscription_messages.on_idcheck_unread_document_with_retry(user)
         else:
             subscription_messages.on_idcheck_unread_document(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "unread-document")  # type: ignore [arg-type]
+        subscription_document_error.send_subscription_document_error_email(user.email, "unread-document")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
         subscription_messages.on_idcheck_document_data_not_matching(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "information-error")  # type: ignore [arg-type]
+        subscription_document_error.send_subscription_document_error_email(user.email, "information-error")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
         if can_retry:
             subscription_messages.on_idcheck_document_not_supported_with_retry(user)
         else:
             subscription_messages.on_idcheck_document_not_supported(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "unread-mrz-document")  # type: ignore [arg-type]
+        subscription_document_error.send_subscription_document_error_email(user.email, "unread-mrz-document")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
         if can_retry:
             subscription_messages.on_idcheck_invalid_document_date_with_retry(user)
         else:
             subscription_messages.on_idcheck_invalid_document_date(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "invalid-document")  # type: ignore [arg-type]
+        subscription_document_error.send_subscription_document_error_email(user.email, "invalid-document")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
         subscription_messages.on_idcheck_rejected(user)

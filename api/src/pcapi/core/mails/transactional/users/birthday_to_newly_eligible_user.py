@@ -10,4 +10,4 @@ def get_birthday_age_18_to_newly_eligible_user_email_data() -> SendinblueTransac
 
 def send_birthday_age_18_email_to_newly_eligible_user(user: users_models.User) -> bool:
     data = get_birthday_age_18_to_newly_eligible_user_email_data()
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)

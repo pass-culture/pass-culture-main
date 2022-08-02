@@ -107,7 +107,7 @@ def update_public_account(user_id: int, body: serialization.PublicAccountUpdateR
         commit=True,
     )
 
-    if body.email and body.email != sanitize_email(user.email):  # type: ignore [arg-type]
+    if body.email and body.email != sanitize_email(user.email):
         try:
             request_email_update_from_admin(user, body.email)
         except users_exceptions.EmailExistsError:

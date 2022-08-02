@@ -14,5 +14,5 @@ logger = logging.getLogger(__name__)
 def suspend_fraudulent_beneficiary_users_by_ids_job(fraudulent_users: list[int], admin_user: User) -> None:
     suspended_users_info = suspend_fraudulent_beneficiary_users_by_ids(fraudulent_users, admin_user, dry_run=False)
     send_suspended_fraudulent_users_email(
-        suspended_users_info["fraudulent_users"], suspended_users_info["nb_cancelled_bookings"], admin_user.email  # type: ignore [arg-type]
+        suspended_users_info["fraudulent_users"], suspended_users_info["nb_cancelled_bookings"], admin_user.email
     )

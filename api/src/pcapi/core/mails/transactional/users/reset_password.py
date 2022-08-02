@@ -9,13 +9,13 @@ from pcapi.utils.urls import generate_firebase_dynamic_link
 def send_reset_password_email_to_user(user: user_models.User) -> bool:
     token = users_api.create_reset_password_token(user)
     data = get_reset_password_email_data(user, token, TransactionalEmail.NEW_PASSWORD_REQUEST.value)
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)
 
 
 def send_email_already_exists_email(user: user_models.User) -> bool:
     token = users_api.create_reset_password_token(user)
     data = get_reset_password_email_data(user, token, TransactionalEmail.EMAIL_ALREADY_EXISTS.value)
-    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[user.email], data=data)
 
 
 def get_reset_password_email_data(

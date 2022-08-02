@@ -72,7 +72,7 @@ def update_external_pro(email: str | None) -> None:
 
 def get_user_or_pro_attributes(user: User) -> UserAttributes | ProAttributes:
     if user.has_pro_role:
-        return get_pro_attributes(user.email)  # type: ignore [arg-type]
+        return get_pro_attributes(user.email)
 
     return get_user_attributes(user)
 

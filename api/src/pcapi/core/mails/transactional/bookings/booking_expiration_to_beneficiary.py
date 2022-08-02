@@ -45,13 +45,13 @@ def send_expired_bookings_to_beneficiary_email(beneficiary: User, bookings: list
         books_bookings_data = get_expired_bookings_to_beneficiary_data(
             beneficiary, books_bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
         )
-        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)  # type: ignore [list-item]
+        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)
 
     if other_bookings:
         other_bookings_data = get_expired_bookings_to_beneficiary_data(
             beneficiary, other_bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
         )
-        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)  # type: ignore [list-item]
+        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
     return success  # type: ignore [return-value]
 
