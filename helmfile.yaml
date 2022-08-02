@@ -11,7 +11,7 @@ releases:
     version: {{ .Values.chartVersion }}
     values:
       - {{ requiredEnv "PCAPI_VALUES_FILE" }}
-      - api/helm/pcapi/values.{{ .Environment.Name }}.yaml
+      - {{ requiredEnv "PCAPI_SECRETS_FILE" }}
 
 environments:
   testing:
