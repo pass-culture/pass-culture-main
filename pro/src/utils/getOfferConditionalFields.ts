@@ -1,6 +1,5 @@
+import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
-
-import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '../components/pages/Offers/Offer/OfferDetails/_constants'
 
 interface IGetOfferConditionalFieldsProps {
   offerSubCategory?: IOfferSubCategory | null

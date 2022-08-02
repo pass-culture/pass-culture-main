@@ -93,14 +93,6 @@ export const OFFER_OPTIONS = {
 
 export const CAN_CREATE_FROM_ISBN_SUBCATEGORIES = ['LIVRE_PAPIER']
 
-export const WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE = [
-  'FESTIVAL_MUSIQUE',
-  'CONCERT',
-  'EVENEMENT_MUSIQUE',
-  'FESTIVAL_SPECTACLE',
-  'SPECTACLE_REPRESENTATION',
-]
-
 export const WITHDRAWAL_ON_SITE_DELAY_OPTIONS = [
   { displayName: 'À tout moment', id: (0).toString() },
   { displayName: '15 minutes', id: (60 * 15).toString() },

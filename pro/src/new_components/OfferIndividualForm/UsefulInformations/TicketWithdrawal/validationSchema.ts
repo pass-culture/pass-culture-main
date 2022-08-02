@@ -3,8 +3,9 @@ import * as yup from 'yup'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 
 const validationSchema = {
-  withdrawalType: yup.string().when('isEvent', {
-    is: (isEvent: string) => isEvent,
+  withdrawalType: yup.string().when('subCategoryFields', {
+    is: (subCategoryFields: string[]) =>
+      subCategoryFields.includes('withdrawalType'),
     then: yup
       .string()
       .oneOf(
@@ -14,10 +15,12 @@ const validationSchema = {
       .required('Vous devez cocher l’une des options ci-dessus'),
     otherwise: yup.string(),
   }),
-  withdrawalDelay: yup.string().when('withdrawalType', {
-    is: (withdrawalType: string) =>
-      withdrawalType === WithdrawalTypeEnum.BY_EMAIL ||
-      withdrawalType === WithdrawalTypeEnum.ON_SITE,
+  withdrawalDelay: yup.string().when(['subCategoryFields', 'withdrawalType'], {
+    is: (subCategoryFields: string[], withdrawalType: WithdrawalTypeEnum) =>
+      subCategoryFields.includes('withdrawalDelay') &&
+      [WithdrawalTypeEnum.BY_EMAIL, WithdrawalTypeEnum.ON_SITE].includes(
+        withdrawalType
+      ),
     then: yup
       .string()
       .required('Vous devez choisir l’une des options ci-dessus'),

@@ -7,25 +7,19 @@ import * as yup from 'yup'
 
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 
-import { UsefulInformations, validationSchema } from '..'
-import { IUsefulInformationsProps } from '../UsefulInformations'
-
-interface IInitialValues {
-  offererId: string
-  venueId: string
-  subcategoryId: string
-  withdrawalDetails: string
-  withdrawalType: string
-  withdrawalDelay: string
-}
+import UsefulInformations, {
+  IUsefulInformationsProps,
+} from '../UsefulInformations'
+import validationSchema from '../validationSchema'
 
 const renderUsefulInformations = ({
   initialValues,
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: IInitialValues
+  initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
   props: IUsefulInformationsProps
 }) => {
@@ -41,7 +35,7 @@ const renderUsefulInformations = ({
 }
 
 describe('OfferIndividual section: UsefulInformations', () => {
-  let initialValues: IInitialValues
+  let initialValues: Partial<IOfferIndividualFormValues>
   let props: IUsefulInformationsProps
   const onSubmit = jest.fn()
 
@@ -70,12 +64,13 @@ describe('OfferIndividual section: UsefulInformations', () => {
       },
     ]
     initialValues = {
+      subCategoryFields: [],
       offererId: '',
       venueId: '',
       subcategoryId: '',
       withdrawalDetails: '',
-      withdrawalType: '',
-      withdrawalDelay: '',
+      withdrawalType: undefined,
+      withdrawalDelay: undefined,
     }
     props = {
       offererNames,
@@ -111,9 +106,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
   it('should contain withdrawal ticket informations when subcategory is from specific subCategory', async () => {
     initialValues.subcategoryId = 'CONCERT'
-    initialValues = {
-      ...initialValues,
-    }
+    initialValues.subCategoryFields = ['withdrawalType']
     renderUsefulInformations({
       initialValues,
       onSubmit,
@@ -129,9 +122,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
   it('should not contain withdrawal ticket informations when subcategory is not from specific subCategory', async () => {
     initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-    initialValues = {
-      ...initialValues,
-    }
     renderUsefulInformations({
       initialValues,
       onSubmit,

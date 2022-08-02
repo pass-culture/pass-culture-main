@@ -25,4 +25,5 @@ export interface IOfferIndividualFormValues {
   speaker?: string | null
   stageDirector?: string | null
   visa?: string | null
+  durationMinutes?: string | null
 }
