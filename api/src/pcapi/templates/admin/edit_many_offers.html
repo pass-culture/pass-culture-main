@@ -15,8 +15,10 @@
     <p><b>Titre du produit :</b> {{ name }}</p>
     <p><b>Type de produit :</b> {{ "Séances de cinéma" if type == "cinema" else "Livres" }}</p>
     <p><b>Nombre d'offres associées :</b></p>
-    <p><b>Actives : {{ active_offers_number }}</b></p>
-    <p><b>Inactives : {{ inactive_offers_number }}</b></p>
+    <p><b>Approuvées actives : {{ active_offers_number }}</b></p>
+    <p><b>Approuvées inactives : {{ inactive_offers_number }}</b></p>
+    <p><b>En attente : {{ pending_offers_number }}</b></p>
+    <p><b>Rejetées : {{ rejected_offers_number }}</b></p>
     {% if type == "book" %}
       <p><b>compatible avec les CGU :</b> {{ product_compatibility["text"] }}</p>
       <p><b>ISBN :</b> {{ isbn }}</p>

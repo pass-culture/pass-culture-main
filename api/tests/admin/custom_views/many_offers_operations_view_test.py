@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -11,6 +13,8 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
 
 from tests.conftest import TestClient
 
@@ -201,11 +205,19 @@ class ManyOffersOperationsViewTest:
         # Then
         assert result == expected_result
 
-    @pytest.mark.parametrize("already_set_incompatible", [False, True])
+    @pytest.mark.parametrize(
+        "validation_status",
+        [
+            OfferValidationStatus.DRAFT,
+            OfferValidationStatus.PENDING,
+            OfferValidationStatus.REJECTED,
+            OfferValidationStatus.APPROVED,
+        ],
+    )
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_product_gcu_compatibility(
-        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app, db_session, already_set_incompatible
+        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app, db_session, validation_status
     ):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -213,13 +225,16 @@ class ManyOffersOperationsViewTest:
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
             extraData={"isbn": "isbn-de-test"},
-            isGcuCompatible=not already_set_incompatible,
+            isGcuCompatible=not validation_status == OfferValidationStatus.REJECTED,
         )
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.OfferFactory(product=product_1, venue=venue, isActive=not already_set_incompatible)
+        offers_factories.OfferFactory(product=product_1, venue=venue, validation=validation_status)
         offers_factories.OfferFactory(product=product_1, venue=venue)
 
-        initially_active_ids = [offer.id for offer in Offer.query.all() if offer.isActive]
+        initially_rejected = {
+            offer.id: {"type": offer.lastValidationType, "date": offer.lastValidationDate}
+            for offer in Offer.query.filter(Offer.validation == OfferValidationStatus.REJECTED)
+        }
 
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
@@ -229,15 +244,21 @@ class ManyOffersOperationsViewTest:
         assert response.status_code == 302
         assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/"
         products = offers_models.Product.query.all()
-        offers = Offer.query.all()
+        offers = Offer.query.order_by("id").all()
         first_product = products[0]
-        first_offer = offers[0]
-        second_offer = offers[1]
 
         assert not first_product.isGcuCompatible
-        assert not first_offer.isActive
-        assert not second_offer.isActive
-        mocked_async_index_offer_ids.assert_called_once_with(initially_active_ids)
+        for offer in offers:
+            assert offer.validation == offers_models.OfferValidationStatus.REJECTED
+            if offer.id in initially_rejected:
+                assert offer.lastValidationType == initially_rejected[offer.id]["type"]
+                assert offer.lastValidationDate == initially_rejected[offer.id]["date"]
+            else:
+                assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
+                assert datetime.utcnow() - offer.lastValidationDate < timedelta(seconds=5)
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id for offer in offers if offer.id not in initially_rejected]
+        )
 
     def test_get_products_compatible_status(self):
         # Given
