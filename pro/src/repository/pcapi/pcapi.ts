@@ -1,6 +1,7 @@
 import { ListOffersQueryModel } from 'apiClient/v1'
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { ReimbursementPointsResponseModel } from 'core/Finances'
 import { EducationalDomain } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { client } from 'repository/pcapi/pcapiClient'
@@ -535,11 +536,23 @@ export const editBusinessUnit = (businessUnitId, siret) => {
 }
 
 //
+// Reimbursement Point
+//
+export const getReimbursementPoints = (
+  offererId = null
+): Promise<ReimbursementPointsResponseModel[]> => {
+  const queryParams = offererId ? `?offererId=${offererId}` : ''
+
+  return client.get(`/finance/reimbursement-points${queryParams}`)
+}
+
+//
 // Invoices
 //
 
 const buildInvoicesQuery = ({
   businessUnitId = DEFAULT_INVOICES_FILTERS.businessUnitId,
+  reimbursementPointId = DEFAULT_INVOICES_FILTERS.businessUnitId,
   periodBeginningDate = DEFAULT_INVOICES_FILTERS.periodBeginningDate,
   periodEndingDate = DEFAULT_INVOICES_FILTERS.periodEndingDate,
 }) => {
@@ -547,6 +560,11 @@ const buildInvoicesQuery = ({
   if (businessUnitId !== DEFAULT_INVOICES_FILTERS.businessUnitId) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'businessUnitId' does not exist on type '... Remove this comment to see the full error message
     params.businessUnitId = businessUnitId
+  }
+
+  if (reimbursementPointId !== DEFAULT_INVOICES_FILTERS.businessUnitId) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'reimbursementPointId' does not exist on type '... Remove this comment to see the full error message
+    params.reimbursementPointId = reimbursementPointId
   }
 
   if (periodBeginningDate !== DEFAULT_INVOICES_FILTERS.periodBeginningDate) {
