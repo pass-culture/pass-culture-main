@@ -82,6 +82,7 @@ const CollectiveDataForm = ({
       pathname: `/structures/${offererId}/lieux/${venueId}`,
       state: {
         collectiveDataEditionSuccess: response.message,
+        scrollToElementId: 'venue-collective-data',
       },
     })
   }
@@ -228,7 +229,10 @@ const CollectiveDataForm = ({
           >
             <Link
               className="secondary-link"
-              to={`/structures/${offererId}/lieux/${venueId}`}
+              to={{
+                pathname: `/structures/${offererId}/lieux/${venueId}`,
+                state: { scrollToElementId: 'venue-collective-data' },
+              }}
             >
               Annuler et quitter
             </Link>
