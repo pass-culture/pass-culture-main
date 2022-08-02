@@ -70,7 +70,6 @@
     "react-datepicker": "^4.7.0",
     "react-dotdotdot": "^1.2.3",
     "react-final-form": "^6.5.9",
-    "react-final-form-utils": "^1.4.0",
     "react-leaflet": "^3.2.5",
     "react-loading-infinite-scroller": "^1.5.1",
     "react-redux": "^8.0.2",
