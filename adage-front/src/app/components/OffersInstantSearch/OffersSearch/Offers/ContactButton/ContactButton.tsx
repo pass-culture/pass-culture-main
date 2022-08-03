@@ -22,7 +22,7 @@ const ContactButton = ({
     trackEvent({
       category: 'button-click',
       action: 'modal-opening',
-      name: 'contact-button',
+      name: 'ContactButtonClick',
     })
     setIsModalOpen(true)
   }

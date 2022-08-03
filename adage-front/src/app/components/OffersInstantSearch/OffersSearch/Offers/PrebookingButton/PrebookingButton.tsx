@@ -33,7 +33,7 @@ const PrebookingButton = ({
     trackEvent({
       category: 'button-click',
       action: 'modal-opening',
-      name: 'prebooking-modal-button',
+      name: 'PrebookingModalButtonClick',
       value: stock.id,
     })
     setIsModalOpen(true)
@@ -47,7 +47,7 @@ const PrebookingButton = ({
     trackEvent({
       category: 'button-click',
       action: 'server-action',
-      name: 'prebooking-confirmation-button',
+      name: 'PrebookingConfirmationButtonClick',
       value: stock.id,
     })
     const { isOk, message } = await postBookingAdapater(stock.id)
