@@ -953,4 +953,90 @@ describe('offererDetailsLegacy', () => {
       expect(mockLogEvent).toHaveBeenCalledTimes(2)
     })
   })
+
+  describe('when FF new bank informations creation', () => {
+    beforeEach(() => {
+      store = configureTestStore({
+        user: {
+          currentUser: {
+            id: 'fake_id',
+            firstName: 'John',
+            lastName: 'Do',
+            email: 'john.do@dummy.xyz',
+            phoneNumber: '01 00 00 00 00',
+          },
+          initialized: true,
+        },
+        features: {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'ENABLE_NEW_BANK_INFORMATIONS_CREATION',
+            },
+          ],
+        },
+        app: { logEvent: mockLogEvent },
+      })
+    })
+
+    it('should display missing bank information when at least one venue does not have a reimbursement point', async () => {
+      firstOffererByAlphabeticalOrder = {
+        ...firstOffererByAlphabeticalOrder,
+        managedVenues: [
+          {
+            ...physicalVenue,
+            hasReimbursementPoint: false,
+          },
+          {
+            ...physicalVenueWithPublicName,
+            hasReimbursementPoint: true,
+          },
+        ],
+      }
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+
+      const { waitForElements } = renderHomePage({ store })
+      const { offerer } = await waitForElements()
+
+      expect(
+        within(offerer).getByRole('button', {
+          name: 'Masquer',
+        })
+      ).toBeInTheDocument()
+      expect(
+        within(offerer).getByText('Coordonnées bancaires')
+      ).toBeInTheDocument()
+    })
+
+    it('should not display missing bank information when all venues has reimbursement point', async () => {
+      firstOffererByAlphabeticalOrder = {
+        ...firstOffererByAlphabeticalOrder,
+        managedVenues: [
+          {
+            ...physicalVenue,
+            hasReimbursementPoint: true,
+          },
+          {
+            ...physicalVenueWithPublicName,
+            hasReimbursementPoint: true,
+          },
+        ],
+      }
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+
+      const { waitForElements } = renderHomePage({ store })
+      const { offerer } = await waitForElements()
+
+      const displayButton = within(offerer).getByRole('button', {
+        name: 'Afficher',
+      })
+      expect(displayButton).toBeInTheDocument()
+
+      // open offerer and wait that the block open.
+      await userEvent.click(displayButton)
+      expect(
+        within(offerer).queryByText('Coordonnées bancaires')
+      ).not.toBeInTheDocument()
+    })
+  })
 })
