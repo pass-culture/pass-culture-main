@@ -15,6 +15,29 @@
     color: colors.$grey-dark;
   }
 
+  &.new {
+    background: colors.$blue;
+    color: colors.$white;
+
+    .content {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .ico-new {
+      margin-right: rem.torem(16px);
+      margin-top: rem.torem(8px);
+    }
+
+    .bi-link {
+      color: colors.$white;
+    }
+
+    .close-icon {
+      fill: colors.$white;
+    }
+  }
+
   border-radius: 6px;
   margin: rem.torem(16px) 0;
   padding: rem.torem(7px) rem.torem(15px);
