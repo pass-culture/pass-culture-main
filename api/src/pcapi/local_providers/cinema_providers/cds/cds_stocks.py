@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Iterator
+from typing import cast
 
 import pytz
 from sqlalchemy import Sequence
@@ -38,7 +39,7 @@ class CDSStocks(LocalProvider):
         self.movies: Iterator[Movie] = iter(self._get_cds_movies())
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
-        self.last_offer_id = None
+        self.last_offer_id: int | None = None
 
     def __next__(self) -> list[ProvidableInfo]:
 
@@ -113,10 +114,10 @@ class CDSStocks(LocalProvider):
             cds_offer.id = get_next_offer_id_from_database()
             cds_offer.isDuo = self.isDuo
 
-        self.last_offer_id = cds_offer.id  # type: ignore [assignment]
+        self.last_offer_id = cds_offer.id
 
     def fill_stock_attributes(self, cds_stock: Stock):  # type: ignore [no-untyped-def]
-        cds_stock.offerId = self.last_offer_id
+        cds_stock.offerId = cast(int, self.last_offer_id)
 
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
@@ -229,13 +230,13 @@ class CDSStocks(LocalProvider):
         return shows_with_pass_culture_tariff
 
 
-def get_next_product_id_from_database():  # type: ignore [no-untyped-def]
-    sequence = Sequence("product_id_seq")
+def get_next_product_id_from_database() -> int:
+    sequence: Sequence = Sequence("product_id_seq")
     return db.session.execute(sequence)
 
 
-def get_next_offer_id_from_database():  # type: ignore [no-untyped-def]
-    sequence = Sequence("offer_id_seq")
+def get_next_offer_id_from_database() -> int:
+    sequence: Sequence = Sequence("offer_id_seq")
     return db.session.execute(sequence)
 
 

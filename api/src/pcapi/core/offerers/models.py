@@ -135,7 +135,7 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
-    name = Column(String(140), nullable=False)
+    name: str = Column(String(140), nullable=False)
 
     siret = Column(String(14), nullable=True, unique=True)
 
@@ -197,7 +197,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
 
     venueLabel = relationship("VenueLabel", foreign_keys=[venueLabelId])  # type: ignore [misc]
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     withdrawalDetails = Column(Text, nullable=True)
 
@@ -397,13 +397,13 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
 class VenueLabel(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_label"
 
-    label = Column(String(100), nullable=False)
+    label: str = Column(String(100), nullable=False)
 
     venue = relationship(Venue, back_populates="venueLabel", uselist=False)
 
 
 class VenueType(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    label = Column(String(100), nullable=False)
+    label: str = Column(String(100), nullable=False)
 
     venue = relationship("Venue", back_populates="venueType")  # type: ignore [misc]
 
@@ -413,7 +413,9 @@ class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     id = Column(BigInteger, primary_key=True)
 
-    venueId = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True)
+    venueId: int = Column(
+        BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+    )
 
     venue = relationship("Venue", foreign_keys=[venueId], back_populates="contact")  # type: ignore [misc]
 
@@ -480,9 +482,9 @@ class VenuePricingPointLink(Base, Model):  # type: ignore [valid-type, misc]
     """
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     venue = relationship(Venue, foreign_keys=[venueId], back_populates="pricing_point_links")  # type: ignore [misc]
-    pricingPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    pricingPointId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     pricingPoint = relationship(Venue, foreign_keys=[pricingPointId])  # type: ignore [misc]
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
@@ -510,9 +512,9 @@ class VenueReimbursementPointLink(Base, Model):  # type: ignore [valid-type, mis
     """
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     venue = relationship(Venue, foreign_keys=[venueId], back_populates="reimbursement_point_links")  # type: ignore [misc]
-    reimbursementPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPointId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])  # type: ignore [misc]
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
@@ -534,8 +536,8 @@ class VenueReimbursementPointLink(Base, Model):  # type: ignore [valid-type, mis
 
 class VenueEducationalStatus(Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_educational_status"
-    id = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
-    name = Column(String(256), nullable=False)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
+    name: str = Column(String(256), nullable=False)
     venues = relationship(Venue, back_populates="venueEducationalStatus", uselist=True)
 
 
@@ -549,9 +551,9 @@ class Offerer(
     NeedsValidationMixin,
     DeactivableMixin,
 ):
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    name = Column(String(140), nullable=False)
+    name: str = Column(String(140), nullable=False)
 
     UserOfferers: list["UserOfferer"] = sa.orm.relationship("UserOfferer", back_populates="offerer")
 
@@ -658,7 +660,7 @@ class OffererTag(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     __tablename__ = "offerer_tag"
 
-    name = Column(String(140), nullable=False, unique=True)
+    name: str = Column(String(140), nullable=False, unique=True)
 
     def __repr__(self):  # type: ignore [no-untyped-def]
         return "%s" % self.name
@@ -667,8 +669,8 @@ class OffererTag(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class OffererTagMapping(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offerer_tag_mapping"
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
-    tagId = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
+    tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
 
     __table_args__ = (
         UniqueConstraint(
