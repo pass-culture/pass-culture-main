@@ -1,13 +1,28 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import Venue from 'components/pages/Home/Venues/VenueLegacy'
+
+interface IVenueListProps {
+  physicalVenues: {
+    id: string
+    name: string
+    publicName?: string
+    businessUnitId?: string
+    hasReimbursementPoint: boolean
+  }[]
+  selectedOffererId: string
+  virtualVenue: {
+    id: string
+    businessUnitId?: string
+    hasReimbursementPoint: boolean
+  } | null
+}
 
 export const VenueList = ({
   physicalVenues,
   selectedOffererId,
   virtualVenue,
-}) => (
+}: IVenueListProps) => (
   <div className="h-venue-list">
     {virtualVenue && (
       <Venue
@@ -16,6 +31,7 @@ export const VenueList = ({
         isVirtual
         name="Offres numériques"
         offererId={selectedOffererId}
+        hasReimbursementPoint={virtualVenue.hasReimbursementPoint}
       />
     )}
 
@@ -32,20 +48,3 @@ export const VenueList = ({
     ))}
   </div>
 )
-
-VenueList.defaultProps = {
-  physicalVenues: null,
-  virtualVenue: null,
-}
-
-VenueList.propTypes = {
-  physicalVenues: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      publicName: PropTypes.string,
-    })
-  ),
-  selectedOffererId: PropTypes.string.isRequired,
-  virtualVenue: PropTypes.shape(),
-}
