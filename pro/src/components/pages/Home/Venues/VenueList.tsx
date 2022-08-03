@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Venue from 'components/pages/Home/Venues/VenueLegacy'
+import { Banner } from 'ui-kit'
 
 interface IVenueListProps {
   physicalVenues: {
@@ -24,6 +25,17 @@ export const VenueList = ({
   virtualVenue,
 }: IVenueListProps) => (
   <div className="h-venue-list">
+    <Banner
+      type="new"
+      closable
+      href={`/structures/${selectedOffererId}/lieux/${physicalVenues[0]?.id}/eac`}
+      linkTitle="Renseigner vos informations "
+      icon="ico-external-site-filled-white"
+    >
+      Nouveau ! Vous pouvez désormais renseigner les informations scolaires d'un
+      lieu via votre page Lieu du pass Culture. Ces informations seront visibles
+      par les enseignants sur ADAGE.
+    </Banner>
     {virtualVenue && (
       <Venue
         hasBusinessUnit={!!virtualVenue.businessUnitId}

@@ -12,7 +12,7 @@ export interface IBannerProps {
   linkTitle?: string
   children?: React.ReactNode | React.ReactNode[]
   targetLink?: string
-  type?: 'notification-info' | 'attention' | 'light'
+  type?: 'notification-info' | 'attention' | 'light' | 'new'
   closable?: boolean
   handleOnClick?: () => void
   className?: string
@@ -42,21 +42,28 @@ const Banner = ({
         </button>
       )}
 
-      {children && <p className={styles['bi-banner-text']}>{children}</p>}
+      <div className={styles['content']}>
+        {type === 'new' && (
+          <Icon svg="ico-star" className={styles['ico-new']} />
+        )}
+        <div>
+          {children && <p className={styles['bi-banner-text']}>{children}</p>}
 
-      {href && linkTitle && (
-        <p className={styles['bi-banner-text']}>
-          <a
-            className={cn(styles['bi-link'])}
-            href={href}
-            rel="noopener noreferrer"
-            target={targetLink}
-          >
-            {!hideLinkIcon && <Icon svg={icon} />}
-            {linkTitle}
-          </a>
-        </p>
-      )}
+          {href && linkTitle && (
+            <p className={styles['bi-banner-text']}>
+              <a
+                className={cn(styles['bi-link'])}
+                href={href}
+                rel="noopener noreferrer"
+                target={targetLink}
+              >
+                {!hideLinkIcon && <Icon svg={icon} />}
+                {linkTitle}
+              </a>
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
