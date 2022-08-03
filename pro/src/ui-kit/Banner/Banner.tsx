@@ -2,6 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
+import { ReactComponent as CloseIcon } from 'icons/icons-close.svg'
 
 import styles from './Banner.module.scss'
 
@@ -34,7 +35,10 @@ const Banner = ({
     <div className={cn(styles['bi-banner'], styles[type], className)}>
       {closable && (
         <button onClick={handleOnClick} type="button">
-          <Icon alt="Masquer le bandeau" svg="icons-close" />
+          <CloseIcon
+            title="Masquer le bandeau"
+            className={styles['close-icon']}
+          />
         </button>
       )}
 
