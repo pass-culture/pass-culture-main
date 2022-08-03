@@ -136,13 +136,15 @@ class Pricing(Base, Model):  # type: ignore [valid-type, misc]
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="pricings")  # type: ignore [misc]
-
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking = sqla_orm.relationship(  # type: ignore [misc]
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
+    # FIXME (dbaty 2022-08-03): make NOT NULLable once we have populated all rows.
+    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
+    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
 
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` and `siret`
     # columns once we have fully switched to `pricingPointId`

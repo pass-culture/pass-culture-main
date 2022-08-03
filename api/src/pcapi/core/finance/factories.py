@@ -57,6 +57,7 @@ class PricingFactory(BaseFactory):
 
     status = models.PricingStatus.VALIDATED
     booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
+    venue = factory.SelfAttribute("booking.venue")
     businessUnit = factory.SelfAttribute("booking.venue.businessUnit")
     siret = factory.LazyAttribute(
         lambda pricing: pricing.booking.venue.siret or pricing.booking.venue.businessUnit.siret
@@ -74,6 +75,7 @@ class CollectivePricingFactory(BaseFactory):
 
     status = models.PricingStatus.VALIDATED
     collectiveBooking = factory.SubFactory(UsedCollectiveBookingFactory)
+    venue = factory.SelfAttribute("collectiveBooking.venue")
     businessUnit = factory.SelfAttribute("collectiveBooking.venue.businessUnit")
     siret = factory.SelfAttribute("collectiveBooking.venue.siret")
     valueDate = factory.SelfAttribute("collectiveBooking.dateUsed")
