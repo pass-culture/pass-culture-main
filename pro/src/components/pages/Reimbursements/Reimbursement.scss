@@ -120,4 +120,16 @@
     text-align: center;
     width: 52%;
   }
+
+  .banner {
+    margin: rem.torem(32px) 0;
+
+    a {
+      margin: rem.torem(8px);
+    }
+  }
+
+  .secondary-button {
+    margin-left: rem.torem(10px);
+  }
 }

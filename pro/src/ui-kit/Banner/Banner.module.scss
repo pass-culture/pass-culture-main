@@ -19,9 +19,16 @@
   margin: rem.torem(16px) 0;
   padding: rem.torem(7px) rem.torem(15px);
 
-  > p {
+  &-text {
     margin: rem.torem(5px) 0;
     line-height: rem.torem(20px);
+    text-align: left;
+
+    &:not(:first-of-type) {
+      .bi-link {
+        margin-top: rem.torem(8px);
+      }
+    }
   }
 
   button {
@@ -32,6 +39,18 @@
 }
 
 .bi-link {
+  font-weight: 700;
+  display: flex;
+  align-items: end;
+
+  img {
+    display: block;
+    flex: 0 1 rem.torem(25px);
+    height: rem.torem(24px);
+    margin-right: rem.torem(4px);
+    width: rem.torem(24px);
+  }
+
   &.bi-external-link--mod-topright {
     position: absolute;
     right: 0;
