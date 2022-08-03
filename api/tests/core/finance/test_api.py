@@ -139,6 +139,7 @@ class PriceBookingTest:
         pricing = api.price_booking(booking, self.use_pricing_point)
         assert models.Pricing.query.count() == 1
         assert pricing.booking == booking
+        assert pricing.venue == booking.venue
         if self.use_pricing_point:
             assert pricing.pricingPointId == booking.venue.id
         else:
@@ -290,6 +291,7 @@ class PriceCollectiveBookingTest:
         pricing = api.price_booking(collective_booking, self.use_pricing_point)
         assert models.Pricing.query.count() == 1
         assert pricing.collectiveBooking == collective_booking
+        assert pricing.venue == collective_booking.venue
         if self.use_pricing_point:
             assert pricing.pricingPointId == collective_booking.venue.id
         else:

@@ -671,6 +671,7 @@ def _price_booking(
         "lines": lines,
         "bookingId": booking.id if not is_booking_collective else None,
         "collectiveBookingId": booking.id if is_booking_collective else None,
+        "venueId": booking.venueId,  # denormalized for performance in `_generate_cashflows()`
     }
 
     return models.Pricing(**pricing_data)  # type: ignore [arg-type]
@@ -1069,10 +1070,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                         )
                         .outerjoin(models.CashflowPricing)
                         .filter(
-                            sqla_func.coalesce(
-                                bookings_models.Booking.venueId,
-                                educational_models.CollectiveBooking.venueId,
-                            ).in_(venue_ids),
+                            models.Pricing.venueId.in_(venue_ids),
                             *filters,
                         )
                     )
