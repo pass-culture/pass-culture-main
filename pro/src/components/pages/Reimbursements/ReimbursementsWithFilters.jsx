@@ -116,7 +116,7 @@ const Reimbursements = ({ currentUser }) => {
             validation automatique des contremarques d’évènements. Cette page
             est automatiquement mise à jour à chaque remboursement.
           </p>
-          <Banner type="notification-info">
+          <Banner type="notification-info" className="banner">
             En savoir plus sur
             <a
               className="bi-link tertiary-link"

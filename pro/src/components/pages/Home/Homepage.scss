@@ -3,21 +3,6 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 
 .homepage {
-  .bi-banner {
-    p {
-      color: colors.$black;
-    }
-  }
-  .bi-link {
-    display: flex;
-    margin-top: rem.torem(8px);
-
-    img {
-      display: block;
-      flex: 0 1 rem.torem(25px);
-    }
-  }
-
   .pc-breadcrumb {
     margin-bottom: rem.torem(32px);
     margin-top: rem.torem(24px);
@@ -75,11 +60,6 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-
-      .tertiary-link {
-        align-self: center;
-        display: flex;
-      }
     }
 
     &.h-card-primary {

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
+import { Banner } from 'ui-kit'
 
 import styles from './InternalBanner.module.scss'
 
@@ -9,7 +9,7 @@ interface IInternalBannerProps {
   children?: string | null
   extraClassName?: string
   href: string
-  icon?: string | null
+  icon?: string
   linkTitle: string
   subtitle?: string
   type?: 'notification-info' | 'attention'
@@ -19,28 +19,23 @@ const InternalBanner = ({
   children = null,
   extraClassName = '',
   href,
-  icon = null,
+  icon,
   linkTitle,
   subtitle = '',
   type = 'attention',
 }: IInternalBannerProps): JSX.Element => (
-  <div
-    className={cn(styles['internal-banner'], 'bi-banner', type, extraClassName)}
+  <Banner
+    className={cn(styles['internal-banner'], extraClassName)}
+    href={href}
+    linkTitle={linkTitle}
+    hideLinkIcon={!icon}
+    icon={icon}
+    type={type}
   >
-    <p>{subtitle}</p>
+    <>{subtitle}</>
 
-    {children && <p>{children}</p>}
-
-    <p>
-      <a
-        className={cn(styles['internal-link'], 'bi-link', 'tertiary-link')}
-        href={href}
-      >
-        {icon && <Icon svg={icon} />}
-        {linkTitle}
-      </a>
-    </p>
-  </div>
+    {children && <>{children}</>}
+  </Banner>
 )
 
 export default InternalBanner

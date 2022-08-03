@@ -3,6 +3,8 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
+import styles from './Banner.module.scss'
+
 export interface IBannerProps {
   icon?: string
   href?: string
@@ -13,6 +15,7 @@ export interface IBannerProps {
   closable?: boolean
   handleOnClick?: () => void
   className?: string
+  hideLinkIcon?: boolean
 }
 
 const Banner = ({
@@ -25,26 +28,27 @@ const Banner = ({
   closable = false,
   handleOnClick,
   className,
+  hideLinkIcon = false,
 }: IBannerProps): JSX.Element => {
   return (
-    <div className={cn('bi-banner', type, className)}>
+    <div className={cn(styles['bi-banner'], styles[type], className)}>
       {closable && (
         <button onClick={handleOnClick} type="button">
           <Icon alt="Masquer le bandeau" svg="icons-close" />
         </button>
       )}
 
-      <p>{children}</p>
+      {children && <p className={styles['bi-banner-text']}>{children}</p>}
 
       {href && linkTitle && (
-        <p>
+        <p className={styles['bi-banner-text']}>
           <a
-            className="bi-link tertiary-link"
+            className={cn(styles['bi-link'])}
             href={href}
             rel="noopener noreferrer"
             target={targetLink}
           >
-            <Icon svg={icon} />
+            {!hideLinkIcon && <Icon svg={icon} />}
             {linkTitle}
           </a>
         </p>
