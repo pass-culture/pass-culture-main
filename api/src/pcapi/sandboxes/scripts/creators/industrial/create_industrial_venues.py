@@ -91,7 +91,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             # the venue_type table has been finally replaced by the
             # VenueTypeCode enum
             venue_type = random.choice(venue_types)
-            venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]  # type: ignore [arg-type]
+            venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer=offerer,

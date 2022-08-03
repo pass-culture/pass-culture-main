@@ -459,7 +459,7 @@ def price_booking(
 
     with transaction():
         if use_pricing_point:
-            lock_pricing_point(pricing_point_id)  # type: ignore [arg-type]
+            lock_pricing_point(pricing_point_id)
         else:
             lock_business_unit(business_unit_id)
 
@@ -615,7 +615,7 @@ def _get_pricing_point_id_and_current_revenue(
         .with_entities(sqla.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
         .scalar()
     )
-    return pricing_point_id, utils.to_eurocents(current_revenue or 0)  # type: ignore [return-value]
+    return pricing_point_id, utils.to_eurocents(current_revenue or 0)
 
 
 def _price_booking(
@@ -866,7 +866,7 @@ def cancel_pricing(
 
     with transaction():
         if use_pricing_point:
-            lock_pricing_point(pricing_point_id)  # type: ignore [arg-type]
+            lock_pricing_point(pricing_point_id)
         else:
             lock_business_unit(business_unit_id)
 
