@@ -206,5 +206,28 @@ describe('venues', () => {
         'http://localhost/structures/OFFERER01/lieux/VENUE01?modification'
       )
     })
+
+    it('should display add bank information when venue does not have a reimbursement point', async () => {
+      // Given
+      props.hasReimbursementPoint = false
+      const storeOverrides = configureTestStore({
+        features: {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'ENABLE_NEW_BANK_INFORMATIONS_CREATION',
+            },
+          ],
+        },
+      })
+
+      // When
+      await renderVenue(props, storeOverrides)
+
+      // Then
+      expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(
+        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification'
+      )
+    })
   })
 })

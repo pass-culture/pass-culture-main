@@ -134,10 +134,8 @@ const Venue = ({
               </span>
             </h3>
             <div className="button-group">
-              {(isNewBankInformationActive ||
-                isBankInformationWithSiretActive) &&
-                !hasReimbursementPoint &&
-                !hasBusinessUnit &&
+              {((isNewBankInformationActive && !hasReimbursementPoint) ||
+                (isBankInformationWithSiretActive && !hasBusinessUnit)) &&
                 !isVirtual && (
                   <>
                     <Link

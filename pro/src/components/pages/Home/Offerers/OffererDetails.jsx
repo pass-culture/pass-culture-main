@@ -16,6 +16,7 @@ import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
 import BankInformations from './BankInformations'
 import InvalidBusinessUnits from './InvalidBusinessUnits'
 import MissingBusinessUnits from './MissingBusinessUnits'
+import MissingReimbursementPoints from './MissingReimbursementPoints/MissingReimbursementPoints'
 
 const hasRejectedOrDraftBankInformation = offerer =>
   Boolean(
@@ -25,13 +26,16 @@ const hasRejectedOrDraftBankInformation = offerer =>
 const initialIsExpanded = (
   hasPhysicalVenues,
   isBankInformationWithSiretActive,
+  isNewBankInformationActive,
   hasInvalidBusinessUnits,
+  hasMissingReimbursementPoints,
   hasMissingBusinessUnits
 ) => {
   return (
     !hasPhysicalVenues ||
     (isBankInformationWithSiretActive &&
-      (hasInvalidBusinessUnits || hasMissingBusinessUnits))
+      (hasInvalidBusinessUnits || hasMissingBusinessUnits)) ||
+    (isNewBankInformationActive && hasMissingReimbursementPoints)
   )
 }
 
@@ -45,6 +49,9 @@ const OffererDetails = ({
 }) => {
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
+  const isNewBankInformationActive = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
   const logEvent = useSelector(state => state.app.logEvent)
 
@@ -70,11 +77,22 @@ const OffererDetails = ({
       .some(Boolean)
   }, [isBankInformationWithSiretActive, selectedOfferer])
 
+  const hasMissingReimbursementPoints = useMemo(() => {
+    if (!isNewBankInformationActive) return false
+    if (!selectedOfferer) return false
+    return selectedOfferer.managedVenues
+      .filter(venue => !venue.isVirtual)
+      .map(venue => !venue.hasReimbursementPoint)
+      .some(Boolean)
+  }, [selectedOfferer, isNewBankInformationActive])
+
   const [isExpanded, setIsExpanded] = useState(
     initialIsExpanded(
       hasPhysicalVenues,
       isBankInformationWithSiretActive,
+      isNewBankInformationActive,
       hasInvalidBusinessUnits,
+      hasMissingReimbursementPoints,
       hasMissingBusinessUnits
     )
   )
@@ -85,14 +103,18 @@ const OffererDetails = ({
         initialIsExpanded(
           hasPhysicalVenues,
           isBankInformationWithSiretActive,
+          isNewBankInformationActive,
           hasInvalidBusinessUnits,
+          hasMissingReimbursementPoints,
           hasMissingBusinessUnits
         )
       ),
     [
       hasPhysicalVenues,
       isBankInformationWithSiretActive,
+      isNewBankInformationActive,
       hasInvalidBusinessUnits,
+      hasMissingReimbursementPoints,
       hasMissingBusinessUnits,
     ]
   )
@@ -151,7 +173,9 @@ const OffererDetails = ({
               )
             )
           ) : (
-            selectedOfferer.hasMissingBankInformation && (
+            ((isNewBankInformationActive && hasMissingReimbursementPoints) ||
+              (!isNewBankInformationActive &&
+                selectedOfferer.hasMissingBankInformation)) && (
               <Icon
                 alt="Informations bancaires manquantes"
                 className="ico-bank-warning"
@@ -222,6 +246,11 @@ const OffererDetails = ({
                     </ul>
                   </div>
                 </div>
+                {isNewBankInformationActive && hasMissingReimbursementPoints && (
+                  <div className="h-card-col">
+                    <MissingReimbursementPoints />
+                  </div>
+                )}
                 {isBankInformationWithSiretActive && (
                   <>
                     {hasInvalidBusinessUnits && (
@@ -237,6 +266,7 @@ const OffererDetails = ({
                   </>
                 )}
                 {!isBankInformationWithSiretActive &&
+                  !isNewBankInformationActive &&
                   (selectedOfferer.hasMissingBankInformation ||
                     hasRejectedOrDraftOffererBankInformations) && (
                     <div className="h-card-col">
