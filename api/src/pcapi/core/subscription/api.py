@@ -422,18 +422,18 @@ def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePage
 
 def _get_eligible_and_ok_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     """Finds latest created activable identity fraud check for a user."""
-    user_identity_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-        and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
-        and users_api.is_user_age_compatible_with_eligibility(user.age, fraud_check.eligibilityType)
-    ]
-    if not user_identity_fraud_checks:
-        return None
+    fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)
 
-    return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]
+    for fraud_check in fraud_checks:
+        if (
+            fraud_check.status == fraud_models.FraudCheckStatus.OK
+            and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
+            and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
+            and users_api.is_user_age_compatible_with_eligibility(user.age, fraud_check.eligibilityType)
+        ):
+            return fraud_check
+
+    return None
 
 
 def _get_activable_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
