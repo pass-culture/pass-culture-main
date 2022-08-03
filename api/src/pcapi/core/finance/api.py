@@ -1012,8 +1012,8 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 models.BankInformation.id,
                 sqla.func.array_remove(
                     sqla.func.array_cat(
-                        sqla_func.array_agg(bookings_models.Booking.venueId),
-                        sqla_func.array_agg(educational_models.CollectiveBooking.venueId),
+                        sqla_func.array_agg(bookings_models.Booking.venueId.distinct()),
+                        sqla_func.array_agg(educational_models.CollectiveBooking.venueId.distinct()),
                     ),
                     None,
                 ),
