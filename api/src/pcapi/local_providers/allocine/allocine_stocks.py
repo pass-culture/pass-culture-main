@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+from typing import cast
 
 from dateutil.parser import parse
 from sqlalchemy import Sequence
@@ -46,9 +47,9 @@ class AllocineStocks(LocalProvider):
 
         self.movie_information: dict | None = None
         self.filtered_movie_showtimes: list[dict] | None = None
-        self.last_product_id = None
-        self.last_vf_offer_id = None
-        self.last_vo_offer_id = None
+        self.last_product_id: int | None = None
+        self.last_vf_offer_id: int | None = None
+        self.last_vo_offer_id: int | None = None
 
     def __next__(self) -> list[ProvidableInfo]:
         raw_movie_information = next(self.movies_showtimes)  # type: ignore [var-annotated]
@@ -138,7 +139,7 @@ class AllocineStocks(LocalProvider):
 
         if is_new_product_to_insert:
             allocine_product.id = get_next_product_id_from_database()
-        self.last_product_id = allocine_product.id  # type: ignore [assignment]
+        self.last_product_id = allocine_product.id
 
     def fill_offer_attributes(self, allocine_offer: Offer) -> None:
         allocine_offer.venueId = self.venue.id
@@ -165,7 +166,7 @@ class AllocineStocks(LocalProvider):
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_offer.productId = self.last_product_id
+        allocine_offer.productId = cast(int, self.last_product_id)
         allocine_offer.extraData["diffusionVersion"] = movie_version
 
         is_new_offer_to_insert = allocine_offer.id is None
@@ -175,9 +176,9 @@ class AllocineStocks(LocalProvider):
             allocine_offer.isDuo = self.isDuo
 
         if movie_version == ORIGINAL_VERSION_SUFFIX:
-            self.last_vo_offer_id = allocine_offer.id  # type: ignore [assignment]
+            self.last_vo_offer_id = allocine_offer.id
         else:
-            self.last_vf_offer_id = allocine_offer.id  # type: ignore [assignment]
+            self.last_vf_offer_id = allocine_offer.id
 
     def fill_stock_attributes(self, allocine_stock: Stock):  # type: ignore [no-untyped-def]
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
@@ -186,8 +187,8 @@ class AllocineStocks(LocalProvider):
         parsed_showtimes = retrieve_showtime_information(showtime)  # type: ignore [arg-type]
         diffusion_version = parsed_showtimes["diffusionVersion"]
 
-        allocine_stock.offerId = (
-            self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer_id
+        allocine_stock.offerId = cast(
+            int, (self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer_id)
         )
 
         local_tz = get_department_timezone(self.venue.departementCode)
@@ -223,13 +224,13 @@ class AllocineStocks(LocalProvider):
         return 1
 
 
-def get_next_product_id_from_database():  # type: ignore [no-untyped-def]
-    sequence = Sequence("product_id_seq")
+def get_next_product_id_from_database() -> int:
+    sequence: Sequence = Sequence("product_id_seq")
     return db.session.execute(sequence)
 
 
-def get_next_offer_id_from_database():  # type: ignore [no-untyped-def]
-    sequence = Sequence("offer_id_seq")
+def get_next_offer_id_from_database() -> int:
+    sequence: Sequence = Sequence("offer_id_seq")
     return db.session.execute(sequence)
 
 

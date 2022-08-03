@@ -45,7 +45,7 @@ def save_allocine_sandbox() -> None:
         bookingEmail="fake@email.com",
         city=offerer.city,
         comment="Salle de cinéma",
-        name=offerer.name + " - Salle 1",  # type: ignore [operator]
+        name=offerer.name + " - Salle 1",
         postalCode=offerer.postalCode,
         siret=sirene.siret,
     )
