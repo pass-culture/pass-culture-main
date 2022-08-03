@@ -125,7 +125,12 @@ export const createPatchOfferPayload = (
   const offerKeys = Object.keys(offer) as (keyof IOfferEducationalFormValues)[]
 
   offerKeys.forEach(key => {
-    if (!isEqual(offer[key], initialValues[key]) && key !== 'search-domains') {
+    if (
+      !isEqual(offer[key], initialValues[key]) &&
+      !key.startsWith('search-')
+    ) {
+      // This is because startsWith eliminates the two keys that are not defined in the collectiveOfferSerializer
+      // @ts-expect-error (7053) Element implicitly has an 'any' type because expression of type 'keyof IOfferEducationalFormValues' can't be used to index type
       changedValues = collectiveOfferSerializer[key](changedValues, offer)
     }
   })

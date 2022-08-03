@@ -65,6 +65,7 @@ export type IOfferEducationalFormValues = {
   notificationEmail: string
   domains: string[]
   'search-domains'?: string
+  'search-interventionArea'?: string
 }
 
 export type CanOffererCreateCollectiveOffer = Adapter<
