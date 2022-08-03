@@ -28,32 +28,5 @@ describe('src | components | layout | Banner', () => {
       expect(link).toHaveAttribute('target', '_blank')
       expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     })
-
-    it('should change the banner type - attention', () => {
-      // given
-      const message = 'message'
-
-      // when
-      render(<Banner {...props}>{message}</Banner>)
-
-      // then
-      expect(screen.getByText(message).closest('div')).toHaveClass(
-        'bi-banner attention'
-      )
-    })
-
-    it('should change the banner type - notification-info', () => {
-      // given
-      const message = 'message'
-      props.type = 'notification-info'
-
-      // when
-      render(<Banner {...props}>{message}</Banner>)
-
-      // then
-      expect(screen.getByText(message).closest('div')).toHaveClass(
-        'bi-banner notification-info'
-      )
-    })
   })
 })
