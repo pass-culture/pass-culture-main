@@ -20,6 +20,7 @@ export interface IUsefulInformationsProps {
   isUserAdmin: boolean
   offerSubCategory?: IOfferSubCategory
   isVenueVirtual?: boolean
+  readOnlyFields?: string[]
 }
 
 const UsefulInformations = ({
@@ -28,6 +29,7 @@ const UsefulInformations = ({
   isUserAdmin,
   offerSubCategory,
   isVenueVirtual,
+  readOnlyFields = [],
 }: IUsefulInformationsProps): JSX.Element => {
   const {
     values: { subCategoryFields },
@@ -44,7 +46,11 @@ const UsefulInformations = ({
       title="Informations pratiques"
       description="Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande."
     >
-      <Venue offererNames={offererNames} venueList={venueList} />
+      <Venue
+        offererNames={offererNames}
+        venueList={venueList}
+        readOnlyFields={readOnlyFields}
+      />
 
       {displayNoRefundWarning && (
         <FormLayout.Row>
@@ -56,7 +62,10 @@ const UsefulInformations = ({
           <WithdrawalReminder />
         </FormLayout.Row>
       )}
-      {subCategoryFields.includes('withdrawalType') && <TicketWithdrawal />}
+
+      {subCategoryFields.includes('withdrawalType') && (
+        <TicketWithdrawal readOnlyFields={readOnlyFields} />
+      )}
 
       <FormLayout.Row>
         <TextArea
@@ -65,6 +74,7 @@ const UsefulInformations = ({
           label={'Informations de retrait'}
           name="withdrawalDetails"
           maxLength={500}
+          disabled={readOnlyFields.includes('withdrawalDetails')}
         />
       </FormLayout.Row>
 
@@ -75,6 +85,7 @@ const UsefulInformations = ({
             label={'Rayonnement national'}
             name="isNational"
             value=""
+            disabled={readOnlyFields.includes('isNational')}
           />
         </FormLayout.Row>
       )}

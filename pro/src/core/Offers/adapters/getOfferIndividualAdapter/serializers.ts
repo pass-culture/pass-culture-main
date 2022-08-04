@@ -1,5 +1,6 @@
 import {
   GetIndividualOfferResponseModel,
+  GetOfferLastProviderResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import {
@@ -7,6 +8,7 @@ import {
   IOfferIndividualOfferer,
   IOfferIndividualStock,
   IOfferIndividualVenue,
+  IOfferIndividualVenueProvider,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
@@ -84,6 +86,20 @@ export const serializeOfferApiExtraData = (
   }
 }
 
+export const serializeLastProvider = (
+  apiVenueProvider: GetOfferLastProviderResponseModel | null
+): IOfferIndividualVenueProvider | null => {
+  if (apiVenueProvider === null) {
+    return null
+  }
+
+  return {
+    id: apiVenueProvider.id,
+    isActive: apiVenueProvider.isActive,
+    name: apiVenueProvider.name,
+  }
+}
+
 export const serializeOfferApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividual => {
@@ -121,6 +137,7 @@ export const serializeOfferApi = (
     },
     stocks: apiOffer.stocks.map(serializeStockApi),
     lastProviderName: apiOffer.lastProvider?.name || null,
+    lastProvider: serializeLastProvider(apiOffer.lastProvider || null),
     status: apiOffer.status || null,
     ...serializeOfferApiExtraData(apiOffer),
   }

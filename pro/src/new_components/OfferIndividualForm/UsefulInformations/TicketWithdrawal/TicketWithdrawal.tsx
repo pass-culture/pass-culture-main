@@ -15,7 +15,13 @@ import {
 
 import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
 
-const TicketWithdrawal = (): JSX.Element => {
+interface ITicketWithdrawalProps {
+  readOnlyFields?: string[]
+}
+
+const TicketWithdrawal = ({
+  readOnlyFields = [],
+}: ITicketWithdrawalProps): JSX.Element => {
   const {
     values: { withdrawalType },
     setFieldValue,
@@ -38,6 +44,7 @@ const TicketWithdrawal = (): JSX.Element => {
           group={ticketWithdrawalTypeRadios}
           legend="Comment les billets, places seront-ils transmis ?"
           name="withdrawalType"
+          disabled={readOnlyFields.includes('withdrawalType')}
         />
       </FormLayout.Row>
 
@@ -48,6 +55,7 @@ const TicketWithdrawal = (): JSX.Element => {
             description="avant le début de l'évènement"
             name="withdrawalDelay"
             options={ticketSentDateOptions}
+            disabled={readOnlyFields.includes('withdrawalType')}
           />
         </FormLayout.Row>
       )}
@@ -59,6 +67,7 @@ const TicketWithdrawal = (): JSX.Element => {
             description="avant le début de l'évènement"
             name="withdrawalDelay"
             options={ticketWithdrawalHourOptions}
+            disabled={readOnlyFields.includes('withdrawalType')}
           />
         </FormLayout.Row>
       )}

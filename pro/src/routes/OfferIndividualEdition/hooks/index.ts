@@ -1,0 +1,1 @@
+export { useGetData } from './useGetData'

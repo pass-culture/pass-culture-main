@@ -12,10 +12,12 @@ import useSubCategoryUpdates from '../hooks/useSubCategoryUpdates/useSubCategory
 
 interface ISelectSubCategoryProps {
   subCategories: IOfferSubCategory[]
+  readOnly?: boolean
 }
 
 const SelectSubCategory = ({
   subCategories,
+  readOnly = false,
 }: ISelectSubCategoryProps): JSX.Element => {
   const {
     values: { categoryId },
@@ -40,6 +42,7 @@ const SelectSubCategory = ({
         label: 'Choisir une sous-catégorie',
         value: FORM_DEFAULT_VALUES.subcategoryId,
       }}
+      disabled={readOnly}
     />
   )
 }
