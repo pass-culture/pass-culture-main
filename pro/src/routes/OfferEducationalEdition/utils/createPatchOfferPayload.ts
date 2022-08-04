@@ -112,8 +112,13 @@ const collectiveOfferSerializer = {
     ...payload,
     domains: offer.domains.map(domainIdString => Number(domainIdString)),
   }),
-  // FIXME: send interventionArea when backend is ready
-  interventionArea: (payload: PatchCollectiveOfferBodyModel) => payload,
+  interventionArea: (
+    payload: PatchCollectiveOfferBodyModel,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    interventionArea: offer.interventionArea,
+  }),
 }
 
 export const createPatchOfferPayload = (
