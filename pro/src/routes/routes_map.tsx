@@ -369,7 +369,7 @@ const routes: IRoute[] = [
   {
     component: OfferIndividualEdition,
     exact: true,
-    path: '/offre/:offerId/v3/individuelle',
+    path: '/offre/:offerId/v3/individuelle/informations',
     title: 'Editez de votre offre',
     featureName: 'OFFER_FORM_V3',
   },

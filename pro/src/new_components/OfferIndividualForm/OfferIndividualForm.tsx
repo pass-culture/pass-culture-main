@@ -22,6 +22,7 @@ export interface IOfferIndividualForm {
   venueList: TOfferIndividualVenue[]
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
+  readOnlyFields: string[]
 }
 
 const OfferIndividualForm = ({
@@ -29,6 +30,7 @@ const OfferIndividualForm = ({
   venueList,
   categories,
   subCategories,
+  readOnlyFields = [],
 }: IOfferIndividualForm) => {
   const {
     currentUser: { isAdmin },
@@ -51,10 +53,15 @@ const OfferIndividualForm = ({
 
   return (
     <FormLayout>
-      <Categories categories={categories} subCategories={subCategories} />
+      <Categories
+        categories={categories}
+        subCategories={subCategories}
+        readOnlyFields={readOnlyFields}
+      />
+
       {subcategoryId.length > 0 && filteredVenueList.length > 0 && (
         <>
-          <Informations />
+          <Informations readOnlyFields={readOnlyFields} />
           <Image />
           <UsefulInformations
             isUserAdmin={isAdmin}
@@ -62,8 +69,9 @@ const OfferIndividualForm = ({
             venueList={filteredVenueList}
             offerSubCategory={offerSubCategory}
             isVenueVirtual={isVenueVirtual}
+            readOnlyFields={readOnlyFields}
           />
-          <Accessibility />
+          <Accessibility readOnlyFields={readOnlyFields} />
           <ExternalLink />
           <Notifications />
         </>

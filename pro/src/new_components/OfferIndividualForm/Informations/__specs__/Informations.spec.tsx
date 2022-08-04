@@ -7,13 +7,15 @@ import * as yup from 'yup'
 
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 
-import Informations from '../Informations'
+import Informations, { IInformationsProps } from '../Informations'
 import { validationSchema } from '../validationSchema'
 
 const renderInformations = ({
+  props,
   initialValues,
   onSubmit = jest.fn(),
 }: {
+  props: IInformationsProps
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
@@ -23,7 +25,7 @@ const renderInformations = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <Informations />
+      <Informations {...props} />
     </Formik>
   )
 }
@@ -31,6 +33,7 @@ const renderInformations = ({
 describe('OfferIndividual section: UsefulInformations', () => {
   let initialValues: Partial<IOfferIndividualFormValues>
   const onSubmit = jest.fn()
+  let props: IInformationsProps
 
   beforeEach(() => {
     initialValues = {
@@ -45,10 +48,14 @@ describe('OfferIndividual section: UsefulInformations', () => {
       visa: '',
       durationMinutes: '',
     }
+
+    props = {
+      readOnlyFields: [],
+    }
   })
 
   it('should render non sub categories fields', async () => {
-    await renderInformations({ initialValues, onSubmit })
+    await renderInformations({ props, initialValues, onSubmit })
     expect(screen.getByLabelText("Titre de l'offre")).toBeInTheDocument()
     expect(
       screen.getByLabelText('Description', { exact: false })
@@ -87,7 +94,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       'visa',
       'durationMinutes',
     ]
-    await renderInformations({ initialValues, onSubmit })
+    await renderInformations({ props, initialValues, onSubmit })
     expect(screen.getByLabelText("Titre de l'offre")).toBeInTheDocument()
     expect(
       screen.getByLabelText('Description', { exact: false })

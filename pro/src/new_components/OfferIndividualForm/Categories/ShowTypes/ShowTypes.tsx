@@ -8,7 +8,11 @@ import {
 } from 'new_components/OfferIndividualForm'
 import { Select } from 'ui-kit'
 
-const ShowTypes = (): JSX.Element => {
+interface IShowTypesProps {
+  readOnly?: boolean
+}
+
+const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
   const {
     values: { showType },
     setFieldValue,
@@ -62,6 +66,7 @@ const ShowTypes = (): JSX.Element => {
           label: 'Choisir un type de spectacle',
           value: FORM_DEFAULT_VALUES.showType,
         }}
+        disabled={readOnly}
       />
       {showTypesOptions.showSubType.length > 0 && (
         <Select
@@ -72,6 +77,7 @@ const ShowTypes = (): JSX.Element => {
             label: 'Choisir un sous type',
             value: FORM_DEFAULT_VALUES.showSubType,
           }}
+          disabled={readOnly}
         />
       )}
     </>

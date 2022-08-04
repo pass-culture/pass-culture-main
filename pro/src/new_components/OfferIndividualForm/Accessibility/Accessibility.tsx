@@ -9,7 +9,13 @@ import { CheckboxGroup } from 'ui-kit'
 
 import { IOfferIndividualFormValues } from '../types'
 
-const Accessibility = (): JSX.Element => {
+interface IAccessiblityProps {
+  readOnlyFields?: string[]
+}
+
+const Accessibility = ({
+  readOnlyFields = [],
+}: IAccessiblityProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferIndividualFormValues>()
 
@@ -33,6 +39,7 @@ const Accessibility = (): JSX.Element => {
           group={accessibilityOptions}
           groupName="accessibility"
           legend="Cette offre est accessible au public en situation de handicap :"
+          disabled={readOnlyFields.includes('accessibility')}
         />
       </FormLayout.Row>
     </FormLayout.Section>

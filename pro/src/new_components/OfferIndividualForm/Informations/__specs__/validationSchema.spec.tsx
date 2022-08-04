@@ -9,13 +9,15 @@ import * as yup from 'yup'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 import { SubmitButton } from 'ui-kit'
 
-import Informations from '../Informations'
+import Informations, { IInformationsProps } from '../Informations'
 import { validationSchema } from '../validationSchema'
 
 const renderInformations = async ({
+  props,
   initialValues,
   onSubmit = jest.fn(),
 }: {
+  props: IInformationsProps
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
@@ -26,7 +28,7 @@ const renderInformations = async ({
       validationSchema={yup.object().shape(validationSchema)}
     >
       <>
-        <Informations />
+        <Informations {...props} />
         <SubmitButton isLoading={false}>Submit</SubmitButton>
       </>
     </Formik>
@@ -43,6 +45,7 @@ const renderInformations = async ({
 describe('OfferIndividual section: UsefulInformations', () => {
   let initialValues: Partial<IOfferIndividualFormValues>
   const onSubmit = jest.fn()
+  let props: IInformationsProps
 
   beforeEach(() => {
     initialValues = {
@@ -65,10 +68,15 @@ describe('OfferIndividual section: UsefulInformations', () => {
       visa: '',
       durationMinutes: '',
     }
+
+    props = {
+      readOnlyFields: [],
+    }
   })
 
   it('should display errors for mandatory fields', async () => {
     const { buttonSubmit } = await renderInformations({
+      props,
       initialValues,
       onSubmit,
     })
@@ -100,6 +108,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       async durationMinutesValue => {
         initialValues.subCategoryFields = ['durationMinutes']
         const { buttonSubmit } = await renderInformations({
+          props,
           initialValues,
           onSubmit,
         })
@@ -129,6 +138,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       async durationMinutesValue => {
         initialValues.subCategoryFields = ['durationMinutes']
         const { buttonSubmit } = await renderInformations({
+          props,
           initialValues,
           onSubmit,
         })
@@ -148,6 +158,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     it('should not allow more than 59 minutes', async () => {
       initialValues.subCategoryFields = ['durationMinutes']
       const { buttonSubmit } = await renderInformations({
+        props,
         initialValues,
         onSubmit,
       })

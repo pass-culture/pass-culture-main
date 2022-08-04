@@ -133,6 +133,12 @@ export interface IOfferExtraData {
   visa?: string
 }
 
+export interface IOfferIndividualVenueProvider {
+  id: string
+  isActive: boolean
+  name: string
+}
+
 export interface IOfferIndividual {
   id: string
   nonHumanizedId: number
@@ -167,5 +173,6 @@ export interface IOfferIndividual {
   withdrawalType: WithdrawalTypeEnum | null
   stocks: IOfferIndividualStock[]
   lastProviderName: string | null
+  lastProvider: IOfferIndividualVenueProvider | null
   status: string
 }
