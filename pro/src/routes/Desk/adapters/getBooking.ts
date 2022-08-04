@@ -1,5 +1,5 @@
-import { HTTP_STATUS } from 'api/helpers'
 import { apiContremarque } from 'apiClient/api'
+import { HTTP_STATUS } from 'apiClient/helpers'
 import { ApiError, GetBookingResponse } from 'apiClient/v2'
 import {
   IBooking,

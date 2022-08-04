@@ -6,7 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import { HTTP_STATUS } from 'api/helpers'
+import { HTTP_STATUS } from 'apiClient/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import * as pcapi from 'repository/pcapi/pcapi'

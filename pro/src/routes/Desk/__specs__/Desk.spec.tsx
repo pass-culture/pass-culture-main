@@ -5,8 +5,8 @@ import userEvent from '@testing-library/user-event'
 import React, { useState } from 'react'
 import { MemoryRouter } from 'react-router'
 
-import { HTTP_STATUS } from 'api/helpers'
 import { apiContremarque } from 'apiClient/api'
+import { HTTP_STATUS } from 'apiClient/helpers'
 import {
   ApiError,
   BookingFormula,
