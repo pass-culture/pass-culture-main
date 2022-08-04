@@ -412,7 +412,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         if self.resultContent is None:
             raise ValueError("No source data associated with this fraud check")
-        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type, return-value]
+        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type]
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:

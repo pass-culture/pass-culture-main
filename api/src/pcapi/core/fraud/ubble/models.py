@@ -122,7 +122,6 @@ class UbbleIdentificationDocuments(UbbleIdentificationObject):
     married_name: str = pydantic.Field(None, alias="married-name")
     signed_image_front_url: str = pydantic.Field(None, alias="signed-image-front-url")
     signed_image_back_url: str = pydantic.Field(None, alias="signed-image-back-url")
-    document_type: str = pydantic.Field(None, alias="document-type")  # type: ignore [no-redef]
 
 
 class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):
