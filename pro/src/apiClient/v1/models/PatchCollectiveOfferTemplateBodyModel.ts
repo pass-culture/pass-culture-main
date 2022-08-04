@@ -14,6 +14,7 @@ export type PatchCollectiveOfferTemplateBodyModel = {
   description?: string | null;
   domains?: Array<number> | null;
   durationMinutes?: number | null;
+  interventionArea?: Array<string> | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;

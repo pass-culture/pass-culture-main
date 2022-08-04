@@ -76,6 +76,42 @@ class Returns200Test:
         assert len(offer.domains) == 2
         assert set(offer.domains) == {educational_domain1, educational_domain2}
 
+    def test_create_collective_offer_empty_intervention_area(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        educational_domain = educational_factories.EducationalDomainFactory()
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "bookingEmail": "offer@example.com",
+            "domains": [educational_domain.id],
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "contactEmail": "pouet@example.com",
+            "contactPhone": "01 99 00 25 68",
+            "offerVenue": {
+                "addressType": "offererVenue",
+                "otherAddress": "",
+                "venueId": "",
+            },
+            "students": ["Lycée - Seconde"],
+            "offererId": humanize(offerer.id),
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "interventionArea": [],
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 201
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -91,6 +127,7 @@ class Returns403Test:
             "venueId": humanize(venue.id),
             "bookingEmail": "offer@example.com",
             "durationMinutes": 60,
+            "domains": [educational_factories.EducationalDomainFactory().id],
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "contactEmail": "pouet@example.com",
@@ -129,6 +166,7 @@ class Returns403Test:
             "venueId": humanize(venue.id),
             "bookingEmail": "offer@example.com",
             "durationMinutes": 60,
+            "domains": [educational_factories.EducationalDomainFactory().id],
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "contactEmail": "pouet@example.com",
