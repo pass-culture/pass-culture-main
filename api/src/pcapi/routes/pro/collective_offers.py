@@ -186,9 +186,7 @@ def edit_collective_offer(
         check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        offers_api.update_collective_offer(
-            offer_id=dehumanized_id, is_offer_showcase=False, new_values=body.dict(exclude_unset=True)
-        )
+        offers_api.update_collective_offer(offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True))
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except educational_exceptions.EducationalDomainsNotFound:
@@ -260,9 +258,7 @@ def edit_collective_offer_template(
         check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        offers_api.update_collective_offer(
-            offer_id=dehumanized_id, is_offer_showcase=True, new_values=body.dict(exclude_unset=True)
-        )
+        offers_api.update_collective_offer_template(offer_id=dehumanized_id, new_values=body.dict(exclude_unset=True))
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except educational_exceptions.EducationalDomainsNotFound:
