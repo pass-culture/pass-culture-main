@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Venue from 'components/pages/Home/Venues/VenueLegacy'
-import { Banner } from 'ui-kit'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 interface IVenueListProps {
   physicalVenues: {
@@ -23,40 +24,64 @@ export const VenueList = ({
   physicalVenues,
   selectedOffererId,
   virtualVenue,
-}: IVenueListProps) => (
-  <div className="h-venue-list">
-    <Banner
-      type="new"
-      closable
-      href={`/structures/${selectedOffererId}/lieux/${physicalVenues[0]?.id}/eac`}
-      linkTitle="Renseigner vos informations "
-      icon="ico-external-site-filled-white"
-    >
-      Nouveau ! Vous pouvez désormais renseigner les informations scolaires d'un
-      lieu via votre page Lieu du pass Culture. Ces informations seront visibles
-      par les enseignants sur ADAGE.
-    </Banner>
-    {virtualVenue && (
-      <Venue
-        hasBusinessUnit={!!virtualVenue.businessUnitId}
-        id={virtualVenue.id}
-        isVirtual
-        name="Offres numériques"
-        offererId={selectedOffererId}
-        hasReimbursementPoint={virtualVenue.hasReimbursementPoint}
-      />
-    )}
+}: IVenueListProps) => {
+  const [displayVenueCollectiveDataBanner, setDisplayCollectiveDataBanner] =
+    useState(false)
 
-    {physicalVenues?.map(venue => (
-      <Venue
-        hasBusinessUnit={!!venue.businessUnitId}
-        id={venue.id}
-        key={venue.id}
-        name={venue.name}
-        offererId={selectedOffererId}
-        publicName={venue.publicName}
-        hasReimbursementPoint={venue.hasReimbursementPoint}
-      />
-    ))}
-  </div>
-)
+  useEffect(() => {
+    canOffererCreateCollectiveOfferAdapter(selectedOffererId).then(response =>
+      setDisplayCollectiveDataBanner(
+        response.payload.isOffererEligibleToEducationalOffer
+      )
+    )
+  }, [selectedOffererId])
+
+  const bannerUrl =
+    physicalVenues.length === 1
+      ? `/structures/${selectedOffererId}/lieux/${physicalVenues[0]?.id}`
+      : `/structures/${selectedOffererId}/lieux`
+
+  return (
+    <div className="h-venue-list">
+      {displayVenueCollectiveDataBanner && (
+        <InternalBanner
+          type="new"
+          to={{
+            pathname: bannerUrl,
+            state: { scrollToElementId: 'venue-collective-data' },
+          }}
+          linkTitle="Renseigner vos informations "
+          icon="ico-external-site-filled-white"
+          closable
+          handleOnClick={() => setDisplayCollectiveDataBanner(false)}
+        >
+          Nouveau ! Vous pouvez désormais renseigner les informations scolaires
+          d'un lieu via votre page Lieu du pass Culture. Ces informations seront
+          visibles par les enseignants sur ADAGE.
+        </InternalBanner>
+      )}
+      {virtualVenue && (
+        <Venue
+          hasBusinessUnit={!!virtualVenue.businessUnitId}
+          id={virtualVenue.id}
+          isVirtual
+          name="Offres numériques"
+          offererId={selectedOffererId}
+          hasReimbursementPoint={virtualVenue.hasReimbursementPoint}
+        />
+      )}
+
+      {physicalVenues?.map(venue => (
+        <Venue
+          hasBusinessUnit={!!venue.businessUnitId}
+          id={venue.id}
+          key={venue.id}
+          name={venue.name}
+          offererId={selectedOffererId}
+          publicName={venue.publicName}
+          hasReimbursementPoint={venue.hasReimbursementPoint}
+        />
+      ))}
+    </div>
+  )
+}
