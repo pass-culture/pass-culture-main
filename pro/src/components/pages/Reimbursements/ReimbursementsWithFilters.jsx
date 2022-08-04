@@ -124,7 +124,7 @@ const Reimbursements = ({ currentUser }) => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon svg="ico-external-site" />
+              <Icon svg="ico-external-site" className="banner-icon" />
               Les prochains remboursements
             </a>
             <a
@@ -133,7 +133,7 @@ const Reimbursements = ({ currentUser }) => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon svg="ico-external-site" />
+              <Icon svg="ico-external-site" className="banner-icon" />
               Les modalités de remboursement
             </a>
           </Banner>
