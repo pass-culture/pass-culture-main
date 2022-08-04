@@ -157,6 +157,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
     publicName: str | None
     name: str
     postalCode: str | None
+    collectiveInterventionArea: list[str] | None
     _humanize_id = humanize_field("id")
 
     class Config:
