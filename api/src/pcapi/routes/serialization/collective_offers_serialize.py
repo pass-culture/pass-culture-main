@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+from typing import Dict
 
 from pydantic import Field
 from pydantic import validator
@@ -317,6 +318,22 @@ class CollectiveOfferVenueBodyModel(BaseModel):
         extra = "forbid"
 
 
+def is_intervention_area_valid(
+    intervention_area: list[str] | None,
+    offer_venue: CollectiveOfferVenueBodyModel | None,
+) -> bool:
+    if intervention_area is None:
+        return False
+
+    if offer_venue is not None and offer_venue.addressType == OfferAddressType.OFFERER_VENUE:
+        return True
+
+    if len(intervention_area) == 0:
+        return False
+
+    return True
+
+
 class PostCollectiveOfferBodyModel(BaseModel):
     offerer_id: str
     venue_id: str
@@ -324,7 +341,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     name: str
     booking_email: str | None
     description: str | None
-    domains: list[int] | None
+    domains: list[int]
     duration_minutes: int | None
     audio_disability_compliant: bool = False
     mental_disability_compliant: bool = False
@@ -337,19 +354,30 @@ class PostCollectiveOfferBodyModel(BaseModel):
     intervention_area: list[str] | None
 
     @validator("name", pre=True)
-    def validate_name(cls: BaseModel, name: str, values: str) -> str:  # pylint: disable=no-self-argument
+    def validate_name(cls: BaseModel, name: str) -> str:  # pylint: disable=no-self-argument
         check_offer_name_length_is_valid(name)
         return name
 
     @validator("domains", pre=True)
     def validate_domains(  # pylint: disable=no-self-argument
         cls: "PostCollectiveOfferBodyModel",
-        domains: list[str] | None,
-    ) -> list[str] | None:
-        if domains is not None and len(domains) == 0:
+        domains: list[str],
+    ) -> list[str]:
+        if len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
         return domains
+
+    @validator("intervention_area")
+    def validate_intervention_area(  # pylint: disable=no-self-argument
+        cls: "PostCollectiveOfferBodyModel",
+        intervention_area: list[str] | None,
+        values: Dict,
+    ) -> list[str] | None:
+        if not is_intervention_area_valid(intervention_area, values.get("offer_venue", None)):
+            raise ValueError("intervention_area must have at least one value")
+
+        return intervention_area
 
     class Config:
         alias_generator = to_camel
@@ -392,9 +420,12 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     durationMinutes: int | None
     subcategoryId: SubcategoryIdEnum | None
     domains: list[int] | None
+    interventionArea: list[str] | None
 
     @validator("name", allow_reuse=True)
-    def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_name(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferBodyModel", name: str | None
+    ) -> str | None:
         assert name is not None and name.strip() != ""
         check_offer_name_length_is_valid(name)
         return name
@@ -404,10 +435,21 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         cls: "PatchCollectiveOfferBodyModel",
         domains: list[int] | None,
     ) -> list[int] | None:
-        if domains is not None and len(domains) == 0:
+        if domains is None or (domains is not None and len(domains) == 0):
             raise ValueError("domains must have at least one value")
 
         return domains
+
+    @validator("interventionArea")
+    def validate_intervention_area_not_empty_when_specified(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferBodyModel",
+        intervention_area: list[str] | None,
+        values: Dict,
+    ) -> list[str] | None:
+        if not is_intervention_area_valid(intervention_area, values.get("offerVenue", None)):
+            raise ValueError("interventionArea must have at least one value")
+
+        return intervention_area
 
     class Config:
         alias_generator = to_camel

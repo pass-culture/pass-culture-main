@@ -34,6 +34,7 @@ class Returns200Test:
             subcategoryId="CINE_PLEIN_AIR",
             educational_domains=None,
             students=[StudentLevels.CAP1],
+            interventionArea=["01", "07", "08"],
         )
         booking = CollectiveBookingFactory(
             collectiveStock__collectiveOffer=offer, collectiveStock__beginningDatetime=datetime(2020, 1, 1)
@@ -52,6 +53,7 @@ class Returns200Test:
             "subcategoryId": "CONCERT",
             "domains": [domain.id],
             "students": ["Collège - 4e"],
+            "interventionArea": ["01", "2A"],
         }
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
@@ -65,6 +67,7 @@ class Returns200Test:
         assert response.json["contactEmail"] == "toto@example.com"
         assert response.json["subcategoryId"] == "CONCERT"
         assert response.json["students"] == ["Collège - 4e"]
+        assert response.json["interventionArea"] == ["01", "2A"]
 
         updated_offer = CollectiveOffer.query.get(offer.id)
         assert updated_offer.name == "New name"
@@ -74,11 +77,20 @@ class Returns200Test:
         assert updated_offer.subcategoryId == "CONCERT"
         assert updated_offer.students == [StudentLevels.COLLEGE4]
         assert updated_offer.domains == [domain]
+        assert updated_offer.interventionArea == ["01", "2A"]
 
         expected_payload = EducationalBookingEdition(
             **serialize_collective_booking(booking).dict(),
             updatedFields=sorted(
-                ["name", "students", "contactEmail", "mentalDisabilityCompliant", "subcategoryId", "domains"]
+                [
+                    "name",
+                    "students",
+                    "contactEmail",
+                    "interventionArea",
+                    "mentalDisabilityCompliant",
+                    "subcategoryId",
+                    "domains",
+                ]
             ),
         )
 
@@ -112,6 +124,31 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert len(adage_api_testing.adage_requests) == 0
+
+    def test_patch_offer_with_empty_intervention_area_in_offerer_venue(self, client):
+        # Given
+        offer = CollectiveOfferFactory(interventionArea=["01", "02"])
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "interventionArea": [],
+            "offerVenue": {
+                "addressType": "offererVenue",
+                "otherAddress": "",
+                "venueId": "",
+            },
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        assert offer.interventionArea == []
 
 
 class Returns400Test:
@@ -166,7 +203,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-    def test_patch_offer_with_non_educational_subcategory(self, app, client):
+    def test_patch_offer_with_non_educational_subcategory(self, client):
         # Given
         offer = CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(
@@ -183,7 +220,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-    def test_patch_offer_with_empty_educational_domain(self, app, client):
+    def test_patch_offer_with_empty_educational_domain(self, client):
         # Given
         offer = CollectiveOfferFactory(
             educational_domains=None,
@@ -196,6 +233,69 @@ class Returns400Test:
         # When
         data = {
             "domains": [],
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+
+    def test_patch_offer_with_none_domain(self, app, client):
+        # Given
+        offer = CollectiveOfferFactory(
+            educational_domains=None,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "domains": None,
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+
+    def test_patch_offer_with_empty_intervention_area(self, client):
+        # Given
+        offer = CollectiveOfferFactory(
+            educational_domains=None,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "interventionArea": [],
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+
+    def test_patch_offer_with_none_intervention_area(self, client):
+        # Given
+        offer = CollectiveOfferFactory(
+            educational_domains=None,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "interventionArea": None,
         }
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
