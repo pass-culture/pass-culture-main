@@ -5,6 +5,7 @@ from typing import List
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 from pydantic import ValidationError
+import sentry_sdk
 import sqlalchemy.exc as sqla_exc
 import sqlalchemy.orm as sqla_orm
 import yaml
@@ -14,6 +15,7 @@ from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
+from pcapi.core.booking_providers.api import _get_venue_booking_provider
 from pcapi.core.booking_providers.api import get_shows_stock
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
@@ -1126,6 +1128,9 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
 
     if not booking_provider:
         return
+
+    venue_booking_provider_name = _get_venue_booking_provider(offer.venueId).bookingProvider.name.value
+    sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider_name)
 
     shows_id = [
         int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders  # type: ignore [arg-type]
