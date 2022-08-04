@@ -2,10 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
-import {
-  isAllocineProvider,
-  isCinemaProvider,
-} from 'components/pages/Offers/domain/localProvider'
+import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 

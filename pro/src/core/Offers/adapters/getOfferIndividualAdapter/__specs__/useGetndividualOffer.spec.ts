@@ -196,6 +196,7 @@ describe('useGetOfferIndividual', () => {
       visa: '',
       withdrawalDetails: '',
       withdrawalDelay: null,
+      lastProvider: null,
       lastProviderName: null,
       stocks: [
         {

@@ -48,12 +48,6 @@ export const BASE_OFFER_FIELDS = [
   'venueId',
   'withdrawalDetails',
 ]
-export const EDITED_OFFER_READ_ONLY_FIELDS = [
-  'categoryId',
-  'subcategoryId',
-  'offererId',
-  'venueId',
-]
 
 export const MANDATORY_FIELDS = [
   'name',
@@ -64,17 +58,6 @@ export const MANDATORY_FIELDS = [
   'categoryId',
   'subcategoryId',
 ]
-
-export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
-  ALL_PROVIDERS: [
-    'audioDisabilityCompliant',
-    'mentalDisabilityCompliant',
-    'motorDisabilityCompliant',
-    'visualDisabilityCompliant',
-    'externalTicketOfficeUrl',
-  ],
-  ALLOCINE: ['isDuo'],
-}
 
 export const PLATFORM = {
   ONLINE: 'ONLINE',

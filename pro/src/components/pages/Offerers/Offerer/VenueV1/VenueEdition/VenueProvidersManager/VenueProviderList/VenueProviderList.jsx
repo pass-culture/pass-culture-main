@@ -1,10 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import {
-  isAllocineProvider,
-  isCinemaProvider,
-} from 'components/pages/Offers/domain/localProvider'
+import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
 
 import AllocineProviderItem from '../AllocineProviderItem/AllocineProviderItem'
 import { CinemaProviderItem } from '../CinemaProviderItem/CinemaProviderItem'

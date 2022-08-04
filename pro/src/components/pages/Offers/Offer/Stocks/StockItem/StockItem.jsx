@@ -4,12 +4,12 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
-import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 import {
   getMaximumBookingLimitDatetime as getMaximumBookingLimitDatetimeFromExpirationDatetime,
   hasStockBeenUpdated,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
+import { isAllocineProvider } from 'core/Providers'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
