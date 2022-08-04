@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 
 import Icon from 'components/layout/Icon'
-import InternalBanner from 'components/layout/InternalBanner'
 import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
+import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint/PricingPoint'
 import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
@@ -46,7 +46,7 @@ const ReimbursementFields = ({
         </h2>
         {!venueHaveSiret && !offererHaveVenueWithSiret ? (
           <InternalBanner
-            href={createVenuePath}
+            to={createVenuePath}
             icon="ico-external-site-filled"
             linkTitle="Créer un lieu avec SIRET"
           >

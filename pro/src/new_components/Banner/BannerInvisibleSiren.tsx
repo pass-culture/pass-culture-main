@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Banner from 'ui-kit/Banner'
+import Banner from 'ui-kit/Banners/Banner'
 
 const BannerInvisibleSiren = (): JSX.Element => (
   <Banner
