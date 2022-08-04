@@ -1,9 +1,10 @@
 import type { KeySelector } from 're-reselect'
 import { createCachedSelector } from 're-reselect'
 
-import { apiEntreprise } from 'api/api'
-import type { IEntrepriseSirenData } from 'api/entreprise/types'
-import { HTTP_STATUS, isApiError } from 'api/helpers'
+import { apiEntreprise } from 'apiClient/api'
+import { isApiError } from 'apiClient/entreprise/helpers'
+import type { IEntrepriseSirenData } from 'apiClient/entreprise/types'
+import { HTTP_STATUS } from 'apiClient/helpers'
 import { unhumanizeSiren } from 'core/Offerers/utils'
 import { validateSiren } from 'core/Offerers/validate'
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
-import { getDataURLFromImageURL } from 'api/utils/api'
+import { getDataURLFromImageURL } from 'apiClient/helpers'
 import useNotification from 'components/hooks/useNotification'
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
