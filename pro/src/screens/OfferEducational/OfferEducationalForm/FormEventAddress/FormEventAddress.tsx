@@ -1,13 +1,15 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import { OfferAddressType } from 'apiClient/v1'
+import {
+  GetEducationalOffererResponseModel,
+  GetEducationalOffererVenueResponseModel,
+  OfferAddressType,
+} from 'apiClient/v1'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
-  IUserOfferer,
-  IUserVenue,
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
@@ -31,7 +33,7 @@ import styles from '../OfferEducationalForm.module.scss'
 
 interface IFormEventAddressProps {
   venuesOptions: SelectOptions
-  currentOfferer: IUserOfferer | null
+  currentOfferer: GetEducationalOffererResponseModel | null
   disableForm: boolean
 }
 
@@ -62,7 +64,8 @@ const FormEventAddress = ({
     'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER'
   )
 
-  const [currentVenue, setCurrentVenue] = useState<IUserVenue | null>(null)
+  const [currentVenue, setCurrentVenue] =
+    useState<GetEducationalOffererVenueResponseModel | null>(null)
   const [previousInterventionValues, setPreviousInterventionValues] = useState<
     string[] | null
   >(null)
@@ -148,8 +151,8 @@ const FormEventAddress = ({
             >
               {currentVenue.name}
               <br />
-              {currentVenue.address.street}, {currentVenue.address.postalCode}{' '}
-              {currentVenue.address.city}
+              {currentVenue.address}, {currentVenue.postalCode}{' '}
+              {currentVenue.city}
             </Banner>
           )}
         </FormLayout.Row>

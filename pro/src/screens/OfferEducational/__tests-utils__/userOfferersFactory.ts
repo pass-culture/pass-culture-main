@@ -1,31 +1,34 @@
 import merge from 'lodash/merge'
 
-import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
+import {
+  GetEducationalOffererResponseModel,
+  GetEducationalOffererVenueResponseModel,
+} from 'apiClient/v1'
 
 export const managedVenueFactory = (
-  userVenueExtends: Partial<IUserVenue>
-): IUserVenue =>
+  userVenueExtends: Partial<GetEducationalOffererVenueResponseModel>
+): GetEducationalOffererVenueResponseModel =>
   merge(
     {},
     {
       id: 'VENUE_ID',
       name: 'Venue name',
-      address: {
-        street: '2 bis Street Name',
-        postalCode: '93100',
-        city: 'Montreuil',
-      },
+      address: '2 bis Street Name',
+      postalCode: '93100',
+      city: 'Montreuil',
+      isVirtual: false,
     },
     userVenueExtends
   )
 
 export const managedVenuesFactory = (
-  managedVenuesExtends: Partial<IUserVenue>[]
-): IUserVenue[] => managedVenuesExtends.map(managedVenueFactory)
+  managedVenuesExtends: Partial<GetEducationalOffererVenueResponseModel>[]
+): GetEducationalOffererVenueResponseModel[] =>
+  managedVenuesExtends.map(managedVenueFactory)
 
 const userOffererFactory = (
-  userOffererExtends: Partial<IUserOfferer>
-): IUserOfferer => {
+  userOffererExtends: Partial<GetEducationalOffererResponseModel>
+): GetEducationalOffererResponseModel => {
   return {
     id: 'OFFERER_ID',
     name: 'offerer name',
@@ -35,5 +38,6 @@ const userOffererFactory = (
 }
 
 export const userOfferersFactory = (
-  userOfferersExtends: Partial<IUserOfferer>[]
-): IUserOfferer[] => userOfferersExtends.map(userOffererFactory)
+  userOfferersExtends: Partial<GetEducationalOffererResponseModel>[]
+): GetEducationalOffererResponseModel[] =>
+  userOfferersExtends.map(userOffererFactory)

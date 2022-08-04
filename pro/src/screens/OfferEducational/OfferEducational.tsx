@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   CanOffererCreateCollectiveOffer,
@@ -8,7 +9,6 @@ import {
   IEducationalCategory,
   IEducationalSubCategory,
   IOfferEducationalFormValues,
-  IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
@@ -26,7 +26,7 @@ export interface IOfferEducationalProps {
   educationalSubCategories: IEducationalSubCategory[]
   initialValues: IOfferEducationalFormValues
   onSubmit(values: IOfferEducationalFormValues): void
-  userOfferers: IUserOfferer[]
+  userOfferers: GetEducationalOffererResponseModel[]
   getIsOffererEligible?: CanOffererCreateCollectiveOffer
   notify: {
     success: (msg: string | null) => void
