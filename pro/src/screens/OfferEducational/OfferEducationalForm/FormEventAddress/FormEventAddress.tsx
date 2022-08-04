@@ -28,6 +28,8 @@ import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_SCHOOL_LABEL,
+  INTERVENTION_AREA_LABEL,
+  INTERVENTION_AREA_SINGULAR_LABEL,
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -165,9 +167,10 @@ const FormEventAddress = ({
               hideTags
               options={offerInterventionOptions}
               fieldName="interventionArea"
-              label="Zones de Mobilités pour l’événement"
-              singularLabel="Zone de Mobilité pour l’événement"
+              label={INTERVENTION_AREA_LABEL}
+              singularLabel={INTERVENTION_AREA_SINGULAR_LABEL}
               className={styles.row}
+              disabled={disableForm}
             />
           </FormLayout.Row>
         )}
