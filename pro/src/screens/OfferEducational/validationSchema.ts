@@ -106,19 +106,26 @@ export const validationSchema = yup.object().shape({
 
 export const validationSchemaWithInterventionArea = validationSchema.concat(
   yup.object().shape({
-    interventionArea: yup.array().when('addressType', {
-      is: OfferAddressType.OFFERER_VENUE,
+    interventionArea: yup.array().when('eventAddress', {
+      is: (eventAddress: { addressType: OfferAddressType }) =>
+        eventAddress.addressType === OfferAddressType.OFFERER_VENUE,
       then: yup.array(),
       otherwise: yup.array().min(1, 'Veuillez renseigner une zone de mobilité'),
     }),
     'search-interventionArea': yup
       .string()
-      .when('interventionArea', (interventionArea, schema) =>
-        schema.test({
-          name: 'search-interventionArea-invalid',
-          message: 'error',
-          test: () => interventionArea.length > 0,
-        })
-      ),
+      .when(['interventionArea', 'eventAddress'], {
+        is: (
+          interventionArea: string[],
+          eventAddress: { addressType: OfferAddressType }
+        ) => {
+          return (
+            eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
+            interventionArea.length === 0
+          )
+        },
+        then: schema => schema.required(''),
+        otherwise: schema => schema,
+      }),
   })
 )
