@@ -10,43 +10,39 @@ export const setInitialFormValues = (
   offererId: string | null,
   venueId: string | null
 ): IOfferEducationalFormValues => {
-  const setOffererId = () => {
-    if (offerers.length === 1) {
-      return offerers[0].id as IOfferEducationalFormValues['offererId']
-    }
+  let computedOffererId = DEFAULT_EAC_FORM_VALUES.offererId
+  let computedVenueId = DEFAULT_EAC_FORM_VALUES.venueId
 
-    if (offererId) {
-      return offererId as IOfferEducationalFormValues['offererId']
-    }
-
-    return DEFAULT_EAC_FORM_VALUES.offererId
+  if (offerers.length === 1) {
+    computedOffererId = offerers[0]
+      .id as IOfferEducationalFormValues['offererId']
   }
 
-  const setVenueId = () => {
-    if (offerers.length === 1 && offerers[0].managedVenues.length === 1) {
-      return offerers[0].managedVenues[0]
+  if (offererId) {
+    computedOffererId = offererId as IOfferEducationalFormValues['offererId']
+  }
+
+  if (offerers.length === 1 && offerers[0].managedVenues.length === 1) {
+    computedVenueId = offerers[0].managedVenues[0]
+      .id as IOfferEducationalFormValues['venueId']
+  }
+
+  if (offererId) {
+    const currentOfferer = offerers.find(offerer => offerer.id === offererId)
+
+    if (currentOfferer?.managedVenues.length === 1) {
+      computedVenueId = currentOfferer.managedVenues[0]
         .id as IOfferEducationalFormValues['venueId']
     }
+  }
 
-    if (offererId) {
-      const currentOfferer = offerers.find(offerer => offerer.id === offererId)
-
-      if (currentOfferer?.managedVenues.length === 1) {
-        return currentOfferer.managedVenues[0]
-          .id as IOfferEducationalFormValues['venueId']
-      }
-    }
-
-    if (venueId) {
-      return venueId as IOfferEducationalFormValues['venueId']
-    }
-
-    return DEFAULT_EAC_FORM_VALUES.venueId
+  if (venueId) {
+    computedVenueId = venueId as IOfferEducationalFormValues['venueId']
   }
 
   return {
     ...values,
-    offererId: setOffererId(),
-    venueId: setVenueId(),
+    offererId: computedOffererId,
+    venueId: computedVenueId,
   }
 }
