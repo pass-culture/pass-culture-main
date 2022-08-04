@@ -124,8 +124,15 @@
   .banner {
     margin: rem.torem(32px) 0;
 
+    p {
+      display: flex;
+      align-items: center;
+    }
+
     a {
-      margin: rem.torem(8px);
+      margin: 0 rem.torem(8px);
+      display: inline-flex;
+      align-items: center;
     }
   }
 

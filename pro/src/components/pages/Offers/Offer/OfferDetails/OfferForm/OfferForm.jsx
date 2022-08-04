@@ -16,7 +16,6 @@ import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import InternalBanner from 'components/layout/InternalBanner'
 import Spinner from 'components/layout/Spinner'
 import {
   Events,
@@ -26,6 +25,7 @@ import { OFFER_WITHDRAWAL_TYPE_OPTIONS, EXTRA_DATA_FIELDS } from 'core/Offers'
 import { OfferRefundWarning } from 'new_components/Banner'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SubmitButton } from 'ui-kit'
+import InternalBanner from 'ui-kit/Banners/InternalBanner'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { sortByDisplayName } from 'utils/strings'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
@@ -749,7 +749,7 @@ const OfferForm = ({
           {isTypeOfflineButOnlyVirtualVenues && (
             <InternalBanner
               extraClassName="no-physical-venue"
-              href={`/structures/${formValues.offererId}/lieux/creation`}
+              to={`/structures/${formValues.offererId}/lieux/creation`}
               linkTitle="+ Ajouter un lieu"
               subtitle="Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures."
               type="notification-info"

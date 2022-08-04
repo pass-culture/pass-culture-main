@@ -1,8 +1,0 @@
-@use 'styles/mixins/_rem.scss' as rem;
-
-div.internal-banner {
-  .internal-link img {
-    flex: 0 1 rem.torem(18px);
-    width: rem.torem(24px);
-  }
-}

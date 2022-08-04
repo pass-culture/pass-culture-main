@@ -4,33 +4,25 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as CloseIcon } from 'icons/icons-close.svg'
 
-import styles from './Banner.module.scss'
+import styles from './BannerLayout.module.scss'
 
-export interface IBannerProps {
-  icon?: string
-  href?: string
-  linkTitle?: string
+export interface IBannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
-  targetLink?: string
+  linkNode?: React.ReactNode | React.ReactNode[]
   type?: 'notification-info' | 'attention' | 'light' | 'new'
   closable?: boolean
   handleOnClick?: () => void
   className?: string
-  hideLinkIcon?: boolean
 }
 
-const Banner = ({
-  icon = 'ico-external-site',
-  href,
-  linkTitle,
+const BannerLayout = ({
   children,
-  targetLink = '_blank',
   type = 'attention',
   closable = false,
   handleOnClick,
   className,
-  hideLinkIcon = false,
-}: IBannerProps): JSX.Element => {
+  linkNode,
+}: IBannerLayoutProps): JSX.Element => {
   return (
     <div className={cn(styles['bi-banner'], styles[type], className)}>
       {closable && (
@@ -49,23 +41,11 @@ const Banner = ({
         <div>
           {children && <p className={styles['bi-banner-text']}>{children}</p>}
 
-          {href && linkTitle && (
-            <p className={styles['bi-banner-text']}>
-              <a
-                className={cn(styles['bi-link'])}
-                href={href}
-                rel="noopener noreferrer"
-                target={targetLink}
-              >
-                {!hideLinkIcon && <Icon svg={icon} />}
-                {linkTitle}
-              </a>
-            </p>
-          )}
+          {linkNode}
         </div>
       </div>
     </div>
   )
 }
 
-export default Banner
+export default BannerLayout

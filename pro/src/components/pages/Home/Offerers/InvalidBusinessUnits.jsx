@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-import InternalBanner from 'components/layout/InternalBanner'
+import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
   const businessUnitRoutePath = `/structures/${offererId}/point-de-remboursement/`
@@ -21,7 +21,7 @@ const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
 
       <div className="h-card-content">
         <InternalBanner
-          href={businessUnitRoutePath}
+          to={businessUnitRoutePath}
           icon="ico-outer-pen"
           linkTitle="Renseigner un SIRET de référence"
           targetLink="_self"
