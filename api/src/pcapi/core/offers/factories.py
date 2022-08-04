@@ -100,7 +100,7 @@ class EducationalEventShadowOfferFactory(EducationalEventOfferFactory):
             "venueId": "",
         },
         "contactEmail": "miss.rond@point.com",
-        "contactPhone": "01010100101",
+        "contactPhone": "0101010101",
         "isShowcase": True,
     }
 

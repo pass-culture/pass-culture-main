@@ -39,7 +39,7 @@ class Returns200Test:
                 "venueId": "",
             },
             collectiveStock__collectiveOffer__contactEmail="miss.rond@point.com",
-            collectiveStock__collectiveOffer__contactPhone="01010100101",
+            collectiveStock__collectiveOffer__contactPhone="0101010101",
             collectiveStock__collectiveOffer__audioDisabilityCompliant=True,
             collectiveStock__collectiveOffer__visualDisabilityCompliant=True,
             collectiveStock__collectiveOffer__subcategoryId="SEANCE_CINE",
@@ -69,7 +69,7 @@ class Returns200Test:
                     "city": venue.city,
                     "confirmationDate": format_into_utc_date(booking.confirmationDate),
                     "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
-                    "contact": {"email": "miss.rond@point.com", "phone": "01010100101"},
+                    "contact": {"email": "miss.rond@point.com", "phone": "0101010101"},
                     "coordinates": {
                         "latitude": float(venue.latitude),
                         "longitude": float(venue.longitude),
