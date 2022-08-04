@@ -10,6 +10,7 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
+from pcapi.connectors import sirene
 import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.core.payments.exceptions import DepositTypeAlreadyGrantedException
 from pcapi.models.api_errors import ApiErrors
@@ -155,3 +156,24 @@ def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
 def handle_ratio_error(error: ImageRatioError) -> ApiErrorResponse:
     logger.info("Image ratio error: %s", error)
     return jsonify({"code": "BAD_IMAGE_RATIO", "extra": str(error)}), 400
+
+
+@app.errorhandler(sirene.UnknownEntityException)
+def handle_unknown_entity_exception(error: sirene.UnknownEntityException) -> ApiErrorResponse:
+    msg = "Ce SIREN ou SIRET n'existe pas."
+    err = {"global": [msg]}
+    return jsonify(err), 400
+
+
+@app.errorhandler(sirene.InvalidFormatException)
+def handle_sirene_invalid_format_exception(error: sirene.InvalidFormatException) -> ApiErrorResponse:
+    msg = "Le format de ce SIREN ou SIRET est incorrect."
+    err = {"global": [msg]}
+    return jsonify(err), 400
+
+
+@app.errorhandler(sirene.NonPublicDataException)
+def handle_sirene_non_public_data_exception(error: sirene.NonPublicDataException) -> ApiErrorResponse:
+    msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
+    err = {"global": [msg]}
+    return jsonify(err), 400

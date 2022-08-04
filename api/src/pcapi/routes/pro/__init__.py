@@ -15,6 +15,7 @@ def install_routes(app: Flask) -> None:
     from . import providers
     from . import reimbursements
     from . import signup
+    from . import sirene
     from . import stocks
     from . import users
     from . import validate

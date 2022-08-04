@@ -60,6 +60,7 @@ import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
+import type { SirenInfo } from '../models/SirenInfo';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StockIdsResponseModel } from '../models/StockIdsResponseModel';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
@@ -1206,6 +1207,28 @@ export class DefaultService {
         'venueId': venueId,
         'reimbursementPeriodBeginningDate': reimbursementPeriodBeginningDate,
         'reimbursementPeriodEndingDate': reimbursementPeriodEndingDate,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_siren_info <GET>
+   * @param siren
+   * @returns SirenInfo OK
+   * @throws ApiError
+   */
+  public getSirenInfo(
+    siren: string,
+  ): CancelablePromise<SirenInfo> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/sirene/siren/{siren}',
+      path: {
+        'siren': siren,
       },
       errors: {
         403: `Forbidden`,
