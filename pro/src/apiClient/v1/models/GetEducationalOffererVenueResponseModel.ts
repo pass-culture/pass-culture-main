@@ -6,6 +6,7 @@ export type GetEducationalOffererVenueResponseModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   city?: string | null;
+  collectiveInterventionArea?: Array<string> | null;
   id: string;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;
