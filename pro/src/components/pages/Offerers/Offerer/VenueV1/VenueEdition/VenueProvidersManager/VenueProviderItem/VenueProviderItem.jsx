@@ -5,10 +5,7 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-import {
-  isAllocineProvider,
-  isCinemaProvider,
-} from 'components/pages/Offers/domain/localProvider'
+import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 

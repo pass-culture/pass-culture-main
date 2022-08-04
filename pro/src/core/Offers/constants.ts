@@ -111,3 +111,21 @@ export const WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE = [
   'FESTIVAL_SPECTACLE',
   'SPECTACLE_REPRESENTATION',
 ]
+
+export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
+  ALL_PROVIDERS: [
+    'audioDisabilityCompliant',
+    'mentalDisabilityCompliant',
+    'motorDisabilityCompliant',
+    'visualDisabilityCompliant',
+    'externalTicketOfficeUrl',
+  ],
+  ALLOCINE: ['isDuo'],
+}
+
+export const EDITED_OFFER_READ_ONLY_FIELDS = [
+  'categoryId',
+  'subcategoryId',
+  'offererId',
+  'venueId',
+]

@@ -6,12 +6,10 @@ import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
 } from 'components/pages/Offers/domain/localProvider'
+import { EDITED_OFFER_READ_ONLY_FIELDS } from 'core/Offers'
 import { computeOffersUrl } from 'core/Offers/utils'
 
-import {
-  DEFAULT_FORM_VALUES,
-  EDITED_OFFER_READ_ONLY_FIELDS,
-} from '../_constants'
+import { DEFAULT_FORM_VALUES } from '../_constants'
 import OfferForm from '../OfferForm'
 
 const OfferEdition = ({
