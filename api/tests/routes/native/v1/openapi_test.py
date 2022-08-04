@@ -177,6 +177,7 @@ def test_public_api(client):
                     "properties": {
                         "accountCreationMinimumAge": {"title": "Accountcreationminimumage", "type": "integer"},
                         "appEnableAutocomplete": {"title": "Appenableautocomplete", "type": "boolean"},
+                        "appEnableCategoryFilterPage": {"title": "Appenablecategoryfilterpage", "type": "boolean"},
                         "appEnableSearchHomepageRework": {"title": "Appenablesearchhomepagerework", "type": "boolean"},
                         "autoActivateDigitalBookings": {"title": "Autoactivatedigitalbookings", "type": "boolean"},
                         "depositAmountsByAge": {
@@ -206,6 +207,7 @@ def test_public_api(client):
                     "required": [
                         "accountCreationMinimumAge",
                         "appEnableAutocomplete",
+                        "appEnableCategoryFilterPage",
                         "appEnableSearchHomepageRework",
                         "autoActivateDigitalBookings",
                         "displayDmsRedirection",
