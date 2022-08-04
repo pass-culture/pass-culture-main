@@ -20,6 +20,7 @@ class SettingsTest:
         PRO_DISABLE_EVENTS_QRCODE=False,
         APP_ENABLE_SEARCH_HOMEPAGE_REWORK=False,
         APP_ENABLE_AUTOCOMPLETE=True,
+        APP_ENABLE_CATEGORY_FILTER_PAGE=False,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -27,6 +28,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": True,
+            "appEnableCategoryFilterPage": False,
             "appEnableSearchHomepageRework": False,
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
@@ -59,6 +61,7 @@ class SettingsTest:
         ALLOW_ACCOUNT_UNSUSPENSION=True,
         APP_ENABLE_SEARCH_HOMEPAGE_REWORK=True,
         APP_ENABLE_AUTOCOMPLETE=False,
+        APP_ENABLE_CATEGORY_FILTER_PAGE=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -66,6 +69,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": False,
+            "appEnableCategoryFilterPage": True,
             "appEnableSearchHomepageRework": True,
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
