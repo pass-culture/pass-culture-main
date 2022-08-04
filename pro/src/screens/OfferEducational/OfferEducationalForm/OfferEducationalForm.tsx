@@ -2,11 +2,8 @@ import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import {
-  IOfferEducationalFormValues,
-  IUserOfferer,
-  Mode,
-} from 'core/OfferEducational'
+import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
@@ -42,9 +39,8 @@ const OfferEducationalForm = ({
   domainsOptions,
 }: IOfferEducationalFormProps): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
-  const [currentOfferer, setCurrentOfferer] = useState<IUserOfferer | null>(
-    null
-  )
+  const [currentOfferer, setCurrentOfferer] =
+    useState<GetEducationalOffererResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isEligible, setIsEligible] = useState<boolean>()
 
