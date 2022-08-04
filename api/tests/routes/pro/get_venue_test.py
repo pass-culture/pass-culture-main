@@ -131,7 +131,7 @@ class Returns200Test:
             "collectiveDescription": None,
             "collectiveDomains": [],
             "collectiveEmail": None,
-            "collectiveInterventionArea": None,
+            "collectiveInterventionArea": ["75", "92"],
             "collectiveLegalStatus": None,
             "collectiveNetwork": None,
             "collectivePhone": None,

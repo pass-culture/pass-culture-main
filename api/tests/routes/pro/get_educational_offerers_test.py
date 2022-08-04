@@ -13,7 +13,7 @@ class GetEducationalOfferersTest:
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
         not_validated_offerer = offerers_factories.OffererFactory(validationToken="validationToken")
-        venue_offerer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1)
+        venue_offerer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1, collectiveInterventionArea=None)
         venue_offerer_2 = offerers_factories.VenueFactory(managingOfferer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_2)
@@ -42,6 +42,7 @@ class GetEducationalOfferersTest:
                             "postalCode": venue_offerer_1.postalCode,
                             "visualDisabilityCompliant": venue_offerer_1.visualDisabilityCompliant,
                             "name": venue_offerer_1.name,
+                            "collectiveInterventionArea": None,
                         }
                     ],
                 },
@@ -61,6 +62,7 @@ class GetEducationalOfferersTest:
                             "postalCode": venue_offerer_2.postalCode,
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
                             "name": venue_offerer_2.name,
+                            "collectiveInterventionArea": ["75", "92"],
                         }
                     ],
                 },
@@ -116,6 +118,7 @@ class GetEducationalOfferersTest:
                             "postalCode": venue_offerer_2.postalCode,
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
                             "name": venue_offerer_2.name,
+                            "collectiveInterventionArea": ["75", "92"],
                         }
                     ],
                 },
