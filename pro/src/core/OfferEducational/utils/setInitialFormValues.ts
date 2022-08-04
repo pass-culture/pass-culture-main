@@ -1,12 +1,12 @@
+import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
-  IUserOfferer,
 } from 'core/OfferEducational'
 
 export const setInitialFormValues = (
   values: IOfferEducationalFormValues,
-  offerers: IUserOfferer[],
+  offerers: GetEducationalOffererResponseModel[],
   offererId: string | null,
   venueId: string | null
 ): IOfferEducationalFormValues => {

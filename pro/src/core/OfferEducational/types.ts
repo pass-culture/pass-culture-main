@@ -8,22 +8,6 @@ import {
 } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
 
-export type IUserVenue = {
-  id: string
-  name: string
-  address: {
-    street: string
-    city: string
-    postalCode: string
-  }
-}
-
-export type IUserOfferer = {
-  id: string
-  name: string
-  managedVenues: IUserVenue[]
-}
-
 export type IEducationalCategory = {
   id: string
   label: string
