@@ -58,6 +58,7 @@ class VenueFactory(BaseFactory):
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
+    collectiveInterventionArea = ["75", "92"]
 
     @factory.post_generation
     def business_unit_venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
