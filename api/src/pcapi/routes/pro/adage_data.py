@@ -33,7 +33,7 @@ def get_educational_institutions(
         per_page_limit=query.per_page_limit,
     )
     return educational_institutions.EducationalInstitutionsResponseModel.construct(
-        educationalInstitutions=[
+        educational_institutions=[
             educational_institutions.EducationalInstitutionResponseModel.construct(
                 id=institution.id,
                 name=institution.name,
