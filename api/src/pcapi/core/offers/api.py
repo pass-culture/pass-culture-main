@@ -32,8 +32,6 @@ from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
@@ -323,28 +321,23 @@ def update_offer(
 
 def update_collective_offer(
     offer_id: int,
-    is_offer_showcase: bool,
     new_values: dict,
 ) -> None:
-    cls = educational_models.CollectiveOfferTemplate if is_offer_showcase else educational_models.CollectiveOffer
-
-    offer_to_update = cls.query.filter(cls.id == offer_id).first()  # type: ignore [attr-defined]
+    offer_to_update = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id == offer_id
+    ).first()
 
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
-    if is_offer_showcase:
-        search.async_index_collective_offer_template_ids([offer_to_update.id])
-    else:
-        search.async_index_collective_offer_ids([offer_to_update.id])
+    search.async_index_collective_offer_ids([offer_to_update.id])
 
-    if not is_offer_showcase:
-        educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
-            offer_to_update.id,
-            updated_fields,
-        )
+    educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
+        offer_to_update.id,
+        updated_fields,
+    )
 
 
-def update_collective_offe_template(offer_id: int, new_values: dict) -> None:
+def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     query = educational_models.CollectiveOfferTemplate.query
     query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
     offer_to_update = query.first()
@@ -352,7 +345,9 @@ def update_collective_offe_template(offer_id: int, new_values: dict) -> None:
     search.async_index_collective_offer_template_ids([offer_to_update.id])
 
 
-def _update_collective_offer(offer: CollectiveOffer | CollectiveOfferTemplate, new_values: dict) -> list[str]:
+def _update_collective_offer(
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate, new_values: dict
+) -> list[str]:
     validation.check_validation_status(offer)
     # This variable is meant for Adage mailing
     updated_fields = []
@@ -404,8 +399,8 @@ def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]
 
 def batch_update_collective_offers(query, update_fields):  # type: ignore [no-untyped-def]
     collective_offer_ids_tuples = query.filter(
-        CollectiveOffer.validation == OfferValidationStatus.APPROVED
-    ).with_entities(CollectiveOffer.id)
+        educational_models.CollectiveOffer.validation == OfferValidationStatus.APPROVED
+    ).with_entities(educational_models.CollectiveOffer.id)
 
     collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
     number_of_collective_offers_to_update = len(collective_offer_ids)
@@ -416,7 +411,9 @@ def batch_update_collective_offers(query, update_fields):  # type: ignore [no-un
             current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
         ]
 
-        query_to_update = CollectiveOffer.query.filter(CollectiveOffer.id.in_(collective_offer_ids_batch))
+        query_to_update = educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
+        )
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
 
@@ -425,8 +422,8 @@ def batch_update_collective_offers(query, update_fields):  # type: ignore [no-un
 
 def batch_update_collective_offers_template(query, update_fields):  # type: ignore [no-untyped-def]
     collective_offer_ids_tuples = query.filter(
-        CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED
-    ).with_entities(CollectiveOfferTemplate.id)
+        educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED
+    ).with_entities(educational_models.CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
     number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
@@ -437,8 +434,8 @@ def batch_update_collective_offers_template(query, update_fields):  # type: igno
             current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
         ]
 
-        query_to_update = CollectiveOfferTemplate.query.filter(
-            CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
+        query_to_update = educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
@@ -979,9 +976,9 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
         return False
     if isinstance(offer, Offer):
         search.async_index_offer_ids([offer.id])
-    elif isinstance(offer, CollectiveOffer):
+    elif isinstance(offer, educational_models.CollectiveOffer):
         search.async_index_collective_offer_ids([offer.id])
-    elif isinstance(offer, CollectiveOfferTemplate):
+    elif isinstance(offer, educational_models.CollectiveOfferTemplate):
         search.async_index_collective_offer_template_ids([offer.id])
     template = f"{type(offer)} validation status updated"
     logger.info(template, extra={"offer": offer.id})
@@ -1075,7 +1072,9 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: str | Non
 
 
 def cancel_collective_offer_booking(offer_id: int) -> None:
-    collective_offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer_id).first()
+    collective_offer = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id == offer_id
+    ).first()
 
     if collective_offer.collectiveStock is None:
         raise offers_exceptions.StockNotFound()
