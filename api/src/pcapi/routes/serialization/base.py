@@ -46,8 +46,6 @@ class VenueContactModel(BaseModel):
 
 VenueImageCredit = pydantic.constr(strip_whitespace=True, min_length=1, max_length=255)
 
-VenueDescription = pydantic.constr(max_length=1000, strip_whitespace=True)
-
 
 class BaseVenueResponse(BaseModel):
     isVirtual: bool
@@ -57,7 +55,7 @@ class BaseVenueResponse(BaseModel):
     bannerUrl: str | None
     contact: VenueContactModel | None
     city: str | None
-    description: VenueDescription | None  # type: ignore
+    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
     isPermanent: bool | None
     latitude: float | None
     longitude: float | None

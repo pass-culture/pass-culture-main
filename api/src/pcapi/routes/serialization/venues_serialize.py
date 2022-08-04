@@ -47,7 +47,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     venueLabelId: str | None
     venueTypeCode: str
     withdrawalDetails: str | None
-    description: base.VenueDescription | None  # type: ignore
+    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
     contact: base.VenueContactModel | None
     # FUTURE-NEW-BANK-DETAILS: remove businessUnitId when new bank details journey is complete
     businessUnitId: int | None
@@ -307,7 +307,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     isAccessibilityAppliedOnAllOffers: bool | None
     isWithdrawalAppliedOnAllOffers: bool | None
     isEmailAppliedOnAllOffers: bool | None
-    description: base.VenueDescription | None  # type: ignore
+    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore
     contact: base.VenueContactModel | None
     businessUnitId: int | None
     reimbursementPointId: int | None

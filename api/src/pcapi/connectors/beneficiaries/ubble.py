@@ -42,7 +42,7 @@ def _get_included_attributes(
 ) -> ubble_fraud_models.UbbleIdentificationObject:
     filtered = list(filter(lambda included: included["type"] == type_, response["included"]))  # type: ignore [index]
     attributes = INCLUDED_MODELS[type_](**filtered[0].get("attributes")) if filtered else None
-    return attributes  # type: ignore [return-value]
+    return attributes
 
 
 def _get_data_attribute(response: ubble_fraud_models.UbbleIdentificationResponse, name: str) -> typing.Any:
