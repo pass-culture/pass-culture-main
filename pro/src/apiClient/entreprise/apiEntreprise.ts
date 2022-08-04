@@ -1,4 +1,4 @@
-import { ApiError } from 'api/helpers'
+import { ApiError } from 'apiClient/entreprise/helpers'
 
 import { API_ENTREPRISE_BASE_URL } from './constants'
 import type {

@@ -1,5 +1,5 @@
-import { isApiError } from 'api/helpers'
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import { serializeApiErrors, serializePostOffer } from './serializers'
@@ -24,8 +24,8 @@ const createIndividualOffer: TCreateIndividualOffer = async formValues => {
     }
   } catch (error) {
     let formErrors = {}
-    if (isApiError(error)) {
-      formErrors = error.content.errors
+    if (isErrorAPIError(error)) {
+      formErrors = error.body
     }
     return {
       isOk: false,
