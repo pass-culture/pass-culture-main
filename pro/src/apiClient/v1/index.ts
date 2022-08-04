@@ -11,6 +11,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnerResponseModel } from './models/AdageCulturalPartnerResponseModel';
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
+export type { Address } from './models/Address';
 export type { BannerMetaModel } from './models/BannerMetaModel';
 export { BookingExportType } from './models/BookingExportType';
 export type { BookingRecapResponseBeneficiaryModel } from './models/BookingRecapResponseBeneficiaryModel';
@@ -132,6 +133,7 @@ export type { ReimbursementPointListResponseModel } from './models/Reimbursement
 export type { ReimbursementPointResponseModel } from './models/ReimbursementPointResponseModel';
 export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserResponseModel';
 export type { SharedLoginUserResponseModel } from './models/SharedLoginUserResponseModel';
+export type { SirenInfo } from './models/SirenInfo';
 export type { StockCreationBodyModel } from './models/StockCreationBodyModel';
 export type { StockEditionBodyModel } from './models/StockEditionBodyModel';
 export type { StockIdResponseModel } from './models/StockIdResponseModel';
