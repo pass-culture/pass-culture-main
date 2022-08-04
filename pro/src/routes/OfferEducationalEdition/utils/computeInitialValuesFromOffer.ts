@@ -1,9 +1,9 @@
 import {
+  GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import {
-  CollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   PARTICIPANTS,
@@ -22,7 +22,9 @@ const computeDurationString = (
 }
 
 export const computeInitialValuesFromOffer = (
-  offer: CollectiveOffer | GetCollectiveOfferTemplateResponseModel,
+  offer:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel,
   category: string,
   subCategory: SubcategoryIdEnum
 ): Omit<IOfferEducationalFormValues, 'offererId' | 'venueId'> => {
@@ -69,7 +71,7 @@ export const computeInitialValuesFromOffer = (
     notificationEmail:
       offer.bookingEmail ?? DEFAULT_EAC_FORM_VALUES.notificationEmail,
     domains,
-    // FIXME : set offer.interventionArea when backend is ready
-    interventionArea: DEFAULT_EAC_FORM_VALUES.interventionArea,
+    interventionArea:
+      offer.interventionArea ?? DEFAULT_EAC_FORM_VALUES.interventionArea,
   }
 }

@@ -15,3 +15,6 @@ export const EMAIL_LABEL = 'E-mail'
 export const NOTIFICATIONS_LABEL = 'Être notifié par e-mail des réservations'
 export const NOTIFICATIONS_EMAIL_LABEL =
   'E-mail auquel envoyer les notifications'
+export const INTERVENTION_AREA_LABEL = 'Zones de Mobilités pour l’événement'
+export const INTERVENTION_AREA_SINGULAR_LABEL =
+  'Zone de Mobilité pour l’événement'
