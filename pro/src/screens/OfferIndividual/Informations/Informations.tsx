@@ -28,6 +28,7 @@ export interface IInformationsProps {
   venueList: TOfferIndividualVenue[]
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
+  readOnlyFields?: string[]
 }
 
 const Informations = ({
@@ -36,6 +37,7 @@ const Informations = ({
   venueList,
   categories,
   subCategories,
+  readOnlyFields = [],
 }: IInformationsProps): JSX.Element => {
   const history = useHistory()
 
@@ -74,6 +76,7 @@ const Informations = ({
           venueList={venueList}
           categories={filteredCategories}
           subCategories={filteredSubCategories}
+          readOnlyFields={readOnlyFields}
         />
 
         <OfferFormLayout.ActionBar>

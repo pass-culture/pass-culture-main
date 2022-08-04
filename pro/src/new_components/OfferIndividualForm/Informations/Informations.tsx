@@ -6,7 +6,13 @@ import { TextArea, TextInput } from 'ui-kit'
 
 import { IOfferIndividualFormValues } from '../types'
 
-const Informations = (): JSX.Element => {
+export interface IInformationsProps {
+  readOnlyFields: string[]
+}
+
+const Informations = ({
+  readOnlyFields = [],
+}: IInformationsProps): JSX.Element => {
   const {
     values: { subCategoryFields },
   } = useFormikContext<IOfferIndividualFormValues>()
@@ -27,6 +33,7 @@ const Informations = (): JSX.Element => {
           label="Titre de l'offre"
           maxLength={90}
           name="name"
+          disabled={readOnlyFields.includes('name')}
         />
       </FormLayout.Row>
       <FormLayout.Row>
@@ -36,6 +43,7 @@ const Informations = (): JSX.Element => {
           label="Description"
           maxLength={1000}
           name="description"
+          disabled={readOnlyFields.includes('name')}
         />
       </FormLayout.Row>
       {hasSpeaker && (

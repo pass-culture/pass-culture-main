@@ -16,16 +16,23 @@ import { ShowTypes } from './ShowTypes'
 export interface ICategoriesProps {
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
+  readOnlyFields?: string[]
 }
 
 const Categories = ({
   categories,
   subCategories,
+  readOnlyFields = [],
 }: ICategoriesProps): JSX.Element => {
-  const { values: formValues, setFieldValue } =
-    useFormikContext<IOfferIndividualFormValues>()
+  const {
+    values: formValues,
+    setFieldValue,
+    touched,
+  } = useFormikContext<IOfferIndividualFormValues>()
   useEffect(() => {
-    setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
+    if (touched.subcategoryId === true) {
+      setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
+    }
   }, [formValues.categoryId])
 
   const categoryOptions: SelectOptions = categories
@@ -54,24 +61,28 @@ const Categories = ({
             label: 'Choisir une catégorie',
             value: FORM_DEFAULT_VALUES.categoryId,
           }}
+          disabled={readOnlyFields.includes('categoryId')}
         />
       </FormLayout.Row>
 
       {hasSubCategory && (
         <FormLayout.Row>
-          <SelectSubCategory subCategories={subCategories} />
+          <SelectSubCategory
+            subCategories={subCategories}
+            readOnly={readOnlyFields.includes('subcategoryId')}
+          />
         </FormLayout.Row>
       )}
 
       {hasMusicType && (
         <FormLayout.Row>
-          <MusicTypes />
+          <MusicTypes readOnly={readOnlyFields.includes('musicType')} />
         </FormLayout.Row>
       )}
 
       {hasShowType && (
         <FormLayout.Row>
-          <ShowTypes />
+          <ShowTypes readOnly={readOnlyFields.includes('showType')} />
         </FormLayout.Row>
       )}
     </FormLayout.Section>

@@ -9,7 +9,10 @@ import {
 } from 'new_components/OfferIndividualForm'
 import { Select } from 'ui-kit'
 
-const MusicTypes = (): JSX.Element => {
+interface IMusicTypesProps {
+  readOnly?: boolean
+}
+const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
   const [musicTypesOptions, setMusicTypesOptions] = useState<{
     musicType: SelectOptions
     musicSubType: SelectOptions
@@ -64,6 +67,7 @@ const MusicTypes = (): JSX.Element => {
             label: 'Choisir un genre musical',
             value: FORM_DEFAULT_VALUES.musicType,
           }}
+          disabled={readOnly}
         />
       </FormLayout.Row>
 
@@ -77,6 +81,7 @@ const MusicTypes = (): JSX.Element => {
               label: 'Choisir un sous-genre',
               value: FORM_DEFAULT_VALUES.musicSubType,
             }}
+            disabled={readOnly}
           />
         </FormLayout.Row>
       )}

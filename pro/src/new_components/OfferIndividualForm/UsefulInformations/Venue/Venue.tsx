@@ -13,9 +13,14 @@ import { buildOffererOptions, buildVenueOptions } from './utils'
 export interface IVenueProps {
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
+  readOnlyFields?: string[]
 }
 
-const Venue = ({ offererNames, venueList }: IVenueProps): JSX.Element => {
+const Venue = ({
+  offererNames,
+  venueList,
+  readOnlyFields = [],
+}: IVenueProps): JSX.Element => {
   const { values } = useFormikContext<IOfferIndividualFormValues>()
   const { isDisabled: isOffererDisabled, offererOptions } =
     buildOffererOptions(offererNames)
@@ -31,7 +36,7 @@ const Venue = ({ offererNames, venueList }: IVenueProps): JSX.Element => {
     <>
       <FormLayout.Row>
         <Select
-          disabled={isOffererDisabled}
+          disabled={isOffererDisabled || readOnlyFields.includes('offererId')}
           label="Structure"
           name="offererId"
           options={offererOptions}
@@ -39,7 +44,7 @@ const Venue = ({ offererNames, venueList }: IVenueProps): JSX.Element => {
       </FormLayout.Row>
       <FormLayout.Row>
         <Select
-          disabled={isVenueDisabled}
+          disabled={isVenueDisabled || readOnlyFields.includes('venueId')}
           label="Lieu"
           name="venueId"
           options={venueOptions}
