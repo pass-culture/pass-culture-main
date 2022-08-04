@@ -4,10 +4,12 @@ from operator import or_
 import typing
 
 import pytz
+import sentry_sdk
 from sqlalchemy import and_
 
 from pcapi.core import search
 import pcapi.core.booking_providers.api as booking_providers_api
+from pcapi.core.booking_providers.api import _get_venue_booking_provider
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
@@ -173,6 +175,9 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
         and is_active_venue_booking_provider
     ):
+        venue_booking_provider_name = _get_venue_booking_provider(stock.offer.venueId).bookingProvider.name.value
+        sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider_name)
+
         if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():  # type: ignore [arg-type]
             show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))  # type: ignore [arg-type]
         else:
