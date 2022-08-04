@@ -5,6 +5,7 @@ import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   CanOffererCreateCollectiveOffer,
+  DEFAULT_EAC_FORM_VALUES,
   GetEducationalDomainsAdapter,
   IEducationalCategory,
   IEducationalSubCategory,
@@ -87,6 +88,19 @@ const OfferEducational = ({
       setDomainsOptions(result.payload)
     })
   }, [])
+
+  useEffect(() => {
+    if (formik.values.offererId && formik.values.venueId) {
+      formik.setFieldValue(
+        'interventionArea',
+        userOfferers
+          .find(({ id }) => id === formik.values.offererId)
+          ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
+          ?.collectiveInterventionArea ??
+          DEFAULT_EAC_FORM_VALUES.interventionArea
+      )
+    }
+  }, [formik.values.venueId, formik.values.offererId])
 
   return (
     <>
