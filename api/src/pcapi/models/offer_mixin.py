@@ -1,6 +1,7 @@
 import enum
 
 import sqlalchemy as sa
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import declarative_mixin
 
 
@@ -34,7 +35,7 @@ class OfferValidationType(enum.Enum):
 
 @declarative_mixin
 class StatusMixin:
-    @sa.ext.hybrid.hybrid_property
+    @hybrid_property
     def status(self) -> OfferStatus:
         if self.validation == OfferValidationStatus.REJECTED:
             return OfferStatus.REJECTED
