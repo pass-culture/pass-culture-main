@@ -57,6 +57,7 @@ def test_serialize_offer():
             "name": "Titre formidable",
             "prices": [decimal.Decimal("10.00")],
             "searchGroupName": "LIVRE",
+            "searchGroupNamev2": "LIVRES",
             "stocksDateCreated": [stock.dateCreated.timestamp()],
             "students": [],
             "subcategoryId": offer.subcategory.id,
