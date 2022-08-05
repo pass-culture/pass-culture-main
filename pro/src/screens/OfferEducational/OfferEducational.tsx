@@ -91,14 +91,29 @@ const OfferEducational = ({
 
   useEffect(() => {
     if (formik.values.offererId && formik.values.venueId) {
-      formik.setFieldValue(
-        'interventionArea',
-        userOfferers
-          .find(({ id }) => id === formik.values.offererId)
-          ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
-          ?.collectiveInterventionArea ??
-          DEFAULT_EAC_FORM_VALUES.interventionArea
-      )
+      const venue = userOfferers
+        .find(({ id }) => id === formik.values.offererId)
+        ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
+
+      const noDisabilityCompliant =
+        !venue?.visualDisabilityCompliant &&
+        !venue?.mentalDisabilityCompliant &&
+        !venue?.motorDisabilityCompliant &&
+        !venue?.audioDisabilityCompliant
+
+      formik.setValues({
+        ...formik.values,
+        interventionArea:
+          venue?.collectiveInterventionArea ??
+          DEFAULT_EAC_FORM_VALUES.interventionArea,
+        accessibility: {
+          visual: Boolean(venue?.visualDisabilityCompliant),
+          mental: Boolean(venue?.mentalDisabilityCompliant),
+          motor: Boolean(venue?.motorDisabilityCompliant),
+          audio: Boolean(venue?.audioDisabilityCompliant),
+          none: noDisabilityCompliant,
+        },
+      })
     }
   }, [formik.values.venueId, formik.values.offererId])
 
