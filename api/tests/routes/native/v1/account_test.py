@@ -1995,20 +1995,23 @@ class UnsuspendAccountTest:
         users_factories.SuspendedUponUserRequestFactory(user=user)
 
         with override_features(ALLOW_ACCOUNT_UNSUSPENSION=False):
-            self.assert_code_and_not_active(client, user, "ACCOUNT_UNSUSPENSION_NOT_ENABLED")
+            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+            self.assert_code_and_not_active(response, user, "ACCOUNT_UNSUSPENSION_NOT_ENABLED")
 
     def test_error_when_not_suspended(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=True)
 
         with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            self.assert_code(client, user, "ALREADY_UNSUSPENDED")
+            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+            self.assert_code(response, "ALREADY_UNSUSPENDED")
 
     def test_error_when_not_suspended_upon_user_request(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         users_factories.UserSuspensionByFraudFactory(user=user)
 
         with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            self.assert_code_and_not_active(client, user, "UNSUSPENSION_NOT_ALLOWED")
+            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+            self.assert_code_and_not_active(response, user, "UNSUSPENSION_NOT_ALLOWED")
 
     def test_error_when_suspension_time_limit_reached(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
@@ -2017,17 +2020,15 @@ class UnsuspendAccountTest:
         users_factories.SuspendedUponUserRequestFactory(user=user, eventDate=suspension_date)
 
         with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            self.assert_code_and_not_active(client, user, "UNSUSPENSION_LIMIT_REACHED")
+            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+            self.assert_code_and_not_active(response, user, "UNSUSPENSION_LIMIT_REACHED")
 
-    def assert_code(self, client, user, code):
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/account/unsuspend")
-
+    def assert_code(self, response, code):
         assert response.status_code == 403
         assert response.json["code"] == code
 
-    def assert_code_and_not_active(self, client, user, code):
-        self.assert_code(client, user, code)
+    def assert_code_and_not_active(self, response, user, code):
+        self.assert_code(response, code)
 
         db.session.refresh(user)
         assert not user.isActive
