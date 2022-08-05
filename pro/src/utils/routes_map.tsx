@@ -1,4 +1,3 @@
-import React from 'react'
 import { Redirect, useLocation } from 'react-router-dom'
 
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
@@ -38,12 +37,31 @@ import SignUpValidation from 'routes/SignUpValidation'
 import { UserProfile } from 'routes/User'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+interface ILayoutConfig {
+  pageName?: string
+  fullscreen?: boolean
+}
+
+interface IRouteMeta {
+  public?: boolean
+  layoutConfig?: ILayoutConfig
+}
+
+export interface IRoute {
+  component: any
+  exact?: boolean
+  path: string | string[]
+  title?: string
+  meta?: IRouteMeta
+  featureName?: string
+}
+
 const RedirectToConnexionComponent = () => {
   const location = useLocation()
   return <Redirect to={`/connexion${location.search}`} />
 }
 
-export const routesWithoutLayout = [
+export const routesWithoutLayout: IRoute[] = [
   {
     component: RedirectToConnexionComponent,
     exact: true,
@@ -91,7 +109,7 @@ export const routesWithoutLayout = [
 ]
 
 // Routes wrapped with app layout
-const routes = [
+const routes: IRoute[] = [
   {
     component: Homepage,
     exact: true,
