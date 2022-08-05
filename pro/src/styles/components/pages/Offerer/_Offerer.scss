@@ -4,7 +4,6 @@
 
 .offerer-page {
   position: relative;
-  padding-top: rem.torem(50px);
 
   .op-teaser {
     margin-bottom: rem.torem(24px);
@@ -79,5 +78,9 @@
       color: colors.$grey-dark;
       margin-right: rem.torem(5px);
     }
+  }
+
+  .offerer-page-go-back-link {
+    margin-bottom: rem.torem(30px);
   }
 }

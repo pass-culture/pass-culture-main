@@ -5,17 +5,12 @@
 .go-back {
   &-button {
     @include fonts.button();
-    padding-left: rem.torem(30px);
-    position: absolute;
-    top: 0;
     color: colors.$primary;
     align-items: center;
     display: flex;
-    justify-content: center;
   }
 
   &-icon {
-    left: 0;
-    position: absolute;
+    margin-right: rem.torem(8px);
   }
 }

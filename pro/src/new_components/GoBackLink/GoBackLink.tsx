@@ -10,10 +10,11 @@ import styles from './GoBackLink.module.scss'
 interface GoBackLinkProps {
   to: LocationDescriptor
   title: string
+  className?: string
 }
 
-const GoBackLink = ({ to, title }: GoBackLinkProps): JSX.Element => (
-  <NavLink className={cn(styles['go-back-button'])} to={to}>
+const GoBackLink = ({ to, title, className }: GoBackLinkProps): JSX.Element => (
+  <NavLink className={cn(styles['go-back-button'], className)} to={to}>
     <Icon svg="ico-back" className={styles['go-back-icon']} />
     {title}
   </NavLink>
