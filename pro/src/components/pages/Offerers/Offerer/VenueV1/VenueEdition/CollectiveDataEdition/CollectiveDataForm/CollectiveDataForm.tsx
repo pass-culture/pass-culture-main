@@ -236,9 +236,7 @@ const CollectiveDataForm = ({
             >
               Annuler et quitter
             </Link>
-            <SubmitButton isLoading={isLoading} disabled={!formik.dirty}>
-              Enregistrer
-            </SubmitButton>
+            <SubmitButton isLoading={isLoading}>Enregistrer</SubmitButton>
           </FormLayout.Actions>
         </form>
       </FormikProvider>
