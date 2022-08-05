@@ -1995,7 +1995,8 @@ class UnsuspendAccountTest:
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         users_factories.SuspendedUponUserRequestFactory(user=user)
 
-        self.assert_code_and_not_active(client, user, "ACCOUNT_UNSUSPENSION_NOT_ENABLED")
+        with override_features(ALLOW_ACCOUNT_UNSUSPENSION=False):
+            self.assert_code_and_not_active(client, user, "ACCOUNT_UNSUSPENSION_NOT_ENABLED")
 
     def test_error_when_not_suspended(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=True)

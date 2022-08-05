@@ -45,7 +45,7 @@ class SettingsTest:
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": False,
-            "allowAccountUnsuspension": False,
+            "allowAccountUnsuspension": True,
             "accountUnsuspensionLimit": 60,
         }
 

@@ -152,7 +152,6 @@ class Feature(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-t
 
 
 FEATURES_DISABLED_BY_DEFAULT = (
-    FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION,
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
     FeatureToggle.APP_ENABLE_CATEGORY_FILTER_PAGE,
     FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK,
