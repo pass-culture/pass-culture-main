@@ -1,6 +1,6 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { matchPath } from 'react-router'
 import { useHistory, useLocation } from 'react-router-dom'
 
@@ -8,30 +8,32 @@ import { useConfigureAnalytics } from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
 import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
+import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 import routes, { routesWithoutLayout } from 'utils/routes_map'
 
-export const App = props => {
-  const {
-    children,
-    isFeaturesInitialized,
-    isMaintenanceActivated,
-    loadFeatures,
-  } = props
-  const [isReady, setIsReady] = useState(false)
-  const { isUserInitialized, currentUser } = useCurrentUser()
+interface IAppProps {
+  children: JSX.Element
+}
+
+const App = ({ children }: IAppProps): JSX.Element => {
+  const { currentUser } = useCurrentUser()
   const currentPathname = window.location.pathname
   const history = useHistory()
   const location = useLocation()
+  const isMaintenanceActivated = useSelector(maintenanceSelector)
+  const [isReady, setIsReady] = useState(false)
+
   useConfigureAnalytics(currentUser?.id)
 
   useEffect(() => {
-    if (!isFeaturesInitialized) {
-      loadFeatures()
+    if (currentUser !== null) {
+      setSentryUser({ id: currentUser.id })
+      setIsReady(true)
     }
-  }, [isFeaturesInitialized, loadFeatures])
+  }, [currentUser])
 
   useEffect(() => {
-    if (isUserInitialized && !currentUser) {
+    if (currentUser === null) {
       const publicRouteList = [...routes, ...routesWithoutLayout].filter(
         route => route.meta && route.meta.public
       )
@@ -44,15 +46,11 @@ export const App = props => {
           `${location.pathname}${location.search}`
         )
         history.push(`/connexion?de=${fromUrl}`)
+      } else {
+        setIsReady(true)
       }
-      setIsReady(true)
     }
-
-    if (isUserInitialized && currentUser) {
-      setSentryUser({ id: currentUser.id })
-      setIsReady(true)
-    }
-  }, [currentUser, currentPathname, history, location, isUserInitialized])
+  }, [currentUser, currentPathname, history, location])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -62,7 +60,7 @@ export const App = props => {
     return <RedirectToMaintenance />
   }
 
-  if (!isReady || !isUserInitialized) {
+  if (!isReady) {
     return (
       <main className="spinner-container">
         <Spinner />
@@ -73,12 +71,4 @@ export const App = props => {
   return children
 }
 
-App.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.shape()),
-    PropTypes.shape(),
-  ]).isRequired,
-  isFeaturesInitialized: PropTypes.bool.isRequired,
-  isMaintenanceActivated: PropTypes.bool.isRequired,
-  loadFeatures: PropTypes.func.isRequired,
-}
+export default App
