@@ -32,7 +32,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
         FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION,
-        FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK,
         FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
         FeatureToggle.APP_ENABLE_CATEGORY_FILTER_PAGE,
     )
@@ -44,7 +43,6 @@ def get_settings() -> serializers.SettingsResponse:
         auto_activate_digital_bookings=True,
         app_enable_autocomplete=features[FeatureToggle.APP_ENABLE_AUTOCOMPLETE],
         app_enable_category_filter_page=features[FeatureToggle.APP_ENABLE_CATEGORY_FILTER_PAGE],
-        app_enable_search_homepage_rework=features[FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK],
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)

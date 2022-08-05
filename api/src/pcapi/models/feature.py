@@ -33,7 +33,6 @@ class FeatureToggle(enum.Enum):
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
     APP_ENABLE_CATEGORY_FILTER_PAGE = "Active le filtre des catégories dans les résultats de la recherche"
-    APP_ENABLE_SEARCH_HOMEPAGE_REWORK = "Active les modifications concernant le rework de la recherche de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING = "Désactiver la validation des noms et prénoms"
@@ -154,7 +153,6 @@ class Feature(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-t
 FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
     FeatureToggle.APP_ENABLE_CATEGORY_FILTER_PAGE,
-    FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.ENABLE_ADAGE_VENUE_INFORMATION,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,

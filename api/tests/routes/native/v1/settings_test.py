@@ -18,7 +18,6 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         PRO_DISABLE_EVENTS_QRCODE=False,
-        APP_ENABLE_SEARCH_HOMEPAGE_REWORK=False,
         APP_ENABLE_AUTOCOMPLETE=True,
         APP_ENABLE_CATEGORY_FILTER_PAGE=False,
     )
@@ -29,7 +28,6 @@ class SettingsTest:
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": True,
             "appEnableCategoryFilterPage": False,
-            "appEnableSearchHomepageRework": False,
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": True,
@@ -59,7 +57,6 @@ class SettingsTest:
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         PRO_DISABLE_EVENTS_QRCODE=True,
         ALLOW_ACCOUNT_UNSUSPENSION=True,
-        APP_ENABLE_SEARCH_HOMEPAGE_REWORK=True,
         APP_ENABLE_AUTOCOMPLETE=False,
         APP_ENABLE_CATEGORY_FILTER_PAGE=True,
     )
@@ -70,7 +67,6 @@ class SettingsTest:
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": False,
             "appEnableCategoryFilterPage": True,
-            "appEnableSearchHomepageRework": True,
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": False,
