@@ -147,7 +147,6 @@ describe('CollectiveDataEdition', () => {
       const culturalPartnersField = screen.getByLabelText(
         /Réseaux partenaires EAC :/
       )
-      const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
 
       expect(descriptionField).toBeInTheDocument()
       expect(studentsField).toBeInTheDocument()
@@ -158,7 +157,6 @@ describe('CollectiveDataEdition', () => {
       expect(interventionAreaField).toBeInTheDocument()
       expect(statusField).toBeInTheDocument()
       expect(culturalPartnersField).toBeInTheDocument()
-      expect(submitButton).toBeDisabled()
     })
 
     it('should display toaster when some data could not be loaded', async () => {

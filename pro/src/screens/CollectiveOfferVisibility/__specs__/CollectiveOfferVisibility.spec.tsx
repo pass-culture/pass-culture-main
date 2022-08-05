@@ -198,20 +198,5 @@ describe('CollectiveOfferVisibility', () => {
         await screen.findByText(/91190 Gif-sur-Yvette/)
       ).toBeInTheDocument()
     })
-
-    it('should disable form if user has not made any modifications', async () => {
-      renderVisibilityStep({
-        ...props,
-        mode: Mode.EDITION,
-        initialValues: {
-          visibility: 'one',
-          institution: '12',
-          'search-institution': 'Institution 1',
-        },
-      })
-      expect(
-        screen.getByRole('button', { name: /Valider et enregistrer l’offre/ })
-      ).toBeDisabled()
-    })
   })
 })
