@@ -11,6 +11,8 @@ export interface IUseCurrentUserReturn {
   currentUser: SharedCurrentUserResponseModel
 }
 
+// TODO user is now initialized on application's root.
+// remove isUserInitialized as it's always true
 const useCurrentUser = (): IUseCurrentUserReturn => {
   const currentUser = useSelector(selectCurrentUser)
   const isUserInitialized = useSelector(selectUserInitialized)
