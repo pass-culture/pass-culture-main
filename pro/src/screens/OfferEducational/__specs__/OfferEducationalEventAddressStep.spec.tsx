@@ -13,6 +13,7 @@ import {
   subCategoriesFactory,
   userOfferersFactory,
 } from '../__tests-utils__'
+import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
 import { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {
@@ -158,5 +159,51 @@ describe('screens | OfferEducational : event address step', () => {
         ).toBeInTheDocument()
       )
     })
+  })
+
+  it('should prefill intervention field with venue intervention field when selecting venue', async () => {
+    props.userOfferers = [
+      ...props.userOfferers,
+      userOffererFactory({
+        id: 'OFFERER_WITH_INTERVENTION_AREA',
+        managedVenues: [
+          managedVenueFactory({}),
+          managedVenueFactory({
+            id: 'VENUE_WITH_INTERVENTION_AREA',
+            collectiveInterventionArea: ['01', '02'],
+          }),
+        ],
+      }),
+    ]
+    renderEACOfferForm(props, store)
+
+    const offererSelect = await screen.findByLabelText('Structure')
+
+    await userEvent.selectOptions(offererSelect, [
+      'OFFERER_WITH_INTERVENTION_AREA',
+    ])
+    expect(screen.queryByLabelText('Structure')).toHaveValue(
+      'OFFERER_WITH_INTERVENTION_AREA'
+    )
+
+    const venuesSelect = await screen.findByLabelText(
+      'Lieu qui percevra le remboursement'
+    )
+    await userEvent.selectOptions(venuesSelect, [
+      'VENUE_WITH_INTERVENTION_AREA',
+    ])
+    expect(
+      screen.queryByLabelText('Lieu qui percevra le remboursement')
+    ).toHaveValue('VENUE_WITH_INTERVENTION_AREA')
+
+    await userEvent.click(await screen.findByLabelText('Autre'))
+    expect(screen.getByLabelText('Autre')).toBeChecked()
+    const interventionArea = await screen.findByLabelText(
+      'Zones de Mobilités pour l’événement'
+    )
+    await userEvent.click(interventionArea)
+    await waitFor(() =>
+      expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(2)
+    )
   })
 })
