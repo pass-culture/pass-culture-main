@@ -309,6 +309,9 @@ VENUE_EDUCATIONAL_STATUS = {
 }
 
 
+educational_domain_cursor = 0
+
+
 def create_industrial_educational_bookings() -> None:
     create_educational_domains()
     educational_current_year = educational_factories.EducationalYearFactory()
@@ -516,6 +519,7 @@ def _create_collective_stock(
         collectiveOffer__visualDisabilityCompliant=True,
         collectiveOffer__interventionArea=stock_data.interventionArea,
         collectiveOffer__institution=educational_institution,
+        collectiveOffer__educational_domains=[get_educational_domain()],
     )
 
 
@@ -542,6 +546,7 @@ def _create_collective_offer_template(
         motorDisabilityCompliant=True,
         visualDisabilityCompliant=True,
         interventionArea=offer_data.interventionArea,
+        educational_domains=[get_educational_domain()],
     )
 
 
@@ -563,3 +568,10 @@ def create_educational_domains() -> None:
     educational_factories.EducationalDomainFactory(name="Théâtre, expression dramatique, marionnettes", id=15)
     educational_factories.EducationalDomainFactory(name="Bande dessinée", id=16)
     educational_factories.EducationalDomainFactory(name="Média et information", id=17)
+
+
+def get_educational_domain() -> educational_models.EducationalDomain:
+    global educational_domain_cursor  # pylint: disable=global-statement
+    total = educational_models.EducationalDomain.query.count() - 1
+    educational_domain_cursor = (educational_domain_cursor % total) + 1
+    return educational_models.EducationalDomain.query.filter_by(id=educational_domain_cursor).one()
