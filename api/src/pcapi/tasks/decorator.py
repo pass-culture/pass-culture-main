@@ -62,15 +62,12 @@ def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
 
         try:
             f(body)
+
         except ApiErrors as e:
             logger.warning(
                 "The task %s has not been executed successfully", path, extra={**job_details, "error": str(e)}
             )
             raise
-        except Exception as e:
-            logger.exception(
-                "Exception caught when executing cloud task %s", path, extra={**job_details, "error": str(e)}
-            )
-            raise
+
         else:
             logger.info("Successfully executed cloud task %s", path, extra=job_details)
