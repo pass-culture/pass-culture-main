@@ -418,7 +418,11 @@ class AlgoliaBackend(base.SearchBackend):
                 "isThing": offer.isThing,
                 "name": offer.name,
                 "prices": prices_sorted,
+                # TODO(jeremieb): keep searchGroupNamev2 and remove
+                # remove searchGroupName once the search group name &
+                # home page label migration is over.
                 "searchGroupName": offer.subcategory.search_group_name,
+                "searchGroupNamev2": offer.subcategory_v2.search_group_name,
                 "stocksDateCreated": sorted(stocks_date_created),
                 "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
