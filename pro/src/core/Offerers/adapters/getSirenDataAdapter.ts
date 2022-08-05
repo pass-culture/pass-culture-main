@@ -2,9 +2,8 @@ import type { KeySelector } from 're-reselect'
 import { createCachedSelector } from 're-reselect'
 
 import { apiEntreprise } from 'apiClient/api'
-import { isApiError } from 'apiClient/entreprise/helpers'
 import type { IEntrepriseSirenData } from 'apiClient/entreprise/types'
-import { HTTP_STATUS } from 'apiClient/helpers'
+import { isErrorAPIError, HTTP_STATUS } from 'apiClient/helpers'
 import { unhumanizeSiren } from 'core/Offerers/utils'
 import { validateSiren } from 'core/Offerers/validate'
 
@@ -58,11 +57,11 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
     }
   } catch (e) {
     let message = 'Une erreur est survenue'
-    if (isApiError(e)) {
-      message = e.content
-      if (e.statusCode === HTTP_STATUS.NOT_FOUND) {
+    if (isErrorAPIError(e)) {
+      message = e.body
+      if (e.status === HTTP_STATUS.NOT_FOUND) {
         message = "Ce SIREN n'est pas reconnu"
-      } else if (unavailableSevicesCode.includes(e.statusCode)) {
+      } else if (unavailableSevicesCode.includes(e.status)) {
         message =
           'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
       }

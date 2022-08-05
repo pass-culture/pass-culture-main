@@ -2,9 +2,8 @@ import type { KeySelector } from 're-reselect'
 import { createCachedSelector } from 're-reselect'
 
 import { ENTREPRISE_STATUS_ACTIVE, apiEntreprise } from 'apiClient/api'
-import { isApiError } from 'apiClient/entreprise/helpers'
 import type { IEntrepriseSiretData } from 'apiClient/entreprise/types'
-import { HTTP_STATUS } from 'apiClient/helpers'
+import { isErrorAPIError, HTTP_STATUS } from 'apiClient/helpers'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { validateSiret } from 'core/Venue/validate'
 
@@ -71,9 +70,9 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
     }
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
-    if (isApiError(e)) {
-      message = e.content
-      if (e.statusCode === HTTP_STATUS.NOT_FOUND) {
+    if (isErrorAPIError(e)) {
+      message = e.body
+      if (e.status === HTTP_STATUS.NOT_FOUND) {
         message = "Ce SIRET n'est pas reconnu"
       } else if (
         unavailableSevicesCode.includes(HTTP_STATUS.SERVICE_UNAVAILABLE)
