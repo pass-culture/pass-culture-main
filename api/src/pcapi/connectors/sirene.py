@@ -43,7 +43,7 @@ class NonPublicDataException(SireneException):
 
 class _Address(pydantic.BaseModel):
     street: pydantic.constr(strip_whitespace=True)  # type: ignore[valid-type]
-    postal_code: pydantic.constr(strip_whitespace=True, min_length=5, max_length=5)  # type: ignore[valid-type]
+    postal_code: pydantic.constr(strip_whitespace=True)  # type: ignore[valid-type]
     city: pydantic.constr(strip_whitespace=True)  # type: ignore[valid-type]
 
 
@@ -204,17 +204,19 @@ class InseeBackend(BaseBackend):
 
     def _get_address_from_siret_data(self, data: dict) -> _Address:
         block = data["adresseEtablissement"]
+        # Every field is in the response but may be null, for example
+        # for foreign addresses, which we don't support.
         # The API includes the arrondissement (e.g. "PARIS 1"), remove it.
-        city = re.sub(r" \d+ *$", "", block["libelleCommuneEtablissement"])
+        city = re.sub(r" \d+ *$", "", block["libelleCommuneEtablissement"] or "")
         return _Address(
             street=" ".join(
                 (
-                    block["numeroVoieEtablissement"],
-                    block["typeVoieEtablissement"],
-                    block["libelleVoieEtablissement"],
+                    block["numeroVoieEtablissement"] or "",
+                    block["typeVoieEtablissement"] or "",
+                    block["libelleVoieEtablissement"] or "",
                 )
-            ),
-            postal_code=block["codePostalEtablissement"],
+            ).strip(),
+            postal_code=block["codePostalEtablissement"] or "",
             city=city,
         )
 
