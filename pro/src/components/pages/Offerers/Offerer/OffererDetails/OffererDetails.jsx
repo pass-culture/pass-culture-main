@@ -67,7 +67,11 @@ const OffererDetails = () => {
 
   return (
     <div className="offerer-page">
-      <GoBackLink to={`/accueil?structure=${offerer.id}`} title="Accueil" />
+      <GoBackLink
+        to={`/accueil?structure=${offerer.id}`}
+        title="Accueil"
+        className="offerer-page-go-back-link"
+      />
       <PageTitle title="Détails de votre structure" />
       <Titles subtitle={offerer.name} title="Structure" />
       <p className="op-teaser">

@@ -507,13 +507,12 @@ const VenueEdition = () => {
 
   return (
     <div className="venue-page">
-      <GoBackLink to={`/accueil?structure=${offererId}`} title="Accueil" />
-      {venue.isPermanent && (
-        <DisplayVenueInAppLink
-          className="venue-page-view-venue-cta"
-          nonHumanizedId={venue.nonHumanizedId}
-        />
-      )}
+      <div className="venue-page-links">
+        <GoBackLink to={`/accueil?structure=${offererId}`} title="Accueil" />
+        {venue.isPermanent && (
+          <DisplayVenueInAppLink nonHumanizedId={venue.nonHumanizedId} />
+        )}
+      </div>
       {!isNewBankInformationCreation &&
         venue.businessUnit &&
         !venue.businessUnit.siret && (
