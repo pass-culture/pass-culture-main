@@ -1,4 +1,5 @@
-import { ApiError } from 'apiClient/entreprise/helpers'
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 
 import { API_ENTREPRISE_BASE_URL } from './constants'
 import type {
@@ -8,12 +9,14 @@ import type {
 } from './types'
 
 const handleApiError = async (
-  response: Response
+  response: Response,
+  method: ApiRequestOptions['method'],
+  url: string
 ): Promise<IEntrepriseApiJson> => {
   if (!response.ok) {
     throw new ApiError(
-      response.status,
-      await response.json(),
+      { method, url },
+      response,
       `Échec de la requête ${response.url}, code: ${response.status}`
     )
   }
@@ -23,9 +26,8 @@ const handleApiError = async (
 
 export default {
   getSiretData: async (siret: string): Promise<IEntrepriseSiretData> => {
-    const response = await handleApiError(
-      await fetch(`${API_ENTREPRISE_BASE_URL}/etablissements/${siret}`)
-    )
+    const url = `${API_ENTREPRISE_BASE_URL}/etablissements/${siret}`
+    const response = await handleApiError(await fetch(url), 'GET', url)
     const data = response.etablissement
 
     // https://www.sirene.fr/sirene/public/variable/statutDiffusionUniteLegale
@@ -58,9 +60,8 @@ export default {
   },
 
   getSirenData: async (siren: string): Promise<IEntrepriseSirenData> => {
-    const response = await handleApiError(
-      await fetch(`${API_ENTREPRISE_BASE_URL}/unites_legales/${siren}`)
-    )
+    const url = `${API_ENTREPRISE_BASE_URL}/unites_legales/${siren}`
+    const response = await handleApiError(await fetch(url), 'GET', url)
 
     const legalUnit = response.unite_legale
 
