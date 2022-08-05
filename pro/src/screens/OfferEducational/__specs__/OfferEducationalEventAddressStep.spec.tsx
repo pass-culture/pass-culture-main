@@ -202,8 +202,13 @@ describe('screens | OfferEducational : event address step', () => {
       'Zones de Mobilités pour l’événement'
     )
     await userEvent.click(interventionArea)
-    await waitFor(() =>
-      expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(2)
-    )
+    await waitFor(() => {
+      const checkboxes = screen.getAllByRole('checkbox', { checked: true })
+      expect(
+        checkboxes.filter(
+          checkbox => checkbox.getAttribute('name') === 'interventionArea'
+        )
+      ).toHaveLength(2)
+    })
   })
 })
