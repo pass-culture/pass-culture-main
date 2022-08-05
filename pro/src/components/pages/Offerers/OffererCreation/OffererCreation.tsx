@@ -52,7 +52,11 @@ const OffererCreation = (): JSX.Element => {
 
   return (
     <div className="offerer-page">
-      <GoBackLink to="/accueil" title="Accueil" />
+      <GoBackLink
+        to="/accueil"
+        title="Accueil"
+        className="offerer-page-go-back-link"
+      />
       <PageTitle title="Créer une structure" />
       <Titles title="Structure" />
       {isEntrepriseApiDisabled ? (

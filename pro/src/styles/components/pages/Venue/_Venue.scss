@@ -4,13 +4,6 @@
 
 .venue-page {
   position: relative;
-  padding-top: rem.torem(50px);
-
-  &-view-venue-cta {
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
 
   .col-66 {
     $size: 65.5%;
@@ -76,6 +69,13 @@
     width: rem.torem(16px);
     vertical-align: bottom;
     margin-right: rem.torem(8px);
+  }
+
+  &-links {
+    margin-bottom: rem.torem(30px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
   }
 }
 
