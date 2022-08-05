@@ -6,17 +6,13 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 import { App } from '../App'
 
-jest.mock('apiClient/api', () => ({
-  api: { getProfile: jest.fn() },
-}))
-
-const renderApp = ({ props, store }) => {
+const renderApp = ({ props, store: storeOverride }) => {
+  const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
       <MemoryRouter>
@@ -27,9 +23,6 @@ const renderApp = ({ props, store }) => {
     </Provider>
   )
 }
-
-const getCurrentUser = jest.fn()
-const loadFeatures = jest.fn()
 
 jest.mock('@sentry/browser', () => ({
   setUser: jest.fn(),
@@ -55,16 +48,10 @@ describe('src | App', () => {
       publicName: 'François',
       isAdmin: false,
     }
-    store = configureTestStore({
+    store = {
       user: { initialized: true, currentUser: user },
-    })
-    props = {
-      getCurrentUser,
-      isFeaturesInitialized: false,
-      isMaintenanceActivated: false,
-      loadFeatures,
     }
-    jest.spyOn(api, 'getProfile').mockResolvedValue(user)
+    props = {}
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {
@@ -78,23 +65,16 @@ describe('src | App', () => {
 
   it('should render a Redirect component when isMaintenanceActivated is true', async () => {
     // When
-    props = {
-      ...props,
-      isMaintenanceActivated: true,
+    store = {
+      ...store,
+      maintenance: {
+        isActivated: true,
+      },
     }
     renderApp({ props, store })
 
     await waitFor(() => {
       expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
-  })
-
-  it('should load features', async () => {
-    // When
-    renderApp({ props, store })
-
-    // Then
-    await screen.findByText('Sub component')
-    expect(loadFeatures).toHaveBeenCalledWith()
   })
 })
