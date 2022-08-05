@@ -26,7 +26,7 @@ export const managedVenuesFactory = (
 ): GetEducationalOffererVenueResponseModel[] =>
   managedVenuesExtends.map(managedVenueFactory)
 
-const userOffererFactory = (
+export const userOffererFactory = (
   userOffererExtends: Partial<GetEducationalOffererResponseModel>
 ): GetEducationalOffererResponseModel => {
   return {
