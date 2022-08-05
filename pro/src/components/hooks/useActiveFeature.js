@@ -7,6 +7,8 @@ import {
 } from 'store/features/selectors'
 import { loadFeatures } from 'store/features/thunks'
 
+// TODO features are now initialized on application's root.
+// remove isFeaturesInitialized as it's always true
 const useActiveFeature = featureName => {
   const isActive = useSelector(state => isFeatureActive(state, featureName))
   const isFeaturesInitialized = useSelector(state =>

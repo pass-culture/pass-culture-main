@@ -4,16 +4,11 @@ import { Redirect, Route, Switch } from 'react-router'
 
 import AppLayout from 'app/AppLayout'
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import Spinner from 'components/layout/Spinner'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
-import {
-  selectActiveFeatures,
-  selectFeaturesInitialized,
-} from 'store/features/selectors'
+import { selectActiveFeatures } from 'store/features/selectors'
 import routes, { IRoute, routesWithoutLayout } from 'utils/routes_map'
 
 const AppRouter = (): JSX.Element => {
-  const isFeaturesInitialized = useSelector(selectFeaturesInitialized)
   const activeFeatures = useSelector(selectActiveFeatures)
   const [activeRoutes, setActiveRoutes] = useState<IRoute[]>([])
   const [activeRoutesWithoutLayout, setActiveRoutesWithoutLayout] = useState<
@@ -36,14 +31,6 @@ const AppRouter = (): JSX.Element => {
       )
     )
   }, [activeFeatures])
-
-  if (!isFeaturesInitialized) {
-    return (
-      <main className="spinner-container">
-        <Spinner />
-      </main>
-    )
-  }
 
   return (
     <Switch>
