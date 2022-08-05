@@ -1,4 +1,5 @@
 @use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
 
 .form-layout {
   &.small {
@@ -62,6 +63,22 @@
 
     &:first-child {
       margin-left: 0;
+    }
+  }
+
+  &-row-info {
+    display: flex;
+    &-field {
+      flex: 1 1 100%;
+    }
+    &-info {
+      flex: 1 0 rem.torem(316px);
+      margin-left: rem.torem(24px);
+      position: relative;
+      &-inner {
+        background: colors.$white;
+        position: absolute;
+      }
     }
   }
 }
