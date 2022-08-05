@@ -226,7 +226,7 @@ describe('homepage', () => {
           .mockResolvedValue()
         renderHomePage(store)
         await userEvent.click(
-          screen.getByRole('img', { name: /Masquer le bandeau/ })
+          screen.getByRole('button', { name: /Masquer le bandeau/ })
         )
         expect(spyRegister).toHaveBeenCalledTimes(1)
         expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()

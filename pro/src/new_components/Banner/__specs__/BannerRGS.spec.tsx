@@ -22,7 +22,7 @@ describe('src | new_components | BannerRGS', () => {
     const spyClose = jest.fn()
     render(<BannerRGS closable onClose={spyClose} />)
     await userEvent.click(
-      screen.getByRole('img', {
+      screen.getByRole('button', {
         name: 'Masquer le bandeau',
       })
     )
