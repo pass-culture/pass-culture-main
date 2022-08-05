@@ -19,7 +19,7 @@ import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 const { store } = configureStore()
 
-const Root = () => {
+const Root = (): JSX.Element => {
   return (
     <Provider store={store}>
       <AnalyticsContextProvider>
