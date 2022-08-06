@@ -1,5 +1,6 @@
 from pcapi import settings
 from pcapi.connectors import api_entreprises
+from pcapi.connectors import sirene
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers import api as offerers_api
@@ -21,6 +22,7 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
 )
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 
 
@@ -178,6 +180,12 @@ class SaveVenueBankInformations:
             venue = self.venue_repository.find_by_siret(siret)
             if not venue:
                 api_errors.add_error("Venue", "Venue not found")
+            elif FeatureToggle.USE_INSEE_SIRENE_API.is_active():
+                try:
+                    if not sirene.siret_is_active(siret):
+                        api_errors.add_error("Venue", "SIRET is no longer active")
+                except sirene.SireneException:
+                    api_errors.add_error("Venue", "Error while checking SIRET on Sirene API")
             else:
                 try:
                     is_siret_active = api_entreprises.check_siret_is_still_active(siret)
