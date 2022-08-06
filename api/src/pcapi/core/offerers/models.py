@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+import logging
 import typing
 
 import psycopg2.extras
@@ -35,7 +36,9 @@ from sqlalchemy.sql.sqltypes import CHAR
 from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
+from pcapi.connectors import sirene
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
+from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
@@ -46,6 +49,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
@@ -59,6 +63,8 @@ from pcapi.utils.date import get_postal_code_timezone
 import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
 
+
+logger = logging.getLogger(__name__)
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 (
@@ -606,7 +612,22 @@ class Offerer(
 
     @cached_property
     def legal_category(self) -> dict:
-        return get_offerer_legal_category(self)
+        if not FeatureToggle.USE_INSEE_SIRENE_API.is_active():
+            return get_offerer_legal_category(self)
+        code = None
+        if self.siren:
+            try:
+                code = sirene.get_legal_category_code(self.siren)
+            except sirene.SireneException as exc:
+                logger.warning(
+                    "Error on Sirene API when retrieving legal category",
+                    extra={"exc": exc, "siren": self.siren},
+                )
+        if code:
+            label = CODE_TO_CATEGORY_MAPPING.get(int(code), "")
+        else:
+            code = label = "Donnée indisponible"
+        return {"legal_category_code": code, "legal_category_label": label}
 
 
 offerer_ts_indexes = [

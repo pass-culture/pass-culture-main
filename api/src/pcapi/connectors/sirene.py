@@ -79,25 +79,9 @@ def get_siret(siret: str) -> SiretInfo:
     return _get_backend().get_siret(siret)
 
 
-def get_legal_category(siren: str) -> dict:
-    """Return a dictionary of legal category code and label.
-
-    Upon an error, this function returns "Donnée indisponible" for
-    both.
-    """
-    try:
-        code = get_siren(siren, with_address=False).legal_category_code
-    except SireneApiException as exc:
-        # FIXME (dbaty, 2022-08-01): historically, this function has
-        # been catching all errors, but I am not sure it's the right
-        # thing to do. I think that it's the responsibility of the
-        # caller.
-        code = label = "Donnée indisponible"
-        logging.warning("Could not reach Sirene API", extra={"exc": exc, "siren": siren})
-    else:
-        label = CODE_TO_CATEGORY_MAPPING.get(int(code), "")
-
-    return {"legal_category_code": code, "legal_category_label": label}
+def get_legal_category_code(siren: str) -> str:
+    """Return the code of the legal category."""
+    return get_siren(siren, with_address=False).legal_category_code
 
 
 def siret_is_active(siret: str) -> bool:

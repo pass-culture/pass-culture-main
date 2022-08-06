@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.exc import IntegrityError
 
+from pcapi.connectors import sirene
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -10,6 +11,7 @@ from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -164,6 +166,7 @@ class VenueNApprovedOffersTest:
 
 
 class OffererLegalCategoryTest:
+    @override_features(USE_INSEE_SIRENE_API=False)
     @patch("pcapi.core.offerers.models.get_offerer_legal_category")
     def test_offerer_legal_category_called_many_times(self, mocked_get_offerer_legal_category):
         info = {
@@ -177,6 +180,23 @@ class OffererLegalCategoryTest:
         assert offerer.legal_category == info
         assert offerer.legal_category == info
         assert mocked_get_offerer_legal_category.call_count == 1
+
+    @override_features(USE_INSEE_SIRENE_API=True)
+    def test_offerer_legal_category(self):
+        offerer = factories.OffererFactory.build()
+        assert offerer.legal_category == {
+            "legal_category_code": "1000",
+            "legal_category_label": "Entrepreneur individuel",
+        }
+
+    @override_features(USE_INSEE_SIRENE_API=True)
+    @patch("pcapi.connectors.sirene.get_siren", side_effect=sirene.UnknownEntityException())
+    def test_offerer_legal_category_on_error(self, get_siren_mock):
+        offerer = factories.OffererFactory.build()
+        assert offerer.legal_category == {
+            "legal_category_code": "Donnée indisponible",
+            "legal_category_label": "Donnée indisponible",
+        }
 
 
 def test_save_user_offerer_raise_api_error_when_not_unique(app):
