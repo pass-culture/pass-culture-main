@@ -123,6 +123,7 @@ class FeatureToggle(enum.Enum):
         "Protege le pass culture contre les ministeres qui dépenseraient plus que leur budget sur les 4 derniers mois "
         "de l'année"
     )
+    USE_INSEE_SIRENE_API = "Utiliser la nouvelle API Sirene de l'Insee"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -185,6 +186,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS,
     FeatureToggle.ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
+    FeatureToggle.USE_INSEE_SIRENE_API,
 )
 
 
