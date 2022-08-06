@@ -134,6 +134,7 @@ export type { ReimbursementPointResponseModel } from './models/ReimbursementPoin
 export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserResponseModel';
 export type { SharedLoginUserResponseModel } from './models/SharedLoginUserResponseModel';
 export type { SirenInfo } from './models/SirenInfo';
+export type { SiretInfo } from './models/SiretInfo';
 export type { StockCreationBodyModel } from './models/StockCreationBodyModel';
 export type { StockEditionBodyModel } from './models/StockEditionBodyModel';
 export type { StockIdResponseModel } from './models/StockIdResponseModel';
