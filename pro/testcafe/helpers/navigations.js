@@ -47,11 +47,12 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
   await t.click(submitButton)
   const location = await t.eval(() => window.location)
 
+  const venueUrlRegexp = '/structures/([A-Z0-9]*)/lieux/([A-Z0-9]*)'
   creationOrModification === 'creation'
-    ? await t.expect(location.pathname).eql(HOME_URL)
-    : await t
-        .expect(location.pathname)
-        .match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
+    ? await t
+        .expect(location.pathname + location.search)
+        .match(RegExp(venueUrlRegexp + '\\?modification$'))
+    : await t.expect(location.pathname).match(RegExp(venueUrlRegexp + '$'))
 
   await t.expect(notificationSuccess.exists).ok()
 }
