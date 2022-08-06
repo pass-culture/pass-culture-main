@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi import settings
+from pcapi.connectors import sirene
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 import pcapi.core.finance.factories as finance_factories
@@ -12,6 +13,7 @@ import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
@@ -64,6 +66,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
             assert errors.errors["Venue"] == ["Venue not found"]
 
+        @override_features(USE_INSEE_SIRENE_API=False)
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", side_effect=ApiEntrepriseException())
         def test_raises_an_error_if_api_entreprise_errored(self, siret_is_active):
             offerer = offerers_factories.OffererFactory()
@@ -81,6 +84,25 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
             assert errors.errors["Venue"] == ["Error while checking SIRET on Api Entreprise"]
+
+        @override_features(USE_INSEE_SIRENE_API=True)
+        @patch("pcapi.connectors.sirene.siret_is_active", side_effect=sirene.UnknownEntityException())
+        def test_raises_an_error_if_sirene_api_errored(self, siret_is_active):
+            offerer = offerers_factories.OffererFactory()
+            offerers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
+            application_details = ApplicationDetail(
+                siren="999999999",
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                iban="XXX",
+                bic="YYY",
+                modification_date=datetime.utcnow(),
+                siret="99999999900000",
+            )
+            errors = ApiErrors()
+
+            self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
+            assert errors.errors["Venue"] == ["Error while checking SIRET on Sirene API"]
 
         def test_raises_an_error_if_no_venue_found_by_name(self):
             offerer = offerers_factories.OffererFactory()
@@ -128,7 +150,8 @@ class SaveVenueBankInformationsTest:
                     bank_informations_repository=BankInformationsSQLRepository(),
                 )
 
-            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(
+            @override_features(USE_INSEE_SIRENE_API=False)
+            def test_when_dms_state_is_refused_should_create_the_correct_bank_information_legacy_api(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
@@ -139,6 +162,37 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
+                mock_application_details.return_value = (
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                        siret="79387503012345",
+                        bic="SOGEFRPP",
+                        iban="FR7630007000111234567890144",
+                        idx=int(application_id),
+                        state="refused",
+                    )
+                )
+
+                # When
+                self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
+                assert bank_information.bic is None
+                assert bank_information.iban is None
+                assert bank_information.status == BankInformationStatus.REJECTED
+
+            @override_features(USE_INSEE_SIRENE_API=True)
+            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
+            ):
+                # Given
+                venue = offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
+                application_id = "8"
                 mock_application_details.return_value = (
                     dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -254,7 +308,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            def test_when_siret_is_not_active_should_not_create_the_correct_bank_information(
+            @override_features(USE_INSEE_SIRENE_API=False)
+            def test_when_siret_is_not_active_should_not_create_the_correct_bank_information_legacy_api(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
@@ -265,6 +320,34 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = False  # that's the difference
+                mock_application_details.return_value = (
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                        siret="79387503012345",
+                        bic="SOGEFRPP",
+                        iban="FR7630007000111234567890144",
+                        idx=int(application_id),
+                        state="received",
+                    )
+                )
+
+                # When
+                self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                assert BankInformation.query.count() == 0
+
+            @override_features(USE_INSEE_SIRENE_API=True)
+            @patch("pcapi.connectors.sirene.siret_is_active", lambda siret: False)
+            def test_when_siret_is_not_active_should_not_create_the_correct_bank_information(
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
+            ):
+                # Given
+                offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
+                application_id = "8"
                 mock_application_details.return_value = (
                     dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
