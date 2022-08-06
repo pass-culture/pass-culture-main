@@ -101,11 +101,7 @@ def test_get_legal_category():
             f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
             json=sirene_test_data.RESPONSE_SIREN_COMPANY,
         )
-        category = sirene.get_legal_category(siren)
-        assert category == {
-            "legal_category_code": "5499",
-            "legal_category_label": "Société à responsabilité limitée (sans autre indication)",
-        }
+        assert sirene.get_legal_category_code(siren) == "5499"
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
