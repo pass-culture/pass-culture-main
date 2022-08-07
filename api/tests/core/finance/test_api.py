@@ -221,6 +221,13 @@ class PriceBookingTest:
         pricing = api.price_booking(booking, self.use_pricing_point)
         assert pricing == existing
 
+    def test_price_booking_that_has_been_unused_and_then_used_again(self):
+        booking = bookings_factories.UsedBookingFactory(stock=self.stock_factory())
+        factories.PricingFactory(booking=booking, status=models.PricingStatus.CANCELLED)
+        pricing = api.price_booking(booking, self.use_pricing_point)
+        assert len(booking.pricings) == 2
+        assert pricing.status == models.PricingStatus.VALIDATED
+
     def test_price_booking_that_is_not_used(self):
         booking = bookings_factories.BookingFactory()
         pricing = api.price_booking(booking, self.use_pricing_point)
@@ -967,17 +974,32 @@ class PriceBookingsTest:
 
     @auto_override_features
     def test_basics(self):
-        booking = bookings_factories.UsedBookingFactory(
+        unused_booking = bookings_factories.BookingFactory(
+            stock=self.individual_stock_factory(),
+        )
+        used_booking = bookings_factories.UsedBookingFactory(
             dateUsed=self.few_minutes_ago,
             stock=self.individual_stock_factory(),
         )
-        collective_booking = UsedCollectiveBookingFactory(
+        unused_then_used_booking = bookings_factories.UsedBookingFactory(
+            dateUsed=self.few_minutes_ago,
+            stock=self.individual_stock_factory(),
+        )
+        factories.PricingFactory(
+            booking=unused_then_used_booking,
+            status=models.PricingStatus.CANCELLED,
+        )
+        used_collective_booking = UsedCollectiveBookingFactory(
             dateUsed=self.few_minutes_ago,
             collectiveStock=self.collective_stock_factory(),
         )
         api.price_bookings(min_date=self.few_minutes_ago)
-        assert len(booking.pricings) == 1
-        assert len(collective_booking.pricings) == 1
+
+        assert len(unused_booking.pricings) == 0
+        assert len(used_booking.pricings) == 1
+        assert len(unused_then_used_booking.pricings) == 2
+        assert unused_then_used_booking.pricings[-1].status == models.PricingStatus.VALIDATED
+        assert len(used_collective_booking.pricings) == 1
 
     @auto_override_features
     def test_loop(self):
