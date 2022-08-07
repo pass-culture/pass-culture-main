@@ -309,7 +309,7 @@ def _get_bookings_to_price(
 
     query = query.filter(
         model.dateUsed.between(*window),  # type: ignore [union-attr]
-        models.Pricing.id.is_(None),
+        models.Pricing.id.is_(None) | (models.Pricing.status == models.PricingStatus.CANCELLED),
     )
 
     query = query.join(model.venue)
@@ -505,7 +505,8 @@ def price_booking(
                 return None
 
         # Pricing the same booking twice is not allowed (and would be
-        # rejected by a database constraint, anyway).
+        # rejected by a database constraint, anyway), unless the
+        # existing pricing has been cancelled.
         pricing = get_non_cancelled_pricing_from_booking(booking)
         if pricing:
             return pricing
