@@ -48,12 +48,11 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
   const location = await t.eval(() => window.location)
 
   const venueUrlRegexp = '/structures/([A-Z0-9]*)/lieux/([A-Z0-9]*)'
-  creationOrModification === 'creation'
-    ? await t
-        .expect(location.pathname + location.search)
-        .match(RegExp(venueUrlRegexp + '\\?modification$'))
-    : await t.expect(location.pathname).match(RegExp(venueUrlRegexp + '$'))
-
+  const expectedUrl =
+    creationOrModification === 'creation'
+      ? venueUrlRegexp + '\\?modification$'
+      : venueUrlRegexp + '$'
+  await t.expect(location.pathname + location.search).match(RegExp(expectedUrl))
   await t.expect(notificationSuccess.exists).ok()
 }
 
