@@ -14,6 +14,7 @@ import {
   userOfferersFactory,
 } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
+import { INTERVENTION_AREA_LABEL } from '../constants/labels'
 import { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {
@@ -63,7 +64,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText('Zones de Mobilités pour l’événement')
+        screen.queryByLabelText(INTERVENTION_AREA_LABEL)
       ).not.toBeInTheDocument()
     })
 
@@ -82,7 +83,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText('Zones de Mobilités pour l’événement')
+        screen.queryByLabelText(INTERVENTION_AREA_LABEL)
       ).toBeInTheDocument()
     })
 
@@ -105,7 +106,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).not.toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText('Zones de Mobilités pour l’événement')
+        screen.queryByLabelText(INTERVENTION_AREA_LABEL)
       ).toBeInTheDocument()
     })
   })
@@ -199,7 +200,7 @@ describe('screens | OfferEducational : event address step', () => {
     await userEvent.click(await screen.findByLabelText('Autre'))
     expect(screen.getByLabelText('Autre')).toBeChecked()
     const interventionArea = await screen.findByLabelText(
-      'Zones de Mobilités pour l’événement'
+      INTERVENTION_AREA_LABEL
     )
     await userEvent.click(interventionArea)
     await waitFor(() => {
