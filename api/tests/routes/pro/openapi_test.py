@@ -14,6 +14,23 @@ def test_public_api(client, app):
                     "enum": ["BIEN", "EVENEMENT"],
                     "title": "BookingOfferType",
                 },
+                "CollectiveOffersListVenuesResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
+                    "title": "CollectiveOffersListVenuesResponseModel",
+                    "type": "array",
+                },
+                "CollectiveOffersVenueResponseModel": {
+                    "properties": {
+                        "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "city": {"nullable": True, "title": "City", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                        "name": {"title": "Name", "type": "string"},
+                        "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "CollectiveOffersVenueResponseModel",
+                    "type": "object",
+                },
                 "ValidationError": {
                     "description": "Model " "of a " "validation " "error " "response.",
                     "items": {"$ref": "#/components/schemas/ValidationErrorElement"},
@@ -248,6 +265,49 @@ def test_public_api(client, app):
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
                     "summary": "Validation d'une réservation.",
                     "tags": ["API Contremarque"],
+                }
+            },
+            "/v2/collective-offers/venues": {
+                "get": {
+                    "description": "Tous les "
+                    "lieux "
+                    "enregistrés, "
+                    "physiques "
+                    "ou "
+                    "virtuels, "
+                    "sont "
+                    "listés ici "
+                    "avec leurs "
+                    "coordonnées.",
+                    "operationId": "ListVenues",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "summary": "Récupération "
+                    "de la liste "
+                    "des lieux "
+                    "associés à la "
+                    "structure "
+                    "authentifiée "
+                    "par le jeton "
+                    "d'API.",
+                    "tags": [],
                 }
             },
             "/v2/venue/{venue_id}/stocks": {

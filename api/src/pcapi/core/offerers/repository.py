@@ -207,6 +207,10 @@ def find_venue_by_siret(siret: str) -> models.Venue | None:
     return models.Venue.query.filter_by(siret=siret).one_or_none()
 
 
+def get_all_venues_by_offerer_id(offerer_id: int) -> list[models.Venue]:
+    return models.Venue.query.filter_by(managingOffererId=offerer_id).all()
+
+
 def find_venue_by_managing_offerer_id(offerer_id: int) -> models.Venue | None:
     return models.Venue.query.filter_by(managingOffererId=offerer_id).first()
 
