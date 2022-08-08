@@ -61,29 +61,11 @@ def update_venue(
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
     reimbursement_point_id = attrs.pop("reimbursementPointId", None)
 
-    collective_domains_in_attrs = "collectiveDomains" in attrs
-    collective_legal_status_in_attrs = "collectiveLegalStatus" in attrs
-    collectiveDomains = attrs.pop("collectiveDomains", None)
-    collectiveLegalStatus = attrs.pop("collectiveLegalStatus", None)
-
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
     validation.check_venue_edition(modifications, venue)
 
     if contact_data:
         upsert_venue_contact(venue, contact_data)
-
-    if collective_domains_in_attrs:
-        venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains or [])
-
-    if collective_legal_status_in_attrs:
-        if collectiveLegalStatus:
-            venue.venueEducationalStatusId = collectiveLegalStatus
-        else:
-            venue.venueEducationalStatusId = None
-
-    should_save_venue = collective_domains_in_attrs or collective_legal_status_in_attrs
-    if should_save_venue:
-        repository.save(venue)
 
     if not modifications:
         return venue
