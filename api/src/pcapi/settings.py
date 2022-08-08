@@ -322,6 +322,8 @@ GOOGLE_DRIVE_BACKEND = os.environ.get("GOOGLE_DRIVE_BACKEND", _default_google_dr
 # RATE LIMITER
 RATE_LIMIT_BY_EMAIL = os.environ.get("RATE_LIMIT_BY_EMAIL", "10/minute")
 RATE_LIMIT_BY_IP = os.environ.get("RATE_LIMIT_BY_IP", "10/minute")
+RATE_LIMIT_SIRENE_API = os.environ.get("RATE_LIMIT_SIRENE_API", "5/minute")
+
 
 # DEBUG
 DEBUG_ACTIVATED = os.environ.get("DEBUG_ACTIVATED") == "True"
