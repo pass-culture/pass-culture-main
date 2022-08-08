@@ -311,23 +311,8 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     contact: base.VenueContactModel | None
     businessUnitId: int | None
     reimbursementPointId: int | None
-    collectiveDescription: str | None
-    collectiveStudents: list[educational_models.StudentLevels] | None
-    collectiveWebsite: str | None
-    collectiveDomains: list[int] | None
-    collectiveInterventionArea: list[str] | None
-    venueEducationalStatusId: int | None
-    collectiveNetwork: list[str] | None
-    collectiveAccessInformation: str | None
-    collectivePhone: str | None
-    collectiveEmail: str | None
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
-    _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
-    _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
-    _validate_collectiveAccessInformation = string_length_validator("collectiveAccessInformation", length=500)
-    _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
-    _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):

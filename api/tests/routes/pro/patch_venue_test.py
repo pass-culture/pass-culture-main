@@ -2,8 +2,6 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
@@ -45,7 +43,6 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
-        domain = educational_factories.EducationalDomainFactory(name="pouet")
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
@@ -56,9 +53,6 @@ class Returns200Test:
                 "name": "Ma librairie",
                 "venueTypeCode": "BOOKSTORE",
                 "venueLabelId": humanize(venue_label.id),
-                "collectiveDomains": [domain.id],
-                "collectiveStudents": [educational_models.StudentLevels.COLLEGE4.value],
-                "collectiveNetwork": ["network1", "network2"],
             },
             venue,
         )
@@ -74,9 +68,6 @@ class Returns200Test:
         assert json["isValidated"] is True
         assert "validationToken" not in json
         assert venue.isValidated
-        assert venue.collectiveDomains == [domain]
-        assert venue.collectiveStudents == [educational_models.StudentLevels.COLLEGE4]
-        assert venue.collectiveNetwork == ["network1", "network2"]
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
