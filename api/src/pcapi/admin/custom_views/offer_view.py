@@ -539,17 +539,13 @@ class ValidationBaseView(BaseAdminView):
         form.validation.default = offer.validation.value
         form.process()
         legal_category = offer.venue.managingOfferer.legal_category
-        legal_category_code = legal_category["legal_category_code"] or "Ce lieu n'a pas de code de catégorie juridique"
-        legal_category_label = (
-            legal_category["legal_category_label"] or "Ce lieu n'a pas de libellé de catégorie juridique"
-        )
         current_config = offers_repository.get_current_offer_validation_config()
         validation_items = parse_offer_validation_config(offer, current_config)[1]  # type: ignore [arg-type]
         context = {
             "form": form,
             "cancel_link_url": url_for(f"{self.endpoint}.index_view"),
-            "legal_category_code": legal_category_code,
-            "legal_category_label": legal_category_label,
+            "legal_category_code": legal_category["code"],
+            "legal_category_label": legal_category["label"],
             "pc_offer_url": build_pc_pro_offer_link(offer),
             "metabase_offer_url": _metabase_offer_url(offer.id) if IS_PROD else None,
             "offer_name": offer.name,

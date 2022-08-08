@@ -166,8 +166,8 @@ class OfferValidationViewTest:
         )
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
@@ -200,8 +200,8 @@ class OfferValidationViewTest:
         )
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
@@ -234,8 +234,8 @@ class OfferValidationViewTest:
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True, venue=venue)
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
 
@@ -265,8 +265,8 @@ class OfferValidationViewTest:
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True, venue=venue)
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
 
@@ -444,8 +444,8 @@ class OfferValidationViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
@@ -493,8 +493,8 @@ class OfferValidationViewTest:
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
 
@@ -614,8 +614,8 @@ class OfferValidationViewTest:
         )
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         data = dict(rowid=[offer1.id, offer2.id], action=action)
@@ -658,8 +658,8 @@ class OfferValidationViewTest:
         offers_factories.OfferValidationConfigFactory()
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         mocked_update_pending_offer_validation.return_value = False
@@ -710,8 +710,8 @@ class OfferValidationViewTest:
             validation=OfferValidationStatus.PENDING, isActive=True
         )
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
@@ -759,8 +759,8 @@ class OfferValidationViewTest:
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
 
@@ -849,8 +849,8 @@ class OfferValidationViewTest:
         )
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         data = dict(rowid=[offer1.id, offer2.id], action=action)
@@ -893,8 +893,8 @@ class OfferValidationViewTest:
         offers_factories.OfferValidationConfigFactory()
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         mocked_update_pending_offer_validation.return_value = False
@@ -951,8 +951,8 @@ class OfferValidationViewTest:
             collectiveOffer__institution=educational_institution,
         ).collectiveOffer
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
@@ -1004,8 +1004,8 @@ class OfferValidationViewTest:
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
 
@@ -1132,8 +1132,8 @@ class OfferValidationViewTest:
         ).collectiveOffer
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         data = dict(rowid=[offer1.id, offer2.id], action=action)
@@ -1181,8 +1181,8 @@ class OfferValidationViewTest:
         offers_factories.OfferValidationConfigFactory()
 
         mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
+            "code": 5202,
+            "label": "Société en nom collectif",
         }
 
         mocked_update_pending_offer_validation.return_value = False

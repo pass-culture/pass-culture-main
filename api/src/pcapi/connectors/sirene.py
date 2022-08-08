@@ -9,7 +9,6 @@ import re
 import pydantic
 
 from pcapi import settings
-from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
 from pcapi.models import feature
 from pcapi.utils import module_loading
 from pcapi.utils import requests
