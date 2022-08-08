@@ -3,7 +3,6 @@ import logging
 from pcapi import settings
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.users.external import sendinblue
-from pcapi.models.api_errors import ApiErrors
 from pcapi.tasks.decorator import task
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateProAttributesRequest
@@ -25,14 +24,12 @@ def update_contact_attributes_task(payload: UpdateSendinblueContactRequest) -> N
 
 @task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")  # type: ignore [arg-type]
 def send_transactional_email_primary_task(payload: SendTransactionalEmailRequest) -> None:
-    if not send_transactional_email(payload):
-        raise ApiErrors()
+    send_transactional_email(payload)
 
 
 @task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/send-transactional-email-secondary")  # type: ignore [arg-type]
 def send_transactional_email_secondary_task(payload: SendTransactionalEmailRequest) -> None:
-    if not send_transactional_email(payload):
-        raise ApiErrors()
+    send_transactional_email(payload)
 
 
 # De-duplicate and delay by 15 minutes, to avoid collecting pro attributes and making an update request to Sendinblue
