@@ -5,6 +5,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 from pcapi import settings
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
+from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
@@ -52,15 +53,21 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
         api_instance.send_transac_email(send_smtp_email)
-        return True
+
     except ApiException as exception:
+        if exception.status and int(exception.status) >= 500:
+            raise requests.ExternalAPIException(is_retryable=True) from exception
+
         code = "unknown"
         if exception.body and not isinstance(exception.body, str) and exception.body.get("code"):
             code = exception.body.get("code")
         logger.exception(  # pylint: disable=logging-fstring-interpolation
-            f"Exception when calling send_transac_email with status={exception.status} and code={code}", extra=extra
+            f"Exception when calling Sendinblue send_transac_email with status={exception.status} and code={code}",
+            extra=extra,
         )
-        return False
-    except Exception:  # pylint: disable=broad-except
-        logger.exception("Unknown exception occurred when calling send_transac_email", extra=extra)
-        return False
+        raise requests.ExternalAPIException(is_retryable=False) from exception
+
+    except Exception as exception:
+        raise requests.ExternalAPIException(is_retryable=True) from exception
+
+    return True
