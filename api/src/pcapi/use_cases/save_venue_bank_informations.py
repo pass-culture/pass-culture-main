@@ -169,12 +169,12 @@ class SaveVenueBankInformations:
         api_errors: CannotRegisterBankInformation,
     ) -> VenueWithBasicInformation | None:
         venue = None
-        if dms_token := application_details.dms_token:
+        if dms_token := (application_details.dms_token or "").strip():
             venue = self.venue_repository.find_by_dms_token(dms_token)
             if not venue:
                 api_errors.add_error("Venue", "Venue not found")
 
-        elif siret := application_details.siret:
+        elif siret := (application_details.siret or "").strip():
             venue = self.venue_repository.find_by_siret(siret)
             if not venue:
                 api_errors.add_error("Venue", "Venue not found")
@@ -186,7 +186,7 @@ class SaveVenueBankInformations:
                 api_errors.add_error("Venue", "Error while checking SIRET on Api Entreprise")
 
         else:
-            if offerer and (name := application_details.venue_name):
+            if offerer and (name := (application_details.venue_name or "").strip()):
                 venues = self.venue_repository.find_by_name(name, offerer.id)
                 if len(venues) == 0:
                     api_errors.add_error("Venue", "Venue name not found")
