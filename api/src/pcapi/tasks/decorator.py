@@ -9,6 +9,7 @@ import pydantic
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import requests
 
 from . import cloud_task
 
@@ -52,8 +53,15 @@ def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
     def handle_task(body: payload_type = None):  # type: ignore [no-untyped-def]
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
         task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
+        retry_attempt = request.headers.get("X-CloudTasks-TaskRetryCount")
 
-        job_details = {"queue": queue_name, "handler": path, "task": task_id, "body": request.get_json()}
+        job_details = {
+            "queue": queue_name,
+            "handler": path,
+            "task": task_id,
+            "body": request.get_json(),
+            "retry_attempt": retry_attempt,
+        }
         logger.info("Received cloud task %s", path, extra=job_details)
 
         if request.headers.get(cloud_task.AUTHORIZATION_HEADER_KEY) != cloud_task.AUTHORIZATION_HEADER_VALUE:
@@ -62,6 +70,28 @@ def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
 
         try:
             f(body)
+
+        except requests.ExternalAPIException as exception:
+            if not exception.is_retryable:
+                # The task should not be retried as it would result with the same error again.
+                # A log with a higher level should happen before.
+                logger.warning("Task %s failed and should not be retried", path, extra=job_details)
+                return
+
+            if retry_attempt and int(retry_attempt) + 1 >= settings.CLOUD_TASK_MAX_ATTEMPTS:
+                # notify that External API is probably unavailable
+                logger.error(  # pylint: disable=logging-fstring-interpolation
+                    f"External API unavailable for CloudTask {path}",
+                    extra=job_details | {"exception": str(exception), "cause_exception": str(exception.__cause__)},
+                )
+            else:
+                logger.warning(
+                    "The cloud task has failed and will automatically be retried: %s",
+                    path,
+                    extra=job_details | {"exception": str(exception), "cause_exception": str(exception.__cause__)},
+                )
+
+            raise ApiErrors()
 
         except ApiErrors as e:
             logger.warning(

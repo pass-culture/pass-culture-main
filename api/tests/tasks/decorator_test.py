@@ -11,6 +11,7 @@ from pcapi.core.testing import override_settings
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
+from pcapi.utils import requests
 
 from tests.conftest import TestClient
 
@@ -122,3 +123,49 @@ class CloudTaskDecoratorTest:
 
         assert response.status_code == 299
         endpoint_method.assert_not_called()
+
+
+class PostHandlerTest:
+    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    def test_max_attempt_reached(self, client: TestClient, caplog):
+        endpoint_method.reset_mock()
+        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=True)
+
+        response = client.post(
+            "/cloud-tasks/endpoint_test",
+            headers={"AUTHORIZATION": "Bearer secret-token", "X-CloudTasks-TaskRetryCount": "9"},
+        )
+
+        assert response.status_code == 400
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "External API unavailable for CloudTask /endpoint_test"
+        assert caplog.records[0].levelname == "ERROR"
+
+    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    def test_max_attempt_not_reached(self, client: TestClient, caplog):
+        endpoint_method.reset_mock()
+        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=True)
+
+        response = client.post(
+            "/cloud-tasks/endpoint_test",
+            headers={"AUTHORIZATION": "Bearer secret-token", "X-CloudTasks-TaskRetryCount": "8"},
+        )
+
+        assert response.status_code == 400
+        assert len(caplog.records) == 1
+        assert (
+            caplog.records[0].message == "The cloud task has failed and will automatically be retried: /endpoint_test"
+        )
+        assert caplog.records[0].levelname == "WARNING"
+
+    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    def test_not_retryable(self, client: TestClient):
+        endpoint_method.reset_mock()
+        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=False)
+
+        response = client.post(
+            "/cloud-tasks/endpoint_test",
+            headers={"AUTHORIZATION": "Bearer secret-token", "X-CloudTasks-TaskRetryCount": "8"},
+        )
+
+        assert response.status_code == 204

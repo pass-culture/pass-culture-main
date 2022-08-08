@@ -23,6 +23,14 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT_IN_SECOND = 10
 
 
+class ExternalAPIException(Exception):
+    is_retryable: bool
+
+    def __init__(self, is_retryable: bool, *args: object) -> None:
+        self.is_retryable = is_retryable
+        super().__init__(*args)
+
+
 def _redact_url(url: str) -> str:
     # Cine Digital Service (CDS) wants authentication token to appear in GET
     # requests. We don't want to log them.
