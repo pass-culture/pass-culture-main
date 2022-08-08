@@ -1,6 +1,7 @@
 import dataclasses
 from unittest.mock import patch
 
+import pytest
 from sib_api_v3_sdk.rest import ApiException
 
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
@@ -11,19 +12,46 @@ from pcapi.core.mails.transactional.users.email_address_change_confirmation impo
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
+from pcapi.utils import requests
 
 
 class TransactionalEmailWithTemplateTest:
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
-        side_effect=ApiException(),
+        side_effect=ApiException(status=400, reason="Bad Request"),
     )
-    def test_send_transactional_email_with_template_id_expect_api_error(self, caplog):
+    def test_bad_request(self, mock, caplog):
         payload = SendTransactionalEmailRequest(
             recipients=[], params={}, template_id=1, tags=[], sender={}, reply_to={}
         )
-        assert not send_transactional_email(payload)
-        assert caplog.messages[0].startswith("Exception when calling SMTPApi->send_transac_email:")
+
+        with pytest.raises(requests.ExternalAPIException) as exception_info:
+            send_transactional_email(payload)
+
+        assert exception_info.value.is_retryable is False
+        assert caplog.records[0].levelname == "ERROR"
+        assert (
+            caplog.records[0].message
+            == "Exception when calling Sendinblue send_transac_email with status=400 and code=unknown"
+        )
+        assert len(caplog.records) == 1
+
+    @patch(
+        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
+        side_effect=ApiException(status=524, reason="Bad Request"),
+    )
+    def test_external_api_unavailable(self, mock, caplog):
+        payload = SendTransactionalEmailRequest(
+            recipients=[], params={}, template_id=1, tags=[], sender={}, reply_to={}
+        )
+
+        with pytest.raises(requests.ExternalAPIException) as exception_info:
+            send_transactional_email(payload)
+
+        assert exception_info.value.is_retryable is True
+        assert isinstance(exception_info.value.__cause__, ApiException)
+
+        assert len(caplog.records) == 0
 
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
@@ -117,17 +145,6 @@ class TransactionalEmailWithoutTemplateTest:
     data = SendinblueTransactionalWithoutTemplateEmailData(
         subject="test", html_content="contenu test", sender=SendinblueTransactionalSender.SUPPORT, reply_to=None
     )
-
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
-        side_effect=ApiException(),
-    )
-    def test_send_transactional_email_expect_api_error(self, caplog):
-        payload = SendTransactionalEmailRequest(
-            recipients=[], sender={}, subject="", html_content="", attachment={}, reply_to={}
-        )
-        assert not send_transactional_email(payload)
-        assert caplog.messages[0].startswith("Exception when calling SMTPApi->send_transac_email:")
 
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
