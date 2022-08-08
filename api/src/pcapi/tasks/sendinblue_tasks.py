@@ -20,8 +20,7 @@ SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME = settings.GCP_SENDINBLUE_T
 
 @task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")  # type: ignore [arg-type]
 def update_contact_attributes_task(payload: UpdateSendinblueContactRequest) -> None:
-    if not sendinblue.make_update_request(payload):
-        raise ApiErrors()
+    sendinblue.make_update_request(payload)
 
 
 @task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")  # type: ignore [arg-type]
