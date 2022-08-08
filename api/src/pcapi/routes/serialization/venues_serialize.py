@@ -330,6 +330,25 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
 
 
+class EditVenueCollectiveDataBodyModel(BaseModel):
+    collectiveDescription: str | None
+    collectiveStudents: list[educational_models.StudentLevels] | None
+    collectiveWebsite: str | None
+    collectiveDomains: list[int] | None
+    collectiveInterventionArea: list[str] | None
+    venueEducationalStatusId: int | None
+    collectiveNetwork: list[str] | None
+    collectiveAccessInformation: str | None
+    collectivePhone: str | None
+    collectiveEmail: str | None
+
+    _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
+    _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
+    _validate_collectiveAccessInformation = string_length_validator("collectiveAccessInformation", length=500)
+    _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
+    _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
+
+
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: str
     managingOffererId: str

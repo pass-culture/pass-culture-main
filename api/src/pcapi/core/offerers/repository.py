@@ -144,7 +144,7 @@ def get_filtered_venues(
         if validated_offerer:
             query = query.filter(models.Offerer.isValidated)
         else:
-            query = query.filter(~models.Offerer.isValidated)  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
+            query = query.filter(~models.Offerer.isValidated)  # type: ignore [operator] # pylint: disable=invalid-unary-operand-type
 
     if active_offerers_only:
         query = query.filter(models.Offerer.isActive.is_(True))
@@ -384,3 +384,7 @@ def find_available_reimbursement_points_for_offerer(offerer_id: int) -> list[mod
         .order_by(sqla.func.coalesce(models.Venue.publicName, models.Venue.name))
         .all()
     )
+
+
+def get_venue_by_id(venue_id: int) -> models.Venue:
+    return models.Venue.query.get(venue_id)
