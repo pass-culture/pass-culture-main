@@ -74,7 +74,7 @@ class SendSMSTest:
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
     @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
-    def test_send_sms_success(self, app):
+    def test_send_sms_success(self, mock, app):
         user = users_factories.UserFactory()
 
         phone_validation_api.send_phone_validation_code(user, "+33600000000")
