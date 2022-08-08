@@ -15,7 +15,7 @@ import ReimbursementsContainer from 'components/pages/Reimbursements/Reimburseme
 import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
 import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
 import SignIn from 'components/pages/SignIn/SignIn'
-import SignupContainer from 'components/pages/Signup/SignupContainer'
+import Signup from 'components/pages/Signup/Signup'
 import Bookings from 'routes/Bookings'
 import BusinessUnitList from 'routes/BusinessUnitList'
 import CollectiveBookings from 'routes/CollectiveBookings'
@@ -50,7 +50,7 @@ export const routesWithoutLayout = [
     path: '/',
   },
   {
-    component: SignupContainer,
+    component: Signup,
     exact: true,
     path: '/inscription/(confirmation)?',
     title: 'Inscription',
