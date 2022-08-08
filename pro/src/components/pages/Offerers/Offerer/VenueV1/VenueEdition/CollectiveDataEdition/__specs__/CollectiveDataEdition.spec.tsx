@@ -28,7 +28,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getVenuesEducationalStatuses: jest.fn(),
     getEducationalPartners: jest.fn(),
-    editVenue: jest.fn(),
+    editVenueCollectiveData: jest.fn(),
     getVenueCollectiveData: jest.fn(),
     getEducationalPartner: jest.fn(),
   },
@@ -89,7 +89,7 @@ describe('CollectiveDataEdition', () => {
       .spyOn(api, 'getEducationalPartners')
       .mockResolvedValue({ partners: [] })
     jest
-      .spyOn(api, 'editVenue')
+      .spyOn(api, 'editVenueCollectiveData')
       .mockResolvedValue({ id: 'A1' } as GetVenueResponseModel)
 
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
@@ -407,7 +407,7 @@ describe('CollectiveDataEdition', () => {
   describe('submit', () => {
     it('should display error toast when adapter call failed', async () => {
       jest
-        .spyOn(api, 'editVenue')
+        .spyOn(api, 'editVenueCollectiveData')
         .mockRejectedValueOnce(
           new ApiError(
             {} as ApiRequestOptions,
