@@ -147,7 +147,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
 
     venueProviders = relationship("VenueProvider", back_populates="venue")  # type: ignore [misc]
 
-    managingOffererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
+    managingOffererId: int = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
 
     managingOfferer = relationship("Offerer", foreign_keys=[managingOffererId], backref="managedVenues")  # type: ignore [misc]
 

@@ -685,7 +685,7 @@ def create_collective_offer(
 
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     venue: offerers_models.Venue = rest.load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
-    rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [arg-type]
+    rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
     educational_domains = []
