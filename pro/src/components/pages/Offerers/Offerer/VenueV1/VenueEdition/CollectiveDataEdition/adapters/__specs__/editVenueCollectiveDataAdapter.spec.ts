@@ -9,7 +9,7 @@ import editVenueCollectiveDataAdapter from '../editVenueCollectiveDataAdapter'
 describe('editVenueCollectiveDataAdapter', () => {
   it('should return error message', async () => {
     jest
-      .spyOn(api, 'editVenue')
+      .spyOn(api, 'editVenueCollectiveData')
       .mockRejectedValueOnce(
         new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
       )
@@ -31,7 +31,7 @@ describe('editVenueCollectiveDataAdapter', () => {
 
   it('should return success message', async () => {
     jest
-      .spyOn(api, 'editVenue')
+      .spyOn(api, 'editVenueCollectiveData')
       .mockResolvedValueOnce({ id: 'A1' } as GetVenueResponseModel)
 
     const response = await editVenueCollectiveDataAdapter({
@@ -49,7 +49,7 @@ describe('editVenueCollectiveDataAdapter', () => {
       payload: { id: 'A1' },
       message: 'Vos informations ont bien été enregistrées',
     })
-    expect(api.editVenue).toHaveBeenCalledWith('A1', {
+    expect(api.editVenueCollectiveData).toHaveBeenCalledWith('A1', {
       ...COLLECTIVE_DATA_FORM_INITIAL_VALUES,
       collectiveDescription: 'blabla',
       collectiveDomains: [1],
