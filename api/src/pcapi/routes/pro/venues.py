@@ -18,6 +18,7 @@ from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
@@ -157,6 +158,23 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
+@private_api.route("/venues/<venue_id>/collective-data", methods=["PATCH"])
+@login_required
+@spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
+def edit_venue_collective_data(
+    venue_id: str, body: venues_serialize.EditVenueCollectiveDataBodyModel
+) -> venues_serialize.GetVenueResponseModel:
+    dehumanized_venue_id = dehumanize_or_raise(venue_id)
+    venue = offerers_api.get_venue_by_id(dehumanized_venue_id)
+
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
+    update_venue_attrs = body.dict(exclude_unset=True)
+    venue = offerers_api.update_venue_collective_data(venue, **update_venue_attrs)
+
+    return venues_serialize.GetVenueResponseModel.from_orm(venue)
+
+
 @private_api.route("/venues/<venue_id>/pricing-point", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
@@ -220,7 +238,7 @@ def delete_venue_banner(venue_id: str) -> None:
 )
 def get_venue_stats(humanized_venue_id: str) -> venues_serialize.VenueStatsResponseModel:
     venue: Venue = load_or_404(Venue, humanized_venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [arg-type]
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     (
         active_bookings_quantity,
