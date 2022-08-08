@@ -90,12 +90,6 @@ const OfferDetails = ({
         </OfferSection>
       )}
 
-      {interventionArea?.length > 0 && (
-        <OfferSection title="Zone de Mobiltié de l’acteur culturel">
-          <OfferInterventionArea interventionArea={interventionArea} />
-        </OfferSection>
-      )}
-
       {educationalPriceDetail && (
         <OfferSection title="Détails">{educationalPriceDetail}</OfferSection>
       )}
@@ -103,6 +97,13 @@ const OfferDetails = ({
       <OfferSection title="Adresse où se déroulera l’évènement">
         <OfferVenue offerVenue={offerVenue} venue={venue} />
       </OfferSection>
+
+      {interventionArea?.length > 0 && (
+        <OfferSection title="Zone de Mobilité">
+          <OfferInterventionArea interventionArea={interventionArea} />
+        </OfferSection>
+      )}
+
       {displayContactSection && (
         <OfferSection title="Contact">
           <ul className="offer-details-list">
