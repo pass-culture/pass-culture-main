@@ -30,14 +30,17 @@ def process_users_batch(dry, users):  # type: ignore [no-untyped-def]
             continue
 
         try:
-            formated = ParsedPhoneNumber(user.phoneNumber, region="FR").phone_number
+            if user.phoneNumber == "":
+                formatted = None
+            else:
+                formatted = ParsedPhoneNumber(user.phoneNumber, region="FR").phone_number
 
         except InvalidPhoneNumber:
             LOGGER.error("invalid phone number %s for user %s", user.phoneNumber, user.id)
             errors += 1
 
         else:
-            if formated == user.phoneNumber:
+            if formatted == user.phoneNumber:
                 ok += 1
 
             else:
@@ -47,10 +50,10 @@ def process_users_batch(dry, users):  # type: ignore [no-untyped-def]
                         "phone number of user %s will be formatted from %s to %s",
                         user.id,
                         user.phoneNumber,
-                        formated,
+                        formatted,
                     )
                 else:
-                    user.phoneNumber = formated
+                    user.phoneNumber = formatted
 
     return changed, errors, none, ok
 
@@ -82,7 +85,7 @@ def process_users(batch_size, dry):  # type: ignore [no-untyped-def]
                     ok,
                 )
             else:
-                db.session.bulk_save_objects(users)
+                db.session.commit()
                 LOGGER.info(
                     "%s numbers changed, %s errors, %s None, %s OK (in %s)",
                     changed,

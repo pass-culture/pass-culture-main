@@ -215,7 +215,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,
         most_booked_subcategory=bookings_attributes.most_booked_subcategory,
-        phone_number=user.phoneNumber,
+        phone_number=user.phoneNumber,  # type: ignore [arg-type]
         postal_code=user.postalCode,
         products_use_date={
             f"product_{TRACKED_PRODUCT_IDS[booking.stock.offer.productId]}_use": booking.dateUsed

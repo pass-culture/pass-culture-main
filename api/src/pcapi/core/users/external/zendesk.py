@@ -71,7 +71,7 @@ def update_contact_attributes(
     # Then search by phone number, which is NOT unique in user database
     # TODO(prouzet) Should we search by phone number in venues?
     if not user and phone_number:
-        user = User.query.filter(User.phoneNumber.like(f"%{phone_number[-9:]}")).first()  # type: ignore [attr-defined]
+        user = User.query.filter(User.phoneNumber == phone_number).first()
 
     if user and not email:
         email = user.email
@@ -95,7 +95,7 @@ def _format_user_attributes(email: str, attributes: UserAttributes) -> dict:
     # https://developer.zendesk.com/api-reference/ticketing/users/users/#phone-number
     try:
         parsed_phone_number = phone_number_utils.parse_phone_number(
-            attributes.phone_number,  # type: ignore [arg-type]
+            attributes.phone_number,
             "FR",
         )
         phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)

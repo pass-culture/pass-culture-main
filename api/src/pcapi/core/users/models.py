@@ -483,18 +483,18 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         )
 
     @hybrid_property
-    def phoneNumber(self) -> str:
+    def phoneNumber(self) -> str | None:
         return self._phoneNumber
 
     @phoneNumber.setter  # type: ignore [no-redef]
-    def phoneNumber(self, value: str) -> None:
+    def phoneNumber(self, value: str | None) -> None:
         if not value:
             self._phoneNumber = None
         else:
             self._phoneNumber = ParsedPhoneNumber(value, region="FR").phone_number
 
     @phoneNumber.expression  # type: ignore [no-redef]
-    def phoneNumber(cls) -> sa.Column:  # pylint: disable=no-self-argument
+    def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
         return cls._phoneNumber
 
     @hybrid_property
