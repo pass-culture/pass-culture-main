@@ -17,7 +17,7 @@ def custom_restclient_request(self, method, url, **kwargs):  # type: ignore [no-
     try:
         response = self.__orig_request(method, url, **kwargs)
     except Exception as exc:
-        logger.exception(
+        logger.warning(
             "Call to external service failed with %s",
             # APIException from sib_api_v3_sdk has a status. Other exceptions don't.
             getattr(exc, "status", str(exc)),
