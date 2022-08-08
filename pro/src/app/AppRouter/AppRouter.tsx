@@ -5,8 +5,8 @@ import { Redirect, Route, Switch } from 'react-router'
 import AppLayout from 'app/AppLayout'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
+import routes, { IRoute, routesWithoutLayout } from 'routes/routes_map'
 import { selectActiveFeatures } from 'store/features/selectors'
-import routes, { IRoute, routesWithoutLayout } from 'utils/routes_map'
 
 const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
