@@ -107,8 +107,8 @@ const FormOfferType = ({
         <FormLayout.Row>
           <MultiSelectAutocomplete
             options={domainsOptions}
-            label="Domaines artistiques et culturels"
-            singularLabel="Domaine artistique et culturel"
+            pluralLabel="Domaines artistiques et culturels"
+            label="Domaine artistique et culturel"
             fieldName="domains"
             disabled={disableForm}
           />

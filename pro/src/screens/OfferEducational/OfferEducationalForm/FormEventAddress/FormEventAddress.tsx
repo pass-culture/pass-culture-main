@@ -29,7 +29,7 @@ import {
   EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_SCHOOL_LABEL,
   INTERVENTION_AREA_LABEL,
-  INTERVENTION_AREA_SINGULAR_LABEL,
+  INTERVENTION_AREA_PLURAL_LABEL,
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -167,8 +167,8 @@ const FormEventAddress = ({
               hideTags
               options={offerInterventionOptions}
               fieldName="interventionArea"
+              pluralLabel={INTERVENTION_AREA_PLURAL_LABEL}
               label={INTERVENTION_AREA_LABEL}
-              singularLabel={INTERVENTION_AREA_SINGULAR_LABEL}
               className={styles.row}
               disabled={disableForm}
             />
