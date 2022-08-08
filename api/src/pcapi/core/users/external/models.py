@@ -37,7 +37,7 @@ class UserAttributes:
     marketing_email_subscription: bool
     marketing_push_subscription: bool
     most_booked_subcategory: str | None  # Single subcategory most frequently booked by the user
-    phone_number: typing.Callable[..., typing.Any] | None  # Added for Zendesk
+    phone_number: str | None  # Added for Zendesk, type: ignore [arg-type]
     postal_code: str | None
     products_use_date: dict
     roles: list[str]
