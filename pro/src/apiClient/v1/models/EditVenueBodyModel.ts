@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 
 export type EditVenueBodyModel = {
@@ -11,15 +10,6 @@ export type EditVenueBodyModel = {
   bookingEmail?: string | null;
   businessUnitId?: number | null;
   city?: string | null;
-  collectiveAccessInformation?: string | null;
-  collectiveDescription?: string | null;
-  collectiveDomains?: Array<number> | null;
-  collectiveEmail?: string | null;
-  collectiveInterventionArea?: Array<string> | null;
-  collectiveNetwork?: Array<string> | null;
-  collectivePhone?: string | null;
-  collectiveStudents?: Array<StudentLevels> | null;
-  collectiveWebsite?: string | null;
   comment?: string | null;
   contact?: VenueContactModel | null;
   description?: string | null;
@@ -35,7 +25,6 @@ export type EditVenueBodyModel = {
   publicName?: string | null;
   reimbursementPointId?: number | null;
   siret?: string | null;
-  venueEducationalStatusId?: number | null;
   venueLabelId?: number | null;
   venueTypeCode?: string | null;
   visualDisabilityCompliant?: boolean | null;

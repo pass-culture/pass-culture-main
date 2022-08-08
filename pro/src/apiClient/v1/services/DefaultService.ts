@@ -20,6 +20,7 @@ import type { CollectiveStockResponseModel } from '../models/CollectiveStockResp
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
 import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
+import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollectiveDataBodyModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
@@ -1663,6 +1664,32 @@ export class DefaultService {
       path: {
         'venue_id': venueId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * edit_venue_collective_data <PATCH>
+   * @param venueId
+   * @param requestBody
+   * @returns GetVenueResponseModel OK
+   * @throws ApiError
+   */
+  public editVenueCollectiveData(
+    venueId: string,
+    requestBody?: EditVenueCollectiveDataBodyModel,
+  ): CancelablePromise<GetVenueResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/venues/{venue_id}/collective-data',
+      path: {
+        'venue_id': venueId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
