@@ -47,6 +47,7 @@ export type { CreateThumbnailResponseModel } from './models/CreateThumbnailRespo
 export type { CropParams } from './models/CropParams';
 export type { CulturalPartner } from './models/CulturalPartner';
 export type { EditVenueBodyModel } from './models/EditVenueBodyModel';
+export type { EditVenueCollectiveDataBodyModel } from './models/EditVenueCollectiveDataBodyModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionsQueryModel } from './models/EducationalInstitutionsQueryModel';
 export type { EducationalInstitutionsResponseModel } from './models/EducationalInstitutionsResponseModel';
