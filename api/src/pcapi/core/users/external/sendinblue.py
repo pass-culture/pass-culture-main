@@ -23,9 +23,9 @@ from pcapi.core.users import testing
 from pcapi.core.users.external import ProAttributes
 from pcapi.core.users.external import UserAttributes
 from pcapi.core.users.models import UserRole
-from pcapi.models.api_errors import ApiErrors
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
+from pcapi.utils.requests import ExternalAPIException
 
 
 logger = logging.getLogger(__name__)
@@ -109,8 +109,7 @@ def update_contact_attributes(
     if asynchronous:
         update_contact_attributes_task.delay(contact_request)
     else:
-        if not make_update_request(contact_request):
-            raise ApiErrors()
+        make_update_request(contact_request)
 
 
 def format_list(raw_list: Iterable[str]) -> str:
@@ -189,12 +188,12 @@ def format_user_attributes(attributes: UserAttributes | ProAttributes) -> dict:
     }
 
 
-def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
+def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
     if settings.IS_RUNNING_TESTS:
         testing.sendinblue_requests.append(
             {"email": payload.email, "attributes": payload.attributes, "emailBlacklisted": payload.emailBlacklisted}
         )
-        return True
+        return
 
     if settings.IS_DEV:
         logger.info(
@@ -203,7 +202,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
             payload.attributes,
             payload.emailBlacklisted,
         )
-        return True
+        return
 
     configuration = sib_api_v3_sdk.Configuration()
     configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
@@ -218,39 +217,22 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
 
     try:
         api_instance.create_contact(create_contact)
-        return True
 
     except SendinblueApiException as exception:
-        if exception.status == 524:
-            logger.exception(
-                "Timeout when calling ContactsApi->create_contact",
-                extra={
-                    "email": payload.email,
-                    "attributes": payload.attributes,
-                    "emailBlacklisted": payload.emailBlacklisted,
-                },
-            )
-        else:
-            logger.exception(  # pylint: disable=logging-fstring-interpolation
-                f"Exception when calling ContactsApi->create_contact with status={exception.status}",
-                extra={
-                    "email": payload.email,
-                    "attributes": payload.attributes,
-                    "emailBlacklisted": payload.emailBlacklisted,
-                },
-            )
-        return False
+        if exception.status >= 500:
+            raise ExternalAPIException(is_retryable=True) from exception
 
-    except Exception:  # pylint: disable=broad-except
         logger.exception(
-            "Exception when calling ContactsApi->create_contact",
+            "Exception when calling Sendinblue create_contact API",
             extra={
                 "email": payload.email,
                 "attributes": payload.attributes,
-                "emailBlacklisted": payload.emailBlacklisted,
             },
         )
-        return False
+        raise ExternalAPIException(is_retryable=False) from exception
+
+    except Exception as exception:
+        raise ExternalAPIException(is_retryable=True) from exception
 
 
 def send_import_contacts_request(
