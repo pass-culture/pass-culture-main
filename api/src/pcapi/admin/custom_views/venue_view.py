@@ -82,7 +82,7 @@ def _get_emails_by_venue(venue: Venue) -> set[str]:
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.
     Be careful: venue attributes are no longer available after venue object is deleted, call this function before.
     """
-    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(venue.managingOffererId)  # type: ignore [arg-type]
+    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(venue.managingOffererId)
     emails = {user_offerer.user.email for user_offerer in users_offerer}
     emails.add(venue.bookingEmail)
     return emails

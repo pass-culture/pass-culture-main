@@ -121,6 +121,33 @@ def update_venue(
     return venue
 
 
+def update_venue_collective_data(
+    venue: models.Venue,
+    **attrs: typing.Any,
+) -> models.Venue:
+    collective_domains_in_attrs = "collectiveDomains" in attrs
+    collective_legal_status_in_attrs = "collectiveLegalStatus" in attrs
+    collectiveDomains = attrs.pop("collectiveDomains", None)
+    collectiveLegalStatus = attrs.pop("collectiveLegalStatus", None)
+
+    modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
+
+    if collective_domains_in_attrs:
+        venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains or [])
+
+    if collective_legal_status_in_attrs:
+        if collectiveLegalStatus:
+            venue.venueEducationalStatusId = collectiveLegalStatus
+        else:
+            venue.venueEducationalStatusId = None
+
+    venue.populate_from_dict(modifications)
+
+    repository.save(venue)
+
+    return venue
+
+
 def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
     finance_models.BusinessUnitVenueLink.query.filter(
         finance_models.BusinessUnitVenueLink.businessUnit == business_unit,
@@ -604,3 +631,7 @@ def generate_dms_token() -> str:
 
 def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalStatus]:
     return offerers_repository.get_venues_educational_statuses()
+
+
+def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
+    return offerers_repository.get_venue_by_id(venue_id)
