@@ -613,7 +613,11 @@ class Offerer(
     @cached_property
     def legal_category(self) -> dict:
         if not FeatureToggle.USE_INSEE_SIRENE_API.is_active():
-            return get_offerer_legal_category(self)
+            category = get_offerer_legal_category(self)
+            return {
+                "code": category["legal_category_code"],
+                "label": category["legal_category_label"],
+            }
         code = None
         if self.siren:
             try:
@@ -627,7 +631,7 @@ class Offerer(
             label = CODE_TO_CATEGORY_MAPPING.get(int(code), "")
         else:
             code = label = "Donnée indisponible"
-        return {"legal_category_code": code, "legal_category_label": label}
+        return {"code": code, "label": label}
 
 
 offerer_ts_indexes = [

@@ -168,7 +168,7 @@ class VenueNApprovedOffersTest:
 class OffererLegalCategoryTest:
     @override_features(USE_INSEE_SIRENE_API=False)
     @patch("pcapi.core.offerers.models.get_offerer_legal_category")
-    def test_offerer_legal_category_called_many_times(self, mocked_get_offerer_legal_category):
+    def test_offerer_legal_category_legacy_api(self, mocked_get_offerer_legal_category):
         info = {
             "legal_category_code": "5202",
             "legal_category_label": "Société en nom collectif",
@@ -176,17 +176,21 @@ class OffererLegalCategoryTest:
         mocked_get_offerer_legal_category.return_value = info
         offerer = factories.OffererFactory.build()
 
-        assert offerer.legal_category == info
-        assert offerer.legal_category == info
-        assert offerer.legal_category == info
+        expected = {
+            "code": "5202",
+            "label": "Société en nom collectif",
+        }
+        assert offerer.legal_category == expected
+        assert offerer.legal_category == expected
+        assert offerer.legal_category == expected
         assert mocked_get_offerer_legal_category.call_count == 1
 
     @override_features(USE_INSEE_SIRENE_API=True)
     def test_offerer_legal_category(self):
         offerer = factories.OffererFactory.build()
         assert offerer.legal_category == {
-            "legal_category_code": "1000",
-            "legal_category_label": "Entrepreneur individuel",
+            "code": "1000",
+            "label": "Entrepreneur individuel",
         }
 
     @override_features(USE_INSEE_SIRENE_API=True)
@@ -194,8 +198,8 @@ class OffererLegalCategoryTest:
     def test_offerer_legal_category_on_error(self, get_siren_mock):
         offerer = factories.OffererFactory.build()
         assert offerer.legal_category == {
-            "legal_category_code": "Donnée indisponible",
-            "legal_category_label": "Donnée indisponible",
+            "code": "Donnée indisponible",
+            "label": "Donnée indisponible",
         }
 
 
