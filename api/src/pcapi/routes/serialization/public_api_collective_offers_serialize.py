@@ -23,3 +23,15 @@ class CollectiveOffersCategoryResponseModel(BaseModel):
 
 class CollectiveOffersListCategoriesResponseModel(BaseModel):
     __root__: list[CollectiveOffersCategoryResponseModel]
+
+
+class CollectiveOffersDomainResponseModel(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class CollectiveOffersListDomainsResponseModel(BaseModel):
+    __root__: list[CollectiveOffersDomainResponseModel]
