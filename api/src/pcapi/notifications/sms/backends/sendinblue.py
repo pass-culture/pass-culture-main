@@ -6,6 +6,7 @@ from sib_api_v3_sdk.rest import ApiException
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
@@ -27,11 +28,24 @@ class SendinblueBackend:
         )
         try:
             self.api_instance.send_transac_sms(send_transac_sms)
-            return True
 
-        except ApiException as e:
-            logger.exception("Exception when calling TransactionalSMSApi->send_transac_sms: %s\n", e)
-            return False
+        except ApiException as exception:
+            if exception.status and int(exception.status) >= 500:
+                logger.warning(
+                    "Sendinblue replied with status=%s when sending SMS",
+                    exception.status,
+                    extra={"recipient": recipient, "content": content},
+                )
+                raise requests.ExternalAPIException(is_retryable=True) from exception
+
+            logger.exception("Error while sending SMS", extra={"recipient": recipient, "content": content})
+            raise requests.ExternalAPIException(is_retryable=False) from exception
+
+        except Exception as exception:
+            logger.warning("Exception caught while sending SMS", extra={"recipient": recipient, "content": content})
+            raise requests.ExternalAPIException(is_retryable=True) from exception
+
+        return True
 
     def _format_recipient(self, recipient: str):  # type: ignore [no-untyped-def]
         """Sendinblue does not accept phone numbers with a leading '+'"""
