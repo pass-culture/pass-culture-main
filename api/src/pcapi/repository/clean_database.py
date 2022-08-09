@@ -6,7 +6,6 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.mails.models as mails_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
@@ -93,7 +92,6 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     users_models.UserSuspension.query.delete()
     users_models.User.query.delete()
     UserSession.query.delete()
-    mails_models.Email.query.delete()
     providers_models.Provider.query.delete()
     offerers_models.VenueType.query.delete()
     offerers_models.VenueLabel.query.delete()
