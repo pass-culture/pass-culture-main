@@ -31,26 +31,27 @@ export const VenueList = ({
   useEffect(() => {
     canOffererCreateCollectiveOfferAdapter(selectedOffererId).then(response =>
       setDisplayCollectiveDataBanner(
-        response.payload.isOffererEligibleToEducationalOffer
+        response.payload.isOffererEligibleToEducationalOffer &&
+          physicalVenues.length > 0
       )
     )
   }, [selectedOffererId])
 
-  const bannerUrl =
+  const bannerLocation =
     physicalVenues.length === 1
-      ? `/structures/${selectedOffererId}/lieux/${physicalVenues[0]?.id}`
-      : `/structures/${selectedOffererId}/lieux`
+      ? {
+          pathname: `/structures/${selectedOffererId}/lieux/${physicalVenues[0]?.id}`,
+          state: { scrollToElementId: 'venue-collective-data' },
+        }
+      : undefined
 
   return (
     <div className="h-venue-list">
       {displayVenueCollectiveDataBanner && (
         <InternalBanner
           type="new"
-          to={{
-            pathname: bannerUrl,
-            state: { scrollToElementId: 'venue-collective-data' },
-          }}
-          linkTitle="Renseigner vos informations "
+          to={bannerLocation}
+          linkTitle="Renseigner vos informations"
           icon="ico-external-site-filled-white"
           closable
           handleOnClick={() => setDisplayCollectiveDataBanner(false)}
