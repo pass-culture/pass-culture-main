@@ -27,6 +27,7 @@ secrets:
   - name: GCP_DATA_PROJECT_ID
   - name: GOOGLE_CLIENT_ID
   - name: GOOGLE_CLIENT_SECRET
+  - name: INSEE_SIRENE_API_TOKEN
   - name: JWT_SECRET_KEY
   - name: NOTION_TOKEN
   - name: OBJECT_STORAGE_URL
