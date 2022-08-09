@@ -1104,7 +1104,7 @@ class PostManualReviewTest:
         assert subscription_models.SubscriptionMessage.query.count() == 1
         message = subscription_models.SubscriptionMessage.query.first()
         assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
-        assert message.userMessage == "Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture."
+        assert message.userMessage == "Ton dossier a été refusé : tu n’es malheureusement pas éligible au pass Culture."
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_with_unknown_data(self, client):

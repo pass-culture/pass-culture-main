@@ -268,7 +268,7 @@ class HandleDmsApplicationTest:
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
             subscription_message.userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘ta pièce d'identité’ n’est pas valide."
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘ta pièce d'identité’ n’est pas valide."
         )
 
         send_dms_message_mock.assert_not_called()
@@ -301,7 +301,7 @@ class HandleDmsApplicationTest:
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
             subscription_message.userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture."
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n’es malheureusement pas éligible au pass Culture."
         )
 
         send_dms_message_mock.assert_not_called()

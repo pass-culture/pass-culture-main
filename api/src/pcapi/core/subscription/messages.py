@@ -99,7 +99,7 @@ def on_ubble_journey_cannot_continue(user: users_models.User) -> None:
 def on_fraud_review_ko(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
-        userMessage="Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture.",
+        userMessage="Ton dossier a été refusé : tu n’es malheureusement pas éligible au pass Culture.",
         popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
@@ -216,7 +216,7 @@ def on_dms_application_received(user: users_models.User) -> None:
 def on_dms_application_refused(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
-        userMessage="Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture.",
+        userMessage="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n’es malheureusement pas éligible au pass Culture.",
         popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
@@ -297,8 +297,8 @@ def on_dms_application_field_errors(
         )
     else:
         user_message = _generate_form_field_error(
-            "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘{formatted_error_fields}’ n’est pas valide.",
-            "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car les champs ‘{formatted_error_fields}’ ne sont pas valides.",
+            "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘{formatted_error_fields}’ n’est pas valide.",
+            "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : les champs ‘{formatted_error_fields}’ ne sont pas valides.",
             error_fields,
         )
     message = models.SubscriptionMessage(
