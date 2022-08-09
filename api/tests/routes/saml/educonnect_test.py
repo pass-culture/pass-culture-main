@@ -349,7 +349,7 @@ class EduconnectTest:
         assert len(user.subscriptionMessages) == 1
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2007) indique que tu n'as pas entre 15 et 17 ans."
+            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte ÉduConnect (21/11/2007) indique que tu n'as pas entre 15 et 17 ans."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
@@ -370,7 +370,7 @@ class EduconnectTest:
         assert len(user.subscriptionMessages) == 1
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2003) indique que tu n'as pas entre 15 et 17 ans."
+            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte ÉduConnect (21/11/2003) indique que tu n'as pas entre 15 et 17 ans."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
@@ -391,7 +391,7 @@ class EduconnectTest:
         assert len(user.subscriptionMessages) == 1
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2001) indique que tu n'as pas entre 15 et 17 ans."
+            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte ÉduConnect (21/11/2001) indique que tu n'as pas entre 15 et 17 ans."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
