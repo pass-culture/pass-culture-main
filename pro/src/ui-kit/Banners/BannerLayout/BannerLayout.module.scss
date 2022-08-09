@@ -66,6 +66,10 @@
   display: flex;
   align-items: flex-end;
 
+  &:hover, &:focus {
+    text-decoration: underline;
+  }
+
   img {
     display: block;
     flex: 0 1 rem.torem(25px);

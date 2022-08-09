@@ -13,7 +13,7 @@ interface IInternalBannerProps extends IBannerLayoutProps {
   icon?: string
   linkTitle: string
   subtitle?: string
-  to: LocationDescriptor
+  to?: LocationDescriptor
 }
 
 const InternalBanner = ({
@@ -27,12 +27,14 @@ const InternalBanner = ({
 }: IInternalBannerProps): JSX.Element => (
   <BannerLayout
     linkNode={
-      <p className={styles['bi-banner-text']}>
-        <Link to={to} className={styles['bi-link']}>
-          {icon && <Icon svg={icon} />}
-          {linkTitle}
-        </Link>
-      </p>
+      to ? (
+        <p className={styles['bi-banner-text']}>
+          <Link to={to} className={styles['bi-link']}>
+            {icon && <Icon svg={icon} />}
+            {linkTitle}
+          </Link>
+        </p>
+      ) : undefined
     }
     className={extraClassName}
     {...bannerLayoutProps}
