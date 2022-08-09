@@ -10,6 +10,7 @@ export const populateFacetFilters = ({
   domains,
   venueFilter = null,
   uai,
+  enableInterventionAreaFilter,
 }: {
   departments: Option[]
   categories: Option<string[]>[]
@@ -17,11 +18,15 @@ export const populateFacetFilters = ({
   domains: Option<number>[]
   venueFilter: VenueResponse | null
   uai?: string[] | null
+  enableInterventionAreaFilter: boolean
 }): Facets => {
   const updatedFilters: Facets = []
-  const filteredDepartments: string[] = departments.map(
-    department => `venue.departmentCode:${department.value}`
-  )
+  const filteredDepartments: string[] = enableInterventionAreaFilter
+    ? flatMap(departments, (department: Option<string>) => [
+        `venue.departmentCode:${department.value}`,
+        `offer.interventionArea:${department.value}`,
+      ])
+    : departments.map(department => `venue.departmentCode:${department.value}`)
   const filteredCategories: string[] = flatMap(
     categories,
     (category: Option<string[]>) =>

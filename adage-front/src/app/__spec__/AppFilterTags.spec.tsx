@@ -11,7 +11,7 @@ import {
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from 'app/providers'
-import { FeaturesContextProvider } from 'app/providers/FeaturesContextProvider'
+import { FeaturesContext } from 'app/providers/FeaturesContextProvider'
 
 import { App } from '../App'
 
@@ -78,17 +78,26 @@ jest.mock('api/api', () => ({
 }))
 
 const mockedApi = api as jest.Mocked<typeof api>
+const features = [
+  {
+    name: 'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER',
+    nameKey: 'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER',
+    isActive: true,
+    description: '',
+    id: '1',
+  },
+]
 
 const renderApp = () => {
   render(
     <FiltersContextProvider>
-      <FeaturesContextProvider>
+      <FeaturesContext.Provider value={features}>
         <AlgoliaQueryContextProvider>
           <FacetFiltersContextProvider>
             <App />
           </FacetFiltersContextProvider>
         </AlgoliaQueryContextProvider>
-      </FeaturesContextProvider>
+      </FeaturesContext.Provider>
     </FiltersContextProvider>
   )
 }
@@ -146,7 +155,7 @@ describe('app', () => {
     const searchConfigurationFirstCall = (Configure as jest.Mock).mock
       .calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-      ['venue.departmentCode:01'],
+      ['venue.departmentCode:01', 'offer.interventionArea:01'],
       [
         'offer.educationalInstitutionUAICode:all',
         'offer.educationalInstitutionUAICode:uai',
@@ -155,7 +164,12 @@ describe('app', () => {
     const searchConfigurationSecondCall = (Configure as jest.Mock).mock
       .calls[2][0]
     expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
-      ['venue.departmentCode:01', 'venue.departmentCode:59'],
+      [
+        'venue.departmentCode:01',
+        'offer.interventionArea:01',
+        'venue.departmentCode:59',
+        'offer.interventionArea:59',
+      ],
       [
         'offer.subcategoryId:CINE_PLEIN_AIR',
         'offer.subcategoryId:EVENEMENT_CINE',
@@ -203,7 +217,12 @@ describe('app', () => {
     const searchConfigurationFirstCall = (Configure as jest.Mock).mock
       .calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-      ['venue.departmentCode:01', 'venue.departmentCode:59'],
+      [
+        'venue.departmentCode:01',
+        'offer.interventionArea:01',
+        'venue.departmentCode:59',
+        'offer.interventionArea:59',
+      ],
       ['offer.students:Collège - 4e'],
       [
         'offer.educationalInstitutionUAICode:all',
@@ -213,7 +232,7 @@ describe('app', () => {
     const searchConfigurationSecondCall = (Configure as jest.Mock).mock
       .calls[2][0]
     expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
-      ['venue.departmentCode:59'],
+      ['venue.departmentCode:59', 'offer.interventionArea:59'],
       ['offer.students:Collège - 4e'],
       [
         'offer.educationalInstitutionUAICode:all',
