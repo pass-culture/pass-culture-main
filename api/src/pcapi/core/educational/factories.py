@@ -139,11 +139,12 @@ class EducationalInstitutionFactory(BaseFactory):
         model = models.EducationalInstitution
 
     institutionId = factory.Sequence("{}470009E".format)
-    name = factory.Sequence("Collège de la tour{}".format)
-    city = "Paris"
+    name = factory.Sequence("DE LA TOUR{}".format)
+    city = "PARIS"
     postalCode = "75000"
     email = "contact+collegelatour@example.com"
     phoneNumber = None
+    institutionType = "COLLEGE"
 
 
 class EducationalYearFactory(BaseFactory):
