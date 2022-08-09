@@ -323,12 +323,12 @@ def on_user_subscription_journey_stopped(user: users_models.User) -> None:
 
 ### Educonnect specific messages ###
 def on_educonnect_age_not_valid(user: users_models.User, educonnect_user: educonnect_models.EduconnectUser) -> None:
-    message = f"Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'as pas entre {users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]} et {users_constants.ELIGIBILITY_UNDERAGE_RANGE[-1]} ans."
+    message = f"Ton dossier a été refusé. La date de naissance enregistrée sur ton compte ÉduConnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'as pas entre {users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]} et {users_constants.ELIGIBILITY_UNDERAGE_RANGE[-1]} ans."
     _add_error_message(user, message)
 
 
 def on_educonnect_not_eligible(user: users_models.User, educonnect_user: educonnect_models.EduconnectUser) -> None:
-    message = f"La date de naissance de ton dossier Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'es pas éligible."
+    message = f"La date de naissance de ton dossier ÉduConnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'es pas éligible."
     eligibity_start = users_api.get_eligibility_start_datetime(educonnect_user.birth_date)
     if datetime.datetime.utcnow() < eligibity_start:  # type: ignore [operator]
         message += f" Tu seras éligible le {eligibity_start.strftime('%d/%m/%Y')}."  # type: ignore [union-attr]
