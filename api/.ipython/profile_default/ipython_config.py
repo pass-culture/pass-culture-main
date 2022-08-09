@@ -1,3 +1,4 @@
+from IPython.terminal import prompts
 import pygments.token
 
 from pcapi import settings
@@ -17,6 +18,20 @@ def get_prompt_color():
 prompt_color = get_prompt_color()
 
 
+class CustomPrompt(prompts.Prompts):
+    def in_prompt_tokens(self, cli=None):
+        env = settings.ENV or "local"
+        return [
+            (
+                prompts.Token.Prompt,
+                f"{env}❯ ",
+            ),
+        ]
+
+    def out_prompt_tokens(self, cli=None):
+        return []
+
+
 c = get_config()
 
 c.TerminalInteractiveShell.autoformatter = None
@@ -27,4 +42,5 @@ if prompt_color:
         pygments.token.Token.OutPrompt: f"{prompt_color} bold",
         pygments.token.Token.OutPromptNum: f"{prompt_color} bold",
     }
+c.TerminalInteractiveShell.prompts_class = CustomPrompt
 c.TerminalInteractiveShell.term_title = False
