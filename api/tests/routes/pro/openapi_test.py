@@ -14,6 +14,20 @@ def test_public_api(client, app):
                     "enum": ["BIEN", "EVENEMENT"],
                     "title": "BookingOfferType",
                 },
+                "CollectiveOffersCategoryResponseModel": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "CollectiveOffersCategoryResponseModel",
+                    "type": "object",
+                },
+                "CollectiveOffersListCategoriesResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersCategoryResponseModel"},
+                    "title": "CollectiveOffersListCategoriesResponseModel",
+                    "type": "array",
+                },
                 "CollectiveOffersListVenuesResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
                     "title": "CollectiveOffersListVenuesResponseModel",
@@ -265,6 +279,35 @@ def test_public_api(client, app):
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
                     "summary": "Validation d'une réservation.",
                     "tags": ["API Contremarque"],
+                }
+            },
+            "/v2/collective-offers/categories": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListCategories",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListCategoriesResponseModel"
+                                    }
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des catégories d'offres proposées.",
+                    "tags": [],
                 }
             },
             "/v2/collective-offers/venues": {
