@@ -1,10 +1,10 @@
-name: Tag and deploy to staging
+name: Tag and deploy to staging and then to production
 
 on:
   workflow_dispatch:
     inputs:
       releaseCandidateVersion:
-        description: "Numéro de la RC (sans le .0.0)"
+        description: "Numéro de la RC sans le .0.0 (ex: 2150)"
         required: true
         type: string
       releaseVersion:
@@ -19,14 +19,14 @@ jobs:
       - name: Checkout RC
         uses: actions/checkout@v3
         with:
-          ref: RC-${{ github.event.workflow_dispatch.inputs.releaseCandidateVersion }}.0.0
+          ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
       - name: Author
         run: |
           git config --global user.email "github-actions-bot@passculture.app"
           git config --global user.name "${{ github.actor }}"
       - name: Tag Release
         run: |
-          ./pc -t ${{ github.event.workflow_dispatch.inputs.releaseVersion }} tag
+          ./pc -t ${{ github.event.inputs.releaseVersion }} tag
 
   deploy-to-staging:
     needs: tag-version
@@ -37,10 +37,10 @@ jobs:
       - name: Checkout Release
         uses: actions/checkout@v3
         with:
-          ref: v${{ github.event.workflow_dispatch.inputs.releaseVersion }}
+          ref: v${{ github.event.inputs.releaseVersion }}
       - name: Deploy Release to staging
         run: |
-          ./pc -e staging -t ${{ github.event.workflow_dispatch.inputs.releaseVersion }} deploy
+          ./pc -e staging -t ${{ github.event.inputs.releaseVersion }} deploy
 
   deploy-to-production:
     needs: tag-version
@@ -51,7 +51,7 @@ jobs:
       - name: Checkout Release
         uses: actions/checkout@v3
         with:
-          ref: v${{ github.event.workflow_dispatch.inputs.releaseVersion }}
+          ref: v${{ github.event.inputs.releaseVersion }}
       - name: Deploy Release to production
         run: |
-          echo "would have deployed to production but do it manually this time"
+          ./pc -e production -t ${{ github.event.inputs.releaseVersion }} deploy
