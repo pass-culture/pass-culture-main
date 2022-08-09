@@ -42,10 +42,24 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersListDomainsResponseModel",
                     "type": "array",
                 },
+                "CollectiveOffersListStudentLevelsResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersStudentLevelResponseModel"},
+                    "title": "CollectiveOffersListStudentLevelsResponseModel",
+                    "type": "array",
+                },
                 "CollectiveOffersListVenuesResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
                     "title": "CollectiveOffersListVenuesResponseModel",
                     "type": "array",
+                },
+                "CollectiveOffersStudentLevelResponseModel": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "CollectiveOffersStudentLevelResponseModel",
+                    "type": "object",
                 },
                 "CollectiveOffersVenueResponseModel": {
                     "properties": {
@@ -348,6 +362,35 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective-offers/student-levels": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListStudentsLevels",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListStudentLevelsResponseModel"
+                                    }
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
                     "tags": [],
                 }
             },
