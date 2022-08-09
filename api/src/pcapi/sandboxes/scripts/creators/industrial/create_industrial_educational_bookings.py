@@ -324,15 +324,28 @@ def create_industrial_educational_bookings() -> None:
         educational_factories.EducationalInstitutionFactory(institutionId="0781839A"),
         educational_factories.EducationalInstitutionFactory(institutionId="0290047U"),
         educational_factories.EducationalInstitutionFactory(institutionId="0290198H"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0910620E"),
+        educational_factories.EducationalInstitutionFactory(
+            institutionId="0910620E",
+            institutionType="LYCEE POLYVALENT",
+            name="LYC METIER ROBERT DOISNEAU",
+            city="CORBEIL-ESSONNES",
+            postalCode="91100",
+        ),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0560071Y",
             email=None,
             phoneNumber=None,
+            institutionType="COLLEGE",
+            name="JEAN LE COUTALLER",
+            city="LORIENT",
+            postalCode="56100",
         ),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0780004F",
-            name="LEGTPA DE ST GERMAIN EN LAYE - SAINT-GERMAIN-EN-LAYE",
+            name="DE ST GERMAIN EN LAYE",
+            institutionType="LYCEE D ENSEIGNEMENT GENERAL ET TECHNOLOGIQUE PROFESSIONNEL AGRICOLE",
+            city="SAINT-GERMAIN-EN-LAYE",
+            postalCode="78100",
         ),
     ]
     offerer_with_right_siren = offerers_factories.CollectiveOffererFactory(
