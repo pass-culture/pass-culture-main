@@ -80,7 +80,7 @@ def _handle_validation_errors(
     if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:  # type: ignore [operator]
         subscription_messages.add_error_message(
             user,
-            "Ton compte ÉduConnect est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
+            "Ton compte ÉduConnect est déjà rattaché à un compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse e-mail.",
         )
         duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 

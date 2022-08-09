@@ -343,7 +343,7 @@ class BeneficiaryValidationViewTest:
         assert subscription_models.SubscriptionMessage.query.count() == 1
         message = subscription_models.SubscriptionMessage.query.first()
         assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
-        assert message.userMessage == "Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture."
+        assert message.userMessage == "Ton dossier a été refusé : tu n’es malheureusement pas éligible au pass Culture."
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_with_non_default_eligibility(self, client):

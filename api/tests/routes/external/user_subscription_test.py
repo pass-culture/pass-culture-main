@@ -388,7 +388,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.ERROR
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture."
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n’es malheureusement pas éligible au pass Culture."
         )
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
