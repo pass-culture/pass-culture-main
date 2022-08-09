@@ -11,17 +11,7 @@ blueprint = Blueprint(__name__, __name__)
 SECRET_KEYS = []
 
 
-@overload
-def get(key: str, default: None = None) -> str | None:
-    ...
-
-
-@overload
-def get(key: str, default: str) -> str:
-    ...
-
-
-def get(key: str, default: str | None = None) -> str | None:
+def get(key: str, default: str | None = None) -> str:
     """
     Request a secret by it's key.
 
@@ -31,10 +21,10 @@ def get(key: str, default: str | None = None) -> str | None:
     Note that a secret is mandatory in all cloud environnement.
 
     A default value can still be provided, only for non deployed environnement (dev and test).
-    The behavior of the default value is the same than os.environ.get
+    If not specified, default is "" because string are enforced.
     """
     SECRET_KEYS.append(key)
-    return os.environ.get(key, default)
+    return os.environ.get(key, default or "").strip()
 
 
 def dump_secret_keys() -> str:

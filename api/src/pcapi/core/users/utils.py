@@ -26,13 +26,13 @@ def encode_jwt_payload(token_payload: dict, expiration_date: datetime | None = N
 
     return jwt.encode(
         token_payload,
-        settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
+        settings.JWT_SECRET_KEY,
         algorithm=ALGORITHM_HS_256,
     )
 
 
 def decode_jwt_token(jwt_token: str) -> dict:
-    return jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=[ALGORITHM_HS_256])  # type: ignore # known as str in build assertion
+    return jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=[ALGORITHM_HS_256])
 
 
 def decode_jwt_token_rs256(jwt_token: str) -> dict:
