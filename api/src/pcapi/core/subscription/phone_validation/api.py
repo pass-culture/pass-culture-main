@@ -1,5 +1,6 @@
 import datetime
 import logging
+import time
 
 from flask import current_app as app
 from redis import Redis
@@ -15,6 +16,7 @@ from pcapi.models import db
 from pcapi.notifications import sms as sms_notifications
 from pcapi.repository import repository
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import requests
 
 from . import constants
 from . import exceptions
@@ -115,6 +117,21 @@ def _check_and_update_phone_validation_attempts(redis: Redis, user: users_models
         redis.expire(phone_validation_attempts_key, settings.PHONE_VALIDATION_ATTEMPTS_TTL)
 
 
+def _send_sms_with_retry(phone_number: str, message: str, max_attempt: int = 3) -> None:
+    base_backoff = 1
+    for i_retry in range(max_attempt):
+        try:
+            sms_notifications.send_transactional_sms(phone_number, message)
+            return
+        except requests.ExternalAPIException as exception:
+            if exception.is_retryable:
+                if i_retry < max_attempt - 1:
+                    time.sleep(base_backoff * i_retry)
+                    continue
+                logger.exception("Max retry reached to send SMS", extra={"phone_number": phone_number})
+            raise exceptions.PhoneVerificationException()
+
+
 def send_phone_validation_code(
     user: users_models.User,
     phone_number: str | None,
@@ -138,10 +155,7 @@ def send_phone_validation_code(
     phone_validation_token = users_api.create_phone_validation_token(user, phone_number, expiration=expiration)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"  # type: ignore [union-attr]
 
-    is_sms_sent = sms_notifications.send_transactional_sms(phone_data.phone_number, content)
-
-    if not is_sms_sent:
-        raise exceptions.PhoneVerificationException()
+    _send_sms_with_retry(phone_number, content)
 
     sending_limit.update_sent_SMS_counter(app.redis_client, user)  # type: ignore [attr-defined]
 
