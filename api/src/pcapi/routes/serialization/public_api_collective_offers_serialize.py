@@ -35,3 +35,12 @@ class CollectiveOffersDomainResponseModel(BaseModel):
 
 class CollectiveOffersListDomainsResponseModel(BaseModel):
     __root__: list[CollectiveOffersDomainResponseModel]
+
+
+class CollectiveOffersStudentLevelResponseModel(BaseModel):
+    id: str
+    name: str
+
+
+class CollectiveOffersListStudentLevelsResponseModel(BaseModel):
+    __root__: list[CollectiveOffersStudentLevelResponseModel]
