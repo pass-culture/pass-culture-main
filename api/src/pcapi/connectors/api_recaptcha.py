@@ -68,10 +68,10 @@ def check_recaptcha_token_is_valid(
 
 
 def check_native_app_recaptcha_token(token: str) -> None:
-    check_recaptcha_token_is_valid(token, settings.NATIVE_RECAPTCHA_SECRET, ReCaptchaVersion.V2)  # type: ignore [arg-type]
+    check_recaptcha_token_is_valid(token, settings.NATIVE_RECAPTCHA_SECRET, ReCaptchaVersion.V2)
 
 
 def check_webapp_recaptcha_token(token: str, original_action: str, minimal_score: float) -> None:
     check_recaptcha_token_is_valid(
-        token, settings.RECAPTCHA_SECRET, ReCaptchaVersion.V3, original_action, minimal_score  # type: ignore [arg-type]
+        token, settings.RECAPTCHA_SECRET, ReCaptchaVersion.V3, original_action, minimal_score
     )
