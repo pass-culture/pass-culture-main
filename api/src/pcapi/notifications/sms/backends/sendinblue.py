@@ -54,4 +54,4 @@ class ToDevSendinblueBackend(SendinblueBackend):
             ),
         )
 
-        return mails.send(recipients=[settings.DEV_EMAIL_ADDRESS], data=mail_content)  # type: ignore [list-item]
+        return mails.send(recipients=[settings.DEV_EMAIL_ADDRESS], data=mail_content)

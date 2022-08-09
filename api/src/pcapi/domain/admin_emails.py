@@ -48,12 +48,12 @@ def send_offer_creation_notification_to_administration(
     offer: CollectiveOffer | CollectiveOfferTemplate | Offer,
 ) -> bool:
     email = make_offer_creation_notification_email(offer)
-    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)  # type: ignore [list-item]
+    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)
 
 
 def send_offer_rejection_notification_to_administration(offer: Offer) -> bool:
     data = make_offer_rejection_notification_email(offer)
-    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=data)
 
 
 def send_offer_validation_notification_to_administration(

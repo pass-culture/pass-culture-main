@@ -67,11 +67,11 @@ def require_ubble_signature(route_function: Callable[..., Any]):  # type: ignore
 
 
 def compute_signature(ts: bytes, payload: bytes) -> str:
-    webhook_secret: str = settings.UBBLE_WEBHOOK_SECRET  # type: ignore [assignment]
+    webhook_secret: str = settings.UBBLE_WEBHOOK_SECRET
     assert webhook_secret is not None
     signed_payload = b".".join((ts, payload))
     signature = hmac.new(
-        settings.UBBLE_WEBHOOK_SECRET.encode("utf-8"),  # type: ignore [union-attr]
+        settings.UBBLE_WEBHOOK_SECRET.encode("utf-8"),
         msg=signed_payload,
         digestmod=hashlib.sha256,
     ).hexdigest()
