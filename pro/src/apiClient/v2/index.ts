@@ -11,7 +11,13 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export { BookingFormula } from './models/BookingFormula';
 export { BookingOfferType } from './models/BookingOfferType';
+export type { CollectiveOffersCategoryResponseModel } from './models/CollectiveOffersCategoryResponseModel';
+export type { CollectiveOffersDomainResponseModel } from './models/CollectiveOffersDomainResponseModel';
+export type { CollectiveOffersListCategoriesResponseModel } from './models/CollectiveOffersListCategoriesResponseModel';
+export type { CollectiveOffersListDomainsResponseModel } from './models/CollectiveOffersListDomainsResponseModel';
+export type { CollectiveOffersListStudentLevelsResponseModel } from './models/CollectiveOffersListStudentLevelsResponseModel';
 export type { CollectiveOffersListVenuesResponseModel } from './models/CollectiveOffersListVenuesResponseModel';
+export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
 export type { CollectiveOffersVenueResponseModel } from './models/CollectiveOffersVenueResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { UpdateVenueStockBodyModel } from './models/UpdateVenueStockBodyModel';
