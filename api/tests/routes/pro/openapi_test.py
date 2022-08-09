@@ -23,9 +23,23 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersCategoryResponseModel",
                     "type": "object",
                 },
+                "CollectiveOffersDomainResponseModel": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "integer"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "CollectiveOffersDomainResponseModel",
+                    "type": "object",
+                },
                 "CollectiveOffersListCategoriesResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersCategoryResponseModel"},
                     "title": "CollectiveOffersListCategoriesResponseModel",
+                    "type": "array",
+                },
+                "CollectiveOffersListDomainsResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersDomainResponseModel"},
+                    "title": "CollectiveOffersListDomainsResponseModel",
                     "type": "array",
                 },
                 "CollectiveOffersListVenuesResponseModel": {
@@ -307,6 +321,33 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des catégories d'offres proposées.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective-offers/educational-domains": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListEducationalDomains",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListDomainsResponseModel"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
                     "tags": [],
                 }
             },
