@@ -147,9 +147,11 @@ then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]
   then
       echo -e "\033[0;96mRunning mypy for type checking...\033[0m"
-      mypy $MYPY_FILES --pretty --show-error-codes
-      if [[ "$?" != 0 ]]; then
-          counter=$((counter + 1))
+      if [[ ! $MYPY_FILES == "" ]]; then
+        mypy $MYPY_FILES --pretty --show-error-codes
+        if [[ "$?" != 0 ]]; then
+            counter=$((counter + 1))
+        fi
       fi
   fi
 
