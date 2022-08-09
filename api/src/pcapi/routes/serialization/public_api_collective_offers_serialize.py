@@ -14,3 +14,12 @@ class CollectiveOffersVenueResponseModel(BaseModel):
 
 class CollectiveOffersListVenuesResponseModel(BaseModel):
     __root__: list[CollectiveOffersVenueResponseModel]
+
+
+class CollectiveOffersCategoryResponseModel(BaseModel):
+    id: str
+    name: str
+
+
+class CollectiveOffersListCategoriesResponseModel(BaseModel):
+    __root__: list[CollectiveOffersCategoryResponseModel]
