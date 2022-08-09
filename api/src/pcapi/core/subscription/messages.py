@@ -1,7 +1,10 @@
 import datetime
 
 from pcapi import settings
+from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.subscription.dms import models as dms_models
+from pcapi.core.users import api as users_api
+from pcapi.core.users import constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.repository import repository
 
@@ -269,7 +272,7 @@ def on_already_beneficiary(user: users_models.User) -> None:
     repository.save(message)
 
 
-def add_error_message(user: users_models.User, message: str) -> None:
+def _add_error_message(user: users_models.User, message: str) -> None:
     message = models.SubscriptionMessage(user=user, userMessage=message, popOverIcon=models.PopOverIcon.ERROR)
     repository.save(message)
 
@@ -316,3 +319,27 @@ def on_user_subscription_journey_stopped(user: users_models.User) -> None:
         popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
+
+
+### Educonnect specific messages ###
+def on_educonnect_age_not_valid(user: users_models.User, educonnect_user: educonnect_models.EduconnectUser) -> None:
+    message = f"Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'as pas entre {users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]} et {users_constants.ELIGIBILITY_UNDERAGE_RANGE[-1]} ans."
+    _add_error_message(user, message)
+
+
+def on_educonnect_not_eligible(user: users_models.User, educonnect_user: educonnect_models.EduconnectUser) -> None:
+    message = f"La date de naissance de ton dossier Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'es pas éligible."
+    eligibity_start = users_api.get_eligibility_start_datetime(educonnect_user.birth_date)
+    if datetime.datetime.utcnow() < eligibity_start:  # type: ignore [operator]
+        message += f" Tu seras éligible le {eligibity_start.strftime('%d/%m/%Y')}."  # type: ignore [union-attr]
+    _add_error_message(user, message)
+
+
+def on_educonnect_duplicate_user(user: users_models.User) -> None:
+    message = "Ton compte ÉduConnect est déjà rattaché à un compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse e-mail."
+    _add_error_message(user, message)
+
+
+def on_educonnect_duplicate_ine(user: users_models.User) -> None:
+    message = "Ton identificant national INE est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail."
+    _add_error_message(user, message)

@@ -8,8 +8,6 @@ from pcapi.core.mails.transactional.users import duplicate_beneficiary
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.users import api as users_api
-from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 
 from . import exceptions
@@ -65,30 +63,17 @@ def _handle_validation_errors(
         subscription_messages.on_already_beneficiary(user)
 
     if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_check.reasonCodes:  # type: ignore [operator]
-        message = f"Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'as pas entre {users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]} et {users_constants.ELIGIBILITY_UNDERAGE_RANGE[-1]} ans."
-        subscription_messages.add_error_message(user, message)
+        subscription_messages.on_educonnect_age_not_valid(user, educonnect_user)
 
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in fraud_check.reasonCodes:  # type: ignore [operator]
-        message = f"La date de naissance de ton dossier Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'es pas éligible."
-        eligibity_start = users_api.get_eligibility_start_datetime(educonnect_user.birth_date)
-
-        if datetime.datetime.utcnow() < eligibity_start:  # type: ignore [operator]
-            message += f" Tu seras éligible le {eligibity_start.strftime('%d/%m/%Y')}."  # type: ignore [union-attr]
-
-        subscription_messages.add_error_message(user, message)
+        subscription_messages.on_educonnect_not_eligible(user, educonnect_user)
 
     if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:  # type: ignore [operator]
-        subscription_messages.add_error_message(
-            user,
-            "Ton compte ÉduConnect est déjà rattaché à un compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse e-mail.",
-        )
+        subscription_messages.on_educonnect_duplicate_user(user)
         duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 
     if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_check.reasonCodes:  # type: ignore [operator]
-        subscription_messages.add_error_message(
-            user,
-            "Ton identificant national INE est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
-        )
+        subscription_messages.on_educonnect_duplicate_ine(user)
 
 
 def get_educonnect_subscription_item_status(
