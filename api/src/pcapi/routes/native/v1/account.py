@@ -204,6 +204,10 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
         )
 
 
+def _log_failure_code(phone_number: str, code: str) -> None:
+    logger.warning("Failed to send phone validation code", extra={"number": phone_number, "code": code})
+
+
 @blueprint.native_v1.route("/send_phone_validation_code", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
@@ -214,33 +218,36 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
         )
 
     except phone_validation_exceptions.SMSSendingLimitReached:
-        raise ApiErrors(
-            {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"},
-            status_code=400,
-        )
+        error = {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"}
+        _log_failure_code(body.phoneNumber, error["code"])
+        raise ApiErrors(error, status_code=400)
+
     except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
-        raise ApiErrors(
-            {"message": "Le numéro de téléphone est déjà validé", "code": "PHONE_NUMBER_ALREADY_VALIDATED"},
-            status_code=400,
-        )
+        error = {"code": "PHONE_NUMBER_ALREADY_VALIDATED", "message": "Le numéro de téléphone est déjà validé"}
+        _log_failure_code(body.phoneNumber, error["code"])
+        raise ApiErrors(error, status_code=400)
+
     except phone_validation_exceptions.InvalidCountryCode:
-        raise ApiErrors(
-            {"message": "L'indicatif téléphonique n'est pas accepté", "code": "INVALID_COUNTRY_CODE"},
-            status_code=400,
-        )
+        error = {"code": "INVALID_COUNTRY_CODE", "message": "L'indicatif téléphonique n'est pas accepté"}
+        _log_failure_code(body.phoneNumber, error["code"])
+        raise ApiErrors(error, status_code=400)
+
     except (phone_validation_exceptions.InvalidPhoneNumber):
-        raise ApiErrors(
-            {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
-        )
+        error = {"code": "INVALID_PHONE_NUMBER", "message": "Le numéro de téléphone est invalide"}
+        _log_failure_code(body.phoneNumber, error["code"])
+        raise ApiErrors(error, status_code=400)
+
     except (phone_validation_exceptions.PhoneAlreadyExists):
-        raise ApiErrors(
-            {
-                "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
-                "code": "PHONE_ALREADY_EXISTS",
-            },
-            status_code=400,
-        )
+        error = {
+            "code": "PHONE_ALREADY_EXISTS",
+            "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
+        }
+        _log_failure_code(body.phoneNumber, error["code"])
+        raise ApiErrors(error, status_code=400)
+
     except phone_validation_exceptions.PhoneVerificationException:
+        error = {"code": "CODE_SENDING_FAILURE", "message": "L'envoi du code a échoué"}
+        _log_failure_code(body.phoneNumber, error["code"])
         raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
 
 
