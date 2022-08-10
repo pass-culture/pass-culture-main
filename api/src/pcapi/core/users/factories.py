@@ -63,7 +63,6 @@ class UserFactory(BaseFactory):
     isEmailValidated = True
     roles = []  # type: ignore [var-annotated]
     hasSeenProTutorials = True
-    subscriptionState = models.SubscriptionState.account_created
     postalCode = factory.Faker("postcode")
 
     @classmethod
@@ -133,7 +132,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     roles = [users_models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
     hasSeenProRgs = False
-    subscriptionState = users_models.SubscriptionState.beneficiary_18
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
@@ -228,8 +226,6 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     )
     dateCreated = LazyAttribute(lambda user: user.dateOfBirth + relativedelta(years=user.subscription_age, hours=12))
     ineHash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
-
-    subscriptionState = users_models.SubscriptionState.beneficiary_15_17
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument

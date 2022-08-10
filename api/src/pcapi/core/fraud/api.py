@@ -418,13 +418,7 @@ def on_user_profiling_check_result(
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
 
     if not user_profiling_status == models.FraudStatus.OK:
-        user.validate_profiling_failed()
         subscription_messages.on_user_subscription_journey_stopped(user)
-
-    else:
-        user.validate_profiling()
-
-    repository.save(user)
 
 
 def _create_failed_phone_validation_fraud_check(

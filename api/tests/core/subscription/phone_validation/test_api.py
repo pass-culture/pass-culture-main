@@ -13,7 +13,6 @@ class EnsurePhoneNumberUnicityTest:
         users_factories.UserFactory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33607080900",
-            subscriptionState=users_models.SubscriptionState.email_validated,
             roles=[users_models.UserRole.BENEFICIARY],
         )
         in_validation_user = users_factories.UserFactory()
@@ -27,7 +26,6 @@ class EnsurePhoneNumberUnicityTest:
         already_validated_user = users_factories.UserFactory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33607080900",
-            subscriptionState=users_models.SubscriptionState.email_validated,
             roles=[],
         )
         in_validation_user = users_factories.UserFactory()
