@@ -20,6 +20,7 @@ export type { CollectiveOffersListVenuesResponseModel } from './models/Collectiv
 export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
 export type { CollectiveOffersVenueResponseModel } from './models/CollectiveOffersVenueResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
+export type { GetPublicCollectiveOfferResponseModel } from './models/GetPublicCollectiveOfferResponseModel';
 export type { UpdateVenueStockBodyModel } from './models/UpdateVenueStockBodyModel';
 export type { UpdateVenueStocksBodyModel } from './models/UpdateVenueStocksBodyModel';
 export type { ValidationError } from './models/ValidationError';
