@@ -66,9 +66,6 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_BANNER_ONE_YEAR = "Active la bannière des 1 an du pass sur la Home"
     ENABLE_CSV_MULTI_DOWNLOAD_BUTTON = "Active le multi-téléchargement des réservations"
-    ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION = (
-        "Active l'association d'une offre collective à un établissement scolaire"
-    )
     ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
     ENABLE_NEW_BANK_INFORMATIONS_CREATION = (
         "Active le nouveau parcours d'ajout de coordonnées bancaires sur la page lieu"
@@ -111,7 +108,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
-    ENABLE_EDUCATIONAL_DOMAINS = "Active l'utilisation du champs domaines sur les offres collectives"
     OFFER_DRAFT_ENABLED = "Active la fonctionnalités de création d'offre en brouillon"
     ENABLE_IN_PAGE_PROFILE_FORM = "Active le formulaire d'édition de profile dans une page séparée"
     ENABLE_ADAGE_VENUE_INFORMATION = "Active la page acteur culturel"
