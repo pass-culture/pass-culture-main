@@ -1,5 +1,40 @@
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.utils import to_camel
+
+
+class ListCollectiveOffersQueryModel(BaseModel):
+    status: str | None
+    venue_id: int | None
+    period_beginning_date: str | None
+    period_ending_date: str | None
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class CollectiveOffersResponseModel(BaseModel):
+    id: int
+    beginningDatetime: str
+    status: str
+    venueId: int
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOffersResponseModel":
+        return cls(
+            id=offer.id,
+            beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
+            status=offer.status.name,  # type: ignore [attr-defined]
+            venueId=offer.venueId,
+        )
+
+
+class CollectiveOffersListResponseModel(BaseModel):
+    __root__: list[CollectiveOffersResponseModel]
 
 
 class CollectiveOffersVenueResponseModel(BaseModel):

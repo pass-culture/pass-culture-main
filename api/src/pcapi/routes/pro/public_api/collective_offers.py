@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.core.categories import categories
+from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
@@ -22,6 +23,45 @@ BASE_CODE_DESCRIPTIONS = {
 
 
 logger = logging.getLogger(__name__)
+
+
+@blueprint.pro_public_api_v2.route("/collective-offers/", methods=["GET"])
+@api_key_required
+@spectree_serialize(
+    api=blueprint.pro_public_schema_v2,
+    tags=["API offres collectives"],
+    resp=SpectreeResponse(
+        **(
+            BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (
+                    public_api_collective_offers_serialize.CollectiveOffersListResponseModel,
+                    "L'offre collective existe",
+                ),
+            }
+        )
+    ),
+)
+def get_collective_offers_public(
+    query: public_api_collective_offers_serialize.ListCollectiveOffersQueryModel,
+) -> public_api_collective_offers_serialize.CollectiveOffersListResponseModel:
+    # in French, to be used by Swagger for the API documentation
+    """Récuperation de l'offre collective avec l'identifiant offer_id.
+    Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées."""
+
+    offers = educational_api.list_public_collective_offers(
+        offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
+        venue_id=query.venue_id,
+        status=query.status,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
+    )
+
+    return public_api_collective_offers_serialize.CollectiveOffersListResponseModel(
+        __root__=[
+            public_api_collective_offers_serialize.CollectiveOffersResponseModel.from_orm(offer) for offer in offers
+        ]
+    )
 
 
 @blueprint.pro_public_api_v2.route("/collective-offers/venues", methods=["GET"])
