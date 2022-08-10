@@ -4,10 +4,10 @@ import typing
 
 from flask import Response
 from flask import request
+from jwt import ExpiredSignatureError
 
 from pcapi import settings
 from pcapi.core.auth.api import BadPCToken
-from pcapi.core.auth.api import ExpiredTokenError
 from pcapi.core.auth.api import NotAPassCultureTeamAccountError
 from pcapi.core.auth.api import authenticate_from_bearer
 from pcapi.core.auth.utils import _set_current_permissions
@@ -39,7 +39,7 @@ def permission_required(permission: Permissions) -> typing.Callable:
                 user, user_permissions = authenticate_from_bearer(authorization)
             except BadPCToken:
                 raise ApiErrors({"global": "bad token"}, status_code=403)
-            except ExpiredTokenError:
+            except ExpiredSignatureError:
                 raise ApiErrors({"global": "authentication expired"}, status_code=403)
             except NotAPassCultureTeamAccountError:
                 raise ApiErrors({"global": "unknown user"}, status_code=403)
