@@ -1,14 +1,24 @@
 import logging
 
 from pcapi.core.categories import categories
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+
+
+BASE_CODE_DESCRIPTIONS = {
+    "HTTP_401": (None, "Authentification nécessaire"),
+    "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour voir cette offre collective"),
+    "HTTP_404": (None, "L'offre collective n'existe pas"),
+}
 
 
 logger = logging.getLogger(__name__)
@@ -37,6 +47,55 @@ def list_venues() -> public_api_collective_offers_serialize.CollectiveOffersList
             for venue in venues
         ]
     )
+
+
+@blueprint.pro_public_api_v2.route("/collective-offers/<int:offer_id>", methods=["GET"])
+@api_key_required
+@spectree_serialize(
+    api=blueprint.pro_public_schema_v2,
+    resp=SpectreeResponse(
+        **(
+            BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (
+                    public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
+                    "L'offre collective existe",
+                ),
+            }
+        )
+    ),
+)
+def get_collective_offer_public(
+    offer_id: int,
+) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
+    # in French, to be used by Swagger for the API documentation
+    """Récuperation de l'offre collective avec l'identifiant offer_id."""
+    try:
+        offer = educational_repository.get_collective_offer_by_id(offer_id)
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["L'offre collective n'existe pas"],
+            },
+            status_code=404,
+        )
+
+    if not offer.collectiveStock:
+        # if the offer does not have any stock pretend it doesn't exists
+        raise ApiErrors(
+            errors={
+                "global": ["L'offre collective n'existe pas"],
+            },
+            status_code=404,
+        )
+    if offer.venue.managingOffererId != current_api_key.offerer.id:  # type: ignore [attr-defined]
+        raise ApiErrors(
+            errors={
+                "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."],
+            },
+            status_code=403,
+        )
+    return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
 @blueprint.pro_public_api_v2.route("/collective-offers/categories", methods=["GET"])
