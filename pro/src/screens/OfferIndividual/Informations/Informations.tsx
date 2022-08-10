@@ -2,13 +2,11 @@ import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { TOffererName } from 'core/Offerers/types'
-import { createIndividualOffer } from 'core/Offers/adapters'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
-  IOfferCategory,
-  IOfferSubCategory,
-  IOfferIndividual,
-} from 'core/Offers/types'
+  createIndividualOffer,
+  updateIndividualOffer,
+} from 'core/Offers/adapters'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import {
@@ -16,40 +14,51 @@ import {
   OfferIndividualForm,
   validationSchema,
 } from 'new_components/OfferIndividualForm'
+import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 
 import { ActionBar } from '../ActionBar'
 
 import { filterCategories } from './utils'
 
 export interface IInformationsProps {
-  offer?: IOfferIndividual
   initialValues: IOfferIndividualFormValues
-  offererNames: TOffererName[]
-  venueList: TOfferIndividualVenue[]
-  categories: IOfferCategory[]
-  subCategories: IOfferSubCategory[]
   readOnlyFields?: string[]
 }
 
 const Informations = ({
   initialValues,
-  offererNames,
-  venueList,
-  categories,
-  subCategories,
   readOnlyFields = [],
 }: IInformationsProps): JSX.Element => {
   const history = useHistory()
+  const isCreation = useIsCreation()
+  const {
+    offerId,
+    categories,
+    subCategories,
+    offererNames,
+    venueList,
+    reloadOffer,
+  } = useOfferIndividualContext()
 
   const handleNextStep = async () => formik.handleSubmit()
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
-    const { isOk, payload } = await createIndividualOffer(formValues)
+    const { isOk, payload } =
+      offerId === null
+        ? await createIndividualOffer(formValues)
+        : await updateIndividualOffer({ offerId, formValues })
+
     if (isOk) {
-      history.push(`/offre/${payload.id}/v3/creation/individuelle/stocks`)
+      await reloadOffer()
+      history.push(
+        isCreation
+          ? `/offre/${payload.id}/v3/creation/individuelle/stocks`
+          : `/offre/${payload.id}/v3/individuelle/stocks`
+      )
     } else {
       formik.setErrors(payload.errors)
     }
+    return Promise.resolve()
   }
 
   const formik = useFormik({

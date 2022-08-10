@@ -8,8 +8,8 @@ import { isAllocineProvider } from 'core/Providers'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 
-const setFormReadOnlyFields = (offer?: IOfferIndividual): string[] => {
-  if (offer === undefined) {
+const setFormReadOnlyFields = (offer: IOfferIndividual | null): string[] => {
+  if (offer === null) {
     return []
   }
 

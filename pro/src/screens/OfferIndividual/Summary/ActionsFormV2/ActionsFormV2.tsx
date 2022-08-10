@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -27,7 +28,7 @@ const ActionsFormV2 = ({
   isCreation = false,
   disablePublish = false,
 }: IActionsFormV2Props): JSX.Element => {
-  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const { logEvent } = useAnalytics()
 
   const renderCreationActions = (): JSX.Element => (
     <div className={className}>

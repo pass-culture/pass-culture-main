@@ -16,7 +16,7 @@ import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContaine
 import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
-import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
+import { OfferV2Summary as OfferV2SummaryRoute } from 'routes/OfferV2Summary'
 import { Title } from 'ui-kit'
 
 import OfferDetails from './OfferDetails'
@@ -157,17 +157,19 @@ const OfferLayout = () => {
               `${match.path}/creation/recapitulatif`,
             ]}
           >
-            {() => <OfferSummaryRoute formOfferV2={true} />}
+            <OfferV2SummaryRoute />
           </Route>
-          <Route exact path={`${match.url}/creation/confirmation`}>
-            {() => (
+          <Route
+            exact
+            path={`${match.url}/creation/confirmation`}
+            render={() => (
               <Confirmation
                 offer={offer}
                 setOffer={setOffer}
                 reloadOffer={reloadOffer}
               />
             )}
-          </Route>
+          ></Route>
         </Switch>
       </div>
       {useSummaryPage ? (

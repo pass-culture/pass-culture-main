@@ -7,4 +7,6 @@ export {
 } from './getOfferIndividualAdapter'
 export type { GetOfferIndividualAdapter } from './getOfferIndividualAdapter'
 export { createIndividualOffer } from './createIndividualOffer'
+export { updateIndividualOffer } from './updateIndividualOffer'
+
 export type { TCreateIndividualOffer } from './createIndividualOffer'

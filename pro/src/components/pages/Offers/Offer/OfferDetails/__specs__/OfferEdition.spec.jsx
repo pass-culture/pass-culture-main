@@ -193,6 +193,13 @@ describe('offerDetails - Edition', () => {
       setShowThumbnailForm: jest.fn(),
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(editedOffer)
+    jest
+      .spyOn(api, 'listOfferersNames')
+      .mockResolvedValue({ offerersNames: [venueManagingOfferer] })
+    jest
+      .spyOn(api, 'getVenues')
+      .mockResolvedValue({ venues: [editedOfferVenue] })
+
     pcapi.loadCategories.mockResolvedValue(categories)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))

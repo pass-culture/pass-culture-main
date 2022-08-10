@@ -4,6 +4,14 @@ import {
   IOfferIndividualFormValues,
 } from 'new_components/OfferIndividualForm'
 
+import setSubCategoryFields from './setSubCategoryFields'
+
+const serializeDurationHour = (durationMinute: number): string => {
+  const hours = Math.floor(durationMinute / 60)
+  const minutes = durationMinute - hours * 60
+  return `${hours}:${minutes}`
+}
+
 const setInitialFormValues = (
   offer: IOfferIndividual,
   subCategoryList: IOfferSubCategory[]
@@ -16,12 +24,13 @@ const setInitialFormValues = (
     throw Error("La categorie de l'offre est introuvable")
   }
 
-  // TODO add computed subcategory fields on merge of:
-  // https://github.com/pass-culture/pass-culture-main/pull/3126
-  const subCategoryFields: string[] = [...subCategory.conditionalFields]
+  const { subCategoryFields } = setSubCategoryFields(
+    offer.subcategoryId,
+    subCategoryList
+  )
 
   return {
-    isEvent: subCategory.isEvent || false,
+    isEvent: offer.isEvent,
     subCategoryFields: subCategoryFields,
     name: offer.name,
     description: offer.description,
@@ -36,9 +45,21 @@ const setInitialFormValues = (
     musicSubType: offer.musicSubType,
     withdrawalDetails:
       offer.withdrawalDetails || FORM_DEFAULT_VALUES['withdrawalDetails'],
-    withdrawalDelay: offer.withdrawalDelay,
-    withdrawalType: offer.withdrawalType,
+    withdrawalDelay: offer.withdrawalDelay || undefined,
+    withdrawalType: offer.withdrawalType || undefined,
     accessibility: offer.accessibility,
+    bookingEmail: offer.bookingEmail,
+    receiveNotificationEmails: !!offer.bookingEmail,
+    author: offer.author,
+    isbn: offer.isbn,
+    performer: offer.performer,
+    speaker: offer.speaker,
+    stageDirector: offer.stageDirector,
+    visa: offer.visa,
+    durationMinutes:
+      offer.durationMinutes === null
+        ? undefined
+        : serializeDurationHour(offer.durationMinutes),
   }
 }
 
