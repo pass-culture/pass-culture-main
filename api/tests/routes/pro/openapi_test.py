@@ -42,6 +42,11 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersListDomainsResponseModel",
                     "type": "array",
                 },
+                "CollectiveOffersListResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersResponseModel"},
+                    "title": "CollectiveOffersListResponseModel",
+                    "type": "array",
+                },
                 "CollectiveOffersListStudentLevelsResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersStudentLevelResponseModel"},
                     "title": "CollectiveOffersListStudentLevelsResponseModel",
@@ -51,6 +56,17 @@ def test_public_api(client, app):
                     "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
                     "title": "CollectiveOffersListVenuesResponseModel",
                     "type": "array",
+                },
+                "CollectiveOffersResponseModel": {
+                    "properties": {
+                        "beginningDatetime": {"title": "Beginningdatetime", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                        "status": {"title": "Status", "type": "string"},
+                        "venueId": {"title": "Venueid", "type": "integer"},
+                    },
+                    "required": ["id", "beginningDatetime", "status", "venueId"],
+                    "title": "CollectiveOffersResponseModel",
+                    "type": "object",
                 },
                 "CollectiveOffersStudentLevelResponseModel": {
                     "properties": {
@@ -213,6 +229,17 @@ def test_public_api(client, app):
                         "numberOfTickets",
                     ],
                     "title": "GetPublicCollectiveOfferResponseModel",
+                    "type": "object",
+                },
+                "ListCollectiveOffersQueryModel": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "periodBeginningDate": {"nullable": True, "title": "Periodbeginningdate", "type": "string"},
+                        "periodEndingDate": {"nullable": True, "title": "Periodendingdate", "type": "string"},
+                        "status": {"nullable": True, "title": "Status", "type": "string"},
+                        "venueId": {"nullable": True, "title": "Venueid", "type": "integer"},
+                    },
+                    "title": "ListCollectiveOffersQueryModel",
                     "type": "object",
                 },
                 "UpdateVenueStockBodyModel": {
@@ -391,6 +418,65 @@ def test_public_api(client, app):
                     "tags": ["API Contremarque"],
                 }
             },
+            "/v2/collective-offers/": {
+                "get": {
+                    "description": "",
+                    "operationId": "GetCollectiveOffersPublic",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "status",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Status", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "venueId",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Venueid", "type": "integer"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "periodBeginningDate",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Periodbeginningdate", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "periodEndingDate",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Periodendingdate", "type": "string"},
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListResponseModel"}
+                                }
+                            },
+                            "description": "L'offre " "collective " "existe",
+                        },
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {
+                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective"
+                        },
+                        "404": {"description": "L'offre collective n'existe pas"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.",
+                    "tags": ["API offres collectives"],
+                }
+            },
             "/v2/collective-offers/categories": {
                 "get": {
                     "description": "",
@@ -478,16 +564,7 @@ def test_public_api(client, app):
             },
             "/v2/collective-offers/venues": {
                 "get": {
-                    "description": "Tous les "
-                    "lieux "
-                    "enregistrés, "
-                    "physiques "
-                    "ou "
-                    "virtuels, "
-                    "sont "
-                    "listés ici "
-                    "avec leurs "
-                    "coordonnées.",
+                    "description": "Tous les lieux enregistrés, physiques ou virtuels, sont listés ici avec leurs coordonnées.",
                     "operationId": "ListVenues",
                     "parameters": [],
                     "responses": {
@@ -508,14 +585,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
-                    "summary": "Récupération "
-                    "de la liste "
-                    "des lieux "
-                    "associés à la "
-                    "structure "
-                    "authentifiée "
-                    "par le jeton "
-                    "d'API.",
+                    "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
                     "tags": [],
                 }
             },
@@ -543,17 +613,7 @@ def test_public_api(client, app):
                         },
                         "401": {"description": "Authentification nécessaire"},
                         "403": {
-                            "description": "Vous "
-                            "n'avez "
-                            "pas "
-                            "les "
-                            "droits "
-                            "nécessaires "
-                            "pour "
-                            "voir "
-                            "cette "
-                            "offre "
-                            "collective"
+                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective"
                         },
                         "404": {"description": "L'offre collective n'existe pas"},
                         "422": {
@@ -603,5 +663,5 @@ def test_public_api(client, app):
             },
         },
         "security": [],
-        "tags": [{"name": "API Contremarque"}, {"name": "API Stocks"}],
+        "tags": [{"name": "API offres collectives"}, {"name": "API Contremarque"}, {"name": "API Stocks"}],
     }

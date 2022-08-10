@@ -663,6 +663,24 @@ def list_collective_offers_for_pro_user(
     return merged_offers
 
 
+def list_public_collective_offers(
+    offerer_id: int,
+    venue_id: int | None = None,
+    status: str | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
+    limit: int = 500,
+) -> list[educational_models.CollectiveOffer]:
+    return educational_repository.list_public_collective_offers(
+        offerer_id=offerer_id,
+        status=status,
+        venue_id=venue_id,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
+        limit=limit,
+    )
+
+
 def get_educational_domains_from_ids(
     educational_domain_ids: list[int] | None,
 ) -> list[educational_models.EducationalDomain]:
