@@ -18,7 +18,7 @@ import {
   FORM_DEFAULT_VALUES,
 } from '..'
 import OfferIndividualForm, {
-  IOfferIndividualForm,
+  IOfferIndividualFormProps,
 } from '../OfferIndividualForm'
 
 const renderOfferIndividualForm = ({
@@ -28,7 +28,7 @@ const renderOfferIndividualForm = ({
 }: {
   initialValues: IOfferIndividualFormValues
   onSubmit: () => void
-  props: IOfferIndividualForm
+  props: IOfferIndividualFormProps
 }) => {
   const store = configureTestStore({
     user: { currentUser: { publicName: 'François', isAdmin: false } },
@@ -49,7 +49,7 @@ const renderOfferIndividualForm = ({
 describe('OfferIndividual section: Categories', () => {
   let initialValues: IOfferIndividualFormValues
   const onSubmit = jest.fn()
-  let props: IOfferIndividualForm
+  let props: IOfferIndividualFormProps
   let categories: IOfferCategory[] = []
   let subCategories: IOfferSubCategory[] = []
   let offererNames: TOffererName[]
@@ -124,7 +124,13 @@ describe('OfferIndividual section: Categories', () => {
         },
       },
     ]
-    props = { categories, subCategories, offererNames, venueList }
+    props = {
+      categories,
+      subCategories,
+      offererNames,
+      venueList,
+      readOnlyFields: [],
+    }
   })
 
   it('should render the component', async () => {

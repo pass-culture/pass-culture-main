@@ -2,7 +2,6 @@ import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 
@@ -14,8 +13,6 @@ interface IStocksProps {
 
 const Stocks = ({ offer }: IStocksProps): JSX.Element => {
   const history = useHistory()
-  const { activeSteps } = useOfferFormSteps(offer)
-
   const handleNextStep = () => {
     history.push(`/offre/${offer.id}/v3/creation/individuelle/recapitulatif`)
   }
@@ -44,7 +41,6 @@ const Stocks = ({ offer }: IStocksProps): JSX.Element => {
 
         <OfferFormLayout.ActionBar>
           <ActionBar
-            disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.SUMMARY)}
             onClickNext={handleNextStep}
             onClickPrevious={handlePreviousStep}
           />

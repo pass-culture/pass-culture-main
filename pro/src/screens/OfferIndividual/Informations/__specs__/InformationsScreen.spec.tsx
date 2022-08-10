@@ -6,6 +6,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import {
+  IOfferIndividualContext,
+  OfferIndividualContext,
+} from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -23,13 +27,16 @@ jest.mock('screens/OfferIndividual/Informations/utils', () => {
 
 const renderInformationsScreen = (
   props: IInformationsProps,
-  storeOverride: any
+  storeOverride: any,
+  contextValue: IOfferIndividualContext
 ) => {
   const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
       <MemoryRouter>
-        <InformationsScreen {...props} />
+        <OfferIndividualContext.Provider value={contextValue}>
+          <InformationsScreen {...props} />
+        </OfferIndividualContext.Provider>
       </MemoryRouter>
     </Provider>
   )
@@ -38,6 +45,7 @@ const renderInformationsScreen = (
 describe('screens:OfferCreation::Informations', () => {
   let props: IInformationsProps
   let store: any
+  let contextValue: IOfferIndividualContext
 
   beforeEach(() => {
     store = {
@@ -86,10 +94,16 @@ describe('screens:OfferCreation::Informations', () => {
 
     props = {
       initialValues: FORM_DEFAULT_VALUES,
-      offererNames: [],
+    }
+
+    contextValue = {
+      offerId: null,
+      offer: null,
       venueList: [],
+      offererNames: [],
       categories,
       subCategories,
+      reloadOffer: () => {},
     }
 
     jest
@@ -99,18 +113,18 @@ describe('screens:OfferCreation::Informations', () => {
   })
 
   it('should render the component', async () => {
-    renderInformationsScreen(props, store)
+    renderInformationsScreen(props, store, contextValue)
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })
     ).toBeInTheDocument()
   })
 
   it('should call filterCategories when no venue id is given on initial values', async () => {
-    renderInformationsScreen(props, store)
+    renderInformationsScreen(props, store, contextValue)
     await screen.findByRole('heading', { name: 'Type d’offre' })
     expect(utils.filterCategories).toHaveBeenCalledWith(
-      props.categories,
-      props.subCategories,
+      contextValue.categories,
+      contextValue.subCategories,
       undefined
     )
   })
@@ -131,7 +145,7 @@ describe('screens:OfferCreation::Informations', () => {
       },
     }
     props.initialValues.venueId = venue.id
-    props.venueList = [
+    contextValue.venueList = [
       venue,
       {
         id: 'BB',
@@ -149,11 +163,11 @@ describe('screens:OfferCreation::Informations', () => {
       },
     ]
 
-    renderInformationsScreen(props, store)
+    renderInformationsScreen(props, store, contextValue)
     await screen.findByRole('heading', { name: 'Type d’offre' })
     expect(utils.filterCategories).toHaveBeenCalledWith(
-      props.categories,
-      props.subCategories,
+      contextValue.categories,
+      contextValue.subCategories,
       venue
     )
   })
@@ -175,7 +189,7 @@ describe('screens:OfferCreation::Informations', () => {
         },
       }
       props.initialValues.venueId = venue.id
-      props.venueList = [
+      contextValue.venueList = [
         venue,
         {
           id: 'BB',
@@ -195,7 +209,7 @@ describe('screens:OfferCreation::Informations', () => {
     })
 
     it('should not display the full form when no venue are available', async () => {
-      renderInformationsScreen(props, store)
+      renderInformationsScreen(props, store, contextValue)
       await userEvent.selectOptions(
         await screen.findByLabelText('Choisir une catégorie'),
         'A'
@@ -220,7 +234,7 @@ describe('screens:OfferCreation::Informations', () => {
     })
 
     it('should display the full form when a venue is available', async () => {
-      renderInformationsScreen(props, store)
+      renderInformationsScreen(props, store, contextValue)
       await userEvent.selectOptions(
         await screen.findByLabelText('Choisir une catégorie'),
         'A'

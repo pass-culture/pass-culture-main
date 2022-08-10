@@ -1,8 +1,8 @@
-import { ACCESSIBILITY_DEFAULT_VALUES } from './Accessibility'
-import { CATEGORIES_DEFAULT_VALUES } from './Categories'
-import { INFORMATIONS_DEFAULT_VALUES } from './Informations'
-import { NOTIFICATIONS_DEFAULT_VALUES } from './Notifications'
-import { USEFUL_INFORMATIONS_DEFAULT_VALUES } from './UsefulInformations'
+import { ACCESSIBILITY_DEFAULT_VALUES } from './Accessibility/constants'
+import { CATEGORIES_DEFAULT_VALUES } from './Categories/constants'
+import { INFORMATIONS_DEFAULT_VALUES } from './Informations/constants'
+import { NOTIFICATIONS_DEFAULT_VALUES } from './Notifications/constants'
+import { USEFUL_INFORMATIONS_DEFAULT_VALUES } from './UsefulInformations/constants'
 
 export const FORM_DEFAULT_VALUES = {
   ...INFORMATIONS_DEFAULT_VALUES,

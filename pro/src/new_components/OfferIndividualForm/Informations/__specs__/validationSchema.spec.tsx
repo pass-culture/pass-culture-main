@@ -27,10 +27,12 @@ const renderInformations = async ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <>
-        <Informations {...props} />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
-      </>
+      {({ handleSubmit }) => (
+        <form onSubmit={handleSubmit}>
+          <Informations {...props} />
+          <SubmitButton isLoading={false}>Submit</SubmitButton>
+        </form>
+      )}
     </Formik>
   )
 

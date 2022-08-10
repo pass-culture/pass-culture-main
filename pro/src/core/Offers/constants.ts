@@ -84,13 +84,6 @@ export const ADMINS_DISABLED_FILTERS_MESSAGE =
 
 export const LIVRE_PAPIER_SUBCATEGORY_ID = 'LIVRE_PAPIER'
 
-export enum OFFER_FORM_STEP_IDS {
-  INFORMATIONS = 'informations',
-  STOCKS = 'stocks',
-  SUMMARY = 'recapitulatif',
-  CONFIRMATION = 'confirmation',
-}
-
 export const EXTRA_DATA_FIELDS = [
   'author',
   'isbn',

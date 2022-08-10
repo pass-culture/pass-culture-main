@@ -17,7 +17,7 @@ import { Informations } from './Informations'
 import { Notifications } from './Notifications'
 import { UsefulInformations } from './UsefulInformations'
 
-export interface IOfferIndividualForm {
+export interface IOfferIndividualFormProps {
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
   categories: IOfferCategory[]
@@ -31,7 +31,7 @@ const OfferIndividualForm = ({
   categories,
   subCategories,
   readOnlyFields = [],
-}: IOfferIndividualForm) => {
+}: IOfferIndividualFormProps) => {
   const {
     currentUser: { isAdmin },
   } = useCurrentUser()
