@@ -3,9 +3,6 @@ from datetime import datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
-from google.cloud.storage import Client
-from google.cloud.storage.blob import Blob
-from google.cloud.storage.bucket import Bucket
 import jwt
 
 from pcapi import settings
@@ -43,50 +40,6 @@ def decode_jwt_token_rs256(jwt_token: str) -> dict:
 
 def sanitize_email(email: str) -> str:
     return email.strip().lower()
-
-
-def get_encrypted_gcp_storage_client_bucket() -> Bucket:
-    if not hasattr(get_encrypted_gcp_storage_client_bucket, "client"):
-        get_encrypted_gcp_storage_client_bucket.client = Client(project=settings.GCP_PROJECT)  # type: ignore [attr-defined]
-
-    return get_encrypted_gcp_storage_client_bucket.client.bucket(settings.GCP_ENCRYPTED_BUCKET_NAME)  # type: ignore [attr-defined]
-
-
-def store_object(
-    bucket: str, object_id: str, blob: bytes, content_type: str | None = None, metadata: dict | None = None
-) -> None:
-    storage_path = bucket + "/" + object_id
-    try:
-        storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
-        gcp_cloud_blob = storage_client_bucket.blob(storage_path)
-        gcp_cloud_blob.metadata = metadata
-        gcp_cloud_blob.upload_from_string(blob, content_type=content_type)
-    except Exception as exception:
-        logger.exception("An error has occured while trying to upload file on encrypted GCP bucket: %s", str(exception))
-        raise exception
-
-
-def delete_object(storage_path: str) -> None:
-    try:
-        storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
-        gcp_cloud_blob = storage_client_bucket.blob(storage_path)
-        gcp_cloud_blob.delete()
-    except Exception as exception:
-        logger.exception("An error has occured while trying to delete file on encrypted GCP bucket: %s", str(exception))
-        raise exception
-
-
-def get_object(storage_path: str) -> Blob:
-    try:
-        storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
-        return storage_client_bucket.get_blob(storage_path)
-    except Exception as exception:
-        logger.exception(
-            "An error has occured while trying to get file with path: %s on encrypted GCP bucket: %s",
-            storage_path,
-            str(exception),
-        )
-        raise exception
 
 
 def get_age_at_date(birth_date: date | datetime, specified_datetime: datetime) -> int:
