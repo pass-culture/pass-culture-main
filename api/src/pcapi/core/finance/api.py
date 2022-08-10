@@ -1904,6 +1904,10 @@ def get_invoice_period(invoice_date: datetime.datetime) -> typing.Tuple[datetime
 
 
 def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: bool) -> dict:
+    # Easier to sort here and not in PostgreSQL, and not much slower
+    # because there are very few cashflows (and usually only 1).
+    cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
+
     invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
     total_used_bookings_amount = 0
     total_contribution_amount = 0
@@ -1943,6 +1947,7 @@ def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: b
     period_start, period_end = get_invoice_period(invoice.date)  # type: ignore [arg-type]
     return dict(
         invoice=invoice,
+        cashflows=cashflows,
         groups=groups,
         venue=venue,
         reimbursement_point=reimbursement_point,
