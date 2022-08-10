@@ -817,6 +817,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.bic == "SOGEFRPP"
             assert bank_information.iban == "FR7630007000111234567890144"
             assert bank_information.status == BankInformationStatus.ACCEPTED
+            assert venue.current_reimbursement_point_id == venue.id
 
         def test_refused_application(self, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
