@@ -458,15 +458,12 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         )
 
     @hybrid_property
-    def is_ex_beneficiary(self) -> bool:
+    def has_remaining_credit(self) -> bool:
         today = datetime.combine(date.today(), datetime.min.time())
         return (
-            self.is_beneficiary
-            and self.deposit is not None
-            and self.deposit.expirationDate is not None
-            and (
-                self.deposit.expirationDate <= today or self.deposit.expirationDate > today and self.wallet_balance == 0
-            )
+            self.deposit is not None
+            and (self.deposit.expirationDate is None or self.deposit.expirationDate > today)
+            and self.wallet_balance > 0
         )
 
     @hybrid_property
