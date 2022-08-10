@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
@@ -409,3 +412,22 @@ def find_available_reimbursement_points_for_offerer(offerer_id: int) -> list[mod
 
 def get_venue_by_id(venue_id: int) -> models.Venue:
     return models.Venue.query.get(venue_id)
+
+
+def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
+    three_days_ago = datetime.utcnow() - timedelta(days=3)
+    three_days_ago_min = datetime.combine(three_days_ago, time.min)
+    three_days_ago_max = datetime.combine(three_days_ago, time.max)
+
+    subquery = db.session.query(models.Venue.managingOffererId)
+
+    return (
+        db.session.query(models.Offerer)
+        .filter(models.Offerer.id.not_in(subquery))
+        .filter(
+            models.Offerer.isActive.is_(True),
+            models.Offerer.dateValidated >= three_days_ago_min,
+            models.Offerer.dateValidated <= three_days_ago_max,
+        )
+        .all()
+    )
