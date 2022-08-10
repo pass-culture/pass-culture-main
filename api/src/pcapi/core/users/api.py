@@ -147,7 +147,6 @@ def create_account(
         ),
         phoneNumber=phone_number,
         lastConnectionDate=datetime.datetime.utcnow(),
-        subscriptionState=models.SubscriptionState.account_created,
     )
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:

@@ -8,7 +8,6 @@ import enum
 from operator import attrgetter
 import typing
 
-import flask
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
@@ -126,22 +125,6 @@ def _get_latest_birthday(birth_date: date) -> date:
     return previous_year_birthday
 
 
-class SubscriptionState(enum.Enum):
-    account_created = "account_created"
-    beneficiary_15_17 = "beneficiary_15_17"
-    beneficiary_18 = "beneficiary_18"
-    email_validated = "email_validated"
-    identity_check_ko = "identity_check_ko"
-    identity_check_pending = "identity_check_pending"
-    identity_check_validated = "identity_check_validated"
-    phone_validated = "phone_validated"
-    phone_validation_ko = "phone_validation_ko"
-    profile_completed = "profile_completed"
-    rejected_by_admin = "rejected_by_admin"
-    user_profiling_ko = "user_profiling_ko"
-    user_profiling_validated = "user_profiling_validated"
-
-
 class ActivityEnum(enum.Enum):
     MIDDLE_SCHOOL_STUDENT = "Collégien"
     HIGH_SCHOOL_STUDENT = "Lycéen"
@@ -229,7 +212,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         server_default="{}",
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
-    subscriptionState = sa.Column(sa.Enum(SubscriptionState, create_constraint=False), nullable=True)
 
     def _add_role(self, role: UserRole) -> None:
         from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -541,42 +523,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     @has_test_role.expression  # type: ignore [no-redef]
     def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
-
-    @classmethod
-    def init_subscription_state_machine(cls, obj, *args, **kwargs) -> None:  # type: ignore [no-untyped-def]
-        from pcapi.core.subscription import transitions as subscription_transitions
-
-        if not kwargs:
-            if isinstance(args[-1], dict):
-                kwargs = args[-1]
-
-        initial_state = obj.subscriptionState or kwargs.get("subscriptionState", SubscriptionState.account_created)
-
-        if not hasattr(flask.g, "subscription_machine"):
-            subscription_transitions.install_machine()
-
-        flask.g.subscription_machine.add_model(obj, initial_state)
-
-        setattr(
-            obj,
-            "_subscriptionStateMachine",
-            flask.g.subscription_machine,
-        )
-
-    @classmethod
-    def remove_subscription_state_machine(cls, target, attrs):  # type: ignore [no-untyped-def]
-        # avoid trying to remove the object multiple times from the machine
-        if attrs is None:
-            try:
-                flask.g.subscription_machine.remove_model(target)
-            except Exception:  # pylint: disable=broad-except
-                pass
-
-
-sa.event.listen(User, "init", User.init_subscription_state_machine)
-sa.event.listen(User, "load", User.init_subscription_state_machine)
-
-sa.event.listen(User, "expire", User.remove_subscription_state_machine)
 
 
 class ExpenseDomain(enum.Enum):
