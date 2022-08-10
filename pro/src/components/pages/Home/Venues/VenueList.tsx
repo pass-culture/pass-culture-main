@@ -51,7 +51,7 @@ export const VenueList = ({
         <InternalBanner
           type="new"
           to={bannerLocation}
-          linkTitle="Renseigner vos informations"
+          linkTitle="Renseigner ces informations"
           icon="ico-external-site-filled-white"
           closable
           handleOnClick={() => setDisplayCollectiveDataBanner(false)}
