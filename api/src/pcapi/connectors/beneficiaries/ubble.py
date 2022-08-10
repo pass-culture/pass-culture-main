@@ -8,6 +8,7 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries import exceptions
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.utils import requests as requests_utils
 
 
 logger = logging.getLogger(__name__)
@@ -176,21 +177,38 @@ def start_identification(
 
 def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
     session = configure_session()
-    response = session.get(build_url(f"/identifications/{identification_id}/"))
+    base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
 
-    if not response.ok:
+    try:
+        response = session.get(build_url(f"/identifications/{identification_id}/"))
+    except Exception as e:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
-            "Error while fetching Ubble identification",
-            extra={
-                "status_code": response.status_code,
-                "identification_id": identification_id,
-                "request_type": "get-content",
-                "error_type": "http",
-            },
+            "Exception while fetching Ubble identification",
+            extra={"exception": e, "error_type": "http"} | base_extra_log,
         )
-        response.raise_for_status()
+        raise requests_utils.ExternalAPIException(is_retryable=True) from e
+
+    if not response.ok:
+        if response.status_code >= 500 or response.status_code == 429:
+            core_logging.log_for_supervision(
+                logger,
+                logging.ERROR,
+                "Unexpected Ubble error while fetching identification",
+                extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
+                | base_extra_log,
+            )
+            raise requests_utils.ExternalAPIException(is_retryable=True)
+
+        core_logging.log_for_supervision(
+            logger,
+            logging.ERROR,
+            f"Error while fetching Ubble identification: {response.status_code}",  # ungroup errors on sentry
+            extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
+            | base_extra_log,
+        )
+        raise requests_utils.ExternalAPIException(is_retryable=False)
 
     content = _extract_useful_content_from_response(response.json())
     core_logging.log_for_supervision(
@@ -199,11 +217,10 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
         "Valid response from Ubble",
         extra={
             "status_code": response.status_code,
-            "identification_id": identification_id,
             "score": content.score,
             "status": content.status.value,  # type: ignore [union-attr]
-            "request_type": "get-content",
             "document_type": content.document_type,
-        },
+        }
+        | base_extra_log,
     )
     return content

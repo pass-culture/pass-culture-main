@@ -4,6 +4,7 @@ from pcapi import settings
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
+from pcapi.utils import requests as requests_utils
 
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,9 @@ class StoreIdPictureRequest(BaseModel):
 def store_id_pictures_task(payload: StoreIdPictureRequest) -> None:
     try:
         ubble_subscription_api.archive_ubble_user_id_pictures(payload.identification_id)
+    except requests_utils.ExternalAPIException as exc:
+        logger.warning("External API error when archiving ubble user id pictures", extra={"exception": exc})
+        raise
     except Exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not archive Ubble user id picture",

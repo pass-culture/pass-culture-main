@@ -7,6 +7,7 @@ import requests.exceptions
 from pcapi.connectors.beneficiaries import exceptions
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.utils import requests as requests_utils
 
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
 from tests.test_utils import json_default
@@ -105,13 +106,31 @@ class GetContentTest:
         requests_mock.register_uri("GET", f"/identifications/{identification_id}/", status_code=401)
 
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(requests.exceptions.HTTPError):
+            with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
                 ubble.get_content(identification_id)
 
         assert len(caplog.records) == 1
         record = caplog.records[0]
-        assert record.message == "Error while fetching Ubble identification"
+        assert record.message == "Error while fetching Ubble identification: 401"
         assert record.extra["status_code"] == 401
         assert record.extra["identification_id"] == identification_id
         assert record.extra["request_type"] == "get-content"
         assert record.extra["error_type"] == "http"
+        assert exc_info.value.is_retryable == False
+
+    def test_get_content_network_error(self, requests_mock, caplog):
+        identification_id = "some-id"
+        requests_mock.register_uri("GET", f"/identifications/{identification_id}/", status_code=503)
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
+                ubble.get_content(identification_id)
+
+        assert len(caplog.records) == 1
+        record = caplog.records[0]
+        assert record.message == "Unexpected Ubble error while fetching identification"
+        assert record.extra["status_code"] == 503
+        assert record.extra["identification_id"] == identification_id
+        assert record.extra["request_type"] == "get-content"
+        assert record.extra["error_type"] == "http"
+        assert exc_info.value.is_retryable == True
