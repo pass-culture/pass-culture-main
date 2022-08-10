@@ -12,20 +12,20 @@ class OnlineOfflinePlatformChoices(Enum):
 
 class SearchGroups(Enum):
     ARTS_LOISIRS_CREATIFS = "Arts & loisirs créatifs"
-    BIBLIOTHEQUES_MEDIATHEQUE = "Bibliothèque & médiathèque"
+    BIBLIOTHEQUES_MEDIATHEQUE = "Bibliothèques, Médiathèques"
     CARTES_JEUNES = "Cartes jeunes"
-    CD_VINYLE_MUSIQUE_EN_LIGNE = "CD, vinyle, musique en ligne"
+    CD_VINYLE_MUSIQUE_EN_LIGNE = "CD, vinyles, musique en ligne"
     CONCERTS_FESTIVALS = "Concerts & festivals"
-    EVENEMENTS_EN_LIGNE = "Evénements en ligne"
-    FILMS_SERIES_CINEMA = "Films, séries & cinéma"
+    EVENEMENTS_EN_LIGNE = "Événements en ligne"
+    FILMS_SERIES_CINEMA = "Films, séries, cinéma"
     INSTRUMENTS = "Instruments de musique"
-    JEUX_JEUX_VIDEOS = "Jeux & Jeux vidéos"
+    JEUX_JEUX_VIDEOS = "Jeux & jeux vidéos"
     LIVRES = "Livres"
-    MEDIA_PRESSE = "Média & Presse"
+    MEDIA_PRESSE = "Médias & presse"
     MUSEES_VISITES_CULTURELLES = "Musées & visites culturelles"
     NONE = None
     PLATEFORMES_EN_LIGNE = "Plateformes en ligne"
-    RENCONTRES_CONFERENCES = "Rencontres & conférences"
+    RENCONTRES_CONFERENCES = "Conférences & rencontres"
     SPECTACLES = "Spectacles"
 
 
