@@ -30,11 +30,7 @@ import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
-import { OfferIndividualConfirmation } from 'routes/OfferIndividualConfirmation'
-import { OfferIndividualCreation } from 'routes/OfferIndividualCreation'
-import OfferIndividualEdition from 'routes/OfferIndividualEdition/OfferIndividualEdition'
-import { OfferIndividualEditionStocks } from 'routes/OfferIndividualEditionStocks'
-import { OfferIndividualSummary } from 'routes/OfferIndividualSummary'
+import { OfferIndividualWizard } from 'routes/OfferIndividualWizard'
 import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
 import SignUpValidation from 'routes/SignUpValidation'
@@ -349,42 +345,13 @@ const routes: IRoute[] = [
       },
     },
   },
+
   {
-    component: OfferIndividualConfirmation,
-    exact: true,
-    path: '/offre/:offerId/v3/creation/individuelle/confirmation',
-    title: "Confirmation de création d'offre",
-    featureName: 'OFFER_FORM_V3',
-  },
-  {
-    component: OfferIndividualCreation,
+    component: OfferIndividualWizard,
     exact: false,
-    path: [
-      '/offre/v3/creation/individuelle',
-      '/offre/:offerId/v3/creation/individuelle',
-    ],
-    title: 'Résumé de votre offre',
+    path: ['/offre/v3', '/offre/:offerId/v3'],
+    title: 'Offre étape par étape',
     featureName: 'OFFER_FORM_V3',
-  },
-  {
-    component: OfferIndividualEdition,
-    exact: true,
-    path: '/offre/:offerId/v3/individuelle/informations',
-    title: 'Editez de votre offre',
-    featureName: 'OFFER_FORM_V3',
-  },
-  {
-    component: OfferIndividualEditionStocks,
-    exact: true,
-    path: '/offre/:offerId/v3/individuelle/stocks',
-    title: 'Editez vos stocks',
-    featureName: 'OFFER_FORM_V3',
-  },
-  {
-    component: OfferIndividualSummary,
-    exact: true,
-    path: '/offre/:offerId/v3/individuelle/recapitulatif',
-    title: 'Résumé de votre offre',
   },
   {
     component: Reimbursements,

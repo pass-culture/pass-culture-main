@@ -1,4 +1,4 @@
-import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'new_components/OfferIndividualForm/Categories'
+import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'new_components/OfferIndividualForm/Categories/constants'
 
 export const INFORMATIONS_DEFAULT_VALUES = {
   name: '',

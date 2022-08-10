@@ -19,13 +19,13 @@ export interface IOfferIndividualFormValues {
   withdrawalDelay?: number | null
   withdrawalType?: WithdrawalTypeEnum | null
   accessibility: IAccessibiltyFormValues
-  author?: string | null
-  isbn?: string | null
-  performer?: string | null
-  speaker?: string | null
-  stageDirector?: string | null
-  visa?: string | null
-  durationMinutes?: string | null
+  author?: string
+  isbn?: string
+  performer?: string
+  speaker?: string
+  stageDirector?: string
+  visa?: string
+  durationMinutes?: string
   receiveNotificationEmails: boolean
   bookingEmail: string
 }
