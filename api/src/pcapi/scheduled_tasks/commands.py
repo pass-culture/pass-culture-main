@@ -23,9 +23,11 @@ from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro im
     send_eac_satisfaction_study_email_to_pro,
 )
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
+from pcapi.core.mails.transactional.pro.reminder_venue_creation import send_reminder_venue_creation_to_pro
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
 )
+from pcapi.core.offerers.repository import find_offerers_validated_3_days_ago_with_no_venues
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
@@ -221,6 +223,23 @@ def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
                 extra={
                     "individualBookingId": individual_booking.id,
                     "userId": individual_booking.userId,
+                },
+            )
+
+
+@blueprint.cli.command("send_email_reminder_venue_creation")
+@log_cron_with_transaction
+def send_email_reminder_venue_creation_to_pro() -> None:
+    """Triggers email reminder to pro 3 days after offerer validation if a venue is not created"""
+    offerers = find_offerers_validated_3_days_ago_with_no_venues()
+    for offerer in offerers:
+        try:
+            send_reminder_venue_creation_to_pro(offerer)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not send email reminder venue creation to pro",
+                extra={
+                    "offererId": offerer.id,
                 },
             )
 

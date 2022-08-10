@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.finance.factories as finance_factories
@@ -389,3 +392,23 @@ class GetSirenByOffererIdTest:
     def test_return_error_when_no_siren_found(self):
         with pytest.raises(exceptions.CannotFindOffererSiren):
             repository.find_siren_by_offerer_id(0)
+
+
+class GetOfferersValidatedThreeDaysAgoWithNoVenuesCreatedTest:
+    def test_return_one_offerer_validated__three_days_ago_with_no_venues_created(self):
+        with freeze_time("2022-07-20 15:00:00") as frozen_time:
+            offerer_with_venue = offerers_factories.OffererFactory(dateValidated=datetime.utcnow())
+            offerers_factories.VenueFactory(managingOfferer=offerer_with_venue)
+
+            frozen_time.move_to("2022-07-25 14:00:00")
+            # create offerers 3 days ago
+            offerer_with_venue2 = offerers_factories.OffererFactory(dateValidated=datetime.utcnow())
+            offerers_factories.VenueFactory(managingOfferer=offerer_with_venue2)
+
+            offerer_with_no_venue = offerers_factories.OffererFactory(dateValidated=datetime.utcnow())
+
+            frozen_time.move_to("2022-07-28 16:00:00")
+
+            offerers = repository.find_offerers_validated_3_days_ago_with_no_venues()
+            assert len(offerers) == 1
+            assert offerers[0] == offerer_with_no_venue
