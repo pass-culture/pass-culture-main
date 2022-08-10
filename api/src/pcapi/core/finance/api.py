@@ -1423,11 +1423,6 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             payments_models.Deposit.type.label("deposit_type"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
-    # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
-    # but I am not sure it helps here. We have used
-    # `pcapi.utils.db.get_batches` in the old-style payment code
-    # and that may be what's best here.
-    bookings_query = bookings_query.yield_per(1000)
 
     collective_bookings_query = (
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
@@ -1495,18 +1490,12 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             educational_models.EducationalDeposit.ministry.label("ministry"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
-    # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
-    # but I am not sure it helps here. We have used
-    # `pcapi.utils.db.get_batches` in the old-style payment code
-    # and that may be what's best here.
-    collective_bookings_query = collective_bookings_query.yield_per(1000)
 
     return _write_csv(
         "payment_details",
         header,
         rows=itertools.chain(bookings_query, collective_bookings_query),
         row_formatter=_payment_details_row_formatter,
-        compress=True,  # it's a large CSV file (> 100 Mb), we should compress it
     )
 
 
