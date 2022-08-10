@@ -380,21 +380,23 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
     @property
     def current_pricing_point_id(self) -> int | None:
         now = datetime.utcnow()
-        timespan = db_utils.make_timerange(start=now, end=None)
         return (
             db.session.query(VenuePricingPointLink.pricingPointId)
-            .filter(VenuePricingPointLink.venueId == self.id, VenuePricingPointLink.timespan.overlaps(timespan))
+            .filter(
+                VenuePricingPointLink.venueId == self.id,
+                VenuePricingPointLink.timespan.contains(now),
+            )
             .scalar()
         )
 
     @property
     def current_reimbursement_point_id(self) -> int | None:
         now = datetime.utcnow()
-        timespan = db_utils.make_timerange(start=now, end=None)
         return (
             db.session.query(VenueReimbursementPointLink.reimbursementPointId)
             .filter(
-                VenueReimbursementPointLink.venueId == self.id, VenueReimbursementPointLink.timespan.overlaps(timespan)
+                VenueReimbursementPointLink.venueId == self.id,
+                VenueReimbursementPointLink.timespan.contains(now),
             )
             .scalar()
         )
