@@ -114,9 +114,6 @@ def reset_password(body: ResetPasswordRequest) -> None:
                 "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
             )
 
-    if user.is_subscriptionState_account_created():
-        user.validate_email()
-
     repository.save(user)
 
 
@@ -152,7 +149,6 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
             users_api.request_email_confirmation(exception.user)
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
-    user.validate_email()
     user.isEmailValidated = True
     repository.save(user)
     users_external.update_external_user(user)

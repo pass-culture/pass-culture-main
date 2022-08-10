@@ -281,7 +281,6 @@ def test_reset_password_success(client):
 
     token = Token.query.get(token.id)
     assert token.isUsed
-    assert user.is_subscriptionState_email_validated()
 
 
 @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
@@ -299,7 +298,6 @@ def test_reset_password_for_unvalidated_email(try_dms_orphan_adoption_mock, clie
     assert user.password == crypto.hash_password(new_password)
     try_dms_orphan_adoption_mock.assert_called_once_with(user)
     assert user.isEmailValidated
-    assert user.is_subscriptionState_email_validated()
 
 
 def test_reset_password_fail_for_password_strength(client):

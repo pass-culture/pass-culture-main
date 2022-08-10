@@ -14,9 +14,6 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.core.users.exceptions import InvalidUserRoleException
-from pcapi.models import db
-
-from tests.conftest import clean_database
 
 
 @pytest.mark.usefixtures("db_session")
@@ -295,24 +292,3 @@ class SuperAdminTest:
     def test_super_user_not_prod_is_admin_is_super_admin(self):
         user = users_factories.AdminFactory()
         assert user.is_super_admin()
-
-
-class SubscriptionStateTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_trigger_init_event(self):
-        user = users_factories.UserFactory(subscriptionState=user_models.SubscriptionState.user_profiling_validated)
-        assert user.subscriptionState == user_models.SubscriptionState.user_profiling_validated
-
-    @pytest.mark.usefixtures("db_session")
-    def test_trigger_default_state(self):
-        user = users_factories.UserFactory()
-        assert user.subscriptionState == user_models.SubscriptionState.account_created
-
-    @clean_database
-    def test_trigger_load_event(self):
-        user = users_factories.UserFactory.build()
-        new_session = db.create_scoped_session()
-        new_session.add(user)
-        new_session.commit()
-        new_user = user_models.User.query.get(user.id)
-        assert hasattr(new_user, "_subscriptionStateMachine")

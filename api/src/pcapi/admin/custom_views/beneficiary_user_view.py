@@ -163,7 +163,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "publicName",
         "recreditAmountToShow",
         "roles",
-        "subscriptionState",
         "suspension_history",
     ]
 
