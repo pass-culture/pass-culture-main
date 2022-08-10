@@ -996,11 +996,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             .outerjoin(educational_models.CollectiveBooking.collectiveStock)
             .join(
                 offerers_models.VenueReimbursementPointLink,
-                offerers_models.VenueReimbursementPointLink.venueId
-                == sqla_func.coalesce(
-                    bookings_models.Booking.venueId,
-                    educational_models.CollectiveBooking.venueId,
-                ),
+                offerers_models.VenueReimbursementPointLink.venueId == models.Pricing.venueId,
             )
             .filter(offerers_models.VenueReimbursementPointLink.timespan.contains(batch.cutoff))
             .join(
@@ -1011,13 +1007,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             .with_entities(
                 offerers_models.VenueReimbursementPointLink.reimbursementPointId,
                 models.BankInformation.id,
-                sqla.func.array_remove(
-                    sqla.func.array_cat(
-                        sqla_func.array_agg(bookings_models.Booking.venueId.distinct()),
-                        sqla_func.array_agg(educational_models.CollectiveBooking.venueId.distinct()),
-                    ),
-                    None,
-                ),
+                sqla_func.array_agg(models.Pricing.venueId.distinct()),
             )
             .group_by(
                 offerers_models.VenueReimbursementPointLink.reimbursementPointId,
