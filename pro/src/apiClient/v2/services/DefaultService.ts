@@ -5,6 +5,7 @@ import type { CollectiveOffersListCategoriesResponseModel } from '../models/Coll
 import type { CollectiveOffersListDomainsResponseModel } from '../models/CollectiveOffersListDomainsResponseModel';
 import type { CollectiveOffersListStudentLevelsResponseModel } from '../models/CollectiveOffersListStudentLevelsResponseModel';
 import type { CollectiveOffersListVenuesResponseModel } from '../models/CollectiveOffersListVenuesResponseModel';
+import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -77,6 +78,30 @@ export class DefaultService {
       errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * Récuperation de l'offre collective avec l'identifiant offer_id.
+   * @param offerId
+   * @returns GetPublicCollectiveOfferResponseModel L'offre collective existe
+   * @throws ApiError
+   */
+  public getCollectiveOfferPublic(
+    offerId: number,
+  ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/collective-offers/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        401: `Authentification nécessaire`,
+        403: `Vous n'avez pas les droits nécessaires pour voir cette offre collective`,
+        404: `L'offre collective n'existe pas`,
         422: `Unprocessable Entity`,
       },
     });
