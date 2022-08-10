@@ -3,6 +3,8 @@ import typing
 import urllib.parse
 
 import requests
+from requests import exceptions as requests_exceptions
+from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries import exceptions
@@ -120,8 +122,7 @@ def start_identification(
 
     try:
         response = session.post(build_url("/identifications/"), json=data)
-    except IOError as e:
-        # Any exception explicitely raised by requests or urllib3 inherits from IOError
+    except (urllib3_exceptions.HTTPError, requests_exceptions.RequestException) as e:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
@@ -181,7 +182,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
 
     try:
         response = session.get(build_url(f"/identifications/{identification_id}/"))
-    except Exception as e:
+    except (urllib3_exceptions.HTTPError, requests_exceptions.RequestException) as e:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
