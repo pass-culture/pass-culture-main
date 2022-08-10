@@ -1519,7 +1519,7 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
         "business_units.csv",
-        "payment_details.csv.zip",
+        "payment_details.csv",
         "soldes_des_utilisateurs.csv.zip",
     }
 
@@ -1720,11 +1720,9 @@ def test_generate_payments_file():
     with assert_num_queries(n_queries):
         path = api._generate_payments_file(batch_id)
 
-    with zipfile.ZipFile(path) as zfile:
-        with zfile.open("payment_details.csv") as csv_bytefile:
-            csv_textfile = io.TextIOWrapper(csv_bytefile)
-            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
-            rows = list(reader)
+    with open(path, encoding="utf-8") as fp:
+        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
+        rows = list(reader)
 
     assert len(rows) == 4
     assert rows[0] == {
@@ -1891,11 +1889,9 @@ def test_generate_payments_file_legacy_with_business_units():
     with assert_num_queries(n_queries):
         path = api._generate_payments_file(batch_id)
 
-    with zipfile.ZipFile(path) as zfile:
-        with zfile.open("payment_details.csv") as csv_bytefile:
-            csv_textfile = io.TextIOWrapper(csv_bytefile)
-            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
-            rows = list(reader)
+    with open(path, encoding="utf-8") as fp:
+        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
+        rows = list(reader)
 
     assert len(rows) == 5
     assert rows[0] == {
