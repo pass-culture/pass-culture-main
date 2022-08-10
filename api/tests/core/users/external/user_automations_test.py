@@ -423,3 +423,48 @@ class UserAutomationsTest:
 
         assert mock_update_batch.call_args.args[0] == users[2].id
         assert mock_update_batch.call_args.args[1].is_former_beneficiary is True
+
+    def test_get_ex_underage_beneficiaries_who_can_no_longer_recredit(self):
+        with freeze_time("2021-09-10 15:00:00"):
+            user = users_factories.UnderageBeneficiaryFactory(
+                email="underage+test@example.net",
+                dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=17, months=1),
+            )
+            assert user.deposit.expirationDate == datetime(2022, 8, 10)  # at birthday
+
+        with freeze_time("2022-08-10 05:00:00"):
+            results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
+            assert not results
+
+        with freeze_time("2023-08-10 05:00:00"):
+            results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
+            assert not results
+
+        with freeze_time("2023-08-11 05:00:00"):
+            results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
+            assert results == [user]
+
+        with freeze_time("2023-08-12 05:00:00"):
+            results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
+            assert not results
+
+    @patch("pcapi.core.users.external.update_batch_user")
+    @patch("pcapi.core.users.external.update_sendinblue_user")
+    def test_users_whose_credit_expired_today_automation_underage(self, mock_update_sendinblue, mock_update_batch):
+        with freeze_time("2021-09-10 15:00:00"):
+            user = users_factories.UnderageBeneficiaryFactory(
+                email="underage+test@example.net",
+                dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=17, months=1),
+            )
+
+        with freeze_time("2023-08-11 05:00:00"):
+            user_automations.users_whose_credit_expired_today_automation()
+
+        mock_update_sendinblue.assert_called_once()
+        mock_update_batch.assert_called_once()
+
+        assert mock_update_sendinblue.call_args.args[0] == user.email
+        assert mock_update_sendinblue.call_args.args[1].is_former_beneficiary is True
+
+        assert mock_update_batch.call_args.args[0] == user.id
+        assert mock_update_batch.call_args.args[1].is_former_beneficiary is True

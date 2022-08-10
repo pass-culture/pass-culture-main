@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from datetime import date
 from datetime import datetime
+from math import ceil
 from typing import List
 
 from dateutil.relativedelta import relativedelta
@@ -191,10 +192,31 @@ def get_users_whose_credit_expired_today() -> List[User]:
     )
 
 
+def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> List[User]:
+    # No need to be updated on the exact birthday date, but ensure that we don't miss users born one day in leap years.
+    days_19y = ceil(365.25 * 19)
+    return (
+        db.session.query(User)
+        .filter(User.has_underage_beneficiary_role.is_(True))  # type: ignore [attr-defined]
+        .filter(
+            and_(
+                User.dateOfBirth
+                > datetime.combine(date.today() - relativedelta(days=days_19y + 1), datetime.min.time()),
+                User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
+            )
+        )
+        .yield_per(YIELD_COUNT_PER_DB_QUERY)
+    )
+
+
 def users_whose_credit_expired_today_automation() -> None:
     """
     This automation is called every day to update external contacts attributes after young users reached their credit
-    expiration, when they become former beneficiaries.
+    expiration, when they are no longer current beneficiaries and/or become former beneficiaries.
+    Ex underage beneficiaries who don't get 18y credit on time become former beneficiaries after their birthday.
     """
     for user in get_users_whose_credit_expired_today():
+        update_external_user(user)
+
+    for user in get_ex_underage_beneficiaries_who_can_no_longer_recredit():
         update_external_user(user)
