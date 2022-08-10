@@ -101,6 +101,7 @@ class JsonFormatterTest:
                 "set": {1},
                 "user": user,
                 "bytes": b"encod\xc3\xa9",
+                "nested_complex_object": [{"foo": ["bar"]}],
             },
         )
         serialized = formatter.format(record)
@@ -115,6 +116,7 @@ class JsonFormatterTest:
             "set": [1],
             "user": 7,
             "bytes": "encodé",
+            "nested_complex_object": [{"foo": ["bar"]}],
         }
 
         # gracefully handle non-serializable objects
