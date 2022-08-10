@@ -1,6 +1,5 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import date
 from datetime import datetime
 from typing import List
 
@@ -10,7 +9,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import venues_have_bookings
-from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_active_venues_by_booking_email
@@ -19,6 +17,7 @@ from pcapi.core.offerers.repository import offerer_has_venue_with_adage_id
 from pcapi.core.offerers.repository import venues_have_offers
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.api import get_eligibility_at_date
 from pcapi.core.users.external.models import ProAttributes
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.models import Favorite
@@ -183,7 +182,12 @@ def get_user_attributes(user: User) -> UserAttributes:
     bookings_attributes = _get_bookings_categories_and_subcategories(user_bookings)
 
     # Call only once to limit to one get_wallet_balance query
-    is_ex_beneficiary = user.is_ex_beneficiary
+    has_remaining_credit = user.has_remaining_credit
+
+    # A user becomes a former beneficiary only after the last credit is expired or spent or can no longer be claimed
+    is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
+        user.has_underage_beneficiary_role and get_eligibility_at_date(user.dateOfBirth, datetime.utcnow()) is None
+    )
 
     return UserAttributes(
         booking_categories=bookings_attributes.booking_categories,
@@ -202,8 +206,8 @@ def get_user_attributes(user: User) -> UserAttributes:
         user_id=user.id,
         is_active=user.isActive,  # type: ignore [arg-type]
         is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
-        is_current_beneficiary=user.is_beneficiary and not is_ex_beneficiary,
-        is_former_beneficiary=is_ex_beneficiary,
+        is_current_beneficiary=user.is_beneficiary and has_remaining_credit,
+        is_former_beneficiary=is_former_beneficiary,
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,  # type: ignore [arg-type]
         is_phone_validated=user.is_phone_validated,  # type: ignore [arg-type]

@@ -12,6 +12,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.payments.conf import GRANTED_DEPOSIT_AMOUNT_17
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.external import BookingsAttributes
@@ -23,11 +24,13 @@ from pcapi.core.users.external import update_external_user
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
+from pcapi.core.users.factories import UnderageBeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
+from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.notifications.push import testing as batch_testing
 
@@ -287,6 +290,56 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         suspension_date=None,
         suspension_reason=None,
     )
+
+
+@pytest.mark.parametrize("credit_spent", [False, True])
+def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
+    # At 17 years old
+    with freeze_time(datetime.utcnow() - relativedelta(months=6)):
+        user = UnderageBeneficiaryFactory(subscription_age=17)
+
+    if credit_spent:
+        offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+        IndividualBookingFactory(individualBooking__user=user, amount=GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer)
+
+    # Before 18 years old
+    user = User.query.get(user.id)
+    attributes = get_user_attributes(user)
+
+    assert attributes.is_beneficiary
+    assert attributes.is_current_beneficiary is not credit_spent
+    assert not attributes.is_former_beneficiary  # even if underage credit is spent
+    assert attributes.roles == [UserRole.UNDERAGE_BENEFICIARY.value]
+
+
+def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_yet():
+    # At 17 years old
+    with freeze_time(datetime.utcnow() - relativedelta(years=1)):
+        user = UnderageBeneficiaryFactory(subscription_age=17)
+
+    # At 18 years old
+    user = User.query.get(user.id)
+    attributes = get_user_attributes(user)
+
+    assert attributes.is_beneficiary
+    assert not attributes.is_current_beneficiary
+    assert not attributes.is_former_beneficiary  # even if underage credit is expired
+    assert attributes.roles == [UserRole.UNDERAGE_BENEFICIARY.value]
+
+
+def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_on_time():
+    # At 17 years old
+    with freeze_time(datetime.utcnow() - relativedelta(years=2)):
+        user = UnderageBeneficiaryFactory(subscription_age=17)
+
+    # At 19 years old
+    user = User.query.get(user.id)
+    attributes = get_user_attributes(user)
+
+    assert attributes.is_beneficiary
+    assert not attributes.is_current_beneficiary
+    assert attributes.is_former_beneficiary  # because it's too late to claim any credit
+    assert attributes.roles == [UserRole.UNDERAGE_BENEFICIARY.value]
 
 
 def test_get_user_attributes_not_beneficiary():
