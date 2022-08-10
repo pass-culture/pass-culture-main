@@ -10,6 +10,7 @@ from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import requests as requests_utils
 from pcapi.validation.routes import dms as dms_validation
 from pcapi.validation.routes import ubble as ubble_validation
 
@@ -49,6 +50,11 @@ def ubble_webhook_update_application_status(
 
     try:
         ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+    except requests_utils.ExternalAPIException as exc:
+        logger.warning("External API error when updating ubble workflow", extra=log_extra_data | {"exception": exc})
+        raise ApiErrors({"msg": "an error occured while fetching data"}, status_code=500)
+
     except Exception:
         logger.exception("Could not update Ubble workflow", extra=log_extra_data)
         raise ApiErrors({"msg": "an error occured during workflow update"}, status_code=500)
@@ -67,6 +73,8 @@ def ubble_webhook_store_id_pictures(
     logger.info("Webhook store id pictures called ", extra={"identification_id": body.identification_id})
     try:
         ubble_subscription_api.archive_ubble_user_id_pictures(body.identification_id)
+    except requests_utils.ExternalAPIException as err:
+        raise ApiErrors({"err": str(err)}, status_code=500)
     except BeneficiaryFraudCheckMissingException as err:
         raise ApiErrors({"err": str(err)}, status_code=404)
     except IncompatibleFraudCheckStatus as err:
