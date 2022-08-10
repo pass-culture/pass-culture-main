@@ -59,9 +59,6 @@ const VenueCreation = () => {
   const isNewBankInformationCreation = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
-  const enableAdageVenueInformation = useActiveFeature(
-    'ENABLE_ADAGE_VENUE_INFORMATION'
-  )
   const { offererId } = useParams()
   const history = useHistory()
   const notify = useNotification()
@@ -81,11 +78,10 @@ const VenueCreation = () => {
       const venueLabelsRequest = getVenueLabels().then(labels =>
         sortByLabel(labels)
       )
-      const canOffererCreateCollectiveOfferRequest = enableAdageVenueInformation
-        ? canOffererCreateCollectiveOfferAdapter(offererId).then(
-            ({ payload }) => payload.isOffererEligibleToEducationalOffer
-          )
-        : Promise.resolve(false)
+      const canOffererCreateCollectiveOfferRequest =
+        canOffererCreateCollectiveOfferAdapter(offererId).then(
+          ({ payload }) => payload.isOffererEligibleToEducationalOffer
+        )
 
       const [
         offerer,
@@ -234,15 +230,9 @@ const VenueCreation = () => {
         <AccessibilityFields />
         <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         <ContactInfosFields readOnly={false} />
-        {enableAdageVenueInformation &&
-          canOffererCreateCollectiveOffer &&
-          isSiretValued && (
-            <EACInformation
-              venue={null}
-              offererId={offererId}
-              isCreatingVenue
-            />
-          )}
+        {canOffererCreateCollectiveOffer && isSiretValued && (
+          <EACInformation venue={null} offererId={offererId} isCreatingVenue />
+        )}
         {!isNewBankInformationCreation &&
           (isBankInformationWithSiretActive ? (
             <BusinessUnitFields isCreatingVenue offerer={offerer} />

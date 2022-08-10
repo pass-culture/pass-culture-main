@@ -567,19 +567,8 @@ describe('test page : VenueEdition', () => {
     })
 
     describe('EAC Information', () => {
-      const storeOverrides = {
-        features: {
-          list: [
-            {
-              nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
-              isActive: true,
-            },
-          ],
-        },
-      }
-
-      it('should display EAC Information block when FF is enabled and offerer can create collective offer', async () => {
-        await renderVenueEdition({ props, storeOverrides })
+      it('should display EAC Information block when offerer can create collective offer', async () => {
+        await renderVenueEdition({ props })
 
         const eacSection = await screen.findByText(
           'Mes informations pour les enseignants',
@@ -590,20 +579,8 @@ describe('test page : VenueEdition', () => {
         expect(eacSection).toBeInTheDocument()
       })
 
-      it('should not display EAC Information block when FF is enabled but offerer cannot create collective offer', async () => {
+      it('should not display EAC Information block when offerer cannot create collective offer', async () => {
         pcapi.canOffererCreateEducationalOffer.mockRejectedValueOnce()
-        await renderVenueEdition({ props, storeOverrides })
-
-        const eacSection = screen.queryByText(
-          'Mes informations pour les enseignants',
-          {
-            selector: 'h2',
-          }
-        )
-        expect(eacSection).not.toBeInTheDocument()
-      })
-
-      it('should not display EAC Information block when FF is disabled', async () => {
         await renderVenueEdition({ props })
 
         const eacSection = screen.queryByText(
