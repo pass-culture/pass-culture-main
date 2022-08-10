@@ -276,7 +276,7 @@
     </tr>
     </thead>
     <tbody>
-{% for cashflow in invoice.cashflows %}
+{% for cashflow in cashflows %}
     <tr>
         <td>Virement {{ cashflow.bankAccount.iban }}</td>
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
