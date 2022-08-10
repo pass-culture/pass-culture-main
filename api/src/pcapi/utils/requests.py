@@ -8,6 +8,8 @@ from requests import Response
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from pcapi import settings
+
 
 # fmt: off
 # isort: off
@@ -98,4 +100,5 @@ class Session(_SessionMixin, requests.Session):  # type: ignore [misc]
         safe_adapter = HTTPAdapter(max_retries=safe_retry_strategy)
         unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
         self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
+        self.mount(settings.UBBLE_API_URL, safe_adapter)
         self.mount("https://api.batch.com", unsafe_adapter)
