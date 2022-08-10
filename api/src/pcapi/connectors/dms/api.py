@@ -205,7 +205,7 @@ class DMSGraphQLClient:
         variables = {"dossierNumber": dossier_id}
         return self.execute_query(GET_BIC_QUERY_NAME, variables=variables)
 
-    def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> Any:
+    def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> dict:
         variables = {
             "input": {
                 "dossierId": dossier_id,

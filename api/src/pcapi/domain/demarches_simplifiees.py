@@ -176,7 +176,16 @@ def _find_value_in_fields(fields: list[dict], value_name: str) -> str | None:
 
 def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id: str, message: str) -> None:
     client = api_dms.DMSGraphQLClient()
-    client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
+    result = client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
+    errors = result["dossierModifierAnnotationText"].get("errors")  # pylint: disable=unsubscriptable-object
+    if errors:
+        logger.error(
+            "Got error when updating DMS annotation",
+            extra={
+                "errors": errors,
+                "dossier": dossier_id,
+            },
+        )
 
 
 def archive_dossier(dossier_id: str) -> None:
