@@ -74,18 +74,18 @@ def test_public_api(client, app):
                     "type": "object",
                 },
                 "ValidationError": {
-                    "description": "Model " "of a " "validation " "error " "response.",
+                    "description": "Model of a validation error response.",
                     "items": {"$ref": "#/components/schemas/ValidationErrorElement"},
                     "title": "ValidationError",
                     "type": "array",
                 },
                 "ValidationErrorElement": {
-                    "description": "Model " "of " "a " "validation " "error " "response " "element.",
+                    "description": "Model of a validation error response element.",
                     "properties": {
-                        "ctx": {"title": "Error " "context", "type": "object"},
-                        "loc": {"items": {"type": "string"}, "title": "Missing " "field " "name", "type": "array"},
-                        "msg": {"title": "Error " "message", "type": "string"},
-                        "type": {"title": "Error " "type", "type": "string"},
+                        "ctx": {"title": "Error context", "type": "object"},
+                        "loc": {"items": {"type": "string"}, "title": "Missing field name", "type": "array"},
+                        "msg": {"title": "Error message", "type": "string"},
+                        "type": {"title": "Error type", "type": "string"},
                     },
                     "required": ["loc", "msg", "type"],
                     "title": "ValidationErrorElement",
@@ -131,6 +131,88 @@ def test_public_api(client, app):
                         "venueName",
                     ],
                     "title": "GetBookingResponse",
+                    "type": "object",
+                },
+                "GetPublicCollectiveOfferResponseModel": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "address": {"title": "Address", "type": "string"},
+                        "audioDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Audiodisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "beginningDatetime": {"title": "Beginningdatetime", "type": "string"},
+                        "bookingEmail": {"nullable": True, "title": "Bookingemail", "type": "string"},
+                        "bookingLimitDatetime": {"title": "Bookinglimitdatetime", "type": "string"},
+                        "contactEmail": {"title": "Contactemail", "type": "string"},
+                        "contactPhone": {"title": "Contactphone", "type": "string"},
+                        "dateCreated": {"title": "Datecreated", "type": "string"},
+                        "description": {"nullable": True, "title": "Description", "type": "string"},
+                        "domains": {"items": {"type": "string"}, "title": "Domains", "type": "array"},
+                        "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
+                        "educationalInstitution": {
+                            "nullable": True,
+                            "title": "Educationalinstitution",
+                            "type": "string",
+                        },
+                        "educationalPriceDetail": {
+                            "nullable": True,
+                            "title": "Educationalpricedetail",
+                            "type": "string",
+                        },
+                        "hasBookingLimitDatetimesPassed": {
+                            "title": "Hasbookinglimitdatetimespassed",
+                            "type": "boolean",
+                        },
+                        "id": {"title": "Id", "type": "integer"},
+                        "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
+                        "isActive": {"nullable": True, "title": "Isactive", "type": "boolean"},
+                        "isSoldOut": {"title": "Issoldout", "type": "boolean"},
+                        "mentalDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Mentaldisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "motorDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Motordisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "name": {"title": "Name", "type": "string"},
+                        "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
+                        "status": {"title": "Status", "type": "string"},
+                        "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
+                        "subcategoryId": {"title": "Subcategoryid", "type": "string"},
+                        "totalPrice": {"title": "Totalprice", "type": "integer"},
+                        "venueId": {"title": "Venueid", "type": "integer"},
+                        "visualDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Visualdisabilitycompliant",
+                            "type": "boolean",
+                        },
+                    },
+                    "required": [
+                        "id",
+                        "status",
+                        "name",
+                        "subcategoryId",
+                        "contactEmail",
+                        "contactPhone",
+                        "domains",
+                        "interventionArea",
+                        "students",
+                        "dateCreated",
+                        "hasBookingLimitDatetimesPassed",
+                        "isSoldOut",
+                        "venueId",
+                        "address",
+                        "beginningDatetime",
+                        "bookingLimitDatetime",
+                        "totalPrice",
+                        "numberOfTickets",
+                    ],
+                    "title": "GetPublicCollectiveOfferResponseModel",
                     "type": "object",
                 },
                 "UpdateVenueStockBodyModel": {
@@ -423,7 +505,7 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "Récupération "
@@ -434,6 +516,54 @@ def test_public_api(client, app):
                     "authentifiée "
                     "par le jeton "
                     "d'API.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective-offers/{offer_id}": {
+                "get": {
+                    "description": "",
+                    "operationId": "GetCollectiveOfferPublic",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offer_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/GetPublicCollectiveOfferResponseModel"}
+                                }
+                            },
+                            "description": "L'offre collective existe",
+                        },
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {
+                            "description": "Vous "
+                            "n'avez "
+                            "pas "
+                            "les "
+                            "droits "
+                            "nécessaires "
+                            "pour "
+                            "voir "
+                            "cette "
+                            "offre "
+                            "collective"
+                        },
+                        "404": {"description": "L'offre collective n'existe pas"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récuperation de l'offre collective avec l'identifiant offer_id.",
                     "tags": [],
                 }
             },

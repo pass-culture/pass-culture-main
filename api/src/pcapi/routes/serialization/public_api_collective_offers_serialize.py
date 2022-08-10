@@ -1,3 +1,4 @@
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.routes.serialization import BaseModel
 
 
@@ -44,3 +45,71 @@ class CollectiveOffersStudentLevelResponseModel(BaseModel):
 
 class CollectiveOffersListStudentLevelsResponseModel(BaseModel):
     __root__: list[CollectiveOffersStudentLevelResponseModel]
+
+
+class GetPublicCollectiveOfferResponseModel(BaseModel):
+    id: int
+    status: str
+    name: str
+    description: str | None
+    subcategoryId: str
+    bookingEmail: str | None
+    contactEmail: str
+    contactPhone: str
+    domains: list[str]
+    durationMinutes: int | None
+    interventionArea: list[str]
+    students: list[str]
+    dateCreated: str
+    hasBookingLimitDatetimesPassed: bool
+    isActive: bool | None
+    isSoldOut: bool
+    venueId: int
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
+    address: str
+    beginningDatetime: str
+    bookingLimitDatetime: str
+    totalPrice: int
+    numberOfTickets: int
+    educationalPriceDetail: str | None
+    educationalInstitution: str | None
+
+    class Config:
+        extra = "forbid"
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
+        return cls(
+            id=offer.id,
+            status=offer.status.name,  # type: ignore [attr-defined]
+            name=offer.name,
+            description=offer.description,
+            subcategoryId=offer.subcategoryId,
+            bookingEmail=offer.bookingEmail,
+            contactEmail=offer.contactEmail,
+            contactPhone=offer.contactPhone,
+            domains=[domain.name for domain in offer.domains],  # type: ignore [attr-defined]
+            durationMinutes=offer.durationMinutes,
+            interventionArea=offer.interventionArea,
+            students=[student.name for student in offer.students],
+            dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),  # type: ignore [union-attr]
+            hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
+            isActive=offer.isActive,
+            isSoldOut=offer.isSoldOut,
+            venueId=offer.venueId,
+            audioDisabilityCompliant=offer.audioDisabilityCompliant,
+            mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
+            motorDisabilityCompliant=offer.motorDisabilityCompliant,
+            visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            address=offer.venue.address,
+            beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
+            bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
+            totalPrice=(offer.collectiveStock.price * 100),
+            numberOfTickets=offer.collectiveStock.numberOfTickets,
+            educationalPriceDetail=offer.collectiveStock.priceDetail,
+            educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
+        )
