@@ -1,3 +1,5 @@
+import logging
+
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.connectors import sirene
@@ -22,9 +24,12 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
 )
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 
+
+logger = logging.getLogger(__name__)
 
 PROCEDURE_ID_VERSION_MAP = {
     settings.DMS_VENUE_PROCEDURE_ID: {"dms_api_version": 1, "procedure_version": 1},
@@ -140,6 +145,19 @@ class SaveVenueBankInformations:
                 business_unit.bankAccountId = updated_bank_information.id
                 repository.save(business_unit)
                 offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
+                if application_details.status == BankInformationStatus.ACCEPTED:
+                    venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
+                    try:
+                        offerers_api.link_venue_to_reimbursement_point(venue_sql_entity, venue.identifier)
+                    except ApiErrors as exc:
+                        logger.error(
+                            "Could not link venue to itself as its reimbursement point with v3 application",
+                            extra={
+                                "application_id": application_details.application_id,
+                                "err": exc.errors,
+                                "venue": venue_sql_entity.id,
+                            },
+                        )
         else:
             if application_details.status == BankInformationStatus.ACCEPTED:
                 venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
