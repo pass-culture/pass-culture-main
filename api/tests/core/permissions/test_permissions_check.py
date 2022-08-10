@@ -1,3 +1,4 @@
+import datetime
 import enum
 from unittest import mock
 
@@ -57,6 +58,33 @@ def test_access_denied_without_right_permission(db_session, client):
     # then
     assert view_func_stub.call_count == 0
     assert exc_info.value.errors == {"global": "missing permission"}
+    assert exc_info.value.status_code == 403
+
+
+@override_features(ENABLE_BACKOFFICE_API=True)
+def test_access_denied_with_expired_token(db_session, client):
+    # given
+    permission = PermissionFactory()
+    repository.save(permission)
+    user = UserFactory()
+    view_func_stub = mock.Mock()
+    perm_decorator = permission_required(
+        getattr(enum.Enum("TestPerms", {"BAD_PERMISSION": "bad permission"}), "BAD_PERMISSION")
+    )
+    auth_token = generate_token(
+        user, [permission], expiration=datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+    )
+
+    with current_app.test_request_context(
+        "http://any.thing", headers={"Authorization": f"Bearer {auth_token}"}
+    ), pytest.raises(ApiErrors) as exc_info:
+
+        # when
+        perm_decorator(view_func_stub)("test_arg")
+
+    # then
+    assert view_func_stub.call_count == 0
+    assert exc_info.value.errors == {"global": "authentication expired"}
     assert exc_info.value.status_code == 403
 
 
