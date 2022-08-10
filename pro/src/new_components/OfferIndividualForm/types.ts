@@ -26,4 +26,6 @@ export interface IOfferIndividualFormValues {
   stageDirector?: string | null
   visa?: string | null
   durationMinutes?: string | null
+  receiveNotificationEmails: boolean
+  bookingEmail: string
 }
