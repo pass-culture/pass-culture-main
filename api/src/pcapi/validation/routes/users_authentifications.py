@@ -60,6 +60,20 @@ def api_key_required(route_function: Callable) -> Callable:
     return wrapper
 
 
+def api_key_auth_required(route_function: Callable) -> Callable:
+    add_security_scheme(route_function, API_KEY_AUTH)
+
+    @wraps(route_function)
+    def wrapper(*args, **kwds):  # type: ignore[no-untyped-def]
+        _fill_current_api_key()
+
+        if not g.current_api_key:
+            raise UnauthorizedError(errors={"auth": "API key required"})
+        return route_function(*args, **kwds)
+
+    return wrapper
+
+
 def _fill_current_api_key() -> None:
     mandatory_authorization_type = "Bearer "
     authorization_header = request.headers.get("Authorization")
