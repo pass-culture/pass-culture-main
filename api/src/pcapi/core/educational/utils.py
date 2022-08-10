@@ -14,7 +14,7 @@ def compute_educational_booking_cancellation_limit_date(
 def get_institution_type_and_name(institution_title: str) -> tuple[str, str]:
     short_type = ""
     for index in INSTITUTION_TYPES:
-        if institution_title.strip().startswith(f"{index} "):
+        if institution_title.strip().startswith(f"{index} ") or institution_title == index:
             short_type = index
             break
 
