@@ -74,9 +74,6 @@ const VenueEdition = () => {
   const isNewBankInformationCreation = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
-  const enableAdageVenueInformation = useActiveFeature(
-    'ENABLE_ADAGE_VENUE_INFORMATION'
-  )
   const isEnabledNewVenueProviderSection = useActiveFeature(
     'ENABLE_PRO_NEW_VENUE_PROVIDER_UI'
   )
@@ -152,13 +149,8 @@ const VenueEdition = () => {
       const venueLabelsRequest = pcapi
         .getVenueLabels()
         .then(labels => sortByLabel(labels))
-      const canOffererCreateCollectiveOfferRequest = enableAdageVenueInformation
-        ? canOffererCreateCollectiveOfferAdapter(offererId)
-        : Promise.resolve({
-            payload: { isOffererEligibleToEducationalOffer: false },
-            isOk: true,
-            message: null,
-          })
+      const canOffererCreateCollectiveOfferRequest =
+        canOffererCreateCollectiveOfferAdapter(offererId)
 
       const [
         offerer,
@@ -234,8 +226,7 @@ const VenueEdition = () => {
     }
   }, [
     history.location.state,
-    // element depends on these 2 variables otherwise it is not in the DOM so we need them in the dependency array
-    enableAdageVenueInformation,
+    // element depends on this variable otherwise it is not in the DOM so we need it in the dependency array
     canOffererCreateCollectiveOffer,
   ])
 
@@ -390,7 +381,7 @@ const VenueEdition = () => {
               <ContactInfosFields readOnly={readOnly} />
             </>
           )}
-          {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
+          {canOffererCreateCollectiveOffer && (
             <EACInformation venue={venue} offererId={offererId} />
           )}
           {isNewBankInformationCreation ? (

@@ -338,31 +338,13 @@ describe('venue form', () => {
   })
 
   describe('Collective data', () => {
-    it('should not render button when FF is off', async () => {
-      await renderVenueCreation({ props, storeOverrides })
-
-      expect(
-        screen.queryByText('Renseigner mes informations')
-      ).not.toBeInTheDocument()
-    })
-
-    it('should render button when FF is on and offerer can create collective offer and venue is being created with a siret', async () => {
+    it('should render button when offerer can create collective offer and venue is being created with a siret', async () => {
       jest
         .spyOn(pcapi, 'canOffererCreateEducationalOffer')
         .mockResolvedValueOnce()
       await renderVenueCreation({
         props,
-        storeOverrides: {
-          ...storeOverrides,
-          features: {
-            list: [
-              {
-                isActive: true,
-                nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
-              },
-            ],
-          },
-        },
+        storeOverrides,
       })
 
       expect(
@@ -370,22 +352,10 @@ describe('venue form', () => {
       ).toBeInTheDocument()
     })
 
-    it('should not render button when FF is on and offerer cannot create collective offer', async () => {
+    it('should not render button when and offerer cannot create collective offer', async () => {
       await renderVenueCreation({
         props,
-        storeOverrides: {
-          ...storeOverrides,
-          features: {
-            ...storeOverrides.features,
-            list: [
-              ...storeOverrides.features.list,
-              {
-                isActive: true,
-                nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
-              },
-            ],
-          },
-        },
+        storeOverrides,
       })
 
       expect(
@@ -393,20 +363,10 @@ describe('venue form', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not render button when FF is on and offerer can create collective offer but venue is being created without siret', async () => {
+    it('should not render button when offerer can create collective offer but venue is being created without siret', async () => {
       await renderVenueCreation({
         props,
-        storeOverrides: {
-          ...storeOverrides,
-          features: {
-            list: [
-              {
-                isActive: true,
-                nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
-              },
-            ],
-          },
-        },
+        storeOverrides,
       })
 
       const toggle = screen.getByRole('button', {
