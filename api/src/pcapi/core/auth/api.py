@@ -39,10 +39,6 @@ class NotAPassCultureTeamAccountError(Exception):
     pass
 
 
-class ExpiredTokenError(Exception):
-    pass
-
-
 def get_google_token_id_info(google_token_id: str) -> dict:
     response = requests.get(
         "https://oauth2.googleapis.com/tokeninfo",
@@ -103,10 +99,14 @@ def get_permissions_from_roles(roles: typing.Iterable[str]) -> list[perm_models.
     return permissions.all()
 
 
-def generate_token(user: users_models.User, permissions: typing.Iterable[perm_models.Permission]) -> str:
+def generate_token(
+    user: users_models.User,
+    permissions: typing.Iterable[perm_models.Permission],
+    expiration: datetime | None = None,
+) -> str:
     payload = {"email": user.email, "perms": [p.name for p in permissions]}
-    expiratione_date = datetime.utcnow() + timedelta(days=1)
-    encoded_jwt = encode_jwt_payload(payload, expiratione_date)
+    expiration_date = datetime.utcnow() + timedelta(days=1) if expiration is None else expiration
+    encoded_jwt = encode_jwt_payload(payload, expiration_date)
     return encoded_jwt
 
 
@@ -128,8 +128,6 @@ def authenticate_from_bearer(bearer: str) -> tuple[users_models.User, list[str]]
 
     token = match.group("token")
     payload = decode_jwt_token(token)
-    if (expiration := payload.get("exp")) is not None and datetime.fromtimestamp(expiration) < datetime.utcnow():
-        raise ExpiredTokenError
 
     if (user := users_models.User.query.filter_by(email=payload["email"]).one_or_none()) is None:
         raise NotAPassCultureTeamAccountError
