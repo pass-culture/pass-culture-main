@@ -1,6 +1,5 @@
 import logging
 
-from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exceptions
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
@@ -10,6 +9,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import requests as requests_utils
 
 from . import blueprint
 from .serialization import subscription as serializers
@@ -110,17 +110,13 @@ def start_identification_session(
         identification_url = ubble_subscription_api.start_ubble_workflow(user, body.redirectUrl)
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
 
-    except beneficiaries_exceptions.IdentificationServiceUnavailable:
-        raise api_errors.ApiErrors(
-            {"code": "IDCHECK_SERVICE_UNAVAILABLE", "message": "Le service d'identification n'est pas joignable"},
-            status_code=503,
-        )
-
-    except beneficiaries_exceptions.IdentificationServiceError:
-        raise api_errors.ApiErrors(
-            {
-                "code": "IDCHECK_SERVICE_ERROR",
-                "message": "Une erreur s'est produite à l'appel du service d'identification",
-            },
-            status_code=500,
-        )
+    except requests_utils.ExternalAPIException as exception:
+        if exception.is_retryable:
+            code = "IDCHECK_SERVICE_UNAVAILABLE"
+            message = "Le service d'identification n'est pas joignable"
+            return_status = 503
+        else:
+            code = "IDCHECK_SERVICE_ERROR"
+            message = "Une erreur s'est produite à l'appel du service d'identification"
+            return_status = 500
+        raise api_errors.ApiErrors({"code": code, "message": message}, status_code=return_status)
