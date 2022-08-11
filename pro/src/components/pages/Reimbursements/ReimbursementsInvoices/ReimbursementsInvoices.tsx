@@ -40,6 +40,7 @@ const ReimbursementsInvoices = ({
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [invoices, setInvoices] = useState<InvoiceResponseModel[]>([])
+  const [noInvoices, setNoInvoices] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
@@ -58,7 +59,7 @@ const ReimbursementsInvoices = ({
     selectedReimbursementPoint === ALL_REIMBURSEMENT_POINT_OPTION_ID
 
   const hasNoSearchResult =
-    !hasError && invoices.length === 0 && hasSearchedOnce
+    !hasError && invoices.length === 0 && (hasSearchedOnce || !noInvoices)
 
   const shouldDisplayAdminInfo =
     !hasError && isCurrentUserAdmin && !hasSearchedOnce
@@ -67,6 +68,7 @@ const ReimbursementsInvoices = ({
     !hasError &&
     !isCurrentUserAdmin &&
     invoices.length === 0 &&
+    noInvoices &&
     !hasSearchedOnce
 
   const shouldDisableButton =
@@ -91,6 +93,8 @@ const ReimbursementsInvoices = ({
           setInvoices(invoices)
           setIsLoading(false)
           setHasError(false)
+          // FIXME: api route getInvoices() should give use this information: does user have at least one invoice in database ?
+          setNoInvoices(false)
         })
         .catch(() => {
           setIsLoading(false)
