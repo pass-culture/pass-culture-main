@@ -441,12 +441,15 @@ test("je suis scrollé sur l'élément incorrect du formulaire d'édition d'offr
   )
   await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
   const keyCombinationToDeleteTextInput = 'ctrl+a delete'
+  const elementInViewport = await isElementInViewport(
+    '.offer-form [name="name"]'
+  )
 
   await t
     .click(nameInput)
     .pressKey(keyCombinationToDeleteTextInput)
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
-    .expect(await isElementInViewport('.offer-form [name="name"]'))
+    .expect(elementInViewport)
     .ok({ timeout: 2000 })
 })
