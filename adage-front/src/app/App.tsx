@@ -3,7 +3,6 @@ import '@fontsource/barlow/600.css'
 import '@fontsource/barlow/700.css'
 import '@fontsource/barlow/300.css'
 
-import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
 import * as React from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
@@ -11,11 +10,6 @@ import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 import { api } from 'api/api'
 import { AdageFrontRoles, AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
-import {
-  ACTIVATE_MATOMO_TRACKING,
-  MATOMO_BASE_URL,
-  MATOMO_SITE_ID,
-} from 'utils/config'
 
 import { AppLayout } from './AppLayout'
 import {
@@ -25,21 +19,6 @@ import {
 } from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { FacetFiltersContextProvider } from './providers'
-
-const instance = createInstance({
-  urlBase: MATOMO_BASE_URL,
-  siteId: parseInt(MATOMO_SITE_ID),
-  disabled: ACTIVATE_MATOMO_TRACKING !== 'true',
-  heartBeat: {
-    active: true,
-    seconds: 10,
-  },
-  linkTracking: false,
-  configurations: {
-    setSecureCookie: process.env.NODE_ENV !== 'development',
-    setRequestMethod: 'POST',
-  },
-})
 
 export const queryCache = new QueryCache()
 export const queryClient = new QueryClient({
@@ -111,13 +90,11 @@ export const App = (): JSX.Element => {
         [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
           user.role
         ) ? (
-          <MatomoProvider value={instance}>
-            <AppLayout
-              removeVenueFilter={removeVenueFilter}
-              user={user}
-              venueFilter={venueFilter}
-            />
-          </MatomoProvider>
+          <AppLayout
+            removeVenueFilter={removeVenueFilter}
+            user={user}
+            venueFilter={venueFilter}
+          />
         ) : (
           <UnauthenticatedError />
         )}

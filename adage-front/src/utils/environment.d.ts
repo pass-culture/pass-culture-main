@@ -14,8 +14,5 @@ declare namespace NodeJS {
     REACT_APP_SENTRY_SAMPLE_RATE: string
     REACT_APP_SENTRY_SERVER_URL: string
     REACT_APP_ASSETS_URL: string
-    REACT_APP_ACTIVATE_MATOMO_TRACKING: string
-    REACT_APP_MATOMO_SITE_ID: string
-    REACT_APP_MATOMO_BASE_URL: string
   }
 }
