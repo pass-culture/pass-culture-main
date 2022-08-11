@@ -1,6 +1,7 @@
 import enum
 
 import sqlalchemy as sa
+from sqlalchemy.orm import declarative_mixin
 
 
 class OfferStatus(enum.Enum):
@@ -30,6 +31,7 @@ class OfferValidationType(enum.Enum):
     MANUAL = "MANUAL"
 
 
+@declarative_mixin
 class StatusMixin:
     @sa.ext.hybrid.hybrid_property
     def status(self) -> OfferStatus:
@@ -68,6 +70,7 @@ class StatusMixin:
         )
 
 
+@declarative_mixin
 class ValidationMixin:
     lastValidationDate = sa.Column(sa.DateTime, index=True, nullable=True)
 
