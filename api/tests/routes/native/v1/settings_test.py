@@ -45,6 +45,7 @@ class SettingsTest:
             "proDisableEventsQrcode": False,
             "allowAccountUnsuspension": True,
             "accountUnsuspensionLimit": 60,
+            "appEnableCookiesV2": False,
         }
 
     @override_features(
@@ -59,6 +60,7 @@ class SettingsTest:
         ALLOW_ACCOUNT_UNSUSPENSION=True,
         APP_ENABLE_AUTOCOMPLETE=False,
         APP_ENABLE_CATEGORY_FILTER_PAGE=True,
+        APP_ENABLE_COOKIES_V2=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -84,4 +86,5 @@ class SettingsTest:
             "proDisableEventsQrcode": True,
             "allowAccountUnsuspension": True,
             "accountUnsuspensionLimit": 60,
+            "appEnableCookiesV2": True,
         }
