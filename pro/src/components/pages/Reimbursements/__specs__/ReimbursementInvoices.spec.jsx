@@ -9,7 +9,7 @@ import { MemoryRouter, Route } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import Reimbursements from '../ReimbursementsWithFilters'
+import Reimbursements from '../Reimbursements'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
@@ -21,6 +21,8 @@ jest.mock('utils/date', () => ({
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getInvoices: jest.fn(),
+  getBusinessUnits: jest.fn(),
+  getReimbursementPoints: jest.fn(),
 }))
 
 const initialStore = {
@@ -30,6 +32,7 @@ const initialStore = {
       isAdmin: false,
       hasSeenProTutorials: true,
     },
+    initialized: true,
   },
 }
 
@@ -104,6 +107,8 @@ describe('reimbursementsWithFilters', () => {
     props = { currentUser: { isAdmin: false } }
     jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue(BASE_VENUES)
     jest.spyOn(pcapi, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    jest.spyOn(pcapi, 'getBusinessUnits').mockResolvedValue([])
+    jest.spyOn(pcapi, 'getReimbursementPoints').mockResolvedValue([])
   })
 
   it('shoud render a table with invoices', async () => {

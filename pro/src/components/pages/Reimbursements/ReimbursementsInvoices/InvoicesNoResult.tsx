@@ -2,19 +2,14 @@ import React, { Dispatch, SetStateAction } from 'react'
 
 import { ReactComponent as SearchSvg } from 'icons/ico-search-gray.svg'
 
-type filtersType = {
-  reimbursementPoint: string
-  businessUnit: string
-  periodStart: Date
-  periodEnd: Date
-}
+import { TFiltersType } from './types'
 
 interface IInvoicesNoResultsProps {
   areFiltersDefault: boolean
-  initialFilters: filtersType
+  initialFilters: TFiltersType
   loadInvoices: (shouldReset: boolean) => void
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
-  setFilters: Dispatch<SetStateAction<filtersType>>
+  setFilters: Dispatch<SetStateAction<TFiltersType>>
 }
 
 const InvoicesNoResult = ({
