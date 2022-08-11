@@ -114,7 +114,7 @@ class AllocineStocks(LocalProvider):
         if "duration" in self.movie_information:  # type: ignore [operator]
             obj.durationMinutes = movie_information["duration"]
         if not obj.extraData:
-            obj.extraData = {}  # type: ignore [assignment]
+            obj.extraData = {}
         for field in (
             "visa",
             "stageDirector",
@@ -131,7 +131,7 @@ class AllocineStocks(LocalProvider):
     def fill_product_attributes(self, allocine_product: Product):  # type: ignore [no-untyped-def]
         allocine_product.name = self.movie_information["title"]  # type: ignore [index]
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_product.thumbCount = 0  # type: ignore [assignment]
+        allocine_product.thumbCount = 0
 
         self.update_from_movie_information(allocine_product, self.movie_information)  # type: ignore [arg-type]
 
@@ -197,7 +197,7 @@ class AllocineStocks(LocalProvider):
 
         is_new_stock_to_insert = allocine_stock.id is None
         if is_new_stock_to_insert:
-            allocine_stock.fieldsUpdated = []  # type: ignore [assignment]
+            allocine_stock.fieldsUpdated = []
 
         if "bookingLimitDatetime" not in allocine_stock.fieldsUpdated:
             allocine_stock.bookingLimitDatetime = date_in_utc

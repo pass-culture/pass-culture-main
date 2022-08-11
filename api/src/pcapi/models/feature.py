@@ -242,7 +242,7 @@ def install_feature_flags() -> None:
 
     for flag in to_install_flags:
         db.session.add(
-            Feature(  # type: ignore [call-arg]
+            Feature(
                 name=FeatureToggle[flag].name,
                 description=FeatureToggle[flag].value,
                 isActive=FeatureToggle[flag] not in FEATURES_DISABLED_BY_DEFAULT,

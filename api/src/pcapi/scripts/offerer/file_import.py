@@ -102,9 +102,9 @@ def fill_user_from(csv_row: list[str], user: User) -> User:
 def fill_offerer_from(csv_row: list[str], offerer: Offerer) -> Offerer:
     offerer.siren = csv_row[OFFERER_SIREN_COLUMN_INDEX]
     offerer.name = csv_row[OFFERER_NAME_COLUMN_INDEX]
-    offerer.thumbCount = 0  # type: ignore [assignment]
-    offerer.postalCode = csv_row[OFFERER_POSTAL_CODE_COLUMN_INDEX]  # type: ignore [assignment]
-    offerer.city = csv_row[OFFERER_CITY_COLUMN_INDEX]  # type: ignore [assignment]
+    offerer.thumbCount = 0
+    offerer.postalCode = csv_row[OFFERER_POSTAL_CODE_COLUMN_INDEX]
+    offerer.city = csv_row[OFFERER_CITY_COLUMN_INDEX]
     offerer.dateCreated = datetime.utcnow()
     return offerer
 

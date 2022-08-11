@@ -36,7 +36,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         venue_departement_code=offer.venue.departementCode,
         stocks=stocks,
         status=offer.status.name,  # type: ignore [attr-defined]
-        is_showcase=offer.extraData.get("isShowcase") if offer.extraData else None,
+        is_showcase=offer.extraData.get("isShowcase") if offer.extraData else None,  # type: ignore [arg-type]
     )
 
 

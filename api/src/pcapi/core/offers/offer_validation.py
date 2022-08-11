@@ -49,7 +49,7 @@ def _get_model(offer: CollectiveOffer | CollectiveOfferTemplate | Offer, paramet
     if parameter_model in OFFER_LIKE_MODELS and _get_class_name(offer) == parameter_model:
         model = offer
     elif parameter_model == "CollectiveStock" and isinstance(offer, CollectiveOffer):
-        model = offer.collectiveStock  # type: ignore [assignment]
+        model = offer.collectiveStock
     elif parameter_model == "Venue":
         model = offer.venue  # type: ignore [assignment]
     elif parameter_model == "Offerer":

@@ -146,7 +146,7 @@ def verify_collective_offers_duplication() -> Tuple[
             )
             array_of_missing_ids.append(educational_offer.id)
             continue
-        extraData: dict = educational_offer.extraData  # type: ignore [assignment]
+        extraData: dict = educational_offer.extraData
         contact_phone = extraData.get("contactPhone", None) if extraData else None
         contact_email = extraData.get("contactEmail", None) if extraData else None
         data_to_verify = {

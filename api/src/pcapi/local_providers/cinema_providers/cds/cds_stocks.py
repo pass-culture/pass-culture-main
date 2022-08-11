@@ -102,7 +102,7 @@ class CDSStocks(LocalProvider):
         self.update_from_movie_information(cds_offer, self.movie_information)
 
         if self.movie_information.visa:
-            cds_offer.extraData = {"visa": self.movie_information.visa}  # type: ignore [assignment]
+            cds_offer.extraData = {"visa": self.movie_information.visa}
 
         cds_offer.name = self.movie_information.title
         cds_offer.subcategoryId = subcategories.SEANCE_CINE.id
@@ -133,7 +133,7 @@ class CDSStocks(LocalProvider):
 
         is_new_stock_to_insert = cds_stock.id is None
         if is_new_stock_to_insert:
-            cds_stock.fieldsUpdated = []  # type: ignore [assignment]
+            cds_stock.fieldsUpdated = []
 
         if "bookingLimitDatetime" not in cds_stock.fieldsUpdated:
             cds_stock.bookingLimitDatetime = bookingLimitDatetime
@@ -159,8 +159,8 @@ class CDSStocks(LocalProvider):
         if self.movie_information.duration:
             obj.durationMinutes = movie_information.duration
         if not obj.extraData:
-            obj.extraData = {}  # type: ignore [assignment]
-        obj.extraData = {"visa": self.movie_information.visa}  # type: ignore [assignment]
+            obj.extraData = {}
+        obj.extraData = {"visa": self.movie_information.visa}
 
     def get_object_thumb(self) -> bytes:
         if self.movie_information.posterpath:
