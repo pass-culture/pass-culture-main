@@ -116,6 +116,8 @@ class TestingBackend(BaseBackend):
 
     def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
         assert len(siren) == 9
+        if siren == "000000000":
+            raise UnknownEntityException()
         return SirenInfo(
             siren=siren,
             name="MINISTERE DE LA CULTURE",
