@@ -54,7 +54,11 @@ import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
 import { OfferWithdrawalTypeOptions } from './OfferWithdrawalTypeOptions'
 import SynchronizedProviderInformation from './SynchronisedProviderInfos'
-import { isUrlValid, isEmailValid } from './validators'
+import {
+  isUrlValid,
+  isUrlWithStringInterpolationValid,
+  isEmailValid,
+} from './validators'
 
 const OfferForm = ({
   areAllVenuesVirtual,
@@ -469,7 +473,7 @@ const OfferForm = ({
       newFormErrors['disabilityCompliant'] = 'Ce champ est obligatoire.'
     }
 
-    if (!isUrlValid(formValues.url)) {
+    if (!isUrlWithStringInterpolationValid(formValues.url)) {
       newFormErrors['url'] = 'Veuillez renseigner une URL valide'
     }
 
@@ -661,6 +665,22 @@ const OfferForm = ({
     },
     [handleFormUpdate, resetFormError]
   )
+
+  const handleUrlUpdate = event => {
+    if (isUrlWithStringInterpolationValid(event.target.value)) {
+      resetFormError('url')
+    }
+
+    handleFormUpdate({ url: event.target.value })
+  }
+
+  const handleExternalTicketOfficeUrlUpdate = event => {
+    if (isUrlValid(event.target.value)) {
+      resetFormError('externalTicketOfficeUrl')
+    }
+
+    handleFormUpdate({ externalTicketOfficeUrl: event.target.value })
+  }
 
   const toggleReceiveNotification = useCallback(
     () => setReceiveNotificationEmails(!receiveNotificationEmails),
@@ -1068,7 +1088,7 @@ const OfferForm = ({
                     label="URL d’accès à l’offre"
                     longDescription="Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre"
                     name="url"
-                    onChange={handleSingleFormUpdate}
+                    onChange={handleUrlUpdate}
                     required
                     type="text"
                     value={formValues.url}
@@ -1125,7 +1145,7 @@ const OfferForm = ({
                 error={getErrorMessage('externalTicketOfficeUrl')}
                 label="URL de redirection externe"
                 name="externalTicketOfficeUrl"
-                onChange={handleSingleFormUpdate}
+                onChange={handleExternalTicketOfficeUrlUpdate}
                 subLabel={
                   !mandatoryFields.includes('externalTicketOfficeUrl')
                     ? 'Optionnel'
