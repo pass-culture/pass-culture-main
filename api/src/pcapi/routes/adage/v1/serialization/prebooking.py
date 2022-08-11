@@ -198,8 +198,8 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
-        domain_ids=[domain.id for domain in domains],  # type: ignore [attr-defined]
-        domain_labels=[domain.name for domain in domains],  # type: ignore [attr-defined]
+        domain_ids=[domain.id for domain in domains],
+        domain_labels=[domain.name for domain in domains],
         interventionArea=offer.interventionArea,
     )
 
