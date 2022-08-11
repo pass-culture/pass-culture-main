@@ -1,0 +1,5 @@
+import { DEFAULT_INFORMATIONS_FORM_VALUES } from './Informations'
+
+export const DEFAULT_FORM_VALUES = {
+  ...DEFAULT_INFORMATIONS_FORM_VALUES,
+}

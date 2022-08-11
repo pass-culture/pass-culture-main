@@ -5,9 +5,9 @@ import Homepage from 'components/pages/Home/Homepage'
 import LostPassword from 'components/pages/LostPassword/LostPassword'
 import OfferersContainer from 'components/pages/Offerers/List/OfferersContainer'
 import OffererDetails from 'components/pages/Offerers/Offerer/OffererDetails/OffererDetails'
-import VenueCreation from 'components/pages/Offerers/Offerer/VenueV1/VenueCreation/VenueCreation'
+import VenueV1Creation from 'components/pages/Offerers/Offerer/VenueV1/VenueCreation/VenueCreation'
 import CollectiveDataEdition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
-import VenueEdition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdition'
+import VenueV1Edition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdition'
 import OffererCreation from 'components/pages/Offerers/OffererCreation'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import { Reimbursements } from 'components/pages/Reimbursements'
@@ -35,6 +35,8 @@ import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
 import SignUpValidation from 'routes/SignUpValidation'
 import { UserProfile } from 'routes/User'
+import { VenueCreation } from 'routes/VenueCreation'
+import { VenueEdition } from 'routes/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 interface ILayoutConfig {
@@ -192,17 +194,32 @@ const routes: IRoute[] = [
     title: 'Structures',
   },
   {
-    component: VenueCreation,
+    component: VenueV1Creation,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
     title: 'Structures',
   },
   {
-    component: VenueEdition,
+    component: VenueV1Edition,
     exact: true,
     path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
     title: 'Structures',
   },
+  {
+    component: VenueCreation,
+    exact: true,
+    path: '/structures/:offererId([A-Z0-9]+)/lieux/v2/creation',
+    title: 'Structures',
+    featureName: 'VENUE_FORM_V2',
+  },
+  {
+    component: VenueEdition,
+    exact: true,
+    path: '/structures/:offererId([A-Z0-9]+)/lieux/v2/:venueId([A-Z0-9]+)',
+    title: 'Structures',
+    featureName: 'VENUE_FORM_V2',
+  },
+
   {
     component: CollectiveDataEdition,
     exact: true,
