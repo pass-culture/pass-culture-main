@@ -466,8 +466,8 @@ def create_industrial_educational_bookings() -> None:
             educationalRedactor=educational_redactor,
             educationalInstitution=educational_institution,
             educationalYear=educational_current_year,
-            confirmationLimitDate=stock.beginningDatetime - datetime.timedelta(days=10),  # type: ignore [operator]
-            cancellationLimitDate=stock.beginningDatetime - datetime.timedelta(days=5),  # type: ignore [operator]
+            confirmationLimitDate=stock.beginningDatetime - datetime.timedelta(days=10),
+            cancellationLimitDate=stock.beginningDatetime - datetime.timedelta(days=5),
             dateUsed=now - datetime.timedelta(8),
             collectiveStock=stock,
             collectiveStock__beginningDatetime=now - datetime.timedelta(8),
