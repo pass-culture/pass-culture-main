@@ -1,4 +1,3 @@
-import { useMatomo } from '@datapunt/matomo-tracker-react'
 import React, { useState } from 'react'
 
 import { Button, ModalLayout } from 'app/ui-kit'
@@ -16,14 +15,8 @@ const ContactButton = ({
   contactPhone?: string
 }): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { trackEvent } = useMatomo()
 
   const handleButtonClick = () => {
-    trackEvent({
-      category: 'button-click',
-      action: 'modal-opening',
-      name: 'ContactButtonClick',
-    })
     setIsModalOpen(true)
   }
 

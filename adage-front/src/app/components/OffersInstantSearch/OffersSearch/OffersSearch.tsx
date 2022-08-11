@@ -1,5 +1,4 @@
 import './OffersSearch.scss'
-import { useMatomo } from '@datapunt/matomo-tracker-react'
 import * as React from 'react'
 import { useEffect, useContext, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
@@ -46,8 +45,6 @@ export const OffersSearchComponent = ({
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
-
-  const { trackSiteSearch } = useMatomo()
 
   const enableInterventionAreaFilter = useActiveFeature(
     'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER'
@@ -101,9 +98,6 @@ export const OffersSearchComponent = ({
       })
     )
     setQueryTag(query)
-    if (query) {
-      trackSiteSearch({ keyword: query })
-    }
     refine(query)
   }
 
