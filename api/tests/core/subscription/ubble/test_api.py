@@ -1,7 +1,6 @@
 import datetime
 from io import BytesIO
 import json
-import logging
 import pathlib
 from unittest.mock import patch
 
@@ -26,6 +25,7 @@ from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import requests as requests_utils
 
 import tests
 from tests.core.subscription.test_factories import IdentificationState
@@ -405,16 +405,16 @@ class DownloadUbbleDocumentPictureTest:
         )
 
         # When
-        with caplog.at_level(logging.INFO):
-            res = ubble_subscription_api.download_ubble_document_pictures(
+        with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
+            ubble_subscription_api._download_ubble_document_pictures(
                 ubble_content=self.ubble_content, fraud_check=self.fraud_check
             )
 
         # Then
-        assert res["front"] is None
-        assert res["back"] is None
-        record = caplog.records[1]
-        assert "Unable to retrieve ubble file, request is expired" in record.message
+        assert exc_info.value.is_retryable is False
+        record = caplog.records[0]
+        assert record.levelname == "ERROR"
+        assert record.message == "Ubble picture-download: request has expired"
         assert self.picture_path in record.extra["url"]
 
     def test_download_ubble_document_pictures_with_empty_file(self, requests_mock, caplog):
@@ -426,19 +426,16 @@ class DownloadUbbleDocumentPictureTest:
         )
 
         # When
-        with caplog.at_level(logging.INFO):
-            res = ubble_subscription_api.download_ubble_document_pictures(
-                ubble_content=self.ubble_content, fraud_check=self.fraud_check
-            )
+        res = ubble_subscription_api._download_ubble_document_pictures(
+            ubble_content=self.ubble_content, fraud_check=self.fraud_check
+        )
 
         # Then
         assert res["front"] is None
         assert res["back"] is None
-        assert len(caplog.records) >= 2
+
         record = caplog.records[0]
-        assert "External service called" in record.message
-        record = caplog.records[1]
-        assert "Ubble identity file URL given but uploaded file is empty" in record.message
+        assert "Ubble picture-download: uploaded file is empty" in record.message
         assert self.picture_path in record.extra["url"]
 
     def test_download_ubble_document_pictures_with_unknown_error(self, requests_mock, caplog):
@@ -446,16 +443,16 @@ class DownloadUbbleDocumentPictureTest:
         requests_mock.register_uri("GET", self.picture_path, status_code=503)
 
         # When
-        with caplog.at_level(logging.INFO):
-            res = ubble_subscription_api.download_ubble_document_pictures(
+        with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
+            ubble_subscription_api._download_ubble_document_pictures(
                 ubble_content=self.ubble_content, fraud_check=self.fraud_check
             )
 
         # Then
-        assert res["front"] is None
-        assert res["back"] is None
-        record = caplog.records[1]
-        assert "Unable to retrieve ubble file, unknown error" in record.message
+        assert exc_info.value.is_retryable is True
+
+        record = caplog.records[0]
+        assert "Ubble picture-download: external error" in record.message
         assert self.picture_path in record.extra["url"]
         assert record.extra["status_code"] == 503
 
@@ -469,7 +466,7 @@ class DownloadUbbleDocumentPictureTest:
         )
 
         # When
-        res = ubble_subscription_api.download_ubble_document_pictures(
+        res = ubble_subscription_api._download_ubble_document_pictures(
             ubble_content=self.ubble_content, fraud_check=self.fraud_check
         )
 

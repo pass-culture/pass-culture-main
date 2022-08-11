@@ -2,6 +2,7 @@ import logging
 import typing
 import urllib.parse
 
+from pydantic import networks as pydantic_networks
 import requests
 from requests import exceptions as requests_exceptions
 from urllib3 import exceptions as urllib3_exceptions
@@ -237,3 +238,33 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
         | base_extra_log,
     )
     return content
+
+
+def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
+    try:
+        response = requests.get(http_url, stream=True)
+    except (urllib3_exceptions.HTTPError, requests_exceptions.RequestException) as e:
+        raise requests_utils.ExternalAPIException(is_retryable=True) from e
+
+    if response.status_code == 429 or response.status_code >= 500:
+        logger.warning(
+            "Ubble picture-download: external error",
+            extra={"url": str(http_url), "status_code": response.status_code},
+        )
+        raise requests_utils.ExternalAPIException(is_retryable=True)
+
+    if response.status_code == 403:
+        logger.error(
+            "Ubble picture-download: request has expired",
+            extra={"url": str(http_url), "status_code": response.status_code},
+        )
+        raise requests_utils.ExternalAPIException(is_retryable=False)
+
+    if response.status_code != 200:
+        logger.error(  # pylint: disable=logging-fstring-interpolation
+            f"Ubble picture-download: unexpected error: {response.status_code}",
+            extra={"url": str(http_url)},
+        )
+        raise requests_utils.ExternalAPIException(is_retryable=False)
+
+    return response.headers.get("content-type"), response.raw

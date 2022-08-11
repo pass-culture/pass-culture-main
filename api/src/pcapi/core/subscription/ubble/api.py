@@ -25,7 +25,6 @@ from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingExcep
 from pcapi.core.users import models as users_models
 import pcapi.repository as pcapi_repository
 from pcapi.tasks import ubble_tasks
-from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
@@ -223,7 +222,7 @@ def archive_ubble_user_id_pictures(identification_id: str) -> bool:
         )
 
     ubble_content = ubble.get_content(fraud_check.thirdPartyId)  # type: ignore [arg-type]
-    ubble_files = download_ubble_document_pictures(ubble_content, fraud_check)
+    ubble_files = _download_ubble_document_pictures(ubble_content, fraud_check)
 
     front_picture_stored = back_picture_stored = False
 
@@ -250,49 +249,34 @@ def archive_ubble_user_id_pictures(identification_id: str) -> bool:
     return archive_is_successful
 
 
-def download_ubble_document_pictures(
+def _download_ubble_document_pictures(
     ubble_content: ubble_fraud_models.UbbleContent, fraud_check: fraud_models.BeneficiaryFraudCheck
 ) -> dict:
     file_front = file_back = None
 
     if ubble_content.signed_image_front_url is not None:
-        file_front = _download_ubble_picture(fraud_check, ubble_content.signed_image_front_url, "front")
+        file_front = _download_and_copy_ubble_picture(fraud_check, ubble_content.signed_image_front_url, "front")
 
     if ubble_content.signed_image_back_url is not None:
-        file_back = _download_ubble_picture(fraud_check, ubble_content.signed_image_back_url, "back")
+        file_back = _download_and_copy_ubble_picture(fraud_check, ubble_content.signed_image_back_url, "back")
 
     return {"front": file_front, "back": file_back}
 
 
-def _download_ubble_picture(
+def _download_and_copy_ubble_picture(
     fraud_check: fraud_models.BeneficiaryFraudCheck, http_url: HttpUrl, face_name: str
 ) -> dict | None:
-    response = requests.get(http_url, stream=True)
+    content_type, raw_file = ubble.download_ubble_picture(http_url)
 
-    if response.status_code == 403:
-        logger.info(
-            "Unable to retrieve ubble file, request is expired",
-            extra={"url": str(http_url)},
-        )
-        return None
-
-    if response.status_code != 200:
-        logger.info(
-            "Unable to retrieve ubble file, unknown error",
-            extra={"url": str(http_url), "status_code": response.status_code},
-        )
-        return None
-
-    content_type = response.headers.get("content-type")
     file_name = _generate_storable_picture_filename(fraud_check, face_name, content_type)
     file_path = pathlib.Path(tempfile.mkdtemp()) / file_name
 
     with open(file_path, "wb") as out_file:
-        shutil.copyfileobj(response.raw, out_file)
+        shutil.copyfileobj(raw_file, out_file)
 
     if os.path.getsize(file_path) == 0:
-        logger.info(
-            "Ubble identity file URL given but uploaded file is empty",
+        logger.error(
+            "Ubble picture-download: uploaded file is empty",
             extra={"url": str(http_url)},
         )
         os.remove(file_path)
