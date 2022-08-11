@@ -4,3 +4,9 @@ type SelectOption = {
 }
 
 type SelectOptions = SelectOption[]
+
+type SelectOptionRFF = {
+  id: string
+  displayName: string
+}
+type SelectOptionsRFF = SelectOptionRFF[]

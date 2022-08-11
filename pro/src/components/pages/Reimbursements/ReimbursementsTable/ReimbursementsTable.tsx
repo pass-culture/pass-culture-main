@@ -1,27 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
+import { InvoiceResponseModel } from 'apiClient/v1'
+
 import styles from './ReimbursementsTable.module.scss'
 import ReimbursementsTableBody from './TableBody/ReimbursementsTableBody'
 import ReimbursementsTableHead from './TableHead/ReimbursementsTableHead'
 
-type Invoice = {
-  date: string
-  businessUnitName: string
-  reference: string
-  amount: string
-  url: string
-  cashflowLabels: string[]
-}
-
-type Column = {
+type TColumn = {
   title: string
   sortBy: string
   selfDirection: string
 }
 
 interface ITableProps {
-  columns: Column[]
-  invoices: Invoice[]
+  columns: TColumn[]
+  invoices: InvoiceResponseModel[]
 }
 
 const IS_ASCENDENT = 'asc'
@@ -41,16 +34,10 @@ const ReimbursementsTable = ({
   const sortBy = useCallback(
     (fieldToSort: string, sortDirection: string) => {
       const newSortedInvoices = invoices.sort((columnA, columnB) => {
-        if (
-          columnA[fieldToSort as keyof Invoice] <
-          columnB[fieldToSort as keyof Invoice]
-        )
-          return sortDirection === IS_ASCENDENT ? -1 : 1
-        if (
-          columnA[fieldToSort as keyof Invoice] >
-          columnB[fieldToSort as keyof Invoice]
-        )
-          return sortDirection === IS_ASCENDENT ? 1 : -1
+        const stringA = columnA[fieldToSort as keyof InvoiceResponseModel] || ''
+        const stringB = columnB[fieldToSort as keyof InvoiceResponseModel] || ''
+        if (stringA < stringB) return sortDirection === IS_ASCENDENT ? -1 : 1
+        if (stringA > stringB) return sortDirection === IS_ASCENDENT ? 1 : -1
         return 0
       })
       setSortedInvoices(newSortedInvoices)
