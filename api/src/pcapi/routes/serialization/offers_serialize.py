@@ -2,6 +2,7 @@ from datetime import datetime
 import enum
 from typing import Any
 
+from pydantic import EmailStr
 from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import validator
@@ -66,7 +67,7 @@ class PostOfferBodyModel(BaseModel):
     subcategory_id: str
     # FIXME (cgaunet, 2022-08-02): This field should not be nullable
     name: str | None
-    booking_email: str | None
+    booking_email: EmailStr | None
     external_ticket_office_url: HttpUrl | None
     url: HttpUrl | None
     media_urls: list[str] | None
@@ -121,7 +122,7 @@ class OfferAddressType(enum.Enum):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmail: str | None
+    bookingEmail: EmailStr | None
     description: str | None
     isNational: bool | None
     name: str | None
