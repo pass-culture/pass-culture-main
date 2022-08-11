@@ -64,8 +64,6 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
     if (isErrorAPIError(e) && e.status == 400) {
       if (e.body.global) {
         message = e.body.global[0]
-      } else {
-        message = e.body
       }
     }
     return {
