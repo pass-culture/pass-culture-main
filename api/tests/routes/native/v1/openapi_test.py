@@ -202,6 +202,7 @@ def test_public_api(client):
                         "proDisableEventsQrcode": {"title": "Prodisableeventsqrcode", "type": "boolean"},
                         "allowAccountUnsuspension": {"title": "Allowaccountunsuspension", "type": "boolean"},
                         "accountUnsuspensionLimit": {"title": "Accountunsuspensionlimit", "type": "integer"},
+                        "appEnableCookiesV2": {"title": "Appenablecookiesv2", "type": "boolean"},
                     },
                     "required": [
                         "accountCreationMinimumAge",
@@ -223,6 +224,7 @@ def test_public_api(client):
                         "proDisableEventsQrcode",
                         "allowAccountUnsuspension",
                         "accountUnsuspensionLimit",
+                        "appEnableCookiesV2",
                     ],
                     "title": "SettingsResponse",
                     "type": "object",

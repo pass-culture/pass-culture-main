@@ -119,6 +119,7 @@ class FeatureToggle(enum.Enum):
         "de l'année"
     )
     USE_INSEE_SIRENE_API = "Utiliser la nouvelle API Sirene de l'Insee"
+    APP_ENABLE_COOKIES_V2 = "Activer la gestion conforme des cookies"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -179,6 +180,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.USE_INSEE_SIRENE_API,
+    FeatureToggle.APP_ENABLE_COOKIES_V2,
 )
 
 
