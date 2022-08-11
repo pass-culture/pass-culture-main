@@ -365,10 +365,10 @@ def create_offerer(user: users_models.User, offerer_informations: offerers_seria
 
     else:
         offerer = models.Offerer()
-        offerer.address = offerer_informations.address  # type: ignore [assignment]
-        offerer.city = offerer_informations.city  # type: ignore [assignment]
+        offerer.address = offerer_informations.address
+        offerer.city = offerer_informations.city
         offerer.name = offerer_informations.name
-        offerer.postalCode = offerer_informations.postalCode  # type: ignore [assignment]
+        offerer.postalCode = offerer_informations.postalCode
         offerer.siren = offerer_informations.siren
         offerer.generate_validation_token()
         digital_venue = create_digital_venue(offerer)

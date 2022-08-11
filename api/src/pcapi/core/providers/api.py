@@ -123,7 +123,7 @@ def update_venue_provider(
     venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.VenueProvider:
     if venue_provider.isActive != venue_provider_payload.isActive:
-        venue_provider.isActive = bool(venue_provider_payload.isActive)  # type: ignore[assignment]
+        venue_provider.isActive = bool(venue_provider_payload.isActive)
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
         )
@@ -414,7 +414,7 @@ def _get_stocks_to_upsert(
 def _build_stock_from_stock_detail(
     stock_detail: providers_models.StockDetail, offers_id: int, price: float, provider_id: int | None
 ) -> offers_models.Stock:
-    return offers_models.Stock(  # type: ignore [call-arg]
+    return offers_models.Stock(
         quantity=stock_detail.available_quantity,
         rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
@@ -446,7 +446,7 @@ def _build_new_offer(
     id_at_provider: str,
     provider_id: int | None,
 ) -> offers_models.Offer:
-    return offers_models.Offer(  # type: ignore [call-arg]
+    return offers_models.Offer(
         bookingEmail=venue.bookingEmail,
         description=product.description,
         extraData=product.extraData,

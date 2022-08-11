@@ -76,7 +76,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
                 elif conditionalField == "isbn":
                     extraData[conditionalField] = "".join(random.choices("123456789-", k=13))
                 extra_data_index += 1
-            thing_product.extraData = extraData  # type: ignore [assignment]
+            thing_product.extraData = extraData
             thing_products_by_name[name] = thing_product
             id_at_providers += 1
 

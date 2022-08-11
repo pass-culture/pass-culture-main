@@ -26,8 +26,8 @@ def create_offerer_from_csv(row: dict) -> Offerer:
     offerer = Offerer()
     offerer.name = row["nom_structure"] if row["nom_structure"] else row["Name"]
     offerer.siren = row["SIREN"]
-    offerer.address = _get_address_from_row(row)  # type: ignore [assignment]
-    offerer.postalCode = _get_postal_code(row)  # type: ignore [assignment]
+    offerer.address = _get_address_from_row(row)
+    offerer.postalCode = _get_postal_code(row)
     offerer.city = row["City"]
 
     return offerer
