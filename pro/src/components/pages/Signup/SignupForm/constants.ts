@@ -9,8 +9,6 @@ export const SIGNUP_FORM_DEFAULT_VALUES = {
   legalUnitValues: {
     address: '',
     city: '',
-    latitude: null,
-    longitude: null,
     name: '',
     postalCode: '',
     siren: '',

@@ -1,22 +1,24 @@
 import { sirenUpdate } from '../decorators'
 
-const sirenApiUrl = siren =>
-  `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
-
 describe('sirenUpdate', () => {
   beforeEach(() => {
-    fetch.mockResponse(
-      JSON.stringify({
-        address: null,
-        city: null,
-        name: null,
-        postalCode: null,
-        siren: '841166096',
+    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      headers: new Headers({
+        'Content-Type': 'application/json',
       }),
-      {
-        status: 200,
-      }
-    )
+      json: () =>
+        Promise.resolve({
+          name: 'nom du lieu',
+          siren: '841166096',
+          address: {
+            street: '3 rue de la gare',
+            city: 'paris',
+            postalCode: '75000',
+          },
+        }),
+    })
   })
 
   describe('when the SIREN is not complete', () => {
@@ -50,38 +52,47 @@ describe('sirenUpdate', () => {
   })
 
   describe('when the SIREN has the required 9 numbers', () => {
-    it('should load offerer details from API', () => {
+    it('should load offerer details from API', async () => {
       // Given
       const siren = '418166096'
 
       // When
-      sirenUpdate(siren)
+      await sirenUpdate(siren)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(sirenApiUrl(siren))
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining(`/sirene/siren/${siren}`),
+        expect.anything()
+      )
     })
 
-    it('should format the SIREN to the API standards', () => {
+    it('should format the SIREN to the API standards', async () => {
       // Given
       const siren = '418 166 096'
 
       // When
-      sirenUpdate(siren)
+      await sirenUpdate(siren)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(sirenApiUrl('418166096'))
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/sirene/siren/418166096'),
+        expect.anything()
+      )
     })
   })
 
-  it('should format the SIREN to exclude extra characters', () => {
+  it('should format the SIREN to exclude extra characters', async () => {
     // Given
     const siren = '841 166 09616'
 
     // When
-    sirenUpdate(siren)
+    await sirenUpdate(siren)
 
     // Then
-    expect(fetch).toHaveBeenCalledWith(sirenApiUrl('841166096'))
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/sirene/siren/841166096'),
+      expect.anything()
+    )
   })
 
   it('should return the result', async () => {
@@ -93,11 +104,11 @@ describe('sirenUpdate', () => {
 
     // Then
     expect(result).toStrictEqual({
-      address: '',
-      name: '',
-      siren: siren,
-      postalCode: '',
-      city: '',
+      address: '3 rue de la gare',
+      name: 'nom du lieu',
+      siren: '841166096',
+      postalCode: '75000',
+      city: 'paris',
     })
   })
 })

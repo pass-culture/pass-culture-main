@@ -1,22 +1,23 @@
 import type { KeySelector } from 're-reselect'
 import { createCachedSelector } from 're-reselect'
 
-import { apiEntreprise } from 'apiClient/api'
-import type { IEntrepriseSirenData } from 'apiClient/entreprise/types'
-import { isErrorAPIError, HTTP_STATUS } from 'apiClient/helpers'
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiren } from 'core/Offerers/utils'
 import { validateSiren } from 'core/Offerers/validate'
 
 type Params = string
 type IPayload = {
-  values?: IEntrepriseSirenData
+  values?: {
+    address: string
+    city: string
+    name: string
+    postalCode: string
+    siren: string
+  }
 }
-type GetSirenDataAdapter = Adapter<Params, IPayload, IPayload>
 
-const unavailableSevicesCode = [
-  HTTP_STATUS.GATEWAY_TIMEOUT,
-  HTTP_STATUS.SERVICE_UNAVAILABLE,
-]
+type GetSirenDataAdapter = Adapter<Params, IPayload, IPayload>
 
 const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
   const siren = unhumanizeSiren(humanSiren || '')
@@ -28,8 +29,6 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
         values: {
           address: '',
           city: '',
-          latitude: null,
-          longitude: null,
           name: '',
           postalCode: '',
           siren: '',
@@ -46,27 +45,28 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
     }
   }
   try {
-    const values = await apiEntreprise.getSirenData(siren)
-
+    const response = await api.getSirenInfo(siren)
     return {
       isOk: true,
       message: `Informations récupéré avec success pour le SIREN: ${humanSiren}`,
       payload: {
-        values: values,
+        values: {
+          address: response.address.street,
+          city: response.address.city,
+          name: response.name,
+          postalCode: response.address.postalCode,
+          siren: response.siren,
+        },
       },
     }
   } catch (e) {
     let message = 'Une erreur est survenue'
-    if (isErrorAPIError(e)) {
-      message = e.body
-      if (e.status === HTTP_STATUS.NOT_FOUND) {
-        message = "Ce SIREN n'est pas reconnu"
-      } else if (unavailableSevicesCode.includes(e.status)) {
-        message =
-          'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
+    if (isErrorAPIError(e) && e.status == 400) {
+      if (e.body.global) {
+        message = e.body.global[0]
+      } else {
+        message = e.body
       }
-    } else if (e instanceof Error) {
-      message = e.message
     }
     return {
       isOk: false,

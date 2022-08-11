@@ -9,8 +9,6 @@ export interface ISignupFormValues {
   legalUnitValues: {
     address: string
     city: string
-    latitude: string | null
-    longitude: string | null
     name: string
     postalCode: string
     siren: string
