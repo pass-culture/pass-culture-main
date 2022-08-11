@@ -10,7 +10,7 @@ import CollectiveDataEdition from 'components/pages/Offerers/Offerer/VenueV1/Ven
 import VenueEdition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdition'
 import OffererCreation from 'components/pages/Offerers/OffererCreation'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
+import { Reimbursements } from 'components/pages/Reimbursements'
 import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
 import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
 import SignIn from 'components/pages/SignIn/SignIn'
@@ -334,7 +334,7 @@ const routes: IRoute[] = [
     featureName: 'OFFER_FORM_V3',
   },
   {
-    component: ReimbursementsContainer,
+    component: Reimbursements,
     path: '/remboursements',
     title: 'Remboursements',
     meta: {
