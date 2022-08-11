@@ -39,16 +39,15 @@ def _redact_url(url: str) -> str:
     return re.sub("api_token=[^&^$]+", "api_token=[REDACTED]", url)
 
 
-def _wrapper(request_func: Callable, method: str, url: str, log_at_error_level=True, **kwargs: Any) -> Response:  # type: ignore [no-untyped-def]
+def _wrapper(
+    request_func: Callable, method: str, url: str, log_at_warning_level: bool = True, **kwargs: Any
+) -> Response:
     timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
     try:
         response = request_func(method=method, url=url, timeout=timeout, **kwargs)
     except Exception as exc:
-        # If the URL is not controlled by us, there is probably no
-        # reason to send the error to Sentry. Logging an INFO message
-        # is enough if we ever need to debug.
-        if log_at_error_level:
-            logger_method = logger.exception
+        if log_at_warning_level:
+            logger_method = logger.warning
         else:
             logger_method = logger.info
         logger_method("Call to external service failed with %s", exc, extra={"method": method, "url": _redact_url(url)})
