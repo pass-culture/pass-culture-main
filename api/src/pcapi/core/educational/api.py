@@ -688,16 +688,14 @@ def create_collective_offer(
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
-    educational_domains = []
-    if isinstance(offer_data, PostCollectiveOfferBodyModel):
-        educational_domains = get_educational_domains_from_ids(offer_data.domains)
-    collective_offer = educational_models.CollectiveOffer(  # type: ignore [call-arg]
+    educational_domains = get_educational_domains_from_ids(offer_data.domains)
+    collective_offer = educational_models.CollectiveOffer(
         venueId=venue.id,
         name=offer_data.name,
         offerId=offer_id,
         bookingEmail=offer_data.booking_email,
         description=offer_data.description,
-        domains=educational_domains,  # type: ignore [arg-type]
+        domains=educational_domains,
         durationMinutes=offer_data.duration_minutes,
         subcategoryId=offer_data.subcategory_id,
         students=offer_data.students,

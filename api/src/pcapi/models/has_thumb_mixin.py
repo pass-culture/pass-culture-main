@@ -1,10 +1,12 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
+from sqlalchemy.orm import declarative_mixin
 
 from pcapi import settings
 from pcapi.utils.human_ids import humanize
 
 
+@declarative_mixin
 class HasThumbMixin:
     thumbCount = Column(Integer(), nullable=False, default=0)
 

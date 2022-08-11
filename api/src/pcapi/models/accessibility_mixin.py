@@ -1,6 +1,8 @@
 import sqlalchemy as sa
+from sqlalchemy.orm import declarative_mixin
 
 
+@declarative_mixin
 class AccessibilityMixin:
     audioDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
 

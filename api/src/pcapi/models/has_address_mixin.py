@@ -2,8 +2,10 @@
 
 from sqlalchemy import Column
 from sqlalchemy import String
+from sqlalchemy.orm import declarative_mixin
 
 
+@declarative_mixin
 class HasAddressMixin:
     address = Column(String(200), nullable=True)
 

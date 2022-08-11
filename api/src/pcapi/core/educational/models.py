@@ -91,7 +91,7 @@ class CollectiveBookingStatusFilter(enum.Enum):
     REIMBURSED = "reimbursed"
 
 
-class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Base, Model):  # type: ignore[valid-type, misc]
+class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer"
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
@@ -124,7 +124,7 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
         server_default="{}",
     )
 
-    collectiveStock: RelationshipProperty["CollectiveStock"] = relationship(
+    collectiveStock: "CollectiveStock" = relationship(
         "CollectiveStock", back_populates="collectiveOffer", uselist=False
     )
 
@@ -138,13 +138,13 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
         MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
-    domains: RelationshipProperty[list["EducationalDomain"]] = relationship(
+    domains: list["EducationalDomain"] = relationship(
         "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
     )
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
 
-    institution: RelationshipProperty["EducationalInstitution | None"] = relationship(
+    institution: Mapped["EducationalInstitution"] = relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
@@ -250,7 +250,7 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
             offerId=offer.id,
             contactEmail=offer.extraData.get("contactEmail"),
             contactPhone=offer.extraData.get("contactPhone", "").strip(),
-            offerVenue=offer.extraData.get("offerVenue"),
+            offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [arg-type]
             students=students,  # type: ignore [arg-type]
             interventionArea=[],
         )
@@ -332,7 +332,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     interventionArea = sa.Column(MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}")  # type: ignore [misc]
 
-    domains: RelationshipProperty[list["EducationalDomain"]] = relationship(
+    domains: list["EducationalDomain"] = relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
     )
 
@@ -443,7 +443,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
             offerId=offer.id,
             contactEmail=offer.extraData.get("contactEmail"),
             contactPhone=offer.extraData.get("contactPhone", "").strip(),
-            offerVenue=offer.extraData.get("offerVenue"),
+            offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [arg-type]
             students=students,  # type: ignore [arg-type]
             priceDetail=price_detail,
             interventionArea=[],  # type: ignore [arg-type]
