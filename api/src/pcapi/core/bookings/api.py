@@ -178,8 +178,8 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         venue_booking_provider_name = _get_venue_booking_provider(stock.offer.venueId).bookingProvider.name.value
         sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider_name)
 
-        if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():  # type: ignore [arg-type]
-            show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))  # type: ignore [arg-type]
+        if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():
+            show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))
         else:
             logger.error(
                 'Stock %d has invalid (non-digit) show_id in idAtProviders "%s"', stock.id, stock.idAtProviders

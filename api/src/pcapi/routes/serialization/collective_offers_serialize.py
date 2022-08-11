@@ -496,7 +496,7 @@ class CollectiveOfferFromTemplateResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOfferFromTemplateResponseModel":
         stock = offer.collectiveStock
-        stock.offerId = humanize(offer.id)  # type: ignore [attr-defined]
+        stock.offerId = humanize(offer.id)
         return super().from_orm(stock)
 
     class Config:

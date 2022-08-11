@@ -297,12 +297,12 @@ class OfferView(BaseAdminView):
             previous_validation = form._fields["validation"].object_data
             new_validation = offer.validation
             if previous_validation != new_validation:
-                offer.lastValidationDate = datetime.utcnow()  # type: ignore [assignment]
-                offer.lastValidationType = OfferValidationType.MANUAL  # type: ignore [assignment]
+                offer.lastValidationDate = datetime.utcnow()
+                offer.lastValidationType = OfferValidationType.MANUAL
                 if new_validation == OfferValidationStatus.APPROVED:
-                    offer.isActive = True  # type: ignore [assignment]
+                    offer.isActive = True
                 if new_validation == OfferValidationStatus.REJECTED:
-                    offer.isActive = False  # type: ignore [assignment]
+                    offer.isActive = False
                     cancelled_bookings = cancel_bookings_from_rejected_offer(offer)
                     if cancelled_bookings:
                         send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])

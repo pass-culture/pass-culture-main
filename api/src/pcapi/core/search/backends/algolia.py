@@ -393,7 +393,7 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = offer.dateCreated.timestamp()  # type: ignore [union-attr]
         stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]  # type: ignore [union-attr]
         tags = [criterion.name for criterion in offer.criteria]
-        extra_data = offer.extraData or {}  # type: ignore [var-annotated]
+        extra_data = offer.extraData or {}
         artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
         # Field used by Algolia (not the frontend) to deduplicate results
@@ -489,7 +489,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": collective_offer.name,
                 "students": [student.value for student in collective_offer.students],
                 "subcategoryId": collective_offer.subcategoryId,
-                "domains": [domain.id for domain in collective_offer.domains],  # type: ignore [attr-defined]
+                "domains": [domain.id for domain in collective_offer.domains],
                 "educationalInstitutionUAICode": collective_offer.institution.institutionId
                 if collective_offer.institution
                 else "all",
@@ -522,7 +522,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": collective_offer_template.name,
                 "students": [student.value for student in collective_offer_template.students],
                 "subcategoryId": collective_offer_template.subcategoryId,
-                "domains": [domain.id for domain in collective_offer_template.domains],  # type: ignore [attr-defined]
+                "domains": [domain.id for domain in collective_offer_template.domains],
                 "educationalInstitutionUAICode": "all",
                 "interventionArea": collective_offer_template.interventionArea,
             },

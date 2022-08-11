@@ -22,18 +22,18 @@ def create_offerer(
     date_validated: datetime = None,
 ) -> Offerer:
     offerer = Offerer()
-    offerer.address = address  # type: ignore [assignment]
-    offerer.city = city  # type: ignore [assignment]
+    offerer.address = address
+    offerer.city = city
     offerer.dateCreated = date_created
-    offerer.dateModifiedAtLastProvider = date_modified_at_last_provider  # type: ignore [assignment]
+    offerer.dateModifiedAtLastProvider = date_modified_at_last_provider
     offerer.id = idx  # type: ignore [assignment]
-    offerer.idAtProviders = id_at_providers  # type: ignore [assignment]
-    offerer.isActive = is_active  # type: ignore [assignment]
+    offerer.idAtProviders = id_at_providers
+    offerer.isActive = is_active
     offerer.lastProviderId = last_provider_id
     offerer.name = name
-    offerer.postalCode = postal_code  # type: ignore [assignment]
+    offerer.postalCode = postal_code
     offerer.siren = siren
-    offerer.thumbCount = thumb_count  # type: ignore [assignment]
+    offerer.thumbCount = thumb_count
     offerer.validationToken = validation_token
     offerer.dateValidated = date_validated
 
@@ -60,11 +60,11 @@ def create_stock(
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.dateCreated = date_created
     stock.dateModified = date_modified
-    stock.dateModifiedAtLastProvider = date_modified_at_last_provider  # type: ignore [assignment]
+    stock.dateModifiedAtLastProvider = date_modified_at_last_provider
     if idx:
         stock.id = idx
-    stock.idAtProviders = id_at_providers  # type: ignore [assignment]
-    stock.isSoftDeleted = is_soft_deleted  # type: ignore [assignment]
+    stock.idAtProviders = id_at_providers
+    stock.isSoftDeleted = is_soft_deleted
     stock.lastProviderId = last_provider_id
     stock.offer = offer  # type: ignore [assignment]
     stock.price = price

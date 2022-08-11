@@ -342,7 +342,7 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     """
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
-    user.isActive = False  # type: ignore [assignment]
+    user.isActive = False
     user_suspension = models.UserSuspension(
         user=user,
         eventType=models.SuspensionEventType.SUSPENDED,
@@ -394,7 +394,7 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
 
 
 def unsuspend_account(user: models.User, actor: models.User, send_email: bool = False) -> None:
-    user.isActive = True  # type: ignore [assignment]
+    user.isActive = True
     user_suspension = models.UserSuspension(
         user=user,
         eventType=models.SuspensionEventType.UNSUSPENDED,
@@ -656,7 +656,7 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
 
 def _set_offerer_departement_code(new_user: models.User, offerer: offerers_models.Offerer) -> models.User:
     if offerer.postalCode:  # not None, not ""
-        new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()  # type: ignore [arg-type]
+        new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
     else:
         new_user.departementCode = None
     return new_user

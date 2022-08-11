@@ -51,7 +51,7 @@ def save_allocine_sandbox() -> None:
     )
 
     provider = get_provider_by_local_class("AllocineStocks")
-    provider.isActive = True  # type: ignore [assignment]
+    provider.isActive = True
     provider.enabledForPro = True
 
     venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)

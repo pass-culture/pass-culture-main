@@ -156,7 +156,7 @@ def create_offer(
         offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)
 
     _complete_common_offer_fields(offer, offer_data, venue)
-    offer.isActive = save_as_active  # type: ignore [assignment]
+    offer.isActive = save_as_active
 
     repository.save(offer)
 
@@ -181,7 +181,7 @@ def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offe
     product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
     extra_data = product.extraData
     extra_data.update(offer_data.extra_data)
-    offer = Offer(  # type: ignore [call-arg]
+    offer = Offer(
         product=product,
         subcategoryId=product.subcategoryId,
         name=offer_data.name,  # type: ignore [arg-type]
@@ -222,11 +222,11 @@ def _complete_common_offer_fields(
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
     offer.externalTicketOfficeUrl = offer_data.external_ticket_office_url
-    offer.audioDisabilityCompliant = offer_data.audio_disability_compliant  # type: ignore [assignment]
-    offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant  # type: ignore [assignment]
-    offer.motorDisabilityCompliant = offer_data.motor_disability_compliant  # type: ignore [assignment]
-    offer.visualDisabilityCompliant = offer_data.visual_disability_compliant  # type: ignore [assignment]
-    offer.validation = OfferValidationStatus.DRAFT  # type: ignore [assignment]
+    offer.audioDisabilityCompliant = offer_data.audio_disability_compliant
+    offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
+    offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
+    offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
+    offer.validation = OfferValidationStatus.DRAFT
     offer.isEducational = offer_data.is_educational
 
 
@@ -361,7 +361,7 @@ def _update_collective_offer(
 
         if key == "domains":
             domains = educational_api.get_educational_domains_from_ids(value)
-            offer.domains = domains  # type: ignore [call-overload]
+            offer.domains = domains
             continue
 
         setattr(offer, key, value)
@@ -510,7 +510,7 @@ def _edit_stock(
         }
         # fmt: on
         validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
-        stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)  # type: ignore [assignment]
+        stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
 
     for model_attr, value in updates.items():
         setattr(stock, model_attr, value)
@@ -646,7 +646,7 @@ def upsert_stocks(
 
 def publish_offer(offer_id: int, user: User) -> Offer:
     offer = offers_repository.get_offer_by_id(offer_id)
-    offer.isActive = True  # type: ignore [assignment]
+    offer.isActive = True
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
     return offer
@@ -660,13 +660,13 @@ def update_offer_fraud_information(
 ) -> None:
     venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
 
-    offer.validation = set_offer_status_based_on_fraud_criteria(offer)  # type: ignore [assignment]
+    offer.validation = set_offer_status_based_on_fraud_criteria(offer)
     offer.author = user
-    offer.lastValidationDate = datetime.datetime.utcnow()  # type: ignore [assignment]
-    offer.lastValidationType = OfferValidationType.AUTO  # type: ignore [assignment]
+    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationType = OfferValidationType.AUTO
 
     if offer.validation in (OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED):
-        offer.isActive = False  # type: ignore [assignment]
+        offer.isActive = False
     repository.save(offer)
     if offer.validation == OfferValidationStatus.APPROVED and not silent:
         admin_emails.send_offer_creation_notification_to_administration(offer)
@@ -698,7 +698,7 @@ def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
 def delete_stock(stock: Stock) -> None:
     validation.check_stock_is_deletable(stock)
 
-    stock.isSoftDeleted = True  # type: ignore [assignment]
+    stock.isSoftDeleted = True
     repository.save(stock)
 
     # the algolia sync for the stock will happen within this function
@@ -754,7 +754,7 @@ def create_mediation(
         raise ThumbnailStorageError
 
     else:
-        mediation.thumbCount = 1  # type: ignore [assignment]
+        mediation.thumbCount = 1
         repository.save(mediation)
         # cleanup former thumbnails and mediations
 
@@ -961,9 +961,9 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
         template = f"{type(offer)} validation status cannot be updated, initial validation status is not PENDING. %s"
         logger.info(template, extra={"offer": offer.id})
         return False
-    offer.validation = validation_status  # type: ignore [assignment]
+    offer.validation = validation_status
     if validation_status == OfferValidationStatus.APPROVED:
-        offer.isActive = True  # type: ignore [assignment]
+        offer.isActive = True
 
     try:
         db.session.commit()
@@ -1132,7 +1132,7 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
     sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider_name)
 
     shows_id = [
-        int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders  # type: ignore [arg-type]
+        int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders
     ]
 
     if not shows_id:
@@ -1145,7 +1145,7 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
     shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
 
     for show_id, remaining_places in shows_remaining_places.items():
-        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))  # type: ignore [arg-type]
+        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))
         if stock and remaining_places <= 0:
             update_stock_quantity_to_dn_booked_quantity(stock.id)
 

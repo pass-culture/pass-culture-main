@@ -164,7 +164,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     )
 
     cds_provider = get_provider_by_local_class("CDSStocks")
-    cds_provider.isActive = True  # type: ignore [assignment]
+    cds_provider.isActive = True
     cds_provider.enabledForPro = True
 
     cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
