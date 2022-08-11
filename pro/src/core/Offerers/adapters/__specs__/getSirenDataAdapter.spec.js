@@ -6,13 +6,42 @@ describe('getSirenDataAdapter', () => {
   beforeEach(() => {
     fetch.resetMocks()
   })
+  describe('when the SIREN is invalidate', () => {
+    it('should not call API when SIREN is empty', async () => {
+      // given
+      const siren = ''
+
+      // when
+      const response = await getSirenDataAdapter(siren)
+
+      // then
+      expect(fetch).not.toHaveBeenCalled()
+      expect(response.payload).toStrictEqual({
+        values: {
+          address: '',
+          city: '',
+          name: '',
+          postalCode: '',
+          siren: siren,
+        },
+      })
+    })
+  })
 
   describe('when the SIREN does not exist', () => {
     it('test invalid siret response', async () => {
       // given
       const siren = '245474278'
-      fetch.mockResponseOnce(JSON.stringify({ message: 'no results found' }), {
-        status: 404,
+      jest.spyOn(window, 'fetch').mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+        json: () =>
+          Promise.resolve({
+            global: ['Le format de ce SIREN ou SIRET est incorrect.'],
+          }),
       })
 
       // when
@@ -20,33 +49,9 @@ describe('getSirenDataAdapter', () => {
 
       // then
       expect(fetch.mock.calls).toHaveLength(1)
-      expect(fetch.mock.calls[0][0]).toBe(
-        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
-      )
-      expect(response.isOk).toBeFalsy()
-      expect(response.message).toBe("Ce SIREN n'est pas reconnu")
-      expect(response.payload).toStrictEqual({})
-    })
-
-    it('test unavailable service response', async () => {
-      // given
-      const siren = '345474278'
-      fetch.mockResponseOnce(
-        JSON.stringify({ message: 'service unavailable' }),
-        { status: 503 }
-      )
-
-      // when
-      const response = await getSirenDataAdapter(siren)
-
-      // then
-      expect(fetch.mock.calls).toHaveLength(1)
-      expect(fetch.mock.calls[0][0]).toBe(
-        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
-      )
       expect(response.isOk).toBeFalsy()
       expect(response.message).toBe(
-        'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
+        'Le format de ce SIREN ou SIRET est incorrect.'
       )
       expect(response.payload).toStrictEqual({})
     })
@@ -56,30 +61,29 @@ describe('getSirenDataAdapter', () => {
     it('should return location values', async () => {
       // given
       const siren = '445474278'
-      fetch.mockResponseOnce(
-        JSON.stringify({
-          unite_legale: {
-            denomination: 'nom du lieu',
+      jest.spyOn(window, 'fetch').mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+        json: () =>
+          Promise.resolve({
+            name: 'nom du lieu',
             siren: siren,
-            etablissement_siege: {
-              geo_l4: '3 rue de la gare',
-              libelle_commune: 'paris',
-              latitude: 1.1,
-              longitude: 1.1,
-              code_postal: '75000',
+            address: {
+              street: '3 rue de la gare',
+              city: 'paris',
+              postalCode: '75000',
             },
-          },
-        })
-      )
+          }),
+      })
 
       // when
       const response = await getSirenDataAdapter(siren)
-
       // then
       expect(fetch.mock.calls).toHaveLength(1)
-      expect(fetch.mock.calls[0][0]).toBe(
-        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
-      )
+      expect(fetch.mock.calls[0][0]).toContain(`/sirene/siren/${siren}`)
       expect(response.isOk).toBeTruthy()
       expect(response.message).toBe(
         `Informations récupéré avec success pour le SIREN: ${unhumanizeSiren(
@@ -90,95 +94,10 @@ describe('getSirenDataAdapter', () => {
         values: {
           address: '3 rue de la gare',
           city: 'paris',
-          latitude: 1.1,
-          longitude: 1.1,
           name: 'nom du lieu',
           postalCode: '75000',
           siren: siren,
         },
-      })
-    })
-
-    describe('when offerer name is not in normalized', () => {
-      it('should use the declared name', async () => {
-        // given
-        const siren = '545474278'
-        fetch.mockResponseOnce(
-          JSON.stringify({
-            unite_legale: {
-              siren: siren,
-              etablissement_siege: {
-                geo_l4: '3 rue de la gare',
-                libelle_commune: 'paris',
-                latitude: 1.1,
-                longitude: 1.1,
-                enseigne_1: 'Nom déclaré du lieu',
-                code_postal: '75000',
-                siren: siren,
-              },
-            },
-          })
-        )
-
-        // when
-        const response = await getSirenDataAdapter(siren)
-
-        // then
-        expect(fetch.mock.calls).toHaveLength(1)
-        expect(fetch.mock.calls[0][0]).toBe(
-          `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
-        )
-        expect(response.isOk).toBeTruthy()
-        expect(response.message).toBe(
-          `Informations récupéré avec success pour le SIREN: ${unhumanizeSiren(
-            siren
-          )}`
-        )
-        expect(response.payload.values).toMatchObject({
-          name: 'Nom déclaré du lieu',
-        })
-      })
-    })
-
-    describe('when offerer has no name', () => {
-      it('should have use firstname and lastname', async () => {
-        // given
-        const siren = '645474278'
-        fetch.mockResponseOnce(
-          JSON.stringify({
-            unite_legale: {
-              siren: siren,
-              prenom_1: 'John',
-              nom: 'Do',
-              etablissement_siege: {
-                geo_l4: '3 rue de la gare',
-                libelle_commune: 'paris',
-                latitude: 1.1,
-                longitude: 1.1,
-                code_postal: '75000',
-                siren: siren,
-              },
-            },
-          })
-        )
-
-        // when
-        const response = await getSirenDataAdapter(siren)
-
-        // then
-        expect(fetch.mock.calls).toHaveLength(1)
-        expect(fetch.mock.calls[0][0]).toBe(
-          `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
-        )
-        expect(response.isOk).toBeTruthy()
-        expect(response.message).toBe(
-          `Informations récupéré avec success pour le SIREN: ${unhumanizeSiren(
-            siren
-          )}`
-        )
-        expect(response.payload.values).toMatchObject({
-          name: 'John Do',
-        })
       })
     })
   })

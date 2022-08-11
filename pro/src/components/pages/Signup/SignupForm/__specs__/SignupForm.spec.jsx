@@ -426,7 +426,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
       it('should display a Banner when SIREN is invisible', async () => {
         jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
           isOk: false,
-          message: 'Ce SIREN est masqué sur le répertoire de l’INSEE.',
+          message:
+            'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
         })
         renderSignUp(store)
         expect(

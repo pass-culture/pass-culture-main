@@ -95,7 +95,8 @@ const SignupForm = (): JSX.Element => {
     else {
       formik.setFieldError('siren', response.message)
       if (
-        response.message == 'Ce SIREN est masqué sur le répertoire de l’INSEE.'
+        response.message ==
+        'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
       )
         setShowAnonymousBanner(true)
     }
