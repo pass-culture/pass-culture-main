@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "0.0.0",
+  "version": "200.0.0",
   "private": true,
   "homepage": "/",
   "scripts": {
@@ -64,12 +64,12 @@
     "prop-types": "^15.8.1",
     "re-reselect": "^4.0.0",
     "react": "^16.10.2",
-    "react-dom": "^16.5.2",
     "react-autocomplete": "^1.8.1",
     "react-autosize-textarea": "^7.1.0",
     "react-avatar-editor": "^13.0.0",
     "react-csv": "^2.2.2",
     "react-datepicker": "^4.7.0",
+    "react-dom": "^16.5.2",
     "react-dotdotdot": "^1.2.3",
     "react-final-form": "^6.5.9",
     "react-leaflet": "^3.2.5",
