@@ -51,7 +51,6 @@
     ]
   },
   "dependencies": {
-    "@datapunt/matomo-tracker-react": "^0.5.1",
     "@fontsource/barlow": "^4.5.0",
     "@sentry/react": "^7.1.1",
     "@sentry/tracing": "^7.1.1",
