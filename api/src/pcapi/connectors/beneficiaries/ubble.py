@@ -125,9 +125,9 @@ def start_identification(
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
-            "Request error while starting Ubble identification: %s",
-            e,
+            "Ubble start-identification: Network error",
             extra={
+                "exception": e,
                 "alert": "Ubble error",
                 "error_type": "network",
                 "request_type": "start-identification",
@@ -137,12 +137,26 @@ def start_identification(
 
     if not response.ok:
         # https://ubbleai.github.io/developer-documentation/#errors
+        if response.status_code == 429 or response.status_code >= 500:
+            core_logging.log_for_supervision(
+                logger,
+                logging.ERROR,
+                "Ubble start-identification: External error: %s",
+                response.status_code,
+                extra={
+                    "alert": "Ubble error",
+                    "error_type": "http",
+                    "status_code": response.status_code,
+                    "request_type": "start-identification",
+                    "response_text": response.text,
+                },
+            )
+            raise requests_utils.ExternalAPIException(is_retryable=True)
+
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
-            "Error while starting Ubble identification: %s, %s",
-            response.status_code,
-            response.text,
+            f"Ubble start-identification: Unexpected error: {response.status_code}, {response.text}",
             extra={
                 "alert": "Ubble error",
                 "error_type": "http",
@@ -150,8 +164,6 @@ def start_identification(
                 "request_type": "start-identification",
             },
         )
-        if response.status_code in (410, 429) or response.status_code >= 500:
-            raise requests_utils.ExternalAPIException(is_retryable=True)
 
         raise requests_utils.ExternalAPIException(is_retryable=False)
 
@@ -185,7 +197,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
-            "Exception while fetching Ubble identification",
+            "Ubble get-content: Network error",
             extra={"exception": e, "error_type": "http"} | base_extra_log,
         )
         raise requests_utils.ExternalAPIException(is_retryable=True) from e
@@ -195,7 +207,8 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
             core_logging.log_for_supervision(
                 logger,
                 logging.ERROR,
-                "Unexpected Ubble error while fetching identification",
+                "Ubble get-content: External error: %s",
+                response.status_code,
                 extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
                 | base_extra_log,
             )
@@ -204,7 +217,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
-            f"Error while fetching Ubble identification: {response.status_code}",  # ungroup errors on sentry
+            f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",  # ungroup errors on sentry
             extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
             | base_extra_log,
         )
