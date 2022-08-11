@@ -2,7 +2,6 @@ import json
 import logging
 
 import pytest
-import requests.exceptions
 
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
@@ -59,7 +58,7 @@ class StartIdentificationTest:
         record = caplog.records[0]
         assert record.extra["request_type"] == "start-identification"
         assert record.extra["error_type"] == "network"
-        assert record.message == "Request error while starting Ubble identification: "
+        assert record.message == "Ubble start-identification: Network error"
 
     def test_start_identification_http_error_status(self, ubble_mock_http_error_status, caplog):
         with pytest.raises(requests_utils.ExternalAPIException):
@@ -77,7 +76,7 @@ class StartIdentificationTest:
         assert record.extra["status_code"] == 401
         assert record.extra["request_type"] == "start-identification"
         assert record.extra["error_type"] == "http"
-        assert record.message == "Error while starting Ubble identification: 401, "
+        assert record.message == "Ubble start-identification: Unexpected error: 401, "
 
 
 class GetContentTest:
@@ -110,7 +109,7 @@ class GetContentTest:
 
         assert len(caplog.records) == 1
         record = caplog.records[0]
-        assert record.message == "Error while fetching Ubble identification: 401"
+        assert record.message == "Ubble get-content: Unexpected error: 401, "
         assert record.extra["status_code"] == 401
         assert record.extra["identification_id"] == identification_id
         assert record.extra["request_type"] == "get-content"
@@ -127,7 +126,7 @@ class GetContentTest:
 
         assert len(caplog.records) == 1
         record = caplog.records[0]
-        assert record.message == "Unexpected Ubble error while fetching identification"
+        assert record.message == "Ubble get-content: External error: 503"
         assert record.extra["status_code"] == 503
         assert record.extra["identification_id"] == identification_id
         assert record.extra["request_type"] == "get-content"
