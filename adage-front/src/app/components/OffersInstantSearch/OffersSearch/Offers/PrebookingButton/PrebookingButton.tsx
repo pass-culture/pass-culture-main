@@ -1,4 +1,3 @@
-import { useMatomo } from '@datapunt/matomo-tracker-react'
 import { format } from 'date-fns-tz'
 import React, { useCallback, useState } from 'react'
 
@@ -27,15 +26,8 @@ const PrebookingButton = ({
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { trackEvent } = useMatomo()
 
   const handleSearchButtonClick = () => {
-    trackEvent({
-      category: 'button-click',
-      action: 'modal-opening',
-      name: 'PrebookingModalButtonClick',
-      value: stock.id,
-    })
     setIsModalOpen(true)
   }
 
@@ -44,12 +36,6 @@ const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
-    trackEvent({
-      category: 'button-click',
-      action: 'server-action',
-      name: 'PrebookingConfirmationButtonClick',
-      value: stock.id,
-    })
     const { isOk, message } = await postBookingAdapater(stock.id)
 
     if (!isOk) {
@@ -61,7 +47,7 @@ const PrebookingButton = ({
     setNotification(
       new Notification(NotificationType.success, message as string)
     )
-  }, [stock.id, trackEvent])
+  }, [stock.id])
 
   return canPrebookOffers ? (
     <>
