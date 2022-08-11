@@ -682,11 +682,17 @@ class ValidateEmailTest:
         users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
 
         response = self.send_request_with_token(client, user.email)
+        self.assert_204_and_email_not_updated(response, user)
 
-        assert response.status_code == 204
+    def test_email_does_not_exist(self, client):
+        """
+        Test that if the email does not exist, an OK response is sent
+        but nothing is changed (avoid user enumeration).
+        """
+        user = users_factories.UserFactory(email=self.old_email)
 
-        user = users_models.User.query.get(user.id)
-        assert user.email == self.old_email
+        response = self.send_request_with_token(client, "email_does_not_exist@example.com")
+        self.assert_204_and_email_not_updated(response, user)
 
     def test_email_invalid(self, app, client):
         response = self.send_request_with_token(client, "not_an_email")
@@ -702,6 +708,12 @@ class ValidateEmailTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_TOKEN"
+
+        user = users_models.User.query.get(user.id)
+        assert user.email == self.old_email
+
+    def assert_204_and_email_not_updated(self, response, user):
+        assert response.status_code == 204
 
         user = users_models.User.query.get(user.id)
         assert user.email == self.old_email

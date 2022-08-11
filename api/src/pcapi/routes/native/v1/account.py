@@ -125,7 +125,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
             {"code": "INVALID_TOKEN", "message": "Token invalide"},
             status_code=400,
         )
-    except exceptions.EmailExistsError:
+    except (exceptions.EmailExistsError, exceptions.UserDoesNotExist):
         # Returning an error message might help the end client find
         # existing email addresses.
         pass
