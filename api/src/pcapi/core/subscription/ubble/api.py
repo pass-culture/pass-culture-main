@@ -25,6 +25,9 @@ from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingExcep
 from pcapi.core.users import models as users_models
 import pcapi.repository as pcapi_repository
 from pcapi.tasks import ubble_tasks
+from pcapi.utils import requests as requests_utils
+
+from . import exceptions
 
 
 logger = logging.getLogger(__name__)
@@ -208,7 +211,7 @@ def _is_retryable_check(ubble_check: fraud_models.BeneficiaryFraudCheck) -> bool
     )
 
 
-def archive_ubble_user_id_pictures(identification_id: str) -> bool:
+def archive_ubble_user_id_pictures(identification_id: str) -> None:
     # get urls from Ubble
     fraud_check = ubble_fraud_api.get_ubble_fraud_check(identification_id)
     if not fraud_check:
@@ -221,51 +224,37 @@ def archive_ubble_user_id_pictures(identification_id: str) -> bool:
             f"Fraud check status {fraud_check.status} is incompatible with pictures archives for identification_id {identification_id}"
         )
 
-    ubble_content = ubble.get_content(fraud_check.thirdPartyId)  # type: ignore [arg-type]
-    ubble_files = _download_ubble_document_pictures(ubble_content, fraud_check)
+    try:
+        ubble_content = ubble.get_content(fraud_check.thirdPartyId)  # type: ignore [arg-type]
+    except requests_utils.ExternalAPIException:
+        fraud_check.idPicturesStored = False
+        pcapi_repository.repository.save(fraud_check)
+        raise
 
-    front_picture_stored = back_picture_stored = False
+    exception_during_process = None
+    if ubble_content.signed_image_front_url:
+        try:
+            _download_and_store_ubble_picture(fraud_check, ubble_content.signed_image_front_url, "front")
+        except (exceptions.UbbleDownloadedFileEmpty, requests_utils.ExternalAPIException) as exception:
+            exception_during_process = exception
+    if ubble_content.signed_image_back_url:
+        try:
+            _download_and_store_ubble_picture(fraud_check, ubble_content.signed_image_back_url, "back")
+        except (exceptions.UbbleDownloadedFileEmpty, requests_utils.ExternalAPIException) as exception:
+            exception_during_process = exception
 
-    if ubble_files["front"] is not None:
-        front_picture_stored = outscale.upload_file(
-            str(fraud_check.userId), str(ubble_files["front"]["file_path"]), str(ubble_files["front"]["file_name"])
-        )
-        os.remove(ubble_files["front"]["file_path"])
+    if exception_during_process:
+        fraud_check.idPicturesStored = False
+        pcapi_repository.repository.save(fraud_check)
+        raise exception_during_process
 
-    if ubble_files["back"] is not None:
-        back_picture_stored = outscale.upload_file(
-            str(fraud_check.userId), str(ubble_files["back"]["file_path"]), str(ubble_files["back"]["file_name"])
-        )
-        os.remove(ubble_files["back"]["file_path"])
-
-    # all expected files are successfully stored on secured bucket
-    archive_is_successful = (ubble_content.signed_image_front_url is None or front_picture_stored) and (
-        ubble_content.signed_image_back_url is None or back_picture_stored
-    )
-
-    fraud_check.idPicturesStored = archive_is_successful
+    fraud_check.idPicturesStored = True
     pcapi_repository.repository.save(fraud_check)
 
-    return archive_is_successful
 
-
-def _download_ubble_document_pictures(
-    ubble_content: ubble_fraud_models.UbbleContent, fraud_check: fraud_models.BeneficiaryFraudCheck
-) -> dict:
-    file_front = file_back = None
-
-    if ubble_content.signed_image_front_url is not None:
-        file_front = _download_and_copy_ubble_picture(fraud_check, ubble_content.signed_image_front_url, "front")
-
-    if ubble_content.signed_image_back_url is not None:
-        file_back = _download_and_copy_ubble_picture(fraud_check, ubble_content.signed_image_back_url, "back")
-
-    return {"front": file_front, "back": file_back}
-
-
-def _download_and_copy_ubble_picture(
+def _download_and_store_ubble_picture(
     fraud_check: fraud_models.BeneficiaryFraudCheck, http_url: HttpUrl, face_name: str
-) -> dict | None:
+) -> None:
     content_type, raw_file = ubble.download_ubble_picture(http_url)
 
     file_name = _generate_storable_picture_filename(fraud_check, face_name, content_type)
@@ -276,13 +265,14 @@ def _download_and_copy_ubble_picture(
 
     if os.path.getsize(file_path) == 0:
         logger.error(
-            "Ubble picture-download: uploaded file is empty",
+            "Ubble picture-download: downloaded file is empty",
             extra={"url": str(http_url)},
         )
         os.remove(file_path)
-        return None
+        raise exceptions.UbbleDownloadedFileEmpty()
 
-    return {"file_name": file_name, "file_path": file_path}
+    outscale.upload_file(str(fraud_check.userId), str(file_path), str(file_name))
+    os.remove(file_path)
 
 
 def _generate_storable_picture_filename(

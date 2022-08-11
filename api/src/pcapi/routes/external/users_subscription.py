@@ -7,6 +7,7 @@ from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
+from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
@@ -74,6 +75,8 @@ def ubble_webhook_store_id_pictures(
     try:
         ubble_subscription_api.archive_ubble_user_id_pictures(body.identification_id)
     except requests_utils.ExternalAPIException as err:
+        raise ApiErrors({"err": str(err)}, status_code=503 if err.is_retryable else 500)
+    except ubble_exceptions.UbbleDownloadedFileEmpty as err:
         raise ApiErrors({"err": str(err)}, status_code=500)
     except BeneficiaryFraudCheckMissingException as err:
         raise ApiErrors({"err": str(err)}, status_code=404)
