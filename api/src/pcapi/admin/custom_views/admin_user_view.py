@@ -13,6 +13,7 @@ from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_admin_email
 from pcapi.core.users import api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
@@ -62,8 +63,8 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
     column_details_list = ["suspension_history", "comment"]
 
     @property
-    def form_columns(self):  # type: ignore [no-untyped-def]
-        fields = ("email", "firstName", "lastName", "departementCode", "postalCode")
+    def form_columns(self) -> tuple[str, ...]:
+        fields: tuple[str, ...] = ("email", "firstName", "lastName", "departementCode", "postalCode")
         if self.check_super_admins():
             fields += ("comment",)
         return fields
@@ -81,16 +82,12 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
     )
 
     def get_query(self) -> BaseQuery:
-        from pcapi.core.users.models import User
-
         return User.query.filter(User.has_admin_role.is_(True)).from_self()  # type: ignore [attr-defined]
 
     def get_count_query(self) -> BaseQuery:
-        from pcapi.core.users.models import User
-
         return self.session.query(func.count(distinct(User.id))).select_from(User).filter(User.has_admin_role.is_(True))  # type: ignore [attr-defined]
 
-    def on_model_change(self, form: Form, model, is_created: bool) -> None:  # type: ignore [no-untyped-def]
+    def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         model.publicName = f"{model.firstName} {model.lastName}"
         model.add_admin_role()
         model.hasSeenProTutorials = True
@@ -101,7 +98,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
 
         super().on_model_change(form, model, is_created)
 
-    def after_model_change(self, form: Form, model, is_created: bool) -> None:  # type: ignore [no-untyped-def]
+    def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
             token = users_api.create_reset_password_token(
                 model,
