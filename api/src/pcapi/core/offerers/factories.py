@@ -18,7 +18,7 @@ class OffererFactory(BaseFactory):
     address = "1 boulevard Poissonnière"
     postalCode = "75000"
     city = "Paris"
-    siren = factory.Sequence(lambda n: f"{n:09}")
+    siren = factory.Sequence(lambda n: f"{n + 1:09}")
     isActive = True
 
 
