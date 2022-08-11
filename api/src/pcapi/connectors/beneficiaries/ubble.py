@@ -7,7 +7,6 @@ from requests import exceptions as requests_exceptions
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
-from pcapi.connectors.beneficiaries import exceptions
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.utils import requests as requests_utils
@@ -134,7 +133,7 @@ def start_identification(
                 "request_type": "start-identification",
             },
         )
-        raise exceptions.IdentificationServiceUnavailable()
+        raise requests_utils.ExternalAPIException(is_retryable=True) from e
 
     if not response.ok:
         # https://ubbleai.github.io/developer-documentation/#errors
@@ -151,10 +150,10 @@ def start_identification(
                 "request_type": "start-identification",
             },
         )
-        if response.status_code in (410, 429):
-            raise exceptions.IdentificationServiceUnavailable()
-        # Other errors should not happen, so keep them different than Ubble unavailable
-        raise exceptions.IdentificationServiceError()
+        if response.status_code in (410, 429) or response.status_code >= 500:
+            raise requests_utils.ExternalAPIException(is_retryable=True)
+
+        raise requests_utils.ExternalAPIException(is_retryable=False)
 
     content = _extract_useful_content_from_response(response.json())
     core_logging.log_for_supervision(
