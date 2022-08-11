@@ -1,17 +1,20 @@
+import datetime
+import typing
 import uuid
 
 import markupsafe
+from wtforms.fields import Field
 import wtforms.widgets as wtf_widgets
 
 
 class AutocompleteSelectWidget(wtf_widgets.Select):
-    def __init__(self, endpoint, getter, multiple=False):  # type: ignore [no-untyped-def]
+    def __init__(self, endpoint: str, getter: typing.Callable, multiple: bool = False) -> None:
         super().__init__(multiple=multiple)
         self.endpoint = endpoint
         self.uuid = uuid.uuid4()
         self.getter = getter
 
-    def __call__(self, field, **kwargs):  # type: ignore [no-untyped-def]
+    def __call__(self, field: Field, **kwargs: typing.Any) -> str:
         if field.data:
             selected_ids = ",".join(field.data) if self.multiple else field.data
             selected_data = self.getter(field.data if self.multiple else [field.data])
@@ -75,22 +78,27 @@ class AutocompleteSelectWidget(wtf_widgets.Select):
 
 
 class DateInputWithConstraint(wtf_widgets.DateInput):
-    def __init__(self, input_type=None, min_date=None, max_date=None):  # type: ignore [no-untyped-def]
+    def __init__(
+        self,
+        input_type: str | None = None,
+        min_date: typing.Callable[[typing.Any], datetime.date] | None = None,
+        max_date: typing.Callable[[typing.Any], datetime.date] | None = None,
+    ) -> None:
         super().__init__(input_type=input_type)
         self.min_date = min_date
         self.max_date = max_date
 
-    def __call__(self, field, **kwargs):  # type: ignore [no-untyped-def]
+    def __call__(self, field: Field, **kwargs: typing.Any) -> str:
         for bound_name, bound in (("min", self.min_date), ("max", self.max_date)):
             if callable(bound):
-                bound = bound(field)
+                bound = bound(field)  # type: ignore [assignment]
             if bound:
                 kwargs[bound_name] = bound
         return super().__call__(field, **kwargs)
 
 
 class SelectWithOptgroups(wtf_widgets.Select):
-    def __call__(self, field, **kwargs):  # type: ignore [no-untyped-def]
+    def __call__(self, field: Field, **kwargs: typing.Any) -> str:
         kwargs.setdefault("id", field.id)
         if self.multiple:
             kwargs["multiple"] = True

@@ -1,11 +1,14 @@
 import collections
 import datetime
 from decimal import Decimal
+import typing
 
 from flask_admin.form import SecureForm
 from flask_login import current_user
+from jinja2.runtime import Context
 import markupsafe
 import pytz
+from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Forbidden
 import wtforms.fields as wtf_fields
@@ -23,13 +26,14 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.exceptions as payments_exceptions
+import pcapi.core.payments.models as payment_models
 import pcapi.utils.date as date_utils
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import build_pc_pro_offerer_link
 from pcapi.utils.mailing import build_pc_pro_venue_link
 
 
-def _get_subcategory_choices():  # type: ignore [no-untyped-def]
+def _get_subcategory_choices() -> list[tuple[str, list[tuple[str, str]]]]:
     choices = collections.defaultdict(list)
     for subcategory in ALL_SUBCATEGORIES:
         if subcategory.is_selectable:
@@ -43,7 +47,7 @@ def _get_subcategory_choices():  # type: ignore [no-untyped-def]
 SUBCATEGORY_CHOICES = _get_subcategory_choices()
 
 
-def get_offerers(offerer_ids: list):  # type: ignore [no-untyped-def]
+def get_offerers(offerer_ids: list) -> list[dict[str, str]]:
     return [
         {"id": str(offerer.id), "text": offerer.name}
         for offerer in offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(offerer_ids))
@@ -104,13 +108,17 @@ class EditForm(SecureForm):
     )
 
 
-def format_amount(view, context, model, name):  # type: ignore [no-untyped-def]
-    if model.amount is None:
-        return model.amount
+def format_amount(
+    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+) -> str:
+    if not model.amount:
+        return ""
     return f"{model.amount} €".replace(".", ",")
 
 
-def format_offer(view, context, model, name):  # type: ignore [no-untyped-def]
+def format_offer(
+    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+) -> str:
     if not model.offer:
         return ""
     url = build_pc_pro_offer_link(model.offer)
@@ -120,7 +128,9 @@ def format_offer(view, context, model, name):  # type: ignore [no-untyped-def]
     )
 
 
-def format_offerer(view, context, model, name):  # type: ignore [no-untyped-def]
+def format_offerer(
+    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+) -> str:
     offerer = model.offerer or model.offer.venue.managingOfferer
     url = build_pc_pro_offerer_link(offerer)
     return markupsafe.Markup('<a href="{url}">{offerer.name}</a>').format(
@@ -129,13 +139,17 @@ def format_offerer(view, context, model, name):  # type: ignore [no-untyped-def]
     )
 
 
-def format_rate(view, context, model, name):  # type: ignore [no-untyped-def]
-    if model.rate is None:
-        return model.rate
+def format_rate(view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str) -> str:
+    if not model.rate:
+        return ""
     return f"{model.rate * 100:.2f} %".replace(".", ",")
 
 
-def format_timespan(view, context, model, name):  # type: ignore [no-untyped-def]
+def format_timespan(
+    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+) -> str:
+    if not model.timespan:
+        return ""
     start = pytz.utc.localize(model.timespan.lower).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
     if model.timespan.upper:
         end = pytz.utc.localize(model.timespan.upper).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
@@ -144,28 +158,36 @@ def format_timespan(view, context, model, name):  # type: ignore [no-untyped-def
     return markupsafe.Markup("{start} → {end}").format(start=start, end=end)
 
 
-def format_subcategories(view, context, model, name):  # type: ignore [no-untyped-def]
+def format_subcategories(
+    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+) -> str:
+    if not model.subcategories:
+        return ""
     labels = sorted(ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label for subcategory_id in model.subcategories)
     if model.offererId and not labels:
         return "toutes les sous-catégories"
     if len(labels) > 5:
         summary = ", ".join(labels)
-        labels = ", ".join(labels[:5])
+        displayed_labels = ", ".join(labels[:5])
         return markupsafe.Markup('<span title="{summary}">{labels}, &hellip;</span>').format(
-            summary=summary, labels=labels
+            summary=summary, labels=displayed_labels
         )
-    labels = ", ".join(labels)
-    return markupsafe.Markup(labels)  # pylint: disable=markupsafe-uncontrolled-string
+    displayed_labels = ", ".join(labels)
+    return markupsafe.Markup(displayed_labels)  # pylint: disable=markupsafe-uncontrolled-string
 
 
-def format_siren(view, context, model, name):  # type: ignore [no-untyped-def]
+def format_siren(
+    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+) -> str:
     offerer = model.offerer or model.offer.venue.managingOfferer
     return offerer.siren
 
 
-def format_venue(view, context, model, name):  # type: ignore [no-untyped-def]
+def format_venue(
+    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+) -> str:
     if model.offererId:
-        return None
+        return ""
     venue = model.offer.venue
     url = build_pc_pro_venue_link(venue)
     return markupsafe.Markup('<a href="{url}">{name}</a>').format(
@@ -174,7 +196,7 @@ def format_venue(view, context, model, name):  # type: ignore [no-untyped-def]
     )
 
 
-def get_error_message(exception: payments_exceptions.ReimbursementRuleValidationError):  # type: ignore [no-untyped-def]
+def get_error_message(exception: payments_exceptions.ReimbursementRuleValidationError) -> str:
     if isinstance(exception, payments_exceptions.ConflictingReimbursementRule):
         msg = str(exception)
         msg += " Identifiant(s) technique(s) : "
@@ -223,33 +245,35 @@ class CustomReimbursementRuleView(BaseAdminView):
     column_filters = ["id", "offerer.name", "offer.name"]
 
     @property
-    def can_create(self):  # type: ignore [no-untyped-def]
+    def can_create(self) -> bool:  # type: ignore [override]
         return self.can_add_or_modify()
 
     @property
-    def can_edit(self):  # type: ignore [no-untyped-def]
+    def can_edit(self) -> bool:  # type: ignore [override]
         return self.can_add_or_modify()
 
-    def can_add_or_modify(self):  # type: ignore [no-untyped-def]
+    def can_add_or_modify(self) -> bool:
         # We don't call `has_permission()` from `is_accessible()`
         # because we still want admin users to be able to list
         # reimbursement rules. We want to restrict addition and
         # modification only.
         return permissions.has_permission(current_user, "add-or-modify-custom-reimbursement-rules")
 
-    def get_query(self):  # type: ignore [no-untyped-def]
+    def get_query(self) -> Query:
         return self.model.query.options(
             joinedload(self.model.offerer),
-            joinedload(self.model.offer, offers_models.Offer.venue, offerers_models.Venue.managingOfferer),
+            joinedload(self.model.offer)
+            .joinedload(offers_models.Offer.venue)
+            .joinedload(offerers_models.Venue.managingOfferer),
         )
 
-    def get_create_form(self):  # type: ignore [no-untyped-def]
+    def get_create_form(self) -> typing.Type[AddForm]:
         return AddForm
 
-    def get_edit_form(self):  # type: ignore [no-untyped-def]
+    def get_edit_form(self) -> typing.Type[EditForm]:
         return EditForm
 
-    def create_model(self, form):  # type: ignore [no-untyped-def]
+    def create_model(self, form: AddForm) -> payment_models.CustomReimbursementRule | None:
         if not self.can_create:
             raise Forbidden()
         start_date = date_utils.get_day_start(form.start_date.data, finance_utils.ACCOUNTING_TIMEZONE)
@@ -274,7 +298,9 @@ class CustomReimbursementRuleView(BaseAdminView):
             form._fields["offerer"].errors = [get_error_message(exc)]
             return None
 
-    def update_model(self, form, rule):  # type: ignore [no-untyped-def]
+    def update_model(
+        self, form: EditForm, rule: payment_models.CustomReimbursementRule
+    ) -> payment_models.CustomReimbursementRule | None:
         if not self.can_edit:
             raise Forbidden()
         end_date = date_utils.get_day_start(form.end_date.data, finance_utils.ACCOUNTING_TIMEZONE)

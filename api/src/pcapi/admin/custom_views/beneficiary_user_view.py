@@ -1,8 +1,11 @@
+import typing
+
 from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from sqlalchemy import and_
+from sqlalchemy.orm import Query
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import func
@@ -30,7 +33,7 @@ def filter_email(value: str | None) -> str | None:
 
 
 class FilterByDepositTypeEqual(BaseSQLAFilter):
-    def apply(self, query, value, alias=None):  # type: ignore [no-untyped-def]
+    def apply(self, query: Query, value: typing.Any, alias: str = None) -> Query:
         aliased_deposit = aliased(Deposit)
         current_deposit_by_user = (
             Deposit.query.outerjoin(
@@ -45,12 +48,12 @@ class FilterByDepositTypeEqual(BaseSQLAFilter):
     def operation(self) -> str:
         return "equals"
 
-    def get_options(self, view):  # type: ignore [no-untyped-def]
+    def get_options(self, view: BaseAdminView) -> list[tuple[str, str]]:
         return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
 
 
 class FilterByDepositTypeNotEqual(BaseSQLAFilter):
-    def apply(self, query, value, alias=None):  # type: ignore [no-untyped-def]
+    def apply(self, query: Query, value: typing.Any, alias: str = None) -> Query:
         aliased_deposit = aliased(Deposit)
         current_deposit_by_user = (
             Deposit.query.outerjoin(
@@ -65,7 +68,7 @@ class FilterByDepositTypeNotEqual(BaseSQLAFilter):
     def operation(self) -> str:
         return "not equal"
 
-    def get_options(self, view):  # type: ignore [no-untyped-def]
+    def get_options(self, view: BaseAdminView) -> list[tuple[str, str]]:
         return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
 
 

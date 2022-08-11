@@ -13,6 +13,7 @@ from flask_admin.helpers import get_form_data
 from flask_login import current_user
 from flask_login import login_user
 from flask_login import logout_user
+from flask_sqlalchemy import Model
 import werkzeug
 
 from pcapi import settings
@@ -33,7 +34,7 @@ class BaseAdminMixin:
     # logged-in user's privileges (see `form_columns()`). Thus, we
     # don't use the cache.
     @property
-    def column_formatters(self):  # type: ignore [no-untyped-def]
+    def column_formatters(self) -> dict:
         return {}
 
     def create_form(self, obj=None):  # type: ignore [no-untyped-def]
@@ -82,7 +83,7 @@ class BaseAdminView(BaseAdminMixin, ModelView):
     def inaccessible_callback(self, name, **kwargs):  # type: ignore [no-untyped-def]
         return werkzeug.utils.redirect(url_for("admin.index"))
 
-    def after_model_change(self, form, model, is_created):  # type: ignore [no-untyped-def]
+    def after_model_change(self, form: SecureForm, model: Model, is_created: bool) -> None:
         action = "Création" if is_created else "Modification"
         model_name = str(model)
         logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s", action, model_name, current_user)
