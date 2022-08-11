@@ -849,7 +849,6 @@ describe('offerDetails - Creation - pro user', () => {
         )
 
         // When
-
         await userEvent.click(
           screen.getByLabelText(/Être notifié par email des réservations/)
         )
@@ -859,6 +858,46 @@ describe('offerDetails - Creation - pro user', () => {
           'Email auquel envoyer les notifications :'
         )
         expect(bookingEmailInput).toBeInTheDocument()
+      })
+
+      it('should display email notification input errors when email is wrong or missing', async () => {
+        // Given
+        const queryParams = `?structure=${offerers[1].id}&lieu=${venues[1].id}`
+        pcapi.getVenue.mockResolvedValue(venues[1])
+        await renderOffers(props, store, queryParams)
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Catégorie/),
+          'BEAUX_ARTS'
+        )
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Sous-catégorie/),
+          'MATERIEL_ART_CREATIF'
+        )
+        await userEvent.click(screen.getByLabelText(/Titre de l'offre/))
+        await userEvent.paste('Titre')
+        await userEvent.click(
+          screen.getByLabelText(/Être notifié par email des réservations/)
+        )
+
+        // no email
+        const bookingEmailInput = screen.getByLabelText(
+          'Email auquel envoyer les notifications :'
+        )
+        await userEvent.clear(bookingEmailInput)
+        await userEvent.click(screen.getByText('Étape suivante'))
+        expect(
+          screen.getByText('Ce champ est obligatoire.')
+        ).toBeInTheDocument()
+
+        // wrong email
+        await userEvent.click(bookingEmailInput)
+        await userEvent.paste('wrong email')
+        await userEvent.click(screen.getByText('Étape suivante'))
+        expect(
+          screen.getByText(
+            'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
+          )
+        ).toBeInTheDocument()
       })
 
       it('should display a text input for an external ticket office url"', async () => {
