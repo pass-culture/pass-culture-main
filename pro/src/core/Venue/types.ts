@@ -67,3 +67,7 @@ export type VenueCollectiveInformation = Pick<
   | 'collectiveStudents'
   | 'collectiveWebsite'
 >
+
+export interface IVenue {
+  publicName: string
+}
