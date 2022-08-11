@@ -1,14 +1,14 @@
-name: Tag and deploy to staging and then to production
+name: Tag a hotfix branch and deploy it to staging and/or production
 
 on:
   workflow_dispatch:
     inputs:
-      releaseCandidateVersion:
-        description: "Numéro de la RC sans le .0.0 (ex: 2150)"
+      hotfixBranch:
+        description: "Nom de la branche à tagger (ex: maint/v200)"
         required: true
         type: string
       releaseVersion:
-        description: "Nom de la release (ex: 199.0.0)"
+        description: "Nom du hotfix (ex: 200.0.2)"
         required: true
         type: string
 
@@ -16,17 +16,17 @@ jobs:
   tag-version:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout RC
+      - name: Checkout branch
         uses: actions/checkout@v3
         with:
-          ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
+          ref: ${{ github.event.inputs.hotfixBranch }}
       - name: Author
         run: |
           git config --global user.email "github-actions-bot@passculture.app"
           git config --global user.name "${{ github.actor }}"
       - name: Tag Release
         run: |
-          ./pc -t ${{ github.event.inputs.releaseVersion }} tag
+          ./pc -t ${{ github.event.inputs.releaseVersion }} tag-hotfix
 
   deploy-to-staging:
     needs: tag-version
@@ -52,6 +52,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: v${{ github.event.inputs.releaseVersion }}
-      - name: Deploy Release to production
+      - name: Deploy Release to staging
         run: |
           ./pc -e production -t ${{ github.event.inputs.releaseVersion }} deploy
