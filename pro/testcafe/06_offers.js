@@ -443,10 +443,10 @@ test("je suis scrollé sur l'élément incorrect du formulaire d'édition d'offr
   const keyCombinationToDeleteTextInput = 'ctrl+a delete'
 
   await t
-    .click(nameInput())
+    .click(nameInput)
     .pressKey(keyCombinationToDeleteTextInput)
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
-    .expect(isElementInViewport('.offer-form [name="name"]'))
+    .expect(await isElementInViewport('.offer-form [name="name"]'))
     .ok({ timeout: 2000 })
 })

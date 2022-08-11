@@ -2131,7 +2131,6 @@ describe('offerDetails - Creation - pro user', () => {
       )
 
       // When
-
       await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then

@@ -1,9 +1,20 @@
 import { string } from 'yup'
 
 export const isUrlValid = val => {
-  /*eslint-disable-next-line no-useless-escape*/
   const urlRegex = new RegExp(
-    /^(http|https):\/\/([A-z0-9-_]+)\.([A-z0-9-_]{2,})/
+    /*eslint-disable-next-line no-useless-escape*/
+    /^(?:http(s)?:\/\/)[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$/
+  )
+  if (val === null || val === '') {
+    return true
+  }
+  return urlRegex.test(val)
+}
+
+export const isUrlWithStringInterpolationValid = val => {
+  const urlRegex = new RegExp(
+    /*eslint-disable-next-line no-useless-escape*/
+    /^(?:http(s)?:\/\/)[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[{}\]@%!\$&'\(\)\*\+,;=.]+$/
   )
   if (val === null || val === '') {
     return true

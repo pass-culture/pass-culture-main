@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { isUrlValid, isEmailValid } from '../validators'
+import {
+  isUrlValid,
+  isUrlWithStringInterpolationValid,
+  isEmailValid,
+} from '../validators'
 
 describe('validators', () => {
   describe('isUrlValid', () => {
@@ -28,10 +32,53 @@ describe('validators', () => {
         'http://.com',
         'http://kikou.c',
         'http://kik&$ou.com',
+        ' http://kikou.com',
+        'http://kikou.com ',
+        'http://kikou.com http://kikou.com',
+        'http://kikou.com?token={token}&email={email}&offerId={offerId}',
       ]
 
       // when
       const results = urls.map(isUrlValid)
+
+      // then
+      expect(results.every(element => element === false)).toBe(true)
+    })
+  })
+
+  describe('isUrlWithStringInterpolationValid', () => {
+    it('should return true for valid urls', () => {
+      // given
+      const urls = [
+        'http://kikou.com',
+        null,
+        '',
+        'https://ABxc123.lol/bla?kikou=bla',
+        'http://kikou.com?token={token}&email={email}&offerId={offerId}',
+      ]
+
+      // when
+      const results = urls.map(isUrlWithStringInterpolationValid)
+
+      // then
+      expect(results.every(element => element === true)).toBe(true)
+    })
+
+    it('should return false for invalid urls', () => {
+      // given
+      const urls = [
+        'kikou.com',
+        'http://kikou',
+        'http://.com',
+        'http://kikou.c',
+        'http://kik&$ou.com',
+        ' http://kikou.com',
+        'http://kikou.com ',
+        'http://kikou.com http://kikou.com',
+      ]
+
+      // when
+      const results = urls.map(isUrlWithStringInterpolationValid)
 
       // then
       expect(results.every(element => element === false)).toBe(true)
