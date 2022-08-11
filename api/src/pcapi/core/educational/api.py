@@ -85,7 +85,7 @@ def book_collective_offer(
         stock = educational_repository.get_and_lock_collective_stock(stock_id=stock_id)
         validation.check_collective_stock_is_bookable(stock)
 
-        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)  # type: ignore [arg-type]
+        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
         validation.check_educational_year_exists(educational_year)
         validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
@@ -101,7 +101,7 @@ def book_collective_offer(
             status=educational_models.CollectiveBookingStatus.PENDING,
             dateCreated=utcnow,
             cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
-                stock.beginningDatetime, utcnow  # type: ignore [arg-type]
+                stock.beginningDatetime, utcnow
             ),
         )
         repository.save(booking)

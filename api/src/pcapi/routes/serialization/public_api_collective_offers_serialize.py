@@ -92,7 +92,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             bookingEmail=offer.bookingEmail,
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
-            domains=[domain.name for domain in offer.domains],  # type: ignore [attr-defined]
+            domains=[domain.name for domain in offer.domains],
             durationMinutes=offer.durationMinutes,
             interventionArea=offer.interventionArea,
             students=[student.name for student in offer.students],

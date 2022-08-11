@@ -459,7 +459,7 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=False)
+    beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
 
     collectiveOfferId = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
@@ -473,13 +473,13 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         "CollectiveBooking", back_populates="collectiveStock"
     )
 
-    price = sa.Column(
+    price: float = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
 
-    bookingLimitDatetime = sa.Column(sa.DateTime, nullable=False)
+    bookingLimitDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
 
-    numberOfTickets = sa.Column(sa.Integer, nullable=False)
+    numberOfTickets: int = sa.Column(sa.Integer, nullable=False)
 
     priceDetail = sa.Column(sa.Text, nullable=True)
 
@@ -521,7 +521,7 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     @property
     def isEventDeletable(self) -> bool:
-        return self.beginningDatetime >= datetime.utcnow()  # type: ignore [operator]
+        return self.beginningDatetime >= datetime.utcnow()
 
     @property
     def isSoldOut(self) -> bool:
@@ -744,14 +744,12 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
     reimbursementDate = sa.Column(sa.DateTime, nullable=True)
 
     educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
-    educationalInstitution: RelationshipProperty["EducationalInstitution"] = relationship(  # type: ignore [misc]
+    educationalInstitution: Mapped["EducationalInstitution"] = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
     educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
-    educationalYear: RelationshipProperty["EducationalYear"] = relationship(  # type: ignore [misc]
-        EducationalYear, foreign_keys=[educationalYearId]
-    )
+    educationalYear: Mapped["EducationalYear"] = relationship(EducationalYear, foreign_keys=[educationalYearId])
 
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
