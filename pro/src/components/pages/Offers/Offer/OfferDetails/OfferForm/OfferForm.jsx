@@ -54,9 +54,7 @@ import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
 import { OfferWithdrawalTypeOptions } from './OfferWithdrawalTypeOptions'
 import SynchronizedProviderInformation from './SynchronisedProviderInfos'
-import { isUrlValid } from './validators'
-
-// JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
+import { isUrlValid, isEmailValid } from './validators'
 
 const OfferForm = ({
   areAllVenuesVirtual,
@@ -394,22 +392,6 @@ const OfferForm = ({
     [formValues.withdrawalDetails, venue, handleFormUpdate]
   )
 
-  useEffect(() => {
-    if (formRef.current) {
-      const invalidElement = formRef.current.querySelector('.error')
-
-      if (invalidElement && invalidElement.value === '') {
-        const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
-
-        invalidElement.scrollIntoView({
-          behavior: scrollBehavior,
-          block: 'center',
-          inline: 'center',
-        })
-      }
-    }
-  }, [formRef, formErrors])
-
   useEffect(
     function setParentOfferPreviewData() {
       setOfferPreviewData({
@@ -434,6 +416,20 @@ const OfferForm = ({
     ]
   )
 
+  const redirectToError = useCallback(() => {
+    if (formRef.current) {
+      const invalidElement = formRef.current.querySelector('.error')
+      if (invalidElement && invalidElement.value === '') {
+        const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
+        invalidElement.scrollIntoView({
+          behavior: scrollBehavior,
+          block: 'center',
+          inline: 'center',
+        })
+      }
+    }
+  }, [formRef, formErrors])
+
   const selectOfferer = useCallback(
     event => {
       const selectedOffererId = event.target.value
@@ -448,7 +444,7 @@ const OfferForm = ({
     [formValues.offererId, handleFormUpdate, setSelectedOfferer]
   )
 
-  const isValid = useCallback(() => {
+  const isValid = useCallback(async () => {
     let newFormErrors = {}
     const formFields = [...offerFormFields, 'offererId']
 
@@ -493,6 +489,11 @@ const OfferForm = ({
       ] = `Vous devez cocher l'une des options ci-dessus`
     }
 
+    if (!(await isEmailValid(formValues.bookingEmail))) {
+      newFormErrors['bookingEmail'] =
+        'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
+    }
+
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
   }, [offerFormFields, mandatoryFields, formValues])
@@ -502,7 +503,7 @@ const OfferForm = ({
       event.preventDefault()
       setIsSubmitLoading(true)
 
-      if (isValid()) {
+      if (await isValid()) {
         const editableFields = offerFormFields.filter(
           field => !readOnlyFields.includes(field)
         )
@@ -565,6 +566,7 @@ const OfferForm = ({
           return
         }
       } else {
+        redirectToError()
         showErrorNotification()
       }
       setIsSubmitLoading(false)
@@ -645,6 +647,20 @@ const OfferForm = ({
 
   const handleDurationChange = value =>
     handleFormUpdate({ durationMinutes: value })
+
+  const handleBookingEmailUpdate = useCallback(
+    async event => {
+      event.persist()
+      const bookingEmailUpdate = event.target.value
+
+      if (await isEmailValid(bookingEmailUpdate)) {
+        resetFormError('bookingEmail')
+      }
+
+      handleFormUpdate({ bookingEmail: bookingEmailUpdate })
+    },
+    [handleFormUpdate, resetFormError]
+  )
 
   const toggleReceiveNotification = useCallback(
     () => setReceiveNotificationEmails(!receiveNotificationEmails),
@@ -1141,7 +1157,7 @@ const OfferForm = ({
                     error={getErrorMessage('bookingEmail')}
                     label="Email auquel envoyer les notifications :"
                     name="bookingEmail"
-                    onChange={handleSingleFormUpdate}
+                    onChange={handleBookingEmailUpdate}
                     placeholder="adresse@email.com"
                     required
                     type="email"
