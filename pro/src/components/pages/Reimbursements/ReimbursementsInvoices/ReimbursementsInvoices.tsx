@@ -1,61 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { InvoiceResponseModel } from 'apiClient/v1'
+import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getToday } from 'utils/date'
-
-import Spinner from '../../../layout/Spinner'
-import ReimbursementsTable from '../ReimbursementsTable'
 
 import InvoicesAdminMustFilter from './InvoicesAdminMustFilter'
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
 import InvoicesServerError from './InvoicesServerError'
+import { InvoiceTable } from './InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
-
-type reimbursementPointsOptionsType = [
-  {
-    id: string
-    displayName: string
-  }
-]
 
 interface IReimbursementsInvoicesProps {
   isCurrentUserAdmin: boolean
-  reimbursementPointsOptions: reimbursementPointsOptionsType
+  reimbursementPointsOptions: SelectOptionsRFF
 }
 
 const ReimbursementsInvoices = ({
   isCurrentUserAdmin,
   reimbursementPointsOptions,
 }: IReimbursementsInvoicesProps): JSX.Element => {
-  const columns = [
-    {
-      title: 'Date du justificatif',
-      sortBy: 'date',
-      selfDirection: 'default',
-    },
-    {
-      title: 'Point de remboursement',
-      sortBy: 'reimbursementPointName',
-      selfDirection: 'default',
-    },
-    {
-      title: 'N° du justificatif',
-      sortBy: 'reference',
-      selfDirection: 'default',
-    },
-    {
-      title: 'N° de virement',
-      sortBy: 'cashflowLabels',
-      selfDirection: 'default',
-    },
-    {
-      title: 'Montant remboursé',
-      sortBy: 'amount',
-      selfDirection: 'None',
-    },
-  ]
-
   const ALL_REIMBURSEMENT_POINT_OPTION_ID = 'all'
 
   const INITIAL_FILTERS = useMemo(() => {
@@ -74,7 +39,7 @@ const ReimbursementsInvoices = ({
   }, [])
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
-  const [invoices, setInvoices] = useState([])
+  const [invoices, setInvoices] = useState<InvoiceResponseModel[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
@@ -151,15 +116,10 @@ const ReimbursementsInvoices = ({
     <>
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
-        defaultSelectDisplayName="Tous les points de remboursement"
-        defaultSelectId="all"
         filters={filters}
-        hasNoInvoicesYet={hasNoInvoicesYetForNonAdmin}
-        headerTitle="Affichage des justificatifs de remboursement"
+        disable={hasNoInvoicesYetForNonAdmin}
         initialFilters={INITIAL_FILTERS}
         loadInvoices={loadInvoices}
-        selectLabel="Point de remboursement"
-        selectName="reimbursementPoint"
         selectableOptions={reimbursementPointsOptions}
         setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
@@ -189,9 +149,7 @@ const ReimbursementsInvoices = ({
         />
       )}
       {shouldDisplayAdminInfo && <InvoicesAdminMustFilter />}
-      {invoices.length > 0 && (
-        <ReimbursementsTable columns={columns} invoices={invoices} />
-      )}
+      {invoices.length > 0 && <InvoiceTable invoices={invoices} />}
     </>
   )
 }

@@ -1,20 +1,12 @@
 import React from 'react'
 
+import { InvoiceResponseModel } from 'apiClient/v1'
 import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
 
 import styles from './ReimbursementsTableBody.module.scss'
 
-type ColumnData = {
-  date: string
-  businessUnitName: string
-  reference: string
-  amount: string
-  url: string
-  cashflowLabels: string[]
-}
-
 interface ITableBody {
-  invoices: ColumnData[]
+  invoices: InvoiceResponseModel[]
 }
 
 const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {

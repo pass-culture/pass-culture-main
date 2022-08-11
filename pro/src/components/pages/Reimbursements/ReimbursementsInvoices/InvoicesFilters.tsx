@@ -4,49 +4,27 @@ import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelect
 import Select from 'components/layout/inputs/Select'
 import { getToday } from 'utils/date'
 
-type selectableOptionsType = [
-  {
-    id: string
-    displayName: string
-  }
-]
-
-type filtersType = {
-  reimbursementPoint: string
-  businessUnit: string
-  periodStart: Date
-  periodEnd: Date
-}
+import { TFiltersType } from './types'
 
 interface IReimbursementsSectionHeaderProps {
   areFiltersDefault: boolean
   children: React.ReactNode | React.ReactNode[]
-  defaultSelectDisplayName: string
-  defaultSelectId: string
-  filters: filtersType
-  hasNoInvoicesYet: boolean
-  headerTitle: string
-  initialFilters: filtersType
+  filters: TFiltersType
+  disable: boolean
+  initialFilters: TFiltersType
   loadInvoices: (shouldReset: boolean) => void
-  selectLabel: string
-  selectName: string
-  selectableOptions: selectableOptionsType
+  selectableOptions: SelectOptionsRFF
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
-  setFilters: Dispatch<SetStateAction<filtersType>>
+  setFilters: Dispatch<SetStateAction<TFiltersType>>
 }
 
 const InvoicesFilters = ({
   areFiltersDefault,
   children,
-  defaultSelectDisplayName,
-  defaultSelectId,
   filters,
-  hasNoInvoicesYet,
-  headerTitle,
+  disable,
   initialFilters,
   loadInvoices,
-  selectLabel,
-  selectName,
   selectableOptions,
   setAreFiltersDefault,
   setFilters,
@@ -66,7 +44,7 @@ const InvoicesFilters = ({
   const setReimbursementPointFilter = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const reimbursementPointId = event.target.value
-      setFilters((prevFilters: filtersType) => ({
+      setFilters((prevFilters: TFiltersType) => ({
         ...prevFilters,
         reimbursementPoint: reimbursementPointId,
       }))
@@ -77,7 +55,7 @@ const InvoicesFilters = ({
 
   const setStartDateFilter = useCallback(
     (startDate: Date) => {
-      setFilters((prevFilters: filtersType) => ({
+      setFilters((prevFilters: TFiltersType) => ({
         ...prevFilters,
         periodStart: startDate,
       }))
@@ -88,7 +66,7 @@ const InvoicesFilters = ({
 
   const setEndDateFilter = useCallback(
     (endDate: Date) => {
-      setFilters((prevFilters: filtersType) => ({
+      setFilters((prevFilters: TFiltersType) => ({
         ...prevFilters,
         periodEnd: endDate,
       }))
@@ -100,7 +78,9 @@ const InvoicesFilters = ({
   return (
     <>
       <div className="header">
-        <h2 className="header-title">{headerTitle}</h2>
+        <h2 className="header-title">
+          Affichage des justificatifs de remboursement
+        </h2>
         <button
           className="tertiary-button reset-filters"
           disabled={areFiltersDefault}
@@ -114,20 +94,20 @@ const InvoicesFilters = ({
       <div className="filters">
         <Select
           defaultOption={{
-            displayName: defaultSelectDisplayName,
-            id: defaultSelectId,
+            displayName: 'Tous les points de remboursement',
+            id: 'all',
           }}
           handleSelection={setReimbursementPointFilter}
-          isDisabled={hasNoInvoicesYet}
-          label={selectLabel}
-          name={selectName}
+          isDisabled={disable}
+          label="Point de remboursement"
+          name="reimbursementPoint"
           options={selectableOptions}
           selectedValue={selectedReimbursementPoint}
         />
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
           changePeriodEndingDateValue={setEndDateFilter}
-          isDisabled={hasNoInvoicesYet}
+          isDisabled={disable}
           label="Période"
           maxDateEnding={getToday()}
           periodBeginningDate={selectedPeriodStart}

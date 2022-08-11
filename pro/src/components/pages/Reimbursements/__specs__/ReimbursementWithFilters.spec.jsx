@@ -16,7 +16,7 @@ import { MemoryRouter, Route } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import Reimbursements from '../ReimbursementsWithFilters'
+import Reimbursements from '../Reimbursements'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
@@ -32,22 +32,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getReimbursementPoints: jest.fn(),
 }))
 
-const initialStore = {
-  user: {
-    currentUser: {
-      publicName: 'François',
-      isAdmin: false,
-      hasSeenProTutorials: true,
-    },
-  },
-}
-
-const renderReimbursements = (store, props) => {
+const renderReimbursements = (storeOverride = {}) => {
+  const store = configureTestStore(storeOverride)
   const utils = render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/remboursements/details']}>
         <Route path="/remboursements" exact={false}>
-          <Reimbursements {...props} />
+          <Reimbursements />
         </Route>
       </MemoryRouter>
     </Provider>
@@ -98,7 +89,7 @@ const renderReimbursements = (store, props) => {
 
   const getElementsOnLoadingComplete = async () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    const elements = getElements()
+    const elements = getElements(storeOverride)
 
     return {
       ...elements,
@@ -157,14 +148,11 @@ const BASE_INVOICES = [
 ]
 
 describe('reimbursementsWithFilters', () => {
-  let props
-  let store
+  let storeOverride
   let venues
   let invoices
 
   beforeEach(() => {
-    store = configureTestStore(initialStore)
-    props = { currentUser: { isAdmin: false } }
     venues = BASE_VENUES
     invoices = BASE_INVOICES
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
@@ -174,17 +162,21 @@ describe('reimbursementsWithFilters', () => {
       { id: 2, name: 'Point de remboursement 2' },
     ])
     pcapi.getReimbursementPoints.mockResolvedValue([])
+    storeOverride = {
+      user: {
+        currentUser: {
+          publicName: 'François',
+          isAdmin: false,
+          hasSeenProTutorials: true,
+        },
+        initialized: true,
+      },
+    }
   })
 
   it('should display a refund invoices section', async () => {
-    store = configureTestStore({
-      user: {
-        currentUser: { publicName: 'Damien', isAdmin: false },
-      },
-    })
-
     // when
-    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { getElementsOnLoadingComplete } = renderReimbursements(storeOverride)
     const { nav } = await getElementsOnLoadingComplete()
 
     // then
@@ -194,7 +186,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display the right informations and UI', async () => {
     // given
-    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { getElementsOnLoadingComplete } = renderReimbursements(storeOverride)
     const { filters, buttons, expectFilters } =
       await getElementsOnLoadingComplete()
 
@@ -224,7 +216,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should disable buttons if one or both of the period dates are not filled', async () => {
     // given
-    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { getElementsOnLoadingComplete } = renderReimbursements(storeOverride)
     const { buttons, expectFilters, setPeriodFilters } =
       await getElementsOnLoadingComplete()
 
@@ -261,8 +253,8 @@ describe('reimbursementsWithFilters', () => {
 
   it('should disable buttons if user is admin and no venue filter is selected', async () => {
     // given
-    props = { currentUser: { isAdmin: true } }
-    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    storeOverride.user.currentUser.isAdmin = true
+    const { getElementsOnLoadingComplete } = renderReimbursements(storeOverride)
     const { buttons, filters } = await getElementsOnLoadingComplete()
 
     // then
@@ -286,7 +278,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should reset filters values when clicking on the button', async () => {
     // given
-    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { getElementsOnLoadingComplete } = renderReimbursements(storeOverride)
     const { filters, buttons, expectFilters, setPeriodFilters } =
       await getElementsOnLoadingComplete()
 
@@ -296,7 +288,7 @@ describe('reimbursementsWithFilters', () => {
     // when
     const options = await within(filters.venue).findAllByRole('option')
     setPeriodFilters('12/11/1998', '12/12/1999')
-    userEvent.selectOptions(filters.venue, [options[1].value])
+    await userEvent.selectOptions(filters.venue, [options[1].value])
 
     // then
     await expectFilters.toHaveValues(
@@ -307,14 +299,14 @@ describe('reimbursementsWithFilters', () => {
     expect(buttons.resetFilters).toBeEnabled()
 
     // when
-    userEvent.click(buttons.resetFilters)
+    await userEvent.click(buttons.resetFilters)
     // then
     await expectFilters.toHaveInitialValues()
   })
 
   it('should order venue option by alphabetical order, and prefix with managingOfferer name when venue is digital', async () => {
     // given
-    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { getElementsOnLoadingComplete } = renderReimbursements(storeOverride)
     const { filters } = await getElementsOnLoadingComplete()
     const options = await within(filters.venue).findAllByRole('option')
 
@@ -334,7 +326,7 @@ describe('reimbursementsWithFilters', () => {
       'reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=VENUE2'
 
     // when
-    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { getElementsOnLoadingComplete } = renderReimbursements(storeOverride)
     const { buttons, filters } = await getElementsOnLoadingComplete()
 
     // then
@@ -353,7 +345,7 @@ describe('reimbursementsWithFilters', () => {
   it('should display no refunds message when user has no associated venues', async () => {
     // given
     pcapi.getVenuesForOfferer.mockResolvedValue([])
-    await renderReimbursements(store, props)
+    await renderReimbursements(storeOverride)
 
     // when
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

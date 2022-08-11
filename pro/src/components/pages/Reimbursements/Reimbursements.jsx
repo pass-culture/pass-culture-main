@@ -1,29 +1,21 @@
 import './Reimbursement.scss'
 
-import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { BannerReimbursementsInfo } from 'new_components/Banner'
+import { ReimbursementsBreadcrumb } from 'new_components/ReimbursementsBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { Banner } from 'ui-kit'
 import { sortByDisplayName } from 'utils/strings'
 
-import Breadcrumb from '../../../new_components/Breadcrumb'
-
 import ReimbursementsDetails from './ReimbursementsDetails/ReimbursementsDetails'
-import ReimbursementsInvoices from './ReimbursementsInvoices/ReimbursementsInvoices'
-
-export const STEP_ID_INVOICES = 'justificatifs'
-export const STEP_ID_DETAILS = 'details'
-export const mapPathToStep = {
-  justificatifs: STEP_ID_INVOICES,
-  details: STEP_ID_DETAILS,
-}
+import { ReimbursementsInvoices } from './ReimbursementsInvoices'
 
 const buildAndSortVenueFilterOptions = venues =>
   sortByDisplayName(
@@ -35,27 +27,13 @@ const buildAndSortVenueFilterOptions = venues =>
     }))
   )
 
-const Reimbursements = ({ currentUser }) => {
+const Reimbursements = () => {
+  const { currentUser } = useCurrentUser()
   const [isLoading, setIsLoading] = useState(true)
   const [venuesOptions, setVenuesOptions] = useState([])
   const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState(
     []
   )
-  const steps = [
-    {
-      id: STEP_ID_INVOICES,
-      label: 'Justificatifs de remboursement',
-      url: '/remboursements/justificatifs',
-    },
-    {
-      id: STEP_ID_DETAILS,
-      label: 'Détails des remboursements',
-      url: '/remboursements/details',
-    },
-  ]
-
-  const stepName = location.pathname.match(/[a-z]+$/)
-  const activeStep = stepName ? mapPathToStep[stepName[0]] : STEP_ID_INVOICES
 
   const isNewBankInformationCreation = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
@@ -125,28 +103,10 @@ const Reimbursements = ({ currentUser }) => {
             validation automatique des contremarques d’évènements. Cette page
             est automatiquement mise à jour à chaque remboursement.
           </p>
-          <Banner type="notification-info" className="banner">
-            En savoir plus sur
-            <a
-              className="bi-link tertiary-link"
-              href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Icon svg="ico-external-site" className="banner-icon" />
-              Les prochains remboursements
-            </a>
-            <a
-              className="bi-link tertiary-link"
-              href="https://passculture.zendesk.com/hc/fr/articles/4412007300369"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Icon svg="ico-external-site" className="banner-icon" />
-              Les modalités de remboursement
-            </a>
-          </Banner>
-          <Breadcrumb activeStep={activeStep} steps={steps} styleType="tab" />
+          <BannerReimbursementsInfo />
+
+          <ReimbursementsBreadcrumb />
+
           <Switch>
             <Route exact path={`${match.path}/justificatifs`}>
               <ReimbursementsInvoices
@@ -166,12 +126,6 @@ const Reimbursements = ({ currentUser }) => {
       )}
     </>
   )
-}
-
-Reimbursements.propTypes = {
-  currentUser: PropTypes.shape({
-    isAdmin: PropTypes.bool.isRequired,
-  }).isRequired,
 }
 
 export default Reimbursements
