@@ -2,11 +2,7 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 
 import { API_ENTREPRISE_BASE_URL } from './constants'
-import type {
-  IEntrepriseApiJson,
-  IEntrepriseSirenData,
-  IEntrepriseSiretData,
-} from './types'
+import type { IEntrepriseApiJson, IEntrepriseSiretData } from './types'
 
 const handleApiError = async (
   response: Response,
@@ -56,40 +52,6 @@ export default {
       siret: data.siret,
       companyStatus: data.etat_administratif,
       legalUnitStatus: data.unite_legale.etat_administratif,
-    }
-  },
-
-  getSirenData: async (siren: string): Promise<IEntrepriseSirenData> => {
-    const url = `${API_ENTREPRISE_BASE_URL}/unites_legales/${siren}`
-    const response = await handleApiError(await fetch(url), 'GET', url)
-
-    const legalUnit = response.unite_legale
-
-    // https://www.sirene.fr/sirene/public/variable/statutDiffusionUniteLegale
-    if (legalUnit.statut_diffusion == 'N') {
-      throw new Error('Ce SIREN est masqué sur le répertoire de l’INSEE.')
-    }
-
-    let name
-    if (legalUnit.denomination) {
-      name = legalUnit.denomination
-    } else if (legalUnit.etablissement_siege.enseigne_1) {
-      name = legalUnit.etablissement_siege.enseigne_1
-    } else {
-      name = `${legalUnit.prenom_1 || ''} ${legalUnit.nom || ''}`
-    }
-
-    const latitude = legalUnit.etablissement_siege.latitude
-    const longitude = legalUnit.etablissement_siege.longitude
-
-    return {
-      address: legalUnit.etablissement_siege.geo_l4,
-      city: legalUnit.etablissement_siege.libelle_commune,
-      latitude: latitude ? parseFloat(latitude) : null,
-      longitude: longitude ? parseFloat(longitude) : null,
-      name,
-      postalCode: legalUnit.etablissement_siege.code_postal,
-      siren: legalUnit.siren,
     }
   },
 }
