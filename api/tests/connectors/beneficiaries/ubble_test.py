@@ -4,7 +4,6 @@ import logging
 import pytest
 import requests.exceptions
 
-from pcapi.connectors.beneficiaries import exceptions
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.utils import requests as requests_utils
@@ -45,7 +44,7 @@ class StartIdentificationTest:
         assert record.message == "Valid response from Ubble"
 
     def test_start_identification_connection_error(self, ubble_mock_connection_error, caplog):
-        with pytest.raises(exceptions.IdentificationServiceUnavailable):
+        with pytest.raises(requests_utils.ExternalAPIException):
             with caplog.at_level(logging.ERROR):
                 ubble.start_identification(
                     user_id=123,
@@ -63,7 +62,7 @@ class StartIdentificationTest:
         assert record.message == "Request error while starting Ubble identification: "
 
     def test_start_identification_http_error_status(self, ubble_mock_http_error_status, caplog):
-        with pytest.raises(exceptions.IdentificationServiceError):
+        with pytest.raises(requests_utils.ExternalAPIException):
             ubble.start_identification(
                 user_id=123,
                 first_name="prenom",
