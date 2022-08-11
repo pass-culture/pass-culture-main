@@ -4,7 +4,6 @@ import { ROOT_PATH } from '../src/utils/config'
 
 import { getPathname } from './helpers/location'
 import { fetchSandbox } from './helpers/sandboxes'
-import { getSirenRequestMockWithDefaultValues } from './helpers/sirenes'
 
 const emailInput = Selector('input[name="email"]')
 const passwordInput = Selector('input[name="password"]')
@@ -24,7 +23,6 @@ test('je peux créer un compte avec un SIREN non existant en base de données, e
   await acceptCookieButton()
 
   await t
-    .addRequestHooks(getSirenRequestMockWithDefaultValues())
     .click(acceptCookieButton)
     .expect(signUpButton.hasAttribute('disabled'))
     .ok()
@@ -48,7 +46,6 @@ test('je peux créer un compte avec un SIREN déjà existant en base de données
   await acceptCookieButton()
 
   await t
-    .addRequestHooks(getSirenRequestMockWithDefaultValues())
     .click(acceptCookieButton)
     .typeText(emailInput, 'pctest0.pro93.cafe1@example.com', { paste: true })
     .typeText(passwordInput, 'user@AZERTY123', { paste: true })
