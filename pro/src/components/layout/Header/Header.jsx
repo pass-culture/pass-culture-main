@@ -5,8 +5,6 @@ import { NavLink, useHistory, useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
-import { signout } from 'repository/pcapi/pcapi'
-import { resetIsInitialized } from 'store/user/actions'
 
 import Logo from '../Logo'
 
@@ -22,12 +20,10 @@ const Header = ({ isUserAdmin }) => {
   const history = useHistory()
   const { logEvent } = useAnalytics()
   const location = useLocation()
+
   const onSignoutClick = useCallback(() => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-    signout().then(() => {
-      dispatch(resetIsInitialized())
-      history.push('/connexion')
-    })
+    history.push('/logout')
   }, [dispatch, history, logEvent, location.pathname])
 
   return (

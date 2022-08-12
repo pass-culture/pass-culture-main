@@ -5,6 +5,7 @@ import { Redirect, Route, Switch } from 'react-router'
 import AppLayout from 'app/AppLayout'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
+import { Logout } from 'routes/Logout'
 import routes, { IRoute, routesWithoutLayout } from 'routes/routes_map'
 import { selectActiveFeatures } from 'store/features/selectors'
 
@@ -34,6 +35,9 @@ const AppRouter = (): JSX.Element => {
 
   return (
     <Switch>
+      <Route exact key="logout" path="/logout">
+        <Logout />
+      </Route>
       <Redirect
         from="/offres/:offerId([A-Z0-9]+)/edition"
         to={
