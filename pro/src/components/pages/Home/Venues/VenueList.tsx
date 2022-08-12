@@ -42,6 +42,7 @@ export const VenueList = ({
       ? {
           pathname: `/structures/${selectedOffererId}/lieux/${physicalVenues[0]?.id}`,
           state: { scrollToElementId: 'venue-collective-data' },
+          search: '?fromBanner=true',
         }
       : undefined
 
@@ -56,9 +57,10 @@ export const VenueList = ({
           closable
           handleOnClick={() => setDisplayCollectiveDataBanner(false)}
         >
-          Nouveau ! Vous pouvez désormais renseigner les informations scolaires
-          d'un lieu via votre page Lieu du pass Culture. Ces informations seront
-          visibles par les enseignants sur ADAGE.
+          Nouveau ! Vous pouvez désormais renseigner les informations de votre
+          lieu, à destination des enseignants, depuis votre page Lieu du pass
+          Culture. Ces informations seront visibles par les enseignants sur
+          Adage.
         </InternalBanner>
       )}
       {virtualVenue && (
