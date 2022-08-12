@@ -1,0 +1,71 @@
+name: Mypy leaderboard
+
+on:
+  pull_request:
+    branches:
+      - not-master-for-tests
+    types: [ closed ]
+
+jobs:
+  merge_job:
+    # this job will only run if the PR has been merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo PR #${{ github.event.number }} has been merged
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+      - name: Check changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'api/**'
+      - name: Count mypy ignore's on this branch and master
+        id: mypy-ignore-counter
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          cd api
+          this_branch_ignore_count="$(grep "type: ignore" -r src | wc -l)"
+          git fetch origin master:master --quiet
+          git checkout master --quiet
+          master_ignore_count="$(grep "type: ignore" -r src | wc -l)"
+          git checkout - --quiet
+          echo "::set-output name=this_branch_ignore_count::$this_branch_ignore_count"
+          echo "::set-output name=master_ignore_count::$master_ignore_count"
+
+      - name: Print stuff
+        id: print-stuff
+        run: |
+          body=echo "$(<p>PRINT: ${{ steps.mypy-ignore-counter.outputs.master_ignore_count }} (master) ; ${{ steps.mypy-ignore-counter.outputs.this_branch_ignore_count }} (your branch)</p>)"
+          body=${{ steps.mypy-ignore-counter.outputs.master_ignore_count }}
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}"
+          echo "::set-output name=body::$body"
+
+      - name: Find Comment
+        if: steps.changes.outputs.src == 'true'
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "mypy cop report"
+      - name: Create comment
+        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id == '' && steps.mypy-ignore-counter.outputs.this_branch_ignore_count != steps.mypy-ignore-counter.outputs.master_ignore_count }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.print-stuff.outputs.body }}
+      - name: Update comment
+        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id != '' }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
+          body: ${{ steps.print-stuff.outputs.body }}
