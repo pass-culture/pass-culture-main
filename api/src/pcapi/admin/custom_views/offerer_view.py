@@ -16,6 +16,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.external import update_external_pro
+from pcapi.core.users.external import zendesk_sell
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 from pcapi.utils.mailing import build_pc_pro_offerer_link
 
@@ -114,4 +115,14 @@ class OffererView(BaseAdminView):
             for email in _get_emails_by_offerer(offerer):
                 update_external_pro(email)
 
+            zendesk_sell.update_offerer(offerer)
+
         return result
+
+    def create_model(self, form: Form) -> Offerer:
+        offerer = super().create_model(form)
+
+        if offerer:
+            zendesk_sell.create_offerer(offerer)
+
+        return offerer

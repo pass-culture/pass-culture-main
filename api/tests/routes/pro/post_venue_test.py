@@ -6,7 +6,7 @@ from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as external_testing
 from pcapi.core.users.factories import ProFactory
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -58,6 +58,7 @@ venue_malformed_test_data = [
 
 
 class Returns201Test:
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue_with_a_business_unit(self, client):
         # given
         user = ProFactory()
@@ -77,9 +78,10 @@ class Returns201Test:
         venue = Venue.query.filter_by(id=dehumanize(idx)).one()
         assert venue.businessUnitId == venue_data["businessUnitId"]
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
+        assert external_testing.zendesk_sell_requests == [{"action": "create", "type": "Venue", "id": dehumanize(idx)}]
 
-    @testing.override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    @testing.override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True, ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue(self, client):
         user = ProFactory()
         client = client.with_session_auth(email=user.email)
@@ -110,7 +112,8 @@ class Returns201Test:
         assert not venue.contact.phone_number
         assert not venue.contact.social_medias
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
+        assert external_testing.zendesk_sell_requests == [{"action": "create", "type": "Venue", "id": dehumanize(idx)}]
 
 
 class Returns400Test:
@@ -129,7 +132,8 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["businessUnitId"] == ["Ce point de facturation n'existe pas."]
 
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(external_testing.sendinblue_requests) == 0
+        assert len(external_testing.zendesk_sell_requests) == 0
 
     def test_latitude_out_of_range_and_longitude_wrong_format(self, client):
         user = ProFactory()

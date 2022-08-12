@@ -121,6 +121,7 @@ class FeatureToggle(enum.Enum):
     USE_INSEE_SIRENE_API = "Utiliser la nouvelle API Sirene de l'Insee"
     APP_ENABLE_COOKIES_V2 = "Activer la gestion conforme des cookies"
     VENUE_FORM_V2 = "Afficher la version 2 du formulaire de lieu"
+    ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -179,6 +180,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.APP_ENABLE_COOKIES_V2,
     FeatureToggle.VENUE_FORM_V2,
+    FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
 )
 
 

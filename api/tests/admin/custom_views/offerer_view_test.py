@@ -6,7 +6,7 @@ import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as external_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
@@ -43,6 +43,8 @@ class OffererViewTest:
         assert offerer.name == "Updated offerer"
         assert {tag.name for tag in offerer.tags} == {tag1.name, tag2.name}
 
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_offerer_remove_tags(self, mocked_validate_csrf_token, client):
@@ -73,6 +75,8 @@ class OffererViewTest:
         db.session.refresh(offerer)
         assert offerer.name == "Updated offerer"
         assert len(offerer.tags) == 0
+
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
 
     @pytest.mark.parametrize(
         "booking_status", [None, BookingStatus.USED, BookingStatus.CANCELLED, BookingStatus.REIMBURSED]
@@ -107,8 +111,9 @@ class OffererViewTest:
         db.session.refresh(venue)
 
         assert not offerer.isActive
-        assert len(sendinblue_testing.sendinblue_requests) == 2
-        assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
+        assert len(external_testing.sendinblue_requests) == 2
+        assert {req["email"] for req in external_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
 
     @pytest.mark.parametrize("booking_status", [BookingStatus.PENDING, BookingStatus.CONFIRMED])
     @clean_database
@@ -143,7 +148,7 @@ class OffererViewTest:
         db.session.refresh(venue)
 
         assert offerer.isActive
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(external_testing.sendinblue_requests) == 0
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -173,8 +178,9 @@ class OffererViewTest:
         db.session.refresh(venue)
 
         assert offerer.isActive
-        assert len(sendinblue_testing.sendinblue_requests) == 2
-        assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
+        assert len(external_testing.sendinblue_requests) == 2
+        assert {req["email"] for req in external_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -192,8 +198,8 @@ class OffererViewTest:
 
         assert response.status_code == 302
         assert len(offerers_models.Offerer.query.all()) == 0
-        assert len(sendinblue_testing.sendinblue_requests) == 2
-        assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {
+        assert len(external_testing.sendinblue_requests) == 2
+        assert {req["email"] for req in external_testing.sendinblue_requests} == {
             pro_user.email,
             "booking@example.com",
         }
@@ -230,4 +236,4 @@ class OffererViewTest:
         )
 
         assert len(offerers_models.Offerer.query.all()) == 1
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(external_testing.sendinblue_requests) == 0
