@@ -14,7 +14,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users.factories import AdminFactory
-import pcapi.core.users.testing as sendinblue_testing
+import pcapi.core.users.testing as external_testing
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -63,6 +63,8 @@ class VenueViewTest:
 
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
@@ -98,6 +100,8 @@ class VenueViewTest:
         assert venue_edited.siret == "22222222222222"
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
+        assert len(external_testing.zendesk_sell_requests) == 0
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
@@ -132,6 +136,8 @@ class VenueViewTest:
         venue_edited = Venue.query.get(venue.id)
         assert venue_edited.siret == "22222222222222"
         mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+        assert len(external_testing.zendesk_sell_requests) == 0
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -197,6 +203,8 @@ class VenueViewTest:
 
         assert response.status_code == 302
 
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
@@ -228,6 +236,8 @@ class VenueViewTest:
         assert venue.name == new_name
 
         mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
+
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -262,6 +272,8 @@ class VenueViewTest:
 
         mocked_async_index_venue_ids.assert_called_once_with([venue.id])
         mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -317,8 +329,8 @@ class VenueViewTest:
 
         assert response.status_code == 302
         assert len(Venue.query.all()) == 0
-        assert len(sendinblue_testing.sendinblue_requests) == 3
-        assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {
+        assert len(external_testing.sendinblue_requests) == 3
+        assert {req["email"] for req in external_testing.sendinblue_requests} == {
             user_offerer1.user.email,
             user_offerer2.user.email,
             "booking@example.com",
@@ -355,7 +367,7 @@ class VenueViewTest:
         )
 
         assert len(Venue.query.all()) == 1
-        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert len(external_testing.sendinblue_requests) == 0
 
 
 class GetVenueProviderLinkTest:

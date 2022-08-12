@@ -15,6 +15,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.external as users_external
+from pcapi.core.users.external import zendesk_sell
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 from pcapi.domain import admin_emails
@@ -101,6 +102,7 @@ def update_venue(
     # If booking email was only in this object, this will clear all columns here and it will never be updated later.
     users_external.update_external_pro(old_booking_email)
     users_external.update_external_pro(venue.bookingEmail)
+    zendesk_sell.update_venue(venue)
 
     return venue
 
@@ -128,6 +130,8 @@ def update_venue_collective_data(
     venue.populate_from_dict(modifications)
 
     repository.save(venue)
+
+    zendesk_sell.update_venue(venue)
 
     return venue
 
@@ -201,6 +205,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     search.async_index_venue_ids([venue.id])
 
     users_external.update_external_pro(venue.bookingEmail)
+    zendesk_sell.create_venue(venue)
 
     return venue
 
@@ -386,6 +391,7 @@ def create_offerer(
         )
 
     users_external.update_external_pro(user.email)
+    zendesk_sell.create_offerer(offerer)
 
     return user_offerer
 
@@ -429,6 +435,8 @@ def validate_offerer(token: str) -> None:
 
     for applicant in applicants:
         users_external.update_external_pro(applicant.email)
+
+    zendesk_sell.update_offerer(offerer)
 
     if not transactional_mails.send_new_offerer_validation_email_to_pro(offerer):
         logger.warning(

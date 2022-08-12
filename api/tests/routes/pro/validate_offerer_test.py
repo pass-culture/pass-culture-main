@@ -5,7 +5,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as external_testing
 from pcapi.core.users.models import UserRole
 
 from tests.conftest import TestClient
@@ -31,7 +31,8 @@ class Returns202Test:
         assert offerer.isValidated is True
         assert offerer.dateValidated == datetime(2021, 6, 23, 11)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
+        assert len(external_testing.zendesk_sell_requests) == 1
 
     def expect_offerer_to_be_validated_even_when_user_offerer_has_already_been_activated(self, app):
         # Given
@@ -50,7 +51,7 @@ class Returns202Test:
         assert user_offerer1.user.roles == [UserRole.PRO]
         assert user_offerer2.user.roles == [UserRole.PRO]
 
-        assert len(sendinblue_testing.sendinblue_requests) == 2
+        assert len(external_testing.sendinblue_requests) == 2
 
 
 class Returns404Test:

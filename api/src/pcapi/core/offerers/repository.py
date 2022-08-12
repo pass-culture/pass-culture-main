@@ -201,6 +201,10 @@ def find_offerer_by_siren(siren: str) -> models.Offerer | None:
     return models.Offerer.query.filter_by(siren=siren).one_or_none()
 
 
+def find_offerer_by_id(offererId: int) -> models.Offerer | None:
+    return models.Offerer.query.filter_by(id=offererId).one_or_none()
+
+
 def find_offerer_by_validation_token(token: str) -> models.UserOfferer | None:
     return models.Offerer.query.filter_by(validationToken=token).one_or_none()
 
