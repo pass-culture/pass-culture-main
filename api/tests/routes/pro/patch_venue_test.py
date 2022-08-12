@@ -6,7 +6,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_features
-from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users import testing as external_testing
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -68,7 +68,8 @@ class Returns200Test:
         assert json["isValidated"] is True
         assert "validationToken" not in json
         assert venue.isValidated
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
+        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
     def test_edit_venue_booking_email_with_applied_on_all_offers(self, mocked_update_all_venue_offers_email_job, app):
@@ -109,12 +110,18 @@ class Returns200Test:
 
         mocked_update_all_venue_offers_email_job.assert_called_once_with(venue, "new.venue@email.com")
 
-        assert len(sendinblue_testing.sendinblue_requests) == 4  # former and new booking email, changed twice
-        assert {req.get("email") for req in sendinblue_testing.sendinblue_requests} == {
+        assert len(external_testing.sendinblue_requests) == 4  # former and new booking email, changed twice
+        assert {req.get("email") for req in external_testing.sendinblue_requests} == {
             "old.venue@email.com",
             "no.update@email.com",
             "new.venue@email.com",
         }
+
+        assert external_testing.zendesk_sell_requests == [
+            # Patch API called twice
+            {"action": "update", "type": "Venue", "id": venue.id},
+            {"action": "update", "type": "Venue", "id": venue.id},
+        ]
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
     def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
@@ -146,7 +153,8 @@ class Returns200Test:
             venue, "Ceci est un texte de modalités de retrait"
         )
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
+        assert len(external_testing.zendesk_sell_requests) == 1
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(
@@ -218,7 +226,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert venue.businessUnit.id == new_business_unit.id
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
 
     def test_remove_business_unit_id(self, app) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
@@ -235,7 +243,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert venue.businessUnitId == None
 
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
 
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_add_reimbursement_point(self, client) -> None:
@@ -256,7 +264,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["reimbursementPointId"] == new_reimbursement_point.id
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
 
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_remove_reimbursement_point_id(self, client) -> None:
@@ -277,7 +285,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["reimbursementPointId"] is None
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(external_testing.sendinblue_requests) == 1
 
 
 class Returns400Test:

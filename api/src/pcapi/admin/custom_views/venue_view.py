@@ -36,6 +36,7 @@ from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
+from pcapi.core.users.external import zendesk_sell
 from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 from pcapi.utils.mailing import build_pc_pro_offerer_link
@@ -297,7 +298,7 @@ class VenueView(BaseAdminView):
                 new_adage_id,
             )
 
-        super().update_model(new_venue_form, venue)
+        result = super().update_model(new_venue_form, venue)
 
         # Immediately index venue if tags (criteria) are involved:
         # tags are used by other tools (eg. building playlists for the
@@ -324,7 +325,18 @@ class VenueView(BaseAdminView):
         for email in _get_emails_by_venue(venue):
             update_external_pro(email)
 
+        if result:
+            zendesk_sell.update_venue(venue)
+
         return True
+
+    def create_model(self, form: Form) -> Venue:
+        venue = super().create_model(form)
+
+        if venue:
+            zendesk_sell.create_venue(venue)
+
+        return venue
 
     @action("bulk_edit", "Édition multiple")
     def action_bulk_edit(self, ids):  # type: ignore [no-untyped-def]

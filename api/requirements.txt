@@ -3,6 +3,7 @@ algoliasearch==2.4.0
 APScheduler==3.6.3
 Authlib==0.15.5
 Babel==2.9.1
+basecrm==1.2.9
 bcrypt==3.2.0
 beautifulsoup4==4.9.3
 black
