@@ -13,7 +13,7 @@ interface IAppProps {
   children: JSX.Element
 }
 
-const App = ({ children }: IAppProps): JSX.Element => {
+const App = ({ children }: IAppProps): JSX.Element | null => {
   const { currentUser } = useCurrentUser()
   const location = useLocation()
   const history = useHistory()
@@ -26,11 +26,16 @@ const App = ({ children }: IAppProps): JSX.Element => {
     window.scrollTo(0, 0)
   }, [location.pathname])
 
-  if (currentUser !== null) {
-    setSentryUser({ id: currentUser.id })
-  } else if (!isRoutePublic) {
-    history.push(`/connexion?de=${fromUrl}`)
-  }
+  useEffect(() => {
+    if (currentUser !== null) {
+      setSentryUser({ id: currentUser.id })
+    } else if (!isRoutePublic) {
+      const loginUrl = fromUrl.includes('logout')
+        ? '/connexion'
+        : `/connexion?de=${fromUrl}`
+      history.push(loginUrl)
+    }
+  }, [currentUser, isRoutePublic])
 
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
