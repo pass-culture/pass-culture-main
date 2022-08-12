@@ -57,6 +57,10 @@ def create_bunch_of_accounts():
         city=None,
         address=None,
     )
+    # Same first name as random:
+    users_factories.UserFactory(
+        firstName="Anne", lastName="Autre", email="autre@example.com", phoneNumber="+33780000000"
+    )
 
     return underage, grant_18, pro, random, no_address
 
@@ -190,6 +194,47 @@ class PublicAccountSearchTest:
 
         # then
         assert response.status_code == 200
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_by_both_first_name_and_name(self, client):
+        # given
+        _, _, _, random, _ = create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=f"{random.firstName} {random.lastName}"),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 1
+        found_user = response.json["data"][0]
+        assert found_user["firstName"] == random.firstName
+        assert found_user["lastName"] == random.lastName
+        assert found_user["dateOfBirth"] == random.dateOfBirth.isoformat()
+        assert found_user["id"] == random.id
+        assert found_user["email"] == random.email
+        assert found_user["phoneNumber"] == random.phoneNumber
+        assert found_user["roles"] == []
+        assert found_user["isActive"] is True
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_empty_query(self, client):
+        # given
+        create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=""),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_without_permission(self, client):
