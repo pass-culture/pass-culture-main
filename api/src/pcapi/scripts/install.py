@@ -14,6 +14,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.full_index_offers",
         "pcapi.scripts.generate_invoices",
         "pcapi.scripts.install_data",
+        "pcapi.scripts.booking.commands",
         "pcapi.scripts.offerer.commands",
         "pcapi.scripts.payment.add_custom_offer_reimbursement_rule",
         "pcapi.scripts.provider.check_provider_api",
