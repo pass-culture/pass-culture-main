@@ -9,6 +9,7 @@ export const populateFacetFilters = ({
   students,
   domains,
   venueFilter = null,
+  onlyInMySchool,
   uai,
   enableInterventionAreaFilter,
 }: {
@@ -17,16 +18,19 @@ export const populateFacetFilters = ({
   students: Option[]
   domains: Option<number>[]
   venueFilter: VenueResponse | null
+  onlyInMySchool: boolean
   uai?: string[] | null
   enableInterventionAreaFilter: boolean
 }): Facets => {
   const updatedFilters: Facets = []
+
   const filteredDepartments: string[] = enableInterventionAreaFilter
     ? flatMap(departments, (department: Option<string>) => [
         `venue.departmentCode:${department.value}`,
         `offer.interventionArea:${department.value}`,
       ])
     : departments.map(department => `venue.departmentCode:${department.value}`)
+
   const filteredCategories: string[] = flatMap(
     categories,
     (category: Option<string[]>) =>
@@ -35,9 +39,11 @@ export const populateFacetFilters = ({
         subcategoryId => `offer.subcategoryId:${subcategoryId}`
       )
   )
+
   const filteredStudents: string[] = students.map(
     student => `offer.students:${student.value}`
   )
+
   const filteredDomains: string[] = domains.map(
     domain => `offer.domains:${domain.value}`
   )
@@ -45,12 +51,15 @@ export const populateFacetFilters = ({
   if (filteredDepartments.length > 0) {
     updatedFilters.push(filteredDepartments)
   }
+
   if (filteredCategories.length > 0) {
     updatedFilters.push(filteredCategories)
   }
+
   if (filteredStudents.length > 0) {
     updatedFilters.push(filteredStudents)
   }
+
   if (filteredDomains.length > 0) {
     updatedFilters.push(filteredDomains)
   }
@@ -63,6 +72,10 @@ export const populateFacetFilters = ({
     updatedFilters.push(
       uai.map(uaiCode => `offer.educationalInstitutionUAICode:${uaiCode}`)
     )
+  }
+
+  if (onlyInMySchool) {
+    updatedFilters.push('offer.eventAddressType:school')
   }
 
   return updatedFilters
