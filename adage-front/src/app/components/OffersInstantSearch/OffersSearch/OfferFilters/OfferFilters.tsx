@@ -85,6 +85,7 @@ export const OfferFilters = ({
           checked={onlyInMySchool}
           disabled={!userDepartmentOption}
           label={`Uniquement les acteurs qui se déplacent dans mon établissement : ${user.institutionName} - ${user.institutionCity} ( ${user.departmentCode} )`}
+          name="onlyInMySchool"
           onChange={event => {
             if (event.target.checked && userDepartmentOption) {
               dispatchCurrentFilters({
