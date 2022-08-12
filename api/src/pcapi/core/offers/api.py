@@ -15,7 +15,6 @@ from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
-from pcapi.core.booking_providers.api import _get_venue_booking_provider
 from pcapi.core.booking_providers.api import get_shows_stock
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
@@ -1120,16 +1119,10 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
         )
 
 
-def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer) -> None:
-    booking_provider = VenueBookingProvider.query.filter(
-        VenueBookingProvider.venueId == offer.venueId, VenueBookingProvider.isActive
-    ).one_or_none()
-
-    if not booking_provider:
-        return
-
-    venue_booking_provider_name = _get_venue_booking_provider(offer.venueId).bookingProvider.name.value
-    sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider_name)
+def update_stock_quantity_to_match_booking_provider_remaining_place(
+    offer: Offer, venue_booking_provider: VenueBookingProvider
+) -> None:
+    sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider.bookingProvider.name.value)
 
     shows_id = [
         int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders
@@ -1140,7 +1133,7 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
 
     logger.info(
         "Getting up-to-date show stock from booking provider on offer view",
-        extra={"offer": offer.id, "booking_provider": booking_provider.id},
+        extra={"offer": offer.id, "venue_booking_provider": venue_booking_provider.id},
     )
     shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
 
