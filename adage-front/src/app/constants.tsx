@@ -1,8 +1,11 @@
-export const LEGACY_INITIAL_FACET_FILTERS = ['offer.isEducational:true']
+import { Filters } from './types'
+
 export const INITIAL_QUERY = ''
-export const INITIAL_FILTERS = {
+
+export const INITIAL_FILTERS: Filters = {
   departments: [],
   categories: [],
   students: [],
   domains: [],
+  onlyInMySchool: false,
 }

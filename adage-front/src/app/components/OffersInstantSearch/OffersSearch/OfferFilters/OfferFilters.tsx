@@ -34,8 +34,13 @@ export const OfferFilters = ({
     Option<string[]>[]
   >([])
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
+
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { removeQuery } = useContext(AlgoliaQueryContext)
+
+  const [onlyInMySchool, setOnlyInMySchool] = useState(
+    currentFilters.onlyInMySchool
+  )
 
   const handleResetFilters = () => {
     removeVenueFilter()
@@ -64,12 +69,32 @@ export const OfferFilters = ({
     loadFiltersOptions()
   }, [])
 
+  useEffect(() => {
+    setOnlyInMySchool(currentFilters.onlyInMySchool)
+  }, [currentFilters.onlyInMySchool])
+
+  const userDepartmentOption = departmentOptions.find(
+    departmentOption => departmentOption.value === user.departmentCode
+  )
+
   return (
     <div className={className}>
       <span className="offer-filters-title">Filtrer par :</span>
       <div className="offer-filters-row">
         <Checkbox
+          checked={onlyInMySchool}
+          disabled={!userDepartmentOption}
           label={`Uniquement les acteurs qui se déplacent dans mon établissement : ${user.institutionName} - ${user.institutionCity} ( ${user.departmentCode} )`}
+          onChange={event => {
+            if (event.target.checked && userDepartmentOption) {
+              dispatchCurrentFilters({
+                type: 'POPULATE_ONLY_IN_MY_SCHOOL',
+                departmentFilter: userDepartmentOption,
+              })
+            } else {
+              dispatchCurrentFilters({ type: 'RESET_ONLY_IN_MY_SCHOOL' })
+            }
+          }}
         />
       </div>
       <div className="offer-filters-separator" />

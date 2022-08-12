@@ -5,4 +5,5 @@ export type Filters = {
   categories: Option<string[]>[]
   students: Option[]
   domains: Option<number>[]
+  onlyInMySchool: boolean
 }
