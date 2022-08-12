@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import time
+from datetime import date
 from datetime import timedelta
 from typing import Iterable
 
@@ -415,19 +414,23 @@ def get_venue_by_id(venue_id: int) -> models.Venue:
 
 
 def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
-    three_days_ago = datetime.utcnow() - timedelta(days=3)
-    three_days_ago_min = datetime.combine(three_days_ago, time.min)
-    three_days_ago_max = datetime.combine(three_days_ago, time.max)
+    subquery_get_physical_venues = db.session.query(models.Venue.managingOffererId).where((~models.Venue.isVirtual))
 
-    subquery = db.session.query(models.Venue.managingOffererId)
+    subquery_get_digital_venues_with_offers = (
+        db.session.query(models.Venue.managingOffererId)
+        .join(Offer)
+        .where(models.Venue.isVirtual, Offer.venueId == models.Venue.id)
+    )
+    # when offerer is created, a digital venue is created by default
+    # query should return all offerers validated 3 days ago with only digital venue without offers
 
     return (
         db.session.query(models.Offerer)
-        .filter(models.Offerer.id.not_in(subquery))
+        .filter(models.Offerer.id.not_in(subquery_get_physical_venues))
+        .filter(models.Offerer.id.not_in(subquery_get_digital_venues_with_offers))
         .filter(
             models.Offerer.isActive.is_(True),
-            models.Offerer.dateValidated >= three_days_ago_min,
-            models.Offerer.dateValidated <= three_days_ago_max,
+            sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=3)),
         )
         .all()
     )

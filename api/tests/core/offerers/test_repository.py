@@ -1,6 +1,6 @@
 from datetime import datetime
+from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
 
 import pcapi.core.finance.factories as finance_factories
@@ -395,20 +395,30 @@ class GetSirenByOffererIdTest:
 
 
 class GetOfferersValidatedThreeDaysAgoWithNoVenuesCreatedTest:
-    def test_return_one_offerer_validated__three_days_ago_with_no_venues_created(self):
-        with freeze_time("2022-07-20 15:00:00") as frozen_time:
-            offerer_with_venue = offerers_factories.OffererFactory(dateValidated=datetime.utcnow())
-            offerers_factories.VenueFactory(managingOfferer=offerer_with_venue)
+    def test_return_offerer_validated_three_days_ago_with_no_physical_venue_and_digital_venue_with_no_offers(
+        self,
+    ):
+        # given
+        five_days_ago = datetime.utcnow() - timedelta(days=5)
+        offerer_with_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
+        offerers_factories.VenueFactory(managingOfferer=offerer_with_venue)
 
-            frozen_time.move_to("2022-07-25 14:00:00")
-            # create offerers 3 days ago
-            offerer_with_venue2 = offerers_factories.OffererFactory(dateValidated=datetime.utcnow())
-            offerers_factories.VenueFactory(managingOfferer=offerer_with_venue2)
+        three_days_ago = datetime.utcnow() - timedelta(days=3)
+        offerer_with_venue2 = offerers_factories.OffererFactory(dateValidated=three_days_ago)
+        offerers_factories.VenueFactory(managingOfferer=offerer_with_venue2)
 
-            offerer_with_no_venue = offerers_factories.OffererFactory(dateValidated=datetime.utcnow())
+        offerer_with_digital_venue_and_has_offers = offerers_factories.OffererFactory(dateValidated=three_days_ago)
+        digital_venue = offerers_factories.VirtualVenueFactory(
+            managingOfferer=offerer_with_digital_venue_and_has_offers
+        )
+        offers_factories.DigitalOfferFactory(venue=digital_venue)
 
-            frozen_time.move_to("2022-07-28 16:00:00")
+        offerer_with_only_digital_venue_and_no_offers = offerers_factories.OffererFactory(dateValidated=three_days_ago)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer_with_only_digital_venue_and_no_offers)
 
-            offerers = repository.find_offerers_validated_3_days_ago_with_no_venues()
-            assert len(offerers) == 1
-            assert offerers[0] == offerer_with_no_venue
+        # when
+        offerers = repository.find_offerers_validated_3_days_ago_with_no_venues()
+
+        # then
+        assert len(offerers) == 1
+        assert offerers[0] == offerer_with_only_digital_venue_and_no_offers
