@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 
-import { VenueResponse } from 'api/gen'
+import { AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'app/constants/departmentOptions'
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters, Option } from 'app/types'
-import { Button, MultiSelectAutocomplete } from 'app/ui-kit'
+import { Button, Checkbox, MultiSelectAutocomplete } from 'app/ui-kit'
 
 import OfferFiltersTags from './OfferFiltersTags'
 import './OfferFilters.scss'
@@ -19,6 +19,7 @@ export interface OfferFiltersProps {
   venueFilter: VenueResponse | null
   removeVenueFilter: () => void
   isLoading: boolean
+  user: AuthenticatedResponse
 }
 
 export const OfferFilters = ({
@@ -27,6 +28,7 @@ export const OfferFilters = ({
   venueFilter,
   removeVenueFilter,
   isLoading,
+  user,
 }: OfferFiltersProps): JSX.Element => {
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
@@ -65,6 +67,12 @@ export const OfferFilters = ({
   return (
     <div className={className}>
       <span className="offer-filters-title">Filtrer par :</span>
+      <div className="offer-filters-row">
+        <Checkbox
+          label={`Uniquement les acteurs qui se déplacent dans mon établissement : ${user.institutionName} - ${user.institutionCity} ( ${user.departmentCode} )`}
+        />
+      </div>
+      <div className="offer-filters-separator" />
       <div className="offer-filters-row">
         <MultiSelectAutocomplete
           className="offer-filters-filter"
