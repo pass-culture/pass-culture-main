@@ -11,6 +11,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
+from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.utils.human_ids import humanize
 
 
@@ -196,6 +197,7 @@ def test_serialize_collective_offer():
         educational_domains=[domain1, domain2],
         institution=educational_institution,
         interventionArea=["1", "90", "94"],
+        offerVenue={"addressType": OfferAddressType.OTHER, "venueId": None, "otherAddress": "Quelque part"},
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
@@ -209,6 +211,7 @@ def test_serialize_collective_offer():
             "domains": [domain1.id, domain2.id],
             "educationalInstitutionUAICode": educational_institution.institutionId,
             "interventionArea": ["1", "90", "94"],
+            "eventAddressType": OfferAddressType.OTHER.value,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -244,6 +247,7 @@ def test_serialize_collective_offer_template():
         venue__departementCode="86",
         educational_domains=[domain1, domain2],
         interventionArea=["1", "90", "94"],
+        offerVenue={"addressType": OfferAddressType.SCHOOL, "venueId": None, "otherAddress": "Quelque part"},
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -257,6 +261,7 @@ def test_serialize_collective_offer_template():
             "domains": [domain1.id, domain2.id],
             "educationalInstitutionUAICode": "all",
             "interventionArea": ["1", "90", "94"],
+            "eventAddressType": OfferAddressType.SCHOOL.value,
         },
         "offerer": {
             "name": "Les Librairies Associées",
