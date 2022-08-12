@@ -26,6 +26,9 @@ class AuthenticatedInformation(BaseModel):
 class AuthenticatedResponse(BaseModel):
     role: AdageFrontRoles
     uai: str | None
+    departmentCode: str | None
+    institutionName: str | None
+    institutionCity: str | None
 
     class Config:
         use_enum_values = True
