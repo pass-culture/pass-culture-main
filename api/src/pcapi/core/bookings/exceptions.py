@@ -105,6 +105,14 @@ class BookingDoesntExist(ClientError):
         super().__init__("bookingId", "bookingId ne correspond à aucune réservation")
 
 
+class CannotDeleteBookingWithReimbursementException(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "cannotDeleteBookingWithReimbursementException",
+            "Réservation non supprimable car elle est liée à un remboursement",
+        )
+
+
 class CannotDeleteOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
