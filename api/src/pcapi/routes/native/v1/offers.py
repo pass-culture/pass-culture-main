@@ -1,5 +1,7 @@
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.booking_providers.models import BookingProviderName
+from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.mails.transactional.users.offer_link_to_ios_user import send_offer_link_to_ios_user_email
@@ -43,7 +45,19 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         feature.FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
         and offer.subcategory.id == subcategories.SEANCE_CINE.id
     ):
-        api.update_stock_quantity_to_match_booking_provider_remaining_place(offer)
+        venue_booking_provider = (
+            VenueBookingProvider.query.filter(
+                VenueBookingProvider.venueId == offer.venueId,
+                VenueBookingProvider.isActive,
+            )
+            .options(joinedload(VenueBookingProvider.bookingProvider, innerjoin=True))
+            .one_or_none()
+        )
+        if (
+            venue_booking_provider
+            and venue_booking_provider.bookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE
+        ):
+            api.update_stock_quantity_to_match_booking_provider_remaining_place(offer, venue_booking_provider)
 
     return serializers.OfferResponse.from_orm(offer)
 
