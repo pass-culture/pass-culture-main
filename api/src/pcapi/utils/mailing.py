@@ -1,10 +1,12 @@
 from datetime import datetime
+import logging
 from pprint import pformat
 
 from flask import render_template
 
 from pcapi import settings
 from pcapi.connectors import api_entreprises
+from pcapi.connectors import sirene
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveOffer
@@ -17,8 +19,12 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.domain.postal_code.postal_code import PostalCode
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
+
+
+logger = logging.getLogger(__name__)
 
 
 def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
@@ -76,12 +82,25 @@ def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
     return ""
 
 
-def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
+def make_offerer_internal_validation_email(
     offerer: offerers_models.Offerer,
     user_offerer: offerers_models.UserOfferer,
-    get_by_siren=api_entreprises.get_by_offerer,
 ) -> dict:
-    api_entreprise = get_by_siren(offerer)
+    siren_info: sirene.SirenInfo | dict | None = None
+    if FeatureToggle.USE_INSEE_SIRENE_API.is_active():
+        try:
+            assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
+            siren_info = sirene.get_siren(offerer.siren)
+        except sirene.SireneException as exc:
+            logger.info(
+                "Could not fetch info from Sirene API for offerer validation e-mail",
+                extra={"exc": exc},
+            )
+            siren_info = siren_info_as_dict = None
+        else:
+            siren_info_as_dict = siren_info.dict()
+    else:
+        siren_info = siren_info_as_dict = api_entreprises.get_by_offerer(offerer)
 
     offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()  # type: ignore [arg-type]
 
@@ -90,9 +109,9 @@ def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
         user_offerer=user_offerer,
         offerer=offerer,
         offerer_pro_link=build_pc_pro_offerer_link(offerer),
-        offerer_summary=pformat(_summarize_offerer_vars(offerer, api_entreprise)),
+        offerer_summary=pformat(_summarize_offerer_vars(offerer, siren_info)),
         user_summary=pformat(_summarize_user_vars(user_offerer)),
-        api_entreprise=pformat(api_entreprise),
+        api_entreprise=pformat(siren_info_as_dict),
         api_url=settings.API_URL,
     )
 
@@ -182,15 +201,26 @@ def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
     )
 
 
-def _summarize_offerer_vars(offerer: offerers_models.Offerer, api_entreprise: dict) -> dict:
+# FIXME (dbaty, 2022-08-12): once the old api_entreprises is removed,
+# we'll always receive a SirenInfo object here (or None if an error
+# occurred). Adapt typing and simplify function accordingly.
+def _summarize_offerer_vars(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo | dict | None) -> dict:
+    if isinstance(siren_info, sirene.SirenInfo):
+        head_office_siret = siren_info.head_office_siret
+        ape_code = siren_info.ape_code
+    elif isinstance(siren_info, dict):  # legacy API
+        head_office_siret = siren_info["unite_legale"]["etablissement_siege"]["siret"]
+        ape_code = siren_info["unite_legale"]["activite_principale"]
+    else:  # None
+        head_office_siret = ape_code = "Inconnu (erreur API Sirene)"
     return {
         "name": offerer.name,
         "siren": offerer.siren,
         "address": offerer.address,
         "city": offerer.city,
         "postalCode": offerer.postalCode,
-        "siret": api_entreprise["unite_legale"]["etablissement_siege"]["siret"],
-        "legal_main_activity": api_entreprise["unite_legale"]["activite_principale"],
+        "siret": head_office_siret,
+        "legal_main_activity": ape_code,
     }
 
 
