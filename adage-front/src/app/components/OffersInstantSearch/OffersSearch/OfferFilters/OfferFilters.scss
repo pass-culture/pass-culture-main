@@ -4,7 +4,7 @@
 .offer-filters-title {
   font-weight: bold;
   font-size: rem(15px);
-  margin-bottom: rem(32px);
+  margin-bottom: rem(20px);
   display: inline-block;
 }
 
@@ -29,4 +29,10 @@
 
 .offer-filters-filter:not(:last-of-type) {
   margin-right: rem(24px);
+}
+
+.offer-filters-separator {
+  margin: rem(20px) 0;
+  width: rem(86px);
+  border-bottom: rem(1px) solid $grey-medium;
 }

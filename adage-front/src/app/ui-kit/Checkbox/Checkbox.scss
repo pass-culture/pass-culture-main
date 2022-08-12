@@ -37,6 +37,7 @@
     position: relative;
     vertical-align: middle;
     width: 1.1875em;
+    cursor: pointer;
 
     &:checked {
       background-color: $grey-dark;
