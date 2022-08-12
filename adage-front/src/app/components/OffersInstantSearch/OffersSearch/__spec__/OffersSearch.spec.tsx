@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import selectEvent from 'react-select-event'
 
 import { AdageFrontRoles } from 'api/gen'
 import { findLaunchSearchButton } from 'app/__spec__/__test_utils__/elements'
@@ -39,7 +40,13 @@ describe('offersSearch component', () => {
 
   beforeEach(() => {
     props = {
-      user: { role: AdageFrontRoles.Redactor, uai: 'uai' },
+      user: {
+        role: AdageFrontRoles.Redactor,
+        uai: 'uai',
+        departmentCode: '30',
+        institutionName: 'COLLEGE BELLEVUE',
+        institutionCity: 'ALES',
+      },
       removeVenueFilter: jest.fn(),
       venueFilter: null,
       refine: jest.fn(),
@@ -60,5 +67,120 @@ describe('offersSearch component', () => {
 
     // Then
     expect(props.refine).toHaveBeenCalledWith('Paris')
+  })
+
+  describe('filter only in my school', () => {
+    it('should display checkbox label with user information', async () => {
+      renderOffersSearchComponent(props)
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'Uniquement les acteurs qui se déplacent dans mon établissement : COLLEGE BELLEVUE - ALES ( 30 )'
+          )
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should check user department when checking checkbox', async () => {
+      renderOffersSearchComponent(props)
+      const checkbox = screen.getByLabelText(
+        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        { exact: false }
+      )
+
+      userEvent.click(checkbox)
+
+      expect(
+        await screen.findByText('30 - Gard', { selector: 'div' })
+      ).toBeInTheDocument()
+    })
+
+    it('should uncheck checkbox when user remove department tag', async () => {
+      renderOffersSearchComponent(props)
+      const checkbox = screen.getByLabelText(
+        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        { exact: false }
+      )
+      userEvent.click(checkbox)
+
+      const gardFilterTag = screen.getByText('30 - Gard', { selector: 'div' })
+      const closeIcon = gardFilterTag.lastChild
+
+      userEvent.click(closeIcon as Element)
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'Uniquement les acteurs qui se déplacent dans mon établissement',
+            { exact: false }
+          )
+        ).not.toBeChecked()
+      )
+    })
+
+    it('should uncheck checkbox when user deselect his department', async () => {
+      renderOffersSearchComponent(props)
+      const checkbox = screen.getByLabelText(
+        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        { exact: false }
+      )
+      userEvent.click(checkbox)
+
+      const departmentFilter = await screen.findByLabelText('Département')
+      await selectEvent.select(departmentFilter, '30 - Gard')
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'Uniquement les acteurs qui se déplacent dans mon établissement',
+            { exact: false }
+          )
+        ).not.toBeChecked()
+      )
+    })
+
+    it('should uncheck checkbox when user adds a department', async () => {
+      renderOffersSearchComponent(props)
+      const checkbox = screen.getByLabelText(
+        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        { exact: false }
+      )
+      userEvent.click(checkbox)
+
+      const departmentFilter = await screen.findByLabelText('Département')
+      await selectEvent.select(departmentFilter, '75 - Paris')
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'Uniquement les acteurs qui se déplacent dans mon établissement',
+            { exact: false }
+          )
+        ).not.toBeChecked()
+      )
+    })
+
+    it('should deselect all department except user department when user checks the checkbox', async () => {
+      renderOffersSearchComponent(props)
+      const departmentFilter = await screen.findByLabelText('Département')
+
+      await selectEvent.select(departmentFilter, '75 - Paris')
+
+      const checkbox = screen.getByLabelText(
+        'Uniquement les acteurs qui se déplacent dans mon établissement',
+        { exact: false }
+      )
+
+      userEvent.click(checkbox)
+
+      const parisFilterTag = screen.queryByText('75 - Paris', {
+        selector: 'div',
+      })
+      const gardFilterTag = screen.queryByText('30 - Gard', { selector: 'div' })
+
+      expect(parisFilterTag).not.toBeInTheDocument()
+      expect(gardFilterTag).toBeInTheDocument()
+    })
   })
 })

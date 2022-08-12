@@ -29,14 +29,15 @@ const BaseCheckbox = ({
       className={cn('base-checkbox-input', {
         'has-error': hasError,
       })}
+      id={props.name}
     />
     {!!Icon && (
       <span className="base-checkbox-icon">
         <Icon />
       </span>
     )}
-    <label htmlFor={props.name}>
-      <span className="base-checkbox-label">{label}</span>
+    <label className="base-checkbox-label" htmlFor={props.name}>
+      {label}
     </label>
   </div>
 )
