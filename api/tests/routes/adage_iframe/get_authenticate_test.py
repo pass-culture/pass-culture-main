@@ -2,6 +2,8 @@ import datetime
 from typing import ByteString
 from typing import Optional
 
+from pcapi.core.educational.factories import EducationalInstitutionFactory
+
 from tests.conftest import TestClient
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_invalid_token
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
@@ -22,8 +24,15 @@ class Returns200Test:
             uai=uai_code,
         )
 
-    def test_should_return_redactor_role_when_token_has_an_uai_code(self, app):
+    def test_should_return_redactor_role_when_token_has_an_uai_code(self, app) -> None:
         # Given
+        EducationalInstitutionFactory(
+            institutionId=self.valid_user.get("uai"),
+            name="BELLEVUE",
+            institutionType="COLLEGE",
+            postalCode="30100",
+            city="Ales",
+        )
         valid_encoded_token = self._create_adage_valid_token(uai_code=self.valid_user.get("uai"))
 
         test_client = TestClient(app.test_client())
@@ -37,9 +46,12 @@ class Returns200Test:
         assert response.json == {
             "role": "redactor",
             "uai": self.valid_user.get("uai"),
+            "institutionName": "COLLEGE BELLEVUE",
+            "departmentCode": "30",
+            "institutionCity": "Ales",
         }
 
-    def test_should_return_readonly_role_when_token_has_no_uai_code(self, app):
+    def test_should_return_readonly_role_when_token_has_no_uai_code(self, app) -> None:
         # Given
         valid_encoded_token = self._create_adage_valid_token(uai_code=None)
 
@@ -54,6 +66,9 @@ class Returns200Test:
         assert response.json == {
             "role": "readonly",
             "uai": None,
+            "institutionName": None,
+            "departmentCode": None,
+            "institutionCity": None,
         }
 
 

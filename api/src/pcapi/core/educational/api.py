@@ -38,6 +38,7 @@ from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.models import User
+from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -881,3 +882,13 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
 
 def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
     return venues_serialize.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
+
+
+def get_educational_institution_department_code(
+    institution: educational_models.EducationalInstitution | None,
+) -> str | None:
+    if institution is None or institution.postalCode is None:
+        return None
+
+    department_code = PostalCode(institution.postalCode).get_departement_code()
+    return department_code
