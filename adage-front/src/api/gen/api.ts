@@ -48,6 +48,9 @@ export enum AdageFrontRoles {
   Readonly = 'readonly',
 }
 export interface AuthenticatedResponse {
+  departmentCode?: string | null
+  institutionCity?: string | null
+  institutionName?: string | null
   role: AdageFrontRoles
   uai?: string | null
 }
@@ -132,6 +135,7 @@ export interface Coordinates {
 export interface EducationalInstitutionResponseModel {
   city: string
   id: number
+  institutionType?: string | null
   name: string
   postalCode: string
 }
