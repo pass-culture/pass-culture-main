@@ -4,7 +4,6 @@ from pcapi.core.booking_providers.models import BookingProvider
 from pcapi.core.booking_providers.models import BookingProviderName
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.factories import IndividualBookingFactory
-from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
@@ -36,7 +35,3 @@ class ExternalBookingFactory(BaseFactory):
     booking = factory.SubFactory(IndividualBookingFactory)
     barcode = factory.Sequence(lambda n: f"{n:13}")
     seat = factory.Sequence("A_{}".format)
-
-
-class UsedExternalBookingFactory(ExternalBookingFactory):
-    booking = factory.SubFactory(UsedIndividualBookingFactory)

@@ -3,11 +3,10 @@ from datetime import timezone
 from unittest.mock import patch
 
 from dateutil.tz import tz
-from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.booking_providers.factories import UsedExternalBookingFactory
+from pcapi.core.booking_providers.factories import ExternalBookingFactory
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -215,12 +214,17 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
 
-    @freeze_time("2020-08-11 13:00")
     def test_should_not_return_booking_token_when_booking_is_external(self, app, client):
-        externalbooking = UsedExternalBookingFactory(booking__dateCreated=datetime(2020, 8, 11, 12, 0, 0))
+        booking_date = datetime(2020, 8, 11, 10, 00, tzinfo=timezone.utc)
+        externalbooking = ExternalBookingFactory(
+            booking__dateCreated=booking_date,
+            booking__status=bookings_models.BookingStatus.USED,
+            booking__dateUsed=datetime(2020, 8, 11, 20, 00, tzinfo=timezone.utc),
+        )
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)
 
+        # when
         response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
 
         assert response.status_code == 200
