@@ -138,6 +138,7 @@ export const OffersSearchComponent = ({
         handleLaunchSearchButton={handleLaunchSearchButton}
         isLoading={isLoading}
         removeVenueFilter={removeVenueFilter}
+        user={user}
         venueFilter={venueFilter}
       />
       <div className="search-results">
