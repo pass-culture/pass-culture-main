@@ -782,17 +782,24 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
     order_by = order_by or []
     filters = []
 
+    if not terms:
+        return models.User.query.filter(False)
+
     for term in terms:
         if not term:
             continue
 
-        filters.append(sa.cast(models.User.phoneNumber, sa.Unicode) == term)  # type: ignore [type-var]
-        filters.append(sa.cast(models.User.firstName, sa.Unicode).ilike(f"%{term}%"))
-        filters.append(sa.cast(models.User.lastName, sa.Unicode).ilike(f"%{term}%"))
-        filters.append(sa.cast(models.User.id, sa.Unicode) == term)
-        filters.append(sa.cast(models.User.email, sa.Unicode).ilike(f"%{term}%"))
+        filters.append(
+            sa.or_(
+                sa.cast(models.User.phoneNumber, sa.Unicode) == term,  # type: ignore [type-var]
+                sa.cast(models.User.firstName, sa.Unicode).ilike(f"%{term}%"),
+                sa.cast(models.User.lastName, sa.Unicode).ilike(f"%{term}%"),
+                sa.cast(models.User.id, sa.Unicode) == term,
+                sa.cast(models.User.email, sa.Unicode).ilike(f"%{term}%"),
+            )
+        )
 
-    accounts = models.User.query.filter(sa.or_(*filters))
+    accounts = models.User.query.filter(sa.and_(*filters) if len(filters) > 1 else filters[0])
 
     if order_by:
         try:
