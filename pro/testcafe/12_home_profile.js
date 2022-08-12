@@ -14,7 +14,7 @@ test('j’ai accès aux informations de mon profil', async t => {
   const userFirstname = Selector('span').withText(user.firstName)
   const userLastname = Selector('span').withText(user.lastName)
   const userEmail = Selector('span').withText(user.email)
-  const userPhoneNumber = Selector('span').withText(user.phoneNumber)
+  const userPhoneNumber = Selector('span').withText('+33 1 00 00 00 09')
 
   await navigateToHomeAs(user, createUserRole(user))(t)
   await t
