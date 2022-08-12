@@ -494,6 +494,7 @@ class AlgoliaBackend(base.SearchBackend):
                 if collective_offer.institution
                 else "all",
                 "interventionArea": collective_offer.interventionArea,
+                "eventAddressType": collective_offer.offerVenue.get("addressType"),
             },
             "offerer": {
                 "name": offerer.name,
@@ -525,6 +526,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "domains": [domain.id for domain in collective_offer_template.domains],
                 "educationalInstitutionUAICode": "all",
                 "interventionArea": collective_offer_template.interventionArea,
+                "eventAddressType": collective_offer_template.offerVenue.get("addressType"),
             },
             "offerer": {
                 "name": offerer.name,
