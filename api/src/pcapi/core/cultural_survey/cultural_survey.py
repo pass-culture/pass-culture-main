@@ -21,48 +21,47 @@ class CulturalSurveyQuestion:
 
 FESTIVAL = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.FESTIVAL,
-    title="Participé à un festival,",
-    subtitle="à une avant-première",
+    title="À un festival",
     sub_question=CulturalSurveyQuestionEnum.FESTIVALS,
 )
 SPECTACLE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.SPECTACLE,
-    title="Assisté à un spectacle",
-    subtitle="Pièce de théâtre, cirque, danse...",
+    title="À un spectacle",
+    subtitle="(pièce de théâtre, cirque, danse...)",
     sub_question=CulturalSurveyQuestionEnum.SPECTACLES,
 )
 BIBLIOTHEQUE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.BIBLIOTHEQUE,
-    title="Allé à la bibliothèque",
+    title="À la bibliothèque",
     subtitle="ou à la médiathèque",
 )
 EVENEMENT_JEU = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.EVENEMENT_JEU,
-    title="Participé à un jeu",
-    subtitle="escape game, jeu concours",
+    title="À un escape game",
+    subtitle="ou participé à un jeu, jeu concours",
 )
 CONCERT = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.CONCERT,
-    title="Allé à un concert",
+    title="À un concert",
 )
 CINEMA = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.CINEMA,
-    title="Allé au cinéma",
+    title="Au cinéma",
 )
 MUSEE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.MUSEE,
-    title="Visité un musée,",
+    title="Au musée,",
     subtitle="un monument, une exposition...",
 )
 CONFERENCE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.CONFERENCE,
-    title="Participé à une conférence,",
-    subtitle="rencontre ou découverte des métiers de la culture",
+    title="À une conférence,",
+    subtitle="une rencontre ou une découverte des métiers de la Culture",
 )
 COURS = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.COURS,
-    title="Pris un cours",
-    subtitle="danse, théâtre, musique, dessin",
+    title="À un cours",
+    subtitle="(danse, théâtre, musique, dessin...)",
 )
 SANS_SORTIES = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.SANS_SORTIES,
@@ -240,7 +239,7 @@ ACTIVITES_ANSWERS = [
 
 SORTIES = CulturalSurveyQuestion(
     id=CulturalSurveyQuestionEnum.SORTIES,
-    title="Au cours de l'année précédente, tu as/es au moins une fois ...",
+    title="Au cours de l'année précédente, tu es allé au moins une fois ...",
     answers=SORTIES_ANSWERS,
 )
 
