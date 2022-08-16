@@ -82,6 +82,23 @@ describe('offersSearch component', () => {
       )
     })
 
+    it('should not display checkbox', async () => {
+      props.user = {
+        role: AdageFrontRoles.Redactor,
+        uai: 'uai',
+        departmentCode: null,
+        institutionName: null,
+        institutionCity: null,
+      }
+      renderOffersSearchComponent(props)
+
+      expect(
+        screen.queryByLabelText(
+          'Uniquement les acteurs qui se déplacent dans mon établissement'
+        )
+      ).not.toBeInTheDocument()
+    })
+
     it('should check user department when checking checkbox', async () => {
       renderOffersSearchComponent(props)
       const checkbox = screen.getByLabelText(
