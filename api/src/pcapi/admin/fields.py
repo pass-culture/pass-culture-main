@@ -26,7 +26,7 @@ class SelectMultipleFieldWithOptgroups(wtf_fields.SelectMultipleField):
     def __init__(self, *args, size=None, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(*args, **kwargs)
         self.flattened_choices = {option[0] for group in kwargs["choices"] for option in group[1]}
-        self.size = size
+        self.size = size  # type: ignore [no-untyped-def]
 
     def pre_validate(self, form):  # type: ignore [no-untyped-def]
         if self.data:
