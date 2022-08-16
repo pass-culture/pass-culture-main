@@ -653,14 +653,15 @@ def publish_offer(offer_id: int, user: User) -> Offer:
 
 def update_offer_fraud_information(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | Offer,
-    user: User,
+    user: User | None,
     *,
     silent: bool = False,
 ) -> None:
     venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
 
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
-    offer.author = user
+    if user is not None:
+        offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
     offer.lastValidationType = OfferValidationType.AUTO
 
