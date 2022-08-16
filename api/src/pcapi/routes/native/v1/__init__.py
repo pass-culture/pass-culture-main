@@ -6,6 +6,7 @@ def install_routes(app: Flask) -> None:
     from . import account
     from . import authentication
     from . import bookings
+    from . import cookies_consent
     from . import cultural_survey
     from . import favorites
     from . import offerers
