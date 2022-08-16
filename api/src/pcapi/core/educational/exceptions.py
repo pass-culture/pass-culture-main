@@ -125,3 +125,9 @@ class AdageException(Exception):
 
 class CulturalPartnerNotFoundException(Exception):
     pass
+
+
+class InvalidInterventionArea(Exception):
+    def __init__(self, errors: list[str]):
+        self.errors = errors
+        super().__init__()

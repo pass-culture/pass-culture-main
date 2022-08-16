@@ -5,12 +5,14 @@ from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils.human_ids import humanize
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
@@ -200,3 +202,83 @@ def list_students_levels() -> public_api_collective_offers_serialize.CollectiveO
             for student_level in educational_models.StudentLevels
         ]
     )
+
+
+@blueprint.pro_public_api_v2.route("/collective-offers/", methods=["POST"])
+@api_key_required
+@spectree_serialize(
+    api=blueprint.pro_public_schema_v2,
+    tags=["API offres collectives"],
+    resp=SpectreeResponse(
+        **(
+            {
+                "HTTP_201": (
+                    public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
+                    "L'offre collective existe",
+                ),
+                "HTTP_401": (None, "Authentification nécessaire"),
+                "HTTP_403": (None, "Non éligible pour les offres collectives"),
+                "HTTP_400": (None, "Requête malformée"),
+            }
+        )
+    ),
+)
+def post_collective_offer_public(
+    body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
+) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
+    # in French, to be used by Swagger for the API documentation
+    """Création d'une offre collective."""
+
+    # clean offererVenue
+    if body.offer_venue == public_api_collective_offers_serialize.OfferAddressType.OTHER:
+        offer_venue = {"venueId": "", "addressType": "other", "otherAddress": body.address}
+    elif body.offer_venue == public_api_collective_offers_serialize.OfferAddressType.SCHOOL:
+        offer_venue = {"venueId": "", "addressType": "school", "otherAddress": ""}
+    elif body.offer_venue == public_api_collective_offers_serialize.OfferAddressType.OFFERER_VENUE:
+        offer_venue = {"venueId": humanize(body.venue_id), "addressType": "offererVenue", "otherAddress": ""}
+    else:
+        # should not be possible
+        logger.error("post_collective_offer_public recieved invalid value %s", body.offer_venue)
+        raise ApiErrors(
+            errors={
+                "offereVenue": "Cette valeur n'est pas permise.",
+            },
+            status_code=400,
+        )
+
+    try:
+        offer = educational_api.create_collective_offer_public(
+            offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
+            offer_venue=offer_venue,
+            body=body,
+        )
+    except educational_exceptions.CulturalPartnerNotFoundException:
+        raise ApiErrors(
+            errors={
+                "global": "Non éligible pour les offres collectives.",
+            },
+            status_code=403,
+        )
+    except offerers_exceptions.VenueNotFoundException:
+        raise ApiErrors(
+            errors={
+                "venueId": "Ce lieu n'à pas été trouvée.",
+            },
+            status_code=404,
+        )
+    except educational_exceptions.InvalidInterventionArea as exc:
+        raise ApiErrors(
+            errors={
+                "interventionArea": f"Les valeurs {exc.errors} ne sont pas valides.",
+            },
+            status_code=404,
+        )
+    except educational_exceptions.EducationalInstitutionUnknown:
+        raise ApiErrors(
+            errors={
+                "educationalInstitutionId": "Établissement scolaire non trouvé.",
+            },
+            status_code=404,
+        )
+
+    return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)

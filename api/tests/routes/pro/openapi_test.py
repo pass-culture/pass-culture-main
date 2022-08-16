@@ -224,10 +224,97 @@ def test_public_api(client, app):
                     "title": "ListCollectiveOffersQueryModel",
                     "type": "object",
                 },
+                "OfferAddressType": {
+                    "description": "An enumeration.",
+                    "enum": ["MY_ADDRESS", "SCHOOL_ADDRESS", "OTHER_ADDRESS"],
+                    "title": "OfferAddressType",
+                },
                 "OfferStatus": {
                     "description": "An enumeration.",
                     "enum": ["ACTIVE", "PENDING", "EXPIRED", "REJECTED", "SOLD_OUT", "INACTIVE", "DRAFT"],
                     "title": "OfferStatus",
+                },
+                "PostCollectiveOfferBodyModel": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "audioDisabilityCompliant": {
+                            "default": False,
+                            "title": "Audiodisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "beginningDatetime": {"format": "date-time", "title": "Beginningdatetime", "type": "string"},
+                        "bookingEmail": {"nullable": True, "title": "Bookingemail", "type": "string"},
+                        "bookingLimitDatetime": {
+                            "format": "date-time",
+                            "title": "Bookinglimitdatetime",
+                            "type": "string",
+                        },
+                        "contactEmail": {"title": "Contactemail", "type": "string"},
+                        "contactPhone": {"title": "Contactphone", "type": "string"},
+                        "description": {"nullable": True, "title": "Description", "type": "string"},
+                        "domains": {"items": {"type": "string"}, "title": "Domains", "type": "array"},
+                        "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
+                        "educationalInstitutionId": {
+                            "nullable": True,
+                            "title": "Educationalinstitutionid",
+                            "type": "integer",
+                        },
+                        "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
+                        "mentalDisabilityCompliant": {
+                            "default": False,
+                            "title": "Mentaldisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "motorDisabilityCompliant": {
+                            "default": False,
+                            "title": "Motordisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "name": {"title": "Name", "type": "string"},
+                        "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
+                        "offerVenue": {"$ref": "#/components/schemas/OfferAddressType"},
+                        "priceDetail": {"nullable": True, "title": "Pricedetail", "type": "string"},
+                        "students": {"items": {"$ref": "#/components/schemas/StudentLevels"}, "type": "array"},
+                        "subcategoryId": {"title": "Subcategoryid", "type": "string"},
+                        "totalPrice": {"title": "Totalprice", "type": "integer"},
+                        "venueId": {"title": "Venueid", "type": "integer"},
+                        "visualDisabilityCompliant": {
+                            "default": False,
+                            "title": "Visualdisabilitycompliant",
+                            "type": "boolean",
+                        },
+                    },
+                    "required": [
+                        "venueId",
+                        "name",
+                        "subcategoryId",
+                        "contactEmail",
+                        "contactPhone",
+                        "domains",
+                        "students",
+                        "offerVenue",
+                        "interventionArea",
+                        "beginningDatetime",
+                        "bookingLimitDatetime",
+                        "totalPrice",
+                        "numberOfTickets",
+                    ],
+                    "title": "PostCollectiveOfferBodyModel",
+                    "type": "object",
+                },
+                "StudentLevels": {
+                    "description": "An enumeration.",
+                    "enum": [
+                        "Collège - 4e",
+                        "Collège - 3e",
+                        "CAP - 1re année",
+                        "CAP - 2e année",
+                        "Lycée - Seconde",
+                        "Lycée - Première",
+                        "Lycée - Terminale",
+                    ],
+                    "title": "StudentLevels",
                 },
                 "UpdateVenueStockBodyModel": {
                     "description": "Available stock quantity for a book",
@@ -476,7 +563,40 @@ def test_public_api(client, app):
                     },
                     "summary": "Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.",
                     "tags": ["API offres collectives"],
-                }
+                },
+                "post": {
+                    "description": "",
+                    "operationId": "PostCollectiveOfferPublic",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/PostCollectiveOfferBodyModel"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/GetPublicCollectiveOfferResponseModel"}
+                                }
+                            },
+                            "description": "L'offre collective existe",
+                        },
+                        "400": {"description": "Requête malformée"},
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {"description": "Non éligible pour les offres collectives"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Création d'une offre collective.",
+                    "tags": ["API offres collectives"],
+                },
             },
             "/v2/collective-offers/categories": {
                 "get": {

@@ -33,6 +33,7 @@ from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.models import Stock
@@ -47,6 +48,7 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import collective_bookings_serialize
+from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
@@ -900,6 +902,70 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
 
 def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
     return venues_serialize.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
+
+
+def create_collective_offer_public(
+    offerer_id: int, body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel, offer_venue: dict
+) -> educational_models.CollectiveOffer:
+    from pcapi.core.offers.api import update_offer_fraud_information
+
+    offerers_api.can_offerer_create_educational_offer(offerer_id)
+    venue = offerers_models.Venue.query.filter_by(id=body.venue_id).one_or_none()
+    if venue is None or venue.managingOffererId != offerer_id:
+        raise offerers_exceptions.VenueNotFoundException()
+    cast(offerers_models.Venue, venue)
+
+    offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id, is_educational=True)
+    validation.check_intervention_area(body.intervention_area)
+
+    educational_domains = educational_repository.get_educational_domains_from_names(body.domains)
+
+    if body.educational_institution_id:
+        if not educational_models.EducationalInstitution.query.filter_by(
+            id=body.educational_institution_id
+        ).one_or_none():
+            raise exceptions.EducationalInstitutionUnknown()
+
+    collective_offer = educational_models.CollectiveOffer(
+        venueId=venue.id,
+        name=body.name,
+        description=body.description,
+        subcategoryId=body.subcategory_id,
+        bookingEmail=body.booking_email,
+        contactEmail=body.contact_email,
+        contactPhone=body.contact_phone,
+        domains=educational_domains,
+        durationMinutes=body.duration_minutes,
+        students=body.students,
+        audioDisabilityCompliant=body.audio_disability_compliant,
+        mentalDisabilityCompliant=body.mental_disability_compliant,
+        motorDisabilityCompliant=body.motor_disability_compliant,
+        visualDisabilityCompliant=body.visual_disability_compliant,
+        offerVenue=offer_venue,  # type: ignore [arg-type]
+        interventionArea=body.intervention_area,
+        institutionId=body.educational_institution_id,
+    )
+
+    collective_stock = educational_models.CollectiveStock(
+        collectiveOffer=collective_offer,
+        beginningDatetime=body.beginning_datetime,
+        bookingLimitDatetime=body.booking_limit_datetime,
+        price=body.total_price / 100.0,
+        numberOfTickets=body.number_of_tickets,
+        priceDetail=body.price_detail,
+    )
+
+    update_offer_fraud_information(offer=collective_offer, user=None)
+    db.session.add(collective_offer)
+    db.session.add(collective_stock)
+    db.session.commit()
+    search.async_index_collective_offer_ids([collective_offer.id])
+    logger.info(
+        "Collective offer has been created",
+        extra={"offerId": collective_offer.id},
+    )
+    return collective_offer
 
 
 def get_educational_institution_department_code(

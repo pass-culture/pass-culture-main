@@ -177,3 +177,33 @@ INSTITUTION_TYPES = {
     "LEA": "LYCEE D’ENSEIGNEMENT ADAPTE",
     "IAP": "INSTITUT AGRICOLE PRIVE",
 }
+
+
+def generate_intervention_area() -> set[str]:
+    intervention_area = set()
+    # Metropolis
+    for i in range(1, 96):
+        if i == 20:
+            intervention_area.add("2A")  # Corse-du-Sud
+            intervention_area.add("2B")  # Haute-Corse
+            continue
+        intervention_area.add(str(i))
+
+    # DROM
+    intervention_area.add("971")  # Guadeloupe
+    intervention_area.add("972")  # Martinique
+    intervention_area.add("973")  # Guyane
+    intervention_area.add("974")  # La réunion
+    intervention_area.add("976")  # Mayotte
+    # intervention_area.add('977')  # Saint-Barthélemy
+    # intervention_area.add('978')  # Saint-Martin
+    # intervention_area.add('975')  # Saint-Pierre-et-Miquelon
+    # intervention_area.add('986')  # Wallis et Futuna
+
+    # special codes
+    intervention_area.add("all")
+    intervention_area.add("mainland")  # France metropolitaine
+    return intervention_area
+
+
+INTERVENTION_AREA = generate_intervention_area()

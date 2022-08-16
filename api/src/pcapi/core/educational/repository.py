@@ -857,6 +857,10 @@ def get_educational_domains_from_ids(ids: Iterable[int]) -> list[educational_mod
     return educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids)).all()
 
 
+def get_educational_domains_from_names(names: Iterable[str]) -> list[educational_models.EducationalDomain]:
+    return educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.name.in_(names)).all()
+
+
 def get_all_educational_domains_ordered_by_name() -> list[educational_models.EducationalDomain]:
     return educational_models.EducationalDomain.query.order_by(educational_models.EducationalDomain.name).all()
 
