@@ -5,6 +5,7 @@
 import type { Address } from './Address';
 
 export type SiretInfo = {
+  active: boolean;
   address: Address;
   name: string;
   siret: string;
