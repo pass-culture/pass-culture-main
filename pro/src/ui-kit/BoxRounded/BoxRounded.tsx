@@ -10,7 +10,7 @@ import styles from './BoxRounded.module.scss'
 export interface IBoxRoundedProps {
   children: JSX.Element
   onClickModify: () => void
-  showButtonModify: boolean
+  showButtonModify?: boolean
 }
 
 const BoxRounded = ({
