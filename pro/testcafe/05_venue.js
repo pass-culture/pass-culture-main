@@ -6,7 +6,6 @@ import {
 } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
-import { getSiretRequestMockAs } from './helpers/sirenes'
 
 const addressInput = Selector('input[name="address"]')
 const addressSuggestion = Selector('.location-viewer .menu .item')
@@ -31,22 +30,16 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
   )
-  const { address, city, name, postalCode, siren } = offerer
+  const { siren } = offerer
 
   const newVenueButton = Selector(`a`).withText('Créer un lieu')
-  const latitude = '48.862923'
-  const longitude = '2.287896'
-  const venueName = `${name} - Lieu`
+  const latitude = '48.863666'
+  const longitude = '2.337933'
+  const venueName = `MINISTERE DE LA CULTURE`
   const siret = `${siren}12345`
-  const venue = {
-    address,
-    city,
-    latitude,
-    longitude,
-    name: venueName,
-    postalCode,
-    siret,
-  }
+  const address = '3 RUE DE VALOIS'
+  const city = 'Paris'
+  const postalCode = '75001'
 
   const description =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id risus lorem. Curabitur elementum auctor interdum. In quis risus nibh. Ut gravida leo sit amet purus aliquam elementum. Aliquam erat volutpat. Sed mi ligula, porttitor at mi a, sollicitudin blandit diam. Quisque malesuada, ante lobortis luctus luctus, nisi elit porta diam, at imperdiet ex velit nec erat.'
@@ -54,7 +47,6 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
   await navigateToOffererAs(user, offerer, createUserRole(user))(t)
 
   await t
-    .addRequestHooks(getSiretRequestMockAs(venue))
     .click(newVenueButton)
     .click(venueType)
     .click(venueTypeOption.withText('Festival'))
