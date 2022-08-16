@@ -39,8 +39,8 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models import offer_mixin
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
@@ -665,7 +665,7 @@ def list_collective_offers_for_pro_user(
 def list_public_collective_offers(
     offerer_id: int,
     venue_id: int | None = None,
-    status: str | None = None,
+    status: offer_mixin.OfferStatus | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
     limit: int = 500,
@@ -720,7 +720,7 @@ def create_collective_offer(
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
         offerVenue=offer_data.offer_venue.dict(),  # type: ignore [arg-type]
-        validation=OfferValidationStatus.DRAFT,
+        validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
         motorDisabilityCompliant=offer_data.motor_disability_compliant,
@@ -760,7 +760,7 @@ def create_collective_offer_template_from_collective_offer(
     db.session.add(collective_offer_template)
     db.session.commit()
 
-    if offer.validation == OfferValidationStatus.DRAFT:
+    if offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
         update_offer_fraud_information(collective_offer_template, user)
 
     search.unindex_collective_offer_ids([offer.id])
@@ -862,12 +862,12 @@ def update_collective_offer_educational_institution(
     offer.institution = institution  # type: ignore [assignment]
     db.session.commit()
 
-    if is_creating_offer and offer.validation == OfferValidationStatus.DRAFT:
+    if is_creating_offer and offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
         update_offer_fraud_information(offer, user)
 
     search.async_index_collective_offer_ids([offer_id])
 
-    if educational_institution_id is not None and offer.validation == OfferValidationStatus.APPROVED:
+    if educational_institution_id is not None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
         adage_client.notify_institution_association(serialize_collective_offer(offer))
 
     return offer

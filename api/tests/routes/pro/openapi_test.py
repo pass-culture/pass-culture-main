@@ -89,24 +89,6 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersVenueResponseModel",
                     "type": "object",
                 },
-                "ValidationError": {
-                    "description": "Model of a validation error response.",
-                    "items": {"$ref": "#/components/schemas/ValidationErrorElement"},
-                    "title": "ValidationError",
-                    "type": "array",
-                },
-                "ValidationErrorElement": {
-                    "description": "Model of a validation error response element.",
-                    "properties": {
-                        "ctx": {"title": "Error context", "type": "object"},
-                        "loc": {"items": {"type": "string"}, "title": "Missing field name", "type": "array"},
-                        "msg": {"title": "Error message", "type": "string"},
-                        "type": {"title": "Error type", "type": "string"},
-                    },
-                    "required": ["loc", "msg", "type"],
-                    "title": "ValidationErrorElement",
-                    "type": "object",
-                },
                 "GetBookingResponse": {
                     "properties": {
                         "bookingId": {"title": "Bookingid", "type": "string"},
@@ -114,7 +96,7 @@ def test_public_api(client, app):
                         "datetime": {"title": "Datetime", "type": "string"},
                         "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
                         "email": {"title": "Email", "type": "string"},
-                        "formula": {"nullable": True, "anyOf": [{"$ref": "#/components/schemas/BookingFormula"}]},
+                        "formula": {"anyOf": [{"$ref": "#/components/schemas/BookingFormula"}], "nullable": True},
                         "isUsed": {"title": "Isused", "type": "boolean"},
                         "offerId": {"title": "Offerid", "type": "integer"},
                         "offerName": {"title": "Offername", "type": "string"},
@@ -236,11 +218,16 @@ def test_public_api(client, app):
                     "properties": {
                         "periodBeginningDate": {"nullable": True, "title": "Periodbeginningdate", "type": "string"},
                         "periodEndingDate": {"nullable": True, "title": "Periodendingdate", "type": "string"},
-                        "status": {"nullable": True, "title": "Status", "type": "string"},
+                        "status": {"anyOf": [{"$ref": "#/components/schemas/OfferStatus"}], "nullable": True},
                         "venueId": {"nullable": True, "title": "Venueid", "type": "integer"},
                     },
                     "title": "ListCollectiveOffersQueryModel",
                     "type": "object",
+                },
+                "OfferStatus": {
+                    "description": "An enumeration.",
+                    "enum": ["ACTIVE", "PENDING", "EXPIRED", "REJECTED", "SOLD_OUT", "INACTIVE", "DRAFT"],
+                    "title": "OfferStatus",
                 },
                 "UpdateVenueStockBodyModel": {
                     "description": "Available stock quantity for a book",
@@ -248,8 +235,8 @@ def test_public_api(client, app):
                         "available": {"minimum": 0, "title": "Available", "type": "integer"},
                         "price": {
                             "description": "(Optionnel) Prix en Euros avec 2 décimales possibles",
-                            "title": "Price",
                             "nullable": True,
+                            "title": "Price",
                             "type": "number",
                         },
                         "ref": {"description": "Format: EAN13", "title": "ISBN", "type": "string"},
@@ -270,14 +257,28 @@ def test_public_api(client, app):
                     "title": "Venue's stocks update body",
                     "type": "object",
                 },
+                "ValidationError": {
+                    "description": "Model of a validation error response.",
+                    "items": {"$ref": "#/components/schemas/ValidationErrorElement"},
+                    "title": "ValidationError",
+                    "type": "array",
+                },
+                "ValidationErrorElement": {
+                    "description": "Model of a validation error response element.",
+                    "properties": {
+                        "ctx": {"title": "Error context", "type": "object"},
+                        "loc": {"items": {"type": "string"}, "title": "Missing field name", "type": "array"},
+                        "msg": {"title": "Error message", "type": "string"},
+                        "type": {"title": "Error type", "type": "string"},
+                    },
+                    "required": ["loc", "msg", "type"],
+                    "title": "ValidationErrorElement",
+                    "type": "object",
+                },
             },
             "securitySchemes": {
                 "ApiKeyAuth": {"description": "Api key issued by passculture", "scheme": "bearer", "type": "http"},
-                "SessionAuth": {
-                    "in": "cookie",
-                    "name": "session",
-                    "type": "apiKey",
-                },
+                "SessionAuth": {"in": "cookie", "name": "session", "type": "apiKey"},
             },
         },
         "info": {"title": "pass Culture pro public API v2", "version": "2"},
@@ -285,7 +286,7 @@ def test_public_api(client, app):
         "paths": {
             "/v2/bookings/cancel/token/{token}": {
                 "patch": {
-                    "description": "Bien que, dans le cas d’un événement, l\u2019utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d\u2019annuler la réservation d\u2019un utilisateur si elle n\u2019a pas encore été validé.",
+                    "description": "Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.",
                     "operationId": "PatchCancelBookingByToken",
                     "parameters": [
                         {
@@ -305,10 +306,10 @@ def test_public_api(client, app):
                         "404": {"description": "La contremarque n'existe pas"},
                         "410": {"description": "La contremarque a déjà été annulée"},
                         "422": {
-                            "description": "Unprocessable Entity",
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "Annulation d'une réservation.",
@@ -337,10 +338,10 @@ def test_public_api(client, app):
                             "description": "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié"
                         },
                         "422": {
-                            "description": "Unprocessable Entity",
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "Annulation de la validation d'une réservation.",
@@ -349,7 +350,7 @@ def test_public_api(client, app):
             },
             "/v2/bookings/token/{token}": {
                 "get": {
-                    "description": "Le code \u201ccontremarque\u201d ou \"token\" est une cha\u00eene de caractères permettant d\u2019identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
+                    "description": "Le code “contremarque” ou \"token\" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
                     "operationId": "GetBookingByTokenV2",
                     "parameters": [
                         {
@@ -365,7 +366,7 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/GetBookingResponse"}}
                             },
-                            "description": "La contremarque existe et n\u2019est pas validée",
+                            "description": "La contremarque existe et n’est pas validée",
                         },
                         "401": {"description": "Authentification nécessaire"},
                         "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
@@ -374,10 +375,10 @@ def test_public_api(client, app):
                             "description": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"
                         },
                         "422": {
-                            "description": "Unprocessable Entity",
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
@@ -407,10 +408,10 @@ def test_public_api(client, app):
                             "description": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"
                         },
                         "422": {
-                            "description": "Unprocessable Entity",
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
@@ -428,7 +429,7 @@ def test_public_api(client, app):
                             "in": "query",
                             "name": "status",
                             "required": False,
-                            "schema": {"nullable": True, "title": "Status", "type": "string"},
+                            "schema": {"anyOf": [{"$ref": "#/components/schemas/OfferStatus"}], "nullable": True},
                         },
                         {
                             "description": "",
@@ -459,7 +460,7 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/CollectiveOffersListResponseModel"}
                                 }
                             },
-                            "description": "L'offre " "collective " "existe",
+                            "description": "L'offre collective existe",
                         },
                         "401": {"description": "Authentification nécessaire"},
                         "403": {
@@ -499,7 +500,7 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "Récupération de la liste des catégories d'offres proposées.",
@@ -526,7 +527,7 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
@@ -555,7 +556,7 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
@@ -629,7 +630,7 @@ def test_public_api(client, app):
             },
             "/v2/venue/{venue_id}/stocks": {
                 "post": {
-                    "description": """Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" (optionnel) correspond au prix en euros. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.""",
+                    "description": 'Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" (optionnel) correspond au prix en euros. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d\'API utilisée est reliée.',
                     "operationId": "UpdateStocks",
                     "parameters": [
                         {
@@ -651,10 +652,10 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "404": {"description": "Not Found"},
                         "422": {
-                            "description": "Unprocessable Entity",
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.",
