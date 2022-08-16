@@ -304,7 +304,7 @@ def install_admin_autocomplete_views():  # type: ignore [no-untyped-def]
     from pcapi.admin import autocomplete  # pylint: disable=unused-import
 
 
-def install_admin_template_filters(app: Flask) -> None:
+def install_admin_template_filters(app: Flask) -> None:  # type: ignore [no-untyped-def]
     app.jinja_env.filters["yesno"] = templating.yesno
     app.jinja_env.filters["subscription_status_format"] = templating.subscription_status_format
     app.jinja_env.filters["fraud_check_status_format"] = templating.fraud_check_status_format
