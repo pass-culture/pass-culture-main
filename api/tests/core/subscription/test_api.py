@@ -1506,3 +1506,49 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert not is_success
         assert not user.is_beneficiary
+
+    def test_duplicate_detected(self):
+        first_name = "Alain"
+        last_name = "Milourd"
+        birth_date = datetime.utcnow() - relativedelta(years=18)
+
+        users_factories.BeneficiaryGrant18Factory(firstName=first_name, lastName=last_name, dateOfBirth=birth_date)
+
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        to_invalidate_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            resultContent=fraud_factories.UbbleContentFactory(
+                first_name=first_name, last_name=last_name, birth_date=birth_date.date().isoformat()
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        resut = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert not resut
+        assert not user.is_beneficiary
+        assert to_invalidate_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert to_invalidate_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
