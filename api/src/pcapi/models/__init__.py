@@ -13,6 +13,7 @@ def install_models() -> None:
     # pylint: disable=unused-import
     import pcapi.core.booking_providers.models
     import pcapi.core.bookings.models
+    import pcapi.core.cookies.models
     import pcapi.core.criteria.models
     import pcapi.core.educational.models
     import pcapi.core.finance.models
