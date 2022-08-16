@@ -14,7 +14,7 @@ from pcapi.serialization.decorator import spectree_serialize
 def authenticate(authenticated_information: AuthenticatedInformation) -> AuthenticatedResponse:
     if authenticated_information.uai is not None:
         institution = find_educational_institution_by_uai_code(authenticated_information.uai)
-        department_code = get_educational_institution_department_code(institution)
+        department_code = get_educational_institution_department_code(institution) if institution else None
         institution_full_name = f"{institution.institutionType} {institution.name}".strip() if institution else None
         return AuthenticatedResponse(
             role=AdageFrontRoles.REDACTOR,

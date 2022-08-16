@@ -542,11 +542,11 @@ class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type
 
     city = sa.Column(sa.Text(), nullable=False)
 
-    postalCode = sa.Column(sa.String(10), nullable=True)
+    postalCode: str = sa.Column(sa.String(10), nullable=False)
 
     email = sa.Column(sa.Text(), nullable=True)
 
-    phoneNumber = sa.Column(sa.String(30), nullable=True)
+    phoneNumber = sa.Column(sa.String(30), nullable=False)
 
     collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
         "CollectiveOffer", back_populates="institution"
