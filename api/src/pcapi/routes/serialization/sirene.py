@@ -21,4 +21,5 @@ class SirenInfo(serialization.BaseModel):
 class SiretInfo(serialization.BaseModel):
     siret: str
     name: str
+    active: bool
     address: Address
