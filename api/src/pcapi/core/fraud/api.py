@@ -802,3 +802,35 @@ def create_profile_completion_fraud_check(
         reason=fraud_check_content.origin,
     )
     repository.save(fraud_check)
+
+
+def invalidate_fraud_check_if_duplicate(fraud_check: models.BeneficiaryFraudCheck) -> None:
+    identity_content = fraud_check.source_data()
+
+    if not isinstance(identity_content, IdentityCheckContent):
+        raise ValueError("Invalid fraud check identity content type")
+
+    first_name = identity_content.get_first_name()
+    last_name = identity_content.get_last_name()
+    birth_date = identity_content.get_birth_date()
+
+    if not first_name or not last_name or not birth_date:
+        raise ValueError("Invalid fraud check identity data")
+
+    duplicate_user = find_duplicate_beneficiary(
+        first_name,
+        last_name,
+        identity_content.get_married_name(),
+        birth_date,
+        fraud_check.userId,  # type: ignore [arg-type]
+    )
+    if not duplicate_user:
+        return
+
+    fraud_check.status = models.FraudCheckStatus.SUSPICIOUS
+    if not fraud_check.reasonCodes:
+        fraud_check.reasonCodes = []
+    fraud_check.reasonCodes.append(models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
+    fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user.id}"
+
+    repository.save(fraud_check)
