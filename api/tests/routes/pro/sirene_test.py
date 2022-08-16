@@ -51,6 +51,7 @@ class GetSiretTest:
         assert response.json == {
             "siret": siret,
             "name": "MINISTERE DE LA CULTURE",
+            "active": True,
             "address": {
                 "street": "3 RUE DE VALOIS",
                 "postalCode": "75001",
