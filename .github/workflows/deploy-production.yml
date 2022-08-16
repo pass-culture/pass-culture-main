@@ -20,4 +20,4 @@ jobs:
           ref: v${{ github.event.inputs.releaseVersion }}
       - name: Deploy Release to production
         run: |
-          ./pc -e production -t ${{ github.event.inputs.releaseVersion }} deploy
+          yes | ./pc -e production -t ${{ github.event.inputs.releaseVersion }} deploy
