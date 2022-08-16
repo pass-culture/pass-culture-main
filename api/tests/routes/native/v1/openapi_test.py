@@ -1088,6 +1088,43 @@ def test_public_api(client):
                     "title": "PaginatedFavoritesResponse",
                     "type": "object",
                 },
+                "Consent": {
+                    "properties": {
+                        "accepted": {
+                            "items": {"minLength": 1, "type": "string"},
+                            "title": "Accepted",
+                            "type": "array",
+                            "uniqueItems": True,
+                        },
+                        "mandatory": {
+                            "items": {"minLength": 1, "type": "string"},
+                            "title": "Mandatory",
+                            "type": "array",
+                            "uniqueItems": True,
+                        },
+                        "refused": {
+                            "items": {"minLength": 1, "type": "string"},
+                            "title": "Refused",
+                            "type": "array",
+                            "uniqueItems": True,
+                        },
+                    },
+                    "required": ["mandatory", "accepted", "refused"],
+                    "title": "Consent",
+                    "type": "object",
+                },
+                "CookieConsentRequest": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "choiceDatetime": {"format": "date-time", "title": "Choicedatetime", "type": "string"},
+                        "consent": {"$ref": "#/components/schemas/Consent"},
+                        "deviceId": {"title": "Deviceid", "type": "string"},
+                        "userId": {"nullable": True, "title": "Userid", "type": "integer"},
+                    },
+                    "required": ["consent", "choiceDatetime", "deviceId"],
+                    "title": "CookieConsentRequest",
+                    "type": "object",
+                },
                 "Coordinates": {
                     "properties": {
                         "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
@@ -2004,6 +2041,31 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "get_cultural_survey_questions <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/cookies_consent": {
+                "post": {
+                    "description": "",
+                    "operationId": "post_/native/v1/cookies_consent",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/CookieConsentRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No " "Content"},
+                        "400": {"description": "Bad " "Request"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "summary": "cookies_consent " "<POST>",
                     "tags": [],
                 }
             },
