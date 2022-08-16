@@ -14,3 +14,4 @@ export const api = new AppClient(config).default
 export const apiContremarque = new AppClientV2(config).apiContremarque
 export const apiStocks = new AppClientV2(config).apiStocks
 export { apiEntreprise, ENTREPRISE_STATUS_ACTIVE } from 'apiClient/entreprise'
+export { apiAdresse } from 'apiClient/adresse'
