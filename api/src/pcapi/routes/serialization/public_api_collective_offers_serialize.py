@@ -1,10 +1,11 @@
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
-    status: str | None
+    status: OfferStatus | None
     venue_id: int | None
     period_beginning_date: str | None
     period_ending_date: str | None
