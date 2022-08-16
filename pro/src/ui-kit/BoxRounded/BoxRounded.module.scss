@@ -12,10 +12,10 @@
 
 .modify-button-container {
   position: absolute;
-  top: 0;
+  top: rem.torem(8px);
   right: 0;
 
-  .expanded & {
+  &.hidden {
     display: none;
   }
 }
