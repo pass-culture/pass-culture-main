@@ -24,6 +24,7 @@ export type { CollectiveOffersVenueResponseModel } from './models/CollectiveOffe
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetPublicCollectiveOfferResponseModel } from './models/GetPublicCollectiveOfferResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
+export { OfferStatus } from './models/OfferStatus';
 export type { UpdateVenueStockBodyModel } from './models/UpdateVenueStockBodyModel';
 export type { UpdateVenueStocksBodyModel } from './models/UpdateVenueStocksBodyModel';
 export type { ValidationError } from './models/ValidationError';
