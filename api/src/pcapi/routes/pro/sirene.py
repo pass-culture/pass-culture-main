@@ -40,5 +40,6 @@ def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
     return sirene_serializers.SiretInfo(
         siret=siret,
         name=info.name,
+        active=info.active,
         address=sirene_serializers.Address(**info.address.dict()),
     )
