@@ -90,7 +90,11 @@ const OfferEducational = ({
   }, [])
 
   useEffect(() => {
-    if (formik.values.offererId && formik.values.venueId) {
+    if (
+      formik.values.offererId &&
+      formik.values.venueId &&
+      mode === Mode.CREATION
+    ) {
       const venue = userOfferers
         .find(({ id }) => id === formik.values.offererId)
         ?.managedVenues?.find(({ id }) => id === formik.values.venueId)
