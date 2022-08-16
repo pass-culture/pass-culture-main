@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOffersListResponseModel } from '../models/CollectiveOffersListResponseModel';
+import type { OfferStatus } from '../models/OfferStatus';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -20,7 +21,7 @@ export class ApiOffresCollectivesService {
    * @throws ApiError
    */
   public getCollectiveOffersPublic(
-    status?: string | null,
+    status?: OfferStatus | null,
     venueId?: number | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
