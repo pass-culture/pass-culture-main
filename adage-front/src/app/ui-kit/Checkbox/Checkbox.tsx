@@ -5,7 +5,7 @@ import './Checkbox.scss'
 
 interface IBaseCheckboxProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
-  label: string
+  label: string | React.ReactNode
   hasError?: boolean
   className?: string
   Icon?: React.FunctionComponent<
