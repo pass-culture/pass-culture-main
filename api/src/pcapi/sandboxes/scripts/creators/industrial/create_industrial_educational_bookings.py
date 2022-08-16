@@ -334,7 +334,6 @@ def create_industrial_educational_bookings() -> None:
         educational_factories.EducationalInstitutionFactory(
             institutionId="0560071Y",
             email=None,
-            phoneNumber=None,
             institutionType="COLLEGE",
             name="JEAN LE COUTALLER",
             city="LORIENT",

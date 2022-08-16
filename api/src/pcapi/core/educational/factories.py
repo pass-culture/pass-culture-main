@@ -143,7 +143,7 @@ class EducationalInstitutionFactory(BaseFactory):
     city = "PARIS"
     postalCode = "75000"
     email = "contact+collegelatour@example.com"
-    phoneNumber = None
+    phoneNumber = "0600000000"
     institutionType = "COLLEGE"
 
 

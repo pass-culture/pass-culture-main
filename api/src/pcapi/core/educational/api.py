@@ -885,10 +885,7 @@ def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerRes
 
 
 def get_educational_institution_department_code(
-    institution: educational_models.EducationalInstitution | None,
-) -> str | None:
-    if institution is None or institution.postalCode is None:
-        return None
-
+    institution: educational_models.EducationalInstitution,
+) -> str:
     department_code = PostalCode(institution.postalCode).get_departement_code()
     return department_code
