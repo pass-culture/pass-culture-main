@@ -2,6 +2,8 @@ import datetime
 from typing import ByteString
 from typing import Optional
 
+import pytest
+
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 
 from tests.conftest import TestClient
@@ -9,6 +11,7 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
 
 
+@pytest.mark.usefixtures("db_session")
 class Returns200Test:
     valid_user = {
         "mail": "sabine.laprof@example.com",
@@ -72,6 +75,7 @@ class Returns200Test:
         }
 
 
+@pytest.mark.usefixtures("db_session")
 class ReturnsErrorTest:
     valid_user = {
         "civilite": "Mme.",
