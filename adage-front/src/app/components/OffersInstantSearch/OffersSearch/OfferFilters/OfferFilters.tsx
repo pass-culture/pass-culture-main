@@ -22,6 +22,25 @@ export interface OfferFiltersProps {
   user: AuthenticatedResponse
 }
 
+const getCheckboxLabel = (user: AuthenticatedResponse) => {
+  const userInformation =
+    user.institutionName &&
+    user.institutionCity &&
+    user.departmentCode &&
+    `${user.institutionName} - ${user.institutionCity} ( ${user.departmentCode} )`
+
+  if (!userInformation) {
+    return ''
+  }
+
+  return (
+    <>
+      Uniquement les acteurs qui se déplacent dans mon établissement :{' '}
+      <b>{userInformation}</b>
+    </>
+  )
+}
+
 export const OfferFilters = ({
   className,
   handleLaunchSearchButton,
@@ -77,28 +96,33 @@ export const OfferFilters = ({
     departmentOption => departmentOption.value === user.departmentCode
   )
 
+  const checkboxLabel = getCheckboxLabel(user)
+
   return (
     <div className={className}>
       <span className="offer-filters-title">Filtrer par :</span>
-      <div className="offer-filters-row">
-        <Checkbox
-          checked={onlyInMySchool}
-          disabled={!userDepartmentOption}
-          label={`Uniquement les acteurs qui se déplacent dans mon établissement : ${user.institutionName} - ${user.institutionCity} ( ${user.departmentCode} )`}
-          name="onlyInMySchool"
-          onChange={event => {
-            if (event.target.checked && userDepartmentOption) {
-              dispatchCurrentFilters({
-                type: 'POPULATE_ONLY_IN_MY_SCHOOL',
-                departmentFilter: userDepartmentOption,
-              })
-            } else {
-              dispatchCurrentFilters({ type: 'RESET_ONLY_IN_MY_SCHOOL' })
-            }
-          }}
-        />
-      </div>
-      <div className="offer-filters-separator" />
+      {checkboxLabel && (
+        <>
+          <div className="offer-filters-row">
+            <Checkbox
+              checked={onlyInMySchool}
+              label={checkboxLabel}
+              name="onlyInMySchool"
+              onChange={event => {
+                if (event.target.checked && userDepartmentOption) {
+                  dispatchCurrentFilters({
+                    type: 'POPULATE_ONLY_IN_MY_SCHOOL',
+                    departmentFilter: userDepartmentOption,
+                  })
+                } else {
+                  dispatchCurrentFilters({ type: 'RESET_ONLY_IN_MY_SCHOOL' })
+                }
+              }}
+            />
+          </div>
+          <div className="offer-filters-separator" />
+        </>
+      )}
       <div className="offer-filters-row">
         <MultiSelectAutocomplete
           className="offer-filters-filter"
