@@ -2,7 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOffersListResponseModel } from '../models/CollectiveOffersListResponseModel';
+import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
+import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -39,6 +41,29 @@ export class ApiOffresCollectivesService {
         401: `Authentification nécessaire`,
         403: `Vous n'avez pas les droits nécessaires pour voir cette offre collective`,
         404: `L'offre collective n'existe pas`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * Création d'une offre collective.
+   * @param requestBody
+   * @returns GetPublicCollectiveOfferResponseModel L'offre collective existe
+   * @throws ApiError
+   */
+  public postCollectiveOfferPublic(
+    requestBody?: PostCollectiveOfferBodyModel,
+  ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/v2/collective-offers/',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: `Requête malformée`,
+        401: `Authentification nécessaire`,
+        403: `Non éligible pour les offres collectives`,
         422: `Unprocessable Entity`,
       },
     });
