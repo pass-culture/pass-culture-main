@@ -8,12 +8,12 @@ import { Provider } from 'react-redux'
 
 import { configureTestStore } from 'store/testUtils'
 
-import { UserIdentityForm } from '../'
-import { IUserIdentityFormProps } from '../UserIdentityForm'
+import { UserPhoneForm } from '../'
+import { IUserPhoneFormProps } from '../UserPhoneForm'
 
-const patchIdentityAdapterMock = jest.fn()
+const patchPhoneAdapterMock = jest.fn()
 
-const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
+const renderUserPhoneForm = (props: IUserPhoneFormProps) => {
   const store = configureTestStore({
     user: {
       initialized: true,
@@ -28,33 +28,35 @@ const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
   })
   return render(
     <Provider store={store}>
-      <UserIdentityForm {...props} />
+      <UserPhoneForm {...props} />
     </Provider>
   )
 }
 
-describe('new_components:UserIdentityForm', () => {
-  let props: IUserIdentityFormProps
+describe('new_components:UserPhoneForm', () => {
+  let props: IUserPhoneFormProps
   beforeEach(() => {
-    patchIdentityAdapterMock.mockResolvedValue({})
+    patchPhoneAdapterMock.mockResolvedValue({})
     props = {
       closeForm: jest.fn(),
       initialValues: {
-        firstName: 'FirstName',
-        lastName: 'lastName',
+        phoneNumber: '0615142345',
       },
-      patchIdentityAdapter: patchIdentityAdapterMock,
+      patchPhoneAdapter: patchPhoneAdapterMock,
     }
   })
   it('renders component successfully', () => {
-    renderUserIdentityForm(props)
-    expect(screen.getAllByRole('textbox').length).toBe(2)
+    renderUserPhoneForm(props)
+    expect(screen.getAllByRole('textbox').length).toBe(1)
   })
   it('should trigger onSubmit callback when submitting', async () => {
-    renderUserIdentityForm(props)
-    await userEvent.type(screen.getByLabelText('Prénom'), 'Harry')
+    renderUserPhoneForm(props)
+    await userEvent.clear(screen.getByLabelText('Téléphone'))
+    await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    await expect(patchIdentityAdapterMock).toHaveBeenCalledTimes(1)
+    await expect(patchPhoneAdapterMock).toHaveBeenNthCalledWith(1, {
+      phoneNumber: '+262692790350',
+    })
   })
 })

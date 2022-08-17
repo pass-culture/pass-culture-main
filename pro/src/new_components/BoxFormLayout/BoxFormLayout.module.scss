@@ -2,7 +2,9 @@
 @use 'styles/variables/_colors.scss' as colors;
 @use 'styles/mixins/_fonts.scss' as fonts;
 
-.box-form-layout {}
+.box-form-layout {
+    margin-bottom: rem.torem(16px);
+}
 
 .profile-form-description-banner {
     margin: rem.torem(16px);
@@ -12,24 +14,10 @@
     margin-bottom: rem.torem(8px);
 }
 
-.box-form-layout-header-value {
+.box-form-layout-header-subtitle {
     color: colors.$grey-dark;
 }
 
 .box-form-layout-fields {
     width: rem.torem(400px);
 }
-
-.profile-form-edit-button {
-    &> img {
-        width: rem.torem(24px);
-        height: rem.torem(24px);
-        margin-right: rem.torem(8px);
-    }
-}
-
-  .buttons-field {
-      & > button:nth-child(2) {
-          margin-left: rem.torem(16px);
-      }
-  }
