@@ -12,6 +12,8 @@ on:
         required: true
         type: string
 
+env:
+  RELEASE_VERSION: v${{ github.event.inputs.releaseNumber }}.0.0
 
 jobs:
   tag-version:
@@ -21,7 +23,6 @@ jobs:
       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
       GIT_CONFIG_NAME: ${{ github.actor }}
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
-      RELEASE_VERSION: v${{ github.event.inputs.releaseNumber }}.0.0
       RELEASE_CANDIDATE_VERSION: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
 
     steps:
@@ -63,11 +64,12 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging
+      url: https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=staging
     steps:
       - name: Checkout Release
         uses: actions/checkout@v3
         with:
-          ref: v${{ github.event.inputs.releaseNumber }}
-      - name: Deploy Release to staging
+          ref: ${{ env.RELEASE_VERSION }}
+      - name: Push release to staging
         run: |
-          ./pc -e staging -t ${{ github.event.inputs.releaseNumber }} deploy
+          git push -f origin HEAD:staging
