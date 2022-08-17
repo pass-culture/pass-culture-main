@@ -33,12 +33,7 @@ describe('screens | OfferEducational : event address step', () => {
       store = {
         features: {
           initialized: true,
-          list: [
-            {
-              nameKey: 'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER',
-              isActive: true,
-            },
-          ],
+          list: [],
         },
       }
     })

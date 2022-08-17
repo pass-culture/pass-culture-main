@@ -34,12 +34,7 @@ describe('screens | OfferEducational', () => {
     store = {
       features: {
         initialized: true,
-        list: [
-          {
-            nameKey: 'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER',
-            isActive: true,
-          },
-        ],
+        list: [],
       },
     }
   })
