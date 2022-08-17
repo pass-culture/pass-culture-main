@@ -95,6 +95,13 @@ class UserPhoneBodyModel(BaseModel):
         extra = "forbid"
 
 
+class UserEmailValidationResponseModel(BaseModel):
+    newEmail: str | None
+
+    class Config:
+        orm_mode = True
+
+
 class ProUserCreationBodyModel(BaseModel):
     address: str | None
     city: str | None
