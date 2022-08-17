@@ -19,7 +19,7 @@ import VenueCreationLinks from './VenueCreationLinks'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
-const Offerers = () => {
+const Offerers = ({ setVenues }) => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
@@ -66,6 +66,9 @@ const Offerers = () => {
         const receivedOfferer = await pcapi.getOfferer(offererId)
         setSelectedOfferer(receivedOfferer)
         setPhysicalVenues(
+          receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
+        )
+        setVenues(
           receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
         )
         const virtualVenue = receivedOfferer.managedVenues.find(
