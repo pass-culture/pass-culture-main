@@ -2,6 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { VenueTypeCode } from './VenueTypeCode';
+
 export type GetOffererVenueResponseModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
@@ -23,6 +25,7 @@ export type GetOffererVenueResponseModel = {
   publicName?: string | null;
   siret?: string | null;
   venueLabelId?: string | null;
+  venueTypeCode?: VenueTypeCode | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };
