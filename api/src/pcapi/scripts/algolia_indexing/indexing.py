@@ -27,7 +27,7 @@ def batch_indexing_offers_in_algolia_from_database(
 
 def batch_indexing_venues_in_algolia_from_database(algolia_batch_size: int, max_venues: int | None) -> None:
     venues = offerers_api.get_eligible_for_search_venues(max_venues)
-    for page, venue_chunk in enumerate(get_chunks(venues, algolia_batch_size), start=1):  # type: ignore [var-annotated]
+    for page, venue_chunk in enumerate(get_chunks(venues, algolia_batch_size), start=1):
         venue_ids = [venue.id for venue in venue_chunk]
         search.reindex_venue_ids(venue_ids)
         logger.info("[ALGOLIA] Processed %d venues from page %d", len(venue_ids), page)

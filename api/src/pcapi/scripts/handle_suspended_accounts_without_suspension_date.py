@@ -51,7 +51,7 @@ def mark_accounts_as_deleted(event_date: datetime, actor_user_id: int) -> None:
     query = get_suspended_users_without_a_suspension_date_query().yield_per(3_000)
     user_ids = [row[0] for row in query]
 
-    for chunk in get_chunks(user_ids, 1_000):  # type: ignore
+    for chunk in get_chunks(user_ids, 1_000):
         for user_id in chunk:
             db.session.add(
                 users_models.UserSuspension(

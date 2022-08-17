@@ -6,7 +6,7 @@ import typing
 T = typing.TypeVar("T")
 
 
-def get_chunks(input_data: typing.Iterable, chunk_size: int) -> typing.Generator[list[T], None, None]:
+def get_chunks(input_data: typing.Iterable[T], chunk_size: int) -> typing.Generator[list[T], None, None]:
     """
     Build chunks of `chunk_size` max from an iterable.
     eg. get_chuks([1, 2, 3], 2) -> ([1, 2], [2])
