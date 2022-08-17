@@ -20,6 +20,7 @@ import {
   TextArea,
   Banner,
   MultiSelectAutocomplete,
+  InfoBox,
 } from 'ui-kit'
 
 import {
@@ -162,7 +163,14 @@ const FormEventAddress = ({
 
       {values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
         enableInterventionZone && (
-          <FormLayout.Row>
+          <FormLayout.Row
+            sideComponent={
+              <InfoBox
+                type="info"
+                text="La zone de mobilité permet d’indiquer aux enseignants sur Adage où vous pouvez vous déplacer en France."
+              />
+            }
+          >
             <MultiSelectAutocomplete
               hideTags
               options={offerInterventionOptions}
