@@ -1,3 +1,6 @@
+helmDefaults:
+  wait: true
+
 repositories:
   - name: passCulture
     url: europe-west1-docker.pkg.dev/passculture-infra-prod
@@ -32,5 +35,3 @@ environments:
   perf:
     values:
       - chartVersion: 0.16.0
-
-
