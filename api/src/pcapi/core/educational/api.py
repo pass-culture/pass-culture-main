@@ -159,6 +159,14 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     if collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED:
         return collective_booking
 
+    educational_utils.log_information_for_data_purpose(
+        event_name="BookingApproval",
+        extra_data={
+            "stockId": collective_booking.collectiveStockId,
+            "bookingId": educational_booking_id,
+        },
+    )
+
     validation.check_collective_booking_status(collective_booking)
     validation.check_confirmation_limit_date_has_not_passed(collective_booking)
 

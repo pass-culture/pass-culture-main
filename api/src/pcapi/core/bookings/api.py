@@ -6,6 +6,7 @@ import typing
 import pytz
 import sentry_sdk
 from sqlalchemy import and_
+from sqlalchemy.orm import Query
 
 from pcapi.core import search
 import pcapi.core.booking_providers.api as booking_providers_api
@@ -19,6 +20,7 @@ from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -525,6 +527,17 @@ def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
     db.session.execute(query, {"stock_ids": tuple(stock_ids)})
 
 
+def _logs_for_data_purpose(collective_bookings_subquery: Query) -> None:
+    bookings_information_tuple = CollectiveBooking.query.filter(
+        CollectiveBooking.id.in_(collective_bookings_subquery)
+    ).with_entities(CollectiveBooking.id, CollectiveBooking.collectiveStockId)
+    for booking_id, stock_id in bookings_information_tuple:
+        educational_utils.log_information_for_data_purpose(
+            event_name="BookingUsed",
+            extra_data={"bookingId": booking_id, "stockId": stock_id},
+        )
+
+
 def auto_mark_as_used_after_event() -> None:
     """Automatically mark as used bookings that correspond to events that
     have happened (with a delay).
@@ -558,11 +571,12 @@ def auto_mark_as_used_after_event() -> None:
             .filter(CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED)
             .filter(CollectiveStock.beginningDatetime < threshold)
             .with_entities(CollectiveBooking.id)
-            .subquery()
     )
     collective_bookings = (
         CollectiveBooking.query.filter(CollectiveBooking.id.in_(collective_bookings_subquery))
     )
+
+    _logs_for_data_purpose(collective_bookings_subquery)
 
     # fmt: on
     n_individual_updated = individual_bookings.update(
