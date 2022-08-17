@@ -7,6 +7,7 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from pcapi.core.users import api as users_api
+from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
@@ -17,6 +18,7 @@ from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
+from pcapi.core.users import email as email_api
 
 from . import blueprint
 
@@ -81,6 +83,16 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
     attributes = body.dict()
     users_api.update_user_info(user, **attributes)
     return users_serializers.UserPhoneResponseModel.from_orm(user)
+
+
+
+@blueprint.pro_private_api.route("/users/email_pending_validation", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=users_serializers.UserEmailValidationResponseModel, api=blueprint.pro_private_schema)
+def get_user_email_pending_validation() -> users_serializers.UserEmailValidationResponseModel:
+    user = current_user._get_current_object()
+    pending_validation = email_repository.get_latest_pending_email_validation(user)
+    return users_serializers.UserEmailValidationResponseModel.from_orm(pending_validation)
 
 
 @blueprint.pro_private_api.route("/users/token/<token>", methods=["GET"])
