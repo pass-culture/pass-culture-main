@@ -19,12 +19,6 @@ jest.mock('../Offers/Offers', () => {
   }
 })
 
-jest.mock('../Offers/Pagination/Pagination', () => {
-  return {
-    Pagination: jest.fn(() => <div />),
-  }
-})
-
 const renderOffersSearchComponent = (props: SearchProps) => {
   render(
     <FiltersContextProvider>
