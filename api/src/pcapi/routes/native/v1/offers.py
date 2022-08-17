@@ -20,6 +20,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.workers.push_notification_job import send_offer_link_by_push_job
 
 from . import blueprint
+from ....core.providers.models import CinemaProviderPivot
 from .serialization import offers as serializers
 from .serialization import subcategories_v2 as subcategories_v2_serializers
 
@@ -53,9 +54,14 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
             .options(joinedload(VenueBookingProvider.bookingProvider, innerjoin=True))
             .one_or_none()
         )
+        venue_cinema_pivot = CinemaProviderPivot.query.filter(
+            CinemaProviderPivot.venueId == offer.venueId
+        ).one_or_none()
         if (
             venue_booking_provider
             and venue_booking_provider.bookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE
+            and venue_cinema_pivot
+            and offer.lastProviderId == venue_cinema_pivot.providerId
         ):
             api.update_stock_quantity_to_match_booking_provider_remaining_place(offer, venue_booking_provider)
 
