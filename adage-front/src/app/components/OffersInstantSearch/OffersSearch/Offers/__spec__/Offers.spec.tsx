@@ -467,7 +467,7 @@ describe('offers', () => {
       )
       renderOffers(offersProps)
       const loadMoreButton = await screen.findByRole('button', {
-        name: 'Voir plus',
+        name: 'Voir plus d’offres',
       })
 
       userEvent.click(loadMoreButton)
@@ -484,7 +484,7 @@ describe('offers', () => {
       offersProps.hasMore = false
       renderOffers(offersProps)
       const loadMoreButton = screen.queryByRole('button', {
-        name: 'Voir plus',
+        name: 'Voir plus d’offres',
       })
 
       await waitFor(() => expect(loadMoreButton).not.toBeInTheDocument())
