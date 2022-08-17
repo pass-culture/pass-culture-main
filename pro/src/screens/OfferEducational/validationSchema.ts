@@ -102,30 +102,25 @@ export const validationSchema = yup.object().shape({
       test: () => domains.length > 0,
     })
   ),
-})
-
-export const validationSchemaWithInterventionArea = validationSchema.concat(
-  yup.object().shape({
-    interventionArea: yup.array().when('eventAddress', {
-      is: (eventAddress: { addressType: OfferAddressType }) =>
-        eventAddress.addressType === OfferAddressType.OFFERER_VENUE,
-      then: yup.array(),
-      otherwise: yup.array().min(1, 'Veuillez renseigner une zone de mobilité'),
+  interventionArea: yup.array().when('eventAddress', {
+    is: (eventAddress: { addressType: OfferAddressType }) =>
+      eventAddress.addressType === OfferAddressType.OFFERER_VENUE,
+    then: yup.array(),
+    otherwise: yup.array().min(1, 'Veuillez renseigner une zone de mobilité'),
+  }),
+  'search-interventionArea': yup
+    .string()
+    .when(['interventionArea', 'eventAddress'], {
+      is: (
+        interventionArea: string[],
+        eventAddress: { addressType: OfferAddressType }
+      ) => {
+        return (
+          eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
+          interventionArea.length === 0
+        )
+      },
+      then: schema => schema.required(''),
+      otherwise: schema => schema,
     }),
-    'search-interventionArea': yup
-      .string()
-      .when(['interventionArea', 'eventAddress'], {
-        is: (
-          interventionArea: string[],
-          eventAddress: { addressType: OfferAddressType }
-        ) => {
-          return (
-            eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
-            interventionArea.length === 0
-          )
-        },
-        then: schema => schema.required(''),
-        otherwise: schema => schema,
-      }),
-  })
-)
+})

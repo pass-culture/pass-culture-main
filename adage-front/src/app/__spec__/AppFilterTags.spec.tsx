@@ -80,15 +80,7 @@ jest.mock('api/api', () => ({
 }))
 
 const mockedApi = api as jest.Mocked<typeof api>
-const features = [
-  {
-    name: 'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER',
-    nameKey: 'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER',
-    isActive: true,
-    description: '',
-    id: '1',
-  },
-]
+const features = []
 
 const renderApp = () => {
   render(

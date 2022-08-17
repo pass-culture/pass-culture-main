@@ -193,7 +193,7 @@ describe('app', () => {
     const searchConfigurationFirstCall = (Configure as jest.Mock).mock
       .calls[2][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-      ['venue.departmentCode:01'],
+      ['venue.departmentCode:01', 'offer.interventionArea:01'],
       'venue.id:1436',
       [
         'offer.educationalInstitutionUAICode:all',

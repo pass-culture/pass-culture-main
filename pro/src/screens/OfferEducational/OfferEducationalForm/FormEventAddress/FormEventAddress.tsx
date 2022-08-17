@@ -6,7 +6,6 @@ import {
   GetEducationalOffererVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
@@ -62,10 +61,6 @@ const FormEventAddress = ({
 }: IFormEventAddressProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
-
-  const enableInterventionZone = useActiveFeature(
-    'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER'
-  )
 
   const [currentVenue, setCurrentVenue] =
     useState<GetEducationalOffererVenueResponseModel | null>(null)
@@ -161,27 +156,26 @@ const FormEventAddress = ({
         </FormLayout.Row>
       )}
 
-      {values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
-        enableInterventionZone && (
-          <FormLayout.Row
-            sideComponent={
-              <InfoBox
-                type="info"
-                text="La zone de mobilité permet d’indiquer aux enseignants sur Adage où vous pouvez vous déplacer en France."
-              />
-            }
-          >
-            <MultiSelectAutocomplete
-              hideTags
-              options={offerInterventionOptions}
-              fieldName="interventionArea"
-              pluralLabel={INTERVENTION_AREA_PLURAL_LABEL}
-              label={INTERVENTION_AREA_LABEL}
-              className={styles.row}
-              disabled={disableForm}
+      {values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE && (
+        <FormLayout.Row
+          sideComponent={
+            <InfoBox
+              type="info"
+              text="La zone de mobilité permet d’indiquer aux enseignants sur Adage où vous pouvez vous déplacer en France."
             />
-          </FormLayout.Row>
-        )}
+          }
+        >
+          <MultiSelectAutocomplete
+            hideTags
+            options={offerInterventionOptions}
+            fieldName="interventionArea"
+            pluralLabel={INTERVENTION_AREA_PLURAL_LABEL}
+            label={INTERVENTION_AREA_LABEL}
+            className={styles.row}
+            disabled={disableForm}
+          />
+        </FormLayout.Row>
+      )}
 
       {values.eventAddress.addressType === OfferAddressType.OTHER && (
         <FormLayout.Row>

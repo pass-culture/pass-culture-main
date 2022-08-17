@@ -11,7 +11,6 @@ export const populateFacetFilters = ({
   venueFilter = null,
   onlyInMySchool,
   uai,
-  enableInterventionAreaFilter,
 }: {
   departments: Option[]
   categories: Option<string[]>[]
@@ -20,16 +19,16 @@ export const populateFacetFilters = ({
   venueFilter: VenueResponse | null
   onlyInMySchool: boolean
   uai?: string[] | null
-  enableInterventionAreaFilter: boolean
 }): Facets => {
   const updatedFilters: Facets = []
 
-  const filteredDepartments: string[] = enableInterventionAreaFilter
-    ? flatMap(departments, (department: Option<string>) => [
-        `venue.departmentCode:${department.value}`,
-        `offer.interventionArea:${department.value}`,
-      ])
-    : departments.map(department => `venue.departmentCode:${department.value}`)
+  const filteredDepartments: string[] = flatMap(
+    departments,
+    (department: Option<string>) => [
+      `venue.departmentCode:${department.value}`,
+      `offer.interventionArea:${department.value}`,
+    ]
+  )
 
   const filteredCategories: string[] = flatMap(
     categories,

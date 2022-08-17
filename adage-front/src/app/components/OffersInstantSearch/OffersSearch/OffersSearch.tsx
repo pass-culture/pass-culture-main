@@ -6,7 +6,6 @@ import { connectSearchBox } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { INITIAL_QUERY } from 'app/constants'
-import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters } from 'app/types'
@@ -47,10 +46,6 @@ export const OffersSearchComponent = ({
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
 
-  const enableInterventionAreaFilter = useActiveFeature(
-    'ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER'
-  )
-
   const userUAICode = user.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
   const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null
@@ -65,7 +60,6 @@ export const OffersSearchComponent = ({
           tab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
             : uaiCodeAllInstitutionsTab,
-        enableInterventionAreaFilter,
       })
     )
   }
@@ -98,7 +92,6 @@ export const OffersSearchComponent = ({
           activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
             : uaiCodeAllInstitutionsTab,
-        enableInterventionAreaFilter,
       })
     )
     setQueryTag(query)
