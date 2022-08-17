@@ -32,6 +32,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     publicName: str | None
     siret: str | None
     venueLabelId: str | None
+    venueTypeCode: offerers_models.VenueTypeCode | None
     withdrawalDetails: str | None
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
