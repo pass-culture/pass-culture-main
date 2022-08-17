@@ -170,6 +170,10 @@ describe('offer', () => {
       setIsLoading: jest.fn(),
       userRole: AdageFrontRoles.Redactor,
       handleResetFiltersAndLaunchSearch: jest.fn(),
+      refineNext: jest.fn(),
+      refinePrevious: jest.fn(),
+      hasMore: true,
+      hasPrevious: false,
     }
   })
 
