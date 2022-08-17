@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -30,23 +30,18 @@ const Homepage = (): JSX.Element => {
 
   const IsBannerOneYearActive = useActiveFeature('ENABLE_BANNER_ONE_YEAR')
 
-  const [venues, setVenues] = useState([])
-  const [showBanner, setShowBanner] = useState(false)
-
-  useEffect(() => {
-    if (
-      venues.some(({ venueTypeCode }) => venueTypeCode === 'PATRIMONY_TOURISM')
-    ) {
-      setShowBanner(true)
-    }
-  }, [venues])
+  const [isBannerHeritageDayVisible, setIsBannerHeritageDayVisible] =
+    useState(false)
 
   return (
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
       {IsBannerOneYearActive && <BannerOneYear />}
-      {showBanner && <BannerHeritageDay />}
+      <BannerHeritageDay
+        setIsBannerHeritageDayVisible={setIsBannerHeritageDayVisible}
+        isBannerHeritageDayVisible={isBannerHeritageDayVisible}
+      />
       {!hasClosedRGSBanner && (
         <BannerRGS closable onClose={handleCloseRGSBanner} />
       )}
@@ -56,7 +51,9 @@ const Homepage = (): JSX.Element => {
       />
 
       <section className="h-section">
-        <Offerers setVenues={setVenues} />
+        <Offerers
+          setIsBannerHeritageDayVisible={setIsBannerHeritageDayVisible}
+        />
       </section>
 
       <section className="h-section" ref={profileRef}>
