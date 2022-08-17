@@ -1,6 +1,9 @@
 @use 'styles/mixins/_rem.scss' as rem;
 @use 'styles/variables/_colors.scss' as colors;
 
+$info-box-width: rem.torem(316px);
+$info-box-margin-left: rem.torem(24px);
+
 .form-layout {
   &.small {
     width: rem.torem(468px);
@@ -67,14 +70,20 @@
   }
 
   &-row-info {
-    display: flex;
+    position: relative;
+
     &-field {
-      flex: 1 1 100%;
+      width: 100%;
     }
+
     &-info {
-      flex: 1 0 rem.torem(316px);
-      margin-left: rem.torem(24px);
-      position: relative;
+      width: $info-box-width;
+      position: absolute;
+      top: 0;
+      right: calc(
+        -#{$info-box-margin-left} - #{$info-box-width}
+      ); // calc(-margin-left - width)
+
       &-inner {
         background: colors.$white;
         position: absolute;
@@ -82,3 +91,4 @@
     }
   }
 }
+
