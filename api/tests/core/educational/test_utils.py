@@ -60,3 +60,15 @@ class GetInstitutionTypeAndNameTest:
         for given, expected in test_cases.items():
             result = utils.get_institution_type_and_name(given)
             assert result == expected
+
+
+class HashUserEmailTest:
+    def test_should_hash_user_email(self) -> None:
+        # Given
+        email = "test@mail.com"
+
+        # When
+        result = utils.get_hashed_user_id(email)
+
+        # Then
+        assert result == "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816"

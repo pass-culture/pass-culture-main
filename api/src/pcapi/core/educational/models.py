@@ -706,7 +706,7 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
     dateUsed = sa.Column(sa.DateTime, nullable=True, index=True)
 
-    collectiveStockId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
+    collectiveStockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
 
     collectiveStock: RelationshipProperty["CollectiveStock"] = relationship(
         "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
