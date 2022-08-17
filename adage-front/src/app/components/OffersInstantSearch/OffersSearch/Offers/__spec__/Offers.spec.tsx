@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
@@ -232,6 +233,10 @@ describe('offers', () => {
       hits: searchFakeResults,
       setIsLoading: jest.fn(),
       userRole: AdageFrontRoles.Redactor,
+      refineNext: jest.fn(),
+      hasMore: true,
+      hasPrevious: false,
+      refinePrevious: jest.fn(),
     }
   })
 
@@ -452,6 +457,37 @@ describe('offers', () => {
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
       expect(listItemsInOffer).toHaveLength(0)
+    })
+  })
+
+  describe('load more button', () => {
+    it('should refine next hits when clicking on load more button', async () => {
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+        offerInParis
+      )
+      renderOffers(offersProps)
+      const loadMoreButton = await screen.findByRole('button', {
+        name: 'Voir plus',
+      })
+
+      userEvent.click(loadMoreButton)
+
+      await waitFor(() =>
+        expect(offersProps.refineNext).toHaveBeenCalledTimes(1)
+      )
+    })
+
+    it('should not show button if there is no more result to refine', async () => {
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+        offerInParis
+      )
+      offersProps.hasMore = false
+      renderOffers(offersProps)
+      const loadMoreButton = screen.queryByRole('button', {
+        name: 'Voir plus',
+      })
+
+      await waitFor(() => expect(loadMoreButton).not.toBeInTheDocument())
     })
   })
 })
