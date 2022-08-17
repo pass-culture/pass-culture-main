@@ -150,8 +150,7 @@ def create_or_update_users(rows: Iterable[dict], update_if_exists: bool = False)
         if user:
             users.append(user)
 
-    if settings.IS_STAGING or settings.IS_TESTING or settings.IS_RUNNING_TESTS:
-        _add_or_update_admin(update_if_exists)
+    _add_or_update_admin(update_if_exists)
 
     return users
 
