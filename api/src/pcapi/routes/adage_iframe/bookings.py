@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -25,6 +26,11 @@ def book_collective_offer(
     body: BookCollectiveOfferRequest,
     authenticated_information: AuthenticatedInformation,
 ) -> BookCollectiveOfferResponse:
+    educational_utils.log_information_for_data_purpose(
+        event_name="BookingConfirmationButtonClick",
+        extra_data={"stockId": body.stockId},
+        user_email=authenticated_information.email,
+    )
     try:
         booking = educational_api.book_collective_offer(
             redactor_informations=get_redactor_information_from_adage_authentication(authenticated_information),

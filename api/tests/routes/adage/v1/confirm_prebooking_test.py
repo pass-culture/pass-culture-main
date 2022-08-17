@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+import logging
 
 from freezegun import freeze_time
 import pytest
@@ -24,7 +25,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @freeze_time("2021-10-15 09:00:00")
 class Returns200Test:
-    def test_confirm_collective_prebooking(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_confirm_collective_prebooking(self, client, caplog) -> None:  # type: ignore [no-untyped-def]
         redactor = EducationalRedactorFactory(
             civility="Mme",
             firstName="Jeanne",
@@ -56,7 +57,15 @@ class Returns200Test:
         )
 
         client = client.with_eac_token()
-        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+        with caplog.at_level(logging.INFO):
+            response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert caplog.records[0].message == "BookingApproval"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "bookingId": booking.id,
+            "stockId": booking.collectiveStockId,
+        }
 
         assert response.status_code == 200
         stock = booking.collectiveStock

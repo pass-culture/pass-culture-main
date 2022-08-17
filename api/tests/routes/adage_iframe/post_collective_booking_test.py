@@ -1,12 +1,13 @@
 from datetime import datetime
+import logging
 from typing import ByteString
-from typing import Optional
 
 from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 from tests.conftest import TestClient
@@ -21,10 +22,10 @@ educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8
 
 def _create_adage_valid_token_with_email(
     email: str,
-    civility: Optional[str] = "Mme",
-    lastname: Optional[str] = "LAPROF",
-    firstname: Optional[str] = "Jeanne",
-    uai: Optional[str] = "EAU123",
+    civility: str = "Mme",
+    lastname: str = "LAPROF",
+    firstname: str = "Jeanne",
+    uai: str = "EAU123",
 ) -> ByteString:
     return create_adage_jwt_fake_valid_token(
         civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
@@ -33,7 +34,7 @@ def _create_adage_valid_token_with_email(
 
 @freeze_time("2020-11-17 15:00:00")
 class Returns200Test:
-    def test_post_educational_booking(self, app):
+    def test_post_educational_booking(self, app, caplog):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
@@ -49,12 +50,13 @@ class Returns200Test:
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        response = test_client.post(
-            "/adage-iframe/collective/bookings",
-            json={
-                "stockId": stock.id,
-            },
-        )
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(
+                "/adage-iframe/collective/bookings",
+                json={
+                    "stockId": stock.id,
+                },
+            )
 
         # Then
         assert response.status_code == 200
@@ -63,6 +65,12 @@ class Returns200Test:
         assert booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert booking.educationalYear.adageId == educational_year.adageId
         assert response.json["bookingId"] == booking.id
+        assert caplog.records[0].message == "BookingConfirmationButtonClick"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "stockId": stock.id,
+            "userId": get_hashed_user_id(educational_redactor.email),
+        }
 
     def test_post_educational_booking_with_less_redactor_information(self, app):
         # Given

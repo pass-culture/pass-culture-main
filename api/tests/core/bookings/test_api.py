@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 from datetime import datetime
 from datetime import timedelta
+import logging
 from unittest import mock
 from unittest.mock import patch
 
@@ -993,15 +994,22 @@ class AutoMarkAsUsedAfterEventTest:
         assert non_validated_by_ce_educational_booking.status is BookingStatus.USED
 
     @freeze_time("2021-01-01")
-    def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self):
+    def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self, caplog):
         event_date = datetime.utcnow() - timedelta(days=3)
         educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
 
-        api.auto_mark_as_used_after_event()
+        with caplog.at_level(logging.INFO):
+            api.auto_mark_as_used_after_event()
 
         collectiveBooking = CollectiveBooking.query.first()
         assert collectiveBooking.status is CollectiveBookingStatus.USED
         assert collectiveBooking.dateUsed == datetime(2021, 1, 1)
+        assert caplog.records[0].message == "BookingUsed"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "bookingId": collectiveBooking.id,
+            "stockId": collectiveBooking.collectiveStockId,
+        }
 
     @freeze_time("2021-01-01")
     def test_does_not_update_collective_booking_when_event_date_is_only_1_day_before(self):
