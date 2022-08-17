@@ -32,22 +32,22 @@ def create_bunch_of_accounts():
     underage = users_factories.UnderageBeneficiaryFactory(
         firstName="Gédéon",
         lastName="Groidanlabénoir",
-        email="gg@example.com",
+        email="gg@example.net",
         phoneNumber="+33123456789",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     grant_18 = users_factories.BeneficiaryGrant18Factory(
         firstName="Abdel Yves Akhim",
         lastName="Flaille",
-        email="ayaf@example.com",
-        phoneNumber="+33516273849",
+        email="ayaf@example.net",
+        phoneNumber="+33756273849",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     pro = users_factories.ProFactory(
         firstName="Gérard", lastName="Mentor", email="gm@example.com", phoneNumber="0246813579"
     )
     random = users_factories.UserFactory(
-        firstName="Anne", lastName="Algézic", email="aa@example.com", phoneNumber="0606060606"
+        firstName="Anne", lastName="Algézic", email="aa@example.net", phoneNumber="0606060606"
     )
     no_address = users_factories.UserFactory(
         firstName="Jean-Luc",
@@ -63,6 +63,17 @@ def create_bunch_of_accounts():
     )
 
     return underage, grant_18, pro, random, no_address
+
+
+def assert_user_equals(found_user, expected_user):
+    assert found_user["firstName"] == expected_user.firstName
+    assert found_user["lastName"] == expected_user.lastName
+    assert found_user["dateOfBirth"] == expected_user.dateOfBirth.isoformat()
+    assert found_user["id"] == expected_user.id
+    assert found_user["email"] == expected_user.email
+    assert found_user["phoneNumber"] == expected_user.phoneNumber
+    assert found_user["roles"] == [role.value for role in expected_user.roles]
+    assert found_user["isActive"] is expected_user.isActive
 
 
 class PublicAccountSearchTest:
@@ -95,15 +106,33 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
-        found_user = response.json["data"][0]
-        assert found_user["firstName"] == underage.firstName
-        assert found_user["lastName"] == underage.lastName
-        assert found_user["dateOfBirth"] == underage.dateOfBirth.isoformat()
-        assert found_user["id"] == underage.id
-        assert found_user["email"] == underage.email
-        assert found_user["phoneNumber"] == underage.phoneNumber
-        assert found_user["roles"] == ["UNDERAGE_BENEFICIARY"]
-        assert found_user["isActive"] is True
+        assert_user_equals(response.json["data"][0], underage)
+
+    @pytest.mark.parametrize(
+        "query,expected_found",
+        [
+            ("Yves", "Abdel Yves Akhim"),
+            ("Abdel Akhim", "Abdel Yves Akhim"),
+            ("Gérard", "Gérard"),
+            ("Jean Luc", "Jean-Luc"),
+        ],
+    )
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_by_first_name(self, client, query, expected_found):
+        # given
+        _, _, _, _, _ = create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=query),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 1
+        assert response.json["data"][0]["firstName"] == expected_found
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_name(self, client):
@@ -120,15 +149,7 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
-        found_user = response.json["data"][0]
-        assert found_user["firstName"] == grant_18.firstName
-        assert found_user["lastName"] == grant_18.lastName
-        assert found_user["dateOfBirth"] == grant_18.dateOfBirth.isoformat()
-        assert found_user["id"] == grant_18.id
-        assert found_user["email"] == grant_18.email
-        assert found_user["phoneNumber"] == grant_18.phoneNumber
-        assert found_user["roles"] == ["BENEFICIARY"]
-        assert found_user["isActive"] is True
+        assert_user_equals(response.json["data"][0], grant_18)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_email(self, client):
@@ -145,40 +166,42 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
-        found_user = response.json["data"][0]
-        assert found_user["firstName"] == random.firstName
-        assert found_user["lastName"] == random.lastName
-        assert found_user["dateOfBirth"] == random.dateOfBirth.isoformat()
-        assert found_user["id"] == random.id
-        assert found_user["email"] == random.email
-        assert found_user["phoneNumber"] == random.phoneNumber
-        assert found_user["roles"] == []
-        assert found_user["isActive"] is True
+        assert_user_equals(response.json["data"][0], random)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_public_account_by_phone(self, client):
+    def test_can_search_public_account_by_email_domain(self, client):
         # given
-        _, _, _, random, _ = create_bunch_of_accounts()
+        underage, grant_18, _, random, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_public_account", q=random.phoneNumber),
+            url_for("backoffice_blueprint.search_public_account", q="@example.net"),
+        )
+
+        # then
+        assert response.status_code == 200
+        found_users = response.json["data"]
+        assert {user["email"] for user in found_users} == {underage.email, grant_18.email, random.email}
+
+    @pytest.mark.parametrize("query", ["+33756273849", "0756273849", "756273849"])
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_by_phone(self, client, query):
+        # given
+        _, grant_18, _, _, _ = create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=query),
         )
 
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
-        found_user = response.json["data"][0]
-        assert found_user["firstName"] == random.firstName
-        assert found_user["lastName"] == random.lastName
-        assert found_user["dateOfBirth"] == random.dateOfBirth.isoformat()
-        assert found_user["id"] == random.id
-        assert found_user["email"] == random.email
-        assert found_user["phoneNumber"] == random.phoneNumber
-        assert found_user["roles"] == []
-        assert found_user["isActive"] is True
+        assert_user_equals(response.json["data"][0], grant_18)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_even_with_missing_city_address(self, client):
@@ -194,6 +217,8 @@ class PublicAccountSearchTest:
 
         # then
         assert response.status_code == 200
+        assert len(response.json["data"]) == 1
+        assert_user_equals(response.json["data"][0], no_address)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_both_first_name_and_name(self, client):
@@ -210,15 +235,44 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
-        found_user = response.json["data"][0]
-        assert found_user["firstName"] == random.firstName
-        assert found_user["lastName"] == random.lastName
-        assert found_user["dateOfBirth"] == random.dateOfBirth.isoformat()
-        assert found_user["id"] == random.id
-        assert found_user["email"] == random.email
-        assert found_user["phoneNumber"] == random.phoneNumber
-        assert found_user["roles"] == []
-        assert found_user["isActive"] is True
+        assert_user_equals(response.json["data"][0], random)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_by_all_criteria(self, client):
+        # given
+        underage, _, _, _, _ = create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for(
+                "backoffice_blueprint.search_public_account",
+                q=f"{underage.firstName} {underage.lastName[:7]} {underage.email} {underage.phoneNumber} @example.net",
+            ),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 1
+        assert_user_equals(response.json["data"][0], underage)
+
+    @pytest.mark.parametrize("query", ["Gédéon Flaille", "Anne 0756273849", "Jean Luc Delarue @example.net"])
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_terms_which_do_not_match(self, client, query):
+        # given
+        create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=query),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_empty_query(self, client):
@@ -509,7 +563,7 @@ class UpdatePublicAccountTest:
         assert user.address == "Quai Branly"
         assert user.postalCode == "75007"
         assert user.city == "Paris"
-        assert user.email == "ayaf@example.com"
+        assert user.email == "ayaf@example.net"
         assert user.isEmailValidated
         assert user.idPieceNumber == "ABCDE"
 
@@ -553,7 +607,7 @@ class UpdatePublicAccountTest:
         ).all()
         assert len(email_history) == 1
         assert email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST
-        assert email_history[0].oldEmail == "gg@example.com"
+        assert email_history[0].oldEmail == "gg@example.net"
         assert email_history[0].newEmail == "updated@example.com"
 
         # check that a new token has been generated
@@ -631,7 +685,7 @@ class UpdatePublicAccountTest:
         assert response.json == {"phoneNumber": "La modification du numéro de téléphone n'est pas autorisée"}
 
         db.session.refresh(user)
-        assert user.phoneNumber == "+33516273849"  # unchanged
+        assert user.phoneNumber == "+33756273849"  # unchanged
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
 
     @override_features(ENABLE_BACKOFFICE_API=True)
