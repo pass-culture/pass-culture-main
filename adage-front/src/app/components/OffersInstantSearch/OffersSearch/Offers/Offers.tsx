@@ -1,9 +1,8 @@
 import './Offers.scss'
 import { captureException } from '@sentry/react'
-import React, { useEffect } from 'react'
-import type { HitsProvided } from 'react-instantsearch-core'
-import { connectHits } from 'react-instantsearch-core'
-import { Stats } from 'react-instantsearch-dom'
+import React, { useEffect, useState } from 'react'
+import type { InfiniteHitsProvided } from 'react-instantsearch-core'
+import { connectInfiniteHits, Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
 import {
@@ -14,6 +13,7 @@ import {
 import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
+import { Button } from 'app/ui-kit'
 import { ResultType } from 'utils/types'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
@@ -33,7 +33,7 @@ const extractOfferIdFromObjectId = (offerId: string): number => {
   return Number(offerId)
 }
 
-export interface OffersComponentProps extends HitsProvided<ResultType> {
+export interface OffersComponentProps extends InfiniteHitsProvided<ResultType> {
   userRole: AdageFrontRoles
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
@@ -44,11 +44,11 @@ export const OffersComponent = ({
   setIsLoading,
   handleResetFiltersAndLaunchSearch,
   hits,
+  hasMore,
+  refineNext,
 }: OffersComponentProps): JSX.Element => {
-  const offersThumbById = {}
-  hits.forEach(hit => {
-    offersThumbById[hit.objectID] = hit.offer.thumbUrl
-  })
+  const [isFirstRender, setIsFirstRender] = useState(true)
+  const [queriesAreLoading, setQueriesAreLoading] = useState(false)
 
   const queries = useQueries(
     hits.map(hit => ({
@@ -74,12 +74,20 @@ export const OffersComponent = ({
   )
 
   useEffect(() => {
-    if (queries.every(query => !query.isLoading)) {
+    if (queries.length && queries.every(query => !query.isLoading)) {
       setIsLoading(false)
+      setIsFirstRender(false)
     }
   }, [queries, setIsLoading])
 
-  if (queries.some(query => query.isLoading)) {
+  useEffect(() => {
+    setQueriesAreLoading(queries.some(query => query.isLoading))
+  }, [queries])
+
+  if (
+    isFirstRender &&
+    (!queries.length || queries.some(query => query.isLoading))
+  ) {
     return (
       <div className="offers-loader">
         <Spinner message="Recherche en cours" />
@@ -123,11 +131,24 @@ export const OffersComponent = ({
             />
           </div>
         ))}
+        {hasMore &&
+          (queriesAreLoading ? (
+            <div className="offers-loader">
+              <Spinner message="Chargement en cours" />
+            </div>
+          ) : (
+            <Button
+              className="offers-load-more"
+              label="Voir plus"
+              onClick={refineNext}
+              type="button"
+            />
+          ))}
       </ul>
     </>
   )
 }
 
-export const Offers = connectHits<OffersComponentProps, ResultType>(
+export const Offers = connectInfiniteHits<OffersComponentProps, ResultType>(
   OffersComponent
 )
