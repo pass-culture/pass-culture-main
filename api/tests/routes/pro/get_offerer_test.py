@@ -98,6 +98,7 @@ def test_basics(client):
                 "publicName": venue.publicName,
                 "siret": venue.siret,
                 "venueLabelId": humanize(venue.venueLabelId),
+                "venueTypeCode": venue.venueTypeCode.name,
                 "visualDisabilityCompliant": False,
                 "withdrawalDetails": venue.withdrawalDetails,
             }
