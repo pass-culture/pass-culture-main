@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://backend.passculture.app/saml/metadata.xml">
+	<md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+		<md:KeyDescriptor use="signing">
+			<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+				<ds:X509Data>
+					<ds:X509Certificate>MIIDrjCCApYCCQD96CkFF3doYjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UEBhMCRlIxDjAMBgNVBAgMBVBhcmlzMQ4wDAYDVQQHDAVQYXJpczEUMBIGA1UECgwLcGFzc2N1bHR1cmUxFDASBgNVBAsMC3Bhc3NjdWx0dXJlMRQwEgYDVQQDDAtwYXNzY3VsdHVyZTEmMCQGCSqGSIb3DQEJARYXc3VwcG9ydEBwYXNzY3VsdHVyZS5hcHAwIBcNMjExMDI3MTAyNjMxWhgPMjEyMTEwMDMxMDI2MzFaMIGXMQswCQYDVQQGEwJGUjEOMAwGA1UECAwFUGFyaXMxDjAMBgNVBAcMBVBhcmlzMRQwEgYDVQQKDAtwYXNzY3VsdHVyZTEUMBIGA1UECwwLcGFzc2N1bHR1cmUxFDASBgNVBAMMC3Bhc3NjdWx0dXJlMSYwJAYJKoZIhvcNAQkBFhdzdXBwb3J0QHBhc3NjdWx0dXJlLmFwcDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMc3o4u6gHibJPR1FSzqVriF17DJH/xYQm07cYU9UlMqqPnQUsqM4k1cZZ7ZwJRjto3uwhoyBOmUAUfWw73L6nR1ymHTxkvdx35fy4+CGNr3/SRpmVjWxNBuWAm1rKRVjmuuPcNrSftgt1igkvhddcm5RvFl9CesTQDAldPxZKHyF1DeqRh7/HayOcDPuXuBmWvI1x9uQ1pAndB8STFwVuA3qCCFUdQjv8OuVRKqeQVEzKNy2AfSOwx+gnAzhWZTwUYPvl0Ol+0VhjHNR/R6zivla195ZyuGWbpVHKFnJfmgr/7e3HNMpPo1nwqV+xIluO0/e/03NRVXFHZ1K7TUGKUCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAWKZf904TlyAqD/AlKVb3pDQ1l0BU4WRAsLC5EKfPLYJV3MZwed2iuLN2ScrW5r1auOSas2nFMevSkTS0+Exy0efDrXgoUD6g+TgSZZbGQ/rBT+kGMSnvN6/6YoFBwORP+oOuiEKyIUnk4ok4Gz44gy/b4AxHBCMNDweza0rqWqNtHDhGikG396UiFh3kcxfh7Gt2YAK+6HMGBQEIq0B1jAZh940MjNtp/y7niVePK9Df1l1lOemBdJFCUnYLwyYos4IxvjLh7cgqftJncGAHkeIFW9DMj138UkuTyhXiYXKhjEqPHM+D4OeFVYLbwZfCm1T4PCBypxjBR8enDLtq7g==</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+		</md:KeyDescriptor>
+		<md:KeyDescriptor use="encryption">
+			<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+				<ds:X509Data>
+					<ds:X509Certificate>MIIDrjCCApYCCQD96CkFF3doYjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UEBhMCRlIxDjAMBgNVBAgMBVBhcmlzMQ4wDAYDVQQHDAVQYXJpczEUMBIGA1UECgwLcGFzc2N1bHR1cmUxFDASBgNVBAsMC3Bhc3NjdWx0dXJlMRQwEgYDVQQDDAtwYXNzY3VsdHVyZTEmMCQGCSqGSIb3DQEJARYXc3VwcG9ydEBwYXNzY3VsdHVyZS5hcHAwIBcNMjExMDI3MTAyNjMxWhgPMjEyMTEwMDMxMDI2MzFaMIGXMQswCQYDVQQGEwJGUjEOMAwGA1UECAwFUGFyaXMxDjAMBgNVBAcMBVBhcmlzMRQwEgYDVQQKDAtwYXNzY3VsdHVyZTEUMBIGA1UECwwLcGFzc2N1bHR1cmUxFDASBgNVBAMMC3Bhc3NjdWx0dXJlMSYwJAYJKoZIhvcNAQkBFhdzdXBwb3J0QHBhc3NjdWx0dXJlLmFwcDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMc3o4u6gHibJPR1FSzqVriF17DJH/xYQm07cYU9UlMqqPnQUsqM4k1cZZ7ZwJRjto3uwhoyBOmUAUfWw73L6nR1ymHTxkvdx35fy4+CGNr3/SRpmVjWxNBuWAm1rKRVjmuuPcNrSftgt1igkvhddcm5RvFl9CesTQDAldPxZKHyF1DeqRh7/HayOcDPuXuBmWvI1x9uQ1pAndB8STFwVuA3qCCFUdQjv8OuVRKqeQVEzKNy2AfSOwx+gnAzhWZTwUYPvl0Ol+0VhjHNR/R6zivla195ZyuGWbpVHKFnJfmgr/7e3HNMpPo1nwqV+xIluO0/e/03NRVXFHZ1K7TUGKUCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAWKZf904TlyAqD/AlKVb3pDQ1l0BU4WRAsLC5EKfPLYJV3MZwed2iuLN2ScrW5r1auOSas2nFMevSkTS0+Exy0efDrXgoUD6g+TgSZZbGQ/rBT+kGMSnvN6/6YoFBwORP+oOuiEKyIUnk4ok4Gz44gy/b4AxHBCMNDweza0rqWqNtHDhGikG396UiFh3kcxfh7Gt2YAK+6HMGBQEIq0B1jAZh940MjNtp/y7niVePK9Df1l1lOemBdJFCUnYLwyYos4IxvjLh7cgqftJncGAHkeIFW9DMj138UkuTyhXiYXKhjEqPHM+D4OeFVYLbwZfCm1T4PCBypxjBR8enDLtq7g==</ds:X509Certificate>
+				</ds:X509Data>
+			</ds:KeyInfo>
+		</md:KeyDescriptor>
+		<md:NameIDFormat></md:NameIDFormat>
+		<md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://backend.passculture.app/saml/sls/" />
+		<md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://backend.passculture.app/saml/acs/" index="1" />
+	</md:SPSSODescriptor>
+</md:EntityDescriptor>
