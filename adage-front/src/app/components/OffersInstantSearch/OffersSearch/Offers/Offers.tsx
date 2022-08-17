@@ -131,19 +131,32 @@ export const OffersComponent = ({
             />
           </div>
         ))}
-        {hasMore &&
-          (queriesAreLoading ? (
-            <div className="offers-loader">
-              <Spinner message="Chargement en cours" />
-            </div>
-          ) : (
-            <Button
-              className="offers-load-more"
-              label="Voir plus"
-              onClick={refineNext}
-              type="button"
+        <div className="offers-load-more">
+          <div className="offers-load-more-text">
+            <Stats
+              translations={{
+                stats(nbHits: number) {
+                  return `Vous avez vu ${offers.length} offre${
+                    offers.length > 1 ? 's' : ''
+                  } sur ${nbHits}`
+                },
+              }}
             />
-          ))}
+          </div>
+          {hasMore &&
+            (queriesAreLoading ? (
+              <div className="offers-loader">
+                <Spinner message="Chargement en cours" />
+              </div>
+            ) : (
+              <Button
+                label="Voir plus d’offres"
+                onClick={refineNext}
+                type="button"
+                variant="secondary"
+              />
+            ))}
+        </div>
       </ul>
     </>
   )
