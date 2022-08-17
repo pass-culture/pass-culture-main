@@ -148,6 +148,8 @@ export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';
 export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel';
 export type { UserIdentityBodyModel } from './models/UserIdentityBodyModel';
 export type { UserIdentityResponseModel } from './models/UserIdentityResponseModel';
+export type { UserPhoneBodyModel } from './models/UserPhoneBodyModel';
+export type { UserPhoneResponseModel } from './models/UserPhoneResponseModel';
 export { UserRole } from './models/UserRole';
 export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';

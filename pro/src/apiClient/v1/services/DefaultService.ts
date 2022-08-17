@@ -69,6 +69,8 @@ import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
 import type { UserIdentityResponseModel } from '../models/UserIdentityResponseModel';
+import type { UserPhoneBodyModel } from '../models/UserPhoneBodyModel';
+import type { UserPhoneResponseModel } from '../models/UserPhoneResponseModel';
 import type { VenueLabelListResponseModel } from '../models/VenueLabelListResponseModel';
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
@@ -1353,6 +1355,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/identity',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * patch_user_phone <PATCH>
+   * @param requestBody
+   * @returns UserPhoneResponseModel OK
+   * @throws ApiError
+   */
+  public patchUserPhone(
+    requestBody?: UserPhoneBodyModel,
+  ): CancelablePromise<UserPhoneResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/users/phone',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
