@@ -7,6 +7,7 @@ import secrets
 import typing
 
 from dateutil.relativedelta import relativedelta
+import email_validator
 from flask_jwt_extended import create_access_token
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -40,6 +41,7 @@ from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
 from pcapi.utils import db as db_utils
+from pcapi.utils import phone_number as phone_number_utils
 
 from . import constants
 from . import exceptions
@@ -789,17 +791,43 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
         if not term:
             continue
 
-        filters.append(
-            sa.or_(
-                sa.cast(models.User.phoneNumber, sa.Unicode) == term,  # type: ignore [type-var]
-                sa.cast(models.User.firstName, sa.Unicode).ilike(f"%{term}%"),
-                sa.cast(models.User.lastName, sa.Unicode).ilike(f"%{term}%"),
-                sa.cast(models.User.id, sa.Unicode) == term,
-                sa.cast(models.User.email, sa.Unicode).ilike(f"%{term}%"),
-            )
-        )
+        term_filters: list[sa.sql.ColumnElement] = []
 
-    accounts = models.User.query.filter(sa.and_(*filters) if len(filters) > 1 else filters[0])
+        # phone number
+        try:
+            parsed_phone_number = phone_number_utils.parse_phone_number(term, "FR")
+            term_as_phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
+        except phone_validation_exceptions.InvalidPhoneNumber:
+            pass  # term can't be a phone number
+        else:
+            term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore [arg-type]
+
+        # numeric
+        if term.isnumeric():
+            term_filters.append(models.User.id == int(term))
+
+        # email
+        sanitized_term = users_utils.sanitize_email(term)
+        try:
+            email_validator.validate_email(sanitized_term, check_deliverability=False)
+        except email_validator.EmailNotValidError:
+            pass  # term can't be an email address
+        else:
+            term_filters.append(models.User.email == sanitized_term)
+
+        # search for all emails @domain.ext
+        if sanitized_term.startswith("@"):
+            term_filters.append(models.User.email.like(f"%{sanitized_term}"))
+
+        # any term which does not match a formatted column is searched in the names
+        if not term_filters:
+            term_filters.append(sa.cast(models.User.firstName, sa.Unicode).ilike(f"%{term}%"))
+            term_filters.append(sa.cast(models.User.lastName, sa.Unicode).ilike(f"%{term}%"))
+
+        filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
+
+    # each result must match all terms in any column
+    accounts = models.User.query.filter(*filters)
 
     if order_by:
         try:
