@@ -69,6 +69,32 @@ class UserIdentityBodyModel(BaseModel):
         extra = "forbid"
 
 
+class UserPhoneResponseModel(BaseModel):
+    phoneNumber: str
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+
+
+class UserPhoneBodyModel(BaseModel):
+    phone_number: str
+
+    @validator("phone_number")
+    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+        if phone_number is None:
+            return phone_number
+
+        try:
+            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+        except Exception:
+            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class ProUserCreationBodyModel(BaseModel):
     address: str | None
     city: str | None
