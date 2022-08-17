@@ -21,7 +21,6 @@ import { populateFacetFilters } from '../utils'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
-import { Pagination } from './Offers/Pagination'
 import { SearchBox } from './SearchBox/SearchBox'
 
 export interface SearchProps extends SearchBoxProvided {
@@ -147,7 +146,6 @@ export const OffersSearchComponent = ({
           userRole={user.role}
         />
       </div>
-      <Pagination />
     </>
   )
 }
