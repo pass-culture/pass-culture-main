@@ -11,6 +11,7 @@ import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import './PrebookingButton.scss'
 import { logBookingModalButton } from 'repository/pcapi/pcapi'
+import { LOGS_DATA } from 'utils/config'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
 import PrebookingModal from './PrebookingModal'
@@ -29,7 +30,9 @@ const PrebookingButton = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleBookingModalButtonClick = (stockId: number) => {
-    logBookingModalButton(stockId)
+    if (LOGS_DATA) {
+      logBookingModalButton(stockId)
+    }
     setIsModalOpen(true)
   }
 
