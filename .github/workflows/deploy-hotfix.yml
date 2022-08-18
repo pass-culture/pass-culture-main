@@ -14,19 +14,10 @@ on:
 
 jobs:
   tag-version:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.inputs.hotfixBranch }}
-      - name: Author
-        run: |
-          git config --global user.email "github-actions-bot@passculture.app"
-          git config --global user.name "${{ github.actor }}"
-      - name: Tag Release
-        run: |
-          ./pc -t ${{ github.event.inputs.releaseVersion }} tag-hotfix
+    uses: ./.github/workflows/tag.yml
+    with:
+      base_ref: ${{ github.event.inputs.hotfixBranch }}
+      tag_name: v${{ github.event.inputs.releaseVersion }}
 
   deploy-to-staging:
     needs: tag-version
