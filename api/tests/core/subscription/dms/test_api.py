@@ -172,6 +172,40 @@ class HandleDmsApplicationTest:
 
         assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
 
+    @patch("pcapi.core.subscription.dms.api.subscription_messages.on_dms_application_received")
+    def test_multiple_call_for_same_application(self, mock_on_dms_application_received, db_session):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
+        )
+        application_number = 1234
+        dms_response = make_parsed_graphql_application(
+            application_number=application_number,
+            state=dms_models.GraphQLApplicationStates.on_going,
+            email=user.email,
+            birth_date=datetime.datetime(2016, 1, 1),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+        mock_on_dms_application_received.assert_called_once_with(user)
+        mock_on_dms_application_received.reset_mock()
+        dms_fraud_check = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.DMS
+        ][0]
+        assert (
+            dms_fraud_check.source_data().get_latest_modification_datetime()
+            == dms_response.latest_modification_datetime
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+        mock_on_dms_application_received.assert_not_called()
+        db_session.refresh(dms_fraud_check)
+        assert (
+            dms_fraud_check.source_data().get_latest_modification_datetime()
+            == dms_response.latest_modification_datetime
+        )
+
     @patch("pcapi.connectors.dms.serializer.parse_beneficiary_information_graphql")
     def test_field_error(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()

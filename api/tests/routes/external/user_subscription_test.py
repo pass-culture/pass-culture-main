@@ -807,6 +807,7 @@ class DmsWebhookApplicationTest:
             state=dms_models.GraphQLApplicationStates.draft.value,
             email=user.email,
             id_piece_number="error_identity_piece_number",
+            last_modification_date=datetime.datetime(2021, 9, 30, 17, 55, 58),
         )
         form_data = {
             "procedure_id": 48860,
@@ -832,7 +833,10 @@ class DmsWebhookApplicationTest:
         # Second DMS webhook call: on_going with no value errors
         execute_query.reset_mock()
         execute_query.return_value = make_single_application(
-            12, state=dms_models.GraphQLApplicationStates.on_going.value, email=user.email
+            12,
+            state=dms_models.GraphQLApplicationStates.on_going.value,
+            email=user.email,
+            last_modification_date=datetime.datetime(2021, 9, 30, 18, 00, 00),
         )
         response = client.post(
             f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
