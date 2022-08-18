@@ -1,4 +1,4 @@
-import { api } from 'api/api'
+import { api } from 'apiClient/api'
 import { Adapter, AdapterFailure } from 'app/types'
 import { hasErrorCode } from 'utils/error'
 
@@ -27,7 +27,7 @@ const ERROR_RESPONSE = {
 
 export const postBookingAdapater: PostBookingAdapter = async stockId => {
   try {
-    await api.postAdageIframeBookCollectiveOffer({ stockId })
+    await api.bookCollectiveOffer({ stockId })
 
     return {
       isOk: true,
