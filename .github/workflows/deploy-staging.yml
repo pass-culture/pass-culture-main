@@ -35,7 +35,7 @@ jobs:
           git checkout -b "$MAINTENANCE_BRANCH"
           git push origin "$MAINTENANCE_BRANCH"
 
-  deployment:
+  deploy-to-staging:
     needs: tag-version
     runs-on: ubuntu-latest
     environment:

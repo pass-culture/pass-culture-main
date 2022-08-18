@@ -24,25 +24,27 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging
+      url: https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=staging
     steps:
       - name: Checkout Release
         uses: actions/checkout@v3
         with:
           ref: v${{ github.event.inputs.releaseVersion }}
-      - name: Deploy Release to staging
+      - name: Push release to staging
         run: |
-          ./pc -e staging -t ${{ github.event.inputs.releaseVersion }} deploy
+          git push -f origin HEAD:staging
 
   deploy-to-production:
     needs: tag-version
     runs-on: ubuntu-latest
     environment:
       name: production
+      url: https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=production
     steps:
       - name: Checkout Release
         uses: actions/checkout@v3
         with:
           ref: v${{ github.event.inputs.releaseVersion }}
-      - name: Deploy Release to staging
+      - name: Deploy Release to production
         run: |
-          ./pc -e production -t ${{ github.event.inputs.releaseVersion }} deploy
+          git push -f origin HEAD:production
