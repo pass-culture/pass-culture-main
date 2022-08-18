@@ -9,8 +9,9 @@ import {
 } from 'app/components/Layout/Notification/Notification'
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
-
 import './PrebookingButton.scss'
+import { logBookingModalButton } from 'repository/pcapi/pcapi'
+
 import { postBookingAdapater } from './adapters/postBookingAdapter'
 import PrebookingModal from './PrebookingModal'
 
@@ -27,7 +28,8 @@ const PrebookingButton = ({
   const [notification, setNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleSearchButtonClick = () => {
+  const handleBookingModalButtonClick = (stockId: number) => {
+    logBookingModalButton(stockId)
     setIsModalOpen(true)
   }
 
@@ -62,7 +64,7 @@ const PrebookingButton = ({
             <Button
               className="prebooking-button"
               label="Préréserver"
-              onClick={handleSearchButtonClick}
+              onClick={() => handleBookingModalButtonClick(stock.id)}
               type="button"
             />
 
