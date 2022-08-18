@@ -7,8 +7,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
   preBookStock: jest.fn(),
 }))
 
-jest.mock('api/api', () => ({
-  postAdageIframeBookCollectiveOffer: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  bookCollectiveOffer: jest.fn(),
 }))
 
 describe('offer', () => {
