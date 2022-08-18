@@ -7,8 +7,11 @@ import * as React from 'react'
 import { useCallback, useEffect, useState } from 'react'
 
 import { api as apiLegacy } from 'api/api'
-import { VenueResponse } from 'api/gen'
-import { AuthenticatedResponse, AdageFrontRoles } from 'apiClient'
+import {
+  AuthenticatedResponse,
+  AdageFrontRoles,
+  VenueResponse,
+} from 'apiClient'
 import { api } from 'apiClient/api'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
 import { logCatalogView } from 'repository/pcapi/pcapi'
@@ -52,8 +55,8 @@ export const App = (): JSX.Element => {
         }
 
         if (venueId && !Number.isNaN(venueId)) {
-          return apiLegacy
-            .getAdageIframeGetVenueById(venueId)
+          return api
+            .getVenueById(venueId)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(
