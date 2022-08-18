@@ -26,6 +26,7 @@ export type { GetPublicCollectiveOfferResponseModel } from './models/GetPublicCo
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export { OfferStatus } from './models/OfferStatus';
+export type { OfferVenueModel } from './models/OfferVenueModel';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export { StudentLevels } from './models/StudentLevels';
 export type { UpdateVenueStockBodyModel } from './models/UpdateVenueStockBodyModel';

@@ -6,7 +6,7 @@
  * An enumeration.
  */
 export enum OfferAddressType {
-  MY_ADDRESS = 'MY_ADDRESS',
-  SCHOOL_ADDRESS = 'SCHOOL_ADDRESS',
-  OTHER_ADDRESS = 'OTHER_ADDRESS',
+  OFFERER_VENUE = 'offererVenue',
+  SCHOOL = 'school',
+  OTHER = 'other',
 }

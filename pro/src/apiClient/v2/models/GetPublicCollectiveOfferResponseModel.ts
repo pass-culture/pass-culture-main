@@ -2,8 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { OfferVenueModel } from './OfferVenueModel';
+
 export type GetPublicCollectiveOfferResponseModel = {
-  address: string;
   audioDisabilityCompliant?: boolean | null;
   beginningDatetime: string;
   bookingEmail?: string | null;
@@ -25,6 +26,7 @@ export type GetPublicCollectiveOfferResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   numberOfTickets: number;
+  offerVenue: OfferVenueModel;
   status: string;
   students: Array<string>;
   subcategoryId: string;
