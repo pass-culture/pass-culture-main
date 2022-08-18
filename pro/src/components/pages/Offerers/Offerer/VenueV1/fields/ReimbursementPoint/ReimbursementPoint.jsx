@@ -17,7 +17,6 @@ import styles from './ReimbursementPoint.module.scss'
 const ReimbursementPoint = ({
   readOnly,
   offerer,
-  scrollToSection,
   initialVenue,
   isCreatingVenue,
   venueHasPricingPoint,
@@ -44,12 +43,6 @@ const ReimbursementPoint = ({
       ? 'Modifier mes coordonnées bancaires'
       : 'Ajouter des coordonnées bancaires'
   }, [hasAlreadyAddReimbursementPoint])
-
-  const scrollToReimbursementPoint = useCallback(reimbursementPoint => {
-    if (scrollToSection && reimbursementPoint) {
-      reimbursementPoint.scrollIntoView()
-    }
-  }, [])
 
   const openDMSApplication = useCallback(() => {
     if (venueHasPricingPoint || venue.siret) {
@@ -103,7 +96,7 @@ const ReimbursementPoint = ({
 
   return (
     <div className="section reimbursement-point-section">
-      <div className="main-list-title" ref={scrollToReimbursementPoint}>
+      <div className="main-list-title">
         <Title as="h2" level={4} className={styles['sub-title-text']}>
           Coordonnées bancaires
         </Title>
@@ -219,14 +212,12 @@ ReimbursementPoint.defaultProps = {
   initialVenue: {},
   isCreatingVenue: false,
   readOnly: false,
-  scrollToSection: false,
 }
 ReimbursementPoint.propTypes = {
   initialVenue: PropTypes.shape(),
   isCreatingVenue: PropTypes.bool,
   offerer: PropTypes.shape().isRequired,
   readOnly: PropTypes.bool,
-  scrollToSection: PropTypes.bool,
 }
 
 export default ReimbursementPoint

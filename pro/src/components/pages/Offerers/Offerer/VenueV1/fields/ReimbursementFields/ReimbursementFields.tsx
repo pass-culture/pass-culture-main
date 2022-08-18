@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
 import { IAPIOfferer } from 'core/Offerers/types'
@@ -29,9 +29,15 @@ const ReimbursementFields = ({
   const [venueHasPricingPoint, setVenueHasPricingPoint] = useState<boolean>(
     !!venue.pricingPoint
   )
+
+  const scrollToReimbursementSection = useCallback((node: any) => {
+    if (scrollToSection) {
+      node.scrollIntoView()
+    }
+  }, [])
   return (
     <>
-      <div className="section">
+      <div className="section" ref={scrollToReimbursementSection}>
         <h2 className="main-list-title">
           Remboursement
           <a
@@ -67,7 +73,6 @@ const ReimbursementFields = ({
             <ReimbursementPoint
               offerer={offerer}
               readOnly={readOnly}
-              scrollToSection={scrollToSection}
               initialVenue={venue}
               venueHasPricingPoint={venueHasPricingPoint}
             />
