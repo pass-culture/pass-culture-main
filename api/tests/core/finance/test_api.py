@@ -2200,10 +2200,12 @@ def invoice_test_data(use_reimbursement_point):
         venue_kwargs = {
             "businessUnit__bankAccount__iban": "FR2710010000000000000000064",
         }
+    offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
     venue = offerers_factories.VenueFactory(
         name="Coiffeur justificaTIF",
         siret="85331845900023",
         bookingEmail="pro@example.com",
+        managingOfferer=offerer,
         **venue_kwargs,
     )
     if use_reimbursement_point:
@@ -2795,8 +2797,11 @@ class GenerateInvoiceHtmlTest:
         )
 
         invoice_html = api._generate_invoice_html(invoice, self.use_reimbursement_point)
+        expected_generated_file_name = (
+            "rendered_invoice.html" if self.use_reimbursement_point else "legacy_rendered_invoice.html"
+        )
 
-        with open(self.TEST_FILES_PATH / "invoice" / "rendered_invoice.html", "r", encoding="utf-8") as f:
+        with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
         # We need to replace Cashflow IDs and dates that were used when generating the expected html
         expected_invoice_html = expected_invoice_html.replace(
@@ -2929,6 +2934,7 @@ class GenerateAndStoreInvoiceTest:
     def test_basics(self):
         if self.use_reimbursement_point:
             reimbursement_point = offerers_factories.VenueFactory()
+            factories.BankInformationFactory(venue=reimbursement_point, iban="FR2710010000000000000000064")
         else:
             venue = offerers_factories.VenueFactory()
             business_unit = venue.businessUnit

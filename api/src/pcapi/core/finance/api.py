@@ -1936,21 +1936,34 @@ def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: b
         groups.append(invoice_group)
     reimbursements_by_venue = get_reimbursements_by_venue(invoice)
 
+    reimbursement_point = None
+    reimbursement_point_name = None
+    reimbursement_point_iban = None
+
     # FIXME (dbaty, 2022-07-18): once business units are not used
     # anymore, stop using `venue` in the template.
     if use_reimbursement_point:
         reimbursement_point = invoice.reimbursementPoint
+        if reimbursement_point is None:
+            raise ValueError("Could not generate invoice without reimbursement point")
+        reimbursement_point_name = reimbursement_point.publicName or reimbursement_point.name
+        bank_information = offerers_repository.BankInformation.query.filter(
+            offerers_repository.BankInformation.venueId == reimbursement_point.id
+        ).one()
+        reimbursement_point_iban = bank_information.iban if bank_information else None
         venue = None
     else:
         venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
-        reimbursement_point = None
     period_start, period_end = get_invoice_period(invoice.date)  # type: ignore [arg-type]
+
     return dict(
         invoice=invoice,
         cashflows=cashflows,
         groups=groups,
         venue=venue,
         reimbursement_point=reimbursement_point,
+        reimbursement_point_name=reimbursement_point_name,
+        reimbursement_point_iban=reimbursement_point_iban,
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
