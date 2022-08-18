@@ -27,8 +27,8 @@ jest.mock('react-instantsearch-dom', () => {
   }
 })
 
-jest.mock('api/api', () => ({
-  getAdageIframeGetEducationalOffersCategories: jest.fn().mockResolvedValue({
+jest.mock('apiClient/api', () => ({
+  getEducationalOffersCategories: jest.fn().mockResolvedValue({
     categories: [
       { id: 'CINEMA', proLabel: 'Cinéma' },
       { id: 'MUSEE', proLabel: 'Musée' },
