@@ -41,8 +41,8 @@ export const App = (): JSX.Element => {
         const siret = params.get('siret')
         const venueId = Number(params.get('venue'))
         if (siret) {
-          return apiLegacy
-            .getAdageIframeGetVenueBySiret(siret)
+          return api
+            .getVenueBySiret(siret)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(
