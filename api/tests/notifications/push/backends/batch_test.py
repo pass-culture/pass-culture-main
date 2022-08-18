@@ -38,3 +38,27 @@ class BatchPushNotificationClientTest:
                 "recipients": {"custom_ids": ["1234", "4321"]},
                 "message": {"body": "Notif", "title": "Putsch"},
             }
+
+    def test_api_exception(self):
+        with requests_mock.Mocker() as mock:
+            android_post = mock.post("https://api.example.com/1.1/fake_android_api_key/transactional/send")
+            ios_post = mock.post("https://api.example.com/1.1/fake_ios_api_key/transactional/send")
+
+            BatchBackend().send_transactional_notification(
+                TransactionalNotificationData(
+                    group_id="Group_id",
+                    user_ids=[1234, 4321],
+                    message=TransactionalNotificationMessage(title="Putsch", body="Notif"),
+                )
+            )
+
+            assert ios_post.last_request.json() == {
+                "group_id": "Group_id",
+                "recipients": {"custom_ids": ["1234", "4321"]},
+                "message": {"body": "Notif", "title": "Putsch"},
+            }
+            assert android_post.last_request.json() == {
+                "group_id": "Group_id",
+                "recipients": {"custom_ids": ["1234", "4321"]},
+                "message": {"body": "Notif", "title": "Putsch"},
+            }

@@ -3,7 +3,6 @@
 import logging
 
 from pcapi import settings
-from pcapi.models.api_errors import ApiErrors
 from pcapi.notifications.push import delete_user_attributes
 from pcapi.notifications.push import send_transactional_notification
 from pcapi.notifications.push import update_user_attributes
@@ -27,20 +26,12 @@ class DeleteBatchUserAttributesRequest(BaseModel):
 
 @task(settings.GCP_BATCH_CUSTOM_DATA_ANDROID_QUEUE_NAME, "/batch/android/update_user_attributes")  # type: ignore [arg-type]
 def update_user_attributes_android_task(payload: UpdateBatchAttributesRequest) -> None:
-    result = update_user_attributes(
-        BatchAPI.ANDROID, payload.user_id, payload.attributes, can_be_asynchronously_retried=True
-    )
-    if result.should_retry:
-        raise ApiErrors()
+    update_user_attributes(BatchAPI.ANDROID, payload.user_id, payload.attributes, can_be_asynchronously_retried=True)
 
 
 @task(settings.GCP_BATCH_CUSTOM_DATA_IOS_QUEUE_NAME, "/batch/ios/update_user_attributes")  # type: ignore [arg-type]
 def update_user_attributes_ios_task(payload: UpdateBatchAttributesRequest) -> None:
-    result = update_user_attributes(
-        BatchAPI.IOS, payload.user_id, payload.attributes, can_be_asynchronously_retried=True
-    )
-    if result.should_retry:
-        raise ApiErrors()
+    update_user_attributes(BatchAPI.IOS, payload.user_id, payload.attributes, can_be_asynchronously_retried=True)
 
 
 @task(settings.GCP_BATCH_CUSTOM_DATA_QUEUE_NAME, "/batch/delete_user_attributes")  # type: ignore [arg-type]
