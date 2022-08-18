@@ -6,4 +6,3 @@ export {
 } from './userOfferersFactory'
 export { defaultCreationProps, defaultEditionProps } from './defaultProps'
 export { renderEACOfferForm } from './renderEACOfferForm'
-export { elements } from './elements'

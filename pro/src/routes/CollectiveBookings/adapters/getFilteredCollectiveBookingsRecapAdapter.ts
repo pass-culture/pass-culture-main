@@ -20,7 +20,7 @@ const FAILING_RESPONSE: AdapterFailure<GetFilteredCollectiveBookingsRecapAdapter
     },
   }
 
-export const getFilteredCollectiveBookingsRecapAdapter: GetFilteredCollectiveBookingsRecapAdapter =
+const getFilteredCollectiveBookingsRecapAdapter: GetFilteredCollectiveBookingsRecapAdapter =
   async apiFilters => {
     try {
       let allBookings: CollectiveBookingResponseModel[] = []

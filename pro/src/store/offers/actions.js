@@ -11,8 +11,3 @@ export const savePageNumber = pageNumber => ({
   pageNumber,
   type: SAVE_PAGE_NUMBER,
 })
-
-export const setCategories = categories => ({
-  categories,
-  type: SET_CATEGORIES,
-})

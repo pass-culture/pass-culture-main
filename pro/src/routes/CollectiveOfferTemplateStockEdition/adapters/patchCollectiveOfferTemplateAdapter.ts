@@ -6,7 +6,7 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 
-export type Params = {
+type Params = {
   offer: GetStockOfferSuccessPayload
   values: OfferEducationalStockFormValues
 }

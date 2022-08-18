@@ -5,7 +5,7 @@ import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
 
-export interface RouteLeavingGuardOfferCreationProps {
+interface RouteLeavingGuardOfferCreationProps {
   isFormDirty: boolean
 }
 

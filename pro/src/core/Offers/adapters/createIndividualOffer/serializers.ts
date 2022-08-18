@@ -19,7 +19,7 @@ export const serializeApiErrors = (
   return formErrors
 }
 
-export const serializeExtraData = (
+const serializeExtraData = (
   formValues: IOfferIndividualFormValues
 ): IOfferExtraData => {
   const extraData: IOfferExtraData = {}

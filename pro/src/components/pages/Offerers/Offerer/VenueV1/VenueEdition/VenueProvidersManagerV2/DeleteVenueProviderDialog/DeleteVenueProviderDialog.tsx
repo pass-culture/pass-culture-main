@@ -4,7 +4,7 @@ import ConfirmDialog from 'new_components/ConfirmDialog'
 
 import style from './DeleteVenueProviderDialog.module.scss'
 
-export interface IDeleteVenueProviderDialogProps {
+interface IDeleteVenueProviderDialogProps {
   onConfirm: () => void
   onCancel: () => void
   isLoading: boolean

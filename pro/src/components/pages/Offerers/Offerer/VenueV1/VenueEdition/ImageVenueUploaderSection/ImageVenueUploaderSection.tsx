@@ -27,7 +27,7 @@ export interface IVenueBannerMetaProps {
   crop_params: IVenueBannerMetaCropParamsProps
 }
 
-export interface IVenueBannerMetaCropParamsProps {
+interface IVenueBannerMetaCropParamsProps {
   x_crop_percent: number
   y_crop_percent: number
   height_crop_percent: number

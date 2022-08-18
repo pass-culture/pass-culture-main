@@ -4,7 +4,7 @@ import { selectCurrentUser } from 'store/user/selectors'
 
 import Header from './Header'
 
-export const mapStateToProps = state => {
+const mapStateToProps = state => {
   const user = selectCurrentUser(state)
   return {
     isUserAdmin: user && user.isAdmin,

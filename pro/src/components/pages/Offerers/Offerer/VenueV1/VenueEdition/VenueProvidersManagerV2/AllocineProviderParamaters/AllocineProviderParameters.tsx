@@ -11,7 +11,7 @@ import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderIte
 import style from './AllocineProviderParameters.module.scss'
 import { IAllocineProviderParametersValues } from './types'
 
-export interface IAllocineProviderParametersProps {
+interface IAllocineProviderParametersProps {
   venueProvider: IVenueProviderApi
   afterVenueProviderEdit: (editedVenueProvider: IVenueProviderApi) => void
 }

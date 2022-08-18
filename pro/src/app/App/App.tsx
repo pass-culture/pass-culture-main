@@ -2,12 +2,12 @@ import { setUser as setSentryUser } from '@sentry/browser'
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useHistory } from 'react-router-dom'
+import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 
 import { useConfigureAnalytics } from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
 import { useIsRoutePublic } from 'routes/hooks'
-import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 
 interface IAppProps {
   children: JSX.Element

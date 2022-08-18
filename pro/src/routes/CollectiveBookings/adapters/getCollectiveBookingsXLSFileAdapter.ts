@@ -7,7 +7,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-export const getCollectiveBookingsXLSFileAdapter: GetBookingsXLSFileAdapter =
+const getCollectiveBookingsXLSFileAdapter: GetBookingsXLSFileAdapter =
   async filters => {
     try {
       const bookingsXLSText = await pcapi.getFilteredCollectiveBookingsXLS({

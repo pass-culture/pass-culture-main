@@ -16,7 +16,7 @@ import ToggleVenueProviderStatusButton from '../ToggleVenueProviderStatusButton/
 
 import style from './VenueProviderItemV2.module.scss'
 
-export interface IVenueProviderItemV2Props {
+interface IVenueProviderItemV2Props {
   afterDelete: (deletedVenueProvider: string) => void
   afterSubmit: (editedVenueProvider: IVenueProviderApi) => void
   venueProvider: IVenueProviderApi

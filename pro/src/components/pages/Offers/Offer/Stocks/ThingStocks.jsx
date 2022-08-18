@@ -24,8 +24,8 @@ import {
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_STATUS_DRAFT,
-} from 'core/Offers/constants'
-import { computeOffersUrl } from 'core/Offers/utils'
+  computeOffersUrl,
+} from 'core/Offers'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'

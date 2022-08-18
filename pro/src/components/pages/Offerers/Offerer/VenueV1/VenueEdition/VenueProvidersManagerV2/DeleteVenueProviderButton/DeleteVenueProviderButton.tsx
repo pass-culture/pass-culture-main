@@ -10,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import DeleteVenueProviderDialog from '../DeleteVenueProviderDialog/DeleteVenueProviderDialog'
 import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'
 
-export interface IDeleteVenueProviderButtonProps {
+interface IDeleteVenueProviderButtonProps {
   venueProviderId: string
   afterDelete: (deletedVenueProvider: string) => void
 }

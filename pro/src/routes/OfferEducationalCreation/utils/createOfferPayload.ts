@@ -21,25 +21,6 @@ const disabilityCompliances = (
   visualDisabilityCompliant: accessibility.visual,
 })
 
-export const createOfferPayload = (
-  offer: IOfferEducationalFormValues
-): EducationalOfferModelPayload => ({
-  offererId: offer.offererId,
-  venueId: offer.venueId,
-  subcategoryId: offer.subCategory,
-  name: offer.title,
-  bookingEmail: offer.notifications ? offer.notificationEmail : undefined,
-  description: offer.description,
-  durationMinutes: parseDuration(offer.duration),
-  ...disabilityCompliances(offer.accessibility),
-  extraData: {
-    students: serializeParticipants(offer.participants),
-    offerVenue: offer.eventAddress,
-    contactEmail: offer.email,
-    contactPhone: offer.phone,
-  },
-})
-
 export const createCollectiveOfferPayload = (
   offer: IOfferEducationalFormValues
 ): PostCollectiveOfferBodyModel => ({

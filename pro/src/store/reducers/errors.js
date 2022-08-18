@@ -21,19 +21,4 @@ const errors = (state = initialState, action) => {
   }
 }
 
-export const mergeErrors = (name, patch) => ({
-  name,
-  patch,
-  type: MERGE_ERRORS,
-})
-
-export const removeErrors = name => ({
-  name,
-  type: REMOVE_ERRORS,
-})
-
-export const resetErrors = () => ({
-  type: RESET_ERRORS,
-})
-
 export default errors

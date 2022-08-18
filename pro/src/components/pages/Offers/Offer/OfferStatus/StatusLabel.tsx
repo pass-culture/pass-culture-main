@@ -11,7 +11,7 @@ import {
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
 
-export const OFFER_STATUS_PROPERTIES: Record<
+const OFFER_STATUS_PROPERTIES: Record<
   string,
   { className: string; icon: string; label: string }
 > = {

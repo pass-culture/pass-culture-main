@@ -27,31 +27,3 @@ export const checkHasNoDisabilityCompliance = values => {
 
   return true
 }
-
-export const getAccessibilityInitialValues = ({
-  offer = null,
-  venue = null,
-}) => {
-  const emptyAccessibility = {
-    audioDisabilityCompliant: null,
-    mentalDisabilityCompliant: null,
-    motorDisabilityCompliant: null,
-    visualDisabilityCompliant: null,
-  }
-
-  let accessibility = offer
-    ? getAccessibilityValues(offer)
-    : { ...emptyAccessibility }
-  if (Object.values(accessibility).includes(null)) {
-    accessibility = venue
-      ? getAccessibilityValues(venue)
-      : { ...emptyAccessibility }
-  }
-  accessibility.noDisabilityCompliant =
-    checkHasNoDisabilityCompliance(accessibility)
-  accessibility = Object.keys(accessibility).reduce(
-    (acc, fieldName) => ({ ...acc, [fieldName]: !!accessibility[fieldName] }),
-    {}
-  )
-  return accessibility
-}

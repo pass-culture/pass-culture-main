@@ -11,7 +11,7 @@ import VenueProviderListV2 from './VenueProviderListV2/VenueProviderListV2'
 import styles from './VenueProvidersManagerV2.module.scss'
 import VenueProviderStatus from './VenueProviderStatus/VenueProviderStatus'
 
-export interface IVenueProvidersManagerV2Props {
+interface IVenueProvidersManagerV2Props {
   venue: IAPIVenue
 }
 

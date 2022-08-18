@@ -8,7 +8,7 @@ const mapStateToProps = state => ({
   notification: notificationSelector(state),
 })
 
-export const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = dispatch => ({
   hideNotification: () => {
     dispatch(closeNotification())
   },

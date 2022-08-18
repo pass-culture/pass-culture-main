@@ -10,7 +10,7 @@ import {
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
-export const serializeOffererApi = (
+const serializeOffererApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualOfferer => {
   return {
@@ -19,7 +19,7 @@ export const serializeOffererApi = (
   }
 }
 
-export const serializeVenueApi = (
+const serializeVenueApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualVenue => {
   const baseAccessibility = {
@@ -47,7 +47,7 @@ export const serializeVenueApi = (
   }
 }
 
-export const serializeStockApi = (
+const serializeStockApi = (
   apiStock: GetOfferStockResponseModel
 ): IOfferIndividualStock => {
   return {
@@ -67,7 +67,7 @@ export const serializeStockApi = (
   }
 }
 
-export const serializeOfferApiExtraData = (
+const serializeOfferApiExtraData = (
   apiOffer: GetIndividualOfferResponseModel
 ) => {
   return {

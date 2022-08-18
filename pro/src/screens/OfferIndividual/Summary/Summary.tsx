@@ -37,7 +37,7 @@ import { IStockEventItemProps, StockEventSection } from './StockEventSection'
 import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
 import styles from './Summary.module.scss'
 
-export interface ISummaryProps {
+interface ISummaryProps {
   offerId: string
   formOfferV2?: boolean
   isCreation?: boolean

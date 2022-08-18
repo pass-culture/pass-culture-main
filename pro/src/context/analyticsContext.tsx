@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 
-export type logEventType = (
+type logEventType = (
   event: string,
   params: { [key: string]: string | string[] | boolean }
 ) => void

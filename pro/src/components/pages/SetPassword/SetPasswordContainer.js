@@ -5,13 +5,13 @@ import { selectCurrentUser } from 'store/user/selectors'
 
 import { SetPassword } from './SetPassword'
 
-export const mapStateToProps = state => {
+const mapStateToProps = state => {
   return {
     currentUser: selectCurrentUser(state),
   }
 }
 
-export const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = dispatch => ({
   showNotification: (type, text) =>
     dispatch(
       showNotification({

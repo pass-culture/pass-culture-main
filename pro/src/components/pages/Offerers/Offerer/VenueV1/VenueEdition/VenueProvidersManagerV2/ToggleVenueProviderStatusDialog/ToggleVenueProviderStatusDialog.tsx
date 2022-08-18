@@ -4,7 +4,7 @@ import ConfirmDialog from 'new_components/ConfirmDialog'
 
 import style from './ToggleVenueProviderStatusDialog.module.scss'
 
-export interface IToggleVenueProviderStatusDialogProps {
+interface IToggleVenueProviderStatusDialogProps {
   onConfirm: () => void
   onCancel: () => void
   isLoading: boolean

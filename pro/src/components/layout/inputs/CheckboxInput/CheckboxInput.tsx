@@ -1,6 +1,6 @@
 import React from 'react'
 
-export interface IProps {
+interface IProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   label: string
   name: string

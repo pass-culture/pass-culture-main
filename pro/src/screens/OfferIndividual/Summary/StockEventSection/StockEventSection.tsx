@@ -17,7 +17,7 @@ import styles from './StockEventSection.module.scss'
 
 const NB_UNFOLDED_STOCK = 2
 
-export interface IStockEventSectionProps {
+interface IStockEventSectionProps {
   stocks: IStockEventItemProps[]
   isCreation: boolean
   offerId: string

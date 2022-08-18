@@ -11,7 +11,7 @@ import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderIte
 import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
 import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'
 
-export interface IToggleVenueProviderStatusButtonProps {
+interface IToggleVenueProviderStatusButtonProps {
   venueProvider: IVenueProviderApi
   afterEdit: (venueProvider: IVenueProviderApi) => void
 }

@@ -5,7 +5,7 @@ import { IAPIVenue } from 'core/Venue/types'
 import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 import VenueProviderItemV2 from '../VenueProviderItemV2/VenueProviderItemV2'
 
-export interface IVenueProviderListV2Props {
+interface IVenueProviderListV2Props {
   afterVenueProviderDelete: (deletedVenueProvider: string) => void
   afterVenueProviderEdit: (editedVenueProvider: IVenueProviderApi) => void
   venue: IAPIVenue

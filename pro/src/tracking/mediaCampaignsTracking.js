@@ -4,7 +4,7 @@ const TYPE = 'site'
 
 /* Beware : the same function is defined for id-check */
 // TODO(antoinewg): do we still use Floodlight tracking ?
-export const createTrackingIframe = cat => {
+const createTrackingIframe = cat => {
   const randomInteger = Math.random() * LARGE_MULTIPLER
 
   const iframeId = `floodlight-cat-${cat}`

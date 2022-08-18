@@ -9,7 +9,7 @@ const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {
   payload: { venues: [] },
 }
 
-export const getVenuesAdapter: GetVenuesAdapter = async () => {
+const getVenuesAdapter: GetVenuesAdapter = async () => {
   try {
     const venuesForOfferer = await pcapi.getVenuesForOfferer()
 

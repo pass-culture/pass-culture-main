@@ -3,10 +3,9 @@ import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
-import Tag from 'ui-kit/Tag'
+import { Tag } from 'ui-kit'
 
-import { BaseInput } from '../shared'
-import AutocompleteList from '../shared/AutocompleteList'
+import { BaseInput, AutocompleteList } from '../shared'
 import BaseCheckbox from '../shared/BaseCheckbox'
 import FieldLayout from '../shared/FieldLayout'
 

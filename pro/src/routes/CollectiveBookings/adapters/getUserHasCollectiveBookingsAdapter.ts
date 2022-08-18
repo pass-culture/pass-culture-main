@@ -8,7 +8,7 @@ const FAILING_RESPONSE: AdapterFailure<boolean> = {
   payload: false,
 }
 
-export const getUserHasCollectiveBookingsAdapter: GetUserHasBookingsAdapter =
+const getUserHasCollectiveBookingsAdapter: GetUserHasBookingsAdapter =
   async () => {
     try {
       const { hasBookings } = await pcapi.getUserHasCollectiveBookings()

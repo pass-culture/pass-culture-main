@@ -53,5 +53,3 @@ export const getOfferersAdapter: GetOfferersAdapter = async (
     return FAILING_RESPONSE
   }
 }
-
-export default getOfferersAdapter

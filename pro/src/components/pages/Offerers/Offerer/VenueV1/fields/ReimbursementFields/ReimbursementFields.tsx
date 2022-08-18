@@ -10,7 +10,7 @@ import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
 
 import styles from './ReimbursementFields.module.scss'
 
-export interface ReimbursementInterface {
+interface ReimbursementInterface {
   offerer: IAPIOfferer
   readOnly: boolean
   scrollToSection?: boolean

@@ -13,9 +13,15 @@ import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { BannerInvisibleSiren, BannerRGS } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
+import {
+  Button,
+  SubmitButton,
+  TextInput,
+  Checkbox,
+  PasswordInput,
+  SirenInput,
+} from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { PasswordInput, SirenInput } from 'ui-kit/form'
 import { removeWhitespaces } from 'utils/string'
 
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'

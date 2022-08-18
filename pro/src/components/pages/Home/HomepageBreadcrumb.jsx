@@ -8,7 +8,7 @@ import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
 
 export const STEP_ID_OFFERERS = 'offerers'
-export const STEP_ID_PROFILE = 'profile'
+const STEP_ID_PROFILE = 'profile'
 export const STEP_OFFERER_HASH = 'structures'
 export const STEP_PROFILE_HASH = 'profil'
 

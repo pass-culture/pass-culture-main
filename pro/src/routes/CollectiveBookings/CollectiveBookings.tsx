@@ -12,7 +12,7 @@ import {
   getUserHasCollectiveBookingsAdapter,
 } from './adapters'
 
-export type CollectiveBookingsRouterState = {
+type CollectiveBookingsRouterState = {
   statuses?: string[]
 }
 

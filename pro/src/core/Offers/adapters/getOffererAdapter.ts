@@ -12,9 +12,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-export const getOffererAdapter: GetOffererAdapter = async (
-  offererId: string
-) => {
+const getOffererAdapter: GetOffererAdapter = async (offererId: string) => {
   try {
     const offerer = await api.getOfferer(offererId)
 

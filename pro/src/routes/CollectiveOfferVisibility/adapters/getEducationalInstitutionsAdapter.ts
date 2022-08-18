@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 
-export type GetEducationalInstitutionsAdapter = Adapter<
+type GetEducationalInstitutionsAdapter = Adapter<
   void,
   { institutions: EducationalInstitutionResponseModel[] },
   null

@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
-import { RadioButton } from '..'
+import RadioButton from '../RadioButton'
 import { FieldSetLayout } from '../shared'
 
 import styles from './RadioGroup.module.scss'

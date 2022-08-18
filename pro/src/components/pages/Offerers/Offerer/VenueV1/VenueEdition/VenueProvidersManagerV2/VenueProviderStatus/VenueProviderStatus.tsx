@@ -4,7 +4,7 @@ import Icon from 'components/layout/Icon'
 
 import styles from './VenueProviderStatus.module.scss'
 
-export interface VenueProviderStatusProps {
+interface VenueProviderStatusProps {
   isActive: boolean
 }
 

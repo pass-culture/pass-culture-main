@@ -6,7 +6,7 @@ import {
   SET_USER_IS_INITIALIZED,
 } from './actions'
 
-export type UserState = {
+type UserState = {
   initialized: boolean
   currentUser: null | SharedCurrentUserResponseModel
 }

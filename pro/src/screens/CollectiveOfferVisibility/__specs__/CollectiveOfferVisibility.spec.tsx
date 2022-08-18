@@ -50,7 +50,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
   },
 ]
 
-export const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) => {
+const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) => {
   render(
     <Provider store={configureTestStore()}>
       <MemoryRouter>

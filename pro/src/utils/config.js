@@ -1,8 +1,4 @@
 const NODE_ENV = process.env.NODE_ENV || 'development'
-// NOTE -> le script PC remplace
-// la valeur de `LAST_DEPLOYED_COMMIT`
-// par le numéro de commit qui a été deployé
-export const LAST_DEPLOYED_COMMIT = '##LAST_DEPLOYED_COMMIT##'
 
 export const IS_DEV = NODE_ENV === 'development'
 
@@ -31,7 +27,6 @@ export const DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL =
     .REACT_APP_DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL
 export const REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 =
   process.env.REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4
-export const ASSETS_URL = process.env.REACT_APP_ASSETS_URL
 export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY
 export const WEBAPP_URL = process.env.REACT_APP_WEBAPP_URL
 

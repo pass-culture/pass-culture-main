@@ -1,1 +1,1 @@
-export { default as TextInputWithIcon } from './TextInputWithIcon'
+export { default } from './TextInputWithIcon'

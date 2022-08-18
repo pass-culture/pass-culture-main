@@ -7,7 +7,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-export const getCollectiveBookingsCSVFileAdapter: GetBookingsCSVFileAdapter =
+const getCollectiveBookingsCSVFileAdapter: GetBookingsCSVFileAdapter =
   async filters => {
     try {
       const bookingsCsvText = await pcapi.getFilteredCollectiveBookingsCSV({

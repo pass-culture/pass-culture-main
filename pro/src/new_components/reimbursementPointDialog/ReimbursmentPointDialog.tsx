@@ -9,7 +9,7 @@ import DialogBox from '../DialogBox'
 
 import styles from './ReimbursmentPointDialog.module.scss'
 
-export interface IReimbursmentPointDialog {
+interface IReimbursmentPointDialog {
   closeDialog: () => void
   dmsToken: string
 }

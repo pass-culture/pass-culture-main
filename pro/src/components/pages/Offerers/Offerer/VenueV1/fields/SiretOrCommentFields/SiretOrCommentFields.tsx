@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { SiretField } from 'components/layout/form/fields/SiretField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
-import Toggle from 'ui-kit/Toggle'
+import { Toggle } from 'ui-kit'
 
 export interface SiretOrCommentInterface {
   isCreatedEntity: boolean

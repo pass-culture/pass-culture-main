@@ -49,7 +49,7 @@ export const createValidateRequiredField =
     return error
   }
 
-export interface IGetCanSubmitArgs {
+interface IGetCanSubmitArgs {
   isLoading: boolean
   dirtySinceLastSubmit: boolean
   hasSubmitErrors: boolean
@@ -86,5 +86,3 @@ export const parseSubmitErrors = (errors: Record<string, string>) =>
     const err = errors[key]
     return { ...acc, [key]: err }
   }, {})
-
-export default parseSubmitErrors

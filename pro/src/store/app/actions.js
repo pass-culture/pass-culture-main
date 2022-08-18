@@ -5,8 +5,3 @@ export const setDisplayDomainBanner = displayDomainBanner => ({
   displayDomainBanner,
   type: SET_DISPLAY_DOMAIN_BANNER,
 })
-
-export const setLogEvent = logEvent => ({
-  logEvent,
-  type: SET_LOG_EVENT,
-})

@@ -10,7 +10,7 @@ import ActivationCodesConfirmationForm from './ActivationCodesConfirmationForm/A
 import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
 import { checkAndParseUploadedFile, fileReader } from './UploadedFileChecker'
 
-export const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
+const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
 const ActivationCodesUploadDialog = ({
   activationCodes,
