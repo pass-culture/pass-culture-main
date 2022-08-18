@@ -1,5 +1,5 @@
-import { api } from 'api/api'
-import { CollectiveOfferTemplateResponseModel } from 'api/gen'
+import { CollectiveOfferTemplateResponseModel } from 'apiClient'
+import { api } from 'apiClient/api'
 import { Adapter, AdapterFailure } from 'app/types'
 
 type GetCollectiveOfferTemplateAdapter = Adapter<
@@ -17,7 +17,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
   async offerId => {
     try {
-      const result = await api.getAdageIframeGetCollectiveOfferTemplate(offerId)
+      const result = await api.getCollectiveOfferTemplate(offerId)
 
       return {
         isOk: true,
