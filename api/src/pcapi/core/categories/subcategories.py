@@ -728,7 +728,3 @@ OnlineOfflinePlatformChoicesEnum = Enum(  # type: ignore [misc]
     "OnlineOfflinePlatformChoicesEnum",
     {choice: choice for choice in [c.value for c in OnlineOfflinePlatformChoices]},
 )
-
-
-def get_search_group_label(search_group_name):  # type: ignore [no-untyped-def]
-    return SearchGroups[search_group_name].value
