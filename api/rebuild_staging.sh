@@ -8,7 +8,7 @@
 # Display commands and stop execution on error
 set -ex
 
-for table in activity user_session email; do
+for table in activity user_session; do
   psql $DATABASE_URL -c "TRUNCATE TABLE $table;"
 done
 
