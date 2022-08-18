@@ -14,4 +14,11 @@ def test_update_user_attributes():
 
     update_user_attributes(BatchAPI.IOS, user_id, attributes)
 
-    assert push_testing.requests == [{"attribute_values": {"param": "value"}, "batch_api": "IOS", "user_id": 123}]
+    assert push_testing.requests == [
+        {
+            "attribute_values": {"param": "value"},
+            "batch_api": "IOS",
+            "user_id": 123,
+            "can_be_asynchronously_retried": False,
+        }
+    ]

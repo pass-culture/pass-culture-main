@@ -28,11 +28,12 @@ class BatchBackend:
         self.headers = {"Content-Type": "application/json", "X-Authorization": settings.BATCH_SECRET_API_KEY}
 
     def update_user_attributes(
-        self, batch_api: BatchAPI, user_id: int, attribute_values: dict
+        self, batch_api: BatchAPI, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
     ) -> push_models.UpdateAttributeRequestResult:
         try:
             response = requests.post(
                 f"{settings.BATCH_API_URL}/1.0/{batch_api.value}/data/users/{user_id}",
+                disable_synchronous_retry=can_be_asynchronously_retried,
                 headers=self.headers,
                 json={"overwrite": False, "values": attribute_values},
             )
@@ -51,7 +52,9 @@ class BatchBackend:
 
         return push_models.UpdateAttributeRequestResult(should_retry=False)
 
-    def update_users_attributes(self, users_data: list[UserUpdateData]) -> None:
+    def update_users_attributes(
+        self, users_data: list[UserUpdateData], can_be_asynchronously_retried: bool = False
+    ) -> None:
         def payload_template(user: UserUpdateData) -> dict:
             return {
                 "id": user.user_id,
@@ -62,6 +65,7 @@ class BatchBackend:
             try:
                 response = requests.post(
                     f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/",
+                    disable_synchronous_retry=can_be_asynchronously_retried,
                     headers=self.headers,
                     json=[payload_template(user) for user in users_data],
                 )
@@ -87,11 +91,14 @@ class BatchBackend:
         make_post_request(BatchAPI.ANDROID)
         make_post_request(BatchAPI.IOS)
 
-    def send_transactional_notification(self, notification_data: TransactionalNotificationData) -> None:
+    def send_transactional_notification(
+        self, notification_data: TransactionalNotificationData, can_be_asynchronously_retried: bool = False
+    ) -> None:
         def make_post_request(api: BatchAPI) -> None:
             try:
                 response = requests.post(
                     f"{settings.BATCH_API_URL}/1.1/{api.value}/transactional/send",
+                    disable_synchronous_retry=can_be_asynchronously_retried,
                     headers=self.headers,
                     json={
                         "group_id": notification_data.group_id,
@@ -133,7 +140,7 @@ class BatchBackend:
         make_post_request(BatchAPI.ANDROID)
         make_post_request(BatchAPI.IOS)
 
-    def delete_user_attributes(self, user_id: int) -> None:
+    def delete_user_attributes(self, user_id: int, can_be_asynchronously_retried: bool = False) -> None:
         """
         To be used as an internal cloud task since cloud tasks do not
         accept DELETE http methods.
@@ -141,7 +148,11 @@ class BatchBackend:
         for api in (BatchAPI.IOS, BatchAPI.ANDROID):
             url = f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/{user_id}"
             try:
-                response = requests.delete(url, headers=self.headers)
+                response = requests.delete(
+                    url,
+                    headers=self.headers,
+                    disable_synchronous_retry=can_be_asynchronously_retried,
+                )
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception(
                     "Could not delete batch user: %s",

@@ -37,6 +37,7 @@ class Returns204Test:
                 "title": "Réservation annulée",
             },
             "user_ids": [booking.individualBooking.userId],
+            "can_be_asynchronously_retried": False,
         }
 
     @pytest.mark.usefixtures("db_session")

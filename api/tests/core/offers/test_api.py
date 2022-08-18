@@ -756,6 +756,7 @@ class DeleteStockTest:
                 "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
                 "title": "Réservation annulée",
             },
+            "can_be_asynchronously_retried": False,
         }
 
     def test_can_delete_if_stock_from_allocine(self):

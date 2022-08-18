@@ -484,7 +484,7 @@ class UserProfileUpdateTest:
         assert len(push_testing.requests) == 1
 
         push_request = push_testing.requests[0]
-        assert push_request == {"user_id": user.id}
+        assert push_request == {"user_id": user.id, "can_be_asynchronously_retried": True}
 
     @override_settings(BATCH_SECRET_API_KEY="coucou-la-cle")
     @override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
