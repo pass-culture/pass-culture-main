@@ -12,9 +12,10 @@ import {
   List,
   Stack,
   Typography,
+  CircularProgress,
 } from '@mui/material'
 import { captureException } from '@sentry/react'
-import { ClassAttributes, HTMLAttributes, useState } from 'react'
+import React, { ClassAttributes, HTMLAttributes, useState } from 'react'
 import { Form, TextInput, useAuthenticated, useNotify } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
@@ -96,6 +97,7 @@ function stopTypingOnSearch(event: {
 }
 
 export const UserSearch = () => {
+  const [isLoading, setIsLoading] = useState(false)
   const [userDataState, setUserDataState] = useState({
     userData: [],
     userTotal: 0,
@@ -136,10 +138,13 @@ export const UserSearch = () => {
   }
 
   async function onChangePage(event: React.ChangeEvent<unknown>, page: number) {
+    setIsLoading(true)
     await searchPublicUserList(searchParameter, page)
+    setIsLoading(false)
   }
 
   async function formSubmit(params: FieldValues) {
+    setIsLoading(true)
     if (params && params.search) {
       setSearchParameter(params.search)
       setUserDataState({
@@ -150,6 +155,7 @@ export const UserSearch = () => {
       setEmptyResults(true)
       await searchPublicUserList(params.search, 1)
     }
+    setIsLoading(false)
   }
 
   const clearSearch = () => {
@@ -162,130 +168,143 @@ export const UserSearch = () => {
   }
 
   return (
-    <Grid
-      container
-      spacing={0}
-      direction="column"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Card
+    <>
+      <CircularProgress
+        size={250}
+        thickness={2}
         style={{
-          boxShadow: 'none',
-          width: '100%',
-          marginLeft: 0,
-          paddingTop: '20px',
+          display: isLoading ? 'block' : 'none',
+          marginTop: '3rem',
+          marginLeft: 'auto',
+          marginRight: 'auto',
         }}
+      />
+      <Grid
+        visibility={isLoading ? 'hidden' : 'visible'}
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
       >
-        <CardContent>
-          <Typography
-            component="div"
-            textAlign={emptyResults ? 'center' : 'left'}
-            style={{
-              display: emptyResults ? 'block' : 'none',
-              paddingTop: '7rem',
-            }}
-          >
-            <CustomSearchIcon />
-          </Typography>
-          <Typography
-            variant={'subtitle1'}
-            component={'div'}
-            mb={2}
-            sx={emptyResults ? { mx: 'auto' } : { mx: 1 }}
-            gutterBottom
-            textAlign={emptyResults ? 'center' : 'left'}
-            style={{
-              width: '30rem',
-              display: emptyResults ? 'block' : 'none',
-            }}
-          >
-            Retrouve un utilisateur à partir de son nom, prénom, date de
-            naissance, userID, numéro de téléphone ou son adresse email.
-          </Typography>
-          <Grid container justifyContent={emptyResults ? 'center' : 'left'}>
-            <Box>
-              <Form onSubmit={formSubmit}>
-                <Stack
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                  }}
-                  direction={emptyResults ? 'column' : 'row'}
-                >
-                  <TextInput
-                    helperText={false}
-                    source={'q'}
-                    name={'search'}
-                    type={'text'}
-                    label={emptyResults ? '' : 'Recherche'}
-                    variant={'outlined'}
+        <Card
+          style={{
+            boxShadow: 'none',
+            width: '100%',
+            marginLeft: 0,
+            paddingTop: '20px',
+          }}
+        >
+          <CardContent>
+            <Typography
+              component="div"
+              textAlign={emptyResults ? 'center' : 'left'}
+              style={{
+                display: emptyResults ? 'block' : 'none',
+                paddingTop: '7rem',
+              }}
+            >
+              <CustomSearchIcon />
+            </Typography>
+            <Typography
+              variant={'subtitle1'}
+              component={'div'}
+              mb={2}
+              sx={emptyResults ? { mx: 'auto' } : { mx: 1 }}
+              gutterBottom
+              textAlign={emptyResults ? 'center' : 'left'}
+              style={{
+                width: '30rem',
+                display: emptyResults ? 'block' : 'none',
+              }}
+            >
+              Retrouve un utilisateur à partir de son nom, prénom, date de
+              naissance, userID, numéro de téléphone ou son adresse email.
+            </Typography>
+            <Grid container justifyContent={emptyResults ? 'center' : 'left'}>
+              <Box>
+                <Form onSubmit={formSubmit}>
+                  <Stack
                     style={{
-                      marginLeft: 'auto',
-                      marginRight: 5,
-                      width: emptyResults ? '20rem' : 'auto',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      textAlign: 'center',
                     }}
-                    onKeyUp={stopTypingOnSearch}
-                    InputProps={
-                      !emptyResults
-                        ? {
-                            endAdornment: (
-                              <InputAdornment position="start">
-                                <IconButton
-                                  aria-label={
-                                    'Rechercher un utilisateur public'
-                                  }
-                                  onClick={clearSearch}
-                                >
-                                  <ClearIcon />
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }
-                        : {}
-                    }
-                  />
-
-                  <Button
-                    type={'submit'}
-                    variant="contained"
-                    style={{ height: '2.5rem' }}
+                    direction={emptyResults ? 'column' : 'row'}
                   >
-                    Chercher
-                  </Button>
-                </Stack>
-              </Form>
-            </Box>
+                    <TextInput
+                      helperText={false}
+                      source={'q'}
+                      name={'search'}
+                      type={'text'}
+                      label={emptyResults ? '' : 'Recherche'}
+                      variant={'outlined'}
+                      style={{
+                        marginLeft: 'auto',
+                        marginRight: 5,
+                        width: emptyResults ? '20rem' : 'auto',
+                      }}
+                      onKeyUp={stopTypingOnSearch}
+                      InputProps={
+                        !emptyResults
+                          ? {
+                              endAdornment: (
+                                <InputAdornment position="start">
+                                  <IconButton
+                                    aria-label={
+                                      'Rechercher un utilisateur public'
+                                    }
+                                    onClick={clearSearch}
+                                  >
+                                    <ClearIcon />
+                                  </IconButton>
+                                </InputAdornment>
+                              ),
+                            }
+                          : {}
+                      }
+                    />
+
+                    <Button
+                      type={'submit'}
+                      variant="contained"
+                      style={{ height: '2.5rem' }}
+                    >
+                      Chercher
+                    </Button>
+                  </Stack>
+                </Form>
+              </Box>
+            </Grid>
+            {!emptyResults && <div>{userDataState.userTotal} résultat(s)</div>}
+            {!emptyResults && (
+              <Pagination
+                count={userDataState.totalPages}
+                onChange={onChangePage}
+              />
+            )}
+          </CardContent>
+        </Card>
+        <List>
+          <Grid container spacing={2} sx={{ marginTop: '1em', minWidth: 275 }}>
+            {!emptyResults &&
+              userDataState.userData.map(user => (
+                <Grid
+                  key={user['id']}
+                  sx={{ minWidth: 275 }}
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                  item
+                >
+                  <UserCard record={user} />
+                </Grid>
+              ))}
           </Grid>
-          {!emptyResults && <div>{userDataState.userTotal} résultat(s)</div>}
-          {!emptyResults && (
-            <Pagination
-              count={userDataState.totalPages}
-              onChange={onChangePage}
-            />
-          )}
-        </CardContent>
-      </Card>
-      <List>
-        <Grid container spacing={2} sx={{ marginTop: '1em', minWidth: 275 }}>
-          {!emptyResults &&
-            userDataState.userData.map(user => (
-              <Grid
-                key={user['id']}
-                sx={{ minWidth: 275 }}
-                xs={12}
-                sm={6}
-                md={4}
-                lg={4}
-                xl={4}
-                item
-              >
-                <UserCard record={user} />
-              </Grid>
-            ))}
-        </Grid>
-      </List>
-    </Grid>
+        </List>
+      </Grid>
+    </>
   )
 }
