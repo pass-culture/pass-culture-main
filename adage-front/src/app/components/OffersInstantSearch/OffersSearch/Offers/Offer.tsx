@@ -9,6 +9,7 @@ import {
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
+import { logOfferDetail } from 'repository/pcapi/pcapi'
 
 import ContactButton from './ContactButton'
 import OfferDetails from './OfferDetails/OfferDetails'
@@ -27,6 +28,15 @@ export const Offer = ({
 }): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const offerIsShowcase = !isOfferCollectiveOffer(offer)
+
+  const openOfferDetails = (
+    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  ) => {
+    if (isOfferCollectiveOffer(offer)) {
+      logOfferDetail(offer.stock.id)
+    }
+    setDisplayDetails(!displayDetails)
+  }
 
   return (
     <li className="offer" data-testid="offer-listitem">
@@ -71,7 +81,7 @@ export const Offer = ({
         </p>
         <button
           className="offer-see-more"
-          onClick={() => setDisplayDetails(!displayDetails)}
+          onClick={() => openOfferDetails(offer)}
           type="button"
         >
           <ChevronIcon
