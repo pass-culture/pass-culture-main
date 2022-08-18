@@ -4,8 +4,10 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
 
-import { api } from 'api/api'
-import { AdageFrontRoles, VenueResponse } from 'api/gen'
+import { api as apiLegacy } from 'api/api'
+import { VenueResponse } from 'api/gen'
+import { AdageFrontRoles } from 'apiClient'
+import { api } from 'apiClient/api'
 import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
@@ -46,7 +48,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 jest.mock('api/api', () => ({
   api: {
-    getAdageIframeAuthenticate: jest.fn(),
     getAdageIframeGetVenueById: jest.fn(),
     getAdageIframeGetVenueBySiret: jest.fn(),
     getAdageIframeGetEducationalOffersCategories: jest.fn().mockResolvedValue({
@@ -77,7 +78,14 @@ jest.mock('api/api', () => ({
         },
       ],
     }),
-    getAdageIframeGetCollectiveOffer: jest.fn(),
+  },
+}))
+const mockedApiLegacy = apiLegacy as jest.Mocked<typeof apiLegacy>
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    authenticate: jest.fn(),
+    getCollectiveOffer: jest.fn(),
   },
 }))
 const mockedApi = api as jest.Mocked<typeof api>
@@ -115,12 +123,12 @@ describe('app', () => {
       publicName: "Lib de Par's",
     }
 
-    mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
-      role: AdageFrontRoles.Redactor,
+    mockedApi.authenticate.mockResolvedValue({
+      role: AdageFrontRoles.REDACTOR,
       uai: 'uai',
     })
-    mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
-    mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
+    mockedApiLegacy.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
+    mockedApiLegacy.getAdageIframeGetVenueById.mockResolvedValue(venue)
   })
 
   it('should reset filters', async () => {
@@ -214,7 +222,7 @@ describe('app', () => {
 
   it('should display a "Réinitialiser les filtres" button when no result query is not empty', async () => {
     // Given
-    mockedApi.getAdageIframeGetCollectiveOffer.mockRejectedValue('')
+    mockedApi.getCollectiveOffer.mockRejectedValue('')
     renderApp()
     const searchBox = await findSearchBox()
     const launchSearchButton = await findLaunchSearchButton()
@@ -231,7 +239,7 @@ describe('app', () => {
 
   it('should display a "Réinitialiser les filtres" button when no result and at least one filter is set', async () => {
     // Given
-    mockedApi.getAdageIframeGetCollectiveOffer.mockRejectedValue('')
+    mockedApi.getCollectiveOffer.mockRejectedValue('')
     renderApp()
 
     // When
@@ -249,7 +257,7 @@ describe('app', () => {
 
   it('should not display a "Réinitialiser les filtres" button when there is no query and no filters', async () => {
     // Given
-    mockedApi.getAdageIframeGetCollectiveOffer.mockRejectedValue('')
+    mockedApi.getCollectiveOffer.mockRejectedValue('')
     renderApp()
 
     // Then
