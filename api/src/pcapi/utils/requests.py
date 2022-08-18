@@ -65,23 +65,23 @@ def _wrapper(
     return response
 
 
-def get(url: str, **kwargs: Any) -> Response:
-    with Session() as session:
+def get(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         return session.request(method="GET", url=url, **kwargs)
 
 
-def post(url: str, **kwargs: Any) -> Response:
-    with Session() as session:
+def post(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         return session.request(method="POST", url=url, **kwargs)
 
 
-def put(url: str, **kwargs: Any) -> Response:
-    with Session() as session:
+def put(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         return session.request(method="PUT", url=url, **kwargs)
 
 
-def delete(url: str, **kwargs: Any) -> Response:
-    with Session() as session:
+def delete(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         return session.request(method="DELETE", url=url, **kwargs)
 
 
@@ -91,8 +91,12 @@ class _SessionMixin:
 
 
 class Session(_SessionMixin, requests.Session):  # type: ignore [misc]
-    def __init__(self, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, *args, disable_synchronous_retry: bool = False, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(*args, **kwargs)
+
+        if disable_synchronous_retry:
+            return
+
         # Only sets a retry strategy for safe verbs
         safe_retry_strategy = Retry(total=3, allowed_methods=["HEAD", "GET", "OPTIONS"])
         unsafe_retry_strategy = Retry(total=3)

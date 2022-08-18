@@ -36,6 +36,7 @@ class Returns200Test:
                 "title": "Commande annulée",
             },
             "user_ids": [booking.individualBooking.userId],
+            "can_be_asynchronously_retried": False,
         }
 
 

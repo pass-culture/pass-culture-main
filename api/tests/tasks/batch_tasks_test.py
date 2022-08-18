@@ -41,6 +41,7 @@ def test_batch_task_android(request_mock, client):
 
     assert url == ("https://api.example.com/1.0/fake_android_api_key/data/users/123",)
     assert call_args["json"] == {"overwrite": False, "values": {"TEXTE_À": True}}
+    assert call_args["disable_synchronous_retry"] is True
 
 
 @override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
