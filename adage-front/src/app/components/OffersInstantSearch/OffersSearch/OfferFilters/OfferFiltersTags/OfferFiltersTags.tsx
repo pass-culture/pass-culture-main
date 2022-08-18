@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { VenueResponse } from 'api/gen'
+import { VenueResponse } from 'apiClient'
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Option } from 'app/types'

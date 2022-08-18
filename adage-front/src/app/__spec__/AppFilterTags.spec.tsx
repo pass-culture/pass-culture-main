@@ -73,10 +73,10 @@ jest.mock('apiClient/api', () => ({
         },
       ],
     }),
+    getVenueById: jest.fn(),
+    authenticate: jest.fn(),
+    getVenueBySiret: jest.fn(),
   },
-  getVenueById: jest.fn(),
-  authenticate: jest.fn(),
-  getVenueBySiret: jest.fn(),
 }))
 
 const mockedApi = api as jest.Mocked<typeof api>

@@ -1,4 +1,4 @@
-import { CategoriesResponseModel } from 'api/gen'
+import { CategoriesResponseModel } from 'apiClient'
 import { api } from 'apiClient/api'
 import { Adapter, Option } from 'app/types'
 

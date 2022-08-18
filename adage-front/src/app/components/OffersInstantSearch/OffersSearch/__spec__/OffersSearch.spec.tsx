@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import selectEvent from 'react-select-event'
 
-import { AdageFrontRoles } from 'api/gen'
+import { AdageFrontRoles } from 'apiClient'
 import { findLaunchSearchButton } from 'app/__spec__/__test_utils__/elements'
 import {
   AlgoliaQueryContextProvider,
@@ -35,7 +35,7 @@ describe('offersSearch component', () => {
   beforeEach(() => {
     props = {
       user: {
-        role: AdageFrontRoles.Redactor,
+        role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
         departmentCode: '30',
         institutionName: 'COLLEGE BELLEVUE',
@@ -78,7 +78,7 @@ describe('offersSearch component', () => {
 
     it('should not display checkbox', async () => {
       props.user = {
-        role: AdageFrontRoles.Redactor,
+        role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
         departmentCode: null,
         institutionName: null,

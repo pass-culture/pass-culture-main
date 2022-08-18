@@ -1,4 +1,4 @@
-import { OfferVenueResponse } from 'api/gen'
+import { OfferVenueResponse } from 'apiClient'
 
 const formatToReadableString = (input: string): string => {
   const lowerCasedInput = input.toLowerCase()
