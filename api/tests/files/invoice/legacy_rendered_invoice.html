@@ -10,7 +10,7 @@
             size: A4;
             margin: 2cm 1cm;
             @top-left {
-                content: "Relevé n°{{ invoice.reference }} du {{ invoice.date.strftime('%d/%m/%Y') }}";
+                content: "Relevé n°F220000001 du 30/01/2022";
                 color: #870087;
                 font-size: 10pt;
                 font-style: normal;
@@ -49,7 +49,7 @@
         }
 
         title:after {
-            content: "Relevé n°{{ invoice.reference }} du {{ invoice.date.strftime('%d/%m/%Y') }}";
+            content: "Relevé n°F220000001 du 30/01/2022";
             color: #870087;
             font-size: 10pt;
             font-style: normal;
@@ -192,19 +192,12 @@
 </svg>
 <h1>Justificatif de remboursement</h1>
 <div class="custumerInfo">
-{%- if reimbursement_point %}
-    <p><b>Structure :</b> {{ reimbursement_point.managingOfferer.name }} - {{ reimbursement_point.managingOfferer.siren }}</p>
-    <p><b>IBAN :</b> {{ reimbursement_point_name }} - {{ reimbursement_point_iban }}</p>
-{%- else %}
-    <p><b>Nom :</b> {{ invoice.businessUnit.name }}</p>
-{%- if venue is not none %}
-    <p><b>Adresse :</b> {{ venue.address }} - {{ venue.postalCode}} {{ venue.city }}</p>
-{%- endif %}
-    <p><b>SIRET :</b> {{ invoice.businessUnit.siret }}</p>
-{%- endif %}
+    <p><b>Nom :</b> Coiffeur justificaTIF</p>
+    <p><b>Adresse :</b> 1 boulevard Poissonnière - 75000 Paris</p>
+    <p><b>SIRET :</b> 85331845900023</p>
 </div>
 <h3 class="coloredTitle">
-    Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels
+    Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels
 </h3>
 <h3>
     Détail des offres remboursées incluant la contribution offreur,
@@ -222,36 +215,129 @@
     </tr>
     </thead>
     <tbody>
-{% for group in groups %}
+
     <tr class="coloredSection">
-        <td colspan="6" style="text-align:left"><b> {{ group.label }} </b></td>
+        <td colspan="6" style="text-align:left"><b> Barème général </b></td>
     </tr>
-{% for line in group.lines %}
+
     <tr>
         <td class="headRow">Montant remboursé</td>
-        <td>{{ line.rate|fr_percentage }}</td>
-        <td>{{ line.bookings_amount|fr_currency }} €</td>
-        <td>{{ line.contribution_rate|fr_percentage }}</td>
-        <td>{{ line.contributionAmount|fr_currency }} €</td>
-        <td>{{ line.reimbursedAmount|fr_currency }} €</td>
+        <td>100 %</td>
+        <td>25 896,00 €</td>
+        <td>0 %</td>
+        <td>0,00 €</td>
+        <td>25 896,00 €</td>
     </tr>
-{% endfor %}
+
+    <tr>
+        <td class="headRow">Montant remboursé</td>
+        <td>95 %</td>
+        <td>83,30 €</td>
+        <td>5 %</td>
+        <td>4,16 €</td>
+        <td>79,14 €</td>
+    </tr>
+
     <tr style="color: dimgrey">
         <td class="headRow">SOUS-TOTAL</td>
         <td></td>
-        <td>{{ group.used_bookings_subtotal|fr_currency }} €</td>
+        <td>25 979,30 €</td>
         <td></td>
-        <td>{{ group.contribution_subtotal|fr_currency }} €</td>
-        <td>{{ group.reimbursed_amount_subtotal|fr_currency }} €</td>
+        <td>4,16 €</td>
+        <td>25 975,14 €</td>
     </tr>
-{% endfor %}
+
+    <tr class="coloredSection">
+        <td colspan="6" style="text-align:left"><b> Barème livres </b></td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Montant remboursé</td>
+        <td>100 %</td>
+        <td>20,00 €</td>
+        <td>0 %</td>
+        <td>0,00 €</td>
+        <td>20,00 €</td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Montant remboursé</td>
+        <td>95 %</td>
+        <td>40,00 €</td>
+        <td>5 %</td>
+        <td>2,00 €</td>
+        <td>38,00 €</td>
+    </tr>
+
+    <tr style="color: dimgrey">
+        <td class="headRow">SOUS-TOTAL</td>
+        <td></td>
+        <td>60,00 €</td>
+        <td></td>
+        <td>2,00 €</td>
+        <td>58,00 €</td>
+    </tr>
+
+    <tr class="coloredSection">
+        <td colspan="6" style="text-align:left"><b> Barème non remboursé </b></td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Montant remboursé</td>
+        <td>0 %</td>
+        <td>58,00 €</td>
+        <td>100 %</td>
+        <td>58,00 €</td>
+        <td>0,00 €</td>
+    </tr>
+
+    <tr style="color: dimgrey">
+        <td class="headRow">SOUS-TOTAL</td>
+        <td></td>
+        <td>58,00 €</td>
+        <td></td>
+        <td>58,00 €</td>
+        <td>0,00 €</td>
+    </tr>
+
+    <tr class="coloredSection">
+        <td colspan="6" style="text-align:left"><b> Barème dérogatoire </b></td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Montant remboursé</td>
+        <td>95,65 %</td>
+        <td>23,00 €</td>
+        <td>4,35 %</td>
+        <td>1,00 €</td>
+        <td>22,00 €</td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Montant remboursé</td>
+        <td>94 %</td>
+        <td>20,00 €</td>
+        <td>6 %</td>
+        <td>1,20 €</td>
+        <td>18,80 €</td>
+    </tr>
+
+    <tr style="color: dimgrey">
+        <td class="headRow">SOUS-TOTAL</td>
+        <td></td>
+        <td>43,00 €</td>
+        <td></td>
+        <td>2,20 €</td>
+        <td>40,80 €</td>
+    </tr>
+
     <tr class="bottomTableText">
         <td class="headRow">TOTAL</td>
         <td></td>
-        <td>{{ total_used_bookings_amount|fr_currency }} €</td>
+        <td>26 140,30 €</td>
         <td></td>
-        <td>{{ total_contribution_amount|fr_currency }} €</td>
-        <td>{{ total_reimbursed_amount|fr_currency }} €</td>
+        <td>66,36 €</td>
+        <td>26 073,94 €</td>
     </tr>
     </tbody>
 </table>
@@ -275,18 +361,26 @@
     </tr>
     </thead>
     <tbody>
-{% for cashflow in cashflows %}
+
     <tr>
-        <td>Virement {{ cashflow.bankAccount.iban }}</td>
-        <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
-        <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
-        <td>{{ cashflow.amount|fr_currency }} €</td>
-        <td>{% if reimbursement_point %}{{ reimbursement_point.name }}{% else %}{{ invoice.businessUnit.name }}{% endif %}</td>
+        <td>Virement FR2710010000000000000000064</td>
+        <td class="cashflow_batch_label">1</td>
+        <td class="cashflow_creation_date">21/12/2021</td>
+        <td>25 916,00 €</td>
+        <td>Coiffeur justificaTIF</td>
     </tr>
-{% endfor %}
+
+    <tr>
+        <td>Virement FR2710010000000000000000064</td>
+        <td class="cashflow_batch_label">2</td>
+        <td class="cashflow_creation_date">21/12/2021</td>
+        <td>157,94 €</td>
+        <td>Coiffeur justificaTIF</td>
+    </tr>
+
     <tr class="coloredSection bottomTableText">
         <td class="headRow" colspan="3">TOTAL RÈGLEMENT PASS CULTURE</td>
-        <td>{{ invoice.amount|fr_currency }} €</td>
+        <td>26 073,94 €</td>
     </tr>
     </tbody>
 </table>
@@ -303,16 +397,25 @@
         </tr>
     </thead>
     <tbody>
-{% for venue in reimbursements_by_venue %}
+
         <tr>
-            <td>{{ venue.venue_name }}</td>
-            <td>{{ venue.validated_booking_amount|fr_currency }} €</td>
-            <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency }} €</td>
-            <td class="coloredSection">{{ venue.reimbursed_amount|fr_currency }} €</td>
-            <td>{{ venue.individual_amount|fr_currency }} €</td>
-            <td>{{ (venue.reimbursed_amount - venue.individual_amount)|fr_currency }} €</td>
+            <td>Coiffeur justificaTIF</td>
+            <td>25 474,30 €</td>
+            <td>66,36 €</td>
+            <td class="coloredSection">25 407,94 €</td>
+            <td>20 157,94 €</td>
+            <td>5 250,00 €</td>
         </tr>
-{% endfor %}
+
+        <tr>
+            <td>Coiffeur collecTIF</td>
+            <td>666,00 €</td>
+            <td>0,00 €</td>
+            <td class="coloredSection">666,00 €</td>
+            <td>0,00 €</td>
+            <td>666,00 €</td>
+        </tr>
+
     </tbody>
   </table>
 </body>
