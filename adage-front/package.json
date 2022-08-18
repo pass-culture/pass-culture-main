@@ -15,8 +15,8 @@
     "lint:scss:fix": "yarn lint:scss --fix",
     "test:unit": "jest",
     "test:eslint": "jest eslint-plugin-pass-culture/tests",
-    "generate:api:client": "./scripts/generate_api_client.sh && eslint 'src/api/**/*.ts' --fix",
-    "generate:api:client:local": "./scripts/generate_api_client_local.sh && eslint 'src/api/**/*.ts' --fix"
+    "generate:api:client": "./scripts/generate_api_client.sh",
+    "generate:api:client:local": "./scripts/generate_api_client_local.sh"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
@@ -118,6 +118,7 @@
     "jest-watch-typeahead": "0.6.4",
     "lint-staged": "^11.1.2",
     "mini-css-extract-plugin": "^1.0.0",
+    "openapi-typescript-codegen": "^0.23.0",
     "optimize-css-assets-webpack-plugin": "6.0.1",
     "pnp-webpack-plugin": "1.7.0",
     "postcss-flexbugs-fixes": "^4.0.0",
