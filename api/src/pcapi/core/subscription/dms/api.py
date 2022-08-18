@@ -94,7 +94,14 @@ def handle_dms_application(
         )
     logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
 
-    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number, application_content)
+    fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
+    if fraud_check is None:
+        fraud_check = fraud_dms_api.create_fraud_check(user, application_number, application_content)
+    else:
+        fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
+        if dms_application.latest_modification_datetime == fraud_check_content.get_latest_modification_datetime():
+            logger.info("[DMS] Application already processed", extra=log_extra_data)
+            return fraud_check
 
     if fraud_check.status == fraud_models.FraudCheckStatus.OK:
         logger.warning("[DMS] Skipping because FraudCheck already has OK status", extra=log_extra_data)
