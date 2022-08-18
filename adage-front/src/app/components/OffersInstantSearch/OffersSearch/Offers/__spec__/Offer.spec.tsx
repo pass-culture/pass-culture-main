@@ -3,13 +3,13 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 
-import { api } from 'api/api'
 import {
   AdageFrontRoles,
   CollectiveOfferResponseModel,
   OfferAddressType,
   StudentLevels,
-} from 'api/gen'
+} from 'apiClient'
+import { api } from 'apiClient/api'
 import {
   OffersComponent as Offers,
   OffersComponentProps,
@@ -20,8 +20,8 @@ import {
 } from 'app/providers'
 import { ResultType } from 'utils/types'
 
-jest.mock('api/api', () => ({
-  api: { getAdageIframeGetCollectiveOffer: jest.fn() },
+jest.mock('apiClient/api', () => ({
+  api: { getCollectiveOffer: jest.fn() },
 }))
 
 jest.mock('react-instantsearch-dom', () => {
@@ -95,9 +95,9 @@ describe('offer', () => {
       offerVenue: {
         venueId: 'VENUE_ID',
         otherAddress: '',
-        addressType: OfferAddressType.OffererVenue,
+        addressType: OfferAddressType.OFFERER_VENUE,
       },
-      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
+      students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       isSoldOut: false,
       isExpired: false,
       audioDisabilityCompliant: false,
@@ -141,9 +141,9 @@ describe('offer', () => {
       offerVenue: {
         venueId: '',
         otherAddress: 'A la mairie',
-        addressType: OfferAddressType.Other,
+        addressType: OfferAddressType.OTHER,
       },
-      students: [StudentLevels.Collge4e],
+      students: [StudentLevels.COLL_GE_4E],
       isSoldOut: false,
       isExpired: false,
       audioDisabilityCompliant: false,
@@ -159,7 +159,7 @@ describe('offer', () => {
     offersProps = {
       hits: [searchFakeResult],
       setIsLoading: jest.fn(),
-      userRole: AdageFrontRoles.Redactor,
+      userRole: AdageFrontRoles.REDACTOR,
       handleResetFiltersAndLaunchSearch: jest.fn(),
       refineNext: jest.fn(),
       refinePrevious: jest.fn(),
@@ -171,9 +171,7 @@ describe('offer', () => {
   describe('offer item', () => {
     it('should not show all information at first', async () => {
       // Given
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValue(
-        offerInParis
-      )
+      mockedPcapi.getCollectiveOffer.mockResolvedValue(offerInParis)
 
       // When
       renderOffers(offersProps)
@@ -216,9 +214,7 @@ describe('offer', () => {
 
     it('should show all offer informations if user click on "en savoir plus"', async () => {
       // Given
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValue(
-        offerInCayenne
-      )
+      mockedPcapi.getCollectiveOffer.mockResolvedValue(offerInCayenne)
 
       // When
       renderOffers(offersProps)
@@ -278,7 +274,7 @@ describe('offer', () => {
 
     it('should format the description when links are present', async () => {
       // Given
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValue({
+      mockedPcapi.getCollectiveOffer.mockResolvedValue({
         ...offerInParis,
         description: `lien 1 : www.lien1.com
           https://lien2.com et http://lien3.com

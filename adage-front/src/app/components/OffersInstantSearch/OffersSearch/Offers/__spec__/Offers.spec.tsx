@@ -4,13 +4,14 @@ import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 
 import {} from 'app/__spec__/__test_utils__/elements'
-import { api } from 'api/api'
 import {
   AdageFrontRoles,
+  CancelablePromise,
   CollectiveOfferResponseModel,
   OfferAddressType,
   StudentLevels,
-} from 'api/gen'
+} from 'apiClient'
+import { api } from 'apiClient/api'
 import {
   OffersComponent as Offers,
   OffersComponentProps,
@@ -21,8 +22,8 @@ import {
 } from 'app/providers'
 import { ResultType } from 'utils/types'
 
-jest.mock('api/api', () => ({
-  api: { getAdageIframeGetCollectiveOffer: jest.fn() },
+jest.mock('apiClient/api', () => ({
+  api: { getCollectiveOffer: jest.fn() },
 }))
 
 jest.mock('react-instantsearch-dom', () => {
@@ -121,9 +122,9 @@ describe('offers', () => {
       offerVenue: {
         venueId: 'VENUE_ID',
         otherAddress: '',
-        addressType: OfferAddressType.OffererVenue,
+        addressType: OfferAddressType.OFFERER_VENUE,
       },
-      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
+      students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['75', '92'],
     }
 
@@ -166,9 +167,9 @@ describe('offers', () => {
       offerVenue: {
         venueId: 'VENUE_ID',
         otherAddress: '',
-        addressType: OfferAddressType.OffererVenue,
+        addressType: OfferAddressType.OFFERER_VENUE,
       },
-      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
+      students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['973'],
     }
 
@@ -211,9 +212,9 @@ describe('offers', () => {
       offerVenue: {
         venueId: 'VENUE_ID',
         otherAddress: '',
-        addressType: OfferAddressType.OffererVenue,
+        addressType: OfferAddressType.OFFERER_VENUE,
       },
-      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
+      students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['75', '92'],
     }
 
@@ -221,7 +222,7 @@ describe('offers', () => {
       handleResetFiltersAndLaunchSearch: jest.fn(),
       hits: searchFakeResults,
       setIsLoading: jest.fn(),
-      userRole: AdageFrontRoles.Redactor,
+      userRole: AdageFrontRoles.REDACTOR,
       refineNext: jest.fn(),
       hasMore: true,
       hasPrevious: false,
@@ -231,12 +232,8 @@ describe('offers', () => {
 
   it('should display two offers with their respective stocks when two bookable offers', async () => {
     // Given
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInParis
-    )
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInCayenne
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
     renderOffers(offersProps)
@@ -251,16 +248,10 @@ describe('offers', () => {
 
   it('should remove previous rendered offers on results update', async () => {
     // Given
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInParis
-    )
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInCayenne
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
     const { rerender } = renderOffers(offersProps)
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      otherOffer
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {
@@ -291,16 +282,14 @@ describe('offers', () => {
 
   it('should show most recent results and cancel previous request', async () => {
     // Given
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockReturnValueOnce(
-      new Promise(resolve => setTimeout(() => resolve(offerInParis), 500))
+    mockedPcapi.getCollectiveOffer.mockReturnValueOnce(
+      new CancelablePromise(resolve =>
+        setTimeout(() => resolve(offerInParis), 500)
+      )
     )
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInCayenne
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
     const { rerender } = renderOffers(offersProps)
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      otherOffer
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {
@@ -334,12 +323,12 @@ describe('offers', () => {
 
   it('should show a loader while waiting for response', async () => {
     // Given
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockReturnValueOnce(
-      new Promise(resolve => setTimeout(() => resolve(offerInParis), 500))
+    mockedPcapi.getCollectiveOffer.mockReturnValueOnce(
+      new CancelablePromise(resolve =>
+        setTimeout(() => resolve(offerInParis), 500)
+      )
     )
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInCayenne
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
     renderOffers(offersProps)
@@ -354,12 +343,8 @@ describe('offers', () => {
   it('should display only non sold-out offers', async () => {
     // Given
     offerInParis.isSoldOut = true
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInParis
-    )
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInCayenne
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
     renderOffers(offersProps)
@@ -373,12 +358,8 @@ describe('offers', () => {
   it('should not display expired offer', async () => {
     // Given
     offerInParis.isExpired = true
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInParis
-    )
-    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-      offerInCayenne
-    )
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
+    mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
     renderOffers(offersProps)
@@ -408,12 +389,8 @@ describe('offers', () => {
       // Given
       offerInParis.isExpired = true
       offerInCayenne.isSoldOut = true
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-        offerInParis
-      )
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-        offerInCayenne
-      )
+      mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
+      mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
 
       // When
       renderOffers(offersProps)
@@ -429,12 +406,8 @@ describe('offers', () => {
 
     it('when offers are not found', async () => {
       // Given
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockRejectedValue(
-        'Offre inconnue'
-      )
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockRejectedValue(
-        'Offre inconnue'
-      )
+      mockedPcapi.getCollectiveOffer.mockRejectedValue('Offre inconnue')
+      mockedPcapi.getCollectiveOffer.mockRejectedValue('Offre inconnue')
 
       // When
       renderOffers(offersProps)
@@ -451,9 +424,7 @@ describe('offers', () => {
 
   describe('load more button', () => {
     it('should refine next hits when clicking on load more button', async () => {
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-        offerInParis
-      )
+      mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
       renderOffers(offersProps)
       const loadMoreButton = await screen.findByRole('button', {
         name: 'Voir plus d’offres',
@@ -467,9 +438,7 @@ describe('offers', () => {
     })
 
     it('should not show button if there is no more result to refine', async () => {
-      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
-        offerInParis
-      )
+      mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
       offersProps.hasMore = false
       renderOffers(offersProps)
       const loadMoreButton = screen.queryByRole('button', {
