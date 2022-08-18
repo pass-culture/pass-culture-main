@@ -354,24 +354,6 @@ jobs:
             - notify-slack:
                 channel: shérif
 
-  tests-script-pc:
-    machine:
-      image: ubuntu-2004:202101-01
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-      - run:
-          name: Install requirements
-          command: |
-            sudo apt-get update
-            sudo ./pc symlink
-      - run:
-          name: Run PC tests
-          command: |
-            cd tests
-            ./run_tests.sh
-
   tests-api:
     parameters:
       is_nightly_build:
@@ -1091,7 +1073,6 @@ workflows:
   commit:
     unless: << pipeline.parameters.run_measurement_workflow >>
     jobs:
-      - tests-script-pc
       - type-checking-pro:
          filters:
            branches:

@@ -43,30 +43,13 @@ else
   FILE_TO_UPLOAD=${FILE_TO_UPLOAD:-'none'}
 fi
 
-if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
-
-  if [[ "$2" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-    TAG_NAME=$2
-  else
-    echo "tag format should be Semantic Versioning compliant x.x.x"
-    exit 1
-  fi
-
-  shift 2
-else
-  TAG_NAME=${TAG_NAME:-'not-set'}
-fi
-
 CMD="$1"
 shift
 
 # =============================================
 # Utilities functions
 # =============================================
-RED='\033[0;31m'
-ORANGE='\033[0;33m'
-WARNING_COLOR='\e[38;5;197m'
-NO_COLOR='\033[0m'
+
 
 PRG="$BASH_SOURCE"
 
@@ -98,10 +81,6 @@ function confirm() {
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit
   fi
-}
-
-function echo_warning() {
-  echo -e "${ORANGE}""$1""${NO_COLOR}"
 }
 
 current_branch=$(git symbolic-ref -q HEAD)
@@ -180,14 +159,6 @@ elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it pc-flask bash -c "rm -rf /usr/src/app/static/object_store_data/*";
     docker exec pc-flask bash -c "cd /usr/src/app/ && flask clean_database"'
 
-# Remove all booking & reco from database
-elif [[ "$CMD" == "reset-reco-db" ]]; then
-  RUN='docker exec -it pc-postgres bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation RESTART IDENTITY;\""'
-
-# Remove all booking, reco & user_offerer from database
-elif [[ "$CMD" == "reset-users-db" ]]; then
-  RUN='docker exec -it pc-postgres bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,user_offerer RESTART IDENTITY CASCADE;\""'
-
 # Delete all local images
 elif [[ "$CMD" == "reset-all-storage" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/flask/static/object_store_data;'
@@ -240,16 +211,6 @@ elif [[ "$CMD" == "test-backend" ]]; then
 # Run only local providers tests for API
 elif [[ "$CMD" == "test-backend-provider" ]]; then
   RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venue_provider tests/10_local_providers.py::test_15_spreadsheet_exp_stocks_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
-
-# Start Metabase container with sandbox data
-elif [[ "$CMD" == "start-metabase" ]]; then
-  source "$INFRA_SCRIPTS_PATH"/start-metabase.sh
-  start_metabase
-
-# Restart volumes and start Metabase container with sandbox data
-elif [[ "$CMD" == "restart-metabase" ]]; then
-  source "$INFRA_SCRIPTS_PATH"/start-metabase.sh
-  restart_metabase
 
 # =============================================
 # Initialization commands
