@@ -9,10 +9,11 @@ on:
         type: string
 
 jobs:
-  deployment:
+  deploy-to-production:
     runs-on: ubuntu-latest
     environment:
       name: production
+      url: https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=production
     steps:
       - name: Checkout Release
         uses: actions/checkout@v3
@@ -20,4 +21,4 @@ jobs:
           ref: v${{ github.event.inputs.releaseVersion }}
       - name: Deploy Release to production
         run: |
-          yes | ./pc -e production -t ${{ github.event.inputs.releaseVersion }} deploy
+          git push -f origin HEAD:production
