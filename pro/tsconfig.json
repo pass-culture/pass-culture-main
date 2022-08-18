@@ -35,6 +35,5 @@
     "jest.config.js",
     "__mocks__/**",
     "coverage/**",
-    "src/api/gen"
   ]
 }

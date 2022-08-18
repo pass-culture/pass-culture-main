@@ -4,8 +4,7 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
 
-import { VenueResponse } from 'api/gen'
-import { AdageFrontRoles } from 'apiClient'
+import { AdageFrontRoles, VenueResponse } from 'apiClient'
 import { api } from 'apiClient/api'
 import {
   AlgoliaQueryContextProvider,

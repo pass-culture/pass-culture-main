@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 
-import { VenueResponse } from 'api/gen'
-import { AuthenticatedResponse } from 'apiClient'
+import { AuthenticatedResponse, VenueResponse } from 'apiClient'
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'app/constants/departmentOptions'

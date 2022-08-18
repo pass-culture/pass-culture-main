@@ -8,7 +8,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 jest.mock('apiClient/api', () => ({
-  bookCollectiveOffer: jest.fn(),
+  api: { bookCollectiveOffer: jest.fn() },
 }))
 
 describe('offer', () => {

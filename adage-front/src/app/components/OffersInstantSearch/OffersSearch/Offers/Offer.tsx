@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'api/gen'
+} from 'apiClient'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'

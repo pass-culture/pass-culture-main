@@ -1,7 +1,7 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'api/gen'
+} from 'apiClient'
 
 // only collective offer has "stock" entry in response payload
 export const isOfferCollectiveOffer = (

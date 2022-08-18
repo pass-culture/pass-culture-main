@@ -5,7 +5,7 @@ import './OfferDetails.scss'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'api/gen'
+} from 'apiClient'
 
 import OfferInterventionArea from './OfferInterventionArea'
 import OfferSection from './OfferSection'

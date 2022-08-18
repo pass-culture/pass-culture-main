@@ -1,6 +1,6 @@
 import flatMap from 'lodash/flatMap'
 
-import { VenueResponse } from 'api/gen'
+import { VenueResponse } from 'apiClient'
 import { Facets, Option } from 'app/types'
 
 export const populateFacetFilters = ({

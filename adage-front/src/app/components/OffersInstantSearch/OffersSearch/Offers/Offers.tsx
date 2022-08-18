@@ -8,7 +8,7 @@ import { connectInfiniteHits, Stats } from 'react-instantsearch-dom'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'api/gen'
+} from 'apiClient'
 import { AdageFrontRoles } from 'apiClient'
 import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
