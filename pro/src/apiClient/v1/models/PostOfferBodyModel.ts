@@ -15,7 +15,6 @@ export type PostOfferBodyModel = {
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
   isDuo?: boolean | null;
-  isEducational?: boolean | null;
   isNational?: boolean | null;
   mediaUrls?: Array<string> | null;
   mentalDisabilityCompliant?: boolean;
