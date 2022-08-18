@@ -1,0 +1,67 @@
+name: Tag
+
+# This reusable workflow should be called by another workflow.
+# It tags the release so it's ready to deploy.
+
+on:
+  workflow_call:
+    inputs:
+      base_ref:
+        # The base ref to tag from.
+        # Can be a branch name, a tag or a commit.
+        required: true
+        type: string
+
+      tag_name:
+        # Full tag name.
+        # v200.0.2 for example.
+        required: true
+        type: string
+
+jobs:
+  tag-version:
+    runs-on: ubuntu-latest
+
+    env:
+      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
+      GIT_CONFIG_NAME: ${{ github.actor }}
+
+    steps:
+      - name: Checkout RC
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.base_ref }}
+
+      - name: Author
+        run: |
+          git config --global user.email "$GIT_CONFIG_EMAIL"
+          git config --global user.name "$GIT_CONFIG_NAME"
+
+      - name: Add version to api
+        run: |
+          cd ./api
+          echo "${{ inputs.tag_name }}" > version.txt
+          git add version.txt
+
+      - name: Add version to pro
+        run: |
+          cd pro
+          yarn version --new-version "${{ inputs.tag_name }}"
+          git add package.json
+
+      - name: Add version to adage
+        run: |
+          cd adage-front
+          yarn version --new-version "${{ inputs.tag_name }}"
+          git add package.json
+
+      - name: Tag Release
+        run: |
+          git commit -m "🚀 ${{ inputs.tag_name }}" -n
+          git tag -a "${{ inputs.tag_name }}" -m "🚀 ${{ inputs.tag_name }}"
+          git push origin "${{ inputs.tag_name }}"
+
+      - name: Push back to base ref
+        # In case the base ref is a branch (hotfix workflow for example)
+        run: |
+          git push origin "${{ inputs.base_ref }}"
