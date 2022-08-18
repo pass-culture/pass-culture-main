@@ -4,7 +4,6 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
 
-import { api as apiLegacy } from 'api/api'
 import { AdageFrontRoles, VenueResponse } from 'apiClient'
 import { api } from 'apiClient/api'
 import {
@@ -44,13 +43,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
   logSearchButton: jest.fn(),
 }))
 
-jest.mock('api/api', () => ({
-  api: {
-    getAdageIframeAuthenticate: jest.fn(),
-    getAdageIframeGetVenueBySiret: jest.fn(),
-  },
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getEducationalOffersCategories: jest.fn().mockResolvedValue({
@@ -83,9 +75,10 @@ jest.mock('apiClient/api', () => ({
     }),
   },
   getVenueById: jest.fn(),
+  authenticate: jest.fn(),
+  getVenueBySiret: jest.fn(),
 }))
 
-const mockedApiLegacy = apiLegacy as jest.Mocked<typeof apiLegacy>
 const mockedApi = api as jest.Mocked<typeof api>
 const features = [
   {
@@ -134,7 +127,7 @@ describe('app', () => {
       role: AdageFrontRoles.REDACTOR,
       uai: 'uai',
     })
-    mockedApiLegacy.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
+    mockedApi.getVenueBySiret.mockResolvedValue(venue)
     mockedApi.getVenueById.mockResolvedValue(venue)
   })
 
