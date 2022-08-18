@@ -189,6 +189,7 @@ class DMSContent(common_models.IdentityCheckContent):
     first_name: str
     id_piece_number: str | None
     last_name: str
+    latest_modification_datetime: datetime.datetime | None
     phone: str | None
     postal_code: str | None
     procedure_number: int = pydantic.Field(..., alias="procedure_id")  # keep alias for old data
@@ -231,6 +232,9 @@ class DMSContent(common_models.IdentityCheckContent):
 
     def get_registration_datetime(self) -> datetime.datetime | None:
         return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
+
+    def get_latest_modification_datetime(self) -> datetime.datetime | None:
+        return self.latest_modification_datetime
 
 
 class UserProfilingRiskRating(enum.Enum):
