@@ -25,7 +25,6 @@ class CollectiveOffersPublicGetOfferTest:
         assert response.json == {
             "id": offer.id,
             "name": offer.name,
-            "address": offer.venue.address,
             "description": offer.description,
             "venueId": offer.venue.id,
             "audioDisabilityCompliant": False,
@@ -51,6 +50,7 @@ class CollectiveOffersPublicGetOfferTest:
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
         }
 
     def test_offer_does_not_exists(self, client):

@@ -12,7 +12,6 @@ from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.utils.human_ids import humanize
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
@@ -214,11 +213,12 @@ def list_students_levels() -> public_api_collective_offers_serialize.CollectiveO
             {
                 "HTTP_201": (
                     public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
-                    "L'offre collective existe",
+                    "L'offre collective à été créée avec succes",
                 ),
+                "HTTP_400": (None, "Requête malformée"),
                 "HTTP_401": (None, "Authentification nécessaire"),
                 "HTTP_403": (None, "Non éligible pour les offres collectives"),
-                "HTTP_400": (None, "Requête malformée"),
+                "HTTP_404": (None, "L'une des resources pour la création de l'offre n'a pas été trouvée"),
             }
         )
     ),
@@ -229,27 +229,9 @@ def post_collective_offer_public(
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
 
-    # clean offererVenue
-    if body.offer_venue == public_api_collective_offers_serialize.OfferAddressType.OTHER:
-        offer_venue = {"venueId": "", "addressType": "other", "otherAddress": body.address}
-    elif body.offer_venue == public_api_collective_offers_serialize.OfferAddressType.SCHOOL:
-        offer_venue = {"venueId": "", "addressType": "school", "otherAddress": ""}
-    elif body.offer_venue == public_api_collective_offers_serialize.OfferAddressType.OFFERER_VENUE:
-        offer_venue = {"venueId": humanize(body.venue_id), "addressType": "offererVenue", "otherAddress": ""}
-    else:
-        # should not be possible
-        logger.error("post_collective_offer_public recieved invalid value %s", body.offer_venue)
-        raise ApiErrors(
-            errors={
-                "offereVenue": "Cette valeur n'est pas permise.",
-            },
-            status_code=400,
-        )
-
     try:
         offer = educational_api.create_collective_offer_public(
             offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
-            offer_venue=offer_venue,
             body=body,
         )
     except educational_exceptions.CulturalPartnerNotFoundException:

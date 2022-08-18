@@ -7,12 +7,13 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
 @freeze_time("2022-05-01 15:00:00")
-class CollectiveOffersPublicGetOfferTest:
-    def test_get_offers(self, client):
+class CollectiveOffersPublicPostOfferTest:
+    def test_post_offers(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
@@ -36,8 +37,11 @@ class CollectiveOffersPublicGetOfferTest:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "offerVenue": "OTHER_ADDRESS",
-            "address": "H4 rue des Échecs",
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
             "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -65,6 +69,11 @@ class CollectiveOffersPublicGetOfferTest:
         assert offer.domains == [domain]
         assert offer.institutionId == educational_institution.id
         assert offer.interventionArea == ["44"]
+        assert offer.offerVenue == {
+            "venueId": humanize(venue.id),
+            "addressType": "offererVenue",
+            "otherAddress": "",
+        }
 
     def test_invalid_api_key(self, client):
         # Given
@@ -89,8 +98,11 @@ class CollectiveOffersPublicGetOfferTest:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "offerVenue": "OTHER_ADDRESS",
-            "address": "H4 rue des Échecs",
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
             "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -135,8 +147,11 @@ class CollectiveOffersPublicGetOfferTest:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "offerVenue": "OTHER_ADDRESS",
-            "address": "H4 rue des Échecs",
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
             "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -183,8 +198,11 @@ class CollectiveOffersPublicGetOfferTest:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "offerVenue": "OTHER_ADDRESS",
-            "address": "H4 rue des Échecs",
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
             "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -229,8 +247,11 @@ class CollectiveOffersPublicGetOfferTest:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "offerVenue": "OTHER_ADDRESS",
-            "address": "H4 rue des Échecs",
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
             "interventionArea": ["44", "158"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
@@ -274,8 +295,11 @@ class CollectiveOffersPublicGetOfferTest:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "offerVenue": "OTHER_ADDRESS",
-            "address": "H4 rue des Échecs",
+            "offerVenue": {
+                "venueId": 0,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
             "interventionArea": ["44"],
             # stock part
             "beginningDatetime": "2022-09-25T11:00",

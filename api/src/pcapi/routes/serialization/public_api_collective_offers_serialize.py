@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timezone
-import enum
 from typing import Any
 
 from pydantic import validator
@@ -9,7 +8,9 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.collective_offers_serialize import OfferAddressType
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
@@ -24,10 +25,38 @@ class ListCollectiveOffersQueryModel(BaseModel):
         extra = "forbid"
 
 
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "MY_ADDRESS"
-    SCHOOL = "SCHOOL_ADDRESS"
-    OTHER = "OTHER_ADDRESS"
+class OfferVenueModel(BaseModel):
+    addressType: OfferAddressType
+    venueId: int | None
+    otherAddress: str | None
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+    @validator("venueId")
+    def validate_venueId(  # pylint: disable=no-self-argument
+        cls: "OfferVenueModel", venueId: int | None, values: dict
+    ) -> int | None:
+        if values["addressType"] == OfferAddressType.OFFERER_VENUE and venueId is None:
+            raise ValueError(f"Ce champ est obligatoire si 'addressType' vaut '{OfferAddressType.OFFERER_VENUE.value}'")
+        if values["addressType"] != OfferAddressType.OFFERER_VENUE and venueId is not None:
+            raise ValueError(
+                f"Ce champ est interdit si 'addressType' ne vaut pas '{OfferAddressType.OFFERER_VENUE.value}'"
+            )
+
+        return venueId
+
+    @validator("otherAddress")
+    def validate_otherAddress(  # pylint: disable=no-self-argument
+        cls: "OfferVenueModel", otherAddress: str | None, values: dict
+    ) -> str | None:
+        if values["addressType"] == OfferAddressType.OTHER and not otherAddress:
+            raise ValueError(f"Ce champ est obligatoire si 'addressType' vaut '{OfferAddressType.OTHER.value}'")
+        if values["addressType"] != OfferAddressType.OTHER and otherAddress:
+            raise ValueError(f"Ce champ est interdit si 'addressType' ne vaut pas '{OfferAddressType.OTHER.value}'")
+
+        return otherAddress
 
 
 def validate_number_of_tickets(number_of_tickets: int | None) -> int:
@@ -182,13 +211,13 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
-    address: str
     beginningDatetime: str
     bookingLimitDatetime: str
     totalPrice: int
     numberOfTickets: int
     educationalPriceDetail: str | None
     educationalInstitution: str | None
+    offerVenue: OfferVenueModel
 
     class Config:
         extra = "forbid"
@@ -218,13 +247,17 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
-            address=offer.venue.address,
             beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
             bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
             totalPrice=(offer.collectiveStock.price * 100),
             numberOfTickets=offer.collectiveStock.numberOfTickets,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
+            offerVenue={
+                "venueId": dehumanize(offer.offerVenue.get("venueId")) or None,
+                "addressType": offer.offerVenue["addressType"],
+                "otherAddress": offer.offerVenue["otherAddress"] or None,
+            },
         )
 
 
@@ -244,8 +277,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
-    offer_venue: OfferAddressType
-    address: str | None
+    offer_venue: OfferVenueModel
     intervention_area: list[str]
     # stock part
     beginning_datetime: datetime
