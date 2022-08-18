@@ -4,7 +4,7 @@ import { useEffect, useContext, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import { VenueResponse } from 'api/gen'
+import { VenueResponse } from 'apiClient'
 import { AuthenticatedResponse } from 'apiClient'
 import { INITIAL_QUERY } from 'app/constants'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'

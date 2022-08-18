@@ -6,7 +6,6 @@ import '@fontsource/barlow/300.css'
 import * as React from 'react'
 import { useCallback, useEffect, useState } from 'react'
 
-import { api as apiLegacy } from 'api/api'
 import {
   AuthenticatedResponse,
   AdageFrontRoles,

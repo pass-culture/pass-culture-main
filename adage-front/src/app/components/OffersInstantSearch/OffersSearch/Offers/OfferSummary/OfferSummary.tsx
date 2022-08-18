@@ -6,7 +6,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
-} from 'api/gen'
+} from 'apiClient'
 import { ReactComponent as BuildingIcon } from 'assets/building.svg'
 import { ReactComponent as DateIcon } from 'assets/date.svg'
 import { ReactComponent as EuroIcon } from 'assets/euro.svg'
@@ -65,9 +65,9 @@ const OfferSummary = ({
   let offerVenueLabel = `${venue.postalCode}, ${venue.city}`
 
   if (offerVenue) {
-    if (offerVenue.addressType === OfferAddressType.Other) {
+    if (offerVenue.addressType === OfferAddressType.OTHER) {
       offerVenueLabel = offerVenue.otherAddress
-    } else if (offerVenue.addressType === OfferAddressType.School) {
+    } else if (offerVenue.addressType === OfferAddressType.SCHOOL) {
       offerVenueLabel = "Dans l'établissement scolaire"
     }
   }

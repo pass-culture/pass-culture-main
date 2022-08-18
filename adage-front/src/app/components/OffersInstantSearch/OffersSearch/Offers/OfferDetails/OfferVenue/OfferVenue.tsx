@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OfferAddressType, OfferVenueResponse } from 'api/gen'
+import { OfferAddressType, OfferVenueResponse } from 'apiClient'
 
 interface IOfferVenue {
   offerVenue?: {
@@ -13,9 +13,9 @@ interface IOfferVenue {
 
 const OfferVenue = ({ offerVenue, venue }: IOfferVenue): JSX.Element => {
   if (offerVenue) {
-    if (offerVenue.addressType === OfferAddressType.Other) {
+    if (offerVenue.addressType === OfferAddressType.OTHER) {
       return <div>{offerVenue.otherAddress}</div>
-    } else if (offerVenue.addressType === OfferAddressType.School) {
+    } else if (offerVenue.addressType === OfferAddressType.SCHOOL) {
       return <div>Dans l’établissement scolaire</div>
     }
   }

@@ -1,7 +1,7 @@
 import { format } from 'date-fns-tz'
 import React, { useCallback, useState } from 'react'
 
-import { OfferStockResponse } from 'api/gen'
+import { OfferStockResponse } from 'apiClient'
 import {
   Notification,
   NotificationComponent,

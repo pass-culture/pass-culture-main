@@ -2,8 +2,7 @@ import algoliasearch from 'algoliasearch/lite'
 import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
-import { VenueResponse } from 'api/gen'
-import { AuthenticatedResponse } from 'apiClient'
+import { AuthenticatedResponse, VenueResponse } from 'apiClient'
 import { FacetFiltersContext } from 'app/providers'
 import {
   ALGOLIA_API_KEY,
