@@ -1,5 +1,3 @@
-from typing import ByteString
-from typing import Optional
 from unittest.mock import patch
 
 import pytest
@@ -7,19 +5,7 @@ import pytest
 from pcapi.core.categories.categories import Category
 from pcapi.core.categories.subcategories import Subcategory
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
-
-
-def _create_adage_valid_token_with_email(
-    email: str,
-    civility: Optional[str] = "Mme",
-    lastname: Optional[str] = "LAPROF",
-    firstname: Optional[str] = "Jeanne",
-    uai: Optional[str] = "EAU123",
-) -> ByteString:
-    return create_adage_jwt_fake_valid_token(
-        civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
-    )
+from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -80,7 +66,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_categories(self, client):
         # Given
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When

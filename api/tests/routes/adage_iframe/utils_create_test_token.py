@@ -37,6 +37,18 @@ def create_adage_jwt_fake_valid_token(
         )
 
 
+def create_adage_valid_token_with_email(
+    email: str,
+    civility: str = "Mme",
+    lastname: str = "LAPROF",
+    firstname: str = "Jeanne",
+    uai: str = "EAU123",
+) -> ByteString:
+    return create_adage_jwt_fake_valid_token(
+        civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
+    )
+
+
 def create_adage_jwt_fake_invalid_token(
     civility: str, lastname: str, firstname: str, email: str, uai: str
 ) -> ByteString:

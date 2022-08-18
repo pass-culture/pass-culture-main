@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from typing import ByteString
 
 from freezegun.api import freeze_time
 import pytest
@@ -11,25 +10,13 @@ from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 from tests.conftest import TestClient
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
+from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
-
-
-def _create_adage_valid_token_with_email(
-    email: str,
-    civility: str = "Mme",
-    lastname: str = "LAPROF",
-    firstname: str = "Jeanne",
-    uai: str = "EAU123",
-) -> ByteString:
-    return create_adage_jwt_fake_valid_token(
-        civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
-    )
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -43,7 +30,7 @@ class Returns200Test:
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
         test_client = TestClient(app.test_client())
@@ -80,7 +67,7 @@ class Returns200Test:
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
         )
 
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email="new.email@mail.fr",
             uai=educational_institution.institutionId,
             civility=None,
@@ -128,7 +115,7 @@ class Returns400Test:
     def test_should_not_allow_booking_when_educational_institution_is_unknown(self, test_data, app):
         # Given
         stock, _, educational_redactor = test_data
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai="Unknown"
         )
         test_client = TestClient(app.test_client())
@@ -152,7 +139,7 @@ class Returns400Test:
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=stock_date, collectiveOffer__validation=OfferValidationStatus.REJECTED
         )
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
         test_client = TestClient(app.test_client())
@@ -186,7 +173,7 @@ class Returns403Test:
     def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, test_data, app):
         # Given
         stock, _, educational_redactor = test_data
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email=educational_redactor.email, uai=None)
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email=educational_redactor.email, uai=None)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -215,7 +202,7 @@ class Returns403Test:
         educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
         )
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution2.institutionId
         )
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
