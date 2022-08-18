@@ -449,20 +449,20 @@ class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
 
 @listens_for(Venue, "before_insert")
-def before_insert(mapper, connect, self):  # type: ignore [no-untyped-def]
-    _fill_departement_code_from_postal_code(self)
+def before_insert(mapper, connect, venue):  # type: ignore [no-untyped-def]
+    _fill_departement_code_from_postal_code(venue)
 
 
 @listens_for(Venue, "before_update")
-def before_update(mapper, connect, self):  # type: ignore [no-untyped-def]
-    _fill_departement_code_from_postal_code(self)
+def before_update(mapper, connect, venue):  # type: ignore [no-untyped-def]
+    _fill_departement_code_from_postal_code(venue)
 
 
-def _fill_departement_code_from_postal_code(self):  # type: ignore [no-untyped-def]
-    if not self.isVirtual:
-        if not self.postalCode:
+def _fill_departement_code_from_postal_code(venue: Venue) -> None:
+    if not venue.isVirtual:
+        if not venue.postalCode:
             raise IntegrityError(None, None, None)
-        self.store_departement_code()
+        venue.store_departement_code()
 
 
 ts_indexes = [
