@@ -1,12 +1,25 @@
 import logging
+from typing import ByteString
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
+from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
+
+
+def _create_adage_valid_token_with_email(
+    email: str,
+    civility: str = "Mme",
+    lastname: str = "LAPROF",
+    firstname: str = "Jeanne",
+    uai: str = "EAU123",
+) -> ByteString:
+    return create_adage_jwt_fake_valid_token(
+        civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
+    )
 
 
 class PostLogsTests:
     def test_log_catalog_view(self, client, caplog):
         # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="test@mail.com")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
@@ -24,7 +37,7 @@ class PostLogsTests:
 
     def test_log_search_button(self, client, caplog):
         # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="test@mail.com")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
@@ -41,7 +54,7 @@ class PostLogsTests:
 
     def test_log_offer_detail(self, client, caplog):
         # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="test@mail.com")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
@@ -59,7 +72,7 @@ class PostLogsTests:
 
     def test_log_booking_modal_button_click(self, client, caplog):
         # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="test@mail.com")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # when
