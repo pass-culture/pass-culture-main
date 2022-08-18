@@ -53,7 +53,7 @@ const OffererItem = ({ offerer, isVenueCreationAvailable }) => {
                   // probably too much offers to count.
                   nOffers > 0 ? pluralize(nOffers, 'offres') : `offres`
                 }
-                {nOffers > 100 ? '+' : ''}
+                {nOffers >= 100 ? '+' : ''}
               </Link>
             </li>
           ) : (
