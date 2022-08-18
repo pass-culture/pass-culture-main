@@ -6,10 +6,10 @@ import type { InfiniteHitsProvided } from 'react-instantsearch-core'
 import { connectInfiniteHits, Stats } from 'react-instantsearch-dom'
 
 import {
-  AdageFrontRoles,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'api/gen'
+import { AdageFrontRoles } from 'apiClient'
 import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
@@ -130,7 +130,7 @@ export const OffersComponent = ({
         {offers.map(offer => (
           <div key={offer.id}>
             <Offer
-              canPrebookOffers={userRole == AdageFrontRoles.Redactor}
+              canPrebookOffers={userRole == AdageFrontRoles.REDACTOR}
               key={offer.id}
               offer={offer}
             />
