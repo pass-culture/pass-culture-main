@@ -11,6 +11,7 @@ import { api } from 'api/api'
 import { AdageFrontRoles, AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
 import { logCatalogView } from 'repository/pcapi/pcapi'
+import { LOGS_DATA } from 'utils/config'
 
 import { AppLayout } from './AppLayout'
 import {
@@ -76,7 +77,9 @@ export const App = (): JSX.Element => {
       .catch(() => setUser(null))
       .finally(() => {
         setIsLoading(false)
-        logCatalogView()
+        if (LOGS_DATA) {
+          logCatalogView()
+        }
       })
   }, [])
 

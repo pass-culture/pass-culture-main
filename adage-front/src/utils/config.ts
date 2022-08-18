@@ -4,6 +4,7 @@ export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 
 export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost'
+export const LOGS_DATA = process.env.REACT_APP_LOGS_DATA === 'true'
 
 export const {
   REACT_APP_ALGOLIA_APP_ID: ALGOLIA_APP_ID,
