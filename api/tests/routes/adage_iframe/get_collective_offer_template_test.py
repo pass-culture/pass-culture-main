@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import ByteString
 
 from freezegun.api import freeze_time
 import pytest
@@ -8,25 +7,13 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.testing import assert_num_queries
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
+from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
-
-
-def _create_adage_valid_token_with_email(
-    email: str,
-    civility: str = "Mme",
-    lastname: str = "LAPROF",
-    firstname: str = "Jeanne",
-    uai: str = "EAU123",
-) -> ByteString:
-    return create_adage_jwt_fake_valid_token(
-        civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
-    )
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -41,7 +28,7 @@ class Returns200Test:
         )
         offer_id = offer.id
 
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
@@ -86,7 +73,7 @@ class Returns200Test:
 class Returns404Test:
     def test_should_return_404_when_no_collective_offer_template(self, client):
         # Given
-        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
