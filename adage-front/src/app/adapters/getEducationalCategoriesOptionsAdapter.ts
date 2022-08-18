@@ -1,5 +1,5 @@
-import { api } from 'api/api'
 import { CategoriesResponseModel } from 'api/gen'
+import { api } from 'apiClient/api'
 import { Adapter, Option } from 'app/types'
 
 type Params = null
@@ -43,7 +43,7 @@ const FAILING_RESPONSE = {
 export const getEducationalCategoriesOptionsAdapter: GetEducationalCategoriesOptionsAdapter =
   async () => {
     try {
-      const result = await api.getAdageIframeGetEducationalOffersCategories()
+      const result = await api.getEducationalOffersCategories()
 
       return {
         isOk: true,

@@ -50,7 +50,15 @@ jest.mock('api/api', () => ({
   api: {
     getAdageIframeGetVenueById: jest.fn(),
     getAdageIframeGetVenueBySiret: jest.fn(),
-    getAdageIframeGetEducationalOffersCategories: jest.fn().mockResolvedValue({
+  },
+}))
+const mockedApiLegacy = apiLegacy as jest.Mocked<typeof apiLegacy>
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    authenticate: jest.fn(),
+    getCollectiveOffer: jest.fn(),
+    getEducationalOffersCategories: jest.fn().mockResolvedValue({
       categories: [
         { id: 'CINEMA', proLabel: 'Cinéma' },
         { id: 'MUSEE', proLabel: 'Musée' },
@@ -80,14 +88,7 @@ jest.mock('api/api', () => ({
     }),
   },
 }))
-const mockedApiLegacy = apiLegacy as jest.Mocked<typeof apiLegacy>
 
-jest.mock('apiClient/api', () => ({
-  api: {
-    authenticate: jest.fn(),
-    getCollectiveOffer: jest.fn(),
-  },
-}))
 const mockedApi = api as jest.Mocked<typeof api>
 
 const renderApp = () => {

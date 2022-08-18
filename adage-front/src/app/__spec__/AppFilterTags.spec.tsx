@@ -48,7 +48,12 @@ jest.mock('api/api', () => ({
     getAdageIframeAuthenticate: jest.fn(),
     getAdageIframeGetVenueById: jest.fn(),
     getAdageIframeGetVenueBySiret: jest.fn(),
-    getAdageIframeGetEducationalOffersCategories: jest.fn().mockResolvedValue({
+  },
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getEducationalOffersCategories: jest.fn().mockResolvedValue({
       categories: [
         { id: 'CINEMA', proLabel: 'Cinéma' },
         { id: 'MUSEE', proLabel: 'Musée' },
