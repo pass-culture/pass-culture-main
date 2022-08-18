@@ -4,8 +4,9 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
 
-import { api } from 'api/api'
-import { AdageFrontRoles, VenueResponse } from 'api/gen'
+import { api as apiLegacy } from 'api/api'
+import { AdageFrontRoles, VenueResponse } from 'apiClient'
+import { api } from 'apiClient/api'
 import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
@@ -46,7 +47,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
 jest.mock('api/api', () => ({
   api: {
     getAdageIframeAuthenticate: jest.fn(),
-    getAdageIframeGetVenueById: jest.fn(),
     getAdageIframeGetVenueBySiret: jest.fn(),
   },
 }))
@@ -82,8 +82,10 @@ jest.mock('apiClient/api', () => ({
       ],
     }),
   },
+  getVenueById: jest.fn(),
 }))
 
+const mockedApiLegacy = apiLegacy as jest.Mocked<typeof apiLegacy>
 const mockedApi = api as jest.Mocked<typeof api>
 const features = []
 
@@ -120,12 +122,12 @@ describe('app', () => {
       publicName: "Lib de Par's",
     }
 
-    mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
-      role: AdageFrontRoles.Redactor,
+    mockedApi.authenticate.mockResolvedValue({
+      role: AdageFrontRoles.REDACTOR,
       uai: 'uai',
     })
-    mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
-    mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
+    mockedApiLegacy.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
+    mockedApi.getVenueById.mockResolvedValue(venue)
   })
 
   it('should display filter tags and send selected filters to Algolia', async () => {
