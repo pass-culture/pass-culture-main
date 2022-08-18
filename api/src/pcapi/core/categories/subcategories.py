@@ -57,7 +57,7 @@ class ReimbursementRuleChoices(Enum):
 
 
 class Subcategory(subcategories_v2.Subcategory):
-    def __post_init__(self):  # type: ignore [no-untyped-def]
+    def __post_init__(self) -> None:
         """
         Override references to the subcategories_v2 module's classes.
         """

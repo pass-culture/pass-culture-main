@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 from babel import numbers
+from flask import Flask
 import pytz
 
 
@@ -31,7 +32,7 @@ def fr_currency_filter(eurocents: int) -> float:
     return numbers.format_decimal(amount_in_euros, format="#,##0.00", locale="fr_FR")
 
 
-def install_template_filters(app) -> None:  # type: ignore [no-untyped-def]
+def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["fr_percentage"] = fr_percentage_filter
     app.jinja_env.filters["fr_currency"] = fr_currency_filter
 

@@ -1,6 +1,6 @@
-outbox = []
+outbox: list = []
 
 
-def reset_outbox():  # type: ignore [no-untyped-def]
+def reset_outbox() -> None:
     global outbox  # pylint: disable=global-statement
     outbox = []

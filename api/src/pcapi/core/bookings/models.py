@@ -191,7 +191,7 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         self.dateUsed = None
         self.status = BookingStatus.CONFIRMED
 
-    def cancel_booking(self, cancel_even_if_used=False) -> None:  # type: ignore [no-untyped-def]
+    def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
         if self.status is BookingStatus.REIMBURSED:
