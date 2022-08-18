@@ -144,11 +144,13 @@ describe('app', () => {
     const resetFiltersButton = queryResetFiltersButton() as HTMLElement
 
     // When
+    await waitFor(() => expect(queryTag('01 - Ain')).toBeInTheDocument())
     userEvent.click(resetFiltersButton)
     userEvent.click(launchSearchButton)
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
+
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
       .calls[4][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([

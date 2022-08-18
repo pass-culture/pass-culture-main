@@ -2,7 +2,6 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
-import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import { api } from 'api/api'
 import {
@@ -32,12 +31,6 @@ jest.mock('react-instantsearch-dom', () => {
   }
 })
 
-const queryCache = new QueryCache()
-const queryClient = new QueryClient({ queryCache })
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-)
-
 const mockedPcapi = api as jest.Mocked<typeof api>
 
 const searchFakeResult: Hit<ResultType> = {
@@ -61,8 +54,7 @@ const renderOffers = (props: OffersComponentProps) =>
       <AlgoliaQueryContextProvider>
         <Offers {...props} />
       </AlgoliaQueryContextProvider>
-    </FiltersContextProvider>,
-    { wrapper }
+    </FiltersContextProvider>
   )
 
 describe('offer', () => {
@@ -71,7 +63,6 @@ describe('offer', () => {
   let offersProps: OffersComponentProps
 
   beforeEach(() => {
-    queryCache.clear()
     offerInParis = {
       id: 479,
       description: 'Une offre vraiment chouette',
