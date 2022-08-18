@@ -70,7 +70,6 @@ from pcapi.core.offers.repository import update_stock_quantity_to_dn_booked_quan
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
 from pcapi.core.offers.validation import check_booking_limit_datetime
-from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.core.offers.validation import check_validation_config_parameters
@@ -147,7 +146,7 @@ def create_offer(
 ) -> Offer:
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [attr-defined]
-    _check_offer_data_is_valid(offer_data, offer_data.is_educational)  # type: ignore [arg-type]
+    _check_offer_data_is_valid(offer_data)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer_data.subcategory_id]
     if _is_able_to_create_book_offer_from_isbn(subcategory):
         offer = _initialize_book_offer_from_template(offer_data)
@@ -226,17 +225,14 @@ def _complete_common_offer_fields(
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
     offer.validation = OfferValidationStatus.DRAFT
-    offer.isEducational = offer_data.is_educational
+    offer.isEducational = False
 
 
 def _check_offer_data_is_valid(
     offer_data: PostOfferBodyModel,
-    offer_is_educational: bool,
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
-    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)
-    if not offer_is_educational:
-        validation.check_offer_extra_data(None, offer_data.subcategory_id, offer_data.extra_data)
+    validation.check_offer_extra_data(None, offer_data.subcategory_id, offer_data.extra_data)
 
 
 def update_offer(
@@ -354,7 +350,7 @@ def _update_collective_offer(
         updated_fields.append(key)
 
         if key == "subcategoryId":
-            validation.check_offer_is_eligible_for_educational(value.name, True)
+            validation.check_offer_is_eligible_for_educational(value.name)
             offer.subcategoryId = value.name
             continue
 

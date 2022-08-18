@@ -80,7 +80,6 @@ class PostOfferBodyModel(BaseModel):
     duration_minutes: int | None
     is_national: bool | None
     is_duo: bool | None
-    is_educational: bool | None
     # TODO (schable, 2021-01-14): remove the default value for the 4 following accessibility fields
     #  when new offer creation will be activated in pro app (current offer creation does not send those fields)
     audio_disability_compliant: bool = False

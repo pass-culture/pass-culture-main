@@ -716,7 +716,7 @@ def create_collective_offer(
     venue: offerers_models.Venue = rest.load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
-    offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
+    offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
     collective_offer = educational_models.CollectiveOffer(
         venueId=venue.id,
@@ -924,7 +924,7 @@ def create_collective_offer_public(
     cast(offerers_models.Venue, venue)
 
     offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id, is_educational=True)
+    offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
     validation.check_intervention_area(body.intervention_area)
 
     educational_domains = educational_repository.get_educational_domains_from_names(body.domains)
