@@ -14,6 +14,7 @@ import Tabs from 'app/ui-kit/Tabs'
 import { ReactComponent as InstitutionIcon } from 'assets/institution.svg'
 import { ReactComponent as OffersIcon } from 'assets/offers.svg'
 import { logSearchButton } from 'repository/pcapi/pcapi'
+import { LOGS_DATA } from 'utils/config'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
 import { populateFacetFilters } from '../utils'
@@ -87,7 +88,9 @@ export const OffersSearchComponent = ({
 
   const handleLaunchSearchButton = (filters: Filters): void => {
     setIsLoading(true)
-    logSearchButton()
+    if (LOGS_DATA) {
+      logSearchButton()
+    }
     setFacetFilters(
       populateFacetFilters({
         ...filters,
