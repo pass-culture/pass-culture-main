@@ -5,7 +5,6 @@ import '@fontsource/barlow/300.css'
 
 import * as React from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import { api } from 'api/api'
 import { AdageFrontRoles, AuthenticatedResponse, VenueResponse } from 'api/gen'
@@ -21,16 +20,6 @@ import {
 } from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { FacetFiltersContextProvider } from './providers'
-
-export const queryCache = new QueryCache()
-export const queryClient = new QueryClient({
-  queryCache,
-  defaultOptions: {
-    queries: {
-      retry: 0,
-    },
-  },
-})
 
 export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
@@ -91,21 +80,19 @@ export const App = (): JSX.Element => {
 
   return (
     <FacetFiltersContextProvider uai={user?.uai}>
-      <QueryClientProvider client={queryClient}>
-        {notification && <NotificationComponent notification={notification} />}
-        {user?.role &&
-        [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
-          user.role
-        ) ? (
-          <AppLayout
-            removeVenueFilter={removeVenueFilter}
-            user={user}
-            venueFilter={venueFilter}
-          />
-        ) : (
-          <UnauthenticatedError />
-        )}
-      </QueryClientProvider>
+      {notification && <NotificationComponent notification={notification} />}
+      {user?.role &&
+      [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
+        user.role
+      ) ? (
+        <AppLayout
+          removeVenueFilter={removeVenueFilter}
+          user={user}
+          venueFilter={venueFilter}
+        />
+      ) : (
+        <UnauthenticatedError />
+      )}
     </FacetFiltersContextProvider>
   )
 }

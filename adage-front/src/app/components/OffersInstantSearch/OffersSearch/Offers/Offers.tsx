@@ -1,9 +1,9 @@
 import './Offers.scss'
 import { captureException } from '@sentry/react'
-import React, { useEffect, useState } from 'react'
+import isEqual from 'lodash/isEqual'
+import React, { memo, useEffect, useState } from 'react'
 import type { InfiniteHitsProvided } from 'react-instantsearch-core'
 import { connectInfiniteHits, Stats } from 'react-instantsearch-dom'
-import { useQueries } from 'react-query'
 
 import {
   AdageFrontRoles,
@@ -47,13 +47,20 @@ export const OffersComponent = ({
   hasMore,
   refineNext,
 }: OffersComponentProps): JSX.Element => {
-  const [isFirstRender, setIsFirstRender] = useState(true)
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
+  const [offers, setOffers] = useState<
+    (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[]
+  >([])
+  const [refinedIds, setRefinedIds] = useState<Set<string>>(new Set())
 
-  const queries = useQueries(
-    hits.map(hit => ({
-      queryKey: ['offer', hit.objectID],
-      queryFn: async () => {
+  useEffect(() => {
+    setQueriesAreLoading(true)
+
+    Promise.all(
+      hits.map(async hit => {
+        if (refinedIds.has(hit.objectID)) {
+          return
+        }
         try {
           const offerId = extractOfferIdFromObjectId(hit.objectID)
           const { isOk, payload: offer } = await (hit.isTemplate
@@ -68,26 +75,31 @@ export const OffersComponent = ({
         } catch (e) {
           captureException(e)
         }
-      },
-      staleTime: 1 * 60 * 1000, // We consider an offer valid for 1 min
-    }))
-  )
+      })
+    ).then(fetchedOffers => {
+      const bookableOffers = fetchedOffers.filter(
+        offer => typeof offer !== 'undefined'
+      ) as (
+        | CollectiveOfferResponseModel
+        | CollectiveOfferTemplateResponseModel
+      )[]
 
-  useEffect(() => {
-    if (queries.length && queries.every(query => !query.isLoading)) {
+      setOffers(offers => [...offers, ...bookableOffers])
+
+      setRefinedIds(refinedIds => {
+        hits.forEach(hit => {
+          refinedIds.add(hit.objectID)
+        })
+
+        return refinedIds
+      })
+
+      setQueriesAreLoading(false)
       setIsLoading(false)
-      setIsFirstRender(false)
-    }
-  }, [queries, setIsLoading])
+    })
+  }, [hits, setIsLoading, refinedIds])
 
-  useEffect(() => {
-    setQueriesAreLoading(queries.some(query => query.isLoading))
-  }, [queries])
-
-  if (
-    isFirstRender &&
-    (!queries.length || queries.some(query => query.isLoading))
-  ) {
+  if (queriesAreLoading && offers.length === 0) {
     return (
       <div className="offers-loader">
         <Spinner message="Recherche en cours" />
@@ -95,14 +107,7 @@ export const OffersComponent = ({
     )
   }
 
-  const offers = queries
-    .map(({ data }) => data)
-    .filter(offer => typeof offer !== 'undefined') as (
-    | CollectiveOfferResponseModel
-    | CollectiveOfferTemplateResponseModel
-  )[]
-
-  if (hits.length === 0 || offers.length === 0) {
+  if (hits?.length === 0 || offers.length === 0) {
     return (
       <NoResultsPage
         handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
@@ -163,5 +168,20 @@ export const OffersComponent = ({
 }
 
 export const Offers = connectInfiniteHits<OffersComponentProps, ResultType>(
-  OffersComponent
+  memo(OffersComponent, (prevProps, nextProps) => {
+    // prevent OffersComponent from rerendering if props are equal by value
+    // and thus trigger fetch multiple times
+    let arePropsEqual = true
+    Object.keys(prevProps).forEach(prop => {
+      if (
+        prop !== 'refineNext' &&
+        prop !== 'refinePrevious' &&
+        !isEqual(prevProps[prop], nextProps[prop])
+      ) {
+        arePropsEqual = false
+      }
+    })
+
+    return arePropsEqual
+  })
 )

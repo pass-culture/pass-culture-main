@@ -2,7 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
-import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import {} from 'app/__spec__/__test_utils__/elements'
 import { api } from 'api/api'
@@ -32,12 +31,6 @@ jest.mock('react-instantsearch-dom', () => {
     Stats: jest.fn(() => <div>2 résultats</div>),
   }
 })
-
-const queryCache = new QueryCache()
-const queryClient = new QueryClient({ queryCache })
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-)
 
 const mockedPcapi = api as jest.Mocked<typeof api>
 
@@ -78,10 +71,7 @@ const renderOffers = (props: OffersComponentProps) => {
       <FacetFiltersContextProvider>
         <Offers {...props} />
       </FacetFiltersContextProvider>
-    </AlgoliaQueryContextProvider>,
-    {
-      wrapper,
-    }
+    </AlgoliaQueryContextProvider>
   )
 }
 
@@ -92,7 +82,6 @@ describe('offers', () => {
   let offersProps: OffersComponentProps
 
   beforeEach(() => {
-    queryCache.clear()
     offerInParis = {
       id: 479,
       name: 'Une chouette à la mer',
@@ -257,7 +246,7 @@ describe('offers', () => {
     expect(listItemsInOffer).toHaveLength(2)
     expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-    expect(screen.getByText('2 résultats')).toBeInTheDocument()
+    expect(screen.getAllByText('2 résultats')[0]).toBeInTheDocument()
   })
 
   it('should remove previous rendered offers on results update', async () => {
@@ -297,7 +286,7 @@ describe('offers', () => {
     expect(screen.getAllByTestId('offer-listitem')).toHaveLength(1)
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
-    expect(screen.getByText('2 résultats')).toBeInTheDocument()
+    expect(screen.getAllByText('2 résultats')[0]).toBeInTheDocument()
   })
 
   it('should show most recent results and cancel previous request', async () => {
