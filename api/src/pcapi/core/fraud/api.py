@@ -346,7 +346,7 @@ def is_subscription_name_valid(name: str | None) -> bool:
     return is_latin(stripped_name)
 
 
-def _check_user_names_valid(first_name: str | None, last_name: str | None):  # type: ignore [no-untyped-def]
+def _check_user_names_valid(first_name: str | None, last_name: str | None) -> models.FraudItem:
     incorrect_fields = None
     is_valid_first_name = is_subscription_name_valid(first_name)
     is_valid_last_name = is_subscription_name_valid(last_name)

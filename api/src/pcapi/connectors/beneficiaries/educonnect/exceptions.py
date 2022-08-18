@@ -21,7 +21,7 @@ class UserTypeNotStudent(EduconnectAuthenticationException):
     user_type: str | None
     logout_url: str
 
-    def __init__(self, request_id, user_type, logout_url, *args: object) -> None:  # type: ignore [no-untyped-def]
+    def __init__(self, request_id: str, user_type: str | None, logout_url: str, *args: object) -> None:
         super().__init__(*args)
         self.request_id = request_id
         self.user_type = user_type

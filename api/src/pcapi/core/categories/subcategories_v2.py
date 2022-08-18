@@ -81,7 +81,7 @@ class Subcategory:
     is_bookable_by_underage_when_not_free: bool = True
     can_be_withdrawable: bool = False
 
-    def __post_init__(self):  # type: ignore [no-untyped-def]
+    def __post_init__(self) -> None:
         if self.search_group_name not in [s.name for s in SearchGroups]:
             raise ValueError("search_group_name can only be one of SearchGroups")
         if self.homepage_label_name not in [h.name for h in HomepageLabels]:

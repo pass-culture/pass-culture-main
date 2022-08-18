@@ -358,7 +358,9 @@ def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None
     db.session.delete(api_key)
 
 
-def create_offerer(user: users_models.User, offerer_informations: offerers_serialize.CreateOffererQueryModel):  # type: ignore [no-untyped-def]
+def create_offerer(
+    user: users_models.User, offerer_informations: offerers_serialize.CreateOffererQueryModel
+) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
 
     if offerer is not None:

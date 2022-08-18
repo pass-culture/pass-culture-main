@@ -30,7 +30,7 @@ class SendinblueTransactionalWithoutTemplateEmailData:
     attachment: SendinblueTransactionalAttachment | None = None
     reply_to: EmailInfo = None  # type: ignore [assignment]
 
-    def __post_init__(self):  # type: ignore [no-untyped-def]
+    def __post_init__(self) -> None:
         if self.reply_to is None:
             self.reply_to = self.sender
 
@@ -59,6 +59,6 @@ class SendinblueTransactionalEmailData:
     params: dict = dataclasses.field(default_factory=dict)
     reply_to: EmailInfo = None  # type: ignore [assignment]
 
-    def __post_init__(self):  # type: ignore [no-untyped-def]
+    def __post_init__(self) -> None:
         if self.reply_to is None:
             self.reply_to = self.template.sender.value

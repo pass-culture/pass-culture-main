@@ -11,13 +11,13 @@ from pcapi.domain.titelive import put_today_file_at_end_of_list
 logger = logging.getLogger(__name__)
 
 
-def get_titelive_ftp():  # type: ignore [no-untyped-def]
+def get_titelive_ftp() -> ftplib.FTP:
     if settings.TITELIVE_FTP_URI is None:
         raise ValueError("URI du FTP Titelive non spécifiée.")
     return ftplib.FTP(settings.TITELIVE_FTP_URI)
 
 
-def connect_to_titelive_ftp():  # type: ignore [no-untyped-def]
+def connect_to_titelive_ftp() -> ftplib.FTP:
     ftp_titelive = get_titelive_ftp()
     if settings.TITELIVE_FTP_USER is None or settings.TITELIVE_FTP_PWD is None:
         raise ValueError("Informations de connexion au FTP Titelive non spécifiée.")

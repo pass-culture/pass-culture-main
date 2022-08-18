@@ -20,10 +20,10 @@ from . import models
 from . import utils
 
 
-def get_business_units_query(  # type: ignore [no-untyped-def]
+def get_business_units_query(
     user: users_models.User,
     offerer_id: int = None,
-):
+) -> sqla_orm.Query:
     query = (
         models.BusinessUnit.query.join(models.BankInformation)
         .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
