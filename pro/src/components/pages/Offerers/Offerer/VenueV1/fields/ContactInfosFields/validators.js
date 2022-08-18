@@ -1,16 +1,17 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { string } from 'yup'
 
 import { urlRegex } from 'core/shared'
+
+import { parseAndValidateFrenchPhoneNumber } from './utils'
 
 export const validatePhone = phone => {
   if (!phone) {
     return
   }
-  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
-  const isValid = phoneNumber?.isValid()
-  if (!isValid) {
-    return 'Votre numéro de téléphone n’est pas valide'
+  try {
+    parseAndValidateFrenchPhoneNumber(phone)
+  } catch (err) {
+    return err
   }
 }
 

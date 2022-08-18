@@ -1,4 +1,4 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import { parseAndValidateFrenchPhoneNumber } from '../fields/ContactInfosFields'
 
 const creation_authorized_input_field = [
   'address',
@@ -88,9 +88,8 @@ export const formatVenuePayload = (
       inputName === 'contact' &&
       payload[inputName]?.phoneNumber != undefined
     ) {
-      payload[inputName].phoneNumber = parsePhoneNumberFromString(
-        payload[inputName].phoneNumber,
-        'FR'
+      payload[inputName].phoneNumber = parseAndValidateFrenchPhoneNumber(
+        payload[inputName].phoneNumber
       ).number
     }
 
