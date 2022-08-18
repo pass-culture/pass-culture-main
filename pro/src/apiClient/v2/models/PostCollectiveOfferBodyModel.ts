@@ -2,11 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { OfferAddressType } from './OfferAddressType';
+import type { OfferVenueModel } from './OfferVenueModel';
 import type { StudentLevels } from './StudentLevels';
 
 export type PostCollectiveOfferBodyModel = {
-  address?: string | null;
   audioDisabilityCompliant?: boolean;
   beginningDatetime: string;
   bookingEmail?: string | null;
@@ -22,7 +21,7 @@ export type PostCollectiveOfferBodyModel = {
   motorDisabilityCompliant?: boolean;
   name: string;
   numberOfTickets: number;
-  offerVenue: OfferAddressType;
+  offerVenue: OfferVenueModel;
   priceDetail?: string | null;
   students: Array<StudentLevels>;
   subcategoryId: string;
