@@ -134,7 +134,6 @@ def test_public_api(client, app):
                 "GetPublicCollectiveOfferResponseModel": {
                     "additionalProperties": False,
                     "properties": {
-                        "address": {"title": "Address", "type": "string"},
                         "audioDisabilityCompliant": {
                             "nullable": True,
                             "title": "Audiodisabilitycompliant",
@@ -179,6 +178,7 @@ def test_public_api(client, app):
                         },
                         "name": {"title": "Name", "type": "string"},
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
+                        "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "status": {"title": "Status", "type": "string"},
                         "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
                         "subcategoryId": {"title": "Subcategoryid", "type": "string"},
@@ -204,11 +204,11 @@ def test_public_api(client, app):
                         "hasBookingLimitDatetimesPassed",
                         "isSoldOut",
                         "venueId",
-                        "address",
                         "beginningDatetime",
                         "bookingLimitDatetime",
                         "totalPrice",
                         "numberOfTickets",
+                        "offerVenue",
                     ],
                     "title": "GetPublicCollectiveOfferResponseModel",
                     "type": "object",
@@ -226,7 +226,7 @@ def test_public_api(client, app):
                 },
                 "OfferAddressType": {
                     "description": "An enumeration.",
-                    "enum": ["MY_ADDRESS", "SCHOOL_ADDRESS", "OTHER_ADDRESS"],
+                    "enum": ["offererVenue", "school", "other"],
                     "title": "OfferAddressType",
                 },
                 "OfferStatus": {
@@ -234,10 +234,20 @@ def test_public_api(client, app):
                     "enum": ["ACTIVE", "PENDING", "EXPIRED", "REJECTED", "SOLD_OUT", "INACTIVE", "DRAFT"],
                     "title": "OfferStatus",
                 },
+                "OfferVenueModel": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "addressType": {"$ref": "#/components/schemas/OfferAddressType"},
+                        "otherAddress": {"nullable": True, "title": "Otheraddress", "type": "string"},
+                        "venueId": {"nullable": True, "title": "Venueid", "type": "integer"},
+                    },
+                    "required": ["addressType"],
+                    "title": "OfferVenueModel",
+                    "type": "object",
+                },
                 "PostCollectiveOfferBodyModel": {
                     "additionalProperties": False,
                     "properties": {
-                        "address": {"nullable": True, "title": "Address", "type": "string"},
                         "audioDisabilityCompliant": {
                             "default": False,
                             "title": "Audiodisabilitycompliant",
@@ -273,7 +283,7 @@ def test_public_api(client, app):
                         },
                         "name": {"title": "Name", "type": "string"},
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
-                        "offerVenue": {"$ref": "#/components/schemas/OfferAddressType"},
+                        "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "priceDetail": {"nullable": True, "title": "Pricedetail", "type": "string"},
                         "students": {"items": {"$ref": "#/components/schemas/StudentLevels"}, "type": "array"},
                         "subcategoryId": {"title": "Subcategoryid", "type": "string"},
@@ -582,11 +592,12 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/GetPublicCollectiveOfferResponseModel"}
                                 }
                             },
-                            "description": "L'offre collective existe",
+                            "description": "L'offre collective à été créée avec succes",
                         },
                         "400": {"description": "Requête malformée"},
                         "401": {"description": "Authentification nécessaire"},
                         "403": {"description": "Non éligible pour les offres collectives"},
+                        "404": {"description": "L'une des resources pour la création de l'offre n'a pas été trouvée"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
