@@ -93,8 +93,8 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
         if len(offerer.managedVenues) >= N_VENUES_THRESHOLD_TO_SHOW_OFFER_COUNT:
             offer_counts.update({venue.id: -1 for venue in offerer.managedVenues})
         else:
-            venue_ids |= {venue.id for venue in offerer.managedVenues}
-    offer_counts.update(repository.get_offer_counts_by_venue(venue_ids))
+            venue_ids = {venue.id for venue in offerer.managedVenues}
+        offer_counts.update(repository.get_offer_counts_by_venue(venue_ids))
 
     return GetOfferersListResponseModel(
         offerers=[
