@@ -55,6 +55,7 @@ from pcapi.routes.serialization.collective_stock_serialize import CollectiveStoc
 from pcapi.utils import rest
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import humanize
 
 
 logger = logging.getLogger(__name__)
@@ -913,7 +914,7 @@ def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerRes
 
 
 def create_collective_offer_public(
-    offerer_id: int, body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel, offer_venue: dict
+    offerer_id: int, body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
@@ -935,6 +936,19 @@ def create_collective_offer_public(
         ).one_or_none():
             raise exceptions.EducationalInstitutionUnknown()
 
+    if body.offer_venue.venueId:
+        query = db.session.query(sa.func.count(offerers_models.Venue.id))
+        query = query.filter(
+            offerers_models.Venue.id == body.offer_venue.venueId, offerers_models.Venue.managingOffererId == offerer_id
+        )
+        if query.scalar() == 0:
+            raise offerers_exceptions.VenueNotFoundException()
+
+    offer_venue = {
+        "venueId": humanize(body.offer_venue.venueId) or "",
+        "addressType": body.offer_venue.addressType,
+        "otherAddress": body.offer_venue.otherAddress or "",
+    }
     collective_offer = educational_models.CollectiveOffer(
         venueId=venue.id,
         name=body.name,
