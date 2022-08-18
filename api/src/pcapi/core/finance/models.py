@@ -392,6 +392,8 @@ class Invoice(Base, Model):  # type: ignore [valid-type, misc]
 
     @property
     def storage_object_id(self) -> str:
+        if not self.date:  # can be None if the invoice is not yet saved
+            raise ValueError("Invoice date is not set")
         return (
             f"{self.token}/{self.date.strftime('%d%m%Y')}-{self.reference}-"
             f"Justificatif-de-remboursement-pass-Culture.pdf"
