@@ -110,7 +110,7 @@ class DmsApplicationResponse(pydantic.BaseModel):
     fields: list[DmsField] = pydantic.Field(alias="champs")
     filing_date: datetime.datetime = pydantic.Field(alias="dateDepot")
     id: str
-    latest_modification_date: datetime.datetime = pydantic.Field(alias="dateDerniereModification")
+    latest_modification_datetime: datetime.datetime = pydantic.Field(alias="dateDerniereModification")
     messages: list[DMSMessage]
     number: int
     on_going_date: datetime.datetime | None = pydantic.Field(None, alias="datePassageEnInstruction")
@@ -120,7 +120,7 @@ class DmsApplicationResponse(pydantic.BaseModel):
 
     _format_processed_datetime = pydantic.validator("processed_datetime", allow_reuse=True)(parse_dms_datetime)
     _format_filing_date = pydantic.validator("filing_date", allow_reuse=True)(parse_dms_datetime)
-    _format_latest_modification_date = pydantic.validator("latest_modification_date", allow_reuse=True)(
+    _format_latest_modification_datetime = pydantic.validator("latest_modification_datetime", allow_reuse=True)(
         parse_dms_datetime
     )
     _format_on_going_date = pydantic.validator("on_going_date", allow_reuse=True)(parse_dms_datetime)
