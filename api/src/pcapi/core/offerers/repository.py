@@ -75,36 +75,53 @@ def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
     Venues that do not have any offers are not included in the
     returned dictionary.
     """
-
-    offer_query = Offer.query.filter(
-        Offer.validation != OfferValidationStatus.DRAFT,
-        Offer.venueId.in_(venue_ids),
+    individual_offers_count_subquery = (
+        Offer.query.filter(
+            Offer.validation != OfferValidationStatus.DRAFT,
+            Offer.venueId.in_(venue_ids),
+            Offer.isEducational.is_(False),
+        )
+        .with_entities(Offer.id)
+        .limit(100)
     )
 
-    offer_query = offer_query.filter(Offer.isEducational.is_(False))
-
     individual_offers_count = dict(
-        offer_query.with_entities(Offer.venueId, sqla.func.count()).group_by(Offer.venueId).all()
+        Offer.query.filter(Offer.id.in_(individual_offers_count_subquery))
+        .with_entities(Offer.venueId, sqla.func.count())
+        .group_by(Offer.venueId)
+        .all()
     )
 
     collective_offers_count = {}
     collective_offers_template_count = {}
 
-    collective_offers_count = dict(
+    collective_offers_count_subquery = (
         CollectiveOffer.query.filter(
             CollectiveOffer.validation != OfferValidationStatus.DRAFT,
             CollectiveOffer.venueId.in_(venue_ids),
         )
+        .with_entities(CollectiveOffer.id)
+        .limit(100)
+    )
+
+    collective_offers_count = dict(
+        CollectiveOffer.query.filter(CollectiveOffer.id.in_(collective_offers_count_subquery))
         .with_entities(CollectiveOffer.venueId, sqla.func.count())
         .group_by(CollectiveOffer.venueId)
         .all()
     )
 
-    collective_offers_template_count = dict(
+    collective_offers_template_count_subquery = (
         CollectiveOfferTemplate.query.filter(
             CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
             CollectiveOfferTemplate.venueId.in_(venue_ids),
         )
+        .with_entities(CollectiveOfferTemplate.id)
+        .limit(100)
+    )
+
+    collective_offers_template_count = dict(
+        CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id.in_(collective_offers_template_count_subquery))
         .with_entities(CollectiveOfferTemplate.venueId, sqla.func.count())
         .group_by(CollectiveOfferTemplate.venueId)
         .all()

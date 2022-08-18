@@ -38,9 +38,8 @@ def test_access_by_pro(client):
     n_queries = testing.AUTHENTICATION_QUERIES
     n_queries += 1  # select offerers
     n_queries += 1  # select count of offerers
-    n_queries += 1  # select count of offers for all venues
-    n_queries += 1  # select count of collective offers for all venues
-    n_queries += 1  # select count of collective offers templates for all venues
+    n_queries_per_offerer = 3  # select count of offers, collective and template for all venues of one offerer
+    n_queries += n_queries_per_offerer * 2  # 2 offerers
     with testing.assert_num_queries(n_queries):
         response = client.get("/offerers")
 
