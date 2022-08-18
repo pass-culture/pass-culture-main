@@ -7,53 +7,29 @@ on:
         description: "Numéro de la RC sans le .0.0 (ex: 2150)"
         required: true
         type: string
+
       releaseNumber:
         description: "Numéro de l'itération (ex: 199)"
         required: true
         type: string
 
-env:
-  RELEASE_VERSION: v${{ github.event.inputs.releaseNumber }}.0.0
-
 jobs:
   tag-version:
+    uses: ./.github/workflows/tag.yml
+    with:
+      base_ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
+      tag_name: v${{ github.event.inputs.releaseNumber }}.0.0
+
+  create-maintenance-branch:
+    needs: tag-version
     runs-on: ubuntu-latest
-
     env:
-      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
-      GIT_CONFIG_NAME: ${{ github.actor }}
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
-      RELEASE_CANDIDATE_VERSION: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
-
     steps:
-      - name: Checkout RC
+      - name: Checkout new tag
         uses: actions/checkout@v3
         with:
-          ref: ${{ env.RELEASE_CANDIDATE_VERSION }}
-      - name: Author
-        run: |
-          git config --global user.email "$GIT_CONFIG_EMAIL"
-          git config --global user.name "$GIT_CONFIG_NAME"
-      - name: Add version to api
-        run: |
-          cd ./api
-          echo "$RELEASE_VERSION" > version.txt
-          git add version.txt
-      - name: Add version to pro
-        run: |
-          cd pro
-          yarn version --new-version "$RELEASE_VERSION"
-          git add package.json
-      - name: Add version to adage
-        run: |
-          cd adage-front
-          yarn version --new-version "$RELEASE_VERSION"
-          git add package.json
-      - name: Tag Release
-        run: |
-          git commit -m "🚀 $RELEASE_VERSION" -n
-          git tag -a "$RELEASE_VERSION" -m "🚀 $RELEASE_VERSION"
-          git push origin "$RELEASE_VERSION"
+          ref: v${{ github.event.inputs.releaseNumber }}.0.0
       - name: Create maintenance branch
         run: |
           git checkout -b "$MAINTENANCE_BRANCH"
@@ -69,7 +45,7 @@ jobs:
       - name: Checkout Release
         uses: actions/checkout@v3
         with:
-          ref: ${{ env.RELEASE_VERSION }}
+          ref: v${{ github.event.inputs.releaseNumber }}.0.0
       - name: Push release to staging
         run: |
           git push -f origin HEAD:staging
