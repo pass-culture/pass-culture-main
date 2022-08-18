@@ -18,6 +18,7 @@ import sqlalchemy.event
 import sqlalchemy.orm
 
 from pcapi import settings
+from pcapi.models import db
 from pcapi.models.feature import Feature
 
 
@@ -45,8 +46,6 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         # through a factory is not rollback'ed. To work around this,
         # here is a hack.
         # This issue is discussed here: https://github.com/jeancochrane/pytest-flask-sqlalchemy/issues/12
-        from pcapi.models import db
-
         session = db.session
 
         known_fields = {
@@ -66,8 +65,6 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     @classmethod
     def _get_or_create(cls, model_class, session, *args, **kwargs):  # type: ignore [no-untyped-def]
-        from pcapi.models import db
-
         # See comment in _save for the reason why we inject the
         # session like this.
         session = db.session
@@ -272,6 +269,7 @@ class override_features(TestContextDecorator):
             if status != state[name]:
                 self.apply_to_revert[name] = not status
                 Feature.query.filter_by(name=name).update({"isActive": status})
+                db.session.commit()
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
@@ -280,6 +278,7 @@ class override_features(TestContextDecorator):
     def disable(self) -> None:
         for name, status in self.apply_to_revert.items():
             Feature.query.filter_by(name=name).update({"isActive": status})
+            db.session.commit()
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
