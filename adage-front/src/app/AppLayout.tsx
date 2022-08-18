@@ -1,7 +1,8 @@
 import './AppLayout.scss'
 import * as React from 'react'
 
-import { AuthenticatedResponse, VenueResponse } from 'api/gen'
+import { VenueResponse } from 'api/gen'
+import { AuthenticatedResponse } from 'apiClient'
 import { OffersInstantSearch } from 'app/components/OffersInstantSearch/OffersInstantSearch'
 import { ReactComponent as Download } from 'assets/download.svg'
 import { ReactComponent as Logo } from 'assets/logo-with-text.svg'

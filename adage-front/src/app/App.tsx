@@ -6,8 +6,10 @@ import '@fontsource/barlow/300.css'
 import * as React from 'react'
 import { useCallback, useEffect, useState } from 'react'
 
-import { api } from 'api/api'
-import { AdageFrontRoles, AuthenticatedResponse, VenueResponse } from 'api/gen'
+import { api as apiLegacy } from 'api/api'
+import { VenueResponse } from 'api/gen'
+import { AuthenticatedResponse, AdageFrontRoles } from 'apiClient'
+import { api } from 'apiClient/api'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
 import { logCatalogView } from 'repository/pcapi/pcapi'
 import { LOGS_DATA } from 'utils/config'
@@ -29,14 +31,14 @@ export const App = (): JSX.Element => {
 
   useEffect(() => {
     api
-      .getAdageIframeAuthenticate()
+      .authenticate()
       .then(user => setUser(user))
       .then(() => {
         const params = new URLSearchParams(window.location.search)
         const siret = params.get('siret')
         const venueId = Number(params.get('venue'))
         if (siret) {
-          return api
+          return apiLegacy
             .getAdageIframeGetVenueBySiret(siret)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
@@ -50,7 +52,7 @@ export const App = (): JSX.Element => {
         }
 
         if (venueId && !Number.isNaN(venueId)) {
-          return api
+          return apiLegacy
             .getAdageIframeGetVenueById(venueId)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
@@ -82,7 +84,7 @@ export const App = (): JSX.Element => {
     <FacetFiltersContextProvider uai={user?.uai}>
       {notification && <NotificationComponent notification={notification} />}
       {user?.role &&
-      [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
+      [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
         user.role
       ) ? (
         <AppLayout
