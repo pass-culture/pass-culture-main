@@ -1,6 +1,5 @@
 import logging
 
-from pcapi.notifications.push import models as push_models
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
@@ -12,7 +11,7 @@ logger = logging.getLogger(__name__)
 class LoggerBackend:
     def update_user_attributes(
         self, batch_api: BatchAPI, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
-    ) -> push_models.UpdateAttributeRequestResult:
+    ) -> None:
         logger.info(
             "A request to update user attributes would be sent for user with id=%d with new attributes=%s to api=%s",
             user_id,
@@ -20,7 +19,6 @@ class LoggerBackend:
             batch_api.name,
             extra={"can_be_asynchronously_retried": can_be_asynchronously_retried},
         )
-        return push_models.UpdateAttributeRequestResult(should_retry=False)
 
     def update_users_attributes(
         self, users_data: list[UserUpdateData], can_be_asynchronously_retried: bool = False
