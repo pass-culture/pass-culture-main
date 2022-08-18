@@ -48,7 +48,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 jest.mock('api/api', () => ({
   api: {
-    getAdageIframeGetVenueById: jest.fn(),
     getAdageIframeGetVenueBySiret: jest.fn(),
   },
 }))
@@ -86,6 +85,7 @@ jest.mock('apiClient/api', () => ({
         },
       ],
     }),
+    getVenueById: jest.fn(),
   },
 }))
 
@@ -129,7 +129,7 @@ describe('app', () => {
       uai: 'uai',
     })
     mockedApiLegacy.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
-    mockedApiLegacy.getAdageIframeGetVenueById.mockResolvedValue(venue)
+    mockedApi.getVenueById.mockResolvedValue(venue)
   })
 
   it('should reset filters', async () => {

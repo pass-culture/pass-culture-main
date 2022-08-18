@@ -3,8 +3,9 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 
-import { api } from 'api/api'
+import { api as apiLegacy } from 'api/api'
 import { AdageFrontRoles, VenueResponse } from 'api/gen'
+import { api } from 'apiClient/api'
 import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
@@ -56,15 +57,16 @@ jest.mock('apiClient/api', () => ({
       },
     ],
   }),
+  getVenueById: jest.fn(),
 }))
 
 jest.mock('api/api', () => ({
   api: {
     getAdageIframeAuthenticate: jest.fn(),
-    getAdageIframeGetVenueById: jest.fn(),
     getAdageIframeGetVenueBySiret: jest.fn(),
   },
 }))
+const mockedApiLegacy = apiLegacy as jest.Mocked<typeof apiLegacy>
 const mockedApi = api as jest.Mocked<typeof api>
 
 const features = []
@@ -103,12 +105,12 @@ describe('app', () => {
         publicName: "Lib de Par's",
       }
 
-      mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
+      mockedApiLegacy.getAdageIframeAuthenticate.mockResolvedValue({
         role: AdageFrontRoles.Redactor,
         uai: 'uai',
       })
-      mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
-      mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
+      mockedApiLegacy.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
+      mockedApi.getVenueById.mockResolvedValue(venue)
     })
 
     it('should show search offers input with no filter on venue when no siret or venueId is provided', async () => {
@@ -134,7 +136,9 @@ describe('app', () => {
         screen.queryByText('Lieu :', { exact: false })
       ).not.toBeInTheDocument()
 
-      expect(mockedApi.getAdageIframeGetVenueBySiret).not.toHaveBeenCalled()
+      expect(
+        mockedApiLegacy.getAdageIframeGetVenueBySiret
+      ).not.toHaveBeenCalled()
     })
 
     it('should show search offers input with filter on venue public name when siret is provided and public name exists', async () => {
@@ -163,9 +167,9 @@ describe('app', () => {
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
 
-      expect(mockedApi.getAdageIframeGetVenueBySiret).toHaveBeenCalledWith(
-        siret
-      )
+      expect(
+        mockedApiLegacy.getAdageIframeGetVenueBySiret
+      ).toHaveBeenCalledWith(siret)
     })
 
     it('should show venue filter on venue name when siret is provided and public name does not exist', async () => {
@@ -209,7 +213,7 @@ describe('app', () => {
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
 
-      expect(mockedApi.getAdageIframeGetVenueById).toHaveBeenCalledWith(venueId)
+      expect(mockedApi.getVenueById).toHaveBeenCalledWith(venueId)
     })
 
     it('should show venue filter on venue name when venueId is provided and public name does not exist', async () => {
@@ -231,7 +235,7 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       window.location.search = `?siret=${siret}`
-      mockedApi.getAdageIframeGetVenueBySiret.mockRejectedValue(
+      mockedApiLegacy.getAdageIframeGetVenueBySiret.mockRejectedValue(
         'Unrecognized SIRET'
       )
 
@@ -313,7 +317,7 @@ describe('app', () => {
 
       it('should not display tabs if user does not have UAI code', async () => {
         // Given
-        mockedApi.getAdageIframeAuthenticate.mockResolvedValueOnce({
+        mockedApiLegacy.getAdageIframeAuthenticate.mockResolvedValueOnce({
           role: AdageFrontRoles.Redactor,
           uai: null,
         })
@@ -353,7 +357,7 @@ describe('app', () => {
 
   describe('when is not authenticated', () => {
     beforeEach(() => {
-      mockedApi.getAdageIframeAuthenticate.mockRejectedValue(
+      mockedApiLegacy.getAdageIframeAuthenticate.mockRejectedValue(
         'Authentication failed'
       )
     })
