@@ -149,17 +149,17 @@ def send_phone_validation_code(
         _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
-    user.phoneNumber = phone_number  # type: ignore [assignment]
+    user.phoneNumber = phone_data.phone_number  # type: ignore [assignment]
     repository.save(user)
 
     phone_validation_token = users_api.create_phone_validation_token(
         user,
-        phone_number,
+        phone_data.phone_number,
         expiration=expiration,
     )
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"  # type: ignore [union-attr]
 
-    _send_sms_with_retry(phone_number, content)
+    _send_sms_with_retry(phone_data.phone_number, content)
 
     sending_limit.update_sent_SMS_counter(app.redis_client, user)  # type: ignore [attr-defined]
 

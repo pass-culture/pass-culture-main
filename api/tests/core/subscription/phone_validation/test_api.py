@@ -82,6 +82,27 @@ class SendSMSTest:
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
+    @patch("pcapi.core.users.api.secrets")
+    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    def test_send_sms_phone_number_with_space(self, secrets_mock, send_sms_mock):
+        user = users_factories.UserFactory()
+        secrets_mock.randbelow.return_value = "123456"
+
+        phone_validation_api.send_phone_validation_code(user, "+33 6 00 00 00 00")
+
+        assert send_sms_mock.call_args[0][0].content == "123456 est ton code de confirmation pass Culture"
+        assert send_sms_mock.call_args[0][0].recipient == "33600000000"
+        assert send_sms_mock.call_args[0][0].sender == "PassCulture"
+        assert send_sms_mock.call_args[0][0].tag == "phone-validation"
+        assert send_sms_mock.call_args[0][0].type == "transactional"
+        assert send_sms_mock.call_args[0][0].unicode_enabled == False
+        assert send_sms_mock.call_args[0][0].web_url == None
+
+        assert user.phoneNumber == "+33600000000"
+
+    @patch(
+        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+    )
     @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
     def test_send_sms_bad_request(self, send_sms_mock, caplog, app):
         user = users_factories.UserFactory()
