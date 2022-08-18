@@ -124,6 +124,7 @@ def parse_beneficiary_information_graphql(
         first_name=first_name,
         id_piece_number=id_piece_number,
         last_name=last_name,
+        latest_modification_datetime=application_detail.latest_modification_datetime,
         phone=phone,
         postal_code=postal_code,
         procedure_number=application_detail.procedure.number,

@@ -33,6 +33,9 @@ class IdentityCheckContent(pydantic.BaseModel):
     def get_ine_hash(self) -> str | None:
         return None
 
+    def get_latest_modification_datetime(self) -> datetime.datetime | None:
+        return None
+
     def get_married_name(self) -> str | None:
         return None
 
