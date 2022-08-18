@@ -8,6 +8,7 @@ signed:
 import dataclasses
 import datetime
 import enum
+import typing
 
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
@@ -124,7 +125,7 @@ class BusinessUnitVenueLink(Base, Model):  # type: ignore [valid-type, misc]
         sqla_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
     )
 
-    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, **kwargs: typing.Any) -> None:
         kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
 
@@ -344,8 +345,10 @@ class InvoiceLine(Base, Model):  # type: ignore [valid-type, misc]
     )
 
     @property
-    def bookings_amount(self):  # type: ignore [no-untyped-def]
+    def bookings_amount(self) -> int | None:
         """returns the (positive) raw amount of the used Bookings priced in this line"""
+        if self.contributionAmount is None or self.reimbursedAmount is None:
+            return None
         return self.contributionAmount - self.reimbursedAmount
 
     @property
@@ -388,14 +391,14 @@ class Invoice(Base, Model):  # type: ignore [valid-type, misc]
     cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")  # type: ignore [misc]
 
     @property
-    def storage_object_id(self):  # type: ignore [no-untyped-def]
+    def storage_object_id(self) -> str:
         return (
             f"{self.token}/{self.date.strftime('%d%m%Y')}-{self.reference}-"
             f"Justificatif-de-remboursement-pass-Culture.pdf"
         )
 
     @property
-    def url(self):  # type: ignore [no-untyped-def]
+    def url(self) -> str:
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 

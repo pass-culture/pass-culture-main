@@ -310,7 +310,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
         return bool(self.bankInformation) and self.bankInformation.status == BankInformationStatus.DRAFT
 
     @property
-    def demarchesSimplifieesIsAccepted(self):  # type: ignore [no-untyped-def]
+    def demarchesSimplifieesIsAccepted(self) -> bool:
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
 
     @property
@@ -336,7 +336,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
         return False
 
     @property
-    def thumbUrl(self):  # type: ignore [no-untyped-def]
+    def thumbUrl(self) -> str:
         """
         Override to discard the thumbCount column: not used by Venues
         which have at most one banner (thumb).
@@ -505,7 +505,7 @@ class VenuePricingPointLink(Base, Model):  # type: ignore [valid-type, misc]
         sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
     )
 
-    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, **kwargs: typing.Any) -> None:
         kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
 
@@ -574,15 +574,15 @@ class Offerer(
     thumb_path_component = "offerers"
 
     @property
-    def bic(self):  # type: ignore [no-untyped-def]
+    def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
 
     @property
-    def iban(self):  # type: ignore [no-untyped-def]
+    def iban(self) -> str | None:
         return self.bankInformation.iban if self.bankInformation else None
 
     @property
-    def demarchesSimplifieesApplicationId(self):  # type: ignore [no-untyped-def]
+    def demarchesSimplifieesApplicationId(self) -> str | None:
         if not self.bankInformation:
             return None
 

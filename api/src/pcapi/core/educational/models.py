@@ -199,9 +199,9 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         )
 
     @property
-    def hasBookingLimitDatetimePassed(self):  # type: ignore [no-untyped-def]
+    def hasBookingLimitDatetimePassed(self) -> bool:
         if self.collectiveStock:
-            return self.collectiveStock.hasBookingLimitDatetimePassed
+            return self.collectiveStock.hasBookingLimitDatetimePassed  # type: ignore[return-value]
         return False
 
     @sa.ext.hybrid.hybrid_property
