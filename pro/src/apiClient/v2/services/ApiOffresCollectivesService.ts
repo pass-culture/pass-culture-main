@@ -49,7 +49,7 @@ export class ApiOffresCollectivesService {
   /**
    * Création d'une offre collective.
    * @param requestBody
-   * @returns GetPublicCollectiveOfferResponseModel L'offre collective existe
+   * @returns GetPublicCollectiveOfferResponseModel L'offre collective à été créée avec succes
    * @throws ApiError
    */
   public postCollectiveOfferPublic(
@@ -64,6 +64,7 @@ export class ApiOffresCollectivesService {
         400: `Requête malformée`,
         401: `Authentification nécessaire`,
         403: `Non éligible pour les offres collectives`,
+        404: `L'une des resources pour la création de l'offre n'a pas été trouvée`,
         422: `Unprocessable Entity`,
       },
     });
