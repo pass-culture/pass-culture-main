@@ -32,13 +32,11 @@ class OverrideSettingsOnClassTest:
         assert settings.IS_RUNNING_TESTS == 3
 
 
-@pytest.mark.usefixtures("db_session")
 @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
 def test_override_features_on_function():
     assert not FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
 
 
-@pytest.mark.usefixtures("db_session")
 def test_override_features_as_context_manager():
     assert FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
     with override_features(ENABLE_NATIVE_APP_RECAPTCHA=False):
@@ -46,7 +44,6 @@ def test_override_features_as_context_manager():
     assert FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
 
 
-@pytest.mark.usefixtures("db_session")
 class OverrideFeaturesOnClassTest:
     @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
     def test_method_level_override(self):
