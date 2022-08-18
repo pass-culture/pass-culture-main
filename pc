@@ -100,17 +100,6 @@ function confirm() {
   fi
 }
 
-function ensure_remote() {
-  if [[ "$ENV" == "development" ]]; then
-    echo "$1"
-    exit 3
-  fi
-}
-
-function echo_error() {
-  echo -e "${RED}""$1""${NO_COLOR}"
-}
-
 function echo_warning() {
   echo -e "${ORANGE}""$1""${NO_COLOR}"
 }
@@ -118,37 +107,11 @@ function echo_warning() {
 current_branch=$(git symbolic-ref -q HEAD)
 current_branch=${current_branch##refs/heads/}
 
-function update_deploy_branches() {
-  git fetch --tags
-  git checkout master
-  git reset --hard origin/master || exit_error_restoring_branch
-  git checkout staging
-  git reset --hard origin/staging || exit_error_restoring_branch
-  git checkout integration
-  git reset --hard origin/integration || exit_error_restoring_branch
-  git checkout production
-  git reset --hard origin/production || exit_error_restoring_branch
-}
-
-function tag_frontend_component() {
-  component="$1"
-  tag_name="$2"
-  tag_version="v$tag_name"
-  cd "$ROOT_PATH"/"$component"
-  yarn version --new-version "$tag_name"
-  git add package.json
-}
-
 function open_build_status_page() {
   cd "$ROOT_PATH"
   env_to_deploy="$1"
   commit_to_deploy="$2"
   source scripts/open_build_status_page.sh "$env_to_deploy" "$commit_to_deploy"
-}
-
-function exit_error_restoring_branch() {
-  git checkout "$current_branch"
-  exit 1
 }
 
 function exit_success_restoring_branch() {
@@ -287,110 +250,6 @@ elif [[ "$CMD" == "start-metabase" ]]; then
 elif [[ "$CMD" == "restart-metabase" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start-metabase.sh
   restart_metabase
-
-# =============================================
-# Deploy commands
-# =============================================
-
-# Tag new hotfix version using main repo
-elif [[ "$CMD" == "tag-hotfix" ]]; then
-  if [[ "$TAG_NAME" ]]; then
-    if [ ! -z "$(git status --untracked-files=no --porcelain)" ]; then
-      echo -e "\033[0;31mVeuillez d'abord nettoyer vos modifications:"
-      git status --untracked-files=no --porcelain
-      exit 1
-    fi
-    source "$INFRA_SCRIPTS_PATH"/hotfix.sh
-    tag_hotfix $TAG_NAME
-    exit 0
-  fi
-
-# Tag new version using main repo
-elif [[ "$CMD" == "tag" ]]; then
-  if [[ "$TAG_NAME" ]]; then
-    if [ ! -z "$(git status --untracked-files=no --porcelain)" ]; then
-      echo -e "\033[0;31mVeuillez d'abord nettoyer vos modifications:"
-      git status --untracked-files=no --porcelain
-      exit 1
-    fi
-    TAG_VERSION="v$TAG_NAME"
-    TAG_ITERATION=$(echo $TAG_NAME|sed 's/\..*//')
-
-    # TAG API
-    cd "$ROOT_PATH"/api
-    echo "$TAG_VERSION" > version.txt
-    git add version.txt
-
-    # TAG PRO
-    tag_frontend_component pro "$TAG_NAME"
-
-    # TAG ADAGE-FRONT
-    tag_frontend_component adage-front "$TAG_NAME"
-
-    # TAG MAIN
-    cd "$ROOT_PATH"
-    git commit -m "🚀 $TAG_VERSION" -n
-    git tag -a "$TAG_VERSION" -m "🚀 $TAG_VERSION"
-    git push origin "$TAG_VERSION"
-    git checkout -b "maint/v$TAG_ITERATION"
-    git push origin "maint/v$TAG_ITERATION"
-    # alembic revision -m "post tag $TAG_VERSION" --head=pre@head --depends-on=post@head
-    git reset --hard HEAD~1 # Cleanup for the generated commit used for tagging the version
-
-
-    echo "New version tagged : $TAG_NAME"
-
-    exit_success_restoring_branch
-  fi
-
-# Deploy all components using main repo
-elif [[ "$CMD" == "deploy" ]]; then
-  ensure_remote "Deploy cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
-
-  if [[ ! "$ENV" == 'production' ]] &&
-    [[ ! "$ENV" == 'staging' ]] &&
-    [[ ! "$ENV" == 'integration' ]]; then
-    echo_error "Can only deploy in staging, integration and production"
-    exit 1
-  fi
-
-  if [[ "$TAG_NAME" == 'not-set' ]]; then
-    echo_error "ERROR: You need to specify an existing tag to deploy"
-    exit_error_restoring_branch
-  fi
-
-  echo "$TAG_NAME will be deployed to $ENV"
-  cd "$ROOT_PATH"
-  update_deploy_branches
-
-  if [[ ! -z $(git ls-remote --tags origin refs/tags/v"$TAG_NAME") ]]; then
-    git checkout "v$TAG_NAME"
-  else
-    echo_error "ERROR: You need to specify an existing remote tag to deploy"
-    exit_error_restoring_branch
-  fi
-
-  commit_to_deploy=$(git log -n 1 --pretty=format:%H)
-  if [[ "$ENV" == "production" ]]; then
-    confirm "Warning: code will be deployed to PRODUCTION. Are you sure ?"
-    staging_commit=$(git log -n 1 --pretty=format:%H staging)
-    echo "$staging_commit"
-    if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
-      echo_error "ERROR: Can only deploy in production commits that are also deployed in staging"
-      exit_error_restoring_branch
-    fi
-  fi
-
-  git push -f origin HEAD:"$ENV"
-
-  #  Follow build status
-  open_build_status_page "$ENV" "$commit_to_deploy"
-
-  if [[ "$ENV" == 'production' ]]; then
-    echo -e "$WARNING_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration ?""${NO_COLOR}"
-  fi
-
-  exit_success_restoring_branch
 
 # =============================================
 # Initialization commands
