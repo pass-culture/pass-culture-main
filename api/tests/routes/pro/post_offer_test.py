@@ -12,7 +12,6 @@ from pcapi.utils.human_ids import humanize
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @override_features(OFFER_FORM_SUMMARY_PAGE=True)
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -30,6 +29,7 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.isActive == False
 
+    @override_features(OFFER_FORM_SUMMARY_PAGE=False)
     def test_create_event_offer(self, client):
         # Given
         venue = offerers_factories.VenueFactory()

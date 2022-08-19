@@ -53,7 +53,7 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
                  attribute: "name"
                  condition:
                     operator: "contains"
-                    comparated: 
+                    comparated:
                       - "suspicious"
         """
 
@@ -84,6 +84,7 @@ class UpsertStocksTest:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @freeze_time("2020-11-17 15:00:00")
+    @override_features(OFFER_FORM_SUMMARY_PAGE=False)
     def test_upsert_stocks_triggers_draft_offer_validation(self):
         api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
         # Given draft offers and new stock data
@@ -661,6 +662,7 @@ class UpsertStocksTest:
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
     @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
+    @override_features(OFFER_FORM_SUMMARY_PAGE=False)
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
         self,
         mocked_set_offer_status_based_on_fraud_criteria,

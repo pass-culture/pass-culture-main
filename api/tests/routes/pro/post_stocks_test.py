@@ -51,7 +51,6 @@ class Returns201Test:
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_not_called()
 
-    @override_features(OFFER_FORM_SUMMARY_PAGE=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_stock_with_summury(self, mocked_async_index_offer_ids, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
@@ -74,6 +73,7 @@ class Returns201Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
+    @override_features(OFFER_FORM_SUMMARY_PAGE=False)
     def test_create_one_stock(self, mocked_async_index_offer_ids, app):
         # Given
         offer = offers_factories.ThingOfferFactory(validation=OfferValidationStatus.DRAFT)
