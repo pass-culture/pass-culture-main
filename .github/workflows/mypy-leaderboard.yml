@@ -54,3 +54,14 @@ jobs:
           echo ${{ needs.get_mypy_score_on_merge_job.outputs.mypy_score }}
           echo ${{ needs.get_mypy_score_on_merge_job.outputs.author }}
           echo ${{ needs.get_mypy_score_on_merge_job.outputs.hash }}
+      - name: Call cloud function
+        id: call-cloud-function
+        run: |
+          curl --location --request POST 'https://us-central1-maposaic-99785.cloudfunctions.net/mypy-leaderboard' \
+          --header 'Authorization: AmericanMypy' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "commitHash": ${{ needs.get_mypy_score_on_merge_job.outputs.hash }},
+              "author": ${{ needs.get_mypy_score_on_merge_job.outputs.author }},
+              "mypyDiff": ${{ needs.get_mypy_score_on_merge_job.outputs.mypy_score }}
+          }'
