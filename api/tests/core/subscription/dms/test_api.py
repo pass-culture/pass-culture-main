@@ -369,3 +369,35 @@ class HandleDmsApplicationTest:
             2020, 5, 13, 9, 9, 46, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
         )
         assert result_content.first_name == ""
+
+    @patch("pcapi.core.subscription.dms.api.dms_subscription_emails.send_create_account_after_dms_email")
+    def test_processing_accepted_orphan_application_is_idempotent(self, mock_send_create_account_after_dms_email):
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email="orphan@example.com",
+            last_modification_date="2020-05-13T09:09:46.000+02:00",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+        dms_subscription_api.handle_dms_application(dms_response)
+        orphan = fraud_models.OrphanDmsApplication.query.filter_by(application_id=1).one()
+
+        mock_send_create_account_after_dms_email.assert_called_once_with("orphan@example.com")
+        assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_processing_draft_orphan_application_is_idempotent(self, mock_send_user_message):
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email="orphan@example.com",
+            last_modification_date="2020-05-13T09:09:46.000+02:00",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+        dms_subscription_api.handle_dms_application(dms_response)
+        orphan = fraud_models.OrphanDmsApplication.query.filter_by(application_id=1).one()
+
+        mock_send_user_message.assert_called_once()
+        assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)

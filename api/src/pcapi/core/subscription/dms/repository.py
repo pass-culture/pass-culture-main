@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import Integer
 from sqlalchemy import or_
 
@@ -5,16 +7,21 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.models import db
 
 
-def create_orphan_dms_application_if_not_exists(
-    application_number: int, procedure_number: int, email: str | None = None
-) -> None:
-    if db.session.query(
-        fraud_models.OrphanDmsApplication.query.filter_by(application_id=application_number, email=email).exists()
-    ).scalar():
-        return
+def get_orphan_dms_application_by_application_id(application_id: int) -> fraud_models.OrphanDmsApplication | None:
+    return fraud_models.OrphanDmsApplication.query.filter_by(application_id=application_id).first()
 
+
+def create_orphan_dms_application(
+    application_number: int,
+    procedure_number: int,
+    latest_modification_datetime: datetime.datetime,
+    email: str | None = None,
+) -> None:
     orphan_dms_application = fraud_models.OrphanDmsApplication(
-        application_id=application_number, process_id=procedure_number, email=email
+        application_id=application_number,
+        process_id=procedure_number,
+        email=email,
+        latest_modification_datetime=latest_modification_datetime,
     )
     db.session.add(orphan_dms_application)
     db.session.commit()
