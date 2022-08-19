@@ -36,7 +36,6 @@ line_length = 120
 lines_after_imports = 2
 multi_line_output = 3
 sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,TESTS,LOCALFOLDER"
-skip_gitignore = true
 use_parentheses = true
 
 [tool.mypy]
