@@ -1,3 +1,4 @@
+import datetime
 from datetime import date
 import logging
 import typing
@@ -20,6 +21,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.repository import find_user_by_email
 import pcapi.repository as pcapi_repository
+from pcapi.repository import repository
 
 from . import repository as dms_repository
 
@@ -81,7 +83,14 @@ def handle_dms_application(
     user = find_user_by_email(user_email)
     if not user:
         logger.info("[DMS] User not found for application", extra=log_extra_data)
-        _process_user_not_found_error(user_email, application_number, procedure_number, state, application_scalar_id)
+        _process_user_not_found_error(
+            user_email,
+            application_number,
+            procedure_number,
+            state,
+            application_scalar_id,
+            latest_modification_datetime=dms_application.latest_modification_datetime,
+        )
         return None
 
     application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(dms_application)
@@ -259,10 +268,28 @@ def _process_user_not_found_error(
     procedure_number: int,
     state: dms_models.GraphQLApplicationStates,
     application_scalar_id: str,
+    latest_modification_datetime: datetime.datetime,
 ) -> None:
-    dms_repository.create_orphan_dms_application_if_not_exists(
-        application_number=application_number, procedure_number=procedure_number, email=email
-    )
+    orphan = dms_repository.get_orphan_dms_application_by_application_id(application_number)
+    if orphan:
+        if (
+            not orphan.latest_modification_datetime
+            or orphan.latest_modification_datetime < latest_modification_datetime
+        ):
+            orphan.latest_modification_datetime = latest_modification_datetime
+            repository.save(orphan)
+        else:
+            # Application was already processed
+            return
+    else:
+        # Create new orphan
+        dms_repository.create_orphan_dms_application(
+            application_number=application_number,
+            procedure_number=procedure_number,
+            latest_modification_datetime=latest_modification_datetime,
+            email=email,
+        )
+
     if state == dms_models.GraphQLApplicationStates.draft:
         dms_connector_api.DMSGraphQLClient().send_user_message(
             application_scalar_id,
