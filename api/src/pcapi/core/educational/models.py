@@ -463,7 +463,7 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
 
-    collectiveOfferId = sa.Column(
+    collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
     )
 
