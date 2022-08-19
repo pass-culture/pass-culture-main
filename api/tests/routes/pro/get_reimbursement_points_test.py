@@ -35,7 +35,10 @@ def test_get_reimbursement_points_by_admin(client):
 
 def test_get_reimbursement_points_by_pro(client):
     pro_reimbursement_point_1 = offerers_factories.VenueFactory(
-        businessUnit=None, reimbursement_point="self", name="My Reimbursement Point"
+        businessUnit=None,
+        reimbursement_point="self",
+        name="My Reimbursement Point",
+        publicName="My Reimbursement Point Public Name",
     )
     finance_factories.BankInformationFactory(venue=pro_reimbursement_point_1)
 
@@ -56,6 +59,7 @@ def test_get_reimbursement_points_by_pro(client):
     assert reimbursement_points[0] == {
         "id": pro_reimbursement_point_1.id,
         "name": "My Reimbursement Point",
+        "publicName": "My Reimbursement Point Public Name",
     }
 
 

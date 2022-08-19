@@ -58,6 +58,7 @@ class ReimbursementPointResponseModel(BaseModel):
 
     id: int
     name: str
+    publicName: str
 
 
 class ReimbursementPointListResponseModel(BaseModel):
