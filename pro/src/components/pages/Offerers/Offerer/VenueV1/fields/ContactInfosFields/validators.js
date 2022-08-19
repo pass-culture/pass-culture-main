@@ -1,8 +1,7 @@
 import { string } from 'yup'
 
 import { urlRegex } from 'core/shared'
-
-import { parseAndValidateFrenchPhoneNumber } from './utils'
+import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
 export const validatePhone = phone => {
   if (!phone) {

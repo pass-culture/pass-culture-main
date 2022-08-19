@@ -325,7 +325,7 @@ describe('homepage', () => {
             firstName: 'Johnny',
             lastName: 'Doe',
             email: 'johnny.doe@dummy.xyz',
-            phoneNumber: '01 01 00 00 00',
+            phoneNumber: '+33101000000',
           })
         })
 

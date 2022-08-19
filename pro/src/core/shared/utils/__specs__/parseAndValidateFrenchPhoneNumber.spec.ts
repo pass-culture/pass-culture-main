@@ -1,4 +1,4 @@
-import { parseAndValidateFrenchPhoneNumber } from '../utils'
+import { parseAndValidateFrenchPhoneNumber } from '../parseAndValidateFrenchPhoneNumber'
 
 describe('french phone number without region code', () => {
   it('should parse french metropolitan phone number', () => {
