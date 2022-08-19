@@ -11,11 +11,11 @@ __pycache__
 start-api-when-database-is-ready.sh
 
 # Tests
-tests/
 local_test_env_file
 pytest.ini
 
 # Dockerfiles
+.dockerignore
 Dockerfile
 
 # Docs
@@ -23,7 +23,7 @@ Dockerfile
 LICENSE
 
 # Misc
-.git*
+.gitguardian.yaml
 .circleci
 .vscode
 .pylintrc
@@ -31,4 +31,3 @@ LICENSE
 helm
 mypy.ini
 Procfile
-pyproject.toml

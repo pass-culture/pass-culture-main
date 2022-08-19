@@ -47,7 +47,7 @@ parameters:
 executors:
   gcp-sdk:
     docker:
-      - image: google/cloud-sdk:316.0.0
+      - image: google/cloud-sdk:316.0.0-alpine
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -167,7 +167,7 @@ commands:
       registry-region:
         type: string
     steps:
-      - run: gcloud beta auth configure-docker ${<< parameters.registry-region >>}-docker.pkg.dev
+      - run: gcloud auth configure-docker ${<< parameters.registry-region >>}-docker.pkg.dev
 
   export_app_version:
     description: Export APP version number as environment variable
@@ -290,63 +290,36 @@ jobs:
       is_nightly_build:
         type: boolean
         default: false
-    working_directory: ~/pass-culture
     docker:
-      - image: cimg/python:3.10
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-tests:${CIRCLE_SHA1}
         auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
+          username: _json_key # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+    working_directory: ~/pass-culture
     steps:
       - checkout
       - skip_unchanged:
           paths: api
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - restore_cache:
-                key: << pipeline.parameters.venv_cache_key >>
-      - run:
-          name: Install requirements
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt --progress-bar off
-          working_directory: api
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - save_cache:
-                key: << pipeline.parameters.venv_cache_key >>
-                paths:
-                  - "api/venv"
-      - run:
-          name: Install pcapi Python package
-          command: |
-            venv/bin/pip install -e .
-            venv/bin/pip freeze
-          working_directory: api
       - run:
           name: Check imports are well organized with isort
           when: always
-          command: venv/bin/isort . --check-only
-          working_directory: api
+          command: isort . --check-only
+          working_directory: /usr/src/app
       - run:
           name: Check code is well formatted with black
           when: always
-          command: venv/bin/black . --check
-          working_directory: api
+          command: black . --check
+          working_directory: /usr/src/app
       - run:
           name: Run pylint
           when: always
-          command: venv/bin/pylint src tests --jobs=2
-          working_directory: api
+          command: pylint src tests --jobs=2
+          working_directory: /usr/src/app
       - run:
           name: Run mypy
           when: always
-          command: venv/bin/mypy src --show-error-codes
-          working_directory: api
+          command: mypy src --show-error-codes
+          working_directory: /usr/src/app
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -365,11 +338,12 @@ jobs:
         type: string
     working_directory: ~/pass-culture
     docker:
-      - image: cimg/python:3.10
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-tests:${CIRCLE_SHA1}
         auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
+          username: _json_key # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
         environment:
+          RUN_ENV: tests
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
           REDIS_URL: redis://localhost:6379
       - image: cimg/postgres:12.9-postgis
@@ -389,77 +363,42 @@ jobs:
       - checkout
       - skip_unchanged:
           paths: api
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - restore_cache:
-                key: << pipeline.parameters.venv_cache_key >>
-      - run:
-          name: Install requirements
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt --progress-bar off
-          working_directory: api
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - save_cache:
-                key: << pipeline.parameters.venv_cache_key >>
-                paths:
-                  - "api/venv"
-      - run:
-          name: Install pcapi Python package
-          command: |
-            venv/bin/pip install -e .
-            venv/bin/pip freeze
-          working_directory: api
-      - run:
-          name: Install xmlsec1
-          command: sudo apt-get update && sudo apt-get install xmlsec1
-      - run:
-          name: Install weasyprint dependencies
-          command: sudo apt-get install libpango-1.0-0 libpangoft2-1.0-0
       - run:
           name: Check for alembic multiple heads
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
             LINE_COUNT=$(wc -l \<<< "$(alembic heads)")
             if [${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
-          working_directory: api
+          working_directory: /usr/src/app
       - run:
           name: Check database and model are aligned
           command: |
-            RUN_ENV=tests venv/bin/flask install_postgres_extensions
-            RUN_ENV=tests venv/bin/alembic upgrade pre@head
-            RUN_ENV=tests venv/bin/alembic upgrade post@head
-            RUN_ENV=tests venv/bin/flask install_data
-            RUN_ENV=tests venv/bin/python tests/alembic/check_db_schema.py
-          working_directory: api
+            flask install_postgres_extensions
+            alembic upgrade pre@head
+            alembic upgrade post@head
+            flask install_data
+            python tests/alembic/check_db_schema.py
+          working_directory: /usr/src/app
       # This step will fail ("Walked too far") if there are less than 10 migrations on each branch, for example after a squash
       - run:
           name: Check that downgrade scripts are correctly written
           command: |
-            RUN_ENV=tests venv/bin/alembic downgrade post@head-10
-            RUN_ENV=tests venv/bin/alembic downgrade pre@head-10
-            RUN_ENV=tests venv/bin/alembic upgrade pre@head
-            RUN_ENV=tests venv/bin/alembic upgrade post@head
-          working_directory: api
+            alembic downgrade post@head-10
+            alembic downgrade pre@head-10
+            alembic upgrade pre@head
+            alembic upgrade post@head
+          working_directory: /usr/src/app
       - run:
           name: Running tests
           command: |
             # Synchronize these globs with `python_files` in `pytest.ini`
             TEST_FILES=$(circleci tests glob "tests/**/*test.py" "tests/**/test*.py" | circleci tests split)
             mkdir -p test-results
-            RUN_ENV=tests venv/bin/pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
-          working_directory: api
+            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
+          working_directory: /usr/src/app
       - store_test_results:
-          path: api/test-results
+          path: /usr/src/app/test-results
       - store_artifacts:
-          path: api/test-results
+          path: /usr/src/app/test-results
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -787,7 +726,15 @@ jobs:
 
   build-and-push-image:
     executor: gcp-sdk
+    environment:
+      DOCKER_BUILDKIT: 1
     parameters:
+      console:
+        type: boolean
+        default: false
+      tests:
+        type: boolean
+        default: false
       app_version:
         type: string
         default: ${APP_VERSION}
@@ -812,15 +759,32 @@ jobs:
                 -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
               docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
               docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
-      - run:
-            name: Build & push pcapi-console image
-            command: |
-              source ${BASH_ENV}
-              docker build ./api \
-                -f ./api/Dockerfile \
-                --target pcapi-console \
-                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
-              docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
+      - when:
+          condition:
+            equal: [ true , << parameters.console >> ]
+          steps:
+            - run:
+                name: Build & push pcapi-console image
+                command: |
+                  source ${BASH_ENV}
+                  docker build ./api \
+                    -f ./api/Dockerfile \
+                    --target pcapi-console \
+                    -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
+                  docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
+      - when:
+          condition:
+            equal: [ true , << parameters.tests >> ]
+          steps:
+            - run:
+                name: Build & push pcapi-tests image
+                command: |
+                  source ${BASH_ENV}
+                  docker build ./api \
+                    -f ./api/Dockerfile \
+                    --target pcapi-tests \
+                    -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-tests:${CIRCLE_SHA1}
+                  docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-tests:${CIRCLE_SHA1}
       - run:
           name: Send failure notification
           command: |
@@ -1073,6 +1037,12 @@ workflows:
   commit:
     unless: << pipeline.parameters.run_measurement_workflow >>
     jobs:
+      - build-and-push-image:
+          context:
+            - GCP
+            - GCP_EHP
+          app_version: ${CIRCLE_SHA1}
+          tests: true
       - type-checking-pro:
          filters:
            branches:
@@ -1112,7 +1082,12 @@ workflows:
                - production
                - staging
                - integration
-         context: Slack
+         context:
+          - Slack
+          - GCP
+          - GCP_EHP
+         requires:
+           - build-and-push-image
       - tests-api:
          filters:
            branches:
@@ -1120,7 +1095,12 @@ workflows:
                - production
                - staging
                - integration
-         context: Slack
+         context:
+          - Slack
+          - GCP
+          - GCP_EHP
+         requires:
+           - build-and-push-image
       - tests-adage-front:
          filters:
            branches:
@@ -1151,19 +1131,11 @@ workflows:
          context: Slack
          requires:
            - type-checking-pro
-      - build-and-push-image:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - tests-api
-           - quality-api
-         context:
-           - GCP
-           - GCP_EHP
-         app_version: ${CIRCLE_SHA1}
       - generate-pcapi-helm-values-files:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build-and-push-image
           context:
