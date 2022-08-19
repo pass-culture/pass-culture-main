@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 
 import useNotification from 'components/hooks/useNotification'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import { parseAndValidateFrenchPhoneNumber } from 'components/pages/Offerers/Offerer/VenueV1/fields/ContactInfosFields/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { setCurrentUser } from 'store/user/actions'
 
@@ -22,11 +23,18 @@ const ProfileForm = ({ onCancel, onSuccess, initialValues }) => {
   const submitProfileInformations = useCallback(
     event => {
       event.preventDefault()
+      let phone = phoneNumber
+      try {
+        phone = parseAndValidateFrenchPhoneNumber(phone).number
+      } catch (err) {
+        setFormErrors({ phoneNumber: [err] })
+        return
+      }
       const body = {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        phoneNumber: phoneNumber,
+        phoneNumber: phone,
       }
 
       pcapi
