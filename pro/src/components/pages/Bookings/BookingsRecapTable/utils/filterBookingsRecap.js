@@ -78,6 +78,7 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
     offerName,
     bookingStatus,
   } = filters
+
   return bookingsRecap.filter(booking => {
     return (
       doesOfferNameMatchFilter(offerName, booking) &&

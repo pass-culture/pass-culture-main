@@ -12,10 +12,10 @@ import {
   getUserHasBookingsAdapter,
 } from './adapters'
 
-export type BookingsRouterState = { statuses?: string[] }
+export type BookingsRouterState = { statuses: string[] }
 
 const Bookings = (): JSX.Element => {
-  const location = useLocation<BookingsRouterState>()
+  const location = useLocation<BookingsRouterState | undefined>()
 
   return (
     <BookingsScreen

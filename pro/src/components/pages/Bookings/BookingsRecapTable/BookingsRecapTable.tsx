@@ -1,5 +1,10 @@
-import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
+import type { Cell } from 'react-table'
+
+import {
+  BookingRecapResponseModel,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
 
 import BeneficiaryCell from './CellsFormatter/BeneficiaryCell'
 import BookingDateCell from './CellsFormatter/BookingDateCell'
@@ -27,215 +32,227 @@ import {
 
 const FIRST_PAGE_INDEX = 0
 
-class BookingsRecapTable extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      bookingsRecapFiltered: props.bookingsRecap,
-      columns: [
-        {
-          id: 1,
-          headerTitle: "Nom de l'offre",
-          accessor: 'stock',
-          Cell: ({ value }) => <BookingOfferCell offer={value} />,
-          className: 'column-offer-name',
-          defaultCanSort: true,
-          sortType: sortByOfferName,
-        },
-        {
-          id: 2,
-          headerTitle: '',
-          accessor: 'booking_is_duo',
-          Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
-          className: 'column-booking-duo',
-          disableSortBy: true,
-        },
-        {
-          id: 3,
-          headerTitle: 'Bénéficiaire',
-          accessor: 'beneficiary',
-          Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
-          className: 'column-beneficiary',
-          defaultCanSort: true,
-          sortType: sortByBeneficiaryName,
-        },
-        {
-          id: 4,
-          headerTitle: 'Réservation',
-          accessor: 'booking_date',
-          Cell: ({ value }) => (
-            <BookingDateCell bookingDateTimeIsoString={value} />
-          ),
-          className: 'column-booking-date',
-          defaultCanSort: true,
-          sortType: sortByBookingDate,
-        },
-        {
-          id: 5,
-          headerTitle: 'Contremarque',
-          accessor: 'booking_token',
-          Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
-          className: 'column-booking-token',
-          disableSortBy: true,
-        },
-        {
-          id: 6,
-          accessor: 'booking_status',
-          Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
-          className: 'column-booking-status',
-          disableSortBy: true,
-          HeaderTitleFilter: () => (
-            <FilterByBookingStatus
-              bookingStatuses={this.state.bookingStatus}
-              bookingsRecap={props.bookingsRecap}
-              updateGlobalFilters={this.updateGlobalFilters}
-            />
-          ),
-        },
-      ],
-      currentPage: FIRST_PAGE_INDEX,
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-      bookingStatus: props.locationState?.statuses.length
-        ? props.locationState.statuses
-        : [...ALL_BOOKING_STATUS],
-      selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
-      keywords: '',
-    }
+interface IBookingsRecapTableProps<
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+> {
+  bookingsRecap: T[]
+  isLoading: boolean
+  locationState?: {
+    statuses: string[]
   }
+}
 
-  componentDidMount() {
-    this.applyFilters()
-  }
+type CustomCellValue<
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
+  K extends keyof T
+> = T[K]
 
-  componentDidUpdate(prevProps) {
-    const { bookingsRecap } = this.props
-    if (prevProps.bookingsRecap.length !== bookingsRecap.length) {
-      this.applyFilters()
-    }
-  }
+type BookingsFilters = {
+  bookingBeneficiary: string
+  bookingToken: string
+  offerISBN: string
+  offerName: string
+  bookingStatus: string[]
+  selectedOmniSearchCriteria: string
+  keywords: string
+}
 
-  updateCurrentPage = currentPage => {
-    this.setState({
-      currentPage: currentPage,
-    })
-  }
+const BookingsRecapTable = <
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+>({
+  bookingsRecap,
+  isLoading,
+  locationState,
+}: IBookingsRecapTableProps<T>) => {
+  const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
+  const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
 
-  updateGlobalFilters = updatedFilters => {
-    const { filters } = {
-      currentPage: this.state.currentPage,
-      bookingBeneficiary: this.state.bookingBeneficiary,
-      bookingToken: this.state.bookingToken,
-      offerISBN: this.state.offerISBN,
-      offerName: this.state.offerName,
-      bookingStatus: this.state.bookingStatus,
-    }
-
-    this.setState(
-      {
-        ...filters,
-        ...updatedFilters,
+  const columns = [
+    {
+      id: 1,
+      headerTitle: "Nom de l'offre",
+      accessor: 'stock',
+      Cell: ({ value }: Cell<{ stock: CustomCellValue<T, 'stock'> }>) => (
+        <BookingOfferCell offer={value} />
+      ),
+      className: 'column-offer-name',
+      defaultCanSort: true,
+      sortType: sortByOfferName,
+    },
+    {
+      id: 2,
+      headerTitle: '',
+      accessor: 'booking_is_duo',
+      Cell: ({
+        value,
+      }: Cell<{ booking_is_duo: CustomCellValue<T, 'booking_is_duo'> }>) => (
+        <BookingIsDuoCell isDuo={value} />
+      ),
+      className: 'column-booking-duo',
+      disableSortBy: true,
+    },
+    {
+      id: 3,
+      headerTitle: 'Bénéficiaire',
+      accessor: 'beneficiary',
+      Cell: ({
+        value,
+      }: Cell<{ beneficiary: CustomCellValue<T, 'beneficiary'> }>) => (
+        <BeneficiaryCell beneficiaryInfos={value} />
+      ),
+      className: 'column-beneficiary',
+      defaultCanSort: true,
+      sortType: sortByBeneficiaryName,
+    },
+    {
+      id: 4,
+      headerTitle: 'Réservation',
+      accessor: 'booking_date',
+      Cell: ({
+        value,
+      }: Cell<{ booking_date: CustomCellValue<T, 'booking_date'> }>) => (
+        <BookingDateCell bookingDateTimeIsoString={value} />
+      ),
+      className: 'column-booking-date',
+      defaultCanSort: true,
+      sortType: sortByBookingDate,
+    },
+    {
+      id: 5,
+      headerTitle: 'Contremarque',
+      accessor: 'booking_token',
+      Cell: ({
+        value,
+      }: Cell<{ booking_token: CustomCellValue<T, 'booking_token'> }>) => (
+        <BookingTokenCell bookingToken={value} />
+      ),
+      className: 'column-booking-token',
+      disableSortBy: true,
+    },
+    {
+      id: 6,
+      accessor: 'booking_status',
+      Cell: ({
+        row,
+      }: Cell<{ booking_status: CustomCellValue<T, 'booking_status'> }>) => {
+        return <BookingStatusCell bookingRecapInfo={row} />
       },
-      () => this.applyFilters()
+      className: 'column-booking-status',
+      disableSortBy: true,
+      HeaderTitleFilter: () => (
+        <FilterByBookingStatus
+          bookingStatuses={filters.bookingStatus}
+          bookingsRecap={filteredBookings}
+          updateGlobalFilters={updateGlobalFilters}
+        />
+      ),
+    },
+  ]
+
+  const [filters, setFilters] = useState<BookingsFilters>({
+    bookingBeneficiary: EMPTY_FILTER_VALUE,
+    bookingToken: EMPTY_FILTER_VALUE,
+    offerISBN: EMPTY_FILTER_VALUE,
+    offerName: EMPTY_FILTER_VALUE,
+    bookingStatus: locationState?.statuses.length
+      ? locationState.statuses
+      : [...ALL_BOOKING_STATUS],
+    selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
+    keywords: '',
+  })
+
+  useEffect(() => {
+    applyFilters()
+  }, [bookingsRecap])
+
+  const updateCurrentPage = (currentPage: number) => {
+    setCurrentPage(currentPage)
+  }
+
+  const updateGlobalFilters = (updatedFilters: BookingsFilters) => {
+    setFilters(filters => ({
+      ...filters,
+      ...updatedFilters,
+    }))
+    applyFilters()
+  }
+
+  const applyFilters = (filtersBookingResults?: BookingsFilters) => {
+    const filtersToApply = filtersBookingResults || filters
+    const bookingsRecapFiltered = filterBookingsRecap(
+      bookingsRecap,
+      filtersToApply
     )
+    setFilteredBookings(bookingsRecapFiltered)
+    setCurrentPage(FIRST_PAGE_INDEX)
   }
 
-  applyFilters = filtersBookingResults => {
-    const { bookingsRecap } = this.props
-    const filters = filtersBookingResults || {
-      currentPage: this.state.currentPage,
-      bookingBeneficiary: this.state.bookingBeneficiary,
-      bookingToken: this.state.bookingToken,
-      offerISBN: this.state.offerISBN,
-      offerName: this.state.offerName,
-      bookingStatus: this.state.bookingStatus,
-    }
-    const bookingsRecapFiltered = filterBookingsRecap(bookingsRecap, filters)
-
-    this.setState({
-      bookingsRecapFiltered: bookingsRecapFiltered,
-      currentPage: FIRST_PAGE_INDEX,
-    })
-  }
-
-  resetAllFilters = () => {
+  const resetAllFilters = () => {
     const filtersBookingResults = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
       bookingStatus: [...ALL_BOOKING_STATUS],
-      keywords: EMPTY_FILTER_VALUE,
+      keywords: '',
+      selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
     }
-    this.setState(filtersBookingResults)
-    this.applyFilters(filtersBookingResults)
+    setFilters(filtersBookingResults)
+    applyFilters(filtersBookingResults)
   }
 
-  updateFilters = (updatedFilter, updatedSelectedContent) => {
+  const updateFilters = (
+    updatedFilter: BookingsFilters,
+    updatedSelectedContent: {
+      keywords: string
+      selectedOmniSearchCriteria: string
+    }
+  ) => {
     const { keywords, selectedOmniSearchCriteria } = updatedSelectedContent
-    this.setState({ ...updatedFilter, keywords, selectedOmniSearchCriteria })
-    this.applyFilters({
-      bookingBeneficiary: this.state.bookingBeneficiary,
-      bookingToken: this.state.bookingToken,
-      offerISBN: this.state.offerISBN,
-      offerName: this.state.offerName,
-      bookingStatus: this.state.bookingStatus,
-      keywords: this.state.keywords,
+    setFilters(filters => ({
+      ...filters,
+      ...updatedFilter,
+      keywords,
+      selectedOmniSearchCriteria,
+    }))
+    applyFilters({
+      ...filters,
       ...updatedFilter,
     })
   }
 
-  render() {
-    const { isLoading } = this.props
-    const { bookingsRecapFiltered, columns, currentPage } = this.state
-    const nbBookings = bookingsRecapFiltered.length
+  const nbBookings = filteredBookings.length
 
-    return (
-      <div>
-        <div className="filters-wrapper">
-          <FilterByOmniSearch
-            isDisabled={isLoading}
-            keywords={this.state.keywords}
-            selectedOmniSearchCriteria={this.state.selectedOmniSearchCriteria}
-            updateFilters={this.updateFilters}
-          />
-        </div>
-        {nbBookings > 0 ? (
-          <Fragment>
-            <Header
-              bookingsRecapFiltered={bookingsRecapFiltered}
-              isLoading={isLoading}
-            />
-            <TableFrame
-              columns={columns}
-              currentPage={currentPage}
-              data={bookingsRecapFiltered}
-              nbBookings={nbBookings}
-              nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
-              updateCurrentPage={this.updateCurrentPage}
-            />
-          </Fragment>
-        ) : (
-          <NoFilteredBookings resetFilters={this.resetAllFilters} />
-        )}
+  return (
+    <div>
+      <div className="filters-wrapper">
+        <FilterByOmniSearch
+          isDisabled={isLoading}
+          keywords={filters.keywords}
+          selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
+          updateFilters={updateFilters}
+        />
       </div>
-    )
-  }
-}
-
-BookingsRecapTable.defaultProps = {
-  locationState: null,
-}
-
-BookingsRecapTable.propTypes = {
-  bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  isLoading: PropTypes.bool.isRequired,
-  locationState: PropTypes.shape({
-    venueId: PropTypes.string,
-    statuses: PropTypes.arrayOf(PropTypes.string),
-  }),
+      {nbBookings > 0 ? (
+        <Fragment>
+          <Header
+            bookingsRecapFiltered={filteredBookings}
+            isLoading={isLoading}
+          />
+          <TableFrame
+            columns={columns}
+            currentPage={currentPage}
+            data={filteredBookings}
+            nbBookings={nbBookings}
+            nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
+            updateCurrentPage={updateCurrentPage}
+          />
+        </Fragment>
+      ) : (
+        <NoFilteredBookings resetFilters={resetAllFilters} />
+      )}
+    </div>
+  )
 }
 
 export default BookingsRecapTable
