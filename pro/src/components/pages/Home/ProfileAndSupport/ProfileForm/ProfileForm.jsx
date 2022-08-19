@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 
 import useNotification from 'components/hooks/useNotification'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import { parseAndValidateFrenchPhoneNumber } from 'components/pages/Offerers/Offerer/VenueV1/fields/ContactInfosFields/utils'
+import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { setCurrentUser } from 'store/user/actions'
 
