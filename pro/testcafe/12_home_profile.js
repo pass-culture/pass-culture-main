@@ -54,7 +54,6 @@ test('je peux modifier mon profil avec de nouvelles données valides.', async t 
   const editedUserFirstname = Selector('span').withText(editData.firstname)
   const editedUserLastname = Selector('span').withText(editData.lastname)
   const editedUserEmail = Selector('span').withText(editData.email)
-  const editedUserPhoneNumber = Selector('span').withText(editData.phoneNumber)
   const notificationSuccess = Selector('.notification.is-success').withText(
     'Les informations ont bien été enregistrées.'
   )
@@ -106,7 +105,5 @@ test('je peux modifier mon profil avec de nouvelles données valides.', async t 
     .expect(editedUserLastname.exists)
     .eql(true)
     .expect(editedUserEmail.exists)
-    .eql(true)
-    .expect(editedUserPhoneNumber.exists)
     .eql(true)
 })

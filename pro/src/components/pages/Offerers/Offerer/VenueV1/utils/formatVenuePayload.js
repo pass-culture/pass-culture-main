@@ -1,4 +1,4 @@
-import { parseAndValidateFrenchPhoneNumber } from '../fields/ContactInfosFields'
+import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
 const creation_authorized_input_field = [
   'address',
