@@ -11,6 +11,7 @@ from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_not_empty_string_when_provided
 from pcapi.serialization.utils import validate_phone_number_format
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -23,8 +24,16 @@ class PatchProUserBodyModel(BaseModel):
     _validate_first_name = validate_not_empty_string_when_provided("first_name")
     _validate_last_name = validate_not_empty_string_when_provided("last_name")
     _validate_email = validate_not_empty_string_when_provided("email")
-    _validate_phone_number = validate_not_empty_string_when_provided("phone_number")
-    _validate_phone_number_format = validate_phone_number_format("phone_number")
+
+    @validator("phone_number")
+    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+        if phone_number is None:
+            return phone_number
+
+        try:
+            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+        except Exception:
+            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
 
     class Config:
         alias_generator = to_camel

@@ -5,7 +5,7 @@ import {
   GUADELOUPE_PHONE_REGION,
   GUYUANE_PHONE_REGION,
   MARTINIQUE_PHONE_REGION,
-} from './constants'
+} from './phoneIndicativeByRegion'
 
 const prefixRegionDict: { [key: string]: string } = {
   // La Réunion, Mayotte et autres territoires de l’Océan Indien
