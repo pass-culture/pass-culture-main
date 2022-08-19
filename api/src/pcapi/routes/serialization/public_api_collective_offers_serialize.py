@@ -238,7 +238,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             durationMinutes=offer.durationMinutes,
             interventionArea=offer.interventionArea,
             students=[student.name for student in offer.students],
-            dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),  # type: ignore [union-attr]
+            dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),
             hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
             isActive=offer.isActive,
             isSoldOut=offer.isSoldOut,

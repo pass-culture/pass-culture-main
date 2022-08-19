@@ -664,7 +664,7 @@ def list_collective_offers_for_pro_user(
         offer_date = offers[offer_index].dateCreated
         template_date = templates[template_index].dateCreated
 
-        if offer_date > template_date:  # type: ignore [operator]
+        if offer_date > template_date:
             merged_offers.append(offers[offer_index])
             offer_index += 1
         else:

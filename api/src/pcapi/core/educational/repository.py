@@ -523,7 +523,7 @@ def _get_filtered_collective_bookings_query(
         )
 
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
+            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)  # type: ignore [arg-type]
         )
 
     if venue_id is not None:
