@@ -62,6 +62,10 @@ def _ubble_result_fraud_item(content: ubble_fraud_models.UbbleContent) -> fraud_
                     status = fraud_models.FraudStatus.SUSPICIOUS
                     reason_code = fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
                     detail += " | Le document d'identité est expiré"
+                elif content.ove_score == ubble_fraud_models.UbbleScore.INVALID.value:
+                    status = fraud_models.FraudStatus.SUSPICIOUS
+                    reason_code = fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+                    detail += " | Le document d'identité n'est pas authentique"
                 else:
                     status = fraud_models.FraudStatus.KO
                     reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER

@@ -82,6 +82,7 @@ def _extract_useful_content_from_response(
         gender=getattr(documents, "gender", None),
         last_name=getattr(documents, "last_name", None),
         married_name=getattr(documents, "married_name", None),
+        ove_score=getattr(document_checks, "ove_score", None),
         reference_data_check_score=getattr(reference_data_checks, "score", None),
         registration_datetime=registered_at,
         score=score,

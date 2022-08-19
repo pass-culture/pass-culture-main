@@ -44,6 +44,7 @@ class UbbleContent(IdentityCheckContent):
     identification_url: pydantic.HttpUrl | None
     last_name: str | None
     married_name: str | None
+    ove_score: float | None
     reference_data_check_score: float | None
     registration_datetime: datetime.datetime | None
     score: float | None

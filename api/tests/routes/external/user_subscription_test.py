@@ -1910,6 +1910,147 @@ class UbbleWebhookTest:
 
         self._assert_email_sent(user, 384)
 
+    def test_decision_document_not_authentic(self, client, ubble_mocker):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=(
+                        datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=1)
+                    ).isoformat(),
+                    attributes__document_number="012345678910",
+                    attributes__document_type="CI",
+                    attributes__first_name="John",
+                    attributes__last_name="Doe",
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
+                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.INVALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+            ],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        assert not user.has_beneficiary_role
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in ubble_fraud_check.reasonCodes
+
+        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+
+        message = subscription_models.SubscriptionMessage.query.one()
+        assert (
+            message.userMessage
+            == "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité."
+        )
+        assert message.callToActionLink == subscription_messages.REDIRECT_TO_IDENTIFICATION
+        assert message.callToActionIcon == subscription_models.CallToActionIcon.RETRY
+        assert message.callToActionTitle == "Réessayer la vérification de mon identité"
+
+        assert len(mails_testing.outbox) == 0
+
+    def test_decision_document_not_authentic_no_retry_left(self, client, ubble_mocker):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+        fraud_factories.BeneficiaryFraudCheckFactory.create_batch(
+            2,
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
+        )
+
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=(
+                        datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=1)
+                    ).isoformat(),
+                    attributes__document_number="012345678910",
+                    attributes__document_type="CI",
+                    attributes__first_name="John",
+                    attributes__last_name="Doe",
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
+                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.INVALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+            ],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        assert not user.has_beneficiary_role
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in ubble_fraud_check.reasonCodes
+
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+
+        message = subscription_models.SubscriptionMessage.query.one()
+        assert (
+            message.userMessage
+            == "Ton dossier a été rejeté car le document que tu as présenté n’est pas authentique.  Passe par le site démarches simplifiées pour renouveler ta demande."
+        )
+        assert message.callToActionLink == subscription_messages.REDIRECT_TO_DMS_VIEW
+        assert message.callToActionIcon == subscription_models.CallToActionIcon.EXTERNAL
+        assert message.callToActionTitle == "Accéder au site Démarches-Simplifiées"
+
+        assert len(mails_testing.outbox) == 0
+
     @pytest.mark.parametrize(
         "expiry_score", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
     )
