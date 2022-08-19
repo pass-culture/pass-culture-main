@@ -442,6 +442,9 @@ class OrphanDmsApplication(PcObject, Base, Model):  # type: ignore [valid-type, 
     dateCreated = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow
     )  # no sql default because the column was added after table creation
+    latest_modification_datetime = sa.Column(
+        sa.DateTime, nullable=True
+    )  # This field copies the value provided in the DMS application
     email = sa.Column(sa.Text, nullable=True, index=True)
     application_id = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
     process_id = sa.Column(sa.BigInteger)
