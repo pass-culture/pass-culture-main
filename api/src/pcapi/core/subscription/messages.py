@@ -197,6 +197,28 @@ def on_idcheck_unread_document_with_retry(user: users_models.User) -> None:
     repository.save(message)
 
 
+def on_idcheck_not_authentic_document(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton dossier a été rejeté car le document que tu as présenté n’est pas authentique.  Passe par le site démarches simplifiées pour renouveler ta demande.",
+        callToActionTitle="Accéder au site Démarches-Simplifiées",
+        callToActionLink=REDIRECT_TO_DMS_VIEW,
+        callToActionIcon=models.CallToActionIcon.EXTERNAL,
+    )
+    repository.save(message)
+
+
+def on_idcheck_not_authentic_document_with_retry(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité.",
+        callToActionTitle="Réessayer la vérification de mon identité",
+        callToActionLink=REDIRECT_TO_IDENTIFICATION,
+        callToActionIcon=models.CallToActionIcon.RETRY,
+    )
+    repository.save(message)
+
+
 def on_idcheck_rejected(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,

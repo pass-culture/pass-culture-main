@@ -109,6 +109,12 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
             subscription_messages.on_idcheck_unread_document(user)
         subscription_document_error.send_subscription_document_error_email(user.email, "unread-document")
 
+    elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
+        if can_retry:
+            subscription_messages.on_idcheck_not_authentic_document_with_retry(user)
+        else:
+            subscription_messages.on_idcheck_not_authentic_document(user)
+
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
         subscription_messages.on_idcheck_document_data_not_matching(user)
         subscription_document_error.send_subscription_document_error_email(user.email, "information-error")

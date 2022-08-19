@@ -88,6 +88,7 @@ class UbbleContentFactory(factory.Factory):
     document_type = None
     id_document_number = None
     score = None
+    ove_score = None
     comment = None
     reference_data_check_score = None
     expiry_date_score = None
