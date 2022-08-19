@@ -199,6 +199,10 @@ def test_serialize_collective_offer():
         interventionArea=["1", "90", "94"],
         offerVenue={"addressType": OfferAddressType.OTHER, "venueId": None, "otherAddress": "Quelque part"},
     )
+    educational_factories.CollectiveStockFactory(
+        beginningDatetime=datetime.datetime(2022, 1, 1, 11, 0, 0),
+        collectiveOffer=collective_offer,
+    )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
     assert serialized == {
@@ -212,6 +216,7 @@ def test_serialize_collective_offer():
             "educationalInstitutionUAICode": educational_institution.institutionId,
             "interventionArea": ["1", "90", "94"],
             "eventAddressType": OfferAddressType.OTHER.value,
+            "beginningDatetime": 1641034800.0,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -227,7 +232,7 @@ def test_serialize_collective_offer():
 
 
 def test_serialize_collective_offer_without_institution():
-    collective_offer = educational_factories.CollectiveOfferFactory()
+    collective_offer = educational_factories.CollectiveStockFactory().collectiveOffer
     serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
     assert serialized["offer"]["educationalInstitutionUAICode"] == "all"
 
@@ -262,6 +267,7 @@ def test_serialize_collective_offer_template():
             "educationalInstitutionUAICode": "all",
             "interventionArea": ["1", "90", "94"],
             "eventAddressType": OfferAddressType.SCHOOL.value,
+            "beginningDatetime": 1641031200.0,
         },
         "offerer": {
             "name": "Les Librairies Associées",

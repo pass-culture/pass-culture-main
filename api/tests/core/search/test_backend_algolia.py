@@ -356,7 +356,7 @@ def test_unindex_venue_ids(app):
 
 def test_index_collective_offers():
     backend = get_backend()
-    collective_offer = educational_factories.CollectiveOfferFactory.build()
+    collective_offer = educational_factories.CollectiveStockFactory.build().collectiveOffer
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
         backend.index_collective_offers([collective_offer])
