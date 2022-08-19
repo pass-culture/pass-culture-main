@@ -514,7 +514,7 @@ class AlgoliaBackend(base.SearchBackend):
     ) -> dict:
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
-        date_created = collective_offer_template.dateCreated.timestamp()  # type: ignore [union-attr]
+        date_created = collective_offer_template.dateCreated.timestamp()
 
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),

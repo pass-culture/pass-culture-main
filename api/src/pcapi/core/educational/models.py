@@ -112,7 +112,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -308,7 +308,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -455,7 +455,9 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     stockId = sa.Column(sa.BigInteger, nullable=True)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
+    dateCreated: datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    )
 
     dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -701,7 +703,7 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
     bookingId = sa.Column(sa.BigInteger)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     Index("ix_collective_booking_date_created", dateCreated)
 
     dateUsed = sa.Column(sa.DateTime, nullable=True, index=True)
