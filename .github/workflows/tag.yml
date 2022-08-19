@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 
-      tag_name:
+      tag_number:
         # Full tag name.
         # v200.0.2 for example.
         required: true
@@ -25,6 +25,7 @@ jobs:
     env:
       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
       GIT_CONFIG_NAME: ${{ github.actor }}
+      TAG_NAME: v${{ inputs.tag_number }}
 
     steps:
       - name: Checkout RC
@@ -40,26 +41,26 @@ jobs:
       - name: Add version to api
         run: |
           cd ./api
-          echo "${{ inputs.tag_name }}" > version.txt
+          echo "${{ inputs.tag_number }}" > version.txt
           git add version.txt
 
       - name: Add version to pro
         run: |
           cd pro
-          yarn version --new-version "${{ inputs.tag_name }}"
+          yarn version --new-version "${{ inputs.tag_number }}"
           git add package.json
 
       - name: Add version to adage
         run: |
           cd adage-front
-          yarn version --new-version "${{ inputs.tag_name }}"
+          yarn version --new-version "${{ inputs.tag_number }}"
           git add package.json
 
       - name: Tag Release
         run: |
-          git commit -m "🚀 ${{ inputs.tag_name }}" -n
-          git tag -a "${{ inputs.tag_name }}" -m "🚀 ${{ inputs.tag_name }}"
-          git push origin "${{ inputs.tag_name }}"
+          git commit -m "🚀 $TAG_NAME" -n
+          git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
+          git push origin "$TAG_NAME"
 
       - name: Push back to base ref
         # In case the base ref is a branch (hotfix workflow for example)

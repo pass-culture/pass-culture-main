@@ -18,7 +18,7 @@ jobs:
     uses: ./.github/workflows/tag.yml
     with:
       base_ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
-      tag_name: v${{ github.event.inputs.releaseNumber }}.0.0
+      tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
 
   create-maintenance-branch:
     needs: tag-version
