@@ -46,6 +46,7 @@ class UbbleContent(IdentityCheckContent):
     married_name: str | None
     reference_data_check_score: float | None
     registration_datetime: datetime.datetime | None
+    processed_datetime: datetime.datetime | None
     score: float | None
     status: UbbleIdentificationStatus | None
     supported: float | None

@@ -200,6 +200,9 @@ class UbbleEndToEndTest:
         assert response.status_code == 200
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.source_data().status == UbbleIdentificationStatus.PROCESSED
+        assert fraud_check.source_data().processed_datetime == datetime.datetime(
+            2018, 1, 1, 8, 41, 2, 504663, tzinfo=datetime.timezone.utc
+        )
 
         assert user.is_beneficiary
         assert user.has_active_deposit

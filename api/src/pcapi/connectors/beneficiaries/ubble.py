@@ -67,6 +67,7 @@ def _extract_useful_content_from_response(
     identification_id = _get_data_attribute(response, "identification-id")
     identification_url = _get_data_attribute(response, "identification-url")
     registered_at = _get_data_attribute(response, "created-at")
+    processed_at = _get_data_attribute(response, "ended-at")
     score = _get_data_attribute(response, "score")
     status = _get_data_attribute(response, "status")
 
@@ -84,6 +85,7 @@ def _extract_useful_content_from_response(
         married_name=getattr(documents, "married_name", None),
         reference_data_check_score=getattr(reference_data_checks, "score", None),
         registration_datetime=registered_at,
+        processed_datetime=processed_at,
         score=score,
         status=status,
         supported=getattr(document_checks, "supported", None),
