@@ -82,7 +82,7 @@ executors:
 
   pcapi:
     docker:
-      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_TAG:-${CIRCLE_SHA1}}
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
         auth:
           username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
