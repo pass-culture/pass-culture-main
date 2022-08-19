@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/tag.yml
     with:
       base_ref: ${{ github.event.inputs.hotfixBranch }}
-      tag_name: v${{ github.event.inputs.releaseVersion }}
+      tag_number: ${{ github.event.inputs.releaseVersion }}
 
   deploy-to-staging:
     needs: tag-version
