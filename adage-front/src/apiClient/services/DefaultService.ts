@@ -8,6 +8,7 @@ import type { CategoriesResponseModel } from '../models/CategoriesResponseModel'
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
+import type { StockIdBody } from '../models/StockIdBody';
 import type { VenueResponse } from '../models/VenueResponse';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -110,6 +111,84 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/features',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_booking_modal_button_click <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logBookingModalButtonClick(
+    requestBody?: StockIdBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/booking-modal-button',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_catalog_view <POST>
+   * @returns void
+   * @throws ApiError
+   */
+  public logCatalogView(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/catalog-view',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_offer_details_button_click <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logOfferDetailsButtonClick(
+    requestBody?: StockIdBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/offer-detail',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_search_button_click <POST>
+   * @returns void
+   * @throws ApiError
+   */
+  public logSearchButtonClick(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/search-button',
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
