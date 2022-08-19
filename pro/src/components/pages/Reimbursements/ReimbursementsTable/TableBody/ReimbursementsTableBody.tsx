@@ -17,7 +17,7 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
           <tr key={invoice.reference}>
             <td className={styles['date']}>{invoice.date}</td>
             <td className={styles['business-unit']}>
-              {invoice.businessUnitName}
+              {invoice.reimbursementPointName || invoice.businessUnitName}
             </td>
             <td className={styles['reference']}>{invoice.reference}</td>
             {/* For now only one label is possible by invoice. */}
