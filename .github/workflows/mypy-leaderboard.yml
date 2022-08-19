@@ -7,8 +7,8 @@ on:
     types: [closed]
 
 jobs:
-  get_mypy_score_on_merge_job:
-    # if: github.event.pull_request.merged == true
+  get_mypy_score_on_merge:
+    #if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       mypy_score: ${{ steps.mypy-score-calculator.outputs.mypy_score }}
@@ -31,9 +31,9 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         run: |
           cd api
-          # Get this branch information
           this_branch_ignore_count="$(grep "type: ignore" -r src | wc -l)"
-          author="$(git log -n 1 --pretty=format:'%ae')"
+          author_line="$(git log -n 1 --pretty=short | grep Author)"
+          author="$(echo "$author_line" | cut -d ':' -f 2 | xargs)"
           hash="$(git log -n 1 --pretty=format:'%H')"
           git fetch origin master:master --quiet
           git checkout master --quiet
@@ -44,13 +44,18 @@ jobs:
           echo "::set-output name=author::$author"
           echo "::set-output name=hash::$hash"
 
-  send-info-job:
+  send_info:
     runs-on: ubuntu-latest
-    needs: get_mypy_score_on_merge_job
+    needs: get_mypy_score_on_merge
     steps:
-      - name: Print
-        id: debug-print
+      - name: Call cloud function
+        id: call-cloud-function
         run: |
-          echo ${{ needs.get_mypy_score_on_merge_job.outputs.mypy_score }}
-          echo ${{ needs.get_mypy_score_on_merge_job.outputs.author }}
-          echo ${{ needs.get_mypy_score_on_merge_job.outputs.hash }}
+          curl --location --request POST 'https://us-central1-maposaic-99785.cloudfunctions.net/mypy-leaderboard' \
+          --header 'Authorization: ${{ secrets.MYPY_LEADERBOARD_FUNCTION_AUTHORIZATION }}' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "commitHash": "${{ needs.get_mypy_score_on_merge.outputs.hash }}",
+              "author": "${{ needs.get_mypy_score_on_merge.outputs.author }}",
+              "mypyDiff": ${{ needs.get_mypy_score_on_merge.outputs.mypy_score }}
+          }'
