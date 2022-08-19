@@ -340,6 +340,7 @@ class FraudReasonCode(enum.Enum):
     ID_CHECK_EXPIRED = "id_check_expired"
     ID_CHECK_INVALID = "id_check_invalid"
     ID_CHECK_BLOCKED_OTHER = "id_check_bocked_other"
+    ID_CHECK_NOT_AUTHENTIC = "id_check_not_authentic"
     ID_CHECK_NOT_SUPPORTED = "id_check_not_supported"
     ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
