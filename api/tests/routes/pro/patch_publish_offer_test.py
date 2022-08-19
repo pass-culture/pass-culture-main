@@ -12,6 +12,7 @@ from pcapi.utils.human_ids import humanize
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
+    @override_features(OFFER_FORM_SUMMARY_PAGE=False)
     def test_patch_publish_offer_without_ff(self, client):
         stock = offers_factories.StockFactory()
         offerers_factories.UserOffererFactory(
@@ -23,7 +24,6 @@ class Returns404Test:
         )
         assert response.status_code == 404
 
-    @override_features(OFFER_FORM_SUMMARY_PAGE=True)
     def test_patch_publish_offer_unaccessible(self, client):
         stock = offers_factories.StockFactory()
         offerers_factories.UserOffererFactory(
