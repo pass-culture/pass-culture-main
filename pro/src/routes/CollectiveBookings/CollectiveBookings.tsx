@@ -13,11 +13,11 @@ import {
 } from './adapters'
 
 export type CollectiveBookingsRouterState = {
-  statuses?: string[]
+  statuses: string[]
 }
 
 const CollectiveBookings = (): JSX.Element => {
-  const location = useLocation<CollectiveBookingsRouterState>()
+  const location = useLocation<CollectiveBookingsRouterState | undefined>()
 
   return (
     <BookingsScreen
