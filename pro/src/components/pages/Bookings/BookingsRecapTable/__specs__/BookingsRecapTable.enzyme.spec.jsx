@@ -12,9 +12,7 @@ import BookingIsDuoCell from '../CellsFormatter/BookingIsDuoCell'
 import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 import BookingStatusCell from '../CellsFormatter/BookingStatusCell'
 import BookingTokenCell from '../CellsFormatter/BookingTokenCell'
-import { ALL_BOOKING_STATUS, EMPTY_FILTER_VALUE } from '../Filters/_constants'
 import Header from '../Header/Header'
-import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
 import TablePagination from '../Table/Paginate/TablePagination'
 import TableFrame from '../Table/TableFrame'
@@ -31,86 +29,6 @@ describe('components | BookingsRecapTable', () => {
 
   beforeEach(() => {
     store = configureTestStore({})
-  })
-
-  it('should render a TableContainer component with columns and data props', () => {
-    // Given
-    const bookingsRecap = [
-      {
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_amount: 10,
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        venue_identifier: 'AE',
-        booking_status_history: [
-          {
-            status: 'booked',
-            date: '2020-04-03T12:00:00Z',
-          },
-          {
-            status: 'validated',
-            date: '2020-05-03T12:00:00Z',
-          },
-        ],
-      },
-      {
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_amount: 10,
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: true,
-        venue_identifier: 'AF',
-        booking_status_history: [
-          {
-            status: 'booked',
-            date: '2020-04-03T12:00:00Z',
-          },
-          {
-            status: 'validated',
-            date: '2020-05-03T12:00:00Z',
-          },
-        ],
-      },
-    ]
-    filterBookingsRecap.mockReturnValue(bookingsRecap)
-    const props = {
-      bookingsRecap: bookingsRecap,
-      isLoading: false,
-    }
-
-    // When
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
-    const table = wrapper.find(TableFrame)
-
-    // Then
-    expect(table).toHaveLength(1)
-    expect(table.props()).toStrictEqual({
-      columns: wrapper.state('columns'),
-      data: bookingsRecap,
-      nbBookings: 2,
-      nbBookingsPerPage: NB_BOOKINGS_PER_PAGE,
-      currentPage: 0,
-      updateCurrentPage: expect.any(Function),
-    })
   })
 
   it('should render the expected table headers', () => {
@@ -305,66 +223,6 @@ describe('components | BookingsRecapTable', () => {
     expect(bookingTokenCell.props()).toStrictEqual({ bookingToken: 'ZEHBGD' })
     const bookingStatusCell = wrapper.find(BookingStatusCell)
     expect(bookingStatusCell).toHaveLength(1)
-  })
-
-  it('should render the expected table with max given number of hits per page', () => {
-    // Given
-    const bookingsRecap = [
-      {
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_amount: 10,
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_is_duo: false,
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        venue: {
-          identifier: 'AE',
-          name: 'Librairie Kléber',
-        },
-        booking_status_history: [
-          {
-            status: 'booked',
-            date: '2020-04-03T12:00:00Z',
-          },
-          {
-            status: 'validated',
-            date: '2020-05-01T12:00:00Z',
-          },
-        ],
-      },
-    ]
-    filterBookingsRecap.mockReturnValue(bookingsRecap)
-    const props = {
-      bookingsRecap: bookingsRecap,
-      isLoading: false,
-    }
-
-    // When
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
-
-    // Then
-    const table = wrapper.find(TableFrame)
-    expect(table).toHaveLength(1)
-    expect(table.props()).toStrictEqual({
-      columns: wrapper.find(BookingsRecapTable).state('columns'),
-      data: bookingsRecap,
-      nbBookings: 1,
-      nbBookingsPerPage: NB_BOOKINGS_PER_PAGE,
-      currentPage: 0,
-      updateCurrentPage: expect.any(Function),
-    })
   })
 
   it('should render a Header component when there is at least one filtered booking', () => {
@@ -592,91 +450,6 @@ describe('components | BookingsRecapTable', () => {
     })
   })
 
-  it('should apply filters when component received new data', () => {
-    // given
-    filterBookingsRecap.mockReturnValue([
-      {
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_amount: 10,
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        venue_identifier: 'AE',
-      },
-    ])
-    const booking = {
-      stock: {
-        offer_name: 'Avez-vous déjà vu',
-        type: 'thing',
-      },
-      beneficiary: {
-        lastname: 'Klepi',
-        firstname: 'Sonia',
-        email: 'sonia.klepi@example.com',
-      },
-      booking_amount: 10,
-      booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'ZEHBGD',
-      booking_status: 'validated',
-      booking_is_duo: false,
-      venue_identifier: 'AE',
-    }
-    const bookingsRecap = [booking]
-    const newBooking = {
-      stock: {
-        offer_name: 'Merlin enchanteur',
-        type: 'thing',
-      },
-      beneficiary: {
-        lastname: 'Klepi',
-        firstname: 'Sonia',
-        email: 'sonia.klepi@example.com',
-      },
-      booking_amount: 10,
-      booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'ZEHBGD',
-      booking_status: 'validated',
-      booking_is_duo: false,
-      venue_identifier: 'AE',
-    }
-    const props = {
-      bookingsRecap: bookingsRecap,
-      isLoading: false,
-    }
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
-
-    // When
-    wrapper.setState({ offerName: 'Avez' })
-    const expectedBookingsRecap = [...props.bookingsRecap].concat([newBooking])
-    wrapper.setProps({
-      bookingsRecap: expectedBookingsRecap,
-    })
-
-    // Then
-    const table = wrapper.find(TableFrame)
-    expect(table.props()).toStrictEqual({
-      columns: expect.any(Object),
-      currentPage: 0,
-      data: [booking],
-      nbBookings: 1,
-      nbBookingsPerPage: 1,
-      updateCurrentPage: expect.any(Function),
-    })
-    expect(filterBookingsRecap).toHaveBeenCalledWith(
-      expectedBookingsRecap,
-      expect.objectContaining({ offerName: 'Avez' })
-    )
-  })
-
   it('should render a NoFilteredBookings when no bookings', () => {
     // given
     filterBookingsRecap.mockReturnValue([])
@@ -800,90 +573,6 @@ describe('components | BookingsRecapTable', () => {
     expect(offerName.text()).toBe('')
   })
 
-  it('should apply default filters when mounting component with bookings', () => {
-    // Given
-    const props = {
-      bookingsRecap: [],
-      isLoading: true,
-    }
-    filterBookingsRecap.mockReturnValue([
-      {
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_amount: 10,
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        venue_identifier: 'AE',
-        booking_status_history: [
-          {
-            status: 'booked',
-            date: '2020-04-03T12:00:00Z',
-          },
-          {
-            status: 'validated',
-            date: '2020-04-16T12:00:00Z',
-          },
-        ],
-      },
-    ])
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
-    const updatedProps = {
-      bookingsRecap: [
-        {
-          stock: {
-            offer_name: 'Avez-vous déjà vu',
-            type: 'thing',
-          },
-          beneficiary: {
-            lastname: 'Klepi',
-            firstname: 'Sonia',
-            email: 'sonia.klepi@example.com',
-          },
-          booking_amount: 10,
-          booking_date: '2020-04-03T12:00:00Z',
-          booking_token: 'ZEHBGD',
-          booking_status: 'validated',
-          booking_is_duo: false,
-          venue_identifier: 'AE',
-          booking_status_history: [
-            {
-              status: 'booked',
-              date: '2020-04-03T12:00:00Z',
-            },
-            {
-              status: 'validated',
-              date: '2020-04-16T12:00:00Z',
-            },
-          ],
-        },
-      ],
-    }
-
-    // When
-    wrapper.setProps(updatedProps)
-
-    // Then
-    expect(filterBookingsRecap).toHaveBeenCalledWith(
-      updatedProps.bookingsRecap,
-      expect.objectContaining({
-        bookingBeneficiary: EMPTY_FILTER_VALUE,
-        bookingStatus: ALL_BOOKING_STATUS,
-        bookingToken: EMPTY_FILTER_VALUE,
-        offerISBN: EMPTY_FILTER_VALUE,
-        offerName: EMPTY_FILTER_VALUE,
-      })
-    )
-  })
-
   it('should redirect to first page when applying filters', async () => {
     // given
     const booking = {
@@ -966,64 +655,5 @@ describe('components | BookingsRecapTable', () => {
     // then
     const table = wrapper.find(TableFrame)
     expect(table.prop('currentPage')).toBe(0)
-  })
-
-  it('should filter bookings on render', () => {
-    // Given
-    const props = {
-      bookingsRecap: [
-        {
-          stock: {
-            offer_name: 'Avez-vous déjà vu ?',
-            type: 'thing',
-          },
-          beneficiary: {
-            lastname: 'Klepi',
-            firstname: 'Sonia',
-            email: 'sonia.klepi@example.com',
-          },
-          booking_amount: 10,
-          booking_date: '2020-04-03T12:00:00Z',
-          booking_token: 'ZEHBGD',
-          booking_status: 'validated',
-          booking_is_duo: true,
-          venue: {
-            identifier: 'AE',
-            name: 'Librairie Kléber',
-          },
-          booking_status_history: [
-            {
-              status: 'booked',
-              date: '2020-04-03T12:00:00Z',
-            },
-            {
-              status: 'validated',
-              date: '2020-05-12T12:00:00Z',
-            },
-          ],
-        },
-      ],
-      isLoading: false,
-      locationState: {
-        venueId: 'BD',
-        statuses: ['booked', 'cancelled'],
-      },
-    }
-    filterBookingsRecap.mockReturnValue([])
-
-    // When
-    shallow(<BookingsRecapTable {...props} />)
-
-    // Then
-    expect(filterBookingsRecap).toHaveBeenCalledWith(
-      props.bookingsRecap,
-      expect.objectContaining({
-        bookingStatus: props.locationState.statuses,
-        bookingBeneficiary: EMPTY_FILTER_VALUE,
-        bookingToken: EMPTY_FILTER_VALUE,
-        offerISBN: EMPTY_FILTER_VALUE,
-        offerName: EMPTY_FILTER_VALUE,
-      })
-    )
   })
 })

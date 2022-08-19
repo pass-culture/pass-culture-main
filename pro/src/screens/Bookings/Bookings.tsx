@@ -1,4 +1,3 @@
-import type { Location } from 'history'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
@@ -40,7 +39,7 @@ import { stringify } from '../../utils/query-string'
 import PreFilters from './PreFilters'
 
 interface IBookingsProps {
-  locationState: Location['state']
+  locationState?: { statuses: string[] }
   audience: Audience
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
   getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
@@ -268,7 +267,6 @@ const Bookings = ({
         bookings.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookings}
-            isBookingFiltersActive={isBookingFiltersActive}
             isLoading={isTableLoading}
             locationState={locationState}
           />
