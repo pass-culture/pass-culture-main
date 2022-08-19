@@ -12,7 +12,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 def test_patch_user(app):
     pro = users_factories.ProFactory(email="ma.librairie@example.com")
-    data = {"firstName": "John", "lastName": "Doe", "email": "new@example.com", "phoneNumber": "09 99 99 99 99"}
+    data = {"firstName": "John", "lastName": "Doe", "email": "new@example.com", "phoneNumber": "+33999999999"}
 
     client = TestClient(app.test_client()).with_session_auth(email=pro.email)
     response = client.patch("/users/current", json=data)
