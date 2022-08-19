@@ -65,7 +65,9 @@ const Reimbursements = () => {
         sortByDisplayName(
           reimbursementPointsResponse.map(item => ({
             id: item['id'].toString(),
-            displayName: item['name'],
+            displayName: Object.keys(item).includes('publicName')
+              ? item['publicName']
+              : item['name'],
           }))
         )
       )
