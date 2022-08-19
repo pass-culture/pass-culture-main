@@ -126,7 +126,7 @@ def book_collective_offer(
             extra={"booking": booking.id},
         )
 
-    search.async_index_collective_offer_ids([stock.collectiveOfferId])  # type: ignore [list-item]
+    search.async_index_collective_offer_ids([stock.collectiveOfferId])
 
     try:
         adage_client.notify_prebooking(data=prebooking.serialize_collective_booking(booking))
@@ -477,7 +477,7 @@ def edit_collective_stock(
         db.session.commit()
 
     logger.info("Stock has been updated", extra={"stock": stock.id})
-    search.async_index_collective_offer_ids([stock.collectiveOfferId])  # type: ignore [list-item]
+    search.async_index_collective_offer_ids([stock.collectiveOfferId])
 
     notify_educational_redactor_on_collective_offer_or_stock_edit(
         stock.collectiveOffer.id,
