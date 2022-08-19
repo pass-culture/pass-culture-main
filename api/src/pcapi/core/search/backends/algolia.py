@@ -480,7 +480,8 @@ class AlgoliaBackend(base.SearchBackend):
     def serialize_collective_offer(cls, collective_offer: educational_models.CollectiveOffer) -> dict:
         venue = collective_offer.venue
         offerer = venue.managingOfferer
-        date_created = collective_offer.dateCreated.timestamp()  # type: ignore [union-attr]
+        date_created = collective_offer.dateCreated.timestamp()
+        beginning_datetime = collective_offer.collectiveStock.beginningDatetime.timestamp()
 
         return {
             "objectID": collective_offer.id,
@@ -495,6 +496,7 @@ class AlgoliaBackend(base.SearchBackend):
                 else "all",
                 "interventionArea": collective_offer.interventionArea,
                 "eventAddressType": collective_offer.offerVenue.get("addressType"),
+                "beginningDatetime": beginning_datetime,
             },
             "offerer": {
                 "name": offerer.name,
@@ -527,6 +529,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "educationalInstitutionUAICode": "all",
                 "interventionArea": collective_offer_template.interventionArea,
                 "eventAddressType": collective_offer_template.offerVenue.get("addressType"),
+                "beginningDatetime": date_created,  # this hack is needed to make the order keeps working
             },
             "offerer": {
                 "name": offerer.name,
