@@ -18,6 +18,18 @@ COPY ./requirements.txt ./
 RUN pip install --user \
 	--requirement ./requirements.txt
 
+########## SOURCES ##########
+
+FROM python:3.10-slim AS sources
+
+RUN mkdir -p /tmp/src
+
+WORKDIR /tmp/src
+
+COPY . .
+
+RUN rm -rf tests/ pyproject.toml
+
 ######### LIB ##########
 
 FROM python:3.10-slim AS lib
@@ -37,11 +49,13 @@ RUN apt-get update \
 
 COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 
-USER pcapi
-
 WORKDIR /usr/src/app
 
-COPY --chown=pcapi:pcapi . .
+COPY --from=sources /tmp/src .
+
+RUN chown -R pcapi:pcapi .
+
+USER pcapi
 
 ######### DEV ##########
 
@@ -76,13 +90,25 @@ USER root
 
 RUN apt-get update && \
     apt-get -y install \
-		curl \
-		git
+		curl
 
 RUN apt update && \
 	apt install -y wget gnupg2 && \
 	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
 	echo "deb http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
 	apt update && apt -y install postgresql-client-12
+
+USER pcapi
+
+######### TESTS #########
+
+FROM pcapi AS pcapi-tests
+
+USER root
+
+RUN apt-get update && apt-get -y install git
+
+COPY --chown=pcapi:pcapi tests/ tests
+COPY --chown=pcapi:pcapi pyproject.toml .
 
 USER pcapi
