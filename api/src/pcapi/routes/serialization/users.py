@@ -1,10 +1,16 @@
 from datetime import datetime
 import typing
 
+from jwt import DecodeError
+from jwt import ExpiredSignatureError
+from jwt import InvalidSignatureError
+from jwt import InvalidTokenError
 from pydantic import EmailStr
 from pydantic.class_validators import validator
 
 from pcapi.core.users import models as user_models
+from pcapi.core.users.utils import decode_jwt_token
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.password import check_password_strength
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
@@ -230,3 +236,39 @@ class SharedCurrentUserResponseModel(BaseModel):
         user.isAdmin = user.has_admin_role
         result = super().from_orm(user)
         return result
+
+
+class ChangeProEmailBody(BaseModel):
+    token: str
+
+
+class ChangeEmailTokenContent(BaseModel):
+    current_email: EmailStr
+    new_email: EmailStr
+
+    @validator("current_email", "new_email", pre=True)
+    @classmethod
+    def validate_emails(cls, email: str) -> str:
+        try:
+            return sanitize_email(email)
+        except Exception as e:
+            raise ValueError(email) from e
+
+    @classmethod
+    def from_token(cls, token: str) -> "ChangeEmailTokenContent":
+        try:
+            jwt_payload = decode_jwt_token(token)
+        except (
+            ExpiredSignatureError,
+            InvalidSignatureError,
+            DecodeError,
+            InvalidTokenError,
+        ) as error:
+            raise InvalidTokenError() from error
+
+        if not {"new_email", "current_email"} <= set(jwt_payload):
+            raise InvalidTokenError()
+
+        current_email = jwt_payload["current_email"]
+        new_email = jwt_payload["new_email"]
+        return cls(current_email=current_email, new_email=new_email)
