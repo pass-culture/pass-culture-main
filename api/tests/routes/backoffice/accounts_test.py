@@ -114,6 +114,7 @@ class PublicAccountSearchTest:
             ("Yves", "Abdel Yves Akhim"),
             ("Abdel Akhim", "Abdel Yves Akhim"),
             ("Gérard", "Gérard"),
+            ("Gerard", "Gérard"),
             ("Jean Luc", "Jean-Luc"),
         ],
     )
@@ -134,8 +135,9 @@ class PublicAccountSearchTest:
         assert len(response.json["data"]) == 1
         assert response.json["data"][0]["firstName"] == expected_found
 
+    @pytest.mark.parametrize("query", ["Flaille", "Faille", "Flail"])
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_public_account_by_name(self, client):
+    def test_can_search_public_account_by_name(self, client, query):
         # given
         _, grant_18, _, _, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
@@ -143,13 +145,35 @@ class PublicAccountSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_public_account", q=grant_18.firstName),
+            url_for("backoffice_blueprint.search_public_account", q=query),
         )
 
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
         assert_user_equals(response.json["data"][0], grant_18)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_last_name_priority(self, client):
+        # given
+        create_bunch_of_accounts()
+        users_factories.BeneficiaryGrant18Factory(firstName="Martin", lastName="Gall")
+        users_factories.BeneficiaryGrant18Factory(firstName="Jacques", lastName="Martin")
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="Martin"),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 2
+        assert response.json["data"][0]["firstName"] == "Jacques"
+        assert response.json["data"][0]["lastName"] == "Martin"
+        assert response.json["data"][1]["firstName"] == "Martin"
+        assert response.json["data"][1]["lastName"] == "Gall"
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_email(self, client):
@@ -220,8 +244,9 @@ class PublicAccountSearchTest:
         assert len(response.json["data"]) == 1
         assert_user_equals(response.json["data"][0], no_address)
 
+    @pytest.mark.parametrize("query", ["Anne Algézic", "Anne Algezic", "Anne Algesic", "Anna Algesic"])
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_public_account_by_both_first_name_and_name(self, client):
+    def test_can_search_public_account_by_both_first_name_and_name(self, client, query):
         # given
         _, _, _, random, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
@@ -229,7 +254,7 @@ class PublicAccountSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_public_account", q=f"{random.firstName} {random.lastName}"),
+            url_for("backoffice_blueprint.search_public_account", q=query),
         )
 
         # then
@@ -284,6 +309,23 @@ class PublicAccountSearchTest:
         # when
         response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.search_public_account", q=""),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 0
+
+    @pytest.mark.parametrize("query", ["'", '""', "%", "Ge*", "([{#/="])
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_unexpected(self, client, query):
+        # given
+        create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=query),
         )
 
         # then

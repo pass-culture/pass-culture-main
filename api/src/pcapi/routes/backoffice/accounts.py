@@ -45,7 +45,7 @@ def search_public_account(
     query: serialization.PublicAccountSearchQuery,
 ) -> serialization.ListPublicAccountsResponseModel:
     terms = query.q.split()
-    sorts = query.sort.split(",") if query.sort else ["id"]
+    sorts = query.sort.split(",") if query.sort else None
 
     paginated = users_api.search_public_account(terms, order_by=sorts).paginate(
         page=query.page,
