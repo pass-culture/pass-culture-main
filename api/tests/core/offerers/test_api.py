@@ -343,6 +343,20 @@ class EditVenueTest:
         assert link.businessUnit == business_unit
         assert link.timespan.upper is None
 
+    def test_edit_venue_with_pending_bank_info(self):
+        venue = offerers_factories.VenueFactory(
+            pricing_point="self", reimbursement_point="self", publicName="Nom actuel"
+        )
+        finance_factories.BankInformationFactory(venue=venue, status=finance_models.BankInformationStatus.DRAFT)
+        venue_data = {
+            "publicName": "Nouveau nom",
+            "reimbursementPointId": venue.current_reimbursement_point_id,
+            # all the other venue attributes should be in this dict
+        }
+        offerers_api.update_venue(venue, **venue_data)
+
+        assert venue.publicName == "Nouveau nom"
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
