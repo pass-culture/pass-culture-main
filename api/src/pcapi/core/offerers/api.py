@@ -81,7 +81,10 @@ def update_venue(
     if "businessUnitId" in modifications:
         set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)
 
-    if feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+    if (
+        feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active()
+        and reimbursement_point_id != venue.current_reimbursement_point_id
+    ):
         link_venue_to_reimbursement_point(venue, reimbursement_point_id)
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
