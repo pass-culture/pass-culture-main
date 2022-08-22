@@ -13,7 +13,8 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.repository import repository
 
-from .send import send_user_emails_for_email_change
+from .send import send_beneficiary_user_emails_for_email_change
+from .send import send_pro_user_emails_for_email_change
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,10 @@ def request_email_update(user: User, email: str, password: str) -> None:
     email_history = UserEmailHistory.build_update_request(user=user, new_email=email)
     repository.save(email_history)
 
-    send_user_emails_for_email_change(user, email, expiration_date)
+    if user.is_beneficiary:
+        send_beneficiary_user_emails_for_email_change(user, email, expiration_date)
+    else:
+        send_pro_user_emails_for_email_change(user, email, expiration_date)
 
 
 def check_email_update_attempts(user: User) -> None:

@@ -95,6 +95,11 @@ class UserPhoneBodyModel(BaseModel):
         extra = "forbid"
 
 
+class UserResetEmailBodyModel(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class UserEmailValidationResponseModel(BaseModel):
     newEmail: str | None
 
