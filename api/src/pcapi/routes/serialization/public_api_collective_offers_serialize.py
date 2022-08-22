@@ -2,13 +2,14 @@ from datetime import datetime
 from datetime import timezone
 from typing import Any
 
+from pydantic import Field
 from pydantic import validator
 
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.collective_offers_serialize import OfferAddressType
+from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -26,7 +27,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
 
 
 class OfferVenueModel(BaseModel):
-    addressType: OfferAddressType
+    addressType: collective_offers_serialize.OfferAddressType
     venueId: int | None
     otherAddress: str | None
 
@@ -38,11 +39,13 @@ class OfferVenueModel(BaseModel):
     def validate_venueId(  # pylint: disable=no-self-argument
         cls: "OfferVenueModel", venueId: int | None, values: dict
     ) -> int | None:
-        if values["addressType"] == OfferAddressType.OFFERER_VENUE and venueId is None:
-            raise ValueError(f"Ce champ est obligatoire si 'addressType' vaut '{OfferAddressType.OFFERER_VENUE.value}'")
-        if values["addressType"] != OfferAddressType.OFFERER_VENUE and venueId is not None:
+        if values["addressType"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE and venueId is None:
             raise ValueError(
-                f"Ce champ est interdit si 'addressType' ne vaut pas '{OfferAddressType.OFFERER_VENUE.value}'"
+                f"Ce champ est obligatoire si 'addressType' vaut '{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
+            )
+        if values["addressType"] != collective_offers_serialize.OfferAddressType.OFFERER_VENUE and venueId is not None:
+            raise ValueError(
+                f"Ce champ est interdit si 'addressType' ne vaut pas '{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
             )
 
         return venueId
@@ -51,10 +54,14 @@ class OfferVenueModel(BaseModel):
     def validate_otherAddress(  # pylint: disable=no-self-argument
         cls: "OfferVenueModel", otherAddress: str | None, values: dict
     ) -> str | None:
-        if values["addressType"] == OfferAddressType.OTHER and not otherAddress:
-            raise ValueError(f"Ce champ est obligatoire si 'addressType' vaut '{OfferAddressType.OTHER.value}'")
-        if values["addressType"] != OfferAddressType.OTHER and otherAddress:
-            raise ValueError(f"Ce champ est interdit si 'addressType' ne vaut pas '{OfferAddressType.OTHER.value}'")
+        if values["addressType"] == collective_offers_serialize.OfferAddressType.OTHER and not otherAddress:
+            raise ValueError(
+                f"Ce champ est obligatoire si 'addressType' vaut '{collective_offers_serialize.OfferAddressType.OTHER.value}'"
+            )
+        if values["addressType"] != collective_offers_serialize.OfferAddressType.OTHER and otherAddress:
+            raise ValueError(
+                f"Ce champ est interdit si 'addressType' ne vaut pas '{collective_offers_serialize.OfferAddressType.OTHER.value}'"
+            )
 
         return otherAddress
 
@@ -308,6 +315,87 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("domains must have at least one value")
 
         return domains
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class PatchCollectiveOfferBodyModel(BaseModel):
+    name: str | None
+    description: str | None
+    subcategoryId: str | None
+    bookingEmail: str | None
+    contactEmail: str | None
+    contactPhone: str | None
+    domains: list[str] | None
+    students: list[StudentLevels] | None
+    offerVenue: OfferVenueModel | None
+    interventionArea: list[str] | None
+    educationalPriceDetail: str | None
+    durationMinutes: int | None
+    # stock part
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
+    price: float | None = Field(alias="totalPrice")
+    numberOfTickets: int | None
+    priceDetail: str | None
+    # educational_institution
+    educationalInstitutionId: int | None
+
+    _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
+    _validate_total_price = price_validator("price")
+    _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
+    _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
+    _validate_price_detail = price_detail_validator("priceDetail")
+
+    @validator("domains")
+    def validate_domains(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferBodyModel",
+        domains: list[str],
+    ) -> list[str]:
+        if len(domains) == 0:
+            raise ValueError("domains must have at least one value")
+
+        return domains
+
+    @validator("name", allow_reuse=True)
+    def validate_name(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferBodyModel", name: str | None
+    ) -> str | None:
+        assert name is not None and name.strip() != ""
+        check_offer_name_length_is_valid(name)
+        return name
+
+    @validator("domains")
+    def validate_domains_collective_offer_edition(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferBodyModel",
+        domains: list[int] | None,
+    ) -> list[int] | None:
+        if domains is None or (domains is not None and len(domains) == 0):
+            raise ValueError("domains must have at least one value")
+
+        return domains
+
+    @validator("bookingLimitDatetime")
+    def validate_booking_limit_datetime(  # pylint: disable=no-self-argument
+        cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
+    ) -> datetime | None:
+        if (
+            booking_limit_datetime
+            and values.get("beginningDatetime", None) is not None
+            and booking_limit_datetime > values["beginningDatetime"]
+        ):
+            raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
+        return booking_limit_datetime
+
+    @validator("beginningDatetime", pre=True)
+    def validate_beginning_limit_datetime(  # pylint: disable=no-self-argument
+        cls, beginningDatetime: datetime | None
+    ) -> datetime | None:
+        if beginningDatetime is None:
+            raise ValueError("La date de début de l'événement ne peut pas être nulle.")
+        return beginningDatetime
 
     class Config:
         alias_generator = to_camel
