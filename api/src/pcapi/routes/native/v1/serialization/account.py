@@ -4,10 +4,6 @@ from typing import Any
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
-from jwt import DecodeError
-from jwt import ExpiredSignatureError
-from jwt import InvalidSignatureError
-from jwt import InvalidTokenError
 import pydantic
 from pydantic.class_validators import root_validator
 from pydantic.class_validators import validator
@@ -31,8 +27,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.core.users.utils import decode_jwt_token
-from pcapi.core.users.utils import sanitize_email
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.serialization import BaseModel
@@ -143,38 +137,6 @@ class SubscriptionMessage(BaseModel):
 
 class ChangeBeneficiaryEmailBody(BaseModel):
     token: str
-
-
-class ChangeEmailTokenContent(BaseModel):
-    current_email: pydantic.EmailStr
-    new_email: pydantic.EmailStr
-
-    @validator("current_email", "new_email", pre=True)
-    @classmethod
-    def validate_emails(cls, email: str) -> str:
-        try:
-            return sanitize_email(email)
-        except Exception as e:
-            raise ValueError(email) from e
-
-    @classmethod
-    def from_token(cls, token: str) -> "ChangeEmailTokenContent":
-        try:
-            jwt_payload = decode_jwt_token(token)
-        except (
-            ExpiredSignatureError,
-            InvalidSignatureError,
-            DecodeError,
-            InvalidTokenError,
-        ) as error:
-            raise InvalidTokenError() from error
-
-        if not {"new_email", "current_email"} <= set(jwt_payload):
-            raise InvalidTokenError()
-
-        current_email = jwt_payload["current_email"]
-        new_email = jwt_payload["new_email"]
-        return cls(current_email=current_email, new_email=new_email)
 
 
 class UserProfileResponse(BaseModel):

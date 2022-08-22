@@ -30,6 +30,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
+from pcapi.routes.serialization import users as users_serializers
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -113,7 +114,7 @@ def update_user_email(user: users_models.User, body: serializers.UserProfileEmai
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
-        payload = serializers.ChangeEmailTokenContent.from_token(body.token)
+        payload = users_serializers.ChangeEmailTokenContent.from_token(body.token)
         api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
     except pydantic.ValidationError:
         raise ApiErrors(
