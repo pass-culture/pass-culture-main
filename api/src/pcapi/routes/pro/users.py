@@ -7,9 +7,10 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from pcapi.core.users import api as users_api
-from pcapi.core.users.email import repository as email_repository
+from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.models import TokenType
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serializers
@@ -18,7 +19,6 @@ from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
-from pcapi.core.users import email as email_api
 
 from . import blueprint
 
@@ -84,6 +84,34 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
     users_api.update_user_info(user, **attributes)
     return users_serializers.UserPhoneResponseModel.from_orm(user)
 
+
+@blueprint.pro_private_api.route("/users/email", methods=["POST"])
+@login_required
+@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
+def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
+    errors = ApiErrors()
+    errors.status_code = 400
+    user = current_user._get_current_object()
+    if not user.has_pro_role and not user.has_admin_role:
+        abort(400)
+    try:
+        email_api.request_email_update(user, body.email, body.password)
+    except users_exceptions.EmailUpdateTokenExists as exc:
+        errors.add_error("email", "Une demande de modification d'adresse e-mail est déjà en cours")
+        raise errors from exc
+    except users_exceptions.EmailUpdateInvalidPassword as exc:
+        errors.add_error("password", "Mot de passe invalide")
+        raise errors from exc
+    except users_exceptions.InvalidEmailError as exc:
+        errors.add_error("email", "Adresse email invalide")
+        raise errors from exc
+    except users_exceptions.EmailUpdateLimitReached as exc:
+        errors.add_error("email", "Trop de tentatives")
+        raise errors from exc
+    except users_exceptions.EmailExistsError:
+        # Returning an error message might help the end client find
+        # existing email addresses.
+        pass
 
 
 @blueprint.pro_private_api.route("/users/email_pending_validation", methods=["GET"])

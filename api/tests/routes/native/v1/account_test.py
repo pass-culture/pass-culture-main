@@ -518,7 +518,7 @@ class UpdateUserEmailTest:
     def test_update_user_email(self, app, client):
         new_email = "updated_" + self.identifier
         password = "some_random_string"
-        user = users_factories.UserFactory(email=self.identifier, password=password)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, password=password)
 
         client.with_token(user.email)
         response = client.post(
