@@ -67,10 +67,12 @@ import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StockIdsResponseModel } from '../models/StockIdsResponseModel';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
+import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
 import type { UserIdentityResponseModel } from '../models/UserIdentityResponseModel';
 import type { UserPhoneBodyModel } from '../models/UserPhoneBodyModel';
 import type { UserPhoneResponseModel } from '../models/UserPhoneResponseModel';
+import type { UserResetEmailBodyModel } from '../models/UserResetEmailBodyModel';
 import type { VenueLabelListResponseModel } from '../models/VenueLabelListResponseModel';
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
@@ -1336,6 +1338,43 @@ export class DefaultService {
       url: '/users/current',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * post_user_email <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public postUserEmail(
+    requestBody?: UserResetEmailBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/email',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_user_email_pending_validation <GET>
+   * @returns UserEmailValidationResponseModel OK
+   * @throws ApiError
+   */
+  public getUserEmailPendingValidation(): CancelablePromise<UserEmailValidationResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/users/email_pending_validation',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
