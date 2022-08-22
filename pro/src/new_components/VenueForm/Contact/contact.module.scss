@@ -1,0 +1,4 @@
+@use 'styles/mixins/_rem.scss' as rem;
+.explanatory-text {
+  margin-bottom: rem.torem(24px);
+}

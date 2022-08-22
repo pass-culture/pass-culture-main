@@ -1,5 +1,7 @@
+import { DEFAULT_CONTACT_FORM_VALUES } from './Contact'
 import { DEFAULT_INFORMATIONS_FORM_VALUES } from './Informations'
 
 export const DEFAULT_FORM_VALUES = {
   ...DEFAULT_INFORMATIONS_FORM_VALUES,
+  ...DEFAULT_CONTACT_FORM_VALUES,
 }
