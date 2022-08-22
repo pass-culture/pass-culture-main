@@ -264,3 +264,126 @@ def post_collective_offer_public(
         )
 
     return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+
+
+@blueprint.pro_public_api_v2.route("/collective-offers/<int:offer_id>", methods=["PATCH"])
+@api_key_required
+@spectree_serialize(
+    api=blueprint.pro_public_schema_v2,
+    tags=["API offres collectives"],
+    resp=SpectreeResponse(
+        **(
+            {
+                "HTTP_200": (
+                    public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
+                    "L'offre collective à été édité avec succes",
+                ),
+                "HTTP_400": (None, "Requête malformée"),
+                "HTTP_401": (None, "Authentification nécessaire"),
+                "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour éditer cette offre collective"),
+                "HTTP_404": (None, "L'une des resources pour la création de l'offre n'a pas été trouvée"),
+                "HTTP_422": (None, "Cetains champs ne peuvent pas être édités selon l'état de l'offre"),
+            }
+        )
+    ),
+)
+def patch_collective_offer_public(
+    offer_id: int,
+    body: public_api_collective_offers_serialize.PatchCollectiveOfferBodyModel,
+) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
+    # in French, to be used by Swagger for the API documentation
+    """Édition d'une offre collective."""
+    new_values = body.dict(exclude_unset=True)
+    # checking data
+    non_nullable_fields = [
+        "name",
+        "contactEmail",
+        "contactPhone",
+        "domains",
+        "students",
+        "offerVenue",
+        "interventionArea",
+        "beginningDatetime",
+        "totalPrice",
+        "numberOfTickets",
+    ]
+    for field in non_nullable_fields:
+        if field in new_values and new_values[field] is None:
+            raise ApiErrors(
+                errors={
+                    field: "Ce champ peut ne pas être présent mais ne peut pas être null.",
+                },
+                status_code=400,
+            )
+
+    # access control
+    try:
+        offer = educational_repository.get_collective_offer_by_id(offer_id)
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["L'offre collective n'existe pas"],
+            },
+            status_code=404,
+        )
+
+    if not offer.collectiveStock:
+        # if the offer does not have any stock pretend it doesn't exists
+        raise ApiErrors(
+            errors={
+                "global": ["L'offre collective n'existe pas"],
+            },
+            status_code=404,
+        )
+    if offer.venue.managingOffererId != current_api_key.offerer.id:  # type: ignore [attr-defined]
+        raise ApiErrors(
+            errors={
+                "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette offre collective."],
+            },
+            status_code=403,
+        )
+
+    # real edition
+    try:
+        offer = educational_api.edit_collective_offer_public(
+            offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
+            new_values=new_values,
+            offer=offer,
+        )
+    except educational_exceptions.CulturalPartnerNotFoundException:
+        raise ApiErrors(
+            errors={
+                "global": "Non éligible pour les offres collectives.",
+            },
+            status_code=403,
+        )
+    except offerers_exceptions.VenueNotFoundException:
+        raise ApiErrors(
+            errors={
+                "venueId": "Ce lieu n'a pas été trouvé.",
+            },
+            status_code=404,
+        )
+    except educational_exceptions.InvalidInterventionArea as exc:
+        raise ApiErrors(
+            errors={
+                "interventionArea": f"Les valeurs {exc.errors} ne sont pas valides.",
+            },
+            status_code=404,
+        )
+    except educational_exceptions.EducationalInstitutionUnknown:
+        raise ApiErrors(
+            errors={
+                "educationalInstitutionId": "Établissement scolaire non trouvé.",
+            },
+            status_code=404,
+        )
+    except educational_exceptions.EducationalDomainsNotFound:
+        raise ApiErrors(
+            errors={
+                "domains": "Domaine scolaire non trouvé.",
+            },
+            status_code=404,
+        )
+
+    return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
