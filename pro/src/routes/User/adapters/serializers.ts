@@ -20,3 +20,9 @@ export const serializeUserPhone = (
     phoneNumber: user.phoneNumber || '',
   }
 }
+
+export const serializeUserEmail = (user: SharedCurrentUserResponseModel) => {
+  return {
+    email: user.email,
+  }
+}
