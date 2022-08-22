@@ -245,6 +245,62 @@ def test_public_api(client, app):
                     "title": "OfferVenueModel",
                     "type": "object",
                 },
+                "PatchCollectiveOfferBodyModel": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "beginningDatetime": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Beginningdatetime",
+                            "type": "string",
+                        },
+                        "bookingEmail": {"nullable": True, "title": "Bookingemail", "type": "string"},
+                        "bookingLimitDatetime": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Bookinglimitdatetime",
+                            "type": "string",
+                        },
+                        "contactEmail": {"nullable": True, "title": "Contactemail", "type": "string"},
+                        "contactPhone": {"nullable": True, "title": "Contactphone", "type": "string"},
+                        "description": {"nullable": True, "title": "Description", "type": "string"},
+                        "domains": {"items": {"type": "string"}, "nullable": True, "title": "Domains", "type": "array"},
+                        "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
+                        "educationalInstitutionId": {
+                            "nullable": True,
+                            "title": "Educationalinstitutionid",
+                            "type": "integer",
+                        },
+                        "educationalPriceDetail": {
+                            "nullable": True,
+                            "title": "Educationalpricedetail",
+                            "type": "string",
+                        },
+                        "interventionArea": {
+                            "items": {"type": "string"},
+                            "nullable": True,
+                            "title": "Interventionarea",
+                            "type": "array",
+                        },
+                        "name": {"nullable": True, "title": "Name", "type": "string"},
+                        "numberOfTickets": {"nullable": True, "title": "Numberoftickets", "type": "integer"},
+                        "offerVenue": {
+                            "anyOf": [{"$ref": "#/components/schemas/OfferVenueModel"}],
+                            "nullable": True,
+                            "title": "OfferVenueModel",
+                        },
+                        "priceDetail": {"nullable": True, "title": "Pricedetail", "type": "string"},
+                        "students": {
+                            "items": {"$ref": "#/components/schemas/StudentLevels"},
+                            "nullable": True,
+                            "type": "array",
+                        },
+                        "subcategoryId": {"nullable": True, "title": "Subcategoryid", "type": "string"},
+                        "totalPrice": {"nullable": True, "title": "Totalprice", "type": "number"},
+                    },
+                    "title": "PatchCollectiveOfferBodyModel",
+                    "type": "object",
+                },
                 "PostCollectiveOfferBodyModel": {
                     "additionalProperties": False,
                     "properties": {
@@ -757,7 +813,51 @@ def test_public_api(client, app):
                     },
                     "summary": "Récuperation de l'offre collective avec l'identifiant offer_id.",
                     "tags": [],
-                }
+                },
+                "patch": {
+                    "description": "",
+                    "operationId": "PatchCollectiveOfferPublic",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offer_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/PatchCollectiveOfferBodyModel"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/GetPublicCollectiveOfferResponseModel"}
+                                }
+                            },
+                            "description": "L'offre collective à été édité avec succes",
+                        },
+                        "400": {"description": "Requête malformée"},
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {
+                            "description": "Vous n'avez pas les droits nécessaires pour éditer cette offre collective"
+                        },
+                        "404": {"description": "L'une des resources pour la création de l'offre n'a pas été trouvée"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Cetains champs ne peuvent pas être édités selon l'état de l'offre",
+                        },
+                    },
+                    "summary": "Édition d'une offre collective.",
+                    "tags": ["API offres collectives"],
+                },
             },
             "/v2/venue/{venue_id}/stocks": {
                 "post": {

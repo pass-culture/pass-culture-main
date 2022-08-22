@@ -995,3 +995,58 @@ def get_educational_institution_department_code(
 ) -> str:
     department_code = PostalCode(institution.postalCode).get_departement_code()
     return department_code
+
+
+def edit_collective_offer_public(
+    offerer_id: int, new_values: dict, offer: educational_models.CollectiveOffer
+) -> educational_models.CollectiveOffer:
+    if not (offer.isEditable and offer.collectiveStock.isEditable):
+        raise exceptions.CollectiveOfferNotEditable()
+
+    offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
+    stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
+
+    # This variable is meant for Adage mailing
+    updated_fields = []
+    for key, value in new_values.items():
+
+        updated_fields.append(key)
+
+        if key == "subcategoryId":
+            offer_validation.check_offer_subcategory_is_valid(value)
+            offer_validation.check_offer_is_eligible_for_educational(value, True)
+            offer.subcategoryId = value
+        elif key == "domains":
+            domains = educational_repository.get_educational_domains_from_names(value)
+            if len(domains) != len(value):
+                raise exceptions.EducationalDomainsNotFound()
+            offer.domains = domains
+        elif key == "educationalInstitutionId":
+            if value:
+                if not educational_models.EducationalInstitution.query.filter_by(id=value).one_or_none():
+                    raise exceptions.EducationalInstitutionUnknown()
+            offer.institutionId = value
+        elif key == "offerVenue":
+            offer.offerVenue["venueId"] = humanize(value["venueId"]) or ""
+            offer.offerVenue["addressType"] = value["addressType"].value
+            offer.offerVenue["otherAddress"] = value["otherAddress"] or ""
+        elif key == "bookingLimitDatetime" and value is None:
+            offer.collectiveStock.bookingLimitDatetime = new_values.get(
+                "beginningDatetime", offer.collectiveStock.beginningDatetime
+            )
+        elif key in stock_fields:
+            setattr(offer.collectiveStock, key, value)
+        elif key in offer_fields:
+            setattr(offer, key, value)
+        else:
+            raise ValueError(f"unknown field {key}")
+
+    db.session.commit()
+
+    search.async_index_collective_offer_ids([offer.id])
+
+    notify_educational_redactor_on_collective_offer_or_stock_edit(
+        offer.id,
+        updated_fields,
+    )
+    return offer
