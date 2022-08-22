@@ -98,6 +98,12 @@ class TransactionalEmail(Enum):
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = TemplatePro(
         id_prod=519, id_not_prod=63, tags=["pro_offre_evenement_reportee"]
     )
+    PRO_EMAIL_CHANGE_CONFIRMATION = Template(
+        id_prod=602, id_not_prod=100, tags=["pro_changement_email_confirmation"], use_priority_queue=True
+    )
+    PRO_EMAIL_CHANGE_REQUEST = Template(
+        id_prod=601, id_not_prod=98, tags=["pro_changement_email_demande"], use_priority_queue=True
+    )
     FIRST_VENUE_APPROVED_OFFER_TO_PRO = TemplatePro(id_prod=569, id_not_prod=75, tags=["pro_premiere_offre"])
     FIRST_VENUE_BOOKING_TO_PRO = TemplatePro(id_prod=568, id_not_prod=78, tags=["pro_premiere_reservation"])
     INVOICE_AVAILABLE_TO_PRO = TemplatePro(id_prod=405, id_not_prod=95, tags=["remboursement_justificatif"])
