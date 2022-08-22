@@ -185,6 +185,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
     extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")  # type: ignore [misc]
     firstName = sa.Column(sa.String(128), nullable=True)
+    sa.Index("idx_user_trgm_first_name", firstName, postgresql_using="gin")
     hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     hasSeenProRgs = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
@@ -192,6 +193,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)
+    sa.Index("idx_user_trgm_last_name", lastName, postgresql_using="gin")
     married_name = sa.Column(sa.String(128), nullable=True)
     needsToFillCulturalSurvey = sa.Column(sa.Boolean, server_default=expression.true(), default=True)
     notificationSubscriptions = sa.Column(  # type: ignore [misc]

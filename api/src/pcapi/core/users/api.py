@@ -781,8 +781,8 @@ def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: m
 
 
 def search_public_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
-    order_by = order_by or []
     filters = []
+    name_terms: list[str] = []
 
     if not terms:
         return models.User.query.filter(False)
@@ -819,10 +819,15 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
         if sanitized_term.startswith("@"):
             term_filters.append(models.User.email.like(f"%{sanitized_term}"))
 
-        # any term which does not match a formatted column is searched in the names
         if not term_filters:
-            term_filters.append(sa.cast(models.User.firstName, sa.Unicode).ilike(f"%{term}%"))
-            term_filters.append(sa.cast(models.User.lastName, sa.Unicode).ilike(f"%{term}%"))
+            # terms which do not match a formatted column are searched by trigram distance in the names
+            term_filters.append(
+                sa.func.similarity(models.User.firstName, term) > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE
+            )
+            term_filters.append(
+                sa.func.similarity(models.User.lastName, term) > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE
+            )
+            name_terms.append(term)
 
         filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
@@ -834,6 +839,18 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
             accounts = accounts.order_by(*db_utils.get_ordering_clauses(models.User, order_by))
         except db_utils.BadSortError as err:
             raise ApiErrors({"sorting": str(err)})
+
+    if name_terms:
+        name_search = " ".join(name_terms)
+        accounts = accounts.order_by(
+            sa.desc(
+                sa.func.similarity(models.User.firstName, name_search)
+                + 1.5 * sa.func.similarity(models.User.lastName, name_search)
+            )
+        )
+
+    if not order_by:
+        accounts = accounts.order_by(models.User.id)
 
     return accounts
 
