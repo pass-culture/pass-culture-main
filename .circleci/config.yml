@@ -997,7 +997,7 @@ jobs:
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
-      - run: kubectl get deploy -n <<parameters.helm_environment>> -o name | xargs  -L 1 kubectl rollout restart -n <<parameters.helm_environment>>
+      - run: kubectl -n <<parameters.helm_environment>> rollout restart deploy
 
   measure_workflow_execution_time:
     docker:
