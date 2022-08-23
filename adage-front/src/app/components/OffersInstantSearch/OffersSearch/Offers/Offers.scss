@@ -11,7 +11,7 @@
     display: grid;
     grid-gap: rem(20px);
     padding: 0;
-    margin: rem(8px) 0;
+    margin: rem(8px) 0 rem(24px) 0;
   }
 
   .offers-loader {
@@ -38,7 +38,9 @@
   .offers-load-more {
     text-align: center;
     width: fit-content;
-    margin: auto;
+    margin: 0 auto rem(24px);
+    font-size: rem(12px);
+    height: rem(50px);
 
     &-text {
       font-weight: 600;
