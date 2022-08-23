@@ -413,6 +413,46 @@ jobs:
             - notify-slack:
                 channel: shérif
 
+  test-rebuild-staging:
+    working_directory: ~/pass-culture
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-tests:${CIRCLE_SHA1}
+        auth:
+          username: _json_key # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+        environment:
+          RUN_ENV: tests
+          DATABASE_URL: postgresql://pytest:pytest@localhost:5432/pass_culture
+          DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_infra_key.json
+      - image: cimg/postgres:12.9-postgis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: api
+      - run:
+          name: Write Google Cloud service account private key to file
+          command: echo ${GCP_INFRA_KEY} > ${GOOGLE_APPLICATION_CREDENTIALS}
+      - run:
+          name: Setup database
+          command: |
+            flask install_postgres_extensions
+            alembic upgrade pre@head
+            alembic upgrade post@head
+            flask install_data
+          working_directory: /usr/src/app
+      - run:
+          name: Test rebuild_staging script
+          command: ./rebuild_staging.sh
+          working_directory: /usr/src/app
+
   type-checking-adage-front:
     docker:
       - image: cimg/node:14.18
@@ -1118,6 +1158,18 @@ workflows:
           - GCP_EHP
          requires:
            - build-and-push-image
+      - test-rebuild-staging:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context:
+            - GCP
+            - GCP_EHP
+          requires:
+            - build-and-push-image
       - tests-adage-front:
          filters:
            branches:

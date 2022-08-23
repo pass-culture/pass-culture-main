@@ -106,7 +106,7 @@ FROM pcapi-console AS pcapi-tests
 
 USER root
 
-RUN apt-get update && apt-get -y install git
+RUN apt-get update -y && apt-get install -y git
 
 COPY --chown=pcapi:pcapi tests/ tests
 COPY --chown=pcapi:pcapi pyproject.toml .
