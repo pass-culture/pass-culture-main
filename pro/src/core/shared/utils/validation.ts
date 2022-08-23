@@ -1,10 +1,13 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import { parseAndValidateFrenchPhoneNumber } from './parseAndValidateFrenchPhoneNumber'
 
 export const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone) {
     return false
   }
-  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
-  const isValid = phoneNumber?.isValid()
-  return Boolean(isValid)
+  try {
+    parseAndValidateFrenchPhoneNumber(phone)
+  } catch {
+    return false
+  }
+  return true
 }

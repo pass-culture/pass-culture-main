@@ -1,7 +1,17 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { urlRegex } from 'core/shared'
-import { isPhoneValid } from 'core/shared/utils/validation'
+
+const isPhoneValid = (phone: string | undefined): boolean => {
+  if (!phone) {
+    return true
+  }
+
+  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
+  const isValid = phoneNumber?.isValid()
+  return Boolean(isValid)
+}
 
 export const validationSchema = yup.object().shape({
   collectiveDescription: yup.string(),
