@@ -1,7 +1,10 @@
 import { format } from 'date-fns-tz'
-import PropTypes from 'prop-types'
 import React from 'react'
 
+import {
+  BookingRecapResponseStockModel,
+  CollectiveBookingCollectiveStockResponseModel,
+} from 'apiClient/v1'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
@@ -13,7 +16,13 @@ import {
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 
-const BookingOfferCell = ({ offer }) => {
+const BookingOfferCell = ({
+  offer,
+}: {
+  offer:
+    | BookingRecapResponseStockModel
+    | CollectiveBookingCollectiveStockResponseModel
+}) => {
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const { logEvent } = useAnalytics()
   const editionUrl = useOfferEditionURL(
@@ -55,23 +64,6 @@ const BookingOfferCell = ({ offer }) => {
         ))}
     </a>
   )
-}
-
-BookingOfferCell.defaultValues = {
-  offer: {
-    event_beginning_datetime: null,
-    offer_isbn: null,
-  },
-}
-
-BookingOfferCell.propTypes = {
-  offer: PropTypes.shape({
-    event_beginning_datetime: PropTypes.string,
-    offer_isbn: PropTypes.string,
-    offer_identifier: PropTypes.string.isRequired,
-    offer_name: PropTypes.string.isRequired,
-    offer_is_educational: PropTypes.bool.isRequired,
-  }).isRequired,
 }
 
 export default BookingOfferCell

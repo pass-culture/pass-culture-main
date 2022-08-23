@@ -1,7 +1,17 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
-const BeneficiaryCell = ({ beneficiaryInfos }) => {
+import {
+  BookingRecapResponseBeneficiaryModel,
+  EducationalRedactorResponseModel,
+} from 'apiClient/v1'
+
+const BeneficiaryCell = ({
+  beneficiaryInfos,
+}: {
+  beneficiaryInfos:
+    | BookingRecapResponseBeneficiaryModel
+    | EducationalRedactorResponseModel
+}) => {
   const beneficiaryName = [
     beneficiaryInfos.lastname,
     beneficiaryInfos.firstname,
@@ -26,15 +36,6 @@ const BeneficiaryCell = ({ beneficiaryInfos }) => {
       )}
     </div>
   )
-}
-
-BeneficiaryCell.propTypes = {
-  beneficiaryInfos: PropTypes.shape({
-    email: PropTypes.string.isRequired,
-    firstname: PropTypes.string,
-    lastname: PropTypes.string,
-    phonenumber: PropTypes.string,
-  }).isRequired,
 }
 
 export default BeneficiaryCell
