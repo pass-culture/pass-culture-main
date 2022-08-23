@@ -149,6 +149,10 @@ filterwarnings = [
     # FIXME (askorski, 2022-05-02): algoliasearch uses deprecated @coroutine decorator
     # Remove this when alogliasearch no more uses @coroutine
     'ignore:"@coroutine" decorator is deprecated since Python 3.8, use \"async def\" instead:DeprecationWarning',
+    # FIXME (francois-seguin, 2022-08-23): requests-toolbelt uses deprecated urllib3.contrib.pyopenssl
+    # see https://github.com/requests/toolbelt/issues/331
+    # Remove this when requests-toolbelt fixes its use
+    "ignore:'urllib3.contrib.pyopenssl' module is deprecated*:DeprecationWarning",
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]
