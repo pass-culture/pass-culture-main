@@ -192,6 +192,20 @@ def index_collective_offers_in_queue(from_error_queue: bool = False) -> None:
         logger.exception("Could not index collective offers from queue", extra={"exc": str(exc)})
 
 
+def index_all_collective_offers_and_templates() -> None:
+    """Pop collective offers from indexation queue and reindex them."""
+    backend = _get_backend()
+
+    collective_offers = educational_models.CollectiveOffer.query.with_entities(
+        educational_models.CollectiveOffer.id
+    ).all()
+    collective_offer_templates = educational_models.CollectiveOfferTemplate.query.with_entities(
+        educational_models.CollectiveOfferTemplate.id
+    ).all()
+    _reindex_collective_offer_ids(backend, [offer.id for offer in collective_offers])
+    _reindex_collective_offer_template_ids(backend, [template.id for template in collective_offer_templates])
+
+
 def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -> None:
     """Pop collective offers template from indexation queue and reindex them."""
     backend = _get_backend()
@@ -494,6 +508,11 @@ def unindex_all_collective_offers() -> None:
         if settings.IS_RUNNING_TESTS:
             raise
         logger.exception("Could not unindex all offers")
+
+
+def unindex_all_collective_offer_templates() -> None:
+    # this is a no-op while collective and templates are in the same index
+    pass
 
 
 def unindex_collective_offer_ids(collective_offer_ids: Iterable[int]) -> None:
