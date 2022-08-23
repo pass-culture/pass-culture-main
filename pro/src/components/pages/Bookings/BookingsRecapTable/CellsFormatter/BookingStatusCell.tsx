@@ -1,23 +1,33 @@
-import PropTypes from 'prop-types'
 import React from 'react'
+import { Row } from 'react-table'
 
+import {
+  BookingRecapResponseModel,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
 import Icon from 'components/layout/Icon'
 
 import BookingStatusCellHistory from './BookingStatusCellHistory'
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
 
-const BookingStatusCell = ({ bookingRecapInfo }) => {
-  let bookingDisplayInfo = getBookingStatusDisplayInformations(
+const BookingStatusCell = ({
+  bookingRecapInfo,
+}: {
+  bookingRecapInfo:
+    | Row<BookingRecapResponseModel>
+    | Row<CollectiveBookingResponseModel>
+}) => {
+  const bookingDisplayInfo = getBookingStatusDisplayInformations(
     bookingRecapInfo.original.booking_status
   )
   const offerName = bookingRecapInfo.original.stock.offer_name
 
-  const statusClassName = bookingDisplayInfo.statusClassName
-  const statusName = bookingDisplayInfo.status
+  const statusClassName = bookingDisplayInfo?.statusClassName
+  const statusName = bookingDisplayInfo?.status
   const amount = computeBookingAmount(bookingRecapInfo.original.booking_amount)
-  const icon = bookingDisplayInfo.svgIconFilename
+  const icon = bookingDisplayInfo?.svgIconFilename
 
-  function computeBookingAmount(amount) {
+  function computeBookingAmount(amount: number) {
     const FREE_AMOUNT = 'Gratuit'
     const AMOUNT_SUFFIX = '\u00a0€'
     return amount ? `${amount}${AMOUNT_SUFFIX}` : FREE_AMOUNT
@@ -43,10 +53,6 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
       </div>
     </div>
   )
-}
-
-BookingStatusCell.propTypes = {
-  bookingRecapInfo: PropTypes.shape().isRequired,
 }
 
 export default BookingStatusCell

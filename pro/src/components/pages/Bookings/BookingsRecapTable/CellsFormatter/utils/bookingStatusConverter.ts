@@ -59,7 +59,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
 ]
 
-export function getBookingStatusDisplayInformations(bookingStatus) {
+export function getBookingStatusDisplayInformations(bookingStatus: string) {
   return BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
     ({ id }) => bookingStatus.toLowerCase() === id
   )

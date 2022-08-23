@@ -1,16 +1,30 @@
 import { format } from 'date-fns-tz'
-import PropTypes from 'prop-types'
 import React from 'react'
 
+import {
+  BookingRecapResponseBookingStatusHistoryModel,
+  BookingStatusHistoryResponseModel,
+} from 'apiClient/v1'
 import { toDateStrippedOfTimezone } from 'utils/date'
 
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
 
-const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
+const BookingStatusCellHistory = ({
+  bookingStatusHistory,
+}: {
+  bookingStatusHistory:
+    | BookingRecapResponseBookingStatusHistoryModel[]
+    | BookingStatusHistoryResponseModel[]
+}) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => {
     const displayInfoFromStatus = getBookingStatusDisplayInformations(
       item.status
     )
+
+    if (!displayInfoFromStatus) {
+      return <li />
+    }
+
     return (
       <li key={displayInfoFromStatus.status}>
         <span
@@ -24,7 +38,12 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
     )
   })
 
-  function computeDateForStatus(item, dateFormat) {
+  function computeDateForStatus(
+    item:
+      | BookingRecapResponseBookingStatusHistoryModel
+      | BookingStatusHistoryResponseModel,
+    dateFormat: string
+  ) {
     return item.date
       ? format(toDateStrippedOfTimezone(item.date), dateFormat)
       : '-'
@@ -33,10 +52,6 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   return (
     <div className="booking-status-history">{bookingsStatusHistoryItems}</div>
   )
-}
-
-BookingStatusCellHistory.propTypes = {
-  bookingStatusHistory: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 }
 
 export default BookingStatusCellHistory

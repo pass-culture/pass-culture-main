@@ -1,5 +1,4 @@
 import { format } from 'date-fns-tz'
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import {
@@ -8,7 +7,11 @@ import {
   toDateStrippedOfTimezone,
 } from 'utils/date'
 
-const BookingDateCell = ({ bookingDateTimeIsoString }) => {
+const BookingDateCell = ({
+  bookingDateTimeIsoString,
+}: {
+  bookingDateTimeIsoString: string
+}) => {
   const bookingDate = toDateStrippedOfTimezone(bookingDateTimeIsoString)
   const bookingDateDay = format(bookingDate, FORMAT_DD_MM_YYYY)
   const bookingDateHour = format(bookingDate, FORMAT_HH_mm)
@@ -20,10 +23,6 @@ const BookingDateCell = ({ bookingDateTimeIsoString }) => {
       <span className="booking-date-subtitle">{bookingDateHour}</span>
     </div>
   )
-}
-
-BookingDateCell.propTypes = {
-  bookingDateTimeIsoString: PropTypes.string.isRequired,
 }
 
 export default BookingDateCell
