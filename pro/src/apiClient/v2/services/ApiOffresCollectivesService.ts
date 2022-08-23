@@ -4,6 +4,7 @@
 import type { CollectiveOffersListResponseModel } from '../models/CollectiveOffersListResponseModel';
 import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
+import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -66,6 +67,35 @@ export class ApiOffresCollectivesService {
         403: `Non éligible pour les offres collectives`,
         404: `L'une des resources pour la création de l'offre n'a pas été trouvée`,
         422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * Édition d'une offre collective.
+   * @param offerId
+   * @param requestBody
+   * @returns GetPublicCollectiveOfferResponseModel L'offre collective à été édité avec succes
+   * @throws ApiError
+   */
+  public patchCollectiveOfferPublic(
+    offerId: number,
+    requestBody?: PatchCollectiveOfferBodyModel,
+  ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/v2/collective-offers/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: `Requête malformée`,
+        401: `Authentification nécessaire`,
+        403: `Vous n'avez pas les droits nécessaires pour éditer cette offre collective`,
+        404: `L'une des resources pour la création de l'offre n'a pas été trouvée`,
+        422: `Cetains champs ne peuvent pas être édités selon l'état de l'offre`,
       },
     });
   }
