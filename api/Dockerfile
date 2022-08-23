@@ -102,7 +102,7 @@ USER pcapi
 
 ######### TESTS #########
 
-FROM pcapi AS pcapi-tests
+FROM pcapi-console AS pcapi-tests
 
 USER root
 
