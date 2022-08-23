@@ -731,7 +731,7 @@ jobs:
     parameters:
       console:
         type: boolean
-        default: false
+        default: true
       tests:
         type: boolean
         default: false
