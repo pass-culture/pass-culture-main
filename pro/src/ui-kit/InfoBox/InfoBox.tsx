@@ -30,18 +30,22 @@ export interface IInfoBoxProps {
 const InfoBox = ({ type, text, linkProps }: IInfoBoxProps): JSX.Element => {
   return (
     <div className={cn(styles['info-box'], styles[type])}>
-      <div className={styles['info-box-title']}>
-        {type === 'info' ? (
-          <>
-            <BulbIcon className={styles['info-box-title-icon']} />
-            <span>À SAVOIR</span>
-          </>
-        ) : (
-          <>
-            <AttentionIcon className={styles['info-box-title-icon']} />
-            <span>IMPORTANT</span>
-          </>
-        )}
+      <div className={styles['info-box-header']}>
+        <div className={cn(styles['info-box-bar'])} />
+        <div className={styles['info-box-title']}>
+          {type === 'info' ? (
+            <>
+              <BulbIcon className={styles['info-box-title-icon']} />
+              <span>À SAVOIR</span>
+            </>
+          ) : (
+            <>
+              <AttentionIcon className={styles['info-box-title-icon']} />
+              <span>IMPORTANT</span>
+            </>
+          )}
+        </div>
+        <div className={cn(styles['info-box-bar'], styles[type])} />
       </div>
       <p className={styles['info-box-text']}>{text}</p>
       {linkProps &&

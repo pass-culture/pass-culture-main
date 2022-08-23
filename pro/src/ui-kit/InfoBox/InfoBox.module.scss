@@ -2,54 +2,70 @@
 @use 'styles/mixins/_rem.scss' as rem;
 
 .info-box {
-    position: relative;
-    border-top: 2px solid;
-    padding-top: rem.torem(12px);
-    padding-bottom: rem.torem(16px);
+  &-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: rem.torem(4px);
     font-weight: 600;
+  }
 
-    &.info {
-        border-color: colors.$tertiary;
-        
-        .info-box-title {
-            color: colors.$tertiary
-        }
+  &-bar {
+    width: 100%;
+    height: 2px;
+    border-radius: rem.torem(10px);
+
+    &:first-of-type {
+      width: rem.torem(24px);
+      flex: none;
     }
+  }
 
-    &.important {
-        border-color: colors.$primary;
-        
-        .info-box-title, .info-box-link {
-            color: colors.$primary
-        }
+  &-title {
+    background-color: colors.$white;
+    display: flex;
+    align-items: center;
+    padding: 0 rem.torem(8px);
+    font-size: rem.torem(12px);
+    flex: none;
 
-        .info-box-link-icon {
-            fill: colors.$primary
-        }
+    &-icon {
+      margin-right: rem.torem(8px);
     }
+  }
 
-    &-title {
-        position: absolute;
-        background-color: colors.$white;
-        top: rem.torem(-15px);
-        left: rem.torem(24px);
-        display: flex;
-        align-items: center;
-        padding: 0 rem.torem(8px) 0 rem.torem(4px);
-        font-size: rem.torem(12px);
-    
-        &-icon {
-            margin-right: rem.torem(8px);
-        }
+  &-link {
+    margin-top: rem.torem(8px);
+    display: flex;
+    align-items: center;
+
+    &-icon {
+      margin-right: rem.torem(8px);
     }
+  }
+}
 
-    &-link {
-        margin-top: rem.torem(8px);
-        display: flex;
-        align-items: center;
+.info {
+  .info-box-title {
+    color: colors.$tertiary;
+    padding-left: rem.torem(4px);
+  }
 
-        &-icon {
-            margin-right: rem.torem(8px);
-        }
-    }
+  .info-box-bar {
+    background: colors.$tertiary;
+  }
+}
+
+.important {
+  .info-box-title,
+  .info-box-link {
+    color: colors.$primary;
+  }
+
+  .info-box-link-icon {
+    fill: colors.$primary;
+  }
+
+  .info-box-bar {
+    background: colors.$primary;
+  }
 }
