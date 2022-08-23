@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import type { Cell } from 'react-table'
+import type { Column } from 'react-table'
 
 import {
   BookingRecapResponseModel,
@@ -23,6 +23,7 @@ import Header from './Header/Header'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import TableFrame from './Table/TableFrame'
+import { BookingsFilters } from './types'
 import filterBookingsRecap from './utils/filterBookingsRecap'
 import {
   sortByBeneficiaryName,
@@ -42,19 +43,82 @@ interface IBookingsRecapTableProps<
   }
 }
 
-type CustomCellValue<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
-  K extends keyof T
-> = T[K]
-
-type BookingsFilters = {
-  bookingBeneficiary: string
-  bookingToken: string
-  offerISBN: string
-  offerName: string
-  bookingStatus: string[]
-  selectedOmniSearchCriteria: string
-  keywords: string
+// TODO: return columns depending on audience
+const getColumnsByAudience = <
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+>(
+  filters: BookingsFilters,
+  bookingsRecap: T[],
+  updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
+): (Column<T> & {
+  className?: string
+})[] => {
+  const columns: (Column<BookingRecapResponseModel> & {
+    className?: string
+  })[] = [
+    {
+      id: 'stock',
+      accessor: 'stock',
+      Header: "Nom de l'offre",
+      Cell: ({ value }) => <BookingOfferCell offer={value} />,
+      defaultCanSort: true,
+      sortType: sortByOfferName,
+      className: 'column-offer-name',
+    },
+    {
+      id: 'booking_is_duo',
+      accessor: 'booking_is_duo',
+      Header: '',
+      Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
+      disableSortBy: true,
+      className: 'column-booking-duo',
+    },
+    {
+      Header: 'Bénéficiaire',
+      id: 'beneficiary',
+      accessor: 'beneficiary',
+      Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
+      defaultCanSort: true,
+      sortType: sortByBeneficiaryName,
+      className: 'column-beneficiary',
+    },
+    {
+      Header: 'Réservation',
+      id: 'booking_date',
+      accessor: 'booking_date',
+      Cell: ({ value }) => <BookingDateCell bookingDateTimeIsoString={value} />,
+      defaultCanSort: true,
+      sortType: sortByBookingDate,
+      className: 'column-booking-date',
+    },
+    {
+      Header: 'Contremarque',
+      id: 'booking_token',
+      accessor: 'booking_token',
+      Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
+      disableSortBy: true,
+      className: 'column-booking-token',
+    },
+    {
+      id: 'booking_status',
+      accessor: 'booking_status',
+      Cell: ({ row }) => {
+        return <BookingStatusCell bookingRecapInfo={row} />
+      },
+      disableSortBy: true,
+      Header: () => (
+        <FilterByBookingStatus
+          bookingStatuses={filters.bookingStatus}
+          bookingsRecap={bookingsRecap}
+          updateGlobalFilters={updateGlobalFilters}
+        />
+      ),
+      className: 'column-booking-status',
+    },
+  ]
+  return columns as (Column<T> & {
+    className?: string
+  })[]
 }
 
 const BookingsRecapTable = <
@@ -66,88 +130,6 @@ const BookingsRecapTable = <
 }: IBookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
-
-  const columns = [
-    {
-      id: 1,
-      headerTitle: "Nom de l'offre",
-      accessor: 'stock',
-      Cell: ({ value }: Cell<{ stock: CustomCellValue<T, 'stock'> }>) => (
-        <BookingOfferCell offer={value} />
-      ),
-      className: 'column-offer-name',
-      defaultCanSort: true,
-      sortType: sortByOfferName,
-    },
-    {
-      id: 2,
-      headerTitle: '',
-      accessor: 'booking_is_duo',
-      Cell: ({
-        value,
-      }: Cell<{ booking_is_duo: CustomCellValue<T, 'booking_is_duo'> }>) => (
-        <BookingIsDuoCell isDuo={value} />
-      ),
-      className: 'column-booking-duo',
-      disableSortBy: true,
-    },
-    {
-      id: 3,
-      headerTitle: 'Bénéficiaire',
-      accessor: 'beneficiary',
-      Cell: ({
-        value,
-      }: Cell<{ beneficiary: CustomCellValue<T, 'beneficiary'> }>) => (
-        <BeneficiaryCell beneficiaryInfos={value} />
-      ),
-      className: 'column-beneficiary',
-      defaultCanSort: true,
-      sortType: sortByBeneficiaryName,
-    },
-    {
-      id: 4,
-      headerTitle: 'Réservation',
-      accessor: 'booking_date',
-      Cell: ({
-        value,
-      }: Cell<{ booking_date: CustomCellValue<T, 'booking_date'> }>) => (
-        <BookingDateCell bookingDateTimeIsoString={value} />
-      ),
-      className: 'column-booking-date',
-      defaultCanSort: true,
-      sortType: sortByBookingDate,
-    },
-    {
-      id: 5,
-      headerTitle: 'Contremarque',
-      accessor: 'booking_token',
-      Cell: ({
-        value,
-      }: Cell<{ booking_token: CustomCellValue<T, 'booking_token'> }>) => (
-        <BookingTokenCell bookingToken={value} />
-      ),
-      className: 'column-booking-token',
-      disableSortBy: true,
-    },
-    {
-      id: 6,
-      accessor: 'booking_status',
-      Cell: ({
-        row,
-      }: Cell<{ booking_status: CustomCellValue<T, 'booking_status'> }>) => {
-        return <BookingStatusCell bookingRecapInfo={row} />
-      },
-      className: 'column-booking-status',
-      disableSortBy: true,
-      HeaderTitleFilter: () => (
-        <FilterByBookingStatus
-          bookingStatuses={filters.bookingStatus}
-          bookingsRecap={filteredBookings}
-          updateGlobalFilters={updateGlobalFilters}
-        />
-      ),
-    },
-  ]
 
   const [filters, setFilters] = useState<BookingsFilters>({
     bookingBeneficiary: EMPTY_FILTER_VALUE,
@@ -169,7 +151,7 @@ const BookingsRecapTable = <
     setCurrentPage(currentPage)
   }
 
-  const updateGlobalFilters = (updatedFilters: BookingsFilters) => {
+  const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
     setFilters(filters => ({
       ...filters,
       ...updatedFilters,
@@ -222,6 +204,10 @@ const BookingsRecapTable = <
   }
 
   const nbBookings = filteredBookings.length
+
+  const columns: (Column<T> & {
+    className?: string
+  })[] = getColumnsByAudience(filters, bookingsRecap, updateGlobalFilters)
 
   return (
     <div>
