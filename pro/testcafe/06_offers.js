@@ -216,14 +216,14 @@ test("je suis redirigé sur la liste des offres si je clique sur retour à parti
 
   const addThingStockButton = Selector('button').withText('Ajouter un stock')
   const priceInput = Selector('input[name="price"]')
-  const validateAndCreateOffer = Selector('button').withText(
-    'Valider et créer l’offre'
-  )
+  const publishOffer = Selector('button').withText("Publier l'offre")
+  const nextStep = Selector('button').withText('Étape suivante')
 
   await t
     .click(addThingStockButton)
     .typeText(priceInput, '15', { paste: true })
-    .click(validateAndCreateOffer)
+    .click(nextStep)
+    .click(publishOffer)
     .expect(getPathname())
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/confirmation$/)
 
@@ -416,6 +416,9 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
   )
+  const detailsAnchor = Selector(
+    `a[href^="/offre/${offer.id}/individuel/edition"]`
+  ).withText('Modifier')
   await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
 
   const previousThumbnailSrc = await offerThumbnail().attributes['src']
@@ -423,7 +426,8 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     .click(thumbnailButton)
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
-  await t.eval(() => location.reload(true))
+    .click(detailsAnchor)
+
   const updatedThumbnail = await offerThumbnail()
   await t
     .expect(updatedThumbnail.attributes['src'] === previousThumbnailSrc)
@@ -436,11 +440,11 @@ test("je suis scrollé sur l'élément incorrect du formulaire d'édition d'offr
     'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
   )
   await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
-  const key_combination_to_delete_text_input = 'ctrl+a delete'
+  const keyCombinationToDeleteTextInput = 'ctrl+a delete'
 
   await t
     .click(nameInput())
-    .pressKey(key_combination_to_delete_text_input)
+    .pressKey(keyCombinationToDeleteTextInput)
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(isElementInViewport('.offer-form [name="name"]'))
