@@ -759,7 +759,9 @@ jobs:
             name: Build & push pcapi image
             command: |
               source ${BASH_ENV}
+              export CACHE_FLAG=$([[ ${CIRCLE_BRANCH} == "master" ]] && echo "--no-cache" )
               docker build ./api \
+                ${CACHE_FLAG} \
                 -f ./api/Dockerfile \
                 --target pcapi \
                 -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>> \
@@ -774,7 +776,9 @@ jobs:
                 name: Build & push pcapi-console image
                 command: |
                   source ${BASH_ENV}
+                  export CACHE_FLAG=$([[ ${CIRCLE_BRANCH} == "master" ]] && echo "--no-cache" )
                   docker build ./api \
+                    ${CACHE_FLAG} \
                     -f ./api/Dockerfile \
                     --target pcapi-console \
                     -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
@@ -787,7 +791,9 @@ jobs:
                 name: Build & push pcapi-tests image
                 command: |
                   source ${BASH_ENV}
+                  export CACHE_FLAG=$([[ ${CIRCLE_BRANCH} == "master" ]] && echo "--no-cache" )
                   docker build ./api \
+                    ${CACHE_FLAG} \
                     -f ./api/Dockerfile \
                     --target pcapi-tests \
                     -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-tests:${CIRCLE_SHA1}
