@@ -686,6 +686,8 @@ class OffererTag(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offerer_tag"
 
     name: str = Column(String(140), nullable=False, unique=True)
+    label: str = Column(String(140))
+    description: str = Column(Text)
 
     def __repr__(self):  # type: ignore [no-untyped-def]
         return "%s" % self.name

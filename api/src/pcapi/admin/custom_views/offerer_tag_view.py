@@ -14,8 +14,8 @@ class OffererTagView(BaseAdminView):
     can_create = True
     can_edit = False  # Nothing to edit
     can_delete = True
-    column_list = ["id", "name"]
-    column_labels = {"name": "Nom"}
+    column_list = ["id", "name", "label", "description"]
+    column_labels = {"name": "Nom", "label": "Libellé", "description": "Description"}
     column_searchable_list = ["name"]
     column_filters: list[str] = []
 
@@ -29,4 +29,11 @@ class OffererTagView(BaseAdminView):
                 Length(max=140, message="Le nom ne peut excéder 140 caractères"),
             ],
         )
+        form.label = StringField(
+            "Libellé",
+            [
+                Length(max=140, message="Le libellé ne peut excéder 140 caractères"),
+            ],
+        )
+        form.description = StringField("Description")
         return form
