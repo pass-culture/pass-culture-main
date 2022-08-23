@@ -8,6 +8,7 @@ import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
 import type { BusinessUnitListResponseModel } from '../models/BusinessUnitListResponseModel';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
+import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
 import type { CollectiveOfferFromTemplateResponseModel } from '../models/CollectiveOfferFromTemplateResponseModel';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
@@ -1493,6 +1494,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/tuto-seen',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * patch_validate_email <PATCH>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public patchValidateEmail(
+    requestBody?: ChangeProEmailBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/users/validate_email',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
