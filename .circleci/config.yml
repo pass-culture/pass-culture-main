@@ -47,6 +47,13 @@ parameters:
 executors:
   gcp-sdk:
     docker:
+      - image: google/cloud-sdk:316.0.0
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+
+  gcp-sdk-alpine:
+    docker:
       - image: google/cloud-sdk:316.0.0-alpine
         auth:
           username: $DOCKERHUB_USER
@@ -725,7 +732,7 @@ jobs:
                 channel: shérif
 
   build-and-push-image:
-    executor: gcp-sdk
+    executor: gcp-sdk-alpine
     environment:
       DOCKER_BUILDKIT: 1
     parameters:
