@@ -3,10 +3,19 @@ from datetime import timedelta
 import hashlib
 import logging
 
+import jwt
+
 from pcapi.core.educational.constants import INSTITUTION_TYPES
+from pcapi.core.users.utils import ALGORITHM_RS_256
 
 
 logger = logging.getLogger(__name__)
+
+from pcapi.core import search
+from pcapi.utils.blueprint import Blueprint
+
+
+blueprint = Blueprint(__name__, __name__)
 
 
 def compute_educational_booking_cancellation_limit_date(
@@ -49,3 +58,40 @@ def log_information_for_data_purpose(
         extra={"analyticsSource": "adage", **extra_data},
         technical_message_id="collective_analytics_event",
     )
+
+
+@blueprint.cli.command("reindex_all_collective_offers")
+def reindex_all_collective_offers() -> None:
+    """
+    TO BE USED IN LOCAL ENV
+    """
+    search.unindex_all_collective_offers()
+    search.unindex_all_collective_offer_templates()
+    search.index_all_collective_offers_and_templates()
+
+
+def create_adage_jwt_fake_valid_token() -> str:
+    with open("tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
+        authenticated_informations = {
+            "civilite": "M.",
+            "nom": "TEST",
+            "prenom": "COMPTE",
+            "mail": "compte.test@education.gouv.fr",
+            "uai": "0910620E",
+            "exp": datetime.utcnow() + timedelta(days=1),
+        }
+
+        return jwt.encode(
+            authenticated_informations,
+            key=reader.read().decode(),
+            algorithm=ALGORITHM_RS_256,
+        )
+
+
+@blueprint.cli.command("generate_fake_adage_token")
+def generate_fake_adage_token() -> None:
+    """
+    TO BE USED IN LOCAL ENV
+    """
+    token = create_adage_jwt_fake_valid_token()
+    print(f"Adage localhost URL: http://localhost:3002/?token={token}")
