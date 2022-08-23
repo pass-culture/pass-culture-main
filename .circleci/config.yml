@@ -1050,6 +1050,10 @@ workflows:
             - GCP_EHP
           app_version: ${CIRCLE_SHA1}
           tests: true
+          filters:
+            branches:
+              ignore:
+                - docs
       - type-checking-pro:
          filters:
            branches:
@@ -1057,6 +1061,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context: Slack
       - quality-pro:
          filters:
@@ -1065,6 +1070,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context: Slack
       - type-checking-adage-front:
          filters:
@@ -1073,6 +1079,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context: Slack
       - quality-adage-front:
          filters:
@@ -1081,6 +1088,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context: Slack
       - quality-api:
          filters:
@@ -1089,6 +1097,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context:
           - Slack
           - GCP
@@ -1102,6 +1111,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context:
           - Slack
           - GCP
@@ -1115,6 +1125,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context: Slack
          requires:
            - type-checking-adage-front
@@ -1125,6 +1136,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context: Slack
          requires:
            - type-checking-pro
@@ -1135,6 +1147,7 @@ workflows:
                - production
                - staging
                - integration
+               - docs
          context: Slack
          requires:
            - type-checking-pro
@@ -1218,6 +1231,7 @@ workflows:
                - staging
                - integration
                - master
+               - docs
          requires:
            - type-checking-pro
            - quality-pro
