@@ -1,21 +1,30 @@
 import isEqual from 'lodash.isequal'
-import PropTypes from 'prop-types'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 
+import {
+  BookingRecapResponseModel,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
 import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
 import Icon from 'components/layout/Icon'
 
 import { getBookingStatusDisplayInformations } from '../../CellsFormatter/utils/bookingStatusConverter'
+import { BookingsFilters } from '../../types'
 
-function getAvailableBookingStatuses(bookingsRecap) {
+function getAvailableBookingStatuses<
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+>(bookingsRecap: T[]) {
   const presentBookingStatues = Array.from(
     new Set(bookingsRecap.map(bookingRecap => bookingRecap.booking_status))
   ).map(bookingStatus => ({
-    title: getBookingStatusDisplayInformations(bookingStatus).status,
+    title: getBookingStatusDisplayInformations(bookingStatus)?.status ?? '',
     value: bookingStatus,
   }))
 
-  const byStatusTitle = (bookingStatusA, bookingStatusB) => {
+  const byStatusTitle = (
+    bookingStatusA: { title: string; value: string },
+    bookingStatusB: { title: string; value: string }
+  ) => {
     const titleA = bookingStatusA.title
     const titleB = bookingStatusB.title
     return titleA < titleB ? -1 : titleA > titleB ? 1 : 0
@@ -24,15 +33,25 @@ function getAvailableBookingStatuses(bookingsRecap) {
   return presentBookingStatues.sort(byStatusTitle)
 }
 
-const FilterByBookingStatus = ({
+interface FilterByBookingStatusProps<
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+> {
+  bookingStatuses: string[]
+  bookingsRecap: T[]
+  updateGlobalFilters: (filters: Partial<BookingsFilters>) => void
+}
+
+const FilterByBookingStatus = <
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+>({
   bookingStatuses,
   bookingsRecap,
   updateGlobalFilters,
-}) => {
+}: FilterByBookingStatusProps<T>) => {
   const [bookingStatusFilters, setBookingStatusFilters] =
     useState(bookingStatuses)
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
-  const containerRef = useRef()
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   function showFilter() {
     setIsToolTipVisible(true)
@@ -44,7 +63,7 @@ const FilterByBookingStatus = ({
 
   useOnClickOrFocusOutside(containerRef, hideFilters)
 
-  function handleCheckboxChange(event) {
+  function handleCheckboxChange(event: ChangeEvent<HTMLInputElement>) {
     const statusId = event.target.name
     const isSelected = event.target.checked
 
@@ -110,12 +129,6 @@ const FilterByBookingStatus = ({
       </span>
     </div>
   )
-}
-
-FilterByBookingStatus.propTypes = {
-  bookingStatuses: PropTypes.arrayOf(PropTypes.string).isRequired,
-  bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  updateGlobalFilters: PropTypes.func.isRequired,
 }
 
 export default FilterByBookingStatus
