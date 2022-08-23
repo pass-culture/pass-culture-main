@@ -15,6 +15,7 @@ const stockItem = Selector('tbody').find('tr')
 const submitSuccess = Selector('.notification.is-success').withText(
   'Vos modifications ont bien été enregistrées'
 )
+const keyCombinationToDeleteTextInput = 'ctrl+a delete'
 
 fixture('En étant sur la page des stocks d’une offre,')
 
@@ -35,6 +36,7 @@ test("je peux créer un stock pour un évènement en passant par la page de l'of
   const hourPickerLastHour = Selector(
     '.react-datepicker__time-list-item:last-child'
   )
+  const expectedPriceSummary = Selector('span').withText('15 €')
   await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
 
   await t.click(stocksAnchor).click(addEventStockButton)
@@ -44,10 +46,16 @@ test("je peux créer un stock pour un évènement en passant par la page de l'of
     .click(datePickerLastDay)
     .click(hourInput)
     .click(hourPickerLastHour)
+    .click(priceInput)
+    .pressKey(keyCombinationToDeleteTextInput)
     .typeText(priceInput, '15', { paste: true })
     .click(submitButton)
 
-  await t.expect(submitSuccess.exists).ok().expect(stockItem.count).eql(1)
+  await t
+    .expect(submitSuccess.exists)
+    .ok()
+    .expect(expectedPriceSummary.count)
+    .eql(1)
 })
 
 test('je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock en passant par la page des offres', async t => {
@@ -75,6 +83,7 @@ test('je peux modifier un stock pour un évènement', async t => {
   const hourPickerLastHour = Selector(
     '.react-datepicker__time-list-item:last-child'
   )
+  const expectedPriceSummary = Selector('span').withText('15 €')
   await navigateToStocksAs(user, offer, createUserRole(user))(t)
 
   await t
@@ -98,15 +107,17 @@ test('je peux modifier un stock pour un évènement', async t => {
     .click(hourPickerLastHour)
     .expect(datePickerPopin.exists)
     .notOk()
+    .click(priceInput)
+    .pressKey(keyCombinationToDeleteTextInput)
     .typeText(priceInput, '15', { paste: true })
     .click(submitButton)
 
   await t
     .expect(submitSuccess.exists)
     .ok()
-    .expect(priceInput.value)
-    .contains('15')
-    .expect(stockItem.count)
+    .expect(expectedPriceSummary.exists)
+    .ok()
+    .expect(expectedPriceSummary.count)
     .eql(1)
 })
 

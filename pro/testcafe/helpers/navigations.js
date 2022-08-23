@@ -112,7 +112,7 @@ export const navigateToOfferDetailsAs = (user, offer, userRole) => async t => {
   const submitButton = Selector('button[type="submit"]')
   const detailsAnchor = Selector(
     `a[href^="/offre/${offer.id}/individuel/edition"]`
-  ).withText("Détails de l'offre")
+  ).withText('Modifier')
   const offerAnchor = useSummaryPage
     ? Selector(
         `a[href^="/offre/${offer.id}/individuel/recapitulatif"]`
