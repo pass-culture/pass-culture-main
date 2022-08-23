@@ -5,6 +5,8 @@ from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
+from jwt import InvalidTokenError
+import pydantic
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
@@ -83,6 +85,29 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
     attributes = body.dict()
     users_api.update_user_info(user, **attributes)
     return users_serializers.UserPhoneResponseModel.from_orm(user)
+
+
+@blueprint.pro_private_api.route("/users/validate_email", methods=["PATCH"])
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
+    errors = ApiErrors()
+    errors.status_code = 400
+    try:
+        payload = users_serializers.ChangeEmailTokenContent.from_token(body.token)
+        users_api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
+    except pydantic.ValidationError as exc:
+        errors.add_error("global", "Adresse email invalide")
+        raise errors from exc
+    except InvalidTokenError as exc:
+        errors.add_error("global", "Token invalide")
+        raise errors from exc
+    except users_exceptions.UserDoesNotExist as exc:
+        errors.add_error("global", "Token invalide")
+        raise errors from exc
+    except users_exceptions.EmailExistsError:
+        # Returning an error message might help the end client find
+        # existing email addresses.
+        pass
 
 
 @blueprint.pro_private_api.route("/users/email", methods=["POST"])
