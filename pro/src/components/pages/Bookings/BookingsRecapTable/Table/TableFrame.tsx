@@ -1,17 +1,34 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import { usePagination, useSortBy, useTable } from 'react-table'
+import { Column, usePagination, useSortBy, useTable } from 'react-table'
+
+import {
+  BookingRecapResponseModel,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
 
 import TableWrapper from './TableWrapper'
 
-const TableFrame = ({
+interface TableFrameProps<
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+> {
+  columns: Column<T>[]
+  currentPage: number
+  data: T[]
+  nbBookings: number
+  nbBookingsPerPage: number
+  updateCurrentPage: (pageNumber: number) => void
+}
+
+const TableFrame = <
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+>({
   columns,
   data,
   nbBookings,
   nbBookingsPerPage,
   currentPage,
   updateCurrentPage,
-}) => {
+}: TableFrameProps<T>) => {
   const {
     canPreviousPage,
     canNextPage,
@@ -35,6 +52,7 @@ const TableFrame = ({
     useSortBy,
     usePagination
   )
+
   const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
 
   return (
@@ -53,21 +71,6 @@ const TableFrame = ({
       updateCurrentPage={updateCurrentPage}
     />
   )
-}
-
-TableFrame.propTypes = {
-  columns: PropTypes.arrayOf(
-    PropTypes.shape({
-      headerTitle: PropTypes.string,
-      accessor: PropTypes.string,
-      Cell: PropTypes.func,
-    })
-  ).isRequired,
-  currentPage: PropTypes.number.isRequired,
-  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  nbBookings: PropTypes.number.isRequired,
-  nbBookingsPerPage: PropTypes.number.isRequired,
-  updateCurrentPage: PropTypes.func.isRequired,
 }
 
 export default TableFrame
