@@ -41,12 +41,3 @@ def create_fraud_check(
     )
     repository.save(fraud_check)
     return fraud_check
-
-
-def get_or_create_fraud_check(
-    user: users_models.User, application_number: int, result_content: fraud_models.DMSContent | None = None
-) -> fraud_models.BeneficiaryFraudCheck:
-    fraud_check = get_fraud_check(user, application_number)
-    if fraud_check is None:
-        return create_fraud_check(user, application_number, result_content)
-    return fraud_check
