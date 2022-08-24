@@ -7,11 +7,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-width: 2px;
-  border-style: solid;
+  border: 2px solid;
   border-radius: rem.torem(24px);
   height: rem.torem(40px);
-  line-height: rem.torem(36px);
   padding: 0 rem.torem(16px);
 
   &:focus {
@@ -29,11 +27,8 @@
 
   &-icon {
     height: rem.torem(20px);
-    margin-right: rem.torem(2px);
-    margin-left: rem.torem(
-      -4px
-    ); // compensate for icon white space adding to padding
-    width: rem.torem(16px);
+    margin-right: rem.torem(8px);
+    width: rem.torem(20px);
   }
 
   &-primary {
@@ -55,6 +50,10 @@
     &:disabled .button-icon,
     &.button-disabled .button-icon {
       fill: colors.$grey-medium;
+    }
+
+    .button-icon {
+      fill: colors.$white;
     }
   }
 
@@ -80,6 +79,10 @@
     &.button-disabled .button-icon {
       fill: colors.$grey-medium;
     }
+
+    .button-icon {
+      fill: colors.$primary;
+    }
   }
 
   &-ternary {
@@ -87,7 +90,8 @@
     color: colors.$black;
     background-color: transparent;
     border-color: transparent;
-    padding: 0 rem.torem(8px);
+    padding: 0;
+    border: none;
 
     &:hover,
     &:focus {
