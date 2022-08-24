@@ -13,15 +13,18 @@ import {
   BookingTokenCell,
   Header,
   NoFilteredBookings,
-  TablePagination,
 } from 'screens/Bookings/BookingsRecapTable/components'
+import TablePagination from 'screens/Bookings/BookingsRecapTable/components/Table/Paginate'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { configureTestStore } from 'store/testUtils'
 import { ReactComponent } from 'utils/svgrMock'
 
-jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
-  NB_BOOKINGS_PER_PAGE: 1,
-}))
+jest.mock(
+  'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE',
+  () => ({
+    NB_BOOKINGS_PER_PAGE: 1,
+  })
+)
 jest.mock('lodash.debounce', () => jest.fn(callback => callback))
 jest.mock('../utils/filterBookingsRecap', () => jest.fn())
 
@@ -270,7 +273,7 @@ describe('components | BookingsRecapTable', () => {
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
     expect(header.props()).toStrictEqual({
-      bookingsRecapFiltered: bookingsRecap,
+      bookingsRecapFilteredLength: bookingsRecap.length,
       isLoading: false,
     })
   })
