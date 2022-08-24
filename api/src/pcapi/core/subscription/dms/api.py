@@ -342,7 +342,7 @@ def _process_accepted_application(
     )
 
     try:
-        has_completed_all_steps = subscription_api.on_successful_application(user=user, source_data=dms_content)
+        has_completed_all_steps = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
     except Exception:  # pylint: disable=broad-except
         logger.exception(
             "[DMS] Could not save application %s - Procedure %s",

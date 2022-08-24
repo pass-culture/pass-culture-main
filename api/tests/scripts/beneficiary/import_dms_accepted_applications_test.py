@@ -2,7 +2,6 @@ import dataclasses
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -60,10 +59,10 @@ class RunTest:
         get_applications_with_details.assert_called_with(6712558, dms_models.GraphQLApplicationStates.accepted)
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    @patch("pcapi.core.subscription.api.on_successful_application")
+    @patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
     def test_all_applications_are_processed_once(
         self,
-        on_successful_application,
+        activate_beneficiary_if_no_missing_step,
         get_applications_with_details,
     ):
         users_factories.UserFactory(email="email1@example.com")
@@ -94,12 +93,12 @@ class RunTest:
         ]
 
         import_dms_accepted_applications(6712558)
-        assert on_successful_application.call_count == 3
+        assert activate_beneficiary_if_no_missing_step.call_count == 3
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    @patch("pcapi.core.subscription.api.on_successful_application")
+    @patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
     def test_application_with_known_email_and_already_beneficiary_are_saved_as_rejected(
-        self, on_successful_application, get_applications_with_details
+        self, activate_beneficiary_if_no_missing_step, get_applications_with_details
     ):
         # same user, but different
         user = users_factories.BeneficiaryGrant18Factory(email="john.doe@example.com")
@@ -121,12 +120,12 @@ class RunTest:
             "Il ne peut pas prétendre au pass culture 18 ans"
         )
 
-        on_successful_application.assert_not_called()
+        activate_beneficiary_if_no_missing_step.assert_not_called()
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    @patch("pcapi.core.subscription.api.on_successful_application")
+    @patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
     def test_beneficiary_is_created_with_procedure_number(
-        self, on_successful_application, get_applications_with_details
+        self, activate_beneficiary_if_no_missing_step, get_applications_with_details
     ):
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
         get_applications_with_details.return_value = [
@@ -142,28 +141,7 @@ class RunTest:
 
         import_dms_accepted_applications(6712558)
 
-        on_successful_application.assert_called_with(
-            user=applicant,
-            source_data=fraud_models.DMSContent(
-                last_name="Doe",
-                first_name="John",
-                civility=users_models.GenderEnum.F,
-                email="john.doe@test.com",
-                application_number=123,
-                procedure_number=6712558,
-                department=None,
-                phone="0123456789",
-                birth_date=AGE18_ELIGIBLE_BIRTH_DATE.date(),
-                activity="Étudiant",
-                address="3 La Bigotais 22800 Saint-Donan",
-                postal_code="67200",
-                processed_datetime=datetime(2020, 5, 13, 8, 41, 21),
-                registration_datetime=datetime(2020, 5, 13, 9, 9, 46, tzinfo=timezone(timedelta(seconds=7200))),
-                latest_modification_datetime=datetime(2020, 5, 13, 8, 41, 23),
-                id_piece_number="123123121",
-                state="accepte",
-            ),
-        )
+        activate_beneficiary_if_no_missing_step.assert_called_with(user=applicant)
 
 
 class FieldErrorsTest:
@@ -192,10 +170,12 @@ class RunIntegrationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user(self, get_applications_with_details):
         user = users_factories.UserFactory(
-            firstName="john",
+            firstName="profile-firstname",
             lastName="doe",
             email="john.doe@example.com",
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
+            postalCode="12400",
+            address="Route de Gozon",
         )
 
         get_applications_with_details.return_value = [
@@ -207,9 +187,9 @@ class RunIntegrationTest:
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
-        assert user.firstName == "John"
-        assert user.postalCode == "67200"
-        assert user.address == "3 La Bigotais 22800 Saint-Donan"
+        assert user.firstName == "profile-firstname"
+        assert user.postalCode == "12400"
+        assert user.address == "Route de Gozon"
         assert user.phoneNumber is None
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
@@ -532,7 +512,7 @@ class RunIntegrationTest:
             )
         ]
 
-        process_mock = mocker.patch("pcapi.core.subscription.api.on_successful_application")
+        process_mock = mocker.patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
         import_dms_accepted_applications(6712558)
 
         assert process_mock.call_count == 0

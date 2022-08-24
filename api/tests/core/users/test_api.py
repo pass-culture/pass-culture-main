@@ -767,6 +767,13 @@ class BeneficiaryInformationUpdateTest:
         assert new_user.idPieceNumber == "123456789"
         assert new_user.civility == "M."
 
+    def test_update_user_information_from_ubble_with_married_name(self):
+        user = users_factories.UserFactory(civility=None)
+        ubble_data = fraud_factories.UbbleContentFactory(married_name="Flouz")
+        new_user = users_api.update_user_information_from_external_source(user, ubble_data)
+
+        assert new_user.married_name == "Flouz"
+
     def test_update_id_piece_number(self):
         user = users_factories.UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
         dms_data = fraud_factories.DMSContentFactory(id_piece_number="140767100016")
