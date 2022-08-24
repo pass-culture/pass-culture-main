@@ -26,7 +26,7 @@ import {
   EXTRA_DATA_FIELDS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from 'core/Offers'
-import { OfferRefundWarning } from 'new_components/Banner'
+import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SubmitButton } from 'ui-kit'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
@@ -49,7 +49,6 @@ import {
 import AccessibilityCheckboxList, {
   getAccessibilityValues,
 } from './AccessibilityCheckboxList'
-import WithdrawalReminder from './Messages/WithdrawalReminder'
 import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
 import { OfferWithdrawalTypeOptions } from './OfferWithdrawalTypeOptions'

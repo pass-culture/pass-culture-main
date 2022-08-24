@@ -17,7 +17,7 @@ import { Informations } from './Informations'
 import { Notifications } from './Notifications'
 import { UsefulInformations } from './UsefulInformations'
 
-interface IOfferIndividualForm {
+export interface IOfferIndividualForm {
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
   categories: IOfferCategory[]
@@ -34,7 +34,7 @@ const OfferIndividualForm = ({
     currentUser: { isAdmin },
   } = useCurrentUser()
   const {
-    values: { subcategoryId },
+    values: { subcategoryId, venueId },
   } = useFormikContext<IOfferIndividualFormValues>()
 
   const filteredVenueList = useFilteredVenueList({
@@ -43,14 +43,15 @@ const OfferIndividualForm = ({
     venueList,
   })
 
+  const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
+
+  const isVenueVirtual = filteredVenueList.find(
+    v => v.id === venueId
+  )?.isVirtual
+
   return (
     <FormLayout>
       <Categories categories={categories} subCategories={subCategories} />
-
-      {/* @TODO : display reimbursment banner */}
-      {/* @TODO : display create venue banner */}
-      {/* @TODO : display physical offers banner */}
-
       {subcategoryId.length > 0 && filteredVenueList.length > 0 && (
         <>
           <Informations />
@@ -59,6 +60,8 @@ const OfferIndividualForm = ({
             isUserAdmin={isAdmin}
             offererNames={offererNames}
             venueList={filteredVenueList}
+            offerSubCategory={offerSubCategory}
+            isVenueVirtual={isVenueVirtual}
           />
           <Accessibility />
           <ExternalLink />

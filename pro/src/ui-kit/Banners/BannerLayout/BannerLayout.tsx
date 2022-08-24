@@ -39,7 +39,9 @@ const BannerLayout = ({
           <Icon svg="ico-star" className={styles['ico-new']} />
         )}
         <div>
-          {children && <p className={styles['bi-banner-text']}>{children}</p>}
+          {children && (
+            <span className={styles['bi-banner-text']}>{children}</span>
+          )}
 
           {linkNode}
         </div>
