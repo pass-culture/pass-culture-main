@@ -1,9 +1,13 @@
-import argparse
 import csv
 from datetime import datetime
 from io import TextIOWrapper
 import logging
 from typing import Iterable
+
+import click
+from click_option_group import RequiredMutuallyExclusiveOptionGroup
+from click_option_group import optgroup
+from flask import Blueprint
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
@@ -19,6 +23,7 @@ from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
 
 logger = logging.getLogger(__name__)
+blueprint = Blueprint("import_test_users", __name__)
 
 
 def _get_birth_date(row: dict) -> datetime:
@@ -168,40 +173,32 @@ def create_users_from_google_sheet(document_id: str, update_if_exists: bool = Fa
     return create_users_from_csv(wrapper, update_if_exists=update_if_exists)
 
 
-if __name__ == "__main__":
-    from pcapi.flask_app import app
+@blueprint.cli.command("import_test_users")
+@optgroup.group("User data sources", cls=RequiredMutuallyExclusiveOptionGroup)
+@optgroup.option(
+    "-d",
+    "--default",
+    is_flag=True,
+    default=False,
+    help="Import from default Google document set in IMPORT_USERS_GOOGLE_DOCUMENT_ID",
+)
+@optgroup.option("-f", "--filename", help="Path to the CSV file to import")
+@optgroup.option("-g", "--google", "google_id", help="Google document id")
+@click.option("-u", "--update", help="Update users which already exist", is_flag=True, default=False)
+def import_test_users(default: bool, filename: str, google_id: str, update: bool) -> None:
+    """Creates or updates users listed in a Google Sheet or CSV file"""
 
-    parser = argparse.ArgumentParser(description="""Creates or updates users listed in a Google Sheet or CSV file""")
-    parser.add_argument("-f", "--filename", dest="filename", help="Path to the CSV file to import")
-    parser.add_argument("-g", "--google", dest="google_id", help="Google document id")
-    parser.add_argument(
-        "-d",
-        "--default",
-        dest="default",
-        help="Import from default Google document set in IMPORT_USERS_GOOGLE_DOCUMENT_ID",
-        action="store_true",
-        default=False,
-    )
-    parser.add_argument(
-        "-u", "--update", dest="update", help="Update users which already exist", action="store_true", default=False
-    )
-    args = parser.parse_args()
-
-    if len([param for param in (args.filename, args.google_id, args.default) if param]) != 1:
-        raise ValueError("This script requires either the path to a CSV file or the id of Google document or default")
-
-    with app.app_context():
-        if args.filename:
-            source = args.filename
-            with open(source, encoding="utf-8") as fp:
-                new_users = create_users_from_csv(fp)
+    if filename:
+        source = filename
+        with open(source, encoding="utf-8") as fp:
+            new_users = create_users_from_csv(fp)
+    else:
+        if google_id:
+            source = google_id
         else:
-            if args.google_id:
-                source = args.google_id
-            else:
-                source = settings.IMPORT_USERS_GOOGLE_DOCUMENT_ID
-                if not source:
-                    raise ValueError("IMPORT_USERS_GOOGLE_DOCUMENT_ID is not configured")
-            new_users = create_users_from_google_sheet(source, args.update)
+            source = settings.IMPORT_USERS_GOOGLE_DOCUMENT_ID
+            if not source:
+                raise ValueError("IMPORT_USERS_GOOGLE_DOCUMENT_ID is not configured")
+        new_users = create_users_from_google_sheet(source, update)
 
     logger.info("Created or updated %d users from %s", len(new_users), source)

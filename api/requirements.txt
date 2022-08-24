@@ -9,6 +9,7 @@ black
 # `sentry_sdk.init()` uses `flask.signals`, which requires `blinker`
 blinker==1.4
 boto3==1.21.9
+click-option-group==0.5.3
 coveralls==2.1.2
 debugpy
 factory-boy
