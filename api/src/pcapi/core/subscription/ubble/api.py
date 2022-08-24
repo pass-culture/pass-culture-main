@@ -61,10 +61,11 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
             logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
             return
 
+        subscription_api.update_user_birth_date_if_not_beneficiary(user, content.get_birth_date())
+
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
             can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
             handle_validation_errors(user, fraud_check, can_retry=can_retry)
-            subscription_api.update_user_birth_date(user, content.get_birth_date())
             return
 
         payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
