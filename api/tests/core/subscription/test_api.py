@@ -1,4 +1,5 @@
 import dataclasses
+from datetime import date
 from datetime import datetime
 import typing
 from unittest.mock import MagicMock
@@ -17,14 +18,11 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
-from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
-from pcapi.models import api_errors
-import pcapi.notifications.push.testing as push_testing
 
 
 @pytest.mark.usefixtures("db_session")
@@ -34,7 +32,7 @@ class EduconnectFlowTest:
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
-        user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1))
+        user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1), firstName=None, lastName=None)
         access_token = create_access_token(identity=user.email)
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         mock_saml_client = MagicMock()
@@ -97,10 +95,10 @@ class EduconnectFlowTest:
             == "https://webapp-v2.example.com/educonnect/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
-        assert user.firstName == "Max"
-        assert user.lastName == "SENS"
+        assert user.firstName == "WrongFirstName"
+        assert user.lastName == "Wrong Lastname"
         assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
-        assert user.ineHash == ine_hash
+        assert user.ineHash is None
 
         assert not user.is_beneficiary
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
@@ -110,6 +108,11 @@ class EduconnectFlowTest:
         assert response.status_code == 204
         assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
         assert user.deposit.amount == 20
+
+        assert user.firstName == "Max"
+        assert user.lastName == "SENS"
+        assert user.ineHash == ine_hash
+        assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -624,184 +627,6 @@ class NextSubscriptionStepTest:
         )
 
         assert subscription_api.get_next_subscription_step(user) is None
-
-
-@pytest.mark.usefixtures("db_session")
-class OnSuccessfulDMSApplicationTest:
-    def test_new_beneficiaries_requires_userprofiling(self):
-        # given
-        information = fraud_models.DMSContent(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=datetime.utcnow() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18),
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            address="11 Rue du Test",
-            application_number=123,
-            procedure_number=123456,
-            civility=users_models.GenderEnum.F,
-            activity="Étudiant",
-            registration_datetime=datetime.today(),
-        )
-        applicant = users_factories.UserFactory(email=information.email)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        # when
-        subscription_api.on_successful_application(user=applicant, source_data=information)
-
-        # then
-        first = users_models.User.query.first()
-        assert first.email == "jane.doe@example.com"
-        assert first.civility == users_models.GenderEnum.F.value
-        assert first.activity == "Étudiant"
-        assert not first.has_beneficiary_role
-        assert (
-            subscription_api.get_next_subscription_step(first) == subscription_models.SubscriptionStep.PHONE_VALIDATION
-        )
-
-    def test_new_beneficiaries_are_recorded_with_deposit(self):
-        # given
-        information = fraud_models.DMSContent(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=datetime.utcnow() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18),
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            address="11 Rue du Test",
-            application_number=123,
-            procedure_number=123456,
-            civility=users_models.GenderEnum.F,
-            activity="Étudiant",
-            registration_datetime=datetime.today(),
-        )
-        applicant = users_factories.UserFactory(
-            email=information.email, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
-        )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=applicant)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        # when
-        subscription_api.on_successful_application(user=applicant, source_data=information)
-
-        # then
-        first = users_models.User.query.first()
-        assert first.email == "jane.doe@example.com"
-        assert first.wallet_balance == 300
-        assert first.civility == users_models.GenderEnum.F.value
-        assert first.activity == "Étudiant"
-        assert first.has_beneficiary_role
-        assert len(push_testing.requests) == 2
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
-        )
-
-    @patch("pcapi.repository.repository")
-    def test_error_is_collected_if_beneficiary_could_not_be_saved(self, mock_repository):
-        # given
-        information = fraud_factories.DMSContentFactory(application_number=123)
-        applicant = users_factories.UserFactory(email=information.email)
-
-        mock_repository.save.side_effect = [api_errors.ApiErrors({"postalCode": ["baaaaad value"]})]
-
-        # when
-        with pytest.raises(api_errors.ApiErrors):
-            subscription_api.on_successful_application(user=applicant, source_data=information)
-
-        # then
-        assert len(push_testing.requests) == 0
-
-    def test_activate_beneficiary_when_confirmation_happens_after_18_birthday(self):
-        with freeze_time("2020-01-01"):
-            applicant = users_factories.UserFactory(
-                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
-            )
-            eighteen_years_and_one_month_ago = datetime.today() - relativedelta(years=18, months=1)
-
-            # the user deposited their DMS application before turning 18
-            information = fraud_factories.DMSContentFactory(
-                birth_date=eighteen_years_and_one_month_ago,
-                registration_datetime=datetime.today(),
-            )
-            fraud_factories.ProfileCompletionFraudCheckFactory(user=applicant)
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=applicant,
-                type=fraud_models.FraudCheckType.USER_PROFILING,
-                status=fraud_models.FraudCheckStatus.OK,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=applicant,
-                type=fraud_models.FraudCheckType.DMS,
-                status=fraud_models.FraudCheckStatus.OK,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=applicant,
-                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-                status=fraud_models.FraudCheckStatus.OK,
-            )
-
-        assert applicant.has_beneficiary_role is False
-
-        with freeze_time("2020-03-01"):
-            # the DMS application is confirmed after the user turns 18
-            subscription_api.on_successful_application(user=applicant, source_data=information)
-        assert applicant.has_beneficiary_role
-
-    @freeze_time("2020-03-01")
-    def test_activate_beneficiary_when_confirmation_happens_after_18_birthday_requires_phone_validation(self):
-        with freeze_time("2020-01-01"):
-            applicant = users_factories.UserFactory()
-            eighteen_years_and_one_month_ago = datetime.today() - relativedelta(years=18, months=1)
-
-            # the user deposited their DMS application before turning 18
-            information = fraud_models.DMSContent(
-                department="93",
-                last_name="Doe",
-                first_name="Jane",
-                birth_date=eighteen_years_and_one_month_ago,
-                email="jane.doe@example.com",
-                phone="0612345678",
-                postal_code="93130",
-                address="11 Rue du Test",
-                application_number=123,
-                procedure_number=123456,
-                civility="Mme",
-                activity="Étudiant",
-                registration_datetime=datetime.today(),
-            )
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant,
-            type=fraud_models.FraudCheckType.DMS,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
-
-        # the DMS application is confirmed after the user turns 18
-        subscription_api.on_successful_application(user=applicant, source_data=information)
-
-        assert applicant.has_beneficiary_role is False
-        assert (
-            subscription_api.get_next_subscription_step(applicant)
-            == subscription_models.SubscriptionStep.PHONE_VALIDATION
-        )
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1447,7 +1272,12 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName="profile-firstname",
+            lastName="profile-lastname",
         )
+        identity_firstname = "Yolan"
+        identity_lastname = "Mac Doumy"
+        identity_birth_date = date.today() - relativedelta(years=18, months=3, days=1)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
@@ -1459,6 +1289,11 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
+            resultContent=fraud_factories.UbbleContentFactory(
+                first_name=identity_firstname,
+                last_name=identity_lastname,
+                birth_date=identity_birth_date.isoformat(),
+            ),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1477,11 +1312,19 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert is_success
         assert user.is_beneficiary
+        assert user.firstName == identity_firstname
+        assert user.lastName == identity_lastname
+        assert user.dateOfBirth.date() == identity_birth_date
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        )
 
     def test_missing_step(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName=None,
+            lastName=None,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1506,6 +1349,8 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert not is_success
         assert not user.is_beneficiary
+        assert user.firstName is None
+        assert user.lastName is None
 
     def test_duplicate_detected(self):
         first_name = "Alain"
@@ -1517,6 +1362,8 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName=None,
+            lastName=None,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1552,3 +1399,5 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert not user.is_beneficiary
         assert to_invalidate_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert to_invalidate_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
+        assert user.firstName is None
+        assert user.lastName is None

@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 
 from pcapi import settings
 import pcapi.core.fraud.api as fraud_api
@@ -473,22 +474,14 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User, always_upda
     if activable_fraud_check.status != fraud_models.FraudCheckStatus.OK:
         return False
 
+    source_data = typing.cast(common_fraud_models.IdentityCheckContent, activable_fraud_check.source_data())
+    users_api.update_user_information_from_external_source(user, source_data, commit=False)
+
     activate_beneficiary_for_eligibility(
         user, activable_fraud_check.get_detailed_source(), activable_fraud_check.eligibilityType  # type: ignore [arg-type]
     )
 
     return True
-
-
-def on_successful_application(
-    user: users_models.User,
-    source_data: common_fraud_models.IdentityCheckContent,
-) -> bool:
-    users_api.update_user_information_from_external_source(user, source_data)
-
-    pcapi_repository.repository.save(user)
-
-    return activate_beneficiary_if_no_missing_step(user)
 
 
 def _update_fraud_check_eligibility_with_history(

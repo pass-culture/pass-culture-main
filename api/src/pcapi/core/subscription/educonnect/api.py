@@ -38,7 +38,7 @@ def handle_educonnect_authentication(
 
     if fraud_check.status == fraud_models.FraudCheckStatus.OK:
         try:
-            subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())  # type: ignore [arg-type]
+            subscription_api.activate_beneficiary_if_no_missing_step(user=user)
         except Exception:
             logger.exception("Error while activating user from Educonnect", extra={"user_id": user.id})
             raise exceptions.EduconnectSubscriptionException()
