@@ -1,5 +1,5 @@
 import React from 'react'
-import { TableInstance } from 'react-table'
+import { Column, usePagination, useSortBy, useTable } from 'react-table'
 
 import {
   BookingRecapResponseModel,
@@ -13,36 +13,50 @@ import TablePagination from '../Paginate'
 interface TableWrapperProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
-  canNextPage: TableInstance<T>['canNextPage']
-  canPreviousPage: TableInstance<T>['canPreviousPage']
-  getTableBodyProps: TableInstance<T>['getTableBodyProps']
-  getTableProps: TableInstance<T>['getTableProps']
-  headerGroups: TableInstance<T>['headerGroups']
-  nbPages: number
-  nextPage: TableInstance<T>['nextPage']
-  page: TableInstance<T>['page']
-  pageIndex: TableInstance<T>['state']['pageIndex']
-  prepareRow: TableInstance<T>['prepareRow']
-  previousPage: TableInstance<T>['previousPage']
+  columns: Column<T>[]
+  currentPage: number
+  data: T[]
+  nbBookings: number
+  nbBookingsPerPage: number
   updateCurrentPage: (pageNumber: number) => void
 }
 
 const TableWrapper = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >({
-  canNextPage,
-  canPreviousPage,
-  getTableBodyProps,
-  getTableProps,
-  headerGroups,
-  nbPages,
-  nextPage,
-  previousPage,
-  page,
-  pageIndex,
-  prepareRow,
+  columns,
+  currentPage,
+  data,
+  nbBookings,
+  nbBookingsPerPage,
   updateCurrentPage,
 }: TableWrapperProps<T>): JSX.Element => {
+  const {
+    canPreviousPage,
+    canNextPage,
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    nextPage,
+    previousPage,
+    prepareRow,
+    page,
+    state: { pageIndex },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: {
+        pageIndex: currentPage,
+        pageSize: nbBookingsPerPage,
+      },
+    },
+    useSortBy,
+    usePagination
+  )
+
+  const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
+
   const goToNextPage = () => {
     nextPage()
     updateCurrentPage(pageIndex + 1)
@@ -67,7 +81,7 @@ const TableWrapper = <
         canNextPage={canNextPage}
         canPreviousPage={canPreviousPage}
         currentPage={pageIndex + 1}
-        nbPages={nbPages}
+        nbPages={pageCount}
         nextPage={goToNextPage}
         previousPage={goToPreviousPage}
       />

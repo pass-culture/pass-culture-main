@@ -3,16 +3,18 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import BookingsRecapTable from 'screens/Bookings/BookingsRecapTable/BookingsRecapTable'
-import BeneficiaryCell from 'screens/Bookings/BookingsRecapTable/components/CellsFormatter/BeneficiaryCell'
-import BookingDateCell from 'screens/Bookings/BookingsRecapTable/components/CellsFormatter/BookingDateCell'
-import BookingIsDuoCell from 'screens/Bookings/BookingsRecapTable/components/CellsFormatter/BookingIsDuoCell'
-import BookingOfferCell from 'screens/Bookings/BookingsRecapTable/components/CellsFormatter/BookingOfferCell'
-import BookingStatusCell from 'screens/Bookings/BookingsRecapTable/components/CellsFormatter/BookingStatusCell'
-import BookingTokenCell from 'screens/Bookings/BookingsRecapTable/components/CellsFormatter/BookingTokenCell'
-import Header from 'screens/Bookings/BookingsRecapTable/components/Header/Header'
-import NoFilteredBookings from 'screens/Bookings/BookingsRecapTable/components/NoFilteredBookings/NoFilteredBookings'
-import TablePagination from 'screens/Bookings/BookingsRecapTable/components/Table/Paginate/TablePagination'
-import TableFrame from 'screens/Bookings/BookingsRecapTable/components/Table/TableFrame/TableFrame'
+import {
+  TableWrapper,
+  BeneficiaryCell,
+  BookingDateCell,
+  BookingIsDuoCell,
+  BookingOfferCell,
+  BookingStatusCell,
+  BookingTokenCell,
+  Header,
+  NoFilteredBookings,
+  TablePagination,
+} from 'screens/Bookings/BookingsRecapTable/components'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { configureTestStore } from 'store/testUtils'
 import { ReactComponent } from 'utils/svgrMock'
@@ -372,7 +374,7 @@ describe('components | BookingsRecapTable', () => {
     nextPageButton.simulate('click')
 
     // Then
-    const table = wrapper.find(TableFrame)
+    const table = wrapper.find(TableWrapper)
     expect(table.prop('nbBookingsPerPage')).toBe(1)
 
     const bookingOfferCell = wrapper.find(BookingOfferCell)
@@ -438,7 +440,7 @@ describe('components | BookingsRecapTable', () => {
     wrapper.setProps(props)
 
     // Then
-    const table = wrapper.find(TableFrame)
+    const table = wrapper.find(TableWrapper)
     expect(table.props()).toStrictEqual({
       columns: expect.any(Object),
       currentPage: 0,
@@ -497,7 +499,7 @@ describe('components | BookingsRecapTable', () => {
     input.simulate('change', { target: { value: 'not findable' } })
 
     // Then
-    const table = wrapper.find(TableFrame)
+    const table = wrapper.find(TableWrapper)
     expect(table).toHaveLength(0)
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
     expect(noFilteredBookings).toHaveLength(1)
@@ -652,7 +654,7 @@ describe('components | BookingsRecapTable', () => {
     })
 
     // then
-    const table = wrapper.find(TableFrame)
+    const table = wrapper.find(TableWrapper)
     expect(table.prop('currentPage')).toBe(0)
   })
 })
