@@ -1,9 +1,12 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
-const NoFilteredBookings = ({ resetFilters }) => {
+interface NoFilteredBookingsProps {
+  resetFilters: () => void
+}
+
+const NoFilteredBookings = ({ resetFilters }: NoFilteredBookingsProps) => {
   return (
     <div className="no-filtered-bookings-wrapper">
       <Icon className="nfb-icon" svg="ico-search-gray" />
@@ -14,10 +17,6 @@ const NoFilteredBookings = ({ resetFilters }) => {
       </button>
     </div>
   )
-}
-
-NoFilteredBookings.propTypes = {
-  resetFilters: PropTypes.func.isRequired,
 }
 
 export default NoFilteredBookings
