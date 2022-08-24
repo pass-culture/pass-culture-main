@@ -2,11 +2,18 @@ query getApplication(
   $demarcheNumber: Int!
   $after: String
   $state: DossierState
+  $since: String
 ) {
   demarche(number: $demarcheNumber) {
     id
     number
-    dossiers(first: 100, archived: false, state: $state, after: $after) {
+    dossiers(
+      first: 100
+      archived: false
+      state: $state
+      after: $after
+      updatedSince: $since
+    ) {
       pageInfo {
         endCursor
         hasNextPage
