@@ -19,7 +19,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/v2/collective-offers/educational-institutions/"
+            "/v2/collective/educational-institutions/"
         )
 
         # Then
@@ -78,7 +78,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/v2/collective-offers/educational-institutions/?postalCode={educational_institution1.postalCode}"
+            f"/v2/collective/educational-institutions/?postalCode={educational_institution1.postalCode}"
         )
 
         # Then
@@ -102,7 +102,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/v2/collective-offers/educational-institutions/?limit=1"
+            "/v2/collective/educational-institutions/?limit=1"
         )
 
         # Then
@@ -149,7 +149,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/v2/collective-offers/educational-institutions/?limit=23"
+            "/v2/collective/educational-institutions/?limit=23"
         )
 
         # Then
@@ -158,7 +158,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/v2/collective-offers/educational-institutions/"
+            "/v2/collective/educational-institutions/"
         )
 
         # Then
@@ -169,7 +169,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         # Given
 
         # When
-        response = client.get("/v2/collective-offers/educational-institutions/")
+        response = client.get("/v2/collective/educational-institutions/")
 
         # Then
         assert response.status_code == 401
