@@ -64,13 +64,13 @@ class DMSGraphQLClient:
 
         return self.client.execute(gql.gql(query), variable_values=variables)
 
-    def get_applications_with_details(  # type: ignore [misc]
+    def get_applications_with_details(
         self,
         procedure_id: int,
         state: dms_models.GraphQLApplicationStates | None = None,
-        page_token: str = "",
+        page_token: str | None = None,
         since: datetime.datetime | None = None,
-    ) -> list[dms_models.DmsApplicationResponse]:
+    ) -> Generator[dms_models.DmsApplicationResponse, None, None]:
         variables: dict[str, int | str] = {
             "demarcheNumber": procedure_id,
         }
@@ -95,7 +95,7 @@ class DMSGraphQLClient:
 
         if dms_demarche_response.page_info.has_next_page:
             yield from self.get_applications_with_details(
-                procedure_id, state, dms_demarche_response.page_info.end_cursor or "", since
+                procedure_id, state, dms_demarche_response.page_info.end_cursor, since
             )
 
     def get_deleted_applications(
