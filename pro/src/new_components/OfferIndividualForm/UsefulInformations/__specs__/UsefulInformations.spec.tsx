@@ -5,7 +5,9 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
+import { CATEGORY_STATUS } from 'core/Offers'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 
@@ -132,6 +134,124 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
     expect(
       screen.queryByText('Comment les billets, places seront-ils transmis ?')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display not reimbursment banner when subcategory is not reimbursed', async () => {
+    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+    props.offerSubCategory = {
+      id: 'A-A',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie online de A',
+      isEvent: false,
+      conditionalFields: [],
+      canBeDuo: false,
+      canBeEducational: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+      reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
+      isSelectable: true,
+    }
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    await screen.findByRole('heading', { name: 'Informations pratiques' })
+
+    expect(
+      screen.queryByText(
+        'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display not reimbursment banner when subcategory is reimbursed', async () => {
+    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+    props.offerSubCategory = {
+      id: 'A-A',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie online de A',
+      isEvent: false,
+      conditionalFields: [],
+      canBeDuo: false,
+      canBeEducational: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+      reimbursementRule: REIMBURSEMENT_RULES.BOOK,
+      isSelectable: true,
+    }
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    await screen.findByRole('heading', { name: 'Informations pratiques' })
+
+    expect(
+      screen.queryByText(
+        'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
+      )
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display withdrawal banner when subcategory is on physical thing (not event, not virtual)', async () => {
+    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+    props.offerSubCategory = {
+      id: 'A-A',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie online de A',
+      isEvent: false,
+      conditionalFields: [],
+      canBeDuo: false,
+      canBeEducational: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+      isSelectable: true,
+    }
+    props.isVenueVirtual = false
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    await screen.findByRole('heading', { name: 'Informations pratiques' })
+
+    expect(
+      screen.queryByText(
+        'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display withdrawal banner when subcategory is an event', async () => {
+    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+    props.offerSubCategory = {
+      id: 'A-A',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie online de A',
+      isEvent: true,
+      conditionalFields: [],
+      canBeDuo: false,
+      canBeEducational: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+      isSelectable: true,
+    }
+    props.isVenueVirtual = false
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    await screen.findByRole('heading', { name: 'Informations pratiques' })
+
+    expect(
+      screen.queryByText(
+        'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
+      )
     ).not.toBeInTheDocument()
   })
 })
