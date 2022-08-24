@@ -192,8 +192,46 @@ class CollectiveOffersStudentLevelResponseModel(BaseModel):
     name: str
 
 
+MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
+
+
+class GetListEducationalInstitutionsQueryModel(BaseModel):
+    id: int | None
+    name: str | None
+    institution_type: str | None
+    city: str | None
+    postal_code: str | None
+    limit: int = MAX_LIMIT_EDUCATIONAL_INSTITUTION
+
+    @validator("limit")
+    def validate_limit(  # pylint: disable=no-self-argument
+        cls: "GetListEducationalInstitutionsQueryModel", limit: int
+    ) -> int:
+        limit = min(limit, MAX_LIMIT_EDUCATIONAL_INSTITUTION)
+        return limit
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class CollectiveOffersListStudentLevelsResponseModel(BaseModel):
     __root__: list[CollectiveOffersStudentLevelResponseModel]
+
+
+class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
+    id: int
+    name: str
+    institutionType: str
+    city: str
+    postalCode: str
+
+    class Config:
+        orm_mode = True
+
+
+class CollectiveOffersListEducationalInstitutionResponseModel(BaseModel):
+    __root__: list[CollectiveOffersEducationalInstitutionResponseModel]
 
 
 class GetPublicCollectiveOfferResponseModel(BaseModel):
