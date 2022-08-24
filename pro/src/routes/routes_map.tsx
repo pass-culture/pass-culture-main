@@ -25,6 +25,7 @@ import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/
 import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
+import { EmailChangeValidation } from 'routes/EmailChangeValidation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
@@ -172,6 +173,18 @@ const routes: IRoute[] = [
       layoutConfig: {
         fullscreen: true,
         pageName: 'sign-in',
+      },
+    },
+  },
+  {
+    component: EmailChangeValidation,
+    path: '/email_validation',
+    title: 'Validation changement adresse e-mail',
+    meta: {
+      public: true,
+      layoutConfig: {
+        fullscreen: true,
+        pageName: 'email-validation',
       },
     },
   },
