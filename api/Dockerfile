@@ -18,18 +18,6 @@ COPY ./requirements.txt ./
 RUN pip install --user \
 	--requirement ./requirements.txt
 
-########## SOURCES ##########
-
-FROM python:3.10-slim AS sources
-
-RUN mkdir -p /tmp/src
-
-WORKDIR /tmp/src
-
-COPY . .
-
-RUN rm -rf tests/ pyproject.toml
-
 ######### LIB ##########
 
 FROM python:3.10-slim AS lib
@@ -51,7 +39,8 @@ COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 
 WORKDIR /usr/src/app
 
-COPY --from=sources /tmp/src .
+COPY src/ src/
+COPY [^tests]* .
 
 RUN chown -R pcapi:pcapi .
 
