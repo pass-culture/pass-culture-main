@@ -3,6 +3,18 @@ import enum
 
 import pydantic
 import pytz
+import sqlalchemy as sa
+
+from pcapi.models import Base
+from pcapi.models import Model
+from pcapi.models.pc_object import PcObject
+
+
+class LatestDmsImport(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+    procedureId = sa.Column(sa.Integer, nullable=False)
+    latestImportDatetime = sa.Column(sa.DateTime, nullable=False)
+    isProcessing = sa.Column(sa.Boolean, nullable=False)
+    processedApplications = sa.Column(sa.ARRAY(sa.Integer), nullable=False, default=[])
 
 
 def parse_dms_datetime(value: datetime.datetime | None) -> datetime.datetime | None:
