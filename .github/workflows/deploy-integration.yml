@@ -1,0 +1,24 @@
+name: Deploy a tag to integration
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "Nom de la release (ex: 199.0.0)"
+        required: true
+        type: string
+
+jobs:
+  deploy-to-integration:
+    runs-on: ubuntu-latest
+    environment:
+      name: integration
+      url: https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=integration
+    steps:
+      - name: Checkout Release
+        uses: actions/checkout@v3
+        with:
+          ref: v${{ github.event.inputs.releaseVersion }}
+      - name: Deploy Release to integration
+        run: |
+          git push -f origin HEAD:integration
