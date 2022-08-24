@@ -1,4 +1,5 @@
 from .archive_dms_applications import archive_applications
 from .handle_deleted_dms_applications import handle_deleted_dms_applications
 from .handle_inactive_dms_applications import handle_inactive_dms_applications
+from .import_dms_accepted_applications import import_all_updated_dms_applications
 from .import_dms_accepted_applications import import_dms_accepted_applications
