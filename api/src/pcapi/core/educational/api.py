@@ -854,6 +854,24 @@ def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[tu
     return educational_repository.get_all_educational_institutions(offset=offset, limit=per_page_limit)
 
 
+def search_educational_institution(
+    educational_institution_id: int | None,
+    name: str | None,
+    institution_type: str | None,
+    city: str | None,
+    postal_code: str | None,
+    limit: int,
+) -> educational_models.EducationalInstitution:
+    return educational_repository.search_educational_institution(
+        educational_institution_id=educational_institution_id,
+        name=name,
+        city=city,
+        postal_code=postal_code,
+        institution_type=institution_type,
+        limit=limit,
+    )
+
+
 def get_educational_institution_by_id(institution_id: int) -> educational_models.EducationalInstitution:
     return educational_repository.get_educational_institution_by_id(institution_id)
 

@@ -20,6 +20,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.utils.clean_accents import clean_accents
 
 
 COLLECTIVE_BOOKING_STATUS_LABELS = {
@@ -891,3 +892,54 @@ def get_educational_institution_by_id(institution_id: int) -> educational_models
         return educational_models.EducationalInstitution.query.filter_by(id=institution_id).one()
     except sa.orm.exc.NoResultFound:
         raise educational_exceptions.EducationalInstitutionNotFound()
+
+
+def search_educational_institution(
+    educational_institution_id: int | None,
+    name: str | None,
+    institution_type: str | None,
+    city: str | None,
+    postal_code: str | None,
+    limit: int,
+) -> educational_models.EducationalInstitution:
+    filters = []
+    if educational_institution_id is not None:
+        filters.append(
+            sa.func.unaccent(educational_models.EducationalInstitution.id).ilike(f"%{id}%"),
+        )
+
+    if name is not None:
+        name = name.replace(" ", "%")
+        name = name.replace("-", "%")
+        filters.append(
+            sa.func.unaccent(educational_models.EducationalInstitution.name).ilike(f"%{clean_accents(name)}%"),
+        )
+
+    if institution_type is not None:
+        institution_type = institution_type.replace(" ", "%")
+        institution_type = institution_type.replace("-", "%")
+        filters.append(
+            sa.func.unaccent(educational_models.EducationalInstitution.institutionType).ilike(
+                f"%{clean_accents(institution_type)}%"
+            ),
+        )
+
+    if city is not None:
+        city = city.replace(" ", "%")
+        city = city.replace("-", "%")
+        filters.append(
+            sa.func.unaccent(educational_models.EducationalInstitution.city).ilike(f"%{clean_accents(city)}%"),
+        )
+
+    if postal_code is not None:
+        postal_code = postal_code.replace(" ", "%")
+        postal_code = postal_code.replace("-", "%")
+        filters.append(
+            sa.func.unaccent(educational_models.EducationalInstitution.postalCode).ilike(f"%{postal_code}%"),
+        )
+    return (
+        educational_models.EducationalInstitution.query.filter(*filters)
+        .order_by(educational_models.EducationalInstitution.id)
+        .limit(limit)
+        .all()
+    )
