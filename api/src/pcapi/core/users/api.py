@@ -187,7 +187,6 @@ def update_user_information(
     id_piece_number: str | None = None,
     ine_hash: str | None = None,
     married_name: str | None = None,
-    phone_number: str | None = None,
     postal_code: str | None = None,
     commit: bool = False,
 ) -> models.User:
@@ -213,8 +212,6 @@ def update_user_information(
         user.ineHash = ine_hash
     if married_name is not None:
         user.married_name = married_name
-    if phone_number is not None:
-        user.phoneNumber = phone_number  # type: ignore [assignment]
     if postal_code is not None:
         user.postalCode = postal_code
         user.departementCode = PostalCode(postal_code).get_departement_code() if postal_code else None
@@ -236,7 +233,6 @@ def update_user_information_from_external_source(
     first_name = data.get_first_name()
     last_name = data.get_last_name()
     birth_date = data.get_birth_date()
-    phone_number = data.get_phone_number()
 
     if not first_name or not last_name or not birth_date:
         raise exceptions.IncompleteDataException()
@@ -253,7 +249,6 @@ def update_user_information_from_external_source(
         id_piece_number=data.get_id_piece_number(),
         ine_hash=data.get_ine_hash(),
         married_name=data.get_married_name(),
-        phone_number=phone_number if phone_number and not user.phoneNumber and not user.is_phone_validated else None,
         postal_code=data.get_postal_code(),
         commit=commit,
     )

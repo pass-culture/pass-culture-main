@@ -210,7 +210,7 @@ class RunIntegrationTest:
         assert user.firstName == "John"
         assert user.postalCode == "67200"
         assert user.address == "3 La Bigotais 22800 Saint-Donan"
-        assert user.phoneNumber == "+33123456789"
+        assert user.phoneNumber is None
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
