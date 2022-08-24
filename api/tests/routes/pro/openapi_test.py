@@ -602,7 +602,191 @@ def test_public_api(client, app):
                     "tags": ["API Contremarque"],
                 }
             },
-            "/v2/collective-offers/": {
+            "/v2/collective-offers/student-levels": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListStudentsLevels",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListStudentLevelsResponseModel"
+                                    }
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective-offers/venues": {
+                "get": {
+                    "description": "Tous les lieux enregistrés, physiques ou virtuels, sont listés ici avec leurs coordonnées.",
+                    "operationId": "ListVenues",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective/categories": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListCategories",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListCategoriesResponseModel"
+                                    }
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des catégories d'offres proposées.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective/domains": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListEducationalDomains",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListDomainsResponseModel"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective/educational-institutions/": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListEducationalInstitutions",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "id",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Id", "type": "integer"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "name",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Name", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "institutionType",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Institutiontype", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "city",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "City", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "postalCode",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Postalcode", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "limit",
+                            "required": False,
+                            "schema": {"default": 20, "title": "Limit", "type": "integer"},
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListEducationalInstitutionResponseModel"
+                                    }
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste établissements scolaires.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective/offers/": {
                 "get": {
                     "description": "",
                     "operationId": "GetCollectiveOffersPublic",
@@ -695,191 +879,7 @@ def test_public_api(client, app):
                     "tags": ["API offres collectives"],
                 },
             },
-            "/v2/collective-offers/categories": {
-                "get": {
-                    "description": "",
-                    "operationId": "ListCategories",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/CollectiveOffersListCategoriesResponseModel"
-                                    }
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "Récupération de la liste des catégories d'offres proposées.",
-                    "tags": [],
-                }
-            },
-            "/v2/collective-offers/educational-domains": {
-                "get": {
-                    "description": "",
-                    "operationId": "ListEducationalDomains",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListDomainsResponseModel"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
-                    "tags": [],
-                }
-            },
-            "/v2/collective-offers/educational-institutions/": {
-                "get": {
-                    "description": "",
-                    "operationId": "ListEducationalInstitutions",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "query",
-                            "name": "id",
-                            "required": False,
-                            "schema": {"nullable": True, "title": "Id", "type": "integer"},
-                        },
-                        {
-                            "description": "",
-                            "in": "query",
-                            "name": "name",
-                            "required": False,
-                            "schema": {"nullable": True, "title": "Name", "type": "string"},
-                        },
-                        {
-                            "description": "",
-                            "in": "query",
-                            "name": "institutionType",
-                            "required": False,
-                            "schema": {"nullable": True, "title": "Institutiontype", "type": "string"},
-                        },
-                        {
-                            "description": "",
-                            "in": "query",
-                            "name": "city",
-                            "required": False,
-                            "schema": {"nullable": True, "title": "City", "type": "string"},
-                        },
-                        {
-                            "description": "",
-                            "in": "query",
-                            "name": "postalCode",
-                            "required": False,
-                            "schema": {"nullable": True, "title": "Postalcode", "type": "string"},
-                        },
-                        {
-                            "description": "",
-                            "in": "query",
-                            "name": "limit",
-                            "required": False,
-                            "schema": {"default": 20, "title": "Limit", "type": "integer"},
-                        },
-                    ],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/CollectiveOffersListEducationalInstitutionResponseModel"
-                                    }
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "Récupération de la liste établissements scolaires.",
-                    "tags": [],
-                }
-            },
-            "/v2/collective-offers/student-levels": {
-                "get": {
-                    "description": "",
-                    "operationId": "ListStudentsLevels",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/CollectiveOffersListStudentLevelsResponseModel"
-                                    }
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
-                    "tags": [],
-                }
-            },
-            "/v2/collective-offers/venues": {
-                "get": {
-                    "description": "Tous les lieux enregistrés, physiques ou virtuels, sont listés ici avec leurs coordonnées.",
-                    "operationId": "ListVenues",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
-                    "tags": [],
-                }
-            },
-            "/v2/collective-offers/{offer_id}": {
+            "/v2/collective/offers/{offer_id}": {
                 "get": {
                     "description": "",
                     "operationId": "GetCollectiveOfferPublic",
