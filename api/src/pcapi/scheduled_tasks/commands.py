@@ -127,6 +127,19 @@ def import_beneficiaries_from_dms_v4() -> None:
         dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
+@blueprint.cli.command("import_all_updated_dms_applications")
+@log_cron_with_transaction
+def import_all_updated_dms_applications() -> None:
+    for procedure_name, procedure_id in (
+        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
+        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
+    ):
+        if not procedure_id:
+            logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
+            continue
+        dms_script.import_all_updated_dms_applications(procedure_id)
+
+
 @blueprint.cli.command("handle_expired_bookings")
 @log_cron_with_transaction
 def handle_expired_bookings() -> None:
