@@ -722,7 +722,6 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.lastName == "Doe"
         assert beneficiary.firstName == "Jane"
         assert beneficiary.publicName == "Jane Doe"
-        assert beneficiary.phoneNumber == "+33612345678"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)
@@ -784,16 +783,6 @@ class BeneficiaryInformationUpdateTest:
         users_api.update_user_information_from_external_source(user, dms_data)
 
         assert user.phoneNumber == "+33611111111"
-
-    @override_features(ENABLE_PHONE_VALIDATION=False)
-    def test_phone_number_update_if_empty(self):
-
-        user = users_factories.UserFactory(phoneNumber=None)
-        dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
-
-        users_api.update_user_information_from_external_source(user, dms_data)
-
-        assert user.phoneNumber == "+33622222222"
 
     @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_does_not_update_if_not_empty(self):
