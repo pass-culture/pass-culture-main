@@ -11,7 +11,6 @@ import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
@@ -36,6 +35,7 @@ import {
 } from '../../utils/date'
 import { stringify } from '../../utils/query-string'
 
+import BookingsRecapTable from './BookingsRecapTable'
 import PreFilters from './PreFilters'
 
 interface IBookingsProps {
@@ -52,7 +52,9 @@ interface IBookingsProps {
 
 const MAX_LOADED_PAGES = 5
 
-const Bookings = ({
+const Bookings = <
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+>({
   locationState,
   audience,
   getBookingsCSVFileAdapter,
@@ -69,9 +71,7 @@ const Bookings = ({
     ...DEFAULT_PRE_FILTERS,
   })
   const [isTableLoading, setIsTableLoading] = useState(false)
-  const [bookings, setBookings] = useState<
-    BookingRecapResponseModel[] | CollectiveBookingResponseModel[]
-  >([])
+  const [bookings, setBookings] = useState<T[]>([])
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const [hasBooking, setHasBooking] = useState(true)
   const [isLocalLoading, setIsLocalLoading] = useState(false)
@@ -104,7 +104,7 @@ const Bookings = ({
 
     const { bookings, currentPage, pages } = payload
 
-    setBookings(bookings)
+    setBookings(bookings as T[])
 
     setIsTableLoading(false)
     if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
