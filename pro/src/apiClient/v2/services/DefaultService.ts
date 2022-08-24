@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { CollectiveOffersListCategoriesResponseModel } from '../models/CollectiveOffersListCategoriesResponseModel';
 import type { CollectiveOffersListDomainsResponseModel } from '../models/CollectiveOffersListDomainsResponseModel';
+import type { CollectiveOffersListEducationalInstitutionResponseModel } from '../models/CollectiveOffersListEducationalInstitutionResponseModel';
 import type { CollectiveOffersListStudentLevelsResponseModel } from '../models/CollectiveOffersListStudentLevelsResponseModel';
 import type { CollectiveOffersListVenuesResponseModel } from '../models/CollectiveOffersListVenuesResponseModel';
 import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
@@ -40,6 +41,44 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective-offers/educational-domains',
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * Récupération de la liste établissements scolaires.
+   * @param id
+   * @param name
+   * @param institutionType
+   * @param city
+   * @param postalCode
+   * @param limit
+   * @returns CollectiveOffersListEducationalInstitutionResponseModel OK
+   * @throws ApiError
+   */
+  public listEducationalInstitutions(
+    id?: number | null,
+    name?: string | null,
+    institutionType?: string | null,
+    city?: string | null,
+    postalCode?: string | null,
+    limit: number = 20,
+  ): CancelablePromise<CollectiveOffersListEducationalInstitutionResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/collective-offers/educational-institutions/',
+      query: {
+        'id': id,
+        'name': name,
+        'institutionType': institutionType,
+        'city': city,
+        'postalCode': postalCode,
+        'limit': limit,
+      },
       errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
