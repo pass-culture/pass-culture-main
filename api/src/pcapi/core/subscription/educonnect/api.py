@@ -36,6 +36,8 @@ def handle_educonnect_authentication(
         logger.exception("Error on educonnect result", extra={"user_id": user.id})
         raise exceptions.EduconnectSubscriptionException()
 
+    subscription_api.update_user_birth_date_if_not_beneficiary(user, fraud_check.source_data().get_birth_date())  # type: ignore [union-attr]
+
     if fraud_check.status == fraud_models.FraudCheckStatus.OK:
         try:
             subscription_api.activate_beneficiary_if_no_missing_step(user=user)
@@ -44,7 +46,6 @@ def handle_educonnect_authentication(
             raise exceptions.EduconnectSubscriptionException()
     else:
         _handle_validation_errors(user, fraud_check, educonnect_user)
-        subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())  # type: ignore [union-attr]
         logger.warning(
             "Fraud suspicion after educonnect authentication with codes: %s",
             (", ").join([code.value for code in fraud_check.reasonCodes]),  # type: ignore [union-attr]
