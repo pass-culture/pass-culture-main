@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import type { Column } from 'react-table'
 
 import {
@@ -47,7 +47,7 @@ interface IBookingsRecapTableProps<
 const getColumnsByAudience = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >(
-  filters: BookingsFilters,
+  bookingStatus: string[],
   bookingsRecap: T[],
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
 ): (Column<T> & {
@@ -108,7 +108,7 @@ const getColumnsByAudience = <
       disableSortBy: true,
       Header: () => (
         <FilterByBookingStatus
-          bookingStatuses={filters.bookingStatus}
+          bookingStatuses={bookingStatus}
           bookingsRecap={bookingsRecap}
           updateGlobalFilters={updateGlobalFilters}
         />
@@ -207,7 +207,15 @@ const BookingsRecapTable = <
 
   const columns: (Column<T> & {
     className?: string
-  })[] = getColumnsByAudience(filters, bookingsRecap, updateGlobalFilters)
+  })[] = useMemo(
+    () =>
+      getColumnsByAudience(
+        filters.bookingStatus,
+        bookingsRecap,
+        updateGlobalFilters
+      ),
+    []
+  )
 
   return (
     <div>
