@@ -344,8 +344,8 @@ class Returns200Test:
     def test_should_not_return_soft_deleted_stock(self, app):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        offer = offers_factories.EducationalEventOfferFactory(venue__managingOfferer=user_offerer.offerer)
-        deleted_stock = offers_factories.EducationalEventStockFactory(offer=offer, isSoftDeleted=True)
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        deleted_stock = offers_factories.EventStockFactory(offer=offer, isSoftDeleted=True)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)

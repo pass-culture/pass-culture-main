@@ -27,7 +27,6 @@ from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -320,14 +319,6 @@ class BookOfferTest:
             api.book_offer(
                 beneficiary=users_factories.BeneficiaryGrant18Factory(),
                 stock_id=offers_factories.StockFactory().id,
-                quantity=2,
-            )
-
-    def test_raise_if_offer_is_educational(self):
-        with pytest.raises(exceptions.EducationalOfferCannotBeBooked):
-            api.book_offer(
-                beneficiary=users_factories.BeneficiaryGrant18Factory(),
-                stock_id=offers_factories.EducationalEventStockFactory(offer__isEducational=True).id,
                 quantity=2,
             )
 
@@ -958,41 +949,6 @@ class AutoMarkAsUsedAfterEventTest:
 
         validated_external_booking = Booking.query.first()
         assert validated_external_booking.status is BookingStatus.USED
-
-    def test_update_educational_booking_if_not_used(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
-        booking_factories.EducationalBookingFactory(
-            stock__beginningDatetime=event_date,
-        )
-
-        api.auto_mark_as_used_after_event()
-
-        validated_educational_booking = Booking.query.first()
-        assert validated_educational_booking.status is BookingStatus.USED
-
-    def test_does_not_update_educational_booking_if_not_used_and_refused_by_principal(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
-        booking_factories.EducationalBookingFactory(
-            stock__beginningDatetime=event_date,
-            educationalBooking__status=EducationalBookingStatus.REFUSED,
-        )
-
-        api.auto_mark_as_used_after_event()
-
-        validated_educational_booking = Booking.query.first()
-        assert validated_educational_booking.status is not BookingStatus.USED
-
-    def test_update_educational_booking_if_not_used_and_not_validated_by_principal_yet(self):
-        event_date = datetime.utcnow() - timedelta(days=3)
-        booking_factories.EducationalBookingFactory(
-            stock__beginningDatetime=event_date,
-            educationalBooking__status=None,
-        )
-
-        api.auto_mark_as_used_after_event()
-
-        non_validated_by_ce_educational_booking = Booking.query.first()
-        assert non_validated_by_ce_educational_booking.status is BookingStatus.USED
 
     @freeze_time("2021-01-01")
     def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self, caplog):

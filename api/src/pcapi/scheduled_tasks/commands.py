@@ -11,16 +11,12 @@ from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.bookings.repository import find_educational_bookings_done_yesterday
 import pcapi.core.educational.api as educational_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.fraud.api as fraud_api
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     send_individual_booking_event_reminder_email_to_beneficiary,
-)
-from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro import (
-    send_eac_satisfaction_study_email_to_pro,
 )
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
 from pcapi.core.mails.transactional.pro.reminder_venue_creation import send_reminder_venue_creation_to_pro
@@ -166,14 +162,6 @@ def check_stock_quantity_consistency() -> None:
     inconsistent_stocks = check_stock_consistency()
     if inconsistent_stocks:
         logger.error("Found inconsistent stocks: %s", ", ".join([str(stock_id) for stock_id in inconsistent_stocks]))
-
-
-@blueprint.cli.command("send_yesterday_event_offers_notifications")
-@log_cron_with_transaction
-def send_yesterday_event_offers_notifications() -> None:
-    """Triggers email to be sent for yesterday events"""
-    for educational_booking in find_educational_bookings_done_yesterday():
-        send_eac_satisfaction_study_email_to_pro(educational_booking)
 
 
 @blueprint.cli.command("send_today_events_notifications_metropolitan_france")

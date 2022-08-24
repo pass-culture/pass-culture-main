@@ -7,6 +7,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
+import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.payments.models as payments_models
@@ -72,22 +73,19 @@ class DigitalThingsReimbursementTest:
         assert not rule.is_relevant(cinema_card_booking)
         assert not rule.is_relevant(create_non_digital_thing_booking())
         assert not rule.is_relevant(create_event_booking())
-        assert not rule.is_relevant(
-            bookings_factories.EducationalBookingFactory(stock__offer__product=offers_factories.DigitalProductFactory())
-        )
 
 
 @pytest.mark.usefixtures("db_session")
 class EducationalOffersReimbursement:
     def test_apply(self):
-        booking = bookings_factories.EducationalBookingFactory(amount=3000, quantity=2)
+        booking = educational_factories.CollectiveBookingFactory(amount=3000, quantity=2)
         rule = reimbursement.EducationalOffersReimbursement()
-        assert rule.apply(booking) == booking.total_amount
+        assert rule.apply(booking) == booking.collectiveStock.price
 
     def test_relevancy(self):
         rule = reimbursement.EducationalOffersReimbursement()
 
-        assert rule.is_relevant(bookings_factories.EducationalBookingFactory())
+        assert rule.is_relevant(educational_factories.CollectiveBookingFactory)
         assert not rule.is_relevant(bookings_factories.BookingFactory())
 
 
@@ -108,7 +106,6 @@ class PhysicalOffersReimbursementTest:
         assert not rule.is_relevant(digital_book_booking)
         cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
         assert rule.is_relevant(cinema_card_booking)
-        assert not rule.is_relevant(bookings_factories.EducationalBookingFactory())
 
 
 @pytest.mark.usefixtures("db_session")
@@ -126,7 +123,6 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
         assert not self.rule.is_relevant(booking, 20000)
         assert self.rule.is_relevant(booking, 20001)
         assert self.rule.is_relevant(booking, 40000)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 20001)
         assert not self.rule.is_relevant(booking, 40001)
 
     def test_relevancy_depending_on_offer_subcategory(self):
@@ -134,7 +130,6 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -152,14 +147,12 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000Test:
         assert self.rule.is_relevant(booking, 40001)
         assert self.rule.is_relevant(booking, 150000)
         assert not self.rule.is_relevant(booking, 150001)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 40001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 40001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -175,14 +168,12 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
 
         assert not self.rule.is_relevant(booking, 150000)
         assert self.rule.is_relevant(booking, 150001)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 15001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 150001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -201,14 +192,12 @@ class ReimbursementRateByVenueBetween20000And40000Test:
         assert self.rule.is_relevant(booking, 20001)
         assert self.rule.is_relevant(booking, 40000)
         assert not self.rule.is_relevant(booking, 40001)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 20001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 20001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -226,14 +215,12 @@ class ReimbursementRateByVenueBetween40000And150000Test:
         assert self.rule.is_relevant(booking, 40001)
         assert self.rule.is_relevant(booking, 150000)
         assert not self.rule.is_relevant(booking, 150001)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 40001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 40001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -249,14 +236,12 @@ class ReimbursementRateByVenueAbove150000Test:
 
         assert not self.rule.is_relevant(booking, 150000)
         assert self.rule.is_relevant(booking, 150001)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 15001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 150001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -275,12 +260,6 @@ class ReimbursementRateForBookBelow20000Test:
     def test_relevancy_depending_on_revenue(self):
         assert self.rule.is_relevant(self.book_booking, 20000)
         assert not self.rule.is_relevant(self.book_booking, 20001)
-        assert not self.rule.is_relevant(
-            bookings_factories.EducationalBookingFactory(
-                stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
-            ),
-            30,
-        )
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 20000
@@ -291,7 +270,6 @@ class ReimbursementRateForBookBelow20000Test:
         assert self.rule.is_relevant(
             create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue
         )
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -310,12 +288,6 @@ class ReimbursementRateForBookAbove20000Test:
     def test_relevancy_depending_on_revenue(self):
         assert not self.rule.is_relevant(self.book_booking, 20000)
         assert self.rule.is_relevant(self.book_booking, 20001)
-        assert not self.rule.is_relevant(
-            bookings_factories.EducationalBookingFactory(
-                stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
-            ),
-            20001,
-        )
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 20001
@@ -326,7 +298,6 @@ class ReimbursementRateForBookAbove20000Test:
         assert self.rule.is_relevant(
             create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue
         )
-        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 class ReimbursementRuleIsActiveTest:

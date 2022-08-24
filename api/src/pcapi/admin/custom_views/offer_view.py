@@ -133,7 +133,6 @@ class OfferView(BaseAdminView):
         "validation",
         "lastValidationDate",
         "lastValidationType",
-        "isEducational",
     ]
     column_sortable_list = [
         "name",
@@ -152,7 +151,6 @@ class OfferView(BaseAdminView):
         "rankingWeight": "Pondération",
         "lastValidationDate": "Dernière date de validation",
         "lastValidationType": "Type de valid.",  # "Dernier type de validation" would create a large column
-        "isEducational": "Offre EAC",
     }
     # Do not add searchable column on offer view for performance reasons
     # use the filters feature instead
@@ -166,7 +164,6 @@ class OfferView(BaseAdminView):
         "validation",
         "lastValidationDate",
         "lastValidationType",
-        "isEducational",
         ExtraDataFilterEqual(column=Offer.extraData["isbn"], name="ISBN"),
         ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
         ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_movie_id"], name="Identifiant Allociné"),
@@ -568,7 +565,6 @@ class ValidationOfferView(ValidationBaseView):
         "offer",
         "offers",
         "dateCreated",
-        "isEducational",
     ]
     if IS_PROD:
         column_list.append("metabase")
@@ -581,7 +577,6 @@ class ValidationOfferView(ValidationBaseView):
         "offers": "Offres",
         "metabase": "Metabase",
         "dateCreated": "Date de création",
-        "isEducational": "Offre EAC",
     }
 
 

@@ -81,7 +81,6 @@ def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
         Offer.query.filter(
             Offer.validation != OfferValidationStatus.DRAFT,
             Offer.venueId.in_(venue_ids),
-            Offer.isEducational.is_(False),
         )
         .with_entities(Offer.id)
         .limit(100)

@@ -12,7 +12,7 @@ def deactivate_300e_thing_offers() -> None:
         .with_entities(Stock.offerId)
         .all()
     ]
-    offer_qs = Offer.query.filter(Offer.id.in_(stock_offer_ids)).filter(Offer.isEducational == False)
+    offer_qs = Offer.query.filter(Offer.id.in_(stock_offer_ids))
     offer_ids = [offer_id for offer_id, in offer_qs.with_entities(Offer.id)]
     print("Nombre d'offres desactivées: ", len(offer_ids))
     with open("offer_ids_to_reject.csv", "w", encoding="utf-8") as out:

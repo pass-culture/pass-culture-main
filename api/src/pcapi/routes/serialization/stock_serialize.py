@@ -5,7 +5,6 @@ from pydantic import condecimal
 from pydantic import validator
 from pydantic.types import NonNegativeInt
 
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
 from pcapi.routes.serialization import BaseModel
@@ -29,9 +28,6 @@ class StockResponseModel(BaseModel):
     offerId: str
     price: float
     quantity: int | None
-    numberOfTickets: int | None
-    isEducationalStockEditable: bool | None
-    educationalPriceDetail: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_offer_id = humanize_field("offerId")
@@ -45,11 +41,6 @@ class StockResponseModel(BaseModel):
         )
         stock.hasActivationCodes = bool(activation_code)
         stock.activationCodesExpirationDatetime = activation_code.expirationDate if activation_code else None
-        stock.isEducationalStockEditable = False
-        if stock.offer.isEducational:
-            stock.isEducationalStockEditable = all(
-                booking.status in (BookingStatus.PENDING, BookingStatus.CANCELLED) for booking in stock.bookings
-            )
         return super().from_orm(stock)
 
     class Config:

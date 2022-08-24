@@ -23,10 +23,7 @@ class DigitalThingsReimbursement(payments_models.ReimbursementRule):
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
         offer = booking.stock.offer
-        return (
-            offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.NOT_REIMBURSED.value
-            and not offer.isEducational
-        )
+        return offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.NOT_REIMBURSED.value
 
 
 class EducationalOffersReimbursement(payments_models.ReimbursementRule):
@@ -36,17 +33,10 @@ class EducationalOffersReimbursement(payments_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
-        if isinstance(booking, CollectiveBooking):
-            return True
+    def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue: Decimal = Decimal(0)) -> bool:
+        return isinstance(booking, CollectiveBooking)
 
-        offer = booking.stock.offer
-        return offer.isEducational
-
-    def apply(self, booking: Booking | CollectiveBooking) -> Decimal:
-        if isinstance(booking, Booking):
-            return Decimal(booking.total_amount * self.rate)
-
+    def apply(self, booking: CollectiveBooking) -> Decimal:
         return Decimal(booking.collectiveStock.price * self.rate)
 
 
@@ -163,8 +153,6 @@ class ReimbursementRateForBookBelow20000(payments_models.ReimbursementRule):
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         if booking.stock.offer.subcategory.reimbursement_rule != subcategories.ReimbursementRuleChoices.BOOK.value:
             return False
-        if booking.stock.offer.isEducational:
-            return False
         return cumulative_revenue <= 20000
 
 
@@ -177,8 +165,6 @@ class ReimbursementRateForBookAbove20000(payments_models.ReimbursementRule):
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         if booking.stock.offer.subcategory.reimbursement_rule != subcategories.ReimbursementRuleChoices.BOOK.value:
-            return False
-        if booking.stock.offer.isEducational:
             return False
         return cumulative_revenue > 20000
 
@@ -264,7 +250,4 @@ def get_reimbursement_rule(
 
 
 def is_relevant_for_standard_reimbursement_rule(offer: Offer) -> bool:
-    return (
-        not offer.isEducational
-        and offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.STANDARD.value
-    )
+    return offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.STANDARD.value

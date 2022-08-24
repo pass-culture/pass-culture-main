@@ -112,36 +112,6 @@ class Returns200Test:
         assert offer.audioDisabilityCompliant == True
         assert offer.mentalDisabilityCompliant == False
 
-    def test_create_valid_collective_offer_in_old_offer_model(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "withdrawalType": "no_ticket",
-            "extraData": {"toto": "text", "showType": 300},
-            "externalTicketOfficeUrl": "http://example.net",
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "isEducational": True,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
-        offer = Offer.query.get(offer_id)
-        assert offer.isEducational
-
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -247,25 +217,6 @@ class Returns400Test:
         assert response.json["subcategory"] == [
             "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         ]
-
-    def test_fail_when_educational_and_non_eligible_subcategory(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": humanize(venue.id),
-            "name": "An cool educational name",
-            "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
-            "isEducational": True,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["offer"] == ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]
 
     def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, client):
         # Given

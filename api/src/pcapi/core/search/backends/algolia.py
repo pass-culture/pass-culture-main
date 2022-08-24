@@ -412,7 +412,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "description": remove_stopwords(offer.description or ""),
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
-                "isEducational": offer.isEducational,
+                "isEducational": False,
                 "isEvent": offer.isEvent,
                 "isForbiddenToUnderage": offer.is_forbidden_to_underage,
                 "isThing": offer.isThing,

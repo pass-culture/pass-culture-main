@@ -2,9 +2,6 @@ import datetime
 
 import factory
 
-from pcapi.core.educational.factories import EducationalBookingFactory as EducationalBookingSubFactory
-from pcapi.core.educational.factories import PendingEducationalBookingFactory as PendingEducationalBookingSubFactory
-from pcapi.core.educational.factories import RefusedEducationalBookingFactory as RefusedEducationalBookingSubFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -65,40 +62,6 @@ class CancelledBookingFactory(BookingFactory):
     status = models.BookingStatus.CANCELLED
     cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)
     cancellationReason = models.BookingCancellationReasons.BENEFICIARY
-
-
-class EducationalBookingFactory(BookingFactory):
-    educationalBooking = factory.SubFactory(EducationalBookingSubFactory)
-    stock = factory.SubFactory(offers_factories.EducationalEventStockFactory)
-    userId = None
-    user = None
-
-
-class UsedEducationalBookingFactory(BookingFactory):
-    educationalBooking = factory.SubFactory(EducationalBookingSubFactory)
-    stock = factory.SubFactory(offers_factories.EducationalEventStockFactory)
-    status = models.BookingStatus.USED
-    dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
-    userId = None
-    user = None
-
-
-class PendingEducationalBookingFactory(BookingFactory):
-    educationalBooking = factory.SubFactory(PendingEducationalBookingSubFactory)
-    stock = factory.SubFactory(offers_factories.EducationalEventStockFactory)
-    status = models.BookingStatus.PENDING
-    userId = None
-    user = None
-
-
-class RefusedEducationalBookingFactory(BookingFactory):
-    educationalBooking = factory.SubFactory(RefusedEducationalBookingSubFactory)
-    stock = factory.SubFactory(offers_factories.EducationalEventStockFactory)
-    status = models.BookingStatus.CANCELLED
-    cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)
-    cancellationReason = models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
-    userId = None
-    user = None
 
 
 class IndividualBookingSubFactory(BaseFactory):

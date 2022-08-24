@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
-    if isinstance(offer, CollectiveOffer) or (isinstance(offer, Offer) and offer.isEducational):
+    if isinstance(offer, CollectiveOffer):
         return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
 
     if isinstance(offer, CollectiveOfferTemplate):
@@ -85,7 +85,7 @@ def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
 def make_offerer_internal_validation_email(
     offerer: offerers_models.Offerer,
     user_offerer: offerers_models.UserOfferer,
-) -> dict:
+) -> SendinblueTransactionalWithoutTemplateEmailData:
     siren_info: sirene.SirenInfo | dict | None = None
     if FeatureToggle.USE_INSEE_SIRENE_API.is_active():
         try:
@@ -102,7 +102,7 @@ def make_offerer_internal_validation_email(
     else:
         siren_info = siren_info_as_dict = api_entreprises.get_by_offerer(offerer)
 
-    offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()  # type: ignore [arg-type]
+    offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()
 
     email_html = render_template(
         "mails/internal_validation_email.html",
@@ -115,14 +115,16 @@ def make_offerer_internal_validation_email(
         api_url=settings.API_URL,
     )
 
-    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
+    return SendinblueTransactionalWithoutTemplateEmailData(
         subject="%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
         html_content=email_html,
         sender=SendinblueTransactionalSender.SUPPORT_PRO,
     )
 
 
-def make_offer_creation_notification_email(offer: Offer | CollectiveOffer | CollectiveOfferTemplate) -> dict:
+def make_offer_creation_notification_email(
+    offer: Offer | CollectiveOffer | CollectiveOfferTemplate,
+) -> SendinblueTransactionalWithoutTemplateEmailData:
     author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
     pro_link_to_offer = build_pc_pro_offer_link(offer)
@@ -140,14 +142,16 @@ def make_offer_creation_notification_email(offer: Offer | CollectiveOffer | Coll
     location_information = offer.venue.departementCode or "numérique"
     is_educational_offer_label = "EAC " if offer.isEducational else ""
 
-    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
+    return SendinblueTransactionalWithoutTemplateEmailData(
         subject=f"[Création d’offre {is_educational_offer_label}- {location_information}] {offer.name}",
         html_content=html,
         sender=SendinblueTransactionalSender.SUPPORT_PRO,
     )
 
 
-def make_offer_rejection_notification_email(offer: Offer) -> dict:
+def make_offer_rejection_notification_email(
+    offer: Offer | CollectiveOfferTemplate | CollectiveOffer,
+) -> SendinblueTransactionalWithoutTemplateEmailData:
     author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
     pro_link_to_offer = build_pc_pro_offer_link(offer)
     venue = offer.venue
@@ -161,9 +165,9 @@ def make_offer_rejection_notification_email(offer: Offer) -> dict:
         pro_venue_link=pro_venue_link,
     )
     location_information = offer.venue.departementCode or "numérique"
-    is_educational_offer_label = "EAC " if offer.isEducational else ""
+    is_educational_offer_label = "" if isinstance(offer, Offer) else "EAC "
 
-    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
+    return SendinblueTransactionalWithoutTemplateEmailData(
         subject=f"[Création d’offre {is_educational_offer_label}: refus - {location_information}] {offer.name}",
         html_content=html,
         sender=SendinblueTransactionalSender.SUPPORT_PRO,
