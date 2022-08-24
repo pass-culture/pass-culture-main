@@ -1,9 +1,10 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
+import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
-import { ReactComponent as StoryIcon } from './assets/storyIcon.svg'
 import { ButtonVariant, SharedButtonProps } from './types'
 
 import { Button, ButtonLink } from './index'
@@ -45,7 +46,7 @@ export const DefaultButtonWithIcon = Template.bind({})
 
 DefaultButtonWithIcon.args = {
   ...DefaultButton.args,
-  Icon: StoryIcon,
+  Icon: LinkIcon,
 }
 
 export const LinkButton = TemplateLink.bind({})
@@ -60,5 +61,5 @@ export const LinkButtonWithIcon = TemplateLink.bind({})
 
 LinkButtonWithIcon.args = {
   ...LinkButton.args,
-  Icon: StoryIcon,
+  Icon: LinkIcon,
 }
