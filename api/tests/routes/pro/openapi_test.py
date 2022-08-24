@@ -32,6 +32,18 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersDomainResponseModel",
                     "type": "object",
                 },
+                "CollectiveOffersEducationalInstitutionResponseModel": {
+                    "properties": {
+                        "city": {"title": "City", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                        "institutionType": {"title": "Institutiontype", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                        "postalCode": {"title": "Postalcode", "type": "string"},
+                    },
+                    "required": ["id", "name", "institutionType", "city", "postalCode"],
+                    "title": "CollectiveOffersEducationalInstitutionResponseModel",
+                    "type": "object",
+                },
                 "CollectiveOffersListCategoriesResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersCategoryResponseModel"},
                     "title": "CollectiveOffersListCategoriesResponseModel",
@@ -40,6 +52,11 @@ def test_public_api(client, app):
                 "CollectiveOffersListDomainsResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersDomainResponseModel"},
                     "title": "CollectiveOffersListDomainsResponseModel",
+                    "type": "array",
+                },
+                "CollectiveOffersListEducationalInstitutionResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersEducationalInstitutionResponseModel"},
+                    "title": "CollectiveOffersListEducationalInstitutionResponseModel",
                     "type": "array",
                 },
                 "CollectiveOffersListResponseModel": {
@@ -129,6 +146,19 @@ def test_public_api(client, app):
                         "venueName",
                     ],
                     "title": "GetBookingResponse",
+                    "type": "object",
+                },
+                "GetListEducationalInstitutionsQueryModel": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "city": {"nullable": True, "title": "City", "type": "string"},
+                        "id": {"nullable": True, "title": "Id", "type": "integer"},
+                        "institutionType": {"nullable": True, "title": "Institutiontype", "type": "string"},
+                        "limit": {"default": 20, "title": "Limit", "type": "integer"},
+                        "name": {"nullable": True, "title": "Name", "type": "string"},
+                        "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
+                    },
+                    "title": "GetListEducationalInstitutionsQueryModel",
                     "type": "object",
                 },
                 "GetPublicCollectiveOfferResponseModel": {
@@ -662,6 +692,78 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
+                    "tags": [],
+                }
+            },
+            "/v2/collective-offers/educational-institutions/": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListEducationalInstitutions",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "id",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Id", "type": "integer"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "name",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Name", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "institutionType",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Institutiontype", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "city",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "City", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "postalCode",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Postalcode", "type": "string"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "limit",
+                            "required": False,
+                            "schema": {"default": 20, "title": "Limit", "type": "integer"},
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListEducationalInstitutionResponseModel"
+                                    }
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste établissements scolaires.",
                     "tags": [],
                 }
             },
