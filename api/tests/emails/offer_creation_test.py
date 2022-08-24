@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import pytest
 
 from pcapi import settings
+import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
@@ -19,16 +20,22 @@ class MakeOfferCreationNotificationEmailTest:
     )
     def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory()
-        offer = offers_factories.ThingOfferFactory(
-            author=author,
-            isEducational=isEducationalOffer,
-            product__name="Le vent se lève",
-            venue__venueTypeCode=VenueTypeCode.MOVIE,
-            venue__city="Montreuil",
-            venue__postalCode="93100",
-            venue__managingOfferer__name="Cinéma de Montreuil",
+        venue = offerers_factories.VenueFactory(
+            city="Montreuil",
+            postalCode="93100",
+            managingOfferer__name="Cinéma de Montreuil",
+            venueTypeCode=VenueTypeCode.MOVIE,
         )
+        if not isEducationalOffer:
+            offer = offers_factories.ThingOfferFactory(
+                author=author,
+                product__name="Le vent se lève",
+                venue=venue,
+            )
+        else:
+            offer = educational_factories.CollectiveOfferFactory(name="Le vent se lève", venue=venue)
         offerer = offer.venue.managingOfferer
+        offerers_factories.UserOffererFactory(user=author, offerer=offerer)
 
         # When
         email = make_offer_creation_notification_email(offer)
@@ -48,7 +55,7 @@ class MakeOfferCreationNotificationEmailTest:
         assert f"Lien vers l'offre dans la Webapp :" f" {settings.WEBAPP_V2_URL}/offre/{offer.id}" in webapp_offer_link
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
-        pro_offer_type = "individuel" if offer.isEducational is False else "collectif"
+        pro_offer_type = "individuel" if isEducationalOffer is False else "collectif"
         assert (
             f"Lien vers l'offre dans le portail PRO :"
             f" http://localhost:3001/offre/{humanize(offer.id)}/{pro_offer_type}/edition" in pro_offer_link
@@ -57,7 +64,7 @@ class MakeOfferCreationNotificationEmailTest:
         assert "Offre duo : False" in offer_is_duo
 
         offer_is_eac = str(parsed_email.find("p", {"id": "offer_is_educational"}))
-        if offer.isEducational is True:
+        if isEducationalOffer is True:
             assert "Offre EAC : True" in offer_is_eac
             assert email.subject == "[Création d’offre EAC - 93] Le vent se lève"
         else:
@@ -100,16 +107,22 @@ class MakeOfferRejectionNotificationEmailTest:
     )
     def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory(firstName=None)
-        offer = offers_factories.ThingOfferFactory(
-            author=author,
-            isEducational=isEducationalOffer,
-            product__name="Le vent se lève",
-            venue__venueTypeCode=VenueTypeCode.MOVIE,
-            venue__city="Montreuil",
-            venue__postalCode="93100",
-            venue__managingOfferer__name="Cinéma de Montreuil",
+        venue = offerers_factories.VenueFactory(
+            city="Montreuil",
+            postalCode="93100",
+            managingOfferer__name="Cinéma de Montreuil",
+            venueTypeCode=VenueTypeCode.MOVIE,
         )
+        if not isEducationalOffer:
+            offer = offers_factories.ThingOfferFactory(
+                author=author,
+                product__name="Le vent se lève",
+                venue=venue,
+            )
+        else:
+            offer = educational_factories.CollectiveOfferFactory(name="Le vent se lève", venue=venue)
         offerer = offer.venue.managingOfferer
+        offerers_factories.UserOffererFactory(user=author, offerer=offerer)
 
         # When
         email = make_offer_rejection_notification_email(offer)
@@ -126,7 +139,7 @@ class MakeOfferRejectionNotificationEmailTest:
         assert "Vient d'être créée par : Cinéma de Montreuil" in offerer_html
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
-        pro_offer_type = "individuel" if offer.isEducational == False else "collectif"
+        pro_offer_type = "individuel" if not isEducationalOffer else "collectif"
         assert (
             f"Lien vers l'offre dans le portail PRO :"
             f" http://localhost:3001/offre/{humanize(offer.id)}/{pro_offer_type}/edition" in pro_offer_link
@@ -136,7 +149,7 @@ class MakeOfferRejectionNotificationEmailTest:
         assert "Offre duo : False" in offer_is_duo
 
         offer_is_eac = str(parsed_email.find("p", {"id": "offer_is_educational"}))
-        if offer.isEducational is True:
+        if isEducationalOffer:
             assert "Offre EAC : True" in offer_is_eac
             assert email.subject == "[Création d’offre EAC : refus - 93] Le vent se lève"
         else:

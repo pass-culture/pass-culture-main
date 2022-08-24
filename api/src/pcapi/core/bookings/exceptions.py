@@ -45,11 +45,6 @@ class NoActivationCodeAvailable(ClientError):
         super().__init__("noActivationCodeAvailable", "Ce stock ne contient plus de code d'activation disponible.")
 
 
-class EducationalOfferCannotBeBooked(ClientError):
-    def __init__(self) -> None:
-        super().__init__("offerId", "Cette offre est réservée aux rédacteurs de projets")
-
-
 class OfferCategoryNotBookableByUser(ClientError):
     def __init__(self) -> None:
         super().__init__("offerCategory", "Vous n'êtes pas autorisé à réserver cette catégorie d'offre")

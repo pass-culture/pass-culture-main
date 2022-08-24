@@ -22,7 +22,6 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         is_editable=offer.isEditable,
         is_event=typing.cast(bool, offer.isEvent),
         is_thing=offer.isThing,
-        is_educational=offer.isEducational,  # type: ignore [arg-type]
         product_isbn=offer.extraData.get("isbn") if offer.extraData else None,
         name=offer.name,
         thumb_url=offer.thumbUrl,

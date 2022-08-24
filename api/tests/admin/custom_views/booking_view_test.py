@@ -70,23 +70,6 @@ class BookingViewTest:
         booking = Booking.query.get(booking.id)
         assert booking.status is BookingStatus.CONFIRMED
 
-    def test_uncancel_and_mark_as_used_educational_booking(self, app):
-        users_factories.AdminFactory(email="admin@example.com")
-        booking = bookings_factories.RefusedEducationalBookingFactory()
-
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        route = f"/pc/back-office/bookings/mark-as-used/{booking.id}"
-        response = client.post(route, form={})
-
-        assert response.status_code == 302
-        assert response.location == f"http://localhost/pc/back-office/bookings/?id={booking.id}"
-        response = client.get(response.location)
-        content = response.data.decode(response.charset)
-        assert "La réservation a été dés-annulée et marquée comme utilisée." in content
-        booking = Booking.query.get(booking.id)
-        assert booking.status is not BookingStatus.CANCELLED
-        assert booking.status is BookingStatus.USED
-
     def test_cancel_booking(self, app, client):
         admin = users_factories.AdminFactory()
         booking = bookings_factories.IndividualBookingFactory()

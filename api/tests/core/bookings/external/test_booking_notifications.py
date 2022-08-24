@@ -39,9 +39,6 @@ def test_send_today_events_notifications_only_to_individual_bookings_users():
     # should not be fetched: cancelled
     bookings_factories.IndividualBookingFactory(stock=stock_today, status=BookingStatus.CANCELLED, user=user2)
 
-    # should not be fetched: educational
-    bookings_factories.EducationalBookingFactory(stock=stock_today, user=user2)
-
     # should not be fetched: next week
     bookings_factories.IndividualBookingFactory(stock=stock_next_week, user=user2)
 

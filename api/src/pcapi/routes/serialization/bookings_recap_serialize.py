@@ -142,7 +142,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
             if booking_recap.event_beginning_datetime
             else None,
             "offer_isbn": booking_recap.offer_isbn,
-            "offer_is_educational": booking_recap.booking_is_educational,
+            "offer_is_educational": False,
         },
         beneficiary={
             "lastname": booking_recap.beneficiary_lastname or booking_recap.redactor_lastname,

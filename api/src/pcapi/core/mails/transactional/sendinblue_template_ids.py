@@ -91,7 +91,6 @@ class TransactionalEmail(Enum):
     BOOKING_EXPIRATION_TO_PRO = TemplatePro(id_prod=380, id_not_prod=50, tags=["pro_reservation_expiree_30j"])
     EAC_NEW_BOOKING_TO_PRO = TemplatePro(id_prod=383, id_not_prod=67, tags=["pro_nouvelle_reservation_eac"])
     EAC_NEW_PREBOOKING_TO_PRO = TemplatePro(id_prod=429, id_not_prod=68, tags=["pro_nouvelle_prereservation_eac"])
-    EAC_SATISFACTION_STUDY_TO_PRO = TemplatePro(id_prod=523, id_not_prod=66, tags=["pro_bilan_satisfaction_eac"])
     EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION = TemplatePro(
         id_prod=522, id_not_prod=65, tags=["pro_eac_annulation_reservation"]
     )

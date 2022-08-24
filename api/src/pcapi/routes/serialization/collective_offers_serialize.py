@@ -63,19 +63,13 @@ class CollectiveOfferResponseModel(BaseModel):
     id: str
     isActive: bool
     isEditable: bool
-    isEvent: bool
-    isThing: bool
-    isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
-    thumbUrl: str | None
-    productIsbn: str | None
     subcategoryId: SubcategoryIdEnum
+    isShowcase: bool
     venue: ListOffersVenueResponseModel
     status: str
     venueId: str
-    isShowcase: bool | None
-    offerId: str | None
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
 
@@ -105,10 +99,6 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         id=humanize(offer.id),
         isActive=offer.isActive,
         isEditable=offer.isEditable,
-        isEvent=True,
-        isThing=False,
-        isEducational=True,
-        productIsbn=None,
         name=offer.name,
         stocks=serialized_stocks,
         thumbUrl=None,

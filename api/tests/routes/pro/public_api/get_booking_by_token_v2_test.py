@@ -5,12 +5,9 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -70,50 +67,6 @@ class Returns200Test:
             "venueAddress": "1 boulevard Poissonnière",
             "venueDepartmentCode": "75",
             "venueName": "Le Petit Rintintin",
-        }
-
-    def test_when_user_has_rights_and_booking_is_educational(self, client):
-        # Given
-        redactor = educational_factories.EducationalRedactorFactory(
-            civility="M.",
-            firstName="Jean",
-            lastName="Doudou",
-            email="jean.doux@example.com",
-        )
-        validated_eac_booking = bookings_factories.EducationalBookingFactory(
-            dateCreated=datetime.utcnow() - timedelta(days=5),
-            educationalBooking__educationalRedactor=redactor,
-        )
-        pro_user = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=validated_eac_booking.offerer)
-
-        # When
-        client = client.with_basic_auth(pro_user.email)
-        response = client.get(f"/v2/bookings/token/{validated_eac_booking.token}")
-
-        # Then
-        assert response.headers["Content-type"] == "application/json"
-        assert response.status_code == 200
-        assert response.json == {
-            "bookingId": humanize(validated_eac_booking.id),
-            "dateOfBirth": "",
-            "datetime": format_into_utc_date(validated_eac_booking.stock.beginningDatetime),
-            "ean13": None,
-            "email": redactor.email,
-            "formula": "PLACE",
-            "isUsed": False,
-            "offerId": validated_eac_booking.stock.offer.id,
-            "offerName": validated_eac_booking.stock.offer.name,
-            "offerType": "EVENEMENT",
-            "phoneNumber": "",
-            "price": float(validated_eac_booking.stock.price),
-            "publicOfferId": humanize(validated_eac_booking.stock.offer.id),
-            "quantity": validated_eac_booking.quantity,
-            "theater": {},
-            "userName": f"{redactor.firstName} {redactor.lastName}",
-            "venueAddress": validated_eac_booking.venue.address,
-            "venueDepartmentCode": validated_eac_booking.venue.departementCode,
-            "venueName": validated_eac_booking.venue.name,
         }
 
     def test_when_api_key_is_provided_and_rights_and_regular_offer(self, client):
@@ -213,33 +166,6 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         assert response.json["payment"] == ["Cette réservation a été remboursée"]
-
-    def test_when_booking_is_educational_and_refused_by_principal(self, client):
-        # Given
-        redactor = educational_factories.EducationalRedactorFactory(
-            civility="M.",
-            firstName="Jean",
-            lastName="Doudou",
-            email="jean.doux@example.com",
-        )
-        refused_eac_booking = bookings_factories.EducationalBookingFactory(
-            dateCreated=datetime.utcnow() - timedelta(days=5),
-            educationalBooking__educationalRedactor=redactor,
-            educationalBooking__status=EducationalBookingStatus.REFUSED,
-        )
-        pro_user = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=refused_eac_booking.offerer)
-        url = f"/v2/bookings/token/{refused_eac_booking.token}"
-
-        # When
-        response = client.with_basic_auth(pro_user.email).get(url)
-
-        # Then
-        assert response.status_code == 403
-        assert (
-            response.json["educationalBooking"]
-            == "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
-        )
 
 
 class Returns404Test:

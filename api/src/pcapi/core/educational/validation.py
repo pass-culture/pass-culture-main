@@ -6,7 +6,6 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational.constants import INTERVENTION_AREA
-from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 
 
@@ -49,16 +48,7 @@ def check_educational_year_exists(educational_year: models.EducationalYear | Non
         raise exceptions.EducationalYearNotFound()
 
 
-def check_stock_is_bookable(stock: offers_models.Stock) -> None:
-    if not stock.isBookable:
-        raise exceptions.StockNotBookable(stock.id)
-    if not stock.offer.isEducational:
-        raise exceptions.OfferIsNotEducational(stock.offer.id)
-    if not stock.offer.isEvent:
-        raise exceptions.OfferIsNotEvent(stock.offer.id)
-
-
-def check_collective_stock_is_bookable(stock: offers_models.Stock) -> None:
+def check_collective_stock_is_bookable(stock: models.CollectiveStock) -> None:
     if not stock.isBookable:
         raise exceptions.StockNotBookable(stock.id)
 

@@ -92,25 +92,15 @@ BOOKING_EXPORT_HEADER = [
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token.upper())
-    offer_is_educational = query.join(Stock).join(Offer).with_entities(Offer.isEducational).scalar()
 
     if email:
         # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
         # all emails have been sanitized in the database.
-        if not offer_is_educational:
-            query = (
-                query.join(IndividualBooking)
-                .join(IndividualBooking.user)
-                .filter(func.lower(User.email) == sanitize_email(email))
-            )
-        elif offer_is_educational:
-            query = (
-                query.join(educational_models.EducationalBooking)
-                .join(educational_models.EducationalBooking.educationalRedactor)
-                .filter(
-                    func.lower(educational_models.EducationalBooking.educationalRedactor.email) == sanitize_email(email)
-                )
-            )
+        query = (
+            query.join(IndividualBooking)
+            .join(IndividualBooking.user)
+            .filter(func.lower(User.email) == sanitize_email(email))
+        )
 
     if offer_id is not None:
         query = query.join(Stock).join(Offer).filter(Offer.id == offer_id)
@@ -535,7 +525,6 @@ def _get_filtered_booking_report(
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
             Offer.name.label("offerName"),
-            Offer.isEducational.label("offerIsEducational"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Stock.offerId,
             Offer.extraData["isbn"].label("isbn"),
@@ -644,7 +633,6 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         booking_is_reimbursed=booking.status == BookingStatus.REIMBURSED,  # type: ignore [attr-defined]
         booking_is_confirmed=booking.isConfirmed,  # type: ignore [attr-defined]
         booking_is_duo=booking.quantity == DUO_QUANTITY,  # type: ignore [attr-defined]
-        booking_is_educational=booking.educationalBookingId is not None,  # type: ignore [attr-defined]
         booking_is_external=booking.isExternal,  # type: ignore [attr-defined]
         booking_raw_status=booking.status,  # type: ignore [attr-defined]
         booking_confirmation_date=booking.confirmationDate,  # type: ignore [attr-defined]
@@ -705,14 +693,14 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 booking_recap_utils.get_booking_token(
                     booking.token,
                     booking.status,
-                    booking.offerIsEducational,
                     booking.isExternal,
                     booking.stockBeginningDatetime,
                 ),
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
                 convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-                serialize_offer_type_educational_or_individual(booking.offerIsEducational),
+                # This method is still used in the old Payment model
+                serialize_offer_type_educational_or_individual(offer_is_educational=False),
             )
         )
 
@@ -752,7 +740,6 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
             booking_recap_utils.get_booking_token(
                 booking.token,
                 booking.status,
-                booking.offerIsEducational,
                 booking.isExternal,
                 booking.stockBeginningDatetime,
             ),
@@ -760,7 +747,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
         worksheet.write(row, 10, booking.amount, currency_format)
         worksheet.write(row, 11, _get_booking_status(booking.status, booking.isConfirmed))
         worksheet.write(row, 12, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-        worksheet.write(row, 13, serialize_offer_type_educational_or_individual(booking.offerIsEducational))
+        worksheet.write(row, 13, serialize_offer_type_educational_or_individual(offer_is_educational=False))
         row += 1
 
     workbook.close()
@@ -811,46 +798,6 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
             Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
         ).exists()
     ).scalar()
-
-
-def find_educational_bookings_done_yesterday() -> list[educational_models.EducationalBooking]:
-    yesterday = datetime.utcnow() - timedelta(days=1)
-    yesterday_min = datetime.combine(yesterday, time.min)
-    yesterday_max = datetime.combine(yesterday, time.max)
-
-    return (
-        educational_models.EducationalBooking.query.join(educational_models.EducationalBooking.booking)
-        .join(Booking.stock)
-        .filter(
-            Stock.beginningDatetime >= yesterday_min,
-            Stock.beginningDatetime <= yesterday_max,
-        )
-        .options(
-            contains_eager(educational_models.EducationalBooking.booking)
-            .load_only(Booking.stockId)
-            .joinedload(Booking.stock, innerjoin=True)
-            .load_only(Stock.beginningDatetime)
-            .joinedload(Stock.offer, innerjoin=True)
-            .load_only(Offer.name)
-            .joinedload(Offer.venue, innerjoin=True)
-            .load_only(Venue.name, Venue.publicName)
-        )
-        .options(
-            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
-                educational_models.EducationalRedactor.firstName,
-                educational_models.EducationalRedactor.lastName,
-                educational_models.EducationalRedactor.email,
-            )
-        )
-        .options(
-            joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True).load_only(
-                educational_models.EducationalInstitution.name,
-                educational_models.EducationalInstitution.city,
-                educational_models.EducationalInstitution.postalCode,
-            )
-        )
-        .all()
-    )
 
 
 def find_individual_bookings_event_happening_tomorrow_query() -> list[IndividualBooking]:

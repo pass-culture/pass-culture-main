@@ -4,6 +4,7 @@ import decimal
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.finance import api
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
@@ -483,12 +484,12 @@ class FindAllOffererPaymentsTest:
 
     def test_should_return_one_payment_info_with_sent_status_when_offer_educational(self):
         # Given
-        educational_booking = bookings_factories.UsedEducationalBookingFactory(
-            educationalBooking__educationalRedactor__firstName="Dominique",
-            educationalBooking__educationalRedactor__lastName="Leprof",
+        collective_booking = UsedCollectiveBookingFactory(
+            educationalRedactor__firstName="Dominique",
+            educationalRedactor__lastName="Leprof",
         )
-        offerer = educational_booking.offerer
-        payment = factories.PaymentFactory(booking=educational_booking)
+        offerer = collective_booking.offerer
+        payment = factories.PaymentFactory(collectiveBooking=collective_booking)
         factories.PaymentStatusFactory(
             payment=payment,
             status=models.TransactionStatus.SENT,
@@ -500,7 +501,7 @@ class FindAllOffererPaymentsTest:
 
         # Then
         assert len(payments) == 1
-        assert payments[0].offer_is_educational
+        assert payments[0].collective_booking_id is not None
         assert payments[0].redactor_firstname == "Dominique"
         assert payments[0].redactor_lastname == "Leprof"
         # The rest is tested in `test_with_new_models()` below.
@@ -667,7 +668,7 @@ class FindAllOffererPaymentsTest:
             "booking_quantity": 1,
             "booking_amount": decimal.Decimal("10.00"),
             "offer_name": "Test Book",
-            "offer_is_educational": False,
+            "collective_booking_id": None,
             "venue_name": "La petite librairie",
             "venue_address": "123 rue de Paris",
             "venue_postal_code": "75000",
@@ -676,8 +677,6 @@ class FindAllOffererPaymentsTest:
             "iban": "CF13QSDFGH456789",
         }
         specific_for_payment = {
-            "redactor_firstname": None,
-            "redactor_lastname": None,
             "amount": decimal.Decimal("9.50"),
             "reimbursement_rate": decimal.Decimal("0.95"),
             "transaction_label": "pass Culture Pro - remboursement 1ère quinzaine 07-2019",

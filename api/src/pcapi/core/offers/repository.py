@@ -72,8 +72,6 @@ def get_capped_offers_for_filters(
         period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
 
-    query = query.filter(Offer.isEducational == False)
-
     offers = (
         query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
         .options(joinedload(Offer.stocks))
@@ -346,7 +344,7 @@ def get_stocks_for_offers(offer_ids: list[int]) -> list[Stock]:
 
 def get_stocks_for_offer(offer_id: int) -> list[Stock]:
     return (
-        Stock.query.options(joinedload(Stock.offer).load_only(Offer.url, Offer.isEducational))
+        Stock.query.options(joinedload(Stock.offer).load_only(Offer.url))
         .options(joinedload(Stock.bookings).load_only(Booking.status))
         .filter(Stock.offerId == offer_id)
         .filter(Stock.isSoftDeleted.is_(False))
@@ -424,8 +422,6 @@ def get_active_offers_count_for_venue(venue_id: int) -> int:
     active_offers_query = Offer.query.filter(Offer.venueId == venue_id)
     active_offers_query = _filter_by_status(active_offers_query, OfferStatus.ACTIVE.name)
 
-    active_offers_query = active_offers_query.filter(Offer.isEducational.is_(False))
-
     n_active_offers = active_offers_query.distinct(Offer.id).count()
 
     n_active_collective_offer = (
@@ -448,8 +444,6 @@ def get_active_offers_count_for_venue(venue_id: int) -> int:
 def get_sold_out_offers_count_for_venue(venue_id: int) -> int:
     sold_out_offers_query = Offer.query.filter(Offer.venueId == venue_id)
     sold_out_offers_query = _filter_by_status(sold_out_offers_query, OfferStatus.SOLD_OUT.name)
-
-    sold_out_offers_query = sold_out_offers_query.filter(Offer.isEducational.is_(False))
 
     n_sold_out_offers = sold_out_offers_query.distinct(Offer.id).count()
 
@@ -604,10 +598,6 @@ def get_available_activation_code(stock: Stock) -> ActivationCode | None:
         ActivationCode.bookingId.is_(None),
         or_(ActivationCode.expirationDate.is_(None), ActivationCode.expirationDate > func.now()),
     ).first()
-
-
-def get_educational_offer_by_id(offer_id: str) -> Offer:
-    return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id).one()
 
 
 def get_offer_by_id(offer_id: int) -> Offer:

@@ -143,12 +143,12 @@ const EventStocks = ({
     })
   }, [])
 
-  const areValid = (stocks, isEvent, isEducational) => {
+  const areValid = (stocks, isEvent) => {
     const stocksErrors = stocks.reduce((stocksErrors, stock) => {
       const isNewStock = stock.id === undefined
       const stockErrors = isNewStock
-        ? validateCreatedStock(stock, isEvent, isEducational)
-        : validateUpdatedStock(stock, isEvent, isEducational)
+        ? validateCreatedStock(stock, isEvent)
+        : validateUpdatedStock(stock, isEvent)
       const stockHasErrors = Object.keys(stockErrors).length > 0
       return stockHasErrors
         ? { ...stocksErrors, [stock.key]: stockErrors }
@@ -184,13 +184,7 @@ const EventStocks = ({
     e => {
       e.preventDefault()
       const updatedStocks = existingStocks.filter(stock => stock.updated)
-      if (
-        areValid(
-          [...stocksInCreation, ...updatedStocks],
-          offer.isEvent,
-          offer.isEducational
-        )
-      ) {
+      if (areValid([...stocksInCreation, ...updatedStocks], offer.isEvent)) {
         setIsSendingStocksOfferCreation(true)
 
         const stocksToCreate = stocksInCreation.map(stockInCreation =>
