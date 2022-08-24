@@ -2,7 +2,7 @@ import React from 'react'
 
 import { pluralize } from 'utils/pluralize'
 
-interface HeaderProps {
+export interface HeaderProps {
   bookingsRecapFilteredLength: number
   isLoading: boolean
 }
