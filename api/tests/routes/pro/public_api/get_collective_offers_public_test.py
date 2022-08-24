@@ -25,7 +25,7 @@ class CollectiveOffersPublicGetOfferTest:
         offer5 = stock5.collectiveOffer
 
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective-offers/")
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
 
         # Then
         assert response.status_code == 200
@@ -68,7 +68,7 @@ class CollectiveOffersPublicGetOfferTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.ApiKeyFactory(offerer=offerer)
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective-offers/")
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
 
         # Then
         assert response.status_code == 200
@@ -82,7 +82,7 @@ class CollectiveOffersPublicGetOfferTest:
         offer = stock.collectiveOffer
         educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective-offers/")
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
 
         # Then
         assert response.status_code == 200
@@ -104,7 +104,7 @@ class CollectiveOffersPublicGetOfferTest:
         offerer2 = offerers_factories.OffererFactory()
         educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer2)
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective-offers/")
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
 
         # Then
         assert response.status_code == 200
@@ -129,7 +129,7 @@ class CollectiveOffersPublicGetOfferTest:
         )
 
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective-offers/")
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
 
         # Then
         assert response.status_code == 200
@@ -148,7 +148,7 @@ class CollectiveOffersPublicGetOfferTest:
         offerers_factories.ApiKeyFactory(offerer=offerer)
         educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer)
         # When
-        response = client.get("/v2/collective-offers/")
+        response = client.get("/v2/collective/offers/")
 
         # Then
         assert response.status_code == 401

@@ -16,7 +16,7 @@ class CollectiveOffersPublicGetOfferTest:
         offer = stock.collectiveOffer
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/v2/collective-offers/{offer.id}"
+            f"/v2/collective/offers/{offer.id}"
         )
 
         # Then
@@ -59,7 +59,7 @@ class CollectiveOffersPublicGetOfferTest:
         offerers_factories.ApiKeyFactory(offerer=offerer)
         educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer)
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective-offers/-1")
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/-1")
 
         # Then
         assert response.status_code == 404
@@ -71,7 +71,7 @@ class CollectiveOffersPublicGetOfferTest:
         offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/v2/collective-offers/{offer.id}"
+            f"/v2/collective/offers/{offer.id}"
         )
 
         # Then
@@ -84,7 +84,7 @@ class CollectiveOffersPublicGetOfferTest:
         stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer)
         offer = stock.collectiveOffer
         # When
-        response = client.get(f"/v2/collective-offers/{offer.id}")
+        response = client.get(f"/v2/collective/offers/{offer.id}")
 
         # Then
         assert response.status_code == 401
@@ -98,7 +98,7 @@ class CollectiveOffersPublicGetOfferTest:
         offer = stock.collectiveOffer
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/v2/collective-offers/{offer.id}"
+            f"/v2/collective/offers/{offer.id}"
         )
 
         # Then

@@ -51,7 +51,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective-offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
         # Then
@@ -98,7 +98,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective-offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
         # Then
@@ -145,7 +145,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective-offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
         # Then
@@ -188,7 +188,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective-offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
         # Then
@@ -232,7 +232,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective-offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
         # Then
