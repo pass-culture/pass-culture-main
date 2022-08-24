@@ -8,7 +8,6 @@ export const DEFAULT_FORM_VALUES = {
   durationMinutes: null,
   isbn: TEXT_INPUT_DEFAULT_VALUE,
   isDuo: true,
-  isEducational: false,
   noDisabilityCompliant: false,
   audioDisabilityCompliant: false,
   mentalDisabilityCompliant: false,

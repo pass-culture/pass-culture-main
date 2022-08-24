@@ -36,7 +36,6 @@ class BookingRecap:
         booking_is_confirmed: bool,
         booking_raw_status: bookings_models.BookingStatus,
         booking_confirmation_date: datetime | None,
-        booking_is_educational: bool,
         booking_is_external: bool,
         booking_amount: float,
         cancellation_date: datetime | None,
@@ -66,7 +65,6 @@ class BookingRecap:
         self.booking_is_confirmed = booking_is_confirmed
         self.booking_raw_status = booking_raw_status
         self.booking_confirmation_date = booking_confirmation_date
-        self.booking_is_educational = booking_is_educational
         self.booking_is_external = booking_is_external
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
@@ -92,7 +90,6 @@ class BookingRecap:
         return utils.get_booking_token(
             self._booking_token,
             self.booking_raw_status,
-            self.booking_is_educational,
             self.booking_is_external,
             self.event_beginning_datetime,
         )

@@ -14,19 +14,14 @@ import pytest
 from pytest import fixture
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.core.bookings.repository import find_educational_bookings_done_yesterday
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.categories import subcategories
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalRedactorFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.payments.api import create_deposit
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
@@ -906,8 +901,6 @@ class FindByProUserTest:
 
         # Then
         assert len(individual_bookings_recap_paginated.bookings_recap) == 1
-        individual_resulting_booking_recap = individual_bookings_recap_paginated.bookings_recap[0]
-        assert individual_resulting_booking_recap.booking_is_educational == False
         assert len(all_bookings_recap_paginated.bookings_recap) == 1
 
 
@@ -2020,11 +2013,6 @@ class FindSoonToBeExpiredBookingsTest:
             dateCreated=too_old_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
-        # educational booking : not concerned with notifications
-        bookings_factories.EducationalBookingFactory(
-            dateCreated=expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        )
 
         # When
         expired_bookings = booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all()
@@ -2315,27 +2303,6 @@ class SoonExpiringBookingsTest:
         remaining_days = (bookings[0].expirationDate.date() - date.today()).days
         with assert_num_queries(1):
             list(booking_repository.get_soon_expiring_bookings(remaining_days))
-
-
-class GetEducationalEventOffersDoneYesterdayTest:
-    @freeze_time("2020-10-15 09:00:00")
-    def test_find_educational_offer_done_yesterday(self):
-
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        educational_redactor = EducationalRedactorFactory(email="test@redactor.fr")
-        educational_institution = EducationalInstitutionFactory(name="Lycée du pass", city="Paris", postalCode="75018")
-        stocks = EducationalEventStockFactory.create_batch(2, beginningDatetime=yesterday)
-        bookings_created = [
-            EducationalBookingFactory(
-                stock=stock,
-                educationalBooking__educationalInstitution=educational_institution,
-                educationalBooking__educationalRedactor=educational_redactor,
-            )
-            for stock in stocks
-        ]
-        educational_bookings = find_educational_bookings_done_yesterday()
-        assert len(educational_bookings) == 2
-        assert set(educational_bookings) == {booking.educationalBooking for booking in bookings_created}
 
 
 @freeze_time("2020-10-15 09:00:00")

@@ -113,7 +113,7 @@ def check_stock_price(price: float, offer: Offer) -> None:
         api_errors = ApiErrors()
         api_errors.add_error("price", "Le prix doit être positif")
         raise api_errors
-    if price > 300 and not offer.isEducational and not offer.isEvent:
+    if price > 300 and not offer.isEvent:
         api_errors = ApiErrors()
         api_errors.add_error(
             "price300",
@@ -314,11 +314,10 @@ def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -
             raise ValueError(f"{value} of type {type(value)} not in: {VALUE_VALIDATION_CONFIG[key]}")
 
 
-def check_offer_is_eligible_for_educational(subcategory_id: str, is_educational: bool) -> None:
-    if is_educational:
-        subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
-        if not subcategory or not subcategory.can_be_educational:
-            raise exceptions.SubcategoryNotEligibleForEducationalOffer()
+def check_offer_is_eligible_for_educational(subcategory_id: str) -> None:
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+    if not subcategory or not subcategory.can_be_educational:
+        raise exceptions.SubcategoryNotEligibleForEducationalOffer()
 
 
 def check_offer_withdrawal(

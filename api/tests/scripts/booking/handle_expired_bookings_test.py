@@ -298,25 +298,6 @@ class NotifyUsersOfExpiredBookingsTest:
 
         assert email_recaps == {(dvd_user_email, dvd_offer_name), (cd_user_email, cd_offer_name)}
 
-    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_to_beneficiary_email")
-    def test_should_not_notify_of_todays_expired_educational_bookings(self, mocked_send_email_recap, app) -> None:
-        # Given
-        now = datetime.utcnow()
-        long_ago = now - timedelta(days=31)
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        booking_factories.EducationalBookingFactory(
-            stock__offer__product=dvd,
-            dateCreated=long_ago,
-            status=BookingStatus.CANCELLED,
-            cancellationReason=BookingCancellationReasons.EXPIRED,
-        )
-
-        # When
-        handle_expired_bookings.notify_users_of_expired_individual_bookings()
-
-        # Then
-        assert not mocked_send_email_recap.called
-
 
 class NotifyOfferersOfExpiredBookingsTest:
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_bookings_expiration_to_pro_email")

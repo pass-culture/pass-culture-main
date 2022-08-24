@@ -369,17 +369,6 @@ class UpsertStocksTest:
         # Then
         assert existing_stock.price == 301
 
-        # Given
-        user = users_factories.ProFactory()
-        existing_stock = factories.EducationalThingStockFactory(price=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=301)
-
-        # When
-        api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
-
-        # Then
-        assert existing_stock.price == 301
-
     def test_cannot_edit_price_if_reimbursement_rule_exists(self):
         user = users_factories.AdminFactory()
         stock = factories.ThingStockFactory(price=10)
@@ -1027,52 +1016,6 @@ class CreateOfferTest:
             api.create_offer(data, user_offerer.user)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
-
-    def test_create_educational_offer(self):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            name="A pretty good offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            externalTicketOfficeUrl="http://example.net",
-            isEducational=True,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        offer = api.create_offer(data, user)
-
-        assert offer.isEducational
-
-    def test_cannot_create_educational_offer_when_not_eligible_subcategory(self):
-        # Given
-        unauthorized_subcategory_id = "BON_ACHAT_INSTRUMENT"
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            name="A pretty good offer",
-            subcategoryId=unauthorized_subcategory_id,
-            externalTicketOfficeUrl="http://example.net",
-            isEducational=True,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-
-        # When
-        with pytest.raises(exceptions.SubcategoryNotEligibleForEducationalOffer) as error:
-            api.create_offer(data, user)
-
-        # Then
-        assert error.value.errors["offer"] == ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]
 
     def test_fail_if_unknown_venue(self):
         user = users_factories.ProFactory()

@@ -174,7 +174,7 @@ class OffersTest:
 
     def test_get_thing_offer(self, app):
         product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
-        offer = OfferFactory(product=product, isEducational=True, venue__isPermanent=True)
+        offer = OfferFactory(product=product, venue__isPermanent=True)
         ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
@@ -187,7 +187,7 @@ class OffersTest:
         assert not response.json["stocks"][0]["beginningDatetime"]
         assert response.json["stocks"][0]["price"] == 1234
         assert response.json["subcategoryId"] == "ABO_MUSEE"
-        assert response.json["isEducational"]
+        assert response.json["isEducational"] is False
         assert not response.json["isExpired"]
         assert response.json["venue"]["isPermanent"]
 

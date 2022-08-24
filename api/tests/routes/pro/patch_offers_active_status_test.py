@@ -1,10 +1,6 @@
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
@@ -77,48 +73,3 @@ class Returns204Test:
         assert approved_offer.isActive
         assert not pending_offer.isActive
         assert not rejected_offer.isActive
-
-    def should_activate_collective_offers(self, client):
-        # Given
-        offer1 = offers_factories.EducationalEventOfferFactory(isActive=False, extraData={"isShowcase": False})
-        venue = offer1.venue
-        collective_offer = CollectiveOfferFactory(isActive=False, offerId=offer1.id, venue=venue)
-        offer2 = offers_factories.EducationalEventOfferFactory(
-            venue=venue, isActive=False, extraData={"isShowcase": True}
-        )
-        collective_offer_template = CollectiveOfferTemplateFactory(isActive=False, offerId=offer2.id, venue=venue)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        # When
-        client = client.with_session_auth("pro@example.com")
-        data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
-        response = client.patch("/offers/active-status", json=data)
-
-        # Then
-        assert response.status_code == 204
-        assert CollectiveOffer.query.get(collective_offer.id).isActive
-        assert CollectiveOfferTemplate.query.get(collective_offer_template.id).isActive
-
-    def should_deactivate_collective_offers(self, client):
-        # Given
-        offer1 = offers_factories.EducationalEventOfferFactory(isActive=True, extraData={"isShowcase": False})
-        venue = offer1.venue
-
-        collective_offer = CollectiveOfferFactory(isActive=True, offerId=offer1.id, venue=venue)
-        offer2 = offers_factories.EducationalEventOfferFactory(
-            venue=venue, isActive=True, extraData={"isShowcase": True}
-        )
-        collective_offer_template = CollectiveOfferTemplateFactory(isActive=True, venue=venue, offerId=offer2.id)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        # When
-        client = client.with_session_auth("pro@example.com")
-        data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": False}
-        response = client.patch("/offers/active-status", json=data)
-
-        # Then
-        assert response.status_code == 204
-        assert not CollectiveOffer.query.get(collective_offer.id).isActive
-        assert not CollectiveOfferTemplate.query.get(collective_offer_template.id).isActive

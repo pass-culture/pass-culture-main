@@ -98,14 +98,6 @@ const OfferLayout = () => {
       <OfferHeader offer={offer} reloadOffer={reloadOffer} />
     ) : null
 
-  if (offer?.isEducational) {
-    history.push(
-      `/offre/${match.params.offerId}/collectif/${
-        activeStep === 'stocks' ? 'stocks/edition' : 'edition'
-      }`
-    )
-  }
-
   let offerHaveStock = false
   if (offer?.stocks !== undefined) {
     offerHaveStock = offer.stocks.length > 0
@@ -125,7 +117,7 @@ const OfferLayout = () => {
       <Breadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}
-        isOfferEducational={offer?.isEducational}
+        isOfferEducational={false}
         offerId={offer?.id}
         haveStock={offerHaveStock}
       />

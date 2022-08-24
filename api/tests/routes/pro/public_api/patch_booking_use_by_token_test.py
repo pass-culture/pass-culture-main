@@ -1,11 +1,8 @@
-import datetime
-
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
@@ -56,24 +53,6 @@ class Returns204Test:
             booking = Booking.query.one()
             assert booking.status is BookingStatus.USED
 
-        def test_when_user_is_logged_in_and_offer_is_educational(self, client):
-            # Given
-            booking = bookings_factories.EducationalBookingFactory(
-                token="ABCDEF",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-            )
-            pro_user = users_factories.ProFactory(email="pro@example.com")
-            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
-
-            # When
-            url = f"/v2/bookings/use/token/{booking.token}"
-            response = client.with_session_auth("pro@example.com").patch(url)
-
-            # Then
-            assert response.status_code == 204
-            booking = Booking.query.one()
-            assert booking.status is BookingStatus.USED
-
 
 class Returns401Test:
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, client):
@@ -119,29 +98,6 @@ class Returns403Test:
             assert response.json["user"] == [
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
-            booking = Booking.query.get(booking.id)
-            assert booking.status is not BookingStatus.USED
-
-        def test_when_user_is_logged_in_and_offer_is_educational_but_has_been_refused_by_institution(self, client):
-            # Given
-            booking = bookings_factories.EducationalBookingFactory(
-                token="ABCDEF",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-                educationalBooking__status=EducationalBookingStatus.REFUSED,
-            )
-            pro_user = users_factories.ProFactory(email="pro@example.com")
-            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
-
-            # When
-            url = f"/v2/bookings/use/token/{booking.token}"
-            response = client.with_session_auth("pro@example.com").patch(url)
-
-            # Then
-            assert response.status_code == 403
-            assert (
-                response.json["educationalBooking"]
-                == "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
-            )
             booking = Booking.query.get(booking.id)
             assert booking.status is not BookingStatus.USED
 

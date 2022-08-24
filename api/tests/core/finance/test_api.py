@@ -193,20 +193,14 @@ class PriceBookingTest:
             amount=10,
             stock=self.stock_factory(),
         )
-        booking2 = bookings_factories.UsedEducationalBookingFactory(
-            stock=self.stock_factory(offer__venue=booking1.venue),
-            amount=20,
-        )
-        booking3 = bookings_factories.UsedIndividualBookingFactory(
+        booking2 = bookings_factories.UsedIndividualBookingFactory(
             amount=40,
             stock=self.stock_factory(offer__venue=booking1.venue),
         )
         pricing1 = api.price_booking(booking1, self.use_pricing_point)
         pricing2 = api.price_booking(booking2, self.use_pricing_point)
-        pricing3 = api.price_booking(booking3, self.use_pricing_point)
         assert pricing1.revenue == 1000
-        assert pricing2.revenue == 1000  # collective booking, not included in revenue
-        assert pricing3.revenue == 5000
+        assert pricing2.revenue == 5000
 
     def test_price_with_dependent_booking(self):
         booking1 = bookings_factories.UsedBookingFactory(stock=self.stock_factory())
@@ -977,14 +971,12 @@ class PriceBookingsTest:
             dateUsed=self.few_minutes_ago,
             stock=self.individual_stock_factory(),
         )
-        educational_booking = bookings_factories.UsedEducationalBookingFactory(dateUsed=self.few_minutes_ago)
         collective_booking = UsedCollectiveBookingFactory(
             dateUsed=self.few_minutes_ago,
             collectiveStock=self.collective_stock_factory(),
         )
         api.price_bookings(min_date=self.few_minutes_ago)
         assert len(booking.pricings) == 1
-        assert len(educational_booking.pricings) == 0
         assert len(collective_booking.pricings) == 1
 
     @auto_override_features
@@ -2657,27 +2649,29 @@ class GenerateInvoiceTest:
     @auto_override_features
     def test_update_statuses_when_new_model_is_enabled(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        booking1 = bookings_factories.UsedEducationalBookingFactory(
-            stock=self.stock_factory(beginningDatetime=past),
+        reimbursement_point = offerers_factories.VenueFactory()
+        factories.BankInformationFactory(venue=reimbursement_point)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=reimbursement_point.managingOfferer,
+            pricing_point="self",
+            reimbursement_point=reimbursement_point,
         )
         collective_booking1 = UsedCollectiveBookingFactory(
-            bookingId=booking1.id,
-            collectiveStock__collectiveOffer__venue=booking1.venue,
             collectiveStock__beginningDatetime=past,
+            collectiveStock__collectiveOffer__venue=venue,
         )
         collective_booking2 = UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue=booking1.venue,
+            collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__beginningDatetime=past,
         )
-        api.price_booking(booking1, self.use_pricing_point)
         api.price_booking(collective_booking1, self.use_pricing_point)
         api.price_booking(collective_booking2, self.use_pricing_point)
-        api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_cashflows(datetime.datetime.utcnow() + datetime.timedelta(minutes=5))
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
 
         api._generate_invoice(
-            business_unit_id=booking1.venue.businessUnitId,
-            reimbursement_point_id=booking1.venue.current_reimbursement_point_id,
+            business_unit_id=collective_booking1.venue.businessUnitId,
+            reimbursement_point_id=collective_booking1.venue.current_reimbursement_point_id,
             cashflow_ids=cashflow_ids,
         )
 
@@ -2686,7 +2680,6 @@ class GenerateInvoiceTest:
         assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
         pricing_statuses = get_statuses(models.Pricing)
         assert pricing_statuses == {models.PricingStatus.INVOICED}
-        assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
         assert collective_booking1.status == CollectiveBookingStatus.REIMBURSED  # updated
         assert collective_booking2.status == CollectiveBookingStatus.REIMBURSED  # updated
 
@@ -2842,24 +2835,24 @@ class GenerateInvoiceHtmlTest:
             pricing_point=pricing_point,
             reimbursement_point=reimbursement_point,
         )
-        only_educational_booking = bookings_factories.UsedEducationalBookingFactory(
-            stock__price=666,
-            stock__offer__venue=only_educational_venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        only_collective_booking = UsedCollectiveBookingFactory(
+            collectiveStock__price=666,
+            collectiveStock__collectiveOffer__venue=only_educational_venue,
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
-        educational_booking1 = bookings_factories.UsedEducationalBookingFactory(
-            stock__price=5000,
-            stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        collective_booking1 = UsedCollectiveBookingFactory(
+            collectiveStock__price=5000,
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
-        educational_booking2 = bookings_factories.UsedEducationalBookingFactory(
-            stock__price=250,
-            stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        collective_booking2 = UsedCollectiveBookingFactory(
+            collectiveStock__price=250,
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
-        api.price_booking(educational_booking1, self.use_pricing_point)
-        api.price_booking(educational_booking2, self.use_pricing_point)
-        api.price_booking(only_educational_booking, self.use_pricing_point)
+        api.price_booking(collective_booking1, self.use_pricing_point)
+        api.price_booking(collective_booking2, self.use_pricing_point)
+        api.price_booking(only_collective_booking, self.use_pricing_point)
 
         self.generate_and_compare_invoice(stocks, business_unit, reimbursement_point, venue)
 

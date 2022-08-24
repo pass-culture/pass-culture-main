@@ -190,7 +190,9 @@ class ReimbursementDetails:
             self.reimbursed_amount = format_number_as_french(finance_utils.to_euros(payment_info.amount))
 
         # Offer type
-        self.offer_type = serialize_offer_type_educational_or_individual(payment_info.offer_is_educational)
+        self.offer_type = serialize_offer_type_educational_or_individual(
+            offer_is_educational=payment_info.collective_booking_id != None
+        )
 
     @typing.no_type_check  # see comment for `__init__()` above
     def as_csv_row(self) -> list:

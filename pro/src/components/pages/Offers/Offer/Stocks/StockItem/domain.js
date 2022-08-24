@@ -115,18 +115,14 @@ export const createThingStockPayload = (stock, departementCode) => {
   return payload
 }
 
-export const validateCreatedStock = (
-  stock,
-  isEventOffer,
-  isEducationalOffer
-) => {
+export const validateCreatedStock = (stock, isEventOffer) => {
   let errors = {}
 
   if (stock.price < 0) {
     errors.price = 'Le prix doit être positif.'
   }
 
-  if (stock.price > 300 && !isEventOffer && !isEducationalOffer) {
+  if (stock.price > 300 && !isEventOffer) {
     errors.price300 = 'Le prix d’une offre ne peut excéder 300 euros.'
   }
 
@@ -149,12 +145,8 @@ export const validateCreatedStock = (
   return errors
 }
 
-export const validateUpdatedStock = (
-  stock,
-  isEventOffer,
-  isEducationalOffer
-) => {
-  let errors = validateCreatedStock(stock, isEventOffer, isEducationalOffer)
+export const validateUpdatedStock = (stock, isEventOffer) => {
+  let errors = validateCreatedStock(stock, isEventOffer)
 
   const remainingQuantity = stock.quantity - stock.bookingsQuantity
 

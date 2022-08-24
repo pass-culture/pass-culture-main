@@ -84,7 +84,7 @@ class ReimbursementDetailsTest:
         assert row[10] == booking.venue.siret
         # offer and booking
         assert row[11] == booking.stock.offer.name
-        assert row[12] == ""  # Unused for individual offer"Doux"
+        assert row[12] == ""  # Unused for individual offer
         assert row[13] == ""  # Unused for individual offer
         assert row[14] == ""  # Unused for individual offer
         assert row[15] == ""  # Unused for individual offer
@@ -113,8 +113,8 @@ class ReimbursementDetailsTest:
         assert row[10] == booking.venue.siret
         # offer and booking
         assert row[11] == booking.stock.offer.name
-        assert row[12] is None  # Unused for individual offer
-        assert row[13] is None  # Unused for individual offer
+        assert row[12] == ""  # Unused for individual offer
+        assert row[13] == ""  # Unused for individual offer
         assert row[14] == ""  # Unused for individual offer
         assert row[15] == ""  # Unused for individual offer
         assert row[16] == booking.token
@@ -170,7 +170,6 @@ def test_generate_reimbursement_details_csv() -> None:
     # given
     payment = finance_factories.PaymentFactory(
         booking__stock__offer__name='Mon titre ; un peu "spécial"',
-        booking__stock__offer__isEducational=False,
         booking__stock__offer__venue__name='Mon lieu ; un peu "spécial"',
         booking__stock__offer__venue__siret="siret-1234",
         booking__stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
@@ -225,20 +224,21 @@ def test_find_all_offerer_reimbursement_details() -> None:
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
     booking1 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue1)
     booking2 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue2)
-    booking3 = bookings_factories.UsedEducationalBookingFactory(
-        stock__beginningDatetime=datetime.utcnow(),
-        stock__offer__venue=venue2,
+    collective_booking3 = educational_factories.UsedCollectiveBookingFactory(
+        collectiveStock__beginningDatetime=datetime.utcnow(),
+        collectiveStock__collectiveOffer__venue=venue2,
     )
     label = ("pass Culture Pro - remboursement 1ère quinzaine 07-2019",)
     payment_1 = finance_factories.PaymentFactory(booking=booking1, transactionLabel=label)
     payment_2 = finance_factories.PaymentFactory(booking=booking2, transactionLabel=label)
-    payment_3 = finance_factories.PaymentFactory(booking=booking3, transactionLabel=label)
+    payment_3 = finance_factories.PaymentFactory(collectiveBooking=collective_booking3, transactionLabel=label)
     finance_factories.PaymentStatusFactory(payment=payment_1, status=finance_models.TransactionStatus.SENT)
     finance_factories.PaymentStatusFactory(payment=payment_2, status=finance_models.TransactionStatus.SENT)
     finance_factories.PaymentStatusFactory(payment=payment_3, status=finance_models.TransactionStatus.SENT)
 
-    for booking in (booking1, booking2, booking3):
+    for booking in (booking1, booking2):
         finance_factories.PricingFactory(booking=booking)
+    finance_factories.PricingFactory(collectiveBooking=collective_booking3)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     finance_api.generate_invoices()
 
