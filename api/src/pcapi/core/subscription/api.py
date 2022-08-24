@@ -545,8 +545,10 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     return new_fraud_check
 
 
-def update_user_birth_date(user: users_models.User, birth_date: datetime.date | None) -> None:
+def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_date: datetime.date | None) -> None:
     """Updates the user birth date based on data received from the identity provider.
+    Indeed, if the user is not beneficiary (or underage), user.dateOfBirth was manually declared during account creation.
+    We'd better trust the identity provider so that the user is correctly redirected for the rest of the process.
 
     Args:
         user (users_models.User): The user to update.

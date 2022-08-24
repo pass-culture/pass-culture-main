@@ -329,9 +329,10 @@ def _process_accepted_application(
         logger.exception("Error on dms fraud check result: %s", exc)
         return
 
+    subscription_api.update_user_birth_date_if_not_beneficiary(user, dms_content.get_birth_date())
+
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
         _handle_validation_errors(user, fraud_check.reasonCodes, dms_content)  # type: ignore [arg-type]
-        subscription_api.update_user_birth_date(user, dms_content.get_birth_date())
         return
 
     fraud_api.create_honor_statement_fraud_check(
