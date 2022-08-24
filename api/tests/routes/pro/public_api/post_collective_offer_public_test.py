@@ -56,7 +56,7 @@ class CollectiveOffersPublicPostOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective-offers/", json=payload
+                "/v2/collective/offers/", json=payload
             )
 
         # Then
@@ -117,7 +117,7 @@ class CollectiveOffersPublicPostOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective-offers/", json=payload
+                "/v2/collective/offers/", json=payload
             )
 
         # Then
@@ -169,7 +169,7 @@ class CollectiveOffersPublicPostOfferTest:
             side_effect=educational_exceptions.CulturalPartnerNotFoundException,
         ):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective-offers/", json=payload
+                "/v2/collective/offers/", json=payload
             )
 
         # Then
@@ -217,7 +217,7 @@ class CollectiveOffersPublicPostOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective-offers/", json=payload
+                "/v2/collective/offers/", json=payload
             )
 
         # Then
@@ -266,7 +266,7 @@ class CollectiveOffersPublicPostOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective-offers/", json=payload
+                "/v2/collective/offers/", json=payload
             )
 
         # Then
@@ -314,7 +314,7 @@ class CollectiveOffersPublicPostOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective-offers/", json=payload
+                "/v2/collective/offers/", json=payload
             )
 
         # Then

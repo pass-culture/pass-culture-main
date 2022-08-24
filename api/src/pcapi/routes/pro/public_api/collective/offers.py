@@ -1,12 +1,7 @@
-import logging
-
-from pcapi.core.categories import categories
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.offerers import exceptions as offerers_exceptions
-from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import public_api_collective_offers_serialize
@@ -23,10 +18,7 @@ BASE_CODE_DESCRIPTIONS = {
 }
 
 
-logger = logging.getLogger(__name__)
-
-
-@blueprint.pro_public_api_v2.route("/collective-offers/", methods=["GET"])
+@blueprint.pro_public_api_v2.route("/collective/offers/", methods=["GET"])
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
@@ -65,32 +57,9 @@ def get_collective_offers_public(
     )
 
 
-@blueprint.pro_public_api_v2.route("/collective-offers/venues", methods=["GET"])
-@api_key_required
-@spectree_serialize(
-    on_success_status=200,
-    on_error_statuses=[401],
-    response_model=public_api_collective_offers_serialize.CollectiveOffersListVenuesResponseModel,
-    api=blueprint.pro_public_schema_v2,
-)
-def list_venues() -> public_api_collective_offers_serialize.CollectiveOffersListVenuesResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.
-
-    Tous les lieux enregistrés, physiques ou virtuels, sont listés ici avec leurs coordonnées.
-    """
-    offerer_id = current_api_key.offererId  # type: ignore [attr-defined]
-    venues = offerers_repository.get_all_venues_by_offerer_id(offerer_id)
-
-    return public_api_collective_offers_serialize.CollectiveOffersListVenuesResponseModel(
-        __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersVenueResponseModel.from_orm(venue)
-            for venue in venues
-        ]
-    )
 
 
-@blueprint.pro_public_api_v2.route("/collective-offers/<int:offer_id>", methods=["GET"])
+@blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["GET"])
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
@@ -139,103 +108,9 @@ def get_collective_offer_public(
     return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
-@blueprint.pro_public_api_v2.route("/collective-offers/categories", methods=["GET"])
-@api_key_required
-@spectree_serialize(
-    on_success_status=200,
-    on_error_statuses=[401],
-    response_model=public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel,
-    api=blueprint.pro_public_schema_v2,
-)
-def list_categories() -> public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des catégories d'offres proposées."""
-    return public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel(
-        __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersCategoryResponseModel(
-                id=category.id, name=category.pro_label
-            )
-            for category in categories.ALL_CATEGORIES
-            if category.is_selectable
-        ]
-    )
 
 
-@blueprint.pro_public_api_v2.route("/collective-offers/educational-domains", methods=["GET"])
-@api_key_required
-@spectree_serialize(
-    on_success_status=200,
-    on_error_statuses=[401],
-    response_model=public_api_collective_offers_serialize.CollectiveOffersListDomainsResponseModel,
-    api=blueprint.pro_public_schema_v2,
-)
-def list_educational_domains() -> public_api_collective_offers_serialize.CollectiveOffersListDomainsResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives."""
-    educational_domains = educational_repository.get_all_educational_domains_ordered_by_name()
-
-    return public_api_collective_offers_serialize.CollectiveOffersListDomainsResponseModel(
-        __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersDomainResponseModel.from_orm(educational_domain)
-            for educational_domain in educational_domains
-        ]
-    )
-
-
-@blueprint.pro_public_api_v2.route("/collective-offers/student-levels", methods=["GET"])
-@api_key_required
-@spectree_serialize(
-    on_success_status=200,
-    on_error_statuses=[401],
-    response_model=public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel,
-    api=blueprint.pro_public_schema_v2,
-)
-def list_students_levels() -> public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées."""
-    return public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel(
-        __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersStudentLevelResponseModel(
-                id=student_level.name, name=student_level.value
-            )
-            for student_level in educational_models.StudentLevels
-        ]
-    )
-
-
-@blueprint.pro_public_api_v2.route("/collective-offers/educational-institutions/", methods=["GET"])
-@api_key_required
-@spectree_serialize(
-    on_success_status=200,
-    on_error_statuses=[401],
-    response_model=public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel,
-    api=blueprint.pro_public_schema_v2,
-)
-def list_educational_institutions(
-    query: public_api_collective_offers_serialize.GetListEducationalInstitutionsQueryModel,
-) -> public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste établissements scolaires."""
-
-    institutions = educational_api.search_educational_institution(
-        name=query.name,
-        city=query.city,
-        postal_code=query.postal_code,
-        educational_institution_id=query.id,
-        institution_type=query.institution_type,
-        limit=query.limit,
-    )
-    return public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel(
-        __root__=[
-            public_api_collective_offers_serialize.CollectiveOffersEducationalInstitutionResponseModel.from_orm(
-                institution
-            )
-            for institution in institutions
-        ]
-    )
-
-
-@blueprint.pro_public_api_v2.route("/collective-offers/", methods=["POST"])
+@blueprint.pro_public_api_v2.route("/collective/offers/", methods=["POST"])
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
@@ -298,7 +173,7 @@ def post_collective_offer_public(
     return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
-@blueprint.pro_public_api_v2.route("/collective-offers/<int:offer_id>", methods=["PATCH"])
+@blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
