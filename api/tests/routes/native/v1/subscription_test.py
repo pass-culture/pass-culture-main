@@ -724,8 +724,6 @@ class UpdateProfileTest:
             city=None,
             postalCode=None,
             activity=None,
-            firstName="Alexandra",
-            lastName="Stan",
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33609080706",
             dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
@@ -735,6 +733,9 @@ class UpdateProfileTest:
             user=user,
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.DMS,
+            resultContent=fraud_factories.DMSContentFactory(
+                first_name="Alexandra", last_name="Stan", postal_code="75008"
+            ),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -774,7 +775,7 @@ class UpdateProfileTest:
         notification = push_testing.requests[0]
         assert notification["user_id"] == user.id
         assert notification["attribute_values"]["u.is_beneficiary"]
-        assert notification["attribute_values"]["u.postal_code"] == "77000"
+        assert notification["attribute_values"]["u.postal_code"] == "75008"
 
 
 class ProfileOptionsTypeTest:

@@ -71,7 +71,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         ubble_tasks.store_id_pictures_task.delay(payload)
 
         try:
-            subscription_api.on_successful_application(user=user, source_data=content)
+            subscription_api.activate_beneficiary_if_no_missing_step(user=user)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
 

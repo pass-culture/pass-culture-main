@@ -79,7 +79,7 @@ class EduconnectTest:
     def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
-        user = users_factories.UserFactory(email=self.email)
+        user = users_factories.UserFactory(email=self.email, firstName="ProfileFirstName", lastName="ProfileLastName")
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
 
         # even if the user has failed educonnect
@@ -156,10 +156,10 @@ class EduconnectTest:
             subscription_api.get_identity_check_subscription_status(user, user_models.EligibilityType.UNDERAGE)
             == subscription_status.SubscriptionItemStatus.OK
         )
-        assert user.firstName == "Max"
-        assert user.lastName == "SENS"
+        assert user.firstName == "ProfileFirstName"
+        assert user.lastName == "ProfileLastName"
         assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
-        assert user.ineHash == ine_hash
+        assert user.ineHash is None
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_connexion_date_missing(self, mock_get_educonnect_saml_client, client, caplog, app):
@@ -395,13 +395,12 @@ class EduconnectTest:
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_educonnect_connection_synchronizes_data(self, mock_get_educonnect_user, client, app):
+    def test_educonnect_connection_synchronizes_birth_date(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 15
 
-        previous_user_first_name = user.firstName
-        previous_user_last_name = user.lastName
-        previous_user_date_of_birth = user.dateOfBirth
+        first_name = user.firstName
+        last_name = user.lastName
 
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
             saml_request_id=request_id, age=age, last_name="Hayward", first_name="Verona"
@@ -410,11 +409,8 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert user.firstName != previous_user_first_name
-        assert user.firstName == "Verona"
-        assert user.lastName != previous_user_last_name
-        assert user.lastName == "Hayward"
-        assert user.dateOfBirth != previous_user_date_of_birth
+        assert user.firstName == first_name
+        assert user.lastName == last_name
         assert user.dateOfBirth == datetime.datetime.combine(
             datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
         )
