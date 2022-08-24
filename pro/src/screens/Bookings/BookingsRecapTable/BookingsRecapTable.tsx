@@ -16,11 +16,11 @@ import {
   FilterByOmniSearch,
   Header,
   NoFilteredBookings,
-  TableFrame,
   FilterByBookingStatus,
   ALL_BOOKING_STATUS,
   DEFAULT_OMNISEARCH_CRITERIA,
   EMPTY_FILTER_VALUE,
+  TableWrapper,
 } from './components'
 import { NB_BOOKINGS_PER_PAGE } from './constants'
 import { BookingsFilters } from './types'
@@ -225,7 +225,7 @@ const BookingsRecapTable = <
             bookingsRecapFilteredLength={filteredBookings.length}
             isLoading={isLoading}
           />
-          <TableFrame
+          <TableWrapper
             columns={columns}
             currentPage={currentPage}
             data={filteredBookings}
