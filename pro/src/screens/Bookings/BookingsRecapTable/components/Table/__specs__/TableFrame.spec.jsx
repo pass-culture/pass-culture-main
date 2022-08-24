@@ -4,13 +4,13 @@ import * as reactTable from 'react-table'
 
 import TableHead from '../Head/TableHead'
 import TablePagination from '../Paginate/TablePagination'
-import TableFrame from '../TableFrame/TableFrame'
+import TableWrapper from '../TableWrapper'
 
 const CellMock = ({ offer: { offer_name: offerName } }) => (
   <span>{offerName}</span>
 )
 
-describe('components | TableFrame', () => {
+describe('components | TableWrapper', () => {
   it('should render a TableHead component with the right props', () => {
     // Given
     const mockedValues = {
@@ -78,7 +78,7 @@ describe('components | TableFrame', () => {
     useTableSpy.mockReturnValue(mockedValues)
 
     // When
-    const table = mount(<TableFrame {...props} />)
+    const table = mount(<TableWrapper {...props} />)
 
     // Then
     const tableHead = table.find(TableHead)
@@ -146,7 +146,7 @@ describe('components | TableFrame', () => {
     }
 
     // When
-    const table = mount(<TableFrame {...props} />)
+    const table = mount(<TableWrapper {...props} />)
 
     // Then
     const tableRowsNumber = table.find('tbody > tr').length
@@ -184,7 +184,7 @@ describe('components | TableFrame', () => {
       }
 
       // When
-      const wrapper = mount(<TableFrame {...props} />)
+      const wrapper = mount(<TableWrapper {...props} />)
 
       // Then
       const paginate = wrapper.find(TablePagination)
@@ -229,7 +229,7 @@ describe('components | TableFrame', () => {
       }
 
       // When
-      const wrapper = mount(<TableFrame {...props} />)
+      const wrapper = mount(<TableWrapper {...props} />)
 
       // Then
       const bookingsOnPageOne = wrapper.find('tbody').find('tr')
@@ -269,7 +269,7 @@ describe('components | TableFrame', () => {
         currentPage: 0,
         updateCurrentPage: jest.fn(),
       }
-      const wrapper = mount(<TableFrame {...props} />)
+      const wrapper = mount(<TableWrapper {...props} />)
       const paginate = wrapper.find(TablePagination)
       const nextPageButton = paginate.find('button').at(1)
 
@@ -312,7 +312,7 @@ describe('components | TableFrame', () => {
         currentPage: 1,
         updateCurrentPage: jest.fn(),
       }
-      const wrapper = mount(<TableFrame {...props} />)
+      const wrapper = mount(<TableWrapper {...props} />)
       const paginate = wrapper.find(TablePagination)
 
       // When
