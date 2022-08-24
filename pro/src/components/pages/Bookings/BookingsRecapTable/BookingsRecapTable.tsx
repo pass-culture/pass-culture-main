@@ -184,7 +184,7 @@ const BookingsRecapTable = <
   }
 
   const updateFilters = (
-    updatedFilter: BookingsFilters,
+    updatedFilter: Partial<BookingsFilters>,
     updatedSelectedContent: {
       keywords: string
       selectedOmniSearchCriteria: string
