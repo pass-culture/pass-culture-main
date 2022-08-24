@@ -16,6 +16,6 @@ psql $DATABASE_URL -c "UPDATE venue_provider SET \"isActive\" = false;"
 
 psql $DATABASE_URL < src/pcapi/scripts/rebuild_staging/anonymize.sql
 
-python3 src/pcapi/scripts/beneficiary/import_test_users.py --default --update
+flask import_test_users --default --update
 
 flask sandbox --name beneficiaries --clean false
