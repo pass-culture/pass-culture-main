@@ -13,8 +13,10 @@ export { BookingFormula } from './models/BookingFormula';
 export { BookingOfferType } from './models/BookingOfferType';
 export type { CollectiveOffersCategoryResponseModel } from './models/CollectiveOffersCategoryResponseModel';
 export type { CollectiveOffersDomainResponseModel } from './models/CollectiveOffersDomainResponseModel';
+export type { CollectiveOffersEducationalInstitutionResponseModel } from './models/CollectiveOffersEducationalInstitutionResponseModel';
 export type { CollectiveOffersListCategoriesResponseModel } from './models/CollectiveOffersListCategoriesResponseModel';
 export type { CollectiveOffersListDomainsResponseModel } from './models/CollectiveOffersListDomainsResponseModel';
+export type { CollectiveOffersListEducationalInstitutionResponseModel } from './models/CollectiveOffersListEducationalInstitutionResponseModel';
 export type { CollectiveOffersListResponseModel } from './models/CollectiveOffersListResponseModel';
 export type { CollectiveOffersListStudentLevelsResponseModel } from './models/CollectiveOffersListStudentLevelsResponseModel';
 export type { CollectiveOffersListVenuesResponseModel } from './models/CollectiveOffersListVenuesResponseModel';
@@ -22,6 +24,7 @@ export type { CollectiveOffersResponseModel } from './models/CollectiveOffersRes
 export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
 export type { CollectiveOffersVenueResponseModel } from './models/CollectiveOffersVenueResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
+export type { GetListEducationalInstitutionsQueryModel } from './models/GetListEducationalInstitutionsQueryModel';
 export type { GetPublicCollectiveOfferResponseModel } from './models/GetPublicCollectiveOfferResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export { OfferAddressType } from './models/OfferAddressType';
