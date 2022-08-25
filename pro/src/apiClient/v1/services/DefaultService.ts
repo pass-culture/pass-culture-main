@@ -8,6 +8,7 @@ import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
 import type { BusinessUnitListResponseModel } from '../models/BusinessUnitListResponseModel';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
+import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
 import type { CollectiveOfferFromTemplateResponseModel } from '../models/CollectiveOfferFromTemplateResponseModel';
@@ -1398,6 +1399,28 @@ export class DefaultService {
       body: requestBody,
       mediaType: 'application/json',
       errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * post_change_password <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public postChangePassword(
+    requestBody?: ChangePasswordBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/password',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: `Bad Request`,
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },

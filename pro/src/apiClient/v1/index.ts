@@ -27,6 +27,7 @@ export type { BusinessUnitListResponseModel } from './models/BusinessUnitListRes
 export type { BusinessUnitResponseModel } from './models/BusinessUnitResponseModel';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
+export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
 export type { ChangeProEmailBody } from './models/ChangeProEmailBody';
 export type { CollectiveBookingCollectiveStockResponseModel } from './models/CollectiveBookingCollectiveStockResponseModel';
 export type { CollectiveBookingResponseModel } from './models/CollectiveBookingResponseModel';
