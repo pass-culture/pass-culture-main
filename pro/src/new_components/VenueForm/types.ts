@@ -6,4 +6,7 @@ export interface IVenueFormValues {
   bannerMeta: IVenueBannerMetaProps | undefined
   id: string
   bannerUrl: string | undefined
+  email: string
+  phoneNumber: string
+  webSite: string
 }

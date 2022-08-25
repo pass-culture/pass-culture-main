@@ -21,6 +21,11 @@ describe('useGetVenue', () => {
       },
       bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
       collectiveDomains: [],
+      contact: {
+        email: 'test@test.com',
+        phoneNumber: '0606060606',
+        website: 'http://test.com',
+      },
       dateCreated: '2022-07-29T12:18:43.087097Z',
       fieldsUpdated: [],
       id: 'AE',
@@ -64,6 +69,11 @@ describe('useGetVenue', () => {
         },
       },
       bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
+      contact: {
+        email: 'test@test.com',
+        phoneNumber: '0606060606',
+        webSite: 'http://test.com',
+      },
       id: 'AE',
       isPermanent: true,
       publicName: 'Cinéma des iles',

@@ -14,13 +14,13 @@ const Contact = () => {
         contacter en cas de besoin.
       </p>
       <FormLayout.Row>
-        <TextInput name="phone" label="Téléphone" />
+        <TextInput name="phoneNumber" label="Téléphone" />
       </FormLayout.Row>
       <FormLayout.Row>
         <TextInput name="email" label="Adresse e-mail" />
       </FormLayout.Row>
       <FormLayout.Row>
-        <TextInput name="webSiteAddress" label="URL de votre site web" />
+        <TextInput name="webSite" label="URL de votre site web" />
       </FormLayout.Row>
     </FormLayout.Section>
   )
