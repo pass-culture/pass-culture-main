@@ -81,7 +81,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(
       await screen.findByText('Veuillez renseigner un titre')
     ).toBeInTheDocument()
-    expect(screen.queryByTestId('error-description')).not.toBeInTheDocument()
+
     expect(screen.queryByTestId('error-author')).not.toBeInTheDocument()
     expect(screen.queryByTestId('error-isbn')).not.toBeInTheDocument()
     expect(screen.queryByTestId('error-performer')).not.toBeInTheDocument()

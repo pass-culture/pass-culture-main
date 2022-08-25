@@ -4,7 +4,7 @@ import { urlRegex } from 'core/shared'
 import { isPhoneValid } from 'core/shared/utils/validation'
 
 const validationSchema = {
-  phone: yup
+  phoneNumber: yup
     .string()
     .required('Veuillez renseigner un numéro de téléphone')
     .test({
