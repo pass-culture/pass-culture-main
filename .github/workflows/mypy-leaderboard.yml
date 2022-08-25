@@ -4,13 +4,13 @@ on:
   pull_request:
     branches:
       - master
-    types: [closed]
+    #types: [closed]
     paths:
       - "api/src/**"
 
 jobs:
   get_mypy_score_on_merge:
-    if: github.event.pull_request.merged == true
+    #if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       mypy_score: ${{ steps.mypy-score-calculator.outputs.mypy_score }}
