@@ -24,6 +24,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationType
@@ -1219,6 +1220,7 @@ class GetOfferValidationViewTest:
                 """
 
     @clean_database
+    @override_features(USE_INSEE_SIRENE_API=False)
     @patch("pcapi.core.offerers.models.get_offerer_legal_category")
     def test_offer_validation_legal_category_api_calls(self, mocked_get_offerer_legal_category, app):
         import_offer_validation_config(self.CONFIG_YAML)
@@ -1247,6 +1249,7 @@ class GetOfferValidationViewTest:
         assert mocked_get_offerer_legal_category.call_count == 1
 
     @clean_database
+    @override_features(USE_INSEE_SIRENE_API=False)
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
     def test_view_form_loads_if_wrong_siren(self, mocked_get_by_offerer, app, client, caplog):
         import_offer_validation_config(self.CONFIG_YAML)
