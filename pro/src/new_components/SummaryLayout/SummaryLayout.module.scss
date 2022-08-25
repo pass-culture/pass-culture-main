@@ -26,7 +26,7 @@
           align-items: center;
       }
       &-edit-link {
-        height: rem.torem(0px);
+        height: unset;
 
         & > svg {
             height: rem.torem(16px);
