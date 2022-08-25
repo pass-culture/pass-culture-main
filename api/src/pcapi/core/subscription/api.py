@@ -73,7 +73,12 @@ def activate_beneficiary_for_eligibility(
     if "apps_flyer" in user.externalIds:  # type: ignore [operator]
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
-    return user  # do nothing
+    return user
+
+
+# type: ignore [no-untyped-def]
+# type: ignore [no-untyped-def]
+# type: ignore [no-untyped-def]
 
 
 def has_completed_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
