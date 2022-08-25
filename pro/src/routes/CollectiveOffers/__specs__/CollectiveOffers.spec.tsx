@@ -22,7 +22,7 @@ import {
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { configureTestStore } from 'store/testUtils'
-import { offerFactory } from 'utils/apiFactories'
+import { collectiveOfferFactory } from 'utils/apiFactories'
 
 import CollectiveOffers from '../CollectiveOffers'
 
@@ -138,7 +138,7 @@ describe('route CollectiveOffers', () => {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     })
-    offersRecap = [offerFactory({ venue: proVenues[0] })]
+    offersRecap = [collectiveOfferFactory({ venue: proVenues[0] })]
     jest
       .spyOn(api, 'getCollectiveOffers')
       // @ts-ignore FIX ME
@@ -516,7 +516,9 @@ describe('route CollectiveOffers', () => {
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
-      const offersRecap = Array.from({ length: 11 }, () => offerFactory())
+      const offersRecap = Array.from({ length: 11 }, () =>
+        collectiveOfferFactory()
+      )
       jest
         .spyOn(api, 'getCollectiveOffers')
         // @ts-ignore FIX ME
@@ -661,13 +663,13 @@ describe('route CollectiveOffers', () => {
       // Given
       jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
         // @ts-ignore FIX ME
-        offerFactory(
+        collectiveOfferFactory(
           {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
             status: 'ACTIVE',
           },
-          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+          // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
           null
         ),
       ])
@@ -689,13 +691,13 @@ describe('route CollectiveOffers', () => {
       // Given
       jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
         // @ts-ignore FIX ME
-        offerFactory(
+        collectiveOfferFactory(
           {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
             status: 'ACTIVE',
           },
-          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+          // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
           null
         ),
       ])
@@ -778,7 +780,7 @@ describe('route CollectiveOffers', () => {
 
     it('should display next page when clicking on right arrow', async () => {
       // Given
-      const offers = Array.from({ length: 11 }, () => offerFactory())
+      const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
       jest
         .spyOn(api, 'getCollectiveOffers')
         // @ts-ignore FIX ME
@@ -797,7 +799,7 @@ describe('route CollectiveOffers', () => {
 
     it('should display previous page when clicking on left arrow', async () => {
       // Given
-      const offers = Array.from({ length: 11 }, () => offerFactory())
+      const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
       jest
         .spyOn(api, 'getCollectiveOffers')
         // @ts-ignore FIX ME
@@ -841,7 +843,9 @@ describe('route CollectiveOffers', () => {
 
     describe('when 501 offers are fetched', () => {
       beforeEach(() => {
-        offersRecap = Array.from({ length: 501 }, () => offerFactory())
+        offersRecap = Array.from({ length: 501 }, () =>
+          collectiveOfferFactory()
+        )
       })
 
       it('should have max number page of 50', async () => {
