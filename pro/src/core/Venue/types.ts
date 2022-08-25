@@ -70,14 +70,22 @@ export type VenueCollectiveInformation = Pick<
 >
 
 export interface IVenue {
-  bannerMeta: IVenueBannerMetaProps | undefined
+  bannerMeta: IVenueBannerMetaProps | null | undefined
   bannerUrl: string
+  comment: string
   contact: {
     email: string
     phoneNumber: string
     webSite: string
   }
+  description: string
   id: string
   isPermanent: boolean
+  isVenueVirtual: boolean
+  mail: string
+  name: string
   publicName: string
+  siret: string
+  venueType: string
+  venueLabel: string
 }

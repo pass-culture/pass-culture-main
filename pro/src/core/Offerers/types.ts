@@ -28,3 +28,8 @@ export interface IAPIOfferer {
   postalCode: string | null
   siren: string
 }
+
+export interface IOfferer {
+  id: string
+  siren: string
+}
