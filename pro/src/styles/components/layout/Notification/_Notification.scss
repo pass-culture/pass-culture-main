@@ -35,7 +35,7 @@
 
   @keyframes animatetop {
     from {
-      bottom: -300px;
+      bottom: rem.torem(-300px);
       opacity: 0;
     }
 

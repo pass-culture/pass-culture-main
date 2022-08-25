@@ -7,8 +7,8 @@
     @include fonts.title4();
 
     border-bottom: thin solid colors.$grey-medium;
-    margin: 0.75rem 0;
-    padding-bottom: 0.5rem;
+    margin: rem.torem(12px) 0;
+    padding-bottom: rem.torem(8px);
     display: flex;
     flex-flow: row wrap;
 

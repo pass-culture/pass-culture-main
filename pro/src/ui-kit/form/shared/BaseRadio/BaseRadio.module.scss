@@ -9,7 +9,7 @@
   width: 100%;
 
   &-label {
-    line-height: 1em;
+    line-height: rem.torem(16px);
 
     :disabled + & {
       color: forms.$input-text-color-disabled;
@@ -24,9 +24,9 @@
   &-input {
     -webkit-appearance: none;
     appearance: none;
-    border: 2px solid forms.$input-border-color;
+    border: rem.torem(2px) solid forms.$input-border-color;
     border-radius: 50%;
-    box-shadow: inset 0 0 0 10px colors.$white;
+    box-shadow: inset 0 0 0 rem.torem(10px) colors.$white;
     background-color: colors.$white;
 
     transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
@@ -37,13 +37,13 @@
     }
 
     &:checked {
-      box-shadow: inset 0 0 0 2px colors.$white;
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
       background: radial-gradient(colors.$primary 0%, colors.$primary 40%, transparent 50%, transparent);
     }
 
     &:hover:checked,
     &:focus:checked {
-      box-shadow: inset 0 0 0 2px colors.$white;
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
       background-color: forms.$input-border-color-focus;
     }
 
@@ -52,7 +52,7 @@
     }
 
     &:checked.has-error {
-      box-shadow: inset 0 0 0 2px colors.$white;
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
       background-color: forms.$input-border-color-error;
     }
 
@@ -62,7 +62,7 @@
     }
 
     &:checked:disabled {
-      box-shadow: inset 0 0 0 2px colors.$white;
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
       background-color: forms.$input-border-color-disabled;
     }
   }

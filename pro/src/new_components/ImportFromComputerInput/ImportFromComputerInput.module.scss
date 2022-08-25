@@ -9,7 +9,7 @@
 
   &:focus-within {
     background-color: colors.$primary-dark;
-    border: 3px solid colors.$primary-dark;
+    border: rem.torem(3px) solid colors.$primary-dark;
   }
 
   &-file-input {

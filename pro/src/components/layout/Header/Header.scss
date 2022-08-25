@@ -38,9 +38,9 @@ header.menu-v2 {
         padding: 0 rem.torem(16px);
 
         svg {
-          height: 40px;
+          height: rem.torem(40px);
           margin-right: rem.torem(8px);
-          width: 40px;
+          width: rem.torem(40px);
         }
 
         &.icon-only {
@@ -48,9 +48,9 @@ header.menu-v2 {
           padding: 0 rem.torem(8px);
 
           svg {
-            height: 32px;
+            height: rem.torem(32px);
             margin-right: 0;
-            width: 32px;
+            width: rem.torem(32px);
           }
         }
 
@@ -66,7 +66,7 @@ header.menu-v2 {
         flex-shrink: 0;
         height: rem.torem(24px);
         margin: 0 rem.torem(8px);
-        width: 1px;
+        width: rem.torem(1px);
       }
     }
   }

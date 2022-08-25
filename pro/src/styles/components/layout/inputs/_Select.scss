@@ -20,7 +20,7 @@
     appearance: none;
     background: url('/icons/dropdown-disclosure-down-b.svg') no-repeat right
       rem.torem(15px) top 56%;
-    border: 1px solid colors.$grey-medium;
+    border: rem.torem(1px) solid colors.$grey-medium;
     border-radius: rem.torem(20px);
     height: rem.torem(40px);
     margin-top: rem.torem(8px);
@@ -31,7 +31,7 @@
 
     &:focus {
       border-color: colors.$primary;
-      box-shadow: 0 0 0 1px colors.$primary inset;
+      box-shadow: 0 0 0 rem.torem(1px) colors.$primary inset;
     }
 
     &:disabled {
@@ -44,7 +44,7 @@
     }
 
     &.error:not(:focus-within) {
-      border: 2px solid colors.$red-error;
+      border: rem.torem(2px) solid colors.$red-error;
     }
   }
 

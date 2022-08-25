@@ -9,7 +9,7 @@
 
 main {
   .section {
-    margin-bottom: 2rem;
+    margin-bottom: rem.torem(32px);
     padding-bottom: 0;
     padding-top: 0;
 
@@ -17,15 +17,15 @@ main {
       @include fonts.title4();
 
       border-bottom: thin solid colors.$grey-medium;
-      margin: 0.75rem 0;
-      padding-bottom: 0.5rem;
+      margin: rem.torem(12px) 0;
+      padding-bottom: rem.torem(8px);
 
       .main-list-title-text {
         @include fonts.title4();
       }
 
       span {
-        margin-top: 3.5px;
+        margin-top: rem.torem(3.5px);
       }
     }
 
@@ -42,7 +42,7 @@ main {
     margin-bottom: rem.torem(32px);
 
     a {
-      border-bottom: 1px solid;
+      border-bottom: rem.torem(1px) solid;
 
       &:focus,
       &:hover {
@@ -60,9 +60,9 @@ main {
 
     .container {
       display: flex;
-      max-width: 1000px;
+      max-width: rem.torem(1000px);
       min-height: 100%;
-      width: 1000px;
+      width: rem.torem(1000px);
 
       .columns {
         min-height: 100%;
@@ -77,7 +77,7 @@ main {
 
     .page-content {
       background: colors.$white;
-      box-shadow: 0 0 3.75rem colors.$black-shadow;
+      box-shadow: 0 0 rem.torem(60px) colors.$black-shadow;
       border-radius: rem.torem(10px);
 
       .after-notification-content {

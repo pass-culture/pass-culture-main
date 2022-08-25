@@ -5,7 +5,7 @@
 .desk-screen {
   .desk-form {
     border-radius: rem.torem(8px);
-    box-shadow: 0 0 5px colors.$black-shadow;
+    box-shadow: 0 0 rem.torem(5px) colors.$black-shadow;
     display: flex;
     flex-direction: column;
     padding: rem.torem(25px);
@@ -30,7 +30,7 @@
   );
   background-position: center;
   background-repeat: repeat-x;
-  background-size: 6px 1px;
+  background-size: rem.torem(6px) rem.torem(1px);
   margin-bottom: rem.torem(10px);
 }
 

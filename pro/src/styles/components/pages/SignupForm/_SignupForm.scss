@@ -9,9 +9,9 @@
   width: 100%;
 
   .content {
-    margin-left: calc(30px + 15%);
-    padding: 60px 0;
-    width: 500px;
+    margin-left: calc(rem.torem(30px) + 15%);
+    padding: rem.torem(60px) 0;
+    width: rem.torem(500px);
 
     .field-password > img {
       position: absolute;

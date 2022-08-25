@@ -3,14 +3,14 @@
 
 .field-overlay {
   position: relative;
-  height: 0px;
+  height: 0;
 
   .dropdown-indicator {
     background: none;
     border: none;
     fill: colors.$grey-light;
     position: absolute;
-    right: 1rem;
+    right: rem.torem(16px);
     bottom: rem.torem(8px);
     & img {
       width: rem.torem(20px);
@@ -38,20 +38,20 @@
     justify-content: center;
     padding: rem.torem(6px);
     position: absolute;
-    left: 0.8rem;
-    top: -1.8rem;
+    left: rem.torem(12.8px);
+    top: rem.torem(-28.8px);
     width: rem.torem(18px);
   }
 }
 
 .menu {
   border-radius: rem.torem(6px);
-  box-shadow: 0px rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
   font-size: rem.torem(15px);
-  margin: 0 0.1rem;
-  max-height: 18.5rem;
+  margin: 0 rem.torem(1.6px);
+  max-height: rem.torem(296px);
   overflow-y: scroll;
-  padding: 0.5rem 0;
+  padding: rem.torem(8px) 0;
   position: absolute;
   background-color: colors.$white;
   width: 100%;
@@ -59,12 +59,12 @@
   z-index: 1;
 
   &--no-results {
-    padding: 0.5rem;
+    padding: rem.torem(8px);
   }
 
   label {
     display: flex;
-    padding: 0.7rem 1rem;
+    padding: rem.torem(11.2px) rem.torem(16px);
   }
 
   label:hover,

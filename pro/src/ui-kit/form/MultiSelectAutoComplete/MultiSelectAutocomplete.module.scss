@@ -11,13 +11,13 @@
 .multi-select-autocomplete-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding-top: 8px;
+  gap: rem.torem(8px);
+  padding-top: rem.torem(8px);
 }
 
 .multi-select-autocomplete-placeholder-input::placeholder {
   font-style: normal;
-  
+
   &:not(:disabled) {
     color: colors.$black;
   }

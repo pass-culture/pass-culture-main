@@ -5,7 +5,7 @@
   align-items: center;
   display: grid;
   grid-column-gap: rem.torem(24px);
-  grid-template-columns: auto 1px auto;
+  grid-template-columns: auto rem.torem(1px) auto;
   height: 100%;
 
   .tertiary-button img {

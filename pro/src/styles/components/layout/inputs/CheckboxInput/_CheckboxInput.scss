@@ -4,17 +4,17 @@
 
 input[type='checkbox'] {
   appearance: none;
-  border: 2px solid colors.$grey-dark;
-  border-radius: 4px;
+  border: rem.torem(2px) solid colors.$grey-dark;
+  border-radius: rem.torem(4px);
   flex: 0 0 auto;
   font-size: inherit;
-  height: 1.1875em;
+  height: rem.torem(20px);
   margin-right: rem.torem(8px);
   outline: none;
   padding: 0;
   position: relative;
   vertical-align: middle;
-  width: 1.1875em;
+  width: rem.torem(20px);
 
   &:checked {
     background-color: colors.$grey-dark;
@@ -88,7 +88,7 @@ input[type='checkbox'] {
 .field-checkbox {
   .input-checkbox-input {
     align-self: flex-start;
-    margin-top: 3px;
+    margin-top: rem.torem(3px);
   }
 
   svg {

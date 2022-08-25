@@ -2,7 +2,7 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .offer-thumb {
-  border-radius: 3px;
+  border-radius: rem.torem(3px);
   height: rem.torem(100px);
   object-fit: cover;
   width: rem.torem(75px);
@@ -11,7 +11,7 @@
 .default-thumb {
   align-items: center;
   background-color: colors.$grey-medium;
-  border-radius: 3px;
+  border-radius: rem.torem(3px);
   display: flex;
   height: rem.torem(100px);
   justify-content: center;

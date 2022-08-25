@@ -2,7 +2,7 @@
 @use 'styles/mixins/_rem.scss' as rem;
 
 .apf-price-section {
-  margin-top: 0.8rem;
+  margin-top: rem.torem(12.8px);
 }
 
 .allocine-provider-form {
@@ -27,7 +27,7 @@
   }
 
   .blue-insert {
-    margin-top: 0.8rem;
+    margin-top: rem.torem(12.8px);
 
     img {
       max-width: rem.torem(24px);
@@ -36,12 +36,12 @@
 }
 
 .apf-quantity-section {
-  margin-top: 0.8rem;
+  margin-top: rem.torem(12.8px);
 }
 
 .apf-is-duo-section {
   display: flex;
-  margin-top: 0.8rem;
+  margin-top: rem.torem(12.8px);
 }
 
 .apf-provider-import-button-section {

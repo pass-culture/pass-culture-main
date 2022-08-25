@@ -81,12 +81,12 @@ button {
 }
 
 .main-list {
-  margin-bottom: 1rem;
+  margin-bottom: rem.torem(16px);
 
   > li {
     display: flex;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
+    margin-bottom: rem.torem(16px);
+    padding-bottom: rem.torem(16px);
 
     &:last-child {
       margin-bottom: 0;
@@ -97,7 +97,7 @@ button {
     > * {
       align-items: center;
       display: flex;
-      padding: 0 0.5rem;
+      padding: 0 rem.torem(8px);
 
       &.field {
         margin: 0;
@@ -120,7 +120,7 @@ button {
     .caret,
     .picto {
       img {
-        height: 1.5rem;
+        height: rem.torem(24px);
         vertical-align: middle;
       }
     }
@@ -128,7 +128,7 @@ button {
     .name {
       font-size: rem.torem(20px);
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      margin-bottom: rem.torem(8px);
     }
 
     ul.actions {
@@ -142,8 +142,8 @@ button {
       width: 100%;
 
       img {
-        height: 1rem;
-        margin-right: 0.2rem;
+        height: rem.torem(16px);
+        margin-right: rem.torem(3.2px);
         vertical-align: middle;
       }
     }

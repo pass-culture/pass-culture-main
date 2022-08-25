@@ -4,8 +4,8 @@
 
 .venue-list-item {
   align-items: center;
-  border: 1px solid colors.$grey-medium;
-  border-radius: 6px;
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: rem.torem(6px);
   display: flex;
   justify-content: space-between;
   margin: rem.torem(8px) 0;
@@ -13,7 +13,7 @@
 }
 
 .reference-venue {
-  border: 1px solid colors.$light-purple;
+  border: rem.torem(1px) solid colors.$light-purple;
 }
 
 .venue-list-item-infos {

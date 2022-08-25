@@ -4,7 +4,7 @@
 .actions-bar {
   background: colors.$white;
   bottom: 0;
-  box-shadow: 0 0 3.75rem colors.$black-shadow;
+  box-shadow: 0 0 rem.torem(60px) colors.$black-shadow;
   display: none;
   left: 0;
   position: fixed;
@@ -18,7 +18,7 @@
 
   .actions-bar-content {
     grid-column-start: col-main;
-    margin: 0 5rem;
-    padding: 1.25rem 0;
+    margin: rem.torem(8px);
+    padding: rem.torem(20px) 0;
   }
 }

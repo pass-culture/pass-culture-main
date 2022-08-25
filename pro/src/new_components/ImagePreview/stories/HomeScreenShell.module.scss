@@ -3,7 +3,7 @@
 
 .home-screen-shell {
   position: absolute;
-  height: 515px;
+  height: rem.torem(515px);
 }
 
 .preview-on-home-screen {
@@ -12,13 +12,13 @@
   left: rem.torem(17px);
   position: absolute;
   top: rem.torem(152px);
-  height: 228px;
+  height: rem.torem(228px);
 }
 
 .offer-screen-shell {
   top: rem.torem(236px);
   position: absolute;
-  height: 280px;
+  height: rem.torem(280px);
 }
 
 .blurred-preview-on-offer-screen {
@@ -27,8 +27,8 @@
   left: rem.torem(1px);
   position: absolute;
   top: rem.torem(1px);
-  height: 435px;
-  width: 290px;
+  height: rem.torem(435px);
+  width: rem.torem(290px);
 }
 
 .preview-on-offer-screen {
@@ -37,5 +37,5 @@
   left: rem.torem(65px);
   position: absolute;
   top: rem.torem(71px);
-  height: 240px;
+  height: rem.torem(240px);
 }

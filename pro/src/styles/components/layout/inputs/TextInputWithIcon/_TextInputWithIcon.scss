@@ -4,9 +4,9 @@
 
 .it-with-icon-container {
   align-items: center;
-  border: 1px solid colors.$grey-medium;
-  border-radius: 22px;
-  box-shadow: 0 2px 6px 0 colors.$black-shadow;
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: rem.torem(22px);
+  box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 colors.$black-shadow;
   display: flex;
   height: rem.torem(40px);
   justify-content: space-between;
@@ -25,18 +25,18 @@
   }
 
   &:focus-within {
-    border: 1px solid colors.$primary;
-    box-shadow: 0 0 0 1px colors.$primary inset;
+    border: rem.torem(1px) solid colors.$primary;
+    box-shadow: 0 0 0 rem.torem(1px) colors.$primary inset;
   }
 
   &.disabled {
     background-color: colors.$grey-light;
     border: none;
-    box-shadow: 0 0 0 1px colors.$grey-light inset;
+    box-shadow: 0 0 0 rem.torem(1px) colors.$grey-light inset;
 
     .it-icon {
       background-color: colors.$grey-light;
-      box-shadow: 0 0 0 1px colors.$grey-light inset;
+      box-shadow: 0 0 0 rem.torem(1px) colors.$grey-light inset;
     }
 
     img {
@@ -46,7 +46,7 @@
   }
 
   &.error:not(:focus-within) {
-    border: 2px solid colors.$red-error;
+    border: rem.torem(2px) solid colors.$red-error;
   }
 
   .it-input-with-icon {
@@ -74,7 +74,7 @@
     background: none;
     border: none;
     height: 100%;
-    margin: 0 16px;
+    margin: 0 rem.torem(16px);
     outline: none;
     vertical-align: center;
 
