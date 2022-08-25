@@ -3,7 +3,7 @@ name: Mypy leaderboard
 on:
   pull_request:
     branches:
-      - master
+      - not-master-for-tests
     types: [closed]
     paths:
       - "api/src/**"
