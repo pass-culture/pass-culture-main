@@ -13,7 +13,12 @@ const validationSchema = yup.object().shape({
       'Votre numéro de téléphone n’est pas valide',
       value => {
         if (!value) return false
-        const phoneNumber = parseAndValidateFrenchPhoneNumber(value)
+        let phoneNumber
+        try {
+          phoneNumber = parseAndValidateFrenchPhoneNumber(value)
+        } catch (e) {
+          return false
+        }
         const isValid = phoneNumber?.isValid()
         if (!isValid) return false
         return true
