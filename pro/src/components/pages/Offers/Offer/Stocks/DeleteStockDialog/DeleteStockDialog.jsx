@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback } from 'react'
 
-import DialogBox from 'new_components/DialogBox/DialogBox'
+import ConfirmDialog from 'new_components/ConfirmDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
@@ -15,7 +15,6 @@ const DeleteStockDialog = ({
   stockId,
 }) => {
   const DIALOG_LABEL_ID = 'DIALOG_LABEL_ID'
-  const deleteButtonRef = useRef()
 
   const confirmStockDeletion = useCallback(() => {
     pcapi
@@ -33,15 +32,15 @@ const DeleteStockDialog = ({
   )
 
   return (
-    <DialogBox
-      extraClassNames="delete-stock-dialog"
-      hasCloseButton={false}
-      initialFocusRef={deleteButtonRef}
+    <ConfirmDialog
       labelledBy={DIALOG_LABEL_ID}
-      onDismiss={abortStockDeletion}
+      onCancel={abortStockDeletion}
+      onConfirm={confirmStockDeletion}
+      title="Voulez-vous supprimer ce stock ?"
+      confirmText="Supprimer"
+      cancelText="Annuler"
+      icon={DeletionIcon}
     >
-      <DeletionIcon />
-      <h1 id={DIALOG_LABEL_ID}>Voulez-vous supprimer ce stock ?</h1>
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}
         <strong>
@@ -53,24 +52,7 @@ const DeleteStockDialog = ({
         L’ensemble des utilisateurs concernés sera automatiquement averti par
         e-mail.
       </p>
-      <div className="action-buttons">
-        <button
-          className="secondary-button"
-          onClick={abortStockDeletion}
-          type="button"
-        >
-          Annuler
-        </button>
-        <button
-          className="primary-button"
-          onClick={confirmStockDeletion}
-          ref={deleteButtonRef}
-          type="button"
-        >
-          Supprimer
-        </button>
-      </div>
-    </DialogBox>
+    </ConfirmDialog>
   )
 }
 

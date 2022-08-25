@@ -1,11 +1,7 @@
 import React, { ReactNode, useCallback, useState } from 'react'
 import { Redirect, useHistory, Prompt } from 'react-router-dom'
 
-import DialogBox from 'new_components/DialogBox/DialogBox'
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
-
-import styles from './RouteLeavingGuard.module.scss'
+import ConfirmDialog from 'new_components/ConfirmDialog'
 
 export interface IShouldBlockNavigationReturnValue {
   redirectPath?: string | null
@@ -14,19 +10,19 @@ export interface IShouldBlockNavigationReturnValue {
 export interface IRouteLeavingGuardProps {
   children: ReactNode | ReactNode[]
   extraClassNames?: string
-  labelledBy: string
   shouldBlockNavigation: (
     location: Location
   ) => IShouldBlockNavigationReturnValue
   when: boolean
+  dialogTitle: string
 }
 
 const RouteLeavingGuard = ({
   children,
   extraClassNames = '',
-  labelledBy,
   shouldBlockNavigation,
   when,
+  dialogTitle,
 }: IRouteLeavingGuardProps): JSX.Element => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [lastLocation, setLastLocation] = useState('')
@@ -66,31 +62,16 @@ const RouteLeavingGuard = ({
     <>
       <Prompt message={handleBlockedNavigation} when={when} />
       {isModalVisible && (
-        <DialogBox
+        <ConfirmDialog
           extraClassNames={extraClassNames}
-          hasCloseButton={false}
-          labelledBy={labelledBy}
-          onDismiss={closeModal}
+          onCancel={closeModal}
+          onConfirm={handleConfirmNavigationClick}
+          title={dialogTitle}
+          confirmText="Quitter"
+          cancelText="Annuler"
         >
           {children}
-          <div className={styles['action-buttons']}>
-            <Button
-              className={styles['action-button']}
-              onClick={closeModal}
-              type="button"
-              variant={ButtonVariant.SECONDARY}
-            >
-              Annuler
-            </Button>
-            <Button
-              className={styles['action-button']}
-              onClick={handleConfirmNavigationClick}
-              type="button"
-            >
-              Quitter
-            </Button>
-          </div>
-        </DialogBox>
+        </ConfirmDialog>
       )}
     </>
   )

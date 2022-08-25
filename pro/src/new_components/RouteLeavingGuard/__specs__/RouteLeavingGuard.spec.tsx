@@ -55,7 +55,7 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
       shouldBlockNavigation: () => shouldBlockReturnValue,
       when: true,
       children: 'Voulez-vous quitter la page actuelle ?',
-      labelledBy: 'LEAVING_OFFER_CREATION_LABEL_ID',
+      dialogTitle: '',
     }
   })
 
