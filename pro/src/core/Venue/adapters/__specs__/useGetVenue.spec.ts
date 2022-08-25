@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
 
 import { api } from 'apiClient/api'
-import { GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel, VenueTypeCode } from 'apiClient/v1'
 
 import { useGetVenue } from '../getVenueAdapter'
 
@@ -45,6 +45,10 @@ describe('useGetVenue', () => {
       name: 'Lieu name',
       nonHumanizedId: 12,
       publicName: 'Cinéma des iles',
+      description: 'description du lieu',
+      comment: 'commentaire lieu sans siret',
+      bookingEmail: 'test@example.com',
+      venueTypeCode: VenueTypeCode.LIBRAIRIE,
     }
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
@@ -58,7 +62,7 @@ describe('useGetVenue', () => {
 
     const venue = {
       bannerMeta: {
-        image_credit: null,
+        image_credit: '',
         original_image_url:
           'http://localhost/storage/thumbs/venues/CU_1661432578',
         crop_params: {
@@ -77,6 +81,14 @@ describe('useGetVenue', () => {
       id: 'AE',
       isPermanent: true,
       publicName: 'Cinéma des iles',
+      description: 'description du lieu',
+      isVenueVirtual: false,
+      mail: 'test@example.com',
+      name: 'Lieu name',
+      siret: '',
+      comment: 'commentaire lieu sans siret',
+      venueLabel: '',
+      venueType: 'Librairie',
     }
 
     await waitForNextUpdate()

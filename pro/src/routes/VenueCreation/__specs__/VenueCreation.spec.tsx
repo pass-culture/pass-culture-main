@@ -1,23 +1,29 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router'
+import { MemoryRouter, Route } from 'react-router'
 import type { Store } from 'redux'
 
-import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
+import {
+  GetOffererResponseModel,
+  SharedCurrentUserResponseModel,
+} from 'apiClient/v1'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueCreation from '../VenueCreation'
 
-const renderVenueCreation = async (store: Store) => {
-  const history = createBrowserHistory()
-  render(
+const renderVenueCreation = async (offererId: string, store: Store) => {
+  return render(
     <Provider store={store}>
-      <Router history={history}>
-        <VenueCreation />
-      </Router>
+      <MemoryRouter
+        initialEntries={[`/structures/${offererId}/lieux/creation`]}
+      >
+        <Route exact path={'/structures/:offererId/lieux/creation'}>
+          <VenueCreation />
+        </Route>
+      </MemoryRouter>
     </Provider>
   )
 }
@@ -31,9 +37,18 @@ jest.mock('new_components/VenueForm', () => {
   }
 })
 
+jest.mock('apiClient/api', () => ({
+  api: {
+    fetchVenueLabels: jest.fn(),
+    getOfferer: jest.fn(),
+    getVenueTypes: jest.fn(),
+  },
+}))
+
 describe('route VenueCreation', () => {
   let currentUser: SharedCurrentUserResponseModel
   let store: Store
+  let offerer: GetOffererResponseModel
 
   beforeEach(() => {
     currentUser = {
@@ -51,13 +66,22 @@ describe('route VenueCreation', () => {
         currentUser,
       },
     })
+    offerer = {
+      id: 'ABCD',
+    } as GetOffererResponseModel
+
+    jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    jest.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
-  it('should display venue edition screen with initial values', async () => {
+  it('should display venue form screen with creation title', async () => {
     // When
-    renderVenueCreation(store)
+    await renderVenueCreation(offerer.id, store)
 
     // Then
-    const venuePublicName = await screen.findByText('Cinéma des iles')
-    expect(venuePublicName).toBeInTheDocument()
+    const venueCreationTitle = await screen.findByRole('heading', {
+      name: 'Création d’un lieu',
+    })
+    expect(venueCreationTitle).toBeInTheDocument()
   })
 })

@@ -7,16 +7,36 @@ import { SubmitButton } from 'ui-kit'
 import { Contact } from './Contact'
 import ImageUploader from './ImageUploader/ImageUploader'
 import { Informations } from './Informations'
-import { IVenueFormValues } from './types'
 
-const VenueForm = () => {
+import { IVenueFormValues } from '.'
+
+interface IVenueForm {
+  isCreatingVenue: boolean
+  updateIsSiretValued: (isSiretValued: boolean) => void
+  venueTypes: SelectOption[]
+  venueLabels: SelectOption[]
+}
+
+const VenueForm = ({
+  isCreatingVenue,
+  updateIsSiretValued,
+  venueTypes,
+  venueLabels,
+}: IVenueForm) => {
   const { isSubmitting, initialValues } = useFormikContext<IVenueFormValues>()
   const shouldDisplayImageVenueUploaderSection = initialValues?.isPermanent
 
   return (
     <div>
       <FormLayout>
-        <Informations />
+        <Informations
+          isCreatedEntity={isCreatingVenue}
+          readOnly={!isCreatingVenue}
+          updateIsSiretValued={updateIsSiretValued}
+          venueIsVirtual={false}
+          venueTypes={venueTypes}
+          venueLabels={venueLabels}
+        />
         {!!shouldDisplayImageVenueUploaderSection && (
           <ImageUploader {...initialValues} />
         )}
