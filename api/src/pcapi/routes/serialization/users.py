@@ -5,6 +5,7 @@ from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
+import pydantic
 from pydantic import EmailStr
 from pydantic.class_validators import validator
 
@@ -24,7 +25,7 @@ from pcapi.utils.date import format_into_utc_date
 class PatchProUserBodyModel(BaseModel):
     first_name: str | None
     last_name: str | None
-    email: EmailStr | None
+    email: pydantic.EmailStr | None
     phone_number: str | None
 
     _validate_first_name = validate_not_empty_string_when_provided("first_name")
@@ -49,7 +50,7 @@ class PatchProUserBodyModel(BaseModel):
 class PatchProUserResponseModel(BaseModel):
     firstName: str | None
     lastName: str | None
-    email: EmailStr
+    email: pydantic.EmailStr
     phoneNumber: str | None
 
     class Config:
@@ -116,7 +117,7 @@ class UserEmailValidationResponseModel(BaseModel):
 class ProUserCreationBodyModel(BaseModel):
     address: str | None
     city: str | None
-    email: EmailStr
+    email: pydantic.EmailStr
     first_name: str | None
     last_name: str | None
     latitude: float | None
@@ -272,3 +273,9 @@ class ChangeEmailTokenContent(BaseModel):
         current_email = jwt_payload["current_email"]
         new_email = jwt_payload["new_email"]
         return cls(current_email=current_email, new_email=new_email)
+
+
+class ChangePasswordBodyModel(BaseModel):
+    oldPassword: pydantic.constr(strip_whitespace=True, min_length=12)  # type: ignore [valid-type]
+    newPassword: pydantic.constr(strip_whitespace=True, min_length=12)  # type: ignore [valid-type]
+    newConfirmationPassword: pydantic.constr(strip_whitespace=True, min_length=12)  # type: ignore [valid-type]

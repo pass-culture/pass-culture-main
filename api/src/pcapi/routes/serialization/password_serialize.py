@@ -19,16 +19,6 @@ class ResetPasswordBodyModel(BaseModel):
         return email
 
 
-class ChangePasswordBodyModel(BaseModel):
-    oldPassword: str
-    newPassword: str
-    newConfirmationPassword: str
-
-    _validate_oldPassword = validate_not_empty_string_when_provided("oldPassword")
-    _validate_newPassword = validate_not_empty_string_when_provided("newPassword")
-    _validate_newConfirmationPassword = validate_not_empty_string_when_provided("newConfirmationPassword")
-
-
 class NewPasswordBodyModel(BaseModel):
     token: str
     newPassword: str

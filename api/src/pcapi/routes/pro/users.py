@@ -8,12 +8,15 @@ from flask_login import logout_user
 from jwt import InvalidTokenError
 import pydantic
 
+from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_email_to_connected_pro
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.models import TokenType
+from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.serialization.decorator import spectree_serialize
@@ -155,6 +158,19 @@ def check_activation_token_exists(token: str) -> None:
         users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
     except users_exceptions.InvalidToken:
         flask.abort(404)
+
+
+@blueprint.pro_private_api.route("/users/password", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
+def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> None:
+    user = current_user._get_current_object()
+    new_password = body.newPassword
+    new_confirmation_password = body.newConfirmationPassword
+    old_password = body.oldPassword
+    check_password_validity(new_password, new_confirmation_password, old_password, user)
+    update_user_password(user, new_password)
+    send_reset_password_email_to_connected_pro(user)
 
 
 @blueprint.pro_private_api.route("/users/signin", methods=["POST"])

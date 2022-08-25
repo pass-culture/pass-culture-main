@@ -119,4 +119,5 @@ class TransactionalEmail(Enum):
     REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO = TemplatePro(id_prod=587, id_not_prod=73, tags=["pro_rappel_event_J-7"])
     REMINDER_VENUE_CREATION_TO_PRO = TemplatePro(id_prod=571, id_not_prod=97, tags=["pro_relance_lieu"])
     RESET_PASSWORD_TO_PRO = TemplatePro(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
+    RESET_PASSWORD_TO_CONNECTED_PRO = TemplatePro(id_prod=754, id_not_prod=99, tags=["pro_reinit_mdp_when_connected"])
     WELCOME_TO_PRO = TemplatePro(id_prod=481, id_not_prod=57, tags=["pro-bienvenue-pass"])
