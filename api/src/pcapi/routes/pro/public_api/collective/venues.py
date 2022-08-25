@@ -6,7 +6,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
 
-@blueprint.pro_public_api_v2.route("/collective-offers/venues", methods=["GET"])
+@blueprint.pro_public_api_v2.route("/collective/venues", methods=["GET"])
 @api_key_required
 @spectree_serialize(
     on_success_status=200,
