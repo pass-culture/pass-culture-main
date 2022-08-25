@@ -1316,6 +1316,7 @@ class SaveVenueBankInformationsTest:
                 self.dossier_id, self.annotation_id, "Venue: Venue not found"
             )
 
+        @override_features(USE_INSEE_SIRENE_API=False)
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=False)
         def test_update_text_siret_no_longer_active(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
