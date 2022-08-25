@@ -6,6 +6,7 @@ import { IUserIdentityFormValues } from 'new_components/UserIdentityForm/types'
 import { Forms } from './constants'
 import UserEmail, { IUserEmailInitialValues } from './UserEmail/UserEmail'
 import { UserIdentity } from './UserIdentity'
+import { UserPassword } from './UserPassword'
 import { UserPhone } from './UserPhone'
 
 interface IUserProfileProps {
@@ -37,6 +38,10 @@ const UserProfile = ({
         setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
         initialValues={userEmailInitialValues}
         showForm={currentForm === Forms.USER_EMAIL}
+      />
+      <UserPassword
+        setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
+        showForm={currentForm === Forms.USER_PASSWORD}
       />
     </>
   )
