@@ -260,6 +260,22 @@ def _create_profile_completion_fraud_check_from_dms(
                 postalCode=content.postal_code,
             ),
         )
+    else:
+        logger.error(
+            "Not creating profile completion fraud check after DMS import for user %d because not all fields are filled",
+            user.id,
+            extra={
+                "user_id": user.id,
+                "application_id": application_id,
+                "fields": {
+                    "activity": activity,
+                    "city": city,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "postal_code": postal_code,
+                },
+            },
+        )
 
 
 def _process_user_not_found_error(
