@@ -76,6 +76,13 @@ def activate_beneficiary_for_eligibility(
     return user
 
 
+# type: ignore [no-untyped-def]
+# type: ignore [no-untyped-def]
+# type: ignore [no-untyped-def]
+# type: ignore [no-untyped-def]
+# type: ignore [no-untyped-def]
+
+
 def has_completed_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     return db.session.query(
         fraud_models.BeneficiaryFraudCheck.query.filter(
