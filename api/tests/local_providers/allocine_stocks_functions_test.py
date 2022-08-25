@@ -3,6 +3,8 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.offerers.models import Venue
+from pcapi.local_providers.allocine.allocine_stocks import _build_movie_uuid
 from pcapi.local_providers.allocine.allocine_stocks import _filter_only_digital_and_non_experience_showtimes
 from pcapi.local_providers.allocine.allocine_stocks import _find_showtime_by_showtime_uuid
 from pcapi.local_providers.allocine.allocine_stocks import _format_poster_url
@@ -353,3 +355,35 @@ class FindShowtimesByShowtimeUUIDTest:
 
         # Then
         assert showtime is None
+
+
+class BuildMovieUuidTest:
+    def test_should_construct_uuid_with_siret(self):
+        # Given
+        venue = Venue(name="Cinéma Allociné", siret="77567146400110")
+
+        # When
+        movie_uuid = _build_movie_uuid(movie_information=MOVIE_INFO["node"]["movie"], venue=venue)
+
+        # Then
+        assert movie_uuid == "TW92aWU6MjY4Njgw%77567146400110"
+
+    def test_should_construct_uuid_with_venue_id_when_siret_is_none(self):
+        # Given
+        venue = Venue(name="Cinéma Allociné", id=333, siret=None)
+
+        # When
+        movie_uuid = _build_movie_uuid(movie_information=MOVIE_INFO["node"]["movie"], venue=venue)
+
+        # Then
+        assert movie_uuid == "TW92aWU6MjY4Njgw%333"
+
+    def test_should_construct_uuid_with_venue_id_when_siret_is_empty(self):
+        # Given
+        venue = Venue(name="Cinéma Allociné", id=333, siret="")
+
+        # When
+        movie_uuid = _build_movie_uuid(movie_information=MOVIE_INFO["node"]["movie"], venue=venue)
+
+        # Then
+        assert movie_uuid == "TW92aWU6MjY4Njgw%333"
