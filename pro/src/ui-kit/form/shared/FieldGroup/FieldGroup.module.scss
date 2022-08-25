@@ -13,14 +13,14 @@
     }
 
     &:last-child {
-      border-right-width: 1px;
+      border-right-width: rem.torem(1px);
       border-bottom-right-radius: forms.$input-border-radius;
       border-top-right-radius: forms.$input-border-radius;
     }
 
     &:focus,
     &:hover {
-      border-right-width: 1px;
+      border-right-width: rem.torem(1px);
 
       & + .field-group-item {
         border-left-width: 0;

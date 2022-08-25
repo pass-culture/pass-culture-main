@@ -28,7 +28,7 @@
   }
 
   .activation-codes-upload-separator {
-    border: 1px solid colors.$grey-medium;
+    border: rem.torem(1px) solid colors.$grey-medium;
     margin-bottom: rem.torem(16px);
     margin-top: rem.torem(24px);
     width: 100%;

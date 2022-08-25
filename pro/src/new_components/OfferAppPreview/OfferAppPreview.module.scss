@@ -4,7 +4,7 @@
 
 .offer-preview-container {
   border: rem.torem(1px) solid colors.$grey-medium;
-  border-radius: 4px;
+  border-radius: rem.torem(4px);
   box-shadow: 0 0 rem.torem(20px) 0 colors.$black-shadow;
   height: fit-content;
   width: 100%;
@@ -34,7 +34,7 @@
 
 .offer-data-container {
   background-color: colors.$white;
-  border-radius: 3px;
+  border-radius: rem.torem(3px);
   margin-bottom: rem.torem(16px);
 
   .offer-title {

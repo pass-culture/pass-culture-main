@@ -8,7 +8,7 @@
   flex-wrap: wrap;
   align-items: center;
   position: relative;
-  margin-bottom: 1em;
+  margin-bottom: rem.torem(16px);
   cursor: pointer;
   gap: 1ch;
   border: 0;
@@ -67,7 +67,7 @@
 .Toggle[aria-pressed="true"] .ToggleDisplay::before {
   background: center / contain no-repeat url("./assets/check.png") white;
   background-size: rem.torem(16px);
-  left: -2px;
+  left: rem.torem(-2px);
   transform: translate(100%, -50%);
 }
 

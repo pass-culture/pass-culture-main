@@ -19,7 +19,7 @@
     }
 
     &-separator {
-      border-bottom: 1px solid colors.$grey-medium;
+      border-bottom: rem.torem(1px) solid colors.$grey-medium;
       display: block;
       position: absolute;
       top: 50%;

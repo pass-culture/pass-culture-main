@@ -24,13 +24,13 @@
 
 .tnd-subtitle {
   margin-bottom: rem.torem(24px);
-  line-height: 1em;
+  line-height: rem.torem(16px);
 }
 
 .tnd-header {
   @include fonts.title3();
   margin-bottom: rem.torem(16px);
-  line-height: 1em;
+  line-height: rem.torem(16px);
 }
 
 .tnd-hr {

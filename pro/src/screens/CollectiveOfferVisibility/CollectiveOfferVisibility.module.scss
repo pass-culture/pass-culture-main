@@ -10,7 +10,7 @@
 }
 
 .row-layout {
-  width: 310px;
+  width: rem.torem(310px);
   margin-bottom: rem.torem(32px);
 
   &-large {

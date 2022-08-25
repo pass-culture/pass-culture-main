@@ -4,7 +4,7 @@
 .image-preview-shell {
   top: rem.torem(236px);
   position: absolute;
-  height: 280px;
+  height: rem.torem(280px);
 }
 
 .image-preview-blur-offer-preview {
@@ -13,7 +13,7 @@
   left: rem.torem(1px);
   position: absolute;
   top: rem.torem(1px);
-  height: 435px;
+  height: rem.torem(435px);
 }
 
 .image-preview-offer-preview {
@@ -22,5 +22,5 @@
   left: rem.torem(65px);
   position: absolute;
   top: rem.torem(63px);
-  height: 247px;
+  height: rem.torem(247px);
 }

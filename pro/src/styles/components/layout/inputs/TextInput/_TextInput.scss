@@ -36,9 +36,9 @@
   .it-input {
     @include fonts.body();
 
-    border: 1px solid colors.$grey-medium;
-    border-radius: 22px;
-    box-shadow: 0 2px 6px 0 colors.$black-shadow;
+    border: rem.torem(1px) solid colors.$grey-medium;
+    border-radius: rem.torem(22px);
+    box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 colors.$black-shadow;
     color: colors.$black;
     display: block;
     height: rem.torem(40px);
@@ -47,8 +47,8 @@
     width: 100%;
 
     &:focus {
-      border: 1px solid colors.$primary;
-      box-shadow: 0 0 0 1px colors.$primary inset;
+      border: rem.torem(1px) solid colors.$primary;
+      box-shadow: 0 0 0 rem.torem(1px) colors.$primary inset;
       outline: none;
       outline-offset: 0;
     }
@@ -61,7 +61,7 @@
     }
 
     &.error:not(:focus-within) {
-      border: 2px solid colors.$red-error;
+      border: rem.torem(2px) solid colors.$red-error;
     }
   }
 }

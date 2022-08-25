@@ -91,6 +91,6 @@
 }
 
 .of-thumbnail-error {
-  border: solid 2px colors.$red-error;
+  border: solid rem.torem(2px) colors.$red-error;
   border-radius: rem.torem(4px);
 }

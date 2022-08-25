@@ -1,4 +1,5 @@
 @use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
 
 .field-date-only {
   @extend .field-input;
@@ -11,6 +12,6 @@
   }
 
   &.error:not(:focus-within) {
-    border: 2px solid colors.$red-error;
+    border: rem.torem(2px) solid colors.$red-error;
   }
 }

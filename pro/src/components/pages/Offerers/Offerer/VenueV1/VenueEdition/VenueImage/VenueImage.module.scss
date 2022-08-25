@@ -7,7 +7,7 @@
   width: math.div($height * 3, 2);
   height: $height;
   object-fit: cover;
-  border: 1px solid colors.$grey-medium;
-  border-radius: 4px;
-  box-shadow: 0px 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.15);
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: rem.torem(4px);
+  box-shadow: 0 rem.torem(1px) rem.torem(8px) rgba(colors.$black-with-transparency, $alpha: 0.15);
 }

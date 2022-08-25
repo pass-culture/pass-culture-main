@@ -7,7 +7,7 @@
       background-color: colors.$notification-info;
       margin-bottom: rem.torem(32px);
       padding: rem.torem(16px);
-      border-radius: 6px;
+      border-radius: rem.torem(6px);
 
       div {
         margin-bottom: rem.torem(10px);

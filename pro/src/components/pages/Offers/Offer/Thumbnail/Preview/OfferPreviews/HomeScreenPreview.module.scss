@@ -3,7 +3,7 @@
 
 .image-preview-shell {
   position: absolute;
-  height: 515px;
+  height: rem.torem(515px);
 }
 
 .image-preview-home-preview {
@@ -12,5 +12,5 @@
   left: rem.torem(16px);
   position: absolute;
   top: rem.torem(152px);
-  height: 228px;
+  height: rem.torem(228px);
 }

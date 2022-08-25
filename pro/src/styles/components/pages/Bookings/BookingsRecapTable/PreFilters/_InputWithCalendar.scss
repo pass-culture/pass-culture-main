@@ -1,4 +1,5 @@
 @use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
 
 .bookings-page {
   .field-date-only {
@@ -12,7 +13,7 @@
     }
 
     &.error:not(:focus-within) {
-      border: 2px solid colors.$red-error;
+      border: rem.torem(2px) solid colors.$red-error;
     }
   }
 }

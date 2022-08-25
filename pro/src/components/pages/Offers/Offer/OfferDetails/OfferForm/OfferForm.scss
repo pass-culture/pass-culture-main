@@ -15,7 +15,7 @@
 
     &.accessibility-section {
       label:first-of-type svg {
-        margin: 2.5px 8px 2.5px 3px;
+        margin: rem.torem(2.5px) rem.torem(8px) rem.torem(2.5px) rem.torem(3px);
       }
     }
   }

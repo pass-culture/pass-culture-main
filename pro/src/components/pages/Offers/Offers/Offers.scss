@@ -16,7 +16,7 @@
     align-items: center;
     background-color: colors.$notification-info;
     border: none;
-    border-radius: 24px;
+    border-radius: rem.torem(24px);
     display: flex;
     height: rem.torem(32px);
     justify-content: space-between;
@@ -44,7 +44,7 @@
 
   .input-select {
     margin-top: rem.torem(24px);
-    width: rem.torem(169px);
+    width: rem.torem(173.44px);
   }
 
   .period-filter {
@@ -58,15 +58,15 @@
   }
 
   .field-date-begin {
-    border-bottom-left-radius: 20px;
+    border-bottom-left-radius: rem.torem(20px);
     border-right: none;
-    border-top-left-radius: 20px;
+    border-top-left-radius: rem.torem(20px);
   }
 
   .field-date-end {
-    border-bottom-right-radius: 20px;
+    border-bottom-right-radius: rem.torem(20px);
     border-left: none;
-    border-top-right-radius: 20px;
+    border-top-right-radius: rem.torem(20px);
   }
 
   .form-row {
@@ -89,7 +89,7 @@
     .input-select {
       margin-left: rem.torem(24px);
       margin-top: rem.torem(24px);
-      width: rem.torem(220px);
+      width: rem.torem(232px);
 
       &:first-child {
         margin-left: 0;
@@ -176,7 +176,7 @@
         &:focus {
           & img {
             border: rem.torem(1px) solid colors.$primary;
-            border-radius: 4px;
+            border-radius: rem.torem(4px);
             filter: unset;
           }
         }
@@ -188,7 +188,7 @@
     }
 
     tbody > tr {
-      border-bottom: 1px solid colors.$grey-medium;
+      border-bottom: rem.torem(1px) solid colors.$grey-medium;
 
       td {
         padding: rem.torem(16px) rem.torem(10px);

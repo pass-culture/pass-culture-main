@@ -8,12 +8,12 @@
 
   [data-reach-dialog-content] {
     width: initial;
-    margin: 2rem auto;
+    margin: rem.torem(32px) auto;
   }
 }
 
 .dialog-box-content {
-  border-radius: 10px;
+  border-radius: rem.torem(10px);
   min-width: rem.torem(534px);
   position: relative;
   width: auto;

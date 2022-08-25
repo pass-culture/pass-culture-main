@@ -35,7 +35,7 @@
     .item {
       align-items: center;
       background-color: colors.$grey-light;
-      border-radius: 4px;
+      border-radius: rem.torem(4px);
       display: flex;
       justify-content: space-between;
       padding: rem.torem(12px) rem.torem(16px);

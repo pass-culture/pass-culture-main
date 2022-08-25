@@ -11,7 +11,7 @@
   appearance: none;
   min-height: rem.torem(40px);
   line-height: 1.3;
-  border: solid 1px forms.$input-border-color;
+  border: solid rem.torem(1px) forms.$input-border-color;
   border-radius: rem.torem(forms.$input-border-radius);
   background-color: forms.$input-bg-color;
   padding: 0 rem.torem(16px);

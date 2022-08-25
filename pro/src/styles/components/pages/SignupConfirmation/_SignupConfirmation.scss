@@ -3,17 +3,17 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 
 .sign-up-confirmation-page {
-  min-height: 600px;
+  min-height: rem.torem(600px);
   overflow: auto;
   position: relative;
   width: 100%;
 
   .content {
-    margin-left: calc(30px + 15%);
+    margin-left: calc(rem.torem(30px) + 15%);
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 500px;
+    width: rem.torem(500px);
 
     a.quaternary-link {
       color: colors.$primary;
@@ -39,7 +39,7 @@
     }
 
     .hero-body {
-      padding: 3rem 1.5rem;
+      padding: rem.torem(48px) rem.torem(24px);
     }
 
     .confirmation-text {

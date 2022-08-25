@@ -19,12 +19,12 @@
     width: 100%;
 
     &[type='number']:disabled {
-      border: 1px solid transparent;
+      border: rem.torem(1px) solid transparent;
     }
   }
 
   .quantity-input {
-    width: 95px;
+    width: rem.torem(95px);
   }
 
   .it-input {
@@ -47,16 +47,16 @@
   .field-date {
     align-items: center;
     background: url(/icons/ico-calendar.svg) no-repeat 90% center;
-    border-width: 1px;
+    border-width: rem.torem(1px);
     box-shadow: none;
     display: flex;
     height: rem.torem(40px);
-    padding: 0 1px;
+    padding: 0 rem.torem(1px);
 
     &:focus-within {
       background-position-x: 91%;
       border-color: colors.$primary;
-      border-width: 2px;
+      border-width: rem.torem(2px);
       padding: 0;
     }
 

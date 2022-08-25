@@ -5,7 +5,7 @@
 .hero-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 2rem;
+  margin-bottom: rem.torem(32px);
   padding-bottom: 0;
   padding-top: 0;
   position: relative;
@@ -20,17 +20,17 @@
     background-repeat: no-repeat;
     background-size: 80%;
     height: rem.torem(120px);
-    margin-left: -2.5rem;
+    margin-left: rem.torem(-40px);
     opacity: 0.25;
     width: rem.torem(120px);
   }
 
   .section-icon-mask {
     height: rem.torem(120px);
-    left: -5.3rem;
+    left: rem.torem(-84.8px);
     overflow: hidden;
     position: absolute;
-    top: -2.75rem;
+    top: rem.torem(-44px);
     width: rem.torem(80px);
   }
 }
@@ -72,7 +72,7 @@
   line-height: rem.torem(22px);
   position: absolute;
   right: 0;
-  top: -3px;
+  top: rem.torem(-3px);
 
   img {
     height: rem.torem(20px);

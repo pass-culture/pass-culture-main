@@ -4,7 +4,7 @@
 
 .field-group {
   display: table;
-  margin-bottom: 1rem;
+  margin-bottom: rem.torem(16px);
   width: 100%;
 }
 
@@ -64,7 +64,7 @@
   background-position: 97.5% 50%;
   background-repeat: no-repeat;
   border: none;
-  border-radius: 16px;
+  border-radius: rem.torem(16px);
   min-height: rem.torem(36px);
   min-width: rem.torem(250px);
   outline: none !important;
@@ -95,8 +95,8 @@
 .field-textarea {
   @include fonts.body-important();
 
-  border: 1px solid colors.$grey-medium;
-  border-radius: 1.125em;
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: rem.torem(18px);
   flex: 1;
   outline: none !important;
   padding: rem.torem(6px) rem.torem(18px);
@@ -156,11 +156,11 @@
 
 .texteditor-field {
   .controls-bar {
-    margin-bottom: 0.5rem;
+    margin-bottom: rem.torem(8px);
     overflow-y: hidden;
 
     button {
-      border: 2px solid colors.$grey-medium;
+      border: rem.torem(2px) solid colors.$grey-medium;
       border-radius: 0;
       margin-right: 0;
 
@@ -188,7 +188,7 @@
 
 .field {
   &:not(:last-child) {
-    margin-bottom: 1rem;
+    margin-bottom: rem.torem(16px);
   }
 
   &.is-read-only {
@@ -250,7 +250,7 @@
       .field-value {
         .field-inner {
           .field-input {
-            border-radius: 20px;
+            border-radius: rem.torem(20px);
             height: rem.torem(36px);
             width: inherit;
           }

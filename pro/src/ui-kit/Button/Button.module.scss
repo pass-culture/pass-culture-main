@@ -7,7 +7,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid;
+  border: rem.torem(2px) solid;
   border-radius: rem.torem(24px);
   height: rem.torem(40px);
   padding: 0 rem.torem(16px);

@@ -2,7 +2,7 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .location-viewer {
-  margin-bottom: 1.125rem;
+  margin-bottom: rem.torem(18px);
   width: 100%;
 
   .input-wrapper {
@@ -11,14 +11,14 @@
 
     .menu {
       background: colors.$white;
-      border: 2px solid colors.$grey-medium;
-      border-bottom-left-radius: 1.125em;
-      border-bottom-right-radius: 1.125em;
+      border: rem.torem(2px) solid colors.$grey-medium;
+      border-bottom-left-radius: rem.torem(18px);
+      border-bottom-right-radius: rem.torem(18px);
       border-top: none;
-      left: 1.125em;
+      left: rem.torem(18px);
       overflow: hidden;
       position: absolute;
-      right: 1.125em;
+      right: rem.torem(18px);
       z-index: 2000;
 
       &.empty {
@@ -26,7 +26,7 @@
       }
 
       .item {
-        padding: 0.5rem 1rem;
+        padding: rem.torem(8px) rem.torem(16px);
 
         &:not(.placeholder) {
           &.highlighted {
@@ -43,8 +43,8 @@
   }
 
   .map {
-    height: 20rem;
-    margin-top: 1rem;
+    height: rem.torem(320px);
+    margin-top: rem.torem(16px);
     overflow: hidden;
     width: 100%;
 

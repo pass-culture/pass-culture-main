@@ -48,9 +48,9 @@
       background: colors.$grey-medium;
       border: none;
       border-radius: 50%;
-      height: 8px;
+      height: rem.torem(8px);
       margin-left: rem.torem(8px);
-      width: 8px;
+      width: rem.torem(8px);
 
       &:focus {
         outline: transparent;
@@ -60,9 +60,9 @@
     .nav-step-active {
       background: colors.$primary;
       border-radius: 50%;
-      box-shadow: 0 0 3px 0 rgba(colors.$secondary, 0.21);
-      height: 12px;
-      width: 12px;
+      box-shadow: 0 0 rem.torem(3px) 0 rgba(colors.$secondary, 0.21);
+      height: rem.torem(12px);
+      width: rem.torem(12px);
     }
 
     .nav-step-done {

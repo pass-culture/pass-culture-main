@@ -34,10 +34,10 @@
     
    
     &-icon {
-      margin: 0.2rem 0 0.1rem 0.3rem;
+      margin: rem.torem(3.2px) 0 rem.torem(1.6px) rem.torem(4.8px);
       fill: colors.$black;
-      width: 0.7rem;
-      height: 0.7rem;
+      width: rem.torem(11.2px);
+      height: rem.torem(11.2px);
       cursor: pointer;
     }
   }
