@@ -3,7 +3,7 @@ name: Mypy leaderboard
 on:
   pull_request:
     branches:
-      - master
+      - not-master-for-tests
     types: [closed]
     paths:
       - "api/src/**"
@@ -25,12 +25,16 @@ jobs:
         id: mypy-score-calculator
         run: |
           cd api
+          merges_reflog="$(git reflog --pretty=%H --merges)"
+          reflog="$(git reflog --pretty=%H)"
+          echo "$(merges_reflog)"
+          echo "$(reflog)"
           this_branch_ignore_count="$(grep "type: ignore" -r src | wc -l)"
           author_line="$(git log -n 1 --pretty=short | grep Author)"
           author="$(echo "$author_line" | cut -d ':' -f 2 | xargs)"
           hash="$(git log -n 1 --pretty=format:'%H')"
-          git fetch origin master:master --quiet
-          git checkout master --quiet
+          git fetch origin not-master-for-tests:not-master-for-tests --quiet --update-head-ok
+          git checkout not-master-for-tests --quiet
           master_ignore_count="$(grep "type: ignore" -r src | wc -l)"
           git checkout - --quiet
           diff=$(($master_ignore_count - $this_branch_ignore_count))
@@ -38,23 +42,23 @@ jobs:
           echo "::set-output name=author::$author"
           echo "::set-output name=hash::$hash"
 
-  send_info:
-    runs-on: ubuntu-latest
-    needs: get_mypy_score_on_merge
-    steps:
-      - name: Call cloud function
-        id: call-cloud-function
-        run: |
-          curl --location --request POST 'https://us-central1-maposaic-99785.cloudfunctions.net/mypy-leaderboard' \
-          --header 'Authorization: ${{ secrets.MYPY_LEADERBOARD_FUNCTION_AUTHORIZATION }}' \
-          --header 'Content-Type: application/json' \
-          --data-raw '{
-              "commitHash": "${{ needs.get_mypy_score_on_merge.outputs.hash }}",
-              "author": "${{ needs.get_mypy_score_on_merge.outputs.author }}",
-              "mypyDiff": ${{ needs.get_mypy_score_on_merge.outputs.mypy_score }}
-          }'
-          res=$?
-          if test "$res" != "0"; then
-            echo "the curl command failed with: $res"
-            exit "$res"
-          fi
+  # send_info:
+  #   runs-on: ubuntu-latest
+  #   needs: get_mypy_score_on_merge
+  #   steps:
+  #     - name: Call cloud function
+  #       id: call-cloud-function
+  #       run: |
+  #         curl --location --request POST 'https://us-central1-maposaic-99785.cloudfunctions.net/mypy-leaderboard' \
+  #         --header 'Authorization: ${{ secrets.MYPY_LEADERBOARD_FUNCTION_AUTHORIZATION }}' \
+  #         --header 'Content-Type: application/json' \
+  #         --data-raw '{
+  #             "commitHash": "${{ needs.get_mypy_score_on_merge.outputs.hash }}",
+  #             "author": "${{ needs.get_mypy_score_on_merge.outputs.author }}",
+  #             "mypyDiff": ${{ needs.get_mypy_score_on_merge.outputs.mypy_score }}
+  #         }'
+  #         res=$?
+  #         if test "$res" != "0"; then
+  #           echo "the curl command failed with: $res"
+  #           exit "$res"
+  #         fi
