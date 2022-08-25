@@ -1,6 +1,5 @@
 import React from 'react'
 
-import LeavingGuardDialog from 'new_components/LeavingGuardDialog'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
@@ -18,14 +17,14 @@ const RouteLeavingGuardVenueCollectiveDataEdition = ({
 
   return (
     <RouteLeavingGuard
-      labelledBy="LEAVING_VENUE_COLLECTIVE_DATA_EDITION_LABEL_ID"
       shouldBlockNavigation={shouldBlockNavigation}
       when
+      dialogTitle="Voulez vous quitter la page d’informations pour les enseignants ?"
     >
-      <LeavingGuardDialog
-        title="Voulez vous quitter la page d’informations pour les enseignants ?"
-        message="Vos informations ne seront pas sauvegardées et toutes les informations seront perdues."
-      />
+      <p>
+        Vos informations ne seront pas sauvegardées et toutes les informations
+        seront perdues.
+      </p>
     </RouteLeavingGuard>
   )
 }
