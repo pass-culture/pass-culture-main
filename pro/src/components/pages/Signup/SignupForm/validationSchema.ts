@@ -1,6 +1,8 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
+import { isPasswordValid } from 'core/shared/utils/validation'
+
 const passwordErrorMessage = `Votre mot de passe doit contenir au moins :
       - 12 caractères
       - Un chiffre
@@ -17,18 +19,7 @@ export const validationSchema = yup.object().shape({
   password: yup
     .string()
     .required('Veuillez renseigner un mot de passe')
-    .min(12, passwordErrorMessage)
-    .test('isPasswordValid', passwordErrorMessage, value => {
-      if (!value) return false
-      const hasUpperCase = /[A-Z]/.test(value)
-      const hasLowerCase = /[a-z]/.test(value)
-      const hasNumber = /[0-9]/.test(value)
-      const hasSymbole = /[!"#$%&'()*+,-./:;<=>?@[\\^_`{|}~\]]/.test(value)
-      if (hasUpperCase && hasLowerCase && hasNumber && hasSymbole) {
-        return true
-      }
-      return false
-    }),
+    .test('isPasswordValid', passwordErrorMessage, isPasswordValid),
   lastName: yup.string().max(128).required('Veuillez renseigner votre nom'),
   firstName: yup.string().max(128).required('Veuillez renseigner votre prénom'),
   // TODO (mageoffray, 2022-05-12): Create a generic validator method for phone validation
