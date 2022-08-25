@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
 import DialogBox from 'new_components/DialogBox/DialogBox'
@@ -33,15 +33,12 @@ const ConfirmDialog = ({
   hideIcon = false,
   extraClassNames,
 }: IConfirmDialogProps): JSX.Element => {
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
-
   const Icon = icon ?? AlertSvg
 
   return (
     <DialogBox
       extraClassNames={`${styles['confirm-dialog']} ${extraClassNames}`}
       hasCloseButton
-      initialFocusRef={buttonRef}
       labelledBy={title}
       onDismiss={onCancel}
     >
@@ -56,7 +53,6 @@ const ConfirmDialog = ({
           {cancelText}
         </button>
         <SubmitButton
-          buttonRef={buttonRef}
           className="primary-button"
           isLoading={isLoading}
           onClick={onConfirm}
