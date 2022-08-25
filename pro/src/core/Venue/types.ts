@@ -1,4 +1,5 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import { IAccessibiltyFormValues } from 'core/shared'
 
 // TODO use api/gen types
@@ -69,5 +70,9 @@ export type VenueCollectiveInformation = Pick<
 >
 
 export interface IVenue {
+  bannerMeta: IVenueBannerMetaProps | undefined
+  bannerUrl: string
+  id: string
+  isPermanent: boolean
   publicName: string
 }

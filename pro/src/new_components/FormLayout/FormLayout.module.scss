@@ -5,6 +5,7 @@ $info-box-width: rem.torem(316px);
 $info-box-margin-left: rem.torem(24px);
 
 .form-layout {
+  max-width: rem.torem(500px);
   &.small {
     width: rem.torem(468px);
   }
