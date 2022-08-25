@@ -4,7 +4,7 @@
 
 .field-group {
   display: table;
-  margin-bottom: 1rem;
+  margin-bottom: rem.torem(16px);
   width: 100%;
 }
 
@@ -16,7 +16,7 @@ textarea.textarea {
   &[readonly]:not([type='checkbox']) {
     background-color: transparent;
     border: none;
-    padding-left: 0.125rem;
+    padding-left: rem.torem(2px);
     resize: none;
   }
 }
@@ -32,7 +32,7 @@ textarea.textarea {
 .field {
   &.field-siren {
     input {
-      width: 8rem;
+      width: rem.torem(128px);
     }
 
     .display-name {
@@ -40,8 +40,8 @@ textarea.textarea {
 
       color: colors.$black;
       display: inline-block;
-      padding-left: 0.25rem;
-      padding-top: 0.5rem;
+      padding-left: rem.torem(4px);
+      padding-top: rem.torem(8px);
       text-transform: uppercase;
     }
   }
@@ -58,7 +58,7 @@ textarea.textarea {
 
     .control {
       .button {
-        border-width: 2px;
+        border-width: rem.torem(2px);
         height: 100%;
 
         &:focus {
@@ -83,8 +83,8 @@ textarea.textarea {
 
         &.with-info {
           .button {
-            border-bottom-right-radius: 1.125em;
-            border-top-right-radius: 1.125em;
+            border-bottom-right-radius: rem.torem(18px);
+            border-top-right-radius: rem.torem(18px);
           }
         }
       }
@@ -101,21 +101,21 @@ textarea.textarea {
     &.field-siret,
     &.field-iban,
     &.field-text {
-      height: 3.375em;
+      height: rem.torem(54px);
 
       &.readonly {
-        height: 2.375em;
+        height: rem.torem(38px);
       }
     }
 
     &.field-textarea {
       textarea {
-        margin-bottom: 1.125rem;
+        margin-bottom: rem.torem(18px);
       }
     }
 
     display: table-row;
-    margin-bottom: 1.125rem;
+    margin-bottom: rem.torem(18px);
 
     .field-label,
     .field-body {
@@ -123,14 +123,14 @@ textarea.textarea {
 
       .columns {
         &:last-child {
-          margin-bottom: 1rem;
+          margin-bottom: rem.torem(16px);
         }
       }
     }
 
     .field-label {
-      padding-right: 1rem;
-      padding-top: 0.5rem;
+      padding-right: rem.torem(16px);
+      padding-top: rem.torem(8px);
       vertical-align: top;
       white-space: nowrap;
 
@@ -158,12 +158,12 @@ textarea.textarea {
           color: colors.$black;
           cursor: default;
           opacity: 1;
-          padding-left: 0.125rem;
+          padding-left: rem.torem(2px);
         }
       }
 
       textarea.textarea {
-        border-radius: 1.125em;
+        border-radius: rem.torem(18px);
       }
 
       .control:not(.is-expanded):not(.control-checkbox) {
@@ -174,7 +174,7 @@ textarea.textarea {
       }
 
       .control-checkbox {
-        margin-top: 0.5rem;
+        margin-top: rem.torem(8px);
       }
 
       .control-file {
@@ -195,7 +195,7 @@ textarea.textarea {
       }
 
       &:not(:last-child) {
-        padding-right: 0.25rem;
+        padding-right: rem.torem(4px);
       }
     }
   }
@@ -215,7 +215,7 @@ textarea.textarea {
 
 div.control.control-duration {
   input.field-input.field-duration {
-    width: 5.5rem !important;
+    width: rem.torem(88px) !important;
   }
 }
 

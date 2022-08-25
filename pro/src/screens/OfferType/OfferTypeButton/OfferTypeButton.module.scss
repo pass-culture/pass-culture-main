@@ -4,8 +4,8 @@
 
 .button {
   background-color: transparent;
-  border: 1px solid colors.$black;
-  border-radius: 8px;
+  border: rem.torem(1px) solid colors.$black;
+  border-radius: rem.torem(8px);
   padding: rem.torem(32px) rem.torem(16px) rem.torem(16px);
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
   }
 
   &.is-selected {
-    border: 1px solid colors.$primary;
+    border: rem.torem(1px) solid colors.$primary;
     font-weight: 700;
     color: colors.$primary;
 
@@ -57,5 +57,5 @@
 }
 
 .button.is-selected:focus-within {
-  border-width: 2px;
+  border-width: rem.torem(2px);
 }

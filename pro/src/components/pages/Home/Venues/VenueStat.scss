@@ -22,7 +22,7 @@
     justify-content: space-between;
     text-align: center;
 
-    border-right: solid 1px colors.$grey-medium;
+    border-right: solid rem.torem(1px) colors.$grey-medium;
 
     &:last-child {
       border-right: none;

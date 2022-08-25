@@ -33,7 +33,7 @@
     background-color: colors.$grey-medium;
 
     &.horizontal {
-      height: 1px;
+      height: rem.torem(1px);
       margin-left: rem.torem(-16px);
       margin-right: rem.torem(-16px);
     }
@@ -42,7 +42,7 @@
       align-self: stretch;
       margin-bottom: rem.torem(-8px);
       margin-top: rem.torem(-8px);
-      width: 1px;
+      width: rem.torem(1px);
 
       &.small {
         align-self: center;

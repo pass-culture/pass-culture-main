@@ -4,14 +4,14 @@
 
 input[type='radio'] {
   appearance: none;
-  border: 2px solid colors.$grey-dark;
+  border: rem.torem(2px) solid colors.$grey-dark;
   border-radius: 50%;
   flex: 0 0 auto;
   font-size: inherit;
-  height: rem.torem(19px);
+  height: rem.torem(20px);
   margin-right: rem.torem(8px);
   outline: none;
-  width: rem.torem(19px);
+  width: rem.torem(20px);
 
   &:checked {
     background: radial-gradient(

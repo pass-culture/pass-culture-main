@@ -4,7 +4,7 @@
 
 .offer-preview {
   background-color: colors.$grey-very-light;
-  border-radius: 3px;
+  border-radius: rem.torem(3px);
 
   .op-options-summary {
     display: flex;
@@ -55,7 +55,7 @@
 
   .op-section {
     background-color: colors.$white;
-    border-radius: 3px;
+    border-radius: rem.torem(3px);
     margin-top: rem.torem(6px);
     padding: rem.torem(12px) rem.torem(15px) rem.torem(16px) rem.torem(15px);
 

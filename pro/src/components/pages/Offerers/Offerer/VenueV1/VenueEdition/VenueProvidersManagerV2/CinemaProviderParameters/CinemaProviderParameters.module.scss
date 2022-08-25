@@ -4,16 +4,16 @@
 
 .cinema-provider-parameters {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: rem.torem(16px);
 
   .title {
-    font-size: 1rem;
+    font-size: rem.torem(16px);
     font-weight: 600;
   }
 
   .cinema-provider-parameters-list {
     color: colors.$grey-dark;
-    margin-top: 0.5rem;
+    margin-top: rem.torem(8px);
 
     span {
       color: colors.$black;
@@ -23,6 +23,6 @@
   }
 
   .edit-parameters-btn {
-    margin-top: 1rem;
+    margin-top: rem.torem(16px);
   }
 }

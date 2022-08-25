@@ -6,11 +6,11 @@
 }
 
 .with-border {
-  border: 1px solid colors.$black;
+  border: rem.torem(1px) solid colors.$black;
   padding: rem.torem(16px) rem.torem(16px) rem.torem(12px) rem.torem(16px);
   border-radius: rem.torem(8px);
 
   &-primary {
-    border: 1px solid colors.$primary;
+    border: rem.torem(1px) solid colors.$primary;
   }
 }

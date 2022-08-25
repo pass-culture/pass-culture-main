@@ -7,9 +7,9 @@
   align-items: center;
 
   &-label {
-    line-height: 1.2em;
+    line-height: rem.torem(19.2px);
     display: flex;
-    margin-top: -0.1rem;
+    margin-top: rem.torem(-1.6px);
     width: 100%;
     :disabled + & {
       color: forms.$input-text-color-disabled;
@@ -30,8 +30,8 @@
     -webkit-appearance: none;
     appearance: none;
     background-color: forms.$input-bg-color;
-    border: 2px solid forms.$input-border-color;
-    border-radius: 3px;
+    border: rem.torem(2px) solid forms.$input-border-color;
+    border-radius: rem.torem(3px);
     transition: border 150ms ease, background 150ms ease;
 
     &:hover,

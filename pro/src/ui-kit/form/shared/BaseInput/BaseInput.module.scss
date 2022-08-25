@@ -31,11 +31,11 @@
       background: none;
       border: none;
       height: 100%;
-      margin: 0 16px;
+      margin: 0 rem.torem(16px);
       outline: none;
 
       svg {
-          width: 32px;
+          width: rem.torem(32px);
           height: 100%
       }
     }

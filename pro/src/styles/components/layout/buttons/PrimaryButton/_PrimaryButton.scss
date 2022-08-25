@@ -4,14 +4,14 @@
 
 @mixin primary-focus {
   background-color: colors.$primary-dark;
-  border: 3px solid colors.$primary-dark;
+  border: rem.torem(3px) solid colors.$primary-dark;
 }
 
 @mixin primary {
   @include fonts.button();
 
   background-color: colors.$primary;
-  border: 3px solid colors.$primary;
+  border: rem.torem(3px) solid colors.$primary;
   border-radius: rem.torem(24px);
   color: colors.$white;
   height: rem.torem(40px);
@@ -36,7 +36,7 @@
 
   &:disabled {
     background-color: colors.$primary-disabled;
-    border: 3px solid colors.$primary-disabled;
+    border: rem.torem(3px) solid colors.$primary-disabled;
     cursor: not-allowed;
     opacity: 1;
   }

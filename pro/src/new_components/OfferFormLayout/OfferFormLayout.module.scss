@@ -20,7 +20,7 @@ h4 {
   bottom: 0;
   left: 0;
   width: 100%;
-  box-shadow: 0 0 3.75rem colors.$black-shadow;
+  box-shadow: 0 0 rem.torem(60px) colors.$black-shadow;
 
   .inner {
     width: rem.torem(802px);

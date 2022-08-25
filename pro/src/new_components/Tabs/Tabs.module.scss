@@ -10,7 +10,7 @@
     background-color: transparent;
     font-size: rem.torem(16px);
     font-weight: 600;
-    border-bottom: 2px solid transparent;
+    border-bottom: rem.torem(2px) solid transparent;
 
     &-icon {
       fill: colors.$black;
@@ -27,7 +27,7 @@
     }
 
     &.is-selected {
-      border-bottom: 2px solid colors.$primary;
+      border-bottom: rem.torem(2px) solid colors.$primary;
 
       .tabs-tab-link {
         color: colors.$primary;

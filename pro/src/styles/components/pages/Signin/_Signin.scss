@@ -4,12 +4,12 @@
 .sign-in-page {
   display: flex;
   flex-direction: row;
-  min-height: 700px;
+  min-height: rem.torem(700px);
 
   .logo-side {
     background-image: url(/icons/linear-gradient.svg);
-    box-shadow: inset -10px 0 20px 0 colors.$black-shadow;
-    min-width: 520px;
+    box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0 colors.$black-shadow;
+    min-width: rem.torem(520px);
     background-size: cover;
   }
 
@@ -19,11 +19,11 @@
     width: 100%;
 
     .content {
-      margin-left: calc(30px + 15%);
+      margin-left: calc(rem.torem(30px) + 15%);
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 400px;
+      width: rem.torem(400px);
     }
   }
 

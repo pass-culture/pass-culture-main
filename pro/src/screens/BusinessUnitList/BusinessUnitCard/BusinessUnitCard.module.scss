@@ -23,8 +23,8 @@
 }
 
 .business-unit-card {
-  border: 1px solid #c7c8cb;
-  border-radius: 6px;
+  border: rem.torem(1px) solid #c7c8cb;
+  border-radius: rem.torem(6px);
   padding: rem.torem(16px);
 }
 
@@ -44,7 +44,7 @@
 
 .business-unit-bank-informations {
   background-color: colors.$grey-light;
-  border-radius: 6px;
+  border-radius: rem.torem(6px);
   padding: rem.torem(16px);
   width: 50%;
 
@@ -62,8 +62,8 @@
 }
 
 .business-unit-reference-siret {
-  border: 1px solid colors.$light-purple;
-  border-radius: 6px;
+  border: rem.torem(1px) solid colors.$light-purple;
+  border-radius: rem.torem(6px);
   display: flex;
   flex-direction: column;
   justify-content: center;

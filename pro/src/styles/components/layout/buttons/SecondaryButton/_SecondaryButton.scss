@@ -6,7 +6,7 @@
   @include fonts.button();
 
   background-color: colors.$white;
-  border: 2px solid colors.$primary;
+  border: rem.torem(2px) solid colors.$primary;
   border-radius: rem.torem(24px);
   color: colors.$primary;
   height: rem.torem(40px);
@@ -35,7 +35,7 @@
   &:hover,
   &:focus {
     background-color: colors.$primary-dark;
-    border: 2px solid colors.$primary-dark;
+    border: rem.torem(2px) solid colors.$primary-dark;
     color: colors.$white;
 
     img,
@@ -54,7 +54,7 @@
 
   &:disabled {
     background-color: colors.$white;
-    border: 2px solid colors.$primary-disabled;
+    border: rem.torem(2px) solid colors.$primary-disabled;
     color: colors.$primary-disabled;
     cursor: not-allowed;
     opacity: 1;

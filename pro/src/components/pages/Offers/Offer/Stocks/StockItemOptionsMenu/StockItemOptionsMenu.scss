@@ -37,9 +37,9 @@
   @include fonts.button();
 
   align-items: center;
-  column-gap: 4px;
+  column-gap: rem.torem(4px);
   display: grid;
-  grid-template-columns: 32px 1fr;
+  grid-template-columns: rem.torem(32px) 1fr;
   margin-top: rem.torem(10px);
   padding: 0 rem.torem(12px);
 

@@ -28,12 +28,12 @@
         background-position-x: 90%;
         background-position-y: center;
         background-repeat: no-repeat;
-        border: 1px solid colors.$grey-medium;
+        border: rem.torem(1px) solid colors.$grey-medium;
         border-radius: rem.torem(20px);
         display: flex;
         height: rem.torem(40px);
         margin-top: rem.torem(16px);
-        padding: 0 1px;
+        padding: 0 rem.torem(1px);
         width: rem.torem(173px);
 
         &:focus-within {

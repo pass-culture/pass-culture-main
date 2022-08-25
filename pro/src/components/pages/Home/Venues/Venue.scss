@@ -31,7 +31,7 @@
 
     &-separator {
       height: rem.torem(20px);
-      border-left: solid 1px colors.$grey-medium;
+      border-left: solid rem.torem(1px) colors.$grey-medium;
       margin-left: rem.torem(16px);
       margin-right: rem.torem(12px);
     }
