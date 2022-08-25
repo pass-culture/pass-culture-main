@@ -8,13 +8,25 @@ import { useGetVenue } from '../getVenueAdapter'
 describe('useGetVenue', () => {
   it('should return loading payload then success payload', async () => {
     const apiVenue: GetVenueResponseModel = {
-      publicName: 'Cinéma des iles',
+      bannerMeta: {
+        image_credit: null,
+        original_image_url:
+          'http://localhost/storage/thumbs/venues/CU_1661432578',
+        crop_params: {
+          x_crop_percent: 0.005169172932330823,
+          y_crop_percent: 0,
+          height_crop_percent: 1,
+          width_crop_percent: 0.9896616541353384,
+        },
+      },
+      bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
       collectiveDomains: [],
       dateCreated: '2022-07-29T12:18:43.087097Z',
       fieldsUpdated: [],
       id: 'AE',
       isValidated: true,
       isVirtual: false,
+      isPermanent: true,
       managingOfferer: {
         city: 'Paris',
         dateCreated: '2022-07-29T12:18:43.087097Z',
@@ -27,6 +39,7 @@ describe('useGetVenue', () => {
       managingOffererId: 'AA',
       name: 'Lieu name',
       nonHumanizedId: 12,
+      publicName: 'Cinéma des iles',
     }
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
@@ -38,7 +51,23 @@ describe('useGetVenue', () => {
     expect(loadingState.isLoading).toBe(true)
     expect(loadingState.error).toBeUndefined()
 
-    const venue = { publicName: 'Cinéma des iles' }
+    const venue = {
+      bannerMeta: {
+        image_credit: null,
+        original_image_url:
+          'http://localhost/storage/thumbs/venues/CU_1661432578',
+        crop_params: {
+          x_crop_percent: 0.005169172932330823,
+          y_crop_percent: 0,
+          height_crop_percent: 1,
+          width_crop_percent: 0.9896616541353384,
+        },
+      },
+      bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
+      id: 'AE',
+      isPermanent: true,
+      publicName: 'Cinéma des iles',
+    }
 
     await waitForNextUpdate()
     expect(api.getVenue).toHaveBeenCalledWith('AE')
