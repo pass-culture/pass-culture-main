@@ -3,7 +3,7 @@ name: Mypy leaderboard
 on:
   pull_request:
     branches:
-      - master
+      - not-master-for-tests
     types: [closed]
     paths:
       - "api/src/**"
@@ -25,14 +25,17 @@ jobs:
         id: mypy-score-calculator
         run: |
           cd api
+          echo "Currently on branch ${{ github.ref }}"
           this_branch_ignore_count="$(grep "type: ignore" -r src | wc -l)"
           author_line="$(git log -n 1 --pretty=short | grep Author)"
           author="$(echo "$author_line" | cut -d ':' -f 2 | xargs)"
           hash="$(git log -n 1 --pretty=format:'%H')"
           git fetch origin master:master --quiet
           git checkout master --quiet
+          echo "Currently on branch ${{ github.ref }}"
           master_ignore_count="$(grep "type: ignore" -r src | wc -l)"
           git checkout - --quiet
+          echo "Currently on branch ${{ github.ref }}"
           diff=$(($master_ignore_count - $this_branch_ignore_count))
           echo "::set-output name=mypy_score::$diff"
           echo "::set-output name=author::$author"
