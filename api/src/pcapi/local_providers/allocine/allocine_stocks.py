@@ -332,7 +332,8 @@ def _is_original_version_offer(id_at_provider: str) -> bool:
 
 
 def _build_movie_uuid(movie_information: dict, venue: Venue) -> str:
-    return f"{movie_information['id']}%{venue.siret}"
+    venue_id = venue.id if not venue.siret else venue.siret
+    return f"{movie_information['id']}%{venue_id}"
 
 
 def _build_french_movie_uuid(movie_information: dict, venue: Venue) -> str:
