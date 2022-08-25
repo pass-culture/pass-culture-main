@@ -57,8 +57,6 @@ def get_collective_offers_public(
     )
 
 
-
-
 @blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["GET"])
 @api_key_required
 @spectree_serialize(
@@ -106,8 +104,6 @@ def get_collective_offer_public(
             status_code=403,
         )
     return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
-
-
 
 
 @blueprint.pro_public_api_v2.route("/collective/offers/", methods=["POST"])
