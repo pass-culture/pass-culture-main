@@ -631,33 +631,6 @@ def test_public_api(client, app):
                     "tags": [],
                 }
             },
-            "/v2/collective-offers/venues": {
-                "get": {
-                    "description": "Tous les lieux enregistrés, physiques ou virtuels, sont listés ici avec leurs coordonnées.",
-                    "operationId": "ListVenues",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
-                    "tags": [],
-                }
-            },
             "/v2/collective/categories": {
                 "get": {
                     "description": "",
@@ -960,6 +933,33 @@ def test_public_api(client, app):
                     "summary": "Édition d'une offre collective.",
                     "tags": ["API offres collectives"],
                 },
+            },
+            "/v2/collective/venues": {
+                "get": {
+                    "description": "Tous les lieux enregistrés, physiques ou virtuels, sont listés ici avec leurs coordonnées.",
+                    "operationId": "ListVenues",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
+                    "tags": [],
+                }
             },
             "/v2/venue/{venue_id}/stocks": {
                 "post": {
