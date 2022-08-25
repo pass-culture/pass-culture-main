@@ -18,18 +18,6 @@ COPY ./requirements.txt ./
 RUN pip install --user \
 	--requirement ./requirements.txt
 
-########## SOURCES ##########
-
-FROM python:3.10-slim AS sources
-
-RUN mkdir -p /tmp/src
-
-WORKDIR /tmp/src
-
-COPY . .
-
-RUN rm -rf tests/ pyproject.toml
-
 ######### LIB ##########
 
 FROM python:3.10-slim AS lib
@@ -51,9 +39,20 @@ COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 
 WORKDIR /usr/src/app
 
-COPY --from=sources /tmp/src .
+COPY --chown=pcapi:pcapi src/ src/
+COPY --chown=pcapi:pcapi .env* .
+COPY --chown=pcapi:pcapi .flaskenv .
+COPY --chown=pcapi:pcapi .ipython .
+COPY --chown=pcapi:pcapi .whitesource .
+COPY --chown=pcapi:pcapi alembic* .
+COPY --chown=pcapi:pcapi entrypoint.sh .
+COPY --chown=pcapi:pcapi mypy_cop.sh .
+COPY --chown=pcapi:pcapi rebuild_staging.sh .
+COPY --chown=pcapi:pcapi requirements.txt .
+COPY --chown=pcapi:pcapi setup* .
+COPY --chown=pcapi:pcapi version.txt .
 
-RUN chown -R pcapi:pcapi .
+RUN chown pcapi:pcapi .
 
 USER pcapi
 
