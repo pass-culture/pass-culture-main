@@ -1,12 +1,22 @@
 import cn from 'classnames'
+import type { LocationDescriptor } from 'history'
 import React, { MouseEventHandler } from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, SharedButtonProps } from './types'
 
-interface IButtonProps extends SharedButtonProps {
+type InternalLinkProps = {
+  isExternal: false
+  to: LocationDescriptor
+}
+
+type ExternalLinkProps = {
+  isExternal: true
   to: string
+}
+interface IButtonProps extends SharedButtonProps {
+  link: InternalLinkProps | ExternalLinkProps
   children: React.ReactNode | React.ReactNode[]
   className?: string
   isDisabled?: boolean
@@ -20,11 +30,9 @@ const ButtonLink = ({
   isDisabled = false,
   onClick,
   variant = ButtonVariant.TERNARY,
-  to,
+  link,
   ...linkAttrs
 }: IButtonProps): JSX.Element => {
-  const isExternal = /^https?:\/\//i.test(to)
-
   const classNames = cn(
     styles['button'],
     styles[`button-${variant}`],
@@ -32,10 +40,10 @@ const ButtonLink = ({
     className
   )
 
-  return isExternal ? (
+  return link.isExternal ? (
     <a
       className={classNames}
-      href={to}
+      href={link.to}
       onClick={e => {
         isDisabled ? e.preventDefault() : onClick?.(e)
       }}
@@ -49,7 +57,7 @@ const ButtonLink = ({
     <Link
       className={classNames}
       onClick={e => (isDisabled ? e.preventDefault() : onClick?.(e))}
-      to={to}
+      to={link.to}
       {...linkAttrs}
       {...(isDisabled ? { 'aria-disabled': true } : {})}
     >

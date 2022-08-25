@@ -176,7 +176,10 @@ const Summary = ({
               <div className={styles['offer-creation-preview-actions']}>
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
-                  to={`/offre/${offerId}/individuel/creation/stocks`}
+                  link={{
+                    to: `/offre/${offerId}/individuel/creation/stocks`,
+                    isExternal: false,
+                  }}
                   onClick={() =>
                     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OfferBreadcrumbStep.SUMMARY,
@@ -200,7 +203,7 @@ const Summary = ({
               <div className={styles['offer-creation-preview-actions']}>
                 <ButtonLink
                   variant={ButtonVariant.PRIMARY}
-                  to={backOfferUrl}
+                  link={{ to: backOfferUrl, isExternal: false }}
                   onClick={() =>
                     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OfferBreadcrumbStep.SUMMARY,

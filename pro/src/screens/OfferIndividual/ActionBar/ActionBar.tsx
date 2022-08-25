@@ -31,7 +31,7 @@ const ActionBar = ({
       )}
       <ButtonLink
         className={style['action']}
-        to="/offres"
+        link={{ to: '/offres', isExternal: false }}
         variant={ButtonVariant.SECONDARY}
       >
         Annuler

@@ -211,9 +211,12 @@ const SearchFilters = ({
             Icon={ResetIcon}
             {...resetFilterButtonProps}
             onClick={resetFilters}
-            to={`/offres${
-              audience === Audience.COLLECTIVE ? '/collectives' : ''
-            }`}
+            link={{
+              to: `/offres${
+                audience === Audience.COLLECTIVE ? '/collectives' : ''
+              }`,
+              isExternal: false,
+            }}
             variant={ButtonVariant.TERNARY}
           >
             Réinitialiser les filtres

@@ -29,7 +29,7 @@ const FormActions = ({
       {cancelUrl && (
         <ButtonLink
           variant={ButtonVariant.SECONDARY}
-          to={cancelUrl}
+          link={{ to: cancelUrl, isExternal: false }}
           onClick={onCancelClick ? onCancelClick : undefined}
         >
           {isDraft ? 'Étape précédente' : 'Annuler et quitter'}
