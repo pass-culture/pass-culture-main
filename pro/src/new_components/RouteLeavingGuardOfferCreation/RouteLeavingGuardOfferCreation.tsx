@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { LeavingOfferCreationDialog } from 'new_components/LeavingOfferCreationDialog'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
@@ -97,11 +96,14 @@ const RouteLeavingGuardOfferCreation = ({
   )
   return (
     <RouteLeavingGuard
-      labelledBy="LEAVING_OFFER_CREATION_LABEL_ID"
       shouldBlockNavigation={shouldBlockNavigation}
       when={when}
+      dialogTitle="Voulez-vous quitter la création d’offre ?"
     >
-      <LeavingOfferCreationDialog />
+      <p>
+        Votre offre ne sera pas sauvegardée et toutes les informations seront
+        perdues.
+      </p>
     </RouteLeavingGuard>
   )
 }
