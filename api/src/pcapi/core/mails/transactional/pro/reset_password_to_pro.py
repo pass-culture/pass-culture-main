@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
@@ -5,6 +7,8 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
@@ -43,3 +47,19 @@ def get_reset_password_link_to_admin_email_data(
 def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
     data = get_reset_password_link_to_admin_email_data(created_user, reset_password_link)
     return mails.send(recipients=[admin_email], data=data)
+
+
+def get_reset_password_from_connected_pro_email_data(user: User) -> SendinblueTransactionalEmailData:
+    now = datetime.utcnow()
+
+    return SendinblueTransactionalEmailData(
+        template=TransactionalEmail.RESET_PASSWORD_TO_CONNECTED_PRO.value,
+        params={"EVENT_DATE": get_date_formatted_for_email(now), "EVENT_HOUR": get_time_formatted_for_email(now)},
+    )
+
+
+def send_reset_password_email_to_connected_pro(user: User) -> bool:
+    # Users can change their password without an email link when
+    # they were connected to the app.
+    data = get_reset_password_from_connected_pro_email_data(user)
+    return mails.send(recipients=[user.email], data=data)
