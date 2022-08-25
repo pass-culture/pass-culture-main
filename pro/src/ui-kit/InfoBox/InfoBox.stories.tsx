@@ -17,13 +17,13 @@ const Template: Story<IInfoBoxProps> = props => (
 export const InfoWithLink = Template.bind({})
 InfoWithLink.args = {
   type: 'info',
-  linkProps: { isExternal: true, text: 'Suivre le lien', link: '#' },
+  link: { text: 'Suivre le lien', to: '#', isExternal: true },
   text: 'Molestie fermentum accumsan at faucibus leo massa proin. Suspendisse sed sed fringilla ipsum adipiscing.',
 }
 
 export const ImportantWithLink = Template.bind({})
 ImportantWithLink.args = {
   type: 'important',
-  linkProps: { isExternal: true, text: 'Suivre le lien', link: '#' },
+  link: { text: 'Suivre le lien', to: '#', isExternal: true },
   text: 'Molestie fermentum accumsan at faucibus leo massa proin. Suspendisse sed sed fringilla ipsum adipiscing.',
 }

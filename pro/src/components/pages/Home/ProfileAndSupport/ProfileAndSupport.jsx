@@ -94,7 +94,7 @@ const ProfileAndSupport = () => {
               {enableInPageProfileForm && (
                 <ButtonLink
                   variant={ButtonVariant.TERNARY}
-                  to="/profile"
+                  link={{ to: '/profile', isExternal: false }}
                   type="button"
                 >
                   <Icon svg="ico-outer-pen" />

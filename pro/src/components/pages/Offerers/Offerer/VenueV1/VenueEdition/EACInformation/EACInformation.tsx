@@ -43,7 +43,10 @@ const EACInformation = ({
       )}
 
       <ButtonLink
-        to={`/structures/${offererId}/lieux/${venue?.id}/eac`}
+        link={{
+          to: `/structures/${offererId}/lieux/${venue?.id}/eac`,
+          isExternal: false,
+        }}
         variant={ButtonVariant.SECONDARY}
         isDisabled={isCreatingVenue}
         className={cn({ [styles['button']]: collectiveDataIsNotEmpty })}
