@@ -31,7 +31,7 @@ export class ApiOffresCollectivesService {
   ): CancelablePromise<CollectiveOffersListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/v2/collective-offers/',
+      url: '/v2/collective/offers/',
       query: {
         'status': status,
         'venueId': venueId,
@@ -58,7 +58,7 @@ export class ApiOffresCollectivesService {
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/v2/collective-offers/',
+      url: '/v2/collective/offers/',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -84,7 +84,7 @@ export class ApiOffresCollectivesService {
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/v2/collective-offers/{offer_id}',
+      url: '/v2/collective/offers/{offer_id}',
       path: {
         'offer_id': offerId,
       },
