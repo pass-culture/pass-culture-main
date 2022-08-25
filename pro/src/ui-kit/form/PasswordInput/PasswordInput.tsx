@@ -12,12 +12,14 @@ interface IPasswordInputProps {
   label: string
   name: string
   placeholder: string
+  renderTooltip?: boolean
 }
 
 const PasswordInput = ({
   label,
   name,
   placeholder,
+  renderTooltip = true,
 }: IPasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
 
@@ -50,15 +52,16 @@ const PasswordInput = ({
           </button>
         )}
       />
-
-      <Icon
-        alt="Caractéristiques obligatoires du mot de passe"
-        className={styles['password-tip-icon']}
-        data-place="bottom"
-        data-tip={renderPasswordTooltip()}
-        data-type="info"
-        svg="picto-info"
-      />
+      {renderTooltip && (
+        <Icon
+          alt="Caractéristiques obligatoires du mot de passe"
+          className={styles['password-tip-icon']}
+          data-place="bottom"
+          data-tip={renderPasswordTooltip()}
+          data-type="info"
+          svg="picto-info"
+        />
+      )}
     </div>
   )
 }
