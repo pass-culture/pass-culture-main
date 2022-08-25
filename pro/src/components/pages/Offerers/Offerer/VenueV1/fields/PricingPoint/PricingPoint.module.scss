@@ -20,7 +20,8 @@
   margin-top: rem.torem(10px);
 
   .select > select {
-    min-width: rem.torem(550px);
+    width: rem.torem(550px);
+    text-overflow: ellipsis;
   }
   .space-left {
     margin-left: rem.torem(16px);
