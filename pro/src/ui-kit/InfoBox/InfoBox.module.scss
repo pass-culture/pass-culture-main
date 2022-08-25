@@ -32,16 +32,6 @@
       margin-right: rem.torem(8px);
     }
   }
-
-  &-link {
-    margin-top: rem.torem(8px);
-    display: flex;
-    align-items: center;
-
-    &-icon {
-      margin-right: rem.torem(8px);
-    }
-  }
 }
 
 .info {
@@ -59,6 +49,10 @@
   .info-box-title,
   .info-box-link {
     color: colors.$primary;
+
+    svg {
+      fill: colors.$primary; // FIXME(MathildeDuboille - 25-08-2022): use button link variant when ready
+    }
   }
 
   .info-box-link-icon {

@@ -30,7 +30,10 @@ const Template: Story<{
 const TemplateLink: Story<{
   children: string
   variant: ButtonVariant
-  to: string
+  link: {
+    to: string
+    isExternal: boolean
+  }
   Icon?: SharedButtonProps['Icon']
 }> = args => <ButtonLink {...args}>{args.children}</ButtonLink>
 
@@ -54,7 +57,7 @@ export const LinkButton = TemplateLink.bind({})
 LinkButton.args = {
   children: 'Hello world',
   variant: ButtonLink.variant.TERNARY,
-  to: '/my-path',
+  link: { to: '/my-path', isExternal: false },
 }
 
 export const LinkButtonWithIcon = TemplateLink.bind({})

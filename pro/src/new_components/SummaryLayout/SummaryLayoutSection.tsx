@@ -28,7 +28,7 @@ const Section = ({
           {title}
         </Title>
         <ButtonLink
-          to={editLink}
+          link={{ to: editLink, isExternal: false }}
           className={style['summary-layout-section-header-edit-link']}
           Icon={BlackPen}
           onClick={onLinkClick ? onLinkClick : undefined}

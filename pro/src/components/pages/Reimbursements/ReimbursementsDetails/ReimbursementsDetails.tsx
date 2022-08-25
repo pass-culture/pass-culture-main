@@ -93,7 +93,10 @@ const ReimbursementsDetails = ({
         </ButtonDownloadCSV>
         <ButtonLink
           isDisabled={shouldDisableButtons}
-          to={`/remboursements-details?${csvQueryParams}`}
+          link={{
+            to: `/remboursements-details?${csvQueryParams}`,
+            isExternal: false,
+          }}
           variant={ButtonVariant.SECONDARY}
         >
           Afficher
