@@ -1,5 +1,5 @@
 export const DEFAULT_CONTACT_FORM_VALUES = {
-  phone: '',
+  phoneNumber: '',
   email: '',
-  webSiteAddress: '',
+  webSite: '',
 }
