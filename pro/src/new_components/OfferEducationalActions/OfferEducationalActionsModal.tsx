@@ -1,8 +1,8 @@
 import React from 'react'
 
+import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 
-import { ReactComponent as Trash } from './assets/trash.svg'
 import styles from './OfferEducationalActionsModal.module.scss'
 
 interface IOfferEducationalModalProps {

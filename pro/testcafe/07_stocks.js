@@ -128,9 +128,7 @@ test('je peux supprimer un stock pour un évènement', async t => {
   )
   await navigateToStocksAs(user, offer, createUserRole(user))(t)
   const deleteButton = Selector('td').find('button')
-  const deleteButtonConfirmation = Selector('.action-buttons')
-    .find('button')
-    .withText('Supprimer')
+  const deleteButtonConfirmation = Selector('button').withText('Supprimer')
   const deleteSuccess = Selector('.notification.is-success').withText(
     'Le stock a été supprimé.'
   )

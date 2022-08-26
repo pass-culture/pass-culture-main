@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 
 import Icon from 'components/layout/Icon'
 import DialogBox from 'new_components/DialogBox'
@@ -21,12 +21,9 @@ const InfoDialog = ({
   subTitle,
   closeDialog,
 }: IInfoDialogProps): JSX.Element => {
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
-
   return (
     <DialogBox
       hasCloseButton
-      initialFocusRef={buttonRef}
       labelledBy={title}
       onDismiss={closeDialog}
       extraClassNames={styles['info-dialog']}
@@ -39,12 +36,7 @@ const InfoDialog = ({
       </div>
       <div className={styles['info-dialog-subtitle']}>{subTitle}</div>
       <div className={styles['info-dialog-actions']}>
-        <button
-          className="primary-button"
-          onClick={closeDialog}
-          type="submit"
-          ref={buttonRef}
-        >
+        <button className="primary-button" onClick={closeDialog} type="submit">
           {buttonText}
         </button>
       </div>

@@ -22,8 +22,7 @@
 .dialog-box-close {
   background-color: transparent;
   border: none;
-  position: absolute;
-  right: rem.torem(32px);
-  top: rem.torem(32px);
-  z-index: 1;
+  display: flex;
+  width: 100%;
+  justify-content: right;
 }
