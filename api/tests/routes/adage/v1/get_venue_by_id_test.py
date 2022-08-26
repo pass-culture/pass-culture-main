@@ -35,6 +35,10 @@ class Returns200Test:
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
+            "domains": [],
+            "interventionArea": ["75", "92"],
+            "network": None,
+            "statusId": None,
         }
 
 
