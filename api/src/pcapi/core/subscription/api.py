@@ -440,7 +440,7 @@ def _is_identity_check_activable(fraud_check: fraud_models.BeneficiaryFraudCheck
     return is_activable and is_age_compatible
 
 
-def _get_eligible_and_ok_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+def _get_activable_identity_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     """Finds latest created activable identity fraud check for a user."""
     identity_fraud_checks = sorted(
         [
@@ -455,34 +455,32 @@ def _get_eligible_and_ok_identity_fraud_check(user: users_models.User) -> fraud_
     return next((check for check in identity_fraud_checks if _is_identity_check_activable(check)), None)
 
 
-def _get_activable_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
-    """Return the activable fraud_check if the user succeded all steps"""
-    fraud_check = _get_eligible_and_ok_identity_fraud_check(user)
+def _has_completed_other_steps(user: users_models.User, activable_eligibility: users_models.EligibilityType) -> bool:
+    if _should_validate_phone(user, activable_eligibility):
+        return False
 
-    if not fraud_check:
-        return None
-
-    if _should_validate_phone(user, fraud_check.eligibilityType):
-        return None
-
-    subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)
+    subscription_item = get_user_profiling_subscription_item(user, activable_eligibility)
     if subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO):
-        return None
+        return False
 
-    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)
+    profile_completion = get_profile_completion_subscription_item(user, activable_eligibility)
     if profile_completion.status != models.SubscriptionItemStatus.OK:
-        return None
+        return False
 
-    if not fraud_api.has_performed_honor_statement(user, fraud_check.eligibilityType):  # type: ignore [arg-type]
-        return None
+    if not fraud_api.has_performed_honor_statement(user, activable_eligibility):
+        return False
 
-    return fraud_check
+    return True
 
 
 def activate_beneficiary_if_no_missing_step(user: users_models.User, always_update_attributes: bool = True) -> bool:
-    activable_fraud_check = _get_activable_identity_fraud_check(user)
+    activable_fraud_check = _get_activable_identity_check(user)
 
-    if not activable_fraud_check:
+    if (
+        not activable_fraud_check
+        or not activable_fraud_check.eligibilityType
+        or not _has_completed_other_steps(user, activable_fraud_check.eligibilityType)
+    ):
         if always_update_attributes:
             users_external.update_external_user(user)
         return False
@@ -499,7 +497,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User, always_upda
     users_api.update_user_information_from_external_source(user, source_data, commit=False)
 
     activate_beneficiary_for_eligibility(
-        user, activable_fraud_check.get_detailed_source(), activable_fraud_check.eligibilityType  # type: ignore [arg-type]
+        user, activable_fraud_check.get_detailed_source(), activable_fraud_check.eligibilityType
     )
 
     return True
