@@ -54,6 +54,11 @@ const FormVenue = ({
               href: 'https://passculture.typeform.com/to/VtKospEg',
               linkTitle: 'Faire une demande de référencement',
             },
+            {
+              href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
+              linkTitle:
+                'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
+            },
           ]}
         >
           Pour proposer des offres à destination d’un groupe, vous devez être

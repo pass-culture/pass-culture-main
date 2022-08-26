@@ -29,6 +29,7 @@
     height: rem.torem(20px);
     margin-right: rem.torem(8px);
     width: rem.torem(20px);
+    flex-shrink: 0;
   }
 
   &-primary {
