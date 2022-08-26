@@ -166,8 +166,8 @@ class GetBookingsTest:
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         # 1: get the user
-        # 1: get the bookings
-        # 1: rollback
+        # 2: get the bookings
+        # 3: rollback
         with assert_num_queries(3):
             response = test_client.get("/native/v1/bookings")
 
@@ -212,7 +212,6 @@ class GetBookingsTest:
                     "isDigital": True,
                     "isPermanent": False,
                     "name": used2.stock.offer.name,
-                    "url": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
                     "venue": {
                         "address": "1 boulevard Poissonnière",
                         "postalCode": "75000",
