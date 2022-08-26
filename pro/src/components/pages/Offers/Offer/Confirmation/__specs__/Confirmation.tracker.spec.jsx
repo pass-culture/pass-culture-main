@@ -10,6 +10,8 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { offerFactory } from 'utils/apiFactories'
 
+window.open = jest.fn()
+
 const mockLogEvent = jest.fn()
 
 jest.mock('utils/config', () => {
@@ -27,9 +29,11 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 describe('confirmation page', () => {
-  it('should track when click on offer creation button', async () => {
-    // Given
-    const categories = {
+  let categories
+  let offer
+
+  beforeEach(() => {
+    categories = {
       categories: [
         {
           id: 'ID',
@@ -58,7 +62,7 @@ describe('confirmation page', () => {
       ],
     }
     pcapi.loadCategories.mockResolvedValue(categories)
-    const offer = offerFactory({
+    offer = offerFactory({
       name: 'mon offre',
       status: 'DRAFT',
       venueId: 'VENUEID',
@@ -72,14 +76,18 @@ describe('confirmation page', () => {
       { id: 'AB', publicName: 'venue', name: 'venue' },
     ])
     pcapi.getUserValidatedOfferersNames.mockResolvedValue([])
+  })
 
-    // When
+  it('should track when clicking on offer creation button', async () => {
+    // Given
     await renderOffer({
       pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
-    // Then
+    // When
     await userEvent.click(screen.getByText('Créer une nouvelle offre'))
+
+    // Then
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
@@ -88,7 +96,53 @@ describe('confirmation page', () => {
         from: 'confirmation',
         isEdition: false,
         to: 'details',
-        used: 'ConfirmationButton',
+        used: 'ConfirmationButtonNewOffer',
+      }
+    )
+  })
+
+  it('should track when clicking on got to offers button', async () => {
+    // Given
+    await renderOffer({
+      pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
+    })
+
+    // When
+    await userEvent.click(screen.getByText('Voir la liste des offres'))
+
+    // Then
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'confirmation',
+        isEdition: false,
+        to: 'Offers',
+        used: 'ConfirmationButtonOfferList',
+      }
+    )
+  })
+
+  it('should track when clicking on view in app link', async () => {
+    // Given
+    await renderOffer({
+      pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
+    })
+
+    // When
+    await userEvent.click(screen.getByText('Visualiser dans l’app'))
+
+    // Then
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'confirmation',
+        isEdition: false,
+        to: 'AppPreview',
+        used: 'ConfirmationPreview',
       }
     )
   })
