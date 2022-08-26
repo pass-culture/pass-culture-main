@@ -473,7 +473,7 @@ def _has_completed_other_steps(user: users_models.User, activable_eligibility: u
     return True
 
 
-def activate_beneficiary_if_no_missing_step(user: users_models.User, always_update_attributes: bool = True) -> bool:
+def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     activable_fraud_check = _get_activable_identity_check(user)
 
     if (
@@ -481,8 +481,6 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User, always_upda
         or not activable_fraud_check.eligibilityType
         or not _has_completed_other_steps(user, activable_fraud_check.eligibilityType)
     ):
-        if always_update_attributes:
-            users_external.update_external_user(user)
         return False
 
     fraud_api.invalidate_fraud_check_if_duplicate(activable_fraud_check)
