@@ -4,9 +4,8 @@
 
 .button {
   @include fonts.button();
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
   border: rem.torem(2px) solid;
   border-radius: rem.torem(24px);
   height: rem.torem(40px);
