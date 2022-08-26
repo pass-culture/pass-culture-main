@@ -435,6 +435,17 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
             return min(self.dateCreated, registration_datetime)  # type: ignore [type-var, return-value]
         return self.dateCreated  # type: ignore [return-value]
 
+    @property
+    def applicable_eligibilities(self) -> list[users_models.EligibilityType]:
+        if (
+            self.type == FraudCheckType.UBBLE
+            and self.status == FraudCheckStatus.OK
+            and self.eligibilityType == users_models.EligibilityType.UNDERAGE
+        ):
+            return [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]
+
+        return [self.eligibilityType] if self.eligibilityType else []
+
 
 class OrphanDmsApplication(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     # This model is used to store fraud checks that were not associated with a user.
