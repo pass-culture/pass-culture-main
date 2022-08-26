@@ -55,12 +55,16 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   OFFERS_STOCKS = 'OffersStocks',
   OFFERS_PEN = 'OffersPen',
   BOOKINGS_TITLE = 'BookingsTitle',
+  SUMMARY_PREVIEW = 'SummaryPreview',
   CONFIRMATION_PREVIEW = 'ConfirmationPreview',
-  CONFIRMATION_BUTTON = 'ConfirmationButton',
+  CONFIRMATION_BUTTON_NEW_OFFER = 'ConfirmationButtonNewOffer',
+  CONFIRMATION_BUTTON_OFFER_LIST = 'ConfirmationButtonOfferList',
+  DETAILS_PREVIEW = 'DetailsPreview',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
   OFFER = 'Offer',
+  OFFERS = 'Offers',
   PREVIEW = 'AppPreview',
 }
 

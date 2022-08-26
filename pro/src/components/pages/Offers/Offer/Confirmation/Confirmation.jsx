@@ -10,6 +10,7 @@ import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOffe
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -22,7 +23,7 @@ const Confirmation = ({ offer, setOffer, reloadOffer }) => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.CONFIRMATION,
       to: OfferBreadcrumbStep.DETAILS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON_NEW_OFFER,
       isEdition: false,
     })
   }, [setOffer])
@@ -62,14 +63,43 @@ const Confirmation = ({ offer, setOffer, reloadOffer }) => {
           </p>
         </div>
       )}
+      <div className="display-in-app-link">
+        <DisplayOfferInAppLink
+          isTertiary
+          nonHumanizedId={offer.nonHumanizedId}
+          tracking={{
+            isTracked: true,
+            trackingFunction: () =>
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OfferBreadcrumbStep.CONFIRMATION,
+                to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
+                isEdition: false,
+              }),
+          }}
+        />
+      </div>
       <div className="oc-actions">
-        <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
         <Link
-          className="primary-link"
+          className="secondary-link"
           onClick={resetOffer}
           to={`/offre/creation/individuel${queryString}`}
         >
           Créer une nouvelle offre
+        </Link>
+        <Link
+          className="primary-link"
+          onClick={() =>
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.CONFIRMATION,
+              to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON_OFFER_LIST,
+              isEdition: false,
+            })
+          }
+          to={`/offres`}
+        >
+          Voir la liste des offres
         </Link>
       </div>
     </div>

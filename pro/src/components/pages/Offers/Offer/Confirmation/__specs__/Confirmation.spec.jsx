@@ -13,7 +13,7 @@ jest.mock('utils/config', () => {
 })
 
 describe('confirmation page', () => {
-  it('should display the rights information when offer is draft', async () => {
+  it('should display the rights information when offer is not pending', async () => {
     // Given
     const offer = offerFactory({
       name: 'mon offre',
@@ -47,6 +47,9 @@ describe('confirmation page', () => {
       'href',
       `/offre/creation/individuel?structure=${offer.venue.managingOffererId}&lieu=${offer.venueId}`
     )
+    expect(
+      screen.getByText('Voir la liste des offres', { selector: 'a' })
+    ).toHaveAttribute('href', `/offres`)
   })
 
   it('should display the rights information when offer is pending', async () => {
@@ -84,5 +87,8 @@ describe('confirmation page', () => {
       'href',
       `/offre/creation/individuel?structure=${offer.venue.managingOffererId}&lieu=${offer.venueId}`
     )
+    expect(
+      screen.getByText('Voir la liste des offres', { selector: 'a' })
+    ).toHaveAttribute('href', `/offres`)
   })
 })
