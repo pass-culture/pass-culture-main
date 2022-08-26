@@ -11,7 +11,8 @@
 
   .reset-filters {
     margin-bottom: rem.torem(36px);
-    text-align: right;
+    display: flex;
+    justify-content: end;
   }
 
   .pre-filters {

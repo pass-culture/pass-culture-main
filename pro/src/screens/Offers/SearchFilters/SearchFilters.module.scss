@@ -19,5 +19,6 @@
 
 .reset-filters {
   margin-top: rem.torem(24px);
-  text-align: right;
+  display: flex;
+  justify-content: end;
 }
