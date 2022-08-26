@@ -400,6 +400,67 @@ class NextStepTest:
         }
 
     @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=True,
+        ENABLE_PHONE_VALIDATION_IN_STEPPER=False,
+        ENABLE_USER_PROFILING=True,
+    )
+    def test_underage_ubble_ok_turned_18(self, client):
+        # User has already performed id check with Ubble for underage credit, 2 years ago
+        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
+            user = users_factories.UserFactory(
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=16, days=5),
+                activity="Employé",
+            )
+            # 15-17: no phone validation, no user profiling
+
+            # Perform profile completion
+            fraud_factories.ProfileCompletionFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            # Perform first id check with Ubble
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "honor-statement",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
+        }
+
+    @override_features(
         ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True,
         ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True,
         ENABLE_UBBLE=True,
