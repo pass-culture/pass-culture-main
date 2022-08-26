@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react'
 import Icon from 'components/layout/Icon'
 import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
+import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint/PricingPoint'
@@ -55,7 +56,7 @@ const ReimbursementFields = ({
         {!venueHaveSiret && !offererHaveVenueWithSiret ? (
           <InternalBanner
             to={createVenuePath}
-            icon="ico-external-site-filled"
+            Icon={ExternalSiteIcon}
             linkTitle="Créer un lieu avec SIRET"
           >
             Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous

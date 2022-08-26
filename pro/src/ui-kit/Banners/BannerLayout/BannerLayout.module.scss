@@ -43,9 +43,11 @@
   padding: rem.torem(16px);
 
   &-text {
-    margin-bottom: rem.torem(12px);
     line-height: rem.torem(20px);
     text-align: left;
+    &.with-margin {
+      margin-bottom: rem.torem(12px);
+    }
   }
 
   button {

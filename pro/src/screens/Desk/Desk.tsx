@@ -179,6 +179,7 @@ const Desk = ({
             },
           ]}
           type="notification-info"
+          className={styles['desk-banner']}
         >
           <strong>
             N’oubliez pas de vérifier l’identité du bénéficiaire avant de
