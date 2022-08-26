@@ -159,7 +159,7 @@ def get_bookings(user: User) -> BookingsResponse:
             )
         ],
     )
-    # TODO: remove this once the booking.stock.offer.url = booking.completedUrl hack in serialization is removed
+
     db.session.rollback()
     return result
 
