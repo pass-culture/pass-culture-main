@@ -1077,7 +1077,10 @@ class NeedsToPerformeIdentityCheckTest:
 class GetFirstRegistrationDateTest:
     def test_get_first_registration_date_no_check(self):
         user = users_factories.UserFactory()
-        assert subscription_api.get_first_registration_date(user, users_models.EligibilityType.UNDERAGE) is None
+        assert (
+            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            is None
+        )
 
     def test_get_first_registration_date_underage(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
@@ -1104,7 +1107,10 @@ class GetFirstRegistrationDateTest:
             resultContent=fraud_factories.DMSContentFactory(registration_datetime=d1),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        assert subscription_api.get_first_registration_date(user, users_models.EligibilityType.UNDERAGE) == d1
+        assert (
+            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            == d1
+        )
 
     def test_get_first_registration_date_age_18(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
@@ -1124,7 +1130,10 @@ class GetFirstRegistrationDateTest:
             resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        assert subscription_api.get_first_registration_date(user, users_models.EligibilityType.AGE18) == d2
+        assert (
+            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.AGE18)
+            == d2
+        )
 
     def test_with_uneligible_age_try(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
@@ -1145,7 +1154,10 @@ class GetFirstRegistrationDateTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        assert subscription_api.get_first_registration_date(user, users_models.EligibilityType.UNDERAGE) == d2
+        assert (
+            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            == d2
+        )
 
     def test_with_registration_before_opening_try(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
@@ -1166,7 +1178,10 @@ class GetFirstRegistrationDateTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        assert subscription_api.get_first_registration_date(user, users_models.EligibilityType.UNDERAGE) == d2
+        assert (
+            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            == d2
+        )
 
     def test_without_eligible_try(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
@@ -1179,7 +1194,10 @@ class GetFirstRegistrationDateTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        assert subscription_api.get_first_registration_date(user, users_models.EligibilityType.UNDERAGE) == None
+        assert (
+            subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
+            == None
+        )
 
 
 @pytest.mark.usefixtures("db_session")
