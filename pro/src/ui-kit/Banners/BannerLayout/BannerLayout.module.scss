@@ -40,18 +40,12 @@
 
   border-radius: rem.torem(6px);
   margin: rem.torem(16px) 0;
-  padding: rem.torem(7px) rem.torem(15px);
+  padding: rem.torem(16px);
 
   &-text {
-    margin: rem.torem(5px) 0;
+    margin-bottom: rem.torem(12px);
     line-height: rem.torem(20px);
     text-align: left;
-
-    &:not(:first-of-type) {
-      .bi-link {
-        margin-top: rem.torem(8px);
-      }
-    }
   }
 
   button {
@@ -62,20 +56,12 @@
 }
 
 .bi-link {
-  font-weight: 700;
-  display: flex;
-  align-items: flex-end;
+  &-item {
+    display: flex;
 
-  &:hover, &:focus {
-    text-decoration: underline;
-  }
-
-  img {
-    display: block;
-    flex: 0 1 rem.torem(25px);
-    height: rem.torem(24px);
-    margin-right: rem.torem(4px);
-    width: rem.torem(24px);
+    &:not(:last-of-type) {
+      margin-bottom: rem.torem(16px);
+    }
   }
 
   &.bi-external-link--mod-topright {

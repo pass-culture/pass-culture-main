@@ -76,8 +76,12 @@ const ApiKey = ({
         <h2 className="main-list-title-text">Gestion des clés API</h2>
       </div>
       <Banner
-        href="https://www.notion.so/passcultureapp/pass-Culture-Int-grations-techniques-231e16685c9a438b97bdcd7737cdd4d1"
-        linkTitle="En savoir plus sur les clés API"
+        links={[
+          {
+            href: 'https://www.notion.so/passcultureapp/pass-Culture-Int-grations-techniques-231e16685c9a438b97bdcd7737cdd4d1',
+            linkTitle: 'En savoir plus sur les clés API',
+          },
+        ]}
         type="notification-info"
       />
       <div className="title">

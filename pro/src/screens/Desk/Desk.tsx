@@ -172,8 +172,12 @@ const Desk = ({
           {message.message}
         </div>
         <Banner
-          href="https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU"
-          linkTitle="En savoir plus"
+          links={[
+            {
+              href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
+              linkTitle: 'En savoir plus',
+            },
+          ]}
           type="notification-info"
         >
           <strong>

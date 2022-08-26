@@ -175,18 +175,24 @@ const BankInformationWithBusinessUnit = ({
           )}
           {displayedBanners[CREATE_DMS_FILE_BANNER] && (
             <Banner
-              href={
-                DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL
-              }
-              linkTitle="Ajouter des coordonnées bancaires"
+              links={[
+                {
+                  href: DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
+                  linkTitle: 'Ajouter des coordonnées bancaires',
+                },
+              ]}
             >
               Pour ajouter de nouvelles coordonnées bancaires, rendez-vous sur
               Démarches Simplifiées.
             </Banner>
           )}
           <Banner
-            href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
-            linkTitle="En savoir plus sur les remboursements"
+            links={[
+              {
+                href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
+                linkTitle: 'En savoir plus sur les remboursements',
+              },
+            ]}
             type="notification-info"
           />
         </div>
