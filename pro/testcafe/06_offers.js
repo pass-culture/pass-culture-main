@@ -36,7 +36,7 @@ const noDisabilityCompliantCheckbox =
 const thumbnailButton = Selector('.of-placeholder')
 const submitButton = Selector('.actions-section .primary-button')
 const navBrandLogoItem = Selector('.nav-brand .logo')
-const exitOfferCreationMessage = Selector('h3').withText(
+const exitOfferCreationMessage = Selector('div').withText(
   'Voulez-vous quitter la création d’offre ?'
 )
 const exitOfferCreationDialogConfirmButton =

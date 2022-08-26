@@ -3,7 +3,8 @@ import React, { useCallback, useState } from 'react'
 
 import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
-import DialogBox from 'new_components/DialogBox/DialogBox'
+import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+import ConfirmDialog from 'new_components/ConfirmDialog'
 import {
   deleteOffererApiKey,
   generateOffererApiKey,
@@ -11,8 +12,6 @@ import {
 import { Banner } from 'ui-kit'
 import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
-
-import { ReactComponent as DeleteSvg } from './assets/illus-delete.svg'
 
 /* @debt duplicated "Gaël: delete icon import and regroup buttons within one component"*/
 
@@ -152,15 +151,16 @@ const ApiKey = ({
         {isGeneratingKey ? <SpinnerIcon /> : 'Générer une clé API'}
       </button>
       {!!apiKeyToDelete && (
-        <DialogBox
+        <ConfirmDialog
           extraClassNames="api-key-dialog"
           labelledBy="api-key-deletion-dialog"
-          onDismiss={changeApiKeyToDelete(null)}
+          onCancel={changeApiKeyToDelete(null)}
+          onConfirm={confirmApiKeyDeletion}
+          title="Êtes-vous sûr de vouloir supprimer votre clé API ?"
+          confirmText="Confirmer la suppression"
+          cancelText="Annuler"
+          icon={TrashIcon}
         >
-          <DeleteSvg />
-          <div className="title">
-            Êtes-vous sûr de vouloir supprimer votre clé API ?
-          </div>
           <div className="explanation">
             <p>
               Attention, si vous supprimez cette clé, et qu’aucune autre n’a été
@@ -169,23 +169,7 @@ const ApiKey = ({
             <br />
             <p>Cette action est irréversible.</p>
           </div>
-          <div className="actions">
-            <button
-              className="secondary-button"
-              onClick={changeApiKeyToDelete(null)}
-              type="button"
-            >
-              Annuler
-            </button>
-            <button
-              className="primary-button confirm"
-              onClick={confirmApiKeyDeletion}
-              type="button"
-            >
-              Confirmer la suppression
-            </button>
-          </div>
-        </DialogBox>
+        </ConfirmDialog>
       )}
     </div>
   )

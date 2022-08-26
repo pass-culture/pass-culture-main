@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
+import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
 
 const DeleteStockDialog = ({
   isEvent,
@@ -39,7 +38,7 @@ const DeleteStockDialog = ({
       title="Voulez-vous supprimer ce stock ?"
       confirmText="Supprimer"
       cancelText="Annuler"
-      icon={DeletionIcon}
+      icon={Trash}
     >
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}
