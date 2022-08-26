@@ -485,9 +485,6 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User, always_upda
             users_external.update_external_user(user)
         return False
 
-    if not users_api.is_eligible_for_beneficiary_upgrade(user, activable_fraud_check.eligibilityType):
-        raise exceptions.CannotUpgradeBeneficiaryRole()
-
     fraud_api.invalidate_fraud_check_if_duplicate(activable_fraud_check)
 
     if activable_fraud_check.status != fraud_models.FraudCheckStatus.OK:
