@@ -40,8 +40,15 @@ const BannerLayout = ({
         )}
         <div>
           {children && (
-            <div className={styles['bi-banner-text']}>{children}</div>
+            <div
+              className={cn(styles['bi-banner-text'], {
+                [styles['with-margin']]: !!linkNode,
+              })}
+            >
+              {children}
+            </div>
           )}
+
           {linkNode}
         </div>
       </div>

@@ -1,8 +1,7 @@
 import type { LocationDescriptor } from 'history'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { FunctionComponent, SVGProps } from 'react'
 
-import Icon from 'components/layout/Icon'
+import { ButtonLink } from 'ui-kit/Button'
 
 import BannerLayout from '../BannerLayout'
 import { IBannerLayoutProps } from '../BannerLayout/BannerLayout'
@@ -10,7 +9,11 @@ import styles from '../BannerLayout/BannerLayout.module.scss'
 
 interface IInternalBannerProps extends IBannerLayoutProps {
   extraClassName?: string
-  icon?: string
+  Icon?: FunctionComponent<
+    SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
   linkTitle: string
   subtitle?: string
   to?: LocationDescriptor
@@ -21,19 +24,20 @@ const InternalBanner = ({
   subtitle,
   children = null,
   to,
-  icon,
+  Icon,
   linkTitle,
   ...bannerLayoutProps
 }: IInternalBannerProps): JSX.Element => (
   <BannerLayout
     linkNode={
       to ? (
-        <p className={styles['bi-banner-text']}>
-          <Link to={to} className={styles['bi-link']}>
-            {icon && <Icon svg={icon} />}
-            {linkTitle}
-          </Link>
-        </p>
+        <ButtonLink
+          Icon={Icon}
+          link={{ isExternal: false, to }}
+          className={styles['bi-link']}
+        >
+          {linkTitle}
+        </ButtonLink>
       ) : undefined
     }
     className={extraClassName}

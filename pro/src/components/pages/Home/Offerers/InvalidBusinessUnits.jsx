@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
+import { ReactComponent as PenIcon } from 'icons/ico-outer-pen.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
@@ -22,7 +23,7 @@ const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
       <div className="h-card-content">
         <InternalBanner
           to={businessUnitRoutePath}
-          icon="ico-outer-pen"
+          Icon={PenIcon}
           linkTitle="Renseigner un SIRET de référence"
           targetLink="_self"
         >

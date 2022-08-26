@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import Venue from 'components/pages/Home/Venues/VenueLegacy'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import { ReactComponent as WhitePenIcon } from 'icons/ico-external-site-filled-white.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 interface IVenueListProps {
@@ -53,7 +54,7 @@ export const VenueList = ({
           type="new"
           to={bannerLocation}
           linkTitle="Renseigner ces informations"
-          icon="ico-external-site-filled-white"
+          Icon={WhitePenIcon}
           closable
           handleOnClick={() => setDisplayCollectiveDataBanner(false)}
         >
