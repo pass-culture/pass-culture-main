@@ -614,7 +614,7 @@ def decide_eligibility(
     )
     if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
         earliest_identity_check_date = subscription_api.get_first_registration_date(
-            user, users_models.EligibilityType.AGE18
+            user, birth_date, users_models.EligibilityType.AGE18
         )
         if earliest_identity_check_date:
             return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date)

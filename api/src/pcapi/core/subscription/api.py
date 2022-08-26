@@ -34,6 +34,13 @@ def get_latest_subscription_message(user: users_models.User) -> models.Subscript
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
 
 
+def _get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
+    first_registration_date = get_first_registration_date(user, user.dateOfBirth, eligibility)
+    if not first_registration_date or not user.dateOfBirth:
+        return None
+    return users_utils.get_age_at_date(user.dateOfBirth, first_registration_date)
+
+
 def activate_beneficiary_for_eligibility(
     user: users_models.User,
     deposit_source: str,
@@ -41,7 +48,7 @@ def activate_beneficiary_for_eligibility(
 ) -> users_models.User:
     if eligibility == users_models.EligibilityType.UNDERAGE:
         user.add_underage_beneficiary_role()
-        age_at_registration = get_age_at_first_registration(user, users_models.EligibilityType.UNDERAGE)
+        age_at_registration = _get_age_at_first_registration(user, users_models.EligibilityType.UNDERAGE)
 
         if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
             raise exceptions.InvalidAgeException(age=age_at_registration)
@@ -582,10 +589,12 @@ def _get_jouve_subscription_item_status(
 
 
 def get_first_registration_date(
-    user: users_models.User, eligibility: users_models.EligibilityType
+    user: users_models.User,
+    birth_date: datetime.date | datetime.datetime | None,
+    eligibility: users_models.EligibilityType,
 ) -> datetime.datetime | None:
     fraud_checks = user.beneficiaryFraudChecks
-    if not fraud_checks or not user.dateOfBirth:
+    if not fraud_checks or not birth_date:
         return None
 
     registration_dates_when_eligible = [
@@ -593,16 +602,9 @@ def get_first_registration_date(
         for fraud_check in fraud_checks
         if fraud_check.eligibilityType == eligibility
         and users_api.is_user_age_compatible_with_eligibility(
-            users_utils.get_age_at_date(user.dateOfBirth, fraud_check.get_min_date_between_creation_and_registration()),
+            users_utils.get_age_at_date(birth_date, fraud_check.get_min_date_between_creation_and_registration()),
             eligibility,
         )
     ]
 
     return min(registration_dates_when_eligible) if registration_dates_when_eligible else None
-
-
-def get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
-    first_registration_date = get_first_registration_date(user, eligibility)
-    if not first_registration_date or not user.dateOfBirth:
-        return None
-    return users_utils.get_age_at_date(user.dateOfBirth, first_registration_date)
