@@ -25,7 +25,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 import pcapi.notifications.push.testing as push_testing
-from pcapi.scripts.subscription.dms.import_dms_accepted_applications import import_dms_accepted_applications
+from pcapi.scripts.subscription.dms.import_dms_applications import import_dms_accepted_applications
 
 from tests.scripts.beneficiary import fixture
 
