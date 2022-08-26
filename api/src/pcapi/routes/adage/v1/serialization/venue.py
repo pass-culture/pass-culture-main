@@ -15,6 +15,14 @@ if TYPE_CHECKING:
     VenueModel = TypeVar("VenueModel", bound="BaseVenueModel")
 
 
+class VenueDomain(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class BaseVenueModel(BaseModel):
     name: str
     address: str | None
@@ -33,6 +41,10 @@ class BaseVenueModel(BaseModel):
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
+    domains: list[VenueDomain]
+    interventionArea: list[str] | None
+    network: list[str] | None
+    statusId: int | None
 
     @classmethod
     def from_orm(cls: "Type[VenueModel]", venue: Venue) -> "VenueModel":
@@ -52,6 +64,11 @@ class BaseVenueModel(BaseModel):
             venue.phoneNumber = venue.collectivePhone
         elif contact is not None:
             venue.phoneNumber = contact.phone_number
+
+        venue.domains = venue.collectiveDomains
+        venue.interventionArea = venue.collectiveInterventionArea
+        venue.network = venue.collectiveNetwork
+        venue.statusId = venue.venueEducationalStatusId
 
         return super().from_orm(venue)
 
