@@ -1601,7 +1601,7 @@ describe('stocks page', () => {
 
             // Then
             expect(
-              screen.getByLabelText('Voulez-vous supprimer ce stock ?')
+              screen.getByText('Voulez-vous supprimer ce stock ?')
             ).toBeInTheDocument()
             expect(
               queryByTextTrimHtml(
@@ -1622,9 +1622,6 @@ describe('stocks page', () => {
                 'L’ensemble des utilisateurs concernés sera automatiquement averti par e-mail.'
               )
             ).toBeInTheDocument()
-            expect(
-              screen.getByRole('button', { name: 'Supprimer' })
-            ).toHaveFocus()
           })
 
           it('should be able to delete a stock', async () => {
