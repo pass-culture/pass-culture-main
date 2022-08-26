@@ -1,3 +1,4 @@
+import pcapi.core.educational.factories as educational_factories
 from pcapi.core.offerers import factories as offerer_factories
 
 
@@ -40,10 +41,15 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_from_name_serialization(self, client, db_session) -> None:
+        domain1 = educational_factories.EducationalDomainFactory()
+        domain2 = educational_factories.EducationalDomainFactory()
         venue1 = offerer_factories.VenueFactory(
             name="a beautiful name",
             siret=None,
             comment="no siret",
+            collectiveDomains=[domain1, domain2],
+            collectiveInterventionArea=["75", "92"],
+            collectiveNetwork=["1"],
         )
 
         client.with_eac_token()
@@ -71,6 +77,10 @@ class Returns200Test:
                     "mentalDisabilityCompliant": False,
                     "motorDisabilityCompliant": False,
                     "visualDisabilityCompliant": False,
+                    "domains": [{"id": domain1.id, "name": domain1.name}, {"id": domain2.id, "name": domain2.name}],
+                    "interventionArea": ["75", "92"],
+                    "network": ["1"],
+                    "statusId": None,
                 }
             ]
         }
