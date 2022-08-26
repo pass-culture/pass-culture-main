@@ -9,13 +9,10 @@ export type StockResponseModel = {
   bookingsQuantity: number;
   dateCreated: string;
   dateModified: string;
-  educationalPriceDetail?: string | null;
   hasActivationCodes: boolean;
   id: string;
-  isEducationalStockEditable?: boolean | null;
   isEventDeletable: boolean;
   isEventExpired: boolean;
-  numberOfTickets?: number | null;
   offerId: string;
   price: number;
   quantity?: number | null;
