@@ -214,7 +214,11 @@ def get_identity_check_subscription_status(
     if eligibility is None:
         return models.SubscriptionItemStatus.VOID  # type: ignore [return-value]
 
-    identity_fraud_checks = fraud_repository.get_identity_fraud_checks_for_eligibility(user, eligibility)
+    identity_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES and eligibility in fraud_check.applicable_eligibilities
+    ]
 
     dms_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.DMS]
     educonnect_checks = [
