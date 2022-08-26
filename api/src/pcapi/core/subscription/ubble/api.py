@@ -22,6 +22,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
+from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 import pcapi.repository as pcapi_repository
 from pcapi.tasks import ubble_tasks
@@ -72,9 +73,12 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         ubble_tasks.store_id_pictures_task.delay(payload)
 
         try:
-            subscription_api.activate_beneficiary_if_no_missing_step(user=user)
+            is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
+
+        if not is_activated:
+            users_external.update_external_user(user)
 
     elif status in (
         ubble_fraud_models.UbbleIdentificationStatus.ABORTED,

@@ -21,6 +21,7 @@ from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
+from pcapi.core.users import external as users_external
 from pcapi.core.users.external import update_external_user
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
@@ -286,7 +287,9 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
         except phone_validation_exceptions.PhoneVerificationException:
             raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
 
-        subscription_api.activate_beneficiary_if_no_missing_step(user)
+        is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+        if not is_activated:
+            users_external.update_external_user(user)
 
 
 @blueprint.native_v1.route("/phone_validation/remaining_attempts", methods=["GET"])
@@ -391,7 +394,8 @@ def profiling_fraud_score(user: users_models.User, body: serializers.UserProfili
             extra={"sessionId": body.sessionId},
         )
         fraud_api.on_user_profiling_result(user, profiling_infos)
-        subscription_api.activate_beneficiary_if_no_missing_step(user, False)
+
+        subscription_api.activate_beneficiary_if_no_missing_step(user)
 
 
 @blueprint.native_v1.route("/user_profiling/session_id", methods=["GET"])
