@@ -63,6 +63,7 @@ class CollectiveOfferResponseModel(BaseModel):
     id: str
     isActive: bool
     isEditable: bool
+    isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
     subcategoryId: SubcategoryIdEnum
@@ -99,6 +100,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         id=humanize(offer.id),
         isActive=offer.isActive,
         isEditable=offer.isEditable,
+        isEducational=True,
         name=offer.name,
         stocks=serialized_stocks,
         thumbUrl=None,
