@@ -426,25 +426,39 @@ def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePage
     return models.MaintenancePageType.WITHOUT_DMS
 
 
+def _is_identity_check_activable(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    source_data = typing.cast(common_fraud_models.IdentityCheckContent, fraud_check.source_data())
+    birth_date = source_data.get_birth_date()
+
+    if not birth_date:
+        return False
+
+    user_age = users_utils.get_age_from_birth_date(birth_date)
+    is_activable = users_api.is_eligible_for_beneficiary_upgrade(fraud_check.user, fraud_check.eligibilityType)
+    is_age_compatible = users_api.is_user_age_compatible_with_eligibility(user_age, fraud_check.eligibilityType)
+
+    return is_activable and is_age_compatible
+
+
 def _get_eligible_and_ok_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     """Finds latest created activable identity fraud check for a user."""
-    fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)
+    identity_fraud_checks = sorted(
+        [
+            check
+            for check in user.beneficiaryFraudChecks
+            if check.type in fraud_models.IDENTITY_CHECK_TYPES and check.status == fraud_models.FraudCheckStatus.OK
+        ],
+        key=lambda fraud_check: fraud_check.dateCreated,
+        reverse=True,
+    )
 
-    for fraud_check in fraud_checks:
-        if (
-            fraud_check.status == fraud_models.FraudCheckStatus.OK
-            and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-            and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
-            and users_api.is_user_age_compatible_with_eligibility(user.age, fraud_check.eligibilityType)
-        ):
-            return fraud_check
-
-    return None
+    return next((check for check in identity_fraud_checks if _is_identity_check_activable(check)), None)
 
 
 def _get_activable_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     """Return the activable fraud_check if the user succeded all steps"""
     fraud_check = _get_eligible_and_ok_identity_fraud_check(user)
+
     if not fraud_check:
         return None
 
