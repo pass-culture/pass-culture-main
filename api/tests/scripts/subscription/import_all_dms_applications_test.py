@@ -8,7 +8,7 @@ from pcapi.connectors.dms import factories as dms_factories
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.users.factories as users_factories
-from pcapi.scripts.subscription.dms.import_dms_accepted_applications import import_all_updated_dms_applications
+from pcapi.scripts.subscription.dms.import_dms_applications import import_all_updated_dms_applications
 
 from tests.scripts.beneficiary import fixture
 
