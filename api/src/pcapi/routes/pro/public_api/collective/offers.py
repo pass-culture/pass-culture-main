@@ -61,6 +61,7 @@ def get_collective_offers_public(
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
+    tags=["API offres collectives"],
     resp=SpectreeResponse(
         **(
             BASE_CODE_DESCRIPTIONS
