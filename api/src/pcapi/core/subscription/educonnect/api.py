@@ -8,6 +8,7 @@ from pcapi.core.mails.transactional.users import duplicate_beneficiary
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 
 from . import exceptions
@@ -40,10 +41,13 @@ def handle_educonnect_authentication(
 
     if fraud_check.status == fraud_models.FraudCheckStatus.OK:
         try:
-            subscription_api.activate_beneficiary_if_no_missing_step(user=user)
+            is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
         except Exception:
             logger.exception("Error while activating user from Educonnect", extra={"user_id": user.id})
             raise exceptions.EduconnectSubscriptionException()
+
+        if not is_activated:
+            users_external.update_external_user(user)
     else:
         _handle_validation_errors(user, fraud_check, educonnect_user)
         logger.warning(

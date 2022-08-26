@@ -17,6 +17,7 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.dms import models as dms_types
+from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.repository import find_user_by_email
@@ -360,6 +361,7 @@ def _process_accepted_application(
 
     if not has_completed_all_steps:
         dms_subscription_emails.send_complete_subscription_after_dms_email(user.email)
+        users_external.update_external_user(user)
 
 
 def _handle_validation_errors(
