@@ -13,6 +13,7 @@ from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions.models import Permissions
 from pcapi.core.subscription import models as subscription_models
@@ -43,11 +44,11 @@ def create_bunch_of_accounts():
         phoneNumber="+33756273849",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
-    pro = users_factories.ProFactory(
-        firstName="Gérard", lastName="Mentor", email="gm@example.com", phoneNumber="0246813579"
+    pro = users_factories.ProFactory(  # associated with no offerer
+        firstName="Gérard", lastName="Mentor", email="gm@example.com", phoneNumber="+33246813579"
     )
     random = users_factories.UserFactory(
-        firstName="Anne", lastName="Algézic", email="aa@example.net", phoneNumber="0606060606"
+        firstName="Anne", lastName="Algézic", email="aa@example.net", phoneNumber="+33606060606"
     )
     no_address = users_factories.UserFactory(
         firstName="Jean-Luc",
@@ -61,6 +62,13 @@ def create_bunch_of_accounts():
     users_factories.UserFactory(
         firstName="Anne", lastName="Autre", email="autre@example.com", phoneNumber="+33780000000"
     )
+
+    # Pro account should not be returned
+    pro_user = users_factories.ProFactory(firstName="Gérard", lastName="Flaille", email="pro@example.net")
+    offerers_factories.UserOffererFactory(user=pro_user)
+
+    # Beneficiary which is also hired by a pro should be returned
+    offerers_factories.UserOffererFactory(user=grant_18)
 
     return underage, grant_18, pro, random, no_address
 
@@ -331,6 +339,33 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_young_but_also_pro(self, client):
+        # given
+        # She has started subscription process, but is also hired by an offerer
+        young_and_pro = users_factories.UserFactory(
+            firstName="Maud",
+            lastName="Zarella",
+            email="mz@example.com",
+            dateOfBirth=datetime.date.today() - relativedelta(years=16, days=5),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=young_and_pro, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
+        offerers_factories.UserOffererFactory(user=young_and_pro)
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=young_and_pro.email),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 1
+        assert_user_equals(response.json["data"][0], young_and_pro)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_without_permission(self, client):

@@ -42,7 +42,7 @@ SUBSCRIPTION_ITEM_METHODS = [
 )
 @perm_utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
 def search_public_account(
-    query: serialization.PublicAccountSearchQuery,
+    query: serialization.SearchQuery,
 ) -> serialization.ListPublicAccountsResponseModel:
     terms = query.q.split()
     sorts = query.sort.split(",") if query.sort else None
