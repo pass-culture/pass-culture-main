@@ -64,11 +64,6 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersListResponseModel",
                     "type": "array",
                 },
-                "CollectiveOffersListStudentLevelsResponseModel": {
-                    "items": {"$ref": "#/components/schemas/CollectiveOffersStudentLevelResponseModel"},
-                    "title": "CollectiveOffersListStudentLevelsResponseModel",
-                    "type": "array",
-                },
                 "CollectiveOffersListVenuesResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
                     "title": "CollectiveOffersListVenuesResponseModel",
@@ -83,15 +78,6 @@ def test_public_api(client, app):
                     },
                     "required": ["id", "beginningDatetime", "status", "venueId"],
                     "title": "CollectiveOffersResponseModel",
-                    "type": "object",
-                },
-                "CollectiveOffersStudentLevelResponseModel": {
-                    "properties": {
-                        "id": {"title": "Id", "type": "string"},
-                        "name": {"title": "Name", "type": "string"},
-                    },
-                    "required": ["id", "name"],
-                    "title": "CollectiveOffersStudentLevelResponseModel",
                     "type": "object",
                 },
                 "CollectiveOffersVenueResponseModel": {
@@ -602,35 +588,6 @@ def test_public_api(client, app):
                     "tags": ["API Contremarque"],
                 }
             },
-            "/v2/collective-offers/student-levels": {
-                "get": {
-                    "description": "",
-                    "operationId": "ListStudentsLevels",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/CollectiveOffersListStudentLevelsResponseModel"
-                                    }
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
-                    "tags": [],
-                }
-            },
             "/v2/collective/categories": {
                 "get": {
                     "description": "",
@@ -645,10 +602,9 @@ def test_public_api(client, app):
                                     }
                                 }
                             },
-                            "description": "OK",
+                            "description": "La liste des catégories éligibles existantes.",
                         },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
+                        "401": {"description": "Authentification nécessaire"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -657,7 +613,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des catégories d'offres proposées.",
-                    "tags": [],
+                    "tags": ["API offres collectives"],
                 }
             },
             "/v2/collective/domains": {
@@ -672,10 +628,9 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/CollectiveOffersListDomainsResponseModel"}
                                 }
                             },
-                            "description": "OK",
+                            "description": "La liste des domaines d'éducation.",
                         },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
+                        "401": {"description": "Authentification nécessaire"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -684,7 +639,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
-                    "tags": [],
+                    "tags": ["API offres collectives"],
                 }
             },
             "/v2/collective/educational-institutions/": {
@@ -744,10 +699,10 @@ def test_public_api(client, app):
                                     }
                                 }
                             },
-                            "description": "OK",
+                            "description": "La liste des établissement scolaires éligibles.",
                         },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
+                        "400": {"description": "Requête malformée"},
+                        "401": {"description": "Authentification nécessaire"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -756,7 +711,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste établissements scolaires.",
-                    "tags": [],
+                    "tags": ["API offres collectives"],
                 }
             },
             "/v2/collective/offers/": {
@@ -887,7 +842,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récuperation de l'offre collective avec l'identifiant offer_id.",
-                    "tags": [],
+                    "tags": ["API offres collectives"],
                 },
                 "patch": {
                     "description": "",
@@ -934,9 +889,35 @@ def test_public_api(client, app):
                     "tags": ["API offres collectives"],
                 },
             },
+            "/v2/collective/student-levels": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListStudentsLevels",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListDomainsResponseModel"}
+                                }
+                            },
+                            "description": "La liste des domaines d'éducation.",
+                        },
+                        "401": {"description": "Authentification nécessaire"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
+                    "tags": ["API offres collectives"],
+                }
+            },
             "/v2/collective/venues": {
                 "get": {
-                    "description": "Tous les lieux enregistrés, physiques ou virtuels, sont listés ici avec leurs coordonnées.",
+                    "description": "Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.",
                     "operationId": "ListVenues",
                     "parameters": [],
                     "responses": {
@@ -946,10 +927,9 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"}
                                 }
                             },
-                            "description": "OK",
+                            "description": "La liste des lieux ou vous pouvez créer une offre.",
                         },
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
+                        "401": {"description": "Authentification nécessaire"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -958,7 +938,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
-                    "tags": [],
+                    "tags": ["API offres collectives"],
                 }
             },
             "/v2/venue/{venue_id}/stocks": {

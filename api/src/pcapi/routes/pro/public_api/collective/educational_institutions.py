@@ -2,16 +2,27 @@ from pcapi.core.educational import api as educational_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprint.pro_public_api_v2.route("/collective/educational-institutions/", methods=["GET"])
 @api_key_required
 @spectree_serialize(
-    on_success_status=200,
-    on_error_statuses=[401],
-    response_model=public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel,
     api=blueprint.pro_public_schema_v2,
+    tags=["API offres collectives"],
+    resp=SpectreeResponse(
+        **(
+            {
+                "HTTP_200": (
+                    public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel,
+                    "La liste des établissement scolaires éligibles.",
+                ),
+                "HTTP_400": (None, "Requête malformée"),
+                "HTTP_401": (None, "Authentification nécessaire"),
+            }
+        )
+    ),
 )
 def list_educational_institutions(
     query: public_api_collective_offers_serialize.GetListEducationalInstitutionsQueryModel,
