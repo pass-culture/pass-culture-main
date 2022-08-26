@@ -426,21 +426,28 @@ def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePage
     return models.MaintenancePageType.WITHOUT_DMS
 
 
-def _is_identity_check_activable(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+def _get_activable_eligibility(fraud_check: fraud_models.BeneficiaryFraudCheck) -> users_models.EligibilityType | None:
     source_data = typing.cast(common_fraud_models.IdentityCheckContent, fraud_check.source_data())
     birth_date = source_data.get_birth_date()
 
     if not birth_date:
-        return False
+        return None
 
     user_age = users_utils.get_age_from_birth_date(birth_date)
-    is_activable = users_api.is_eligible_for_beneficiary_upgrade(fraud_check.user, fraud_check.eligibilityType)
-    is_age_compatible = users_api.is_user_age_compatible_with_eligibility(user_age, fraud_check.eligibilityType)
 
-    return is_activable and is_age_compatible
+    for eligibility in fraud_check.applicable_eligibilities:
+        is_activable = users_api.is_eligible_for_beneficiary_upgrade(fraud_check.user, eligibility)
+        is_age_compatible = users_api.is_user_age_compatible_with_eligibility(user_age, eligibility)
+
+        if is_activable and is_age_compatible:
+            return eligibility
+
+    return None
 
 
-def _get_activable_identity_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+def _get_activable_identity_check(
+    user: users_models.User,
+) -> tuple[fraud_models.BeneficiaryFraudCheck, users_models.EligibilityType] | None:
     """Finds latest created activable identity fraud check for a user."""
     identity_fraud_checks = sorted(
         [
@@ -451,8 +458,12 @@ def _get_activable_identity_check(user: users_models.User) -> fraud_models.Benef
         key=lambda fraud_check: fraud_check.dateCreated,
         reverse=True,
     )
+    for fraud_check in identity_fraud_checks:
+        eligibility = _get_activable_eligibility(fraud_check)
+        if eligibility:
+            return fraud_check, eligibility
 
-    return next((check for check in identity_fraud_checks if _is_identity_check_activable(check)), None)
+    return None
 
 
 def _has_completed_other_steps(user: users_models.User, activable_eligibility: users_models.EligibilityType) -> bool:
@@ -474,13 +485,14 @@ def _has_completed_other_steps(user: users_models.User, activable_eligibility: u
 
 
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
-    activable_fraud_check = _get_activable_identity_check(user)
+    activable_fraud_check_and_eligibility = _get_activable_identity_check(user)
 
-    if (
-        not activable_fraud_check
-        or not activable_fraud_check.eligibilityType
-        or not _has_completed_other_steps(user, activable_fraud_check.eligibilityType)
-    ):
+    if not activable_fraud_check_and_eligibility:
+        return False
+
+    activable_fraud_check, activable_eligibility = activable_fraud_check_and_eligibility
+
+    if not _has_completed_other_steps(user, activable_eligibility):
         return False
 
     fraud_api.invalidate_fraud_check_if_duplicate(activable_fraud_check)
@@ -491,9 +503,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     source_data = typing.cast(common_fraud_models.IdentityCheckContent, activable_fraud_check.source_data())
     users_api.update_user_information_from_external_source(user, source_data, commit=False)
 
-    activate_beneficiary_for_eligibility(
-        user, activable_fraud_check.get_detailed_source(), activable_fraud_check.eligibilityType
-    )
+    activate_beneficiary_for_eligibility(user, activable_fraud_check.get_detailed_source(), activable_eligibility)
 
     return True
 

@@ -1393,3 +1393,54 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert not subscription_api.activate_beneficiary_if_no_missing_step(user)
         assert not user.is_beneficiary
+
+    def test_underage_ubble_valid_for_18(self):
+        identity_firstname = "Yolan"
+        identity_lastname = "Mac Doumy"
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName=identity_firstname,
+            lastName=identity_lastname,
+        )
+        identity_birth_date = date.today() - relativedelta(years=18, months=3, days=1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                first_name=identity_firstname,
+                last_name=identity_lastname,
+                birth_date=identity_birth_date.isoformat(),
+            ),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        is_success = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_success
+        assert user.is_beneficiary
+        assert user.firstName == identity_firstname
+        assert user.lastName == identity_lastname
+        assert user.dateOfBirth.date() == identity_birth_date
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        )
