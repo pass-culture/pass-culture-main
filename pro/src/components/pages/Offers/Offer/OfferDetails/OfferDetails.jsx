@@ -3,12 +3,19 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
+} from 'core/FirebaseEvents/constants'
 import { useGetCategories } from 'core/Offers/adapters'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
@@ -41,6 +48,7 @@ const OfferDetails = ({
   const [thumbnailError, setThumbnailError] = useState(false)
   const [thumbnailMsgError, setThumbnailMsgError] = useState('')
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+  const { logEvent } = useAnalytics()
 
   const {
     data: categoriesData,
@@ -278,7 +286,19 @@ const OfferDetails = ({
               <OfferPreview offerPreviewData={offerPreviewData} />
             </div>
             {!isCreatingOffer ? (
-              <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
+              <DisplayOfferInAppLink
+                nonHumanizedId={offer.nonHumanizedId}
+                tracking={{
+                  isTracked: true,
+                  trackingFunction: () =>
+                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                      from: OfferBreadcrumbStep.DETAILS,
+                      to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                      used: OFFER_FORM_NAVIGATION_MEDIUM.DETAILS_PREVIEW,
+                      isEdition: true,
+                    }),
+                }}
+              />
             ) : null}
           </div>
         )}
