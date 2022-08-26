@@ -6,3 +6,4 @@ def install_routes(app: Flask) -> None:
     from . import accounts
     from . import auth
     from . import permissions
+    from . import pro
