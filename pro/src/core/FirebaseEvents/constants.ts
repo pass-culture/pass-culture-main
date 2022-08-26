@@ -63,7 +63,6 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
-  OFFER = 'Offer',
   OFFERS = 'Offers',
   PREVIEW = 'AppPreview',
 }

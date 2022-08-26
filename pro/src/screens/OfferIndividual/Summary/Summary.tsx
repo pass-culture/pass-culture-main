@@ -207,7 +207,7 @@ const Summary = ({
                   onClick={() =>
                     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OfferBreadcrumbStep.SUMMARY,
-                      to: OFFER_FORM_NAVIGATION_OUT.OFFER,
+                      to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
                       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
                       isEdition: !isCreation,
                     })
@@ -235,7 +235,19 @@ const Summary = ({
           <OfferAppPreview {...preview} />
           {!isCreation && (
             <div className={styles['offer-preview-app-link']}>
-              <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
+              <DisplayOfferInAppLink
+                nonHumanizedId={offer.nonHumanizedId}
+                tracking={{
+                  isTracked: true,
+                  trackingFunction: () =>
+                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                      from: OfferBreadcrumbStep.SUMMARY,
+                      to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                      used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
+                      isEdition: true,
+                    }),
+                }}
+              />
             </div>
           )}
         </SummaryLayout.Side>
