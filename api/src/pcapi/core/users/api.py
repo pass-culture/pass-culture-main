@@ -775,12 +775,14 @@ def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: m
     return False
 
 
-def search_public_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+def _filter_user_accounts(
+    accounts: BaseQuery, terms: typing.Iterable[str], order_by: list[str] | None = None
+) -> BaseQuery:
     filters = []
     name_terms: list[str] = []
 
     if not terms:
-        return models.User.query.filter(False)
+        return accounts.filter(False)
 
     for term in terms:
         if not term:
@@ -827,7 +829,7 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
         filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
     # each result must match all terms in any column
-    accounts = models.User.query.filter(*filters)
+    accounts = accounts.filter(*filters)
 
     if order_by:
         try:
@@ -848,6 +850,35 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
         accounts = accounts.order_by(models.User.id)
 
     return accounts
+
+
+def search_public_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+    # There is no fully reliable condition to be sure that a user account is used as a public account (vs only pro).
+    # In Flask-Admin backoffice, the difference was made from user_offerer table, which turns the user into a "pro"
+    # account ; the same filter is kept here.
+    # However, some young users, including beneficiaries, work for organizations and are associated with offerers
+    # using the same email as their personal account. So let's include "pro" users who are beneficiaries or have at
+    # least started subscription process.
+    public_accounts = (
+        models.User.query.outerjoin(offerers_models.UserOfferer)
+        .outerjoin(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            sa.or_(
+                offerers_models.UserOfferer.userId.is_(None),
+                models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
+                sa.not_(fraud_models.BeneficiaryFraudCheck.userId.is_(None)),
+            )
+        )
+        .distinct(models.User.id)
+        .from_self()
+    )
+    return _filter_user_accounts(public_accounts, terms, order_by=order_by)
+
+
+def search_pro_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+    # Any account which is associated with at least one offerer
+    pro_accounts = models.User.query.join(offerers_models.UserOfferer).distinct(models.User.id).from_self()
+    return _filter_user_accounts(pro_accounts, terms, order_by=order_by)
 
 
 def skip_phone_validation_step(user: models.User) -> None:

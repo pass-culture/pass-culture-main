@@ -73,7 +73,7 @@ class PaginableQuery(BaseModel):
     sort: str | None = None
 
 
-class PublicAccountSearchQuery(PaginableQuery):
+class SearchQuery(PaginableQuery):
     q: str
 
 
@@ -202,3 +202,24 @@ class PublicHistoryItem(BaseModel):
 
 class PublicHistoryResponseModel(BaseModel):
     history: list[PublicHistoryItem]
+
+
+class ProUserPayload(BaseModel):
+    class Config:
+        orm_mode = True
+        use_enum_values = True
+
+    firstName: str | None
+    lastName: str | None
+    email: str
+    phoneNumber: str | None
+
+
+class ProResult(BaseModel):
+    resourceType: str  # "proUser" or "venue" or "offerer"
+    id: int
+    payload: ProUserPayload
+
+
+class SearchProResponseModel(PaginatedResponse):
+    data: list[ProResult]
