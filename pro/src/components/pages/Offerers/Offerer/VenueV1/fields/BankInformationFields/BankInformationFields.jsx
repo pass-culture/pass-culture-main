@@ -50,8 +50,12 @@ const BankInformation = ({ venue, offerer }) => {
                 Aucune coordonnée bancaire renseignée
               </p>
               <Banner
-                href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
-                linkTitle="Renseignez les coordonnées bancaires du lieu"
+                links={[
+                  {
+                    href: DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL,
+                    linkTitle: 'Renseignez les coordonnées bancaires du lieu',
+                  },
+                ]}
               >
                 Renseignez vos coordonnées bancaires pour ce lieu pour être
                 remboursé de vos offres éligibles
@@ -59,8 +63,12 @@ const BankInformation = ({ venue, offerer }) => {
             </Fragment>
           )}
           <Banner
-            href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
-            linkTitle="En savoir plus sur les remboursements"
+            links={[
+              {
+                href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
+                linkTitle: 'En savoir plus sur les remboursements',
+              },
+            ]}
             type="notification-info"
           />
         </div>

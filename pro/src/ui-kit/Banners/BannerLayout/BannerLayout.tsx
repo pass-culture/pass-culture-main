@@ -42,7 +42,6 @@ const BannerLayout = ({
           {children && (
             <div className={styles['bi-banner-text']}>{children}</div>
           )}
-
           {linkNode}
         </div>
       </div>

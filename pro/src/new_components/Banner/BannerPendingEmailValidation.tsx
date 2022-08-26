@@ -10,8 +10,12 @@ interface Props {
 
 const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
   <Banner
-    href="https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-"
-    linkTitle="Je n'ai pas reçu le lien de confirmation"
+    links={[
+      {
+        href: 'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-',
+        linkTitle: "Je n'ai pas reçu le lien de confirmation",
+      },
+    ]}
     type="attention"
   >
     Pour valider ce changement, un lien de confirmation valable 24 heures vous a

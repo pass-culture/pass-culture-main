@@ -1,17 +1,17 @@
 import cn from 'classnames'
 import type { LocationDescriptor } from 'history'
-import React, { MouseEventHandler } from 'react'
+import React, { MouseEventHandler, HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, SharedButtonProps } from './types'
 
-type InternalLinkProps = {
+type InternalLinkProps = Omit<HTMLProps<HTMLLinkElement>, 'onClick'> & {
   isExternal: false
   to: LocationDescriptor
 }
 
-type ExternalLinkProps = {
+type ExternalLinkProps = Omit<HTMLProps<HTMLAnchorElement>, 'onClick'> & {
   isExternal: true
   to: string
 }
@@ -23,6 +23,10 @@ interface IButtonProps extends SharedButtonProps {
   onClick?: MouseEventHandler<HTMLAnchorElement>
 }
 
+const linkIsExternal = (
+  link: InternalLinkProps | ExternalLinkProps
+): link is ExternalLinkProps => link.isExternal
+
 const ButtonLink = ({
   className,
   children,
@@ -31,7 +35,6 @@ const ButtonLink = ({
   onClick,
   variant = ButtonVariant.TERNARY,
   link,
-  ...linkAttrs
 }: IButtonProps): JSX.Element => {
   const classNames = cn(
     styles['button'],
@@ -40,25 +43,29 @@ const ButtonLink = ({
     className
   )
 
-  return link.isExternal ? (
-    <a
-      className={classNames}
-      href={link.to}
-      onClick={e => {
-        isDisabled ? e.preventDefault() : onClick?.(e)
-      }}
-      {...linkAttrs}
-      {...(isDisabled ? { 'aria-disabled': true } : {})}
-    >
-      {Icon && <Icon className={styles['button-icon']} />}
-      {children}
-    </a>
-  ) : (
+  if (linkIsExternal(link)) {
+    const { to, ...linkProps } = link
+    return (
+      <a
+        className={classNames}
+        href={to}
+        onClick={e => {
+          isDisabled ? e.preventDefault() : onClick?.(e)
+        }}
+        {...(isDisabled ? { 'aria-disabled': true } : {})}
+        {...linkProps}
+      >
+        {Icon && <Icon className={styles['button-icon']} />}
+        {children}
+      </a>
+    )
+  }
+
+  return (
     <Link
       className={classNames}
       onClick={e => (isDisabled ? e.preventDefault() : onClick?.(e))}
       to={link.to}
-      {...linkAttrs}
       {...(isDisabled ? { 'aria-disabled': true } : {})}
     >
       {Icon && <Icon className={styles['button-icon']} />}

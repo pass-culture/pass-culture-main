@@ -49,8 +49,12 @@ const FormVenue = ({
       </FormLayout.Row>
       {isEligible === false && offerersOptions.length !== 0 && (
         <Banner
-          href="https://passculture.typeform.com/to/VtKospEg"
-          linkTitle="Faire une demande de référencement"
+          links={[
+            {
+              href: 'https://passculture.typeform.com/to/VtKospEg',
+              linkTitle: 'Faire une demande de référencement',
+            },
+          ]}
         >
           Pour proposer des offres à destination d’un groupe, vous devez être
           référencé auprès du ministère de l’Éducation Nationale et du ministère
@@ -60,8 +64,12 @@ const FormVenue = ({
 
       {venuesOptions.length === 0 && offerersOptions.length !== 0 && (
         <Banner
-          href={`/structures/${values.offererId}/lieux/creation`}
-          linkTitle="Renseigner un lieu"
+          links={[
+            {
+              href: `/structures/${values.offererId}/lieux/creation`,
+              linkTitle: 'Renseigner un lieu',
+            },
+          ]}
         >
           Pour proposer des offres à destination d’un groupe, vous devez
           renseigner un lieu pour pouvoir être remboursé.

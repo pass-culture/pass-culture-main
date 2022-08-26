@@ -26,15 +26,23 @@ const BankInformations = ({
       <div className="h-card-content">
         {hasRejectedOrDraftOffererBankInformations ? (
           <Banner
-            href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
-            linkTitle="Voir le dossier"
+            links={[
+              {
+                href: `https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`,
+                linkTitle: 'Voir le dossier',
+              },
+            ]}
           >
             Votre dossier est en cours pour cette structure
           </Banner>
         ) : (
           <Banner
-            href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
-            linkTitle="Renseigner des coordonnées bancaires"
+            links={[
+              {
+                href: DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
+                linkTitle: 'Renseigner des coordonnées bancaires',
+              },
+            ]}
           >
             Certains de vos lieux ne sont pas rattachés à des coordonnées
             bancaires. Pour percevoir les remboursements liés aux offres de ces

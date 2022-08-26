@@ -11,8 +11,12 @@ import { CGU_URL } from 'utils/config'
 const OfferStatusBanner = ({ status }) => {
   return status === OFFER_STATUS_REJECTED ? (
     <Banner
-      href={CGU_URL}
-      linkTitle="Consulter les Conditions Générales d’Utilisation"
+      links={[
+        {
+          href: CGU_URL,
+          linkTitle: 'Consulter les Conditions Générales d’Utilisation',
+        },
+      ]}
     >
       Votre offre a été refusée car elle ne respecte pas les Conditions
       Générales d’Utilisation du pass. Un e-mail contenant les conditions

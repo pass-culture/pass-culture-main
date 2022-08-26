@@ -17,6 +17,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { ReactComponent as CircledRightArrow } from 'icons/ico-right-circle-arrow.svg'
 import GoBackLink from 'new_components/GoBackLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
@@ -525,9 +526,14 @@ const VenueEdition = () => {
         !venue.businessUnit.siret && (
           <Banner
             className="banner-invalid-bu"
-            href={`/structures/${offererId}/point-de-remboursement/`}
-            icon="ico-right-circle-arrow"
-            linkTitle="Rattacher votre lieu à un point de remboursement valide"
+            links={[
+              {
+                href: `/structures/${offererId}/point-de-remboursement/`,
+                Icon: CircledRightArrow,
+                linkTitle:
+                  'Rattacher votre lieu à un point de remboursement valide',
+              },
+            ]}
           >
             Ce lieu n’est pas rattaché à un point de remboursement valide. Pour
             continuer à percevoir vos remboursements, veuillez renseigner un

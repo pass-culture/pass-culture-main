@@ -8,8 +8,7 @@ import Banner, { IBannerProps } from '../Banner'
 describe('src | components | layout | Banner', () => {
   describe('render', () => {
     const props: IBannerProps = {
-      href: '/some/site',
-      linkTitle: 'linkTitle',
+      links: [{ href: '/some/site', linkTitle: 'linkTitle' }],
     }
 
     it('should render the Banner with the default props', () => {
@@ -21,10 +20,11 @@ describe('src | components | layout | Banner', () => {
 
       // then
       expect(screen.getByText(message)).toBeInTheDocument()
-      expect(screen.getByRole('img')).toBeInTheDocument()
-      const link = screen.getByRole('link', { name: props.linkTitle })
+      const link = screen.getByRole('link', {
+        name: props.links?.[0]?.linkTitle,
+      })
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', props.href)
+      expect(link).toHaveAttribute('href', props.links?.[0]?.href)
       expect(link).toHaveAttribute('target', '_blank')
       expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     })

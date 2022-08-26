@@ -12,8 +12,12 @@ jest.mock('utils/config', () => ({
 const expectReimbursementBannerToBePresent = wrapper => {
   expect(wrapper.find('Banner').last().props()).toStrictEqual({
     type: 'notification-info',
-    linkTitle: 'En savoir plus sur les remboursements',
-    href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
+    links: [
+      {
+        linkTitle: 'En savoir plus sur les remboursements',
+        href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
+      },
+    ],
   })
 }
 
@@ -70,8 +74,12 @@ describe('src | Offerer | BankInformation', () => {
     // then
     expect(wrapper.find('Banner').first().props()).toStrictEqual({
       children: 'Votre dossier est en cours pour cette structure',
-      linkTitle: 'Accéder au dossier',
-      href: 'https://www.demarches-simplifiees.fr/dossiers/12',
+      links: [
+        {
+          linkTitle: 'Accéder au dossier',
+          href: 'https://www.demarches-simplifiees.fr/dossiers/12',
+        },
+      ],
     })
     expectReimbursementBannerToBePresent(wrapper)
   })
