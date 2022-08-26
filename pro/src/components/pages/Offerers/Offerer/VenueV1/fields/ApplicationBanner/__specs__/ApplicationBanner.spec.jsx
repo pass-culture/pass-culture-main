@@ -17,8 +17,12 @@ describe('when offerer has no bank informations', () => {
     expect(wrapper.find('Banner').props()).toStrictEqual({
       children:
         'Les coordonnées bancaires de votre lieu sont en cours de validation par notre service financier.',
-      linkTitle: 'Voir le dossier en cours',
-      href: 'https://www.demarches-simplifiees.fr/dossiers/12',
+      links: [
+        {
+          linkTitle: 'Voir le dossier en cours',
+          href: 'https://www.demarches-simplifiees.fr/dossiers/12',
+        },
+      ],
       type: 'notification-info',
     })
   })

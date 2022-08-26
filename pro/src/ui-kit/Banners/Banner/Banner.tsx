@@ -1,51 +1,71 @@
-import cn from 'classnames'
-import React from 'react'
+import React, { FunctionComponent, SVGProps } from 'react'
 
-import Icon from 'components/layout/Icon'
+import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
+import { ButtonLink } from 'ui-kit/Button'
 
 import BannerLayout from '../BannerLayout'
 import { IBannerLayoutProps } from '../BannerLayout/BannerLayout'
 import styles from '../BannerLayout/BannerLayout.module.scss'
 
-export interface IBannerProps extends IBannerLayoutProps {
-  icon?: string
-  href?: string
-  linkTitle?: string
-  children?: React.ReactNode | React.ReactNode[]
+type Link = {
+  Icon?: FunctionComponent<
+    SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
+  href: string
+  linkTitle: string
   targetLink?: string
   hideLinkIcon?: boolean
 }
+export interface IBannerProps extends IBannerLayoutProps {
+  children?: React.ReactNode | React.ReactNode[]
+  links?: Link[]
+}
 
 const Banner = ({
-  icon = 'ico-external-site',
-  href,
-  linkTitle,
   children,
-  targetLink = '_blank',
-  hideLinkIcon = false,
+  links = [],
   ...bannerLayoutProps
-}: IBannerProps): JSX.Element => (
-  <BannerLayout
-    linkNode={
-      href &&
-      linkTitle && (
-        <p className={styles['bi-banner-text']}>
-          <a
-            className={cn(styles['bi-link'])}
-            href={href}
-            rel="noopener noreferrer"
-            target={targetLink}
-          >
-            {!hideLinkIcon && <Icon svg={icon} />}
-            {linkTitle}
-          </a>
-        </p>
+}: IBannerProps): JSX.Element => {
+  const getLinkNode = (link: Link) => (
+    <ButtonLink
+      link={{
+        isExternal: true,
+        to: link.href,
+        target: link.targetLink || '_blank',
+        rel: 'noopener noreferrer',
+      }}
+      Icon={link.hideLinkIcon ? undefined : link.Icon || ExternalSiteIcon}
+      className={styles['bi-link']}
+    >
+      {link.linkTitle}
+    </ButtonLink>
+  )
+
+  const getLinksNode = () => {
+    if (links.length > 1) {
+      return (
+        <ul>
+          {links.map(link => {
+            return (
+              <li key={link.href} className={styles['bi-link-item']}>
+                {getLinkNode(link)}
+              </li>
+            )
+          })}
+        </ul>
       )
     }
-    {...bannerLayoutProps}
-  >
-    {children}
-  </BannerLayout>
-)
+
+    return links[0] && getLinkNode(links[0])
+  }
+
+  return (
+    <BannerLayout linkNode={getLinksNode()} {...bannerLayoutProps}>
+      {children}
+    </BannerLayout>
+  )
+}
 
 export default Banner

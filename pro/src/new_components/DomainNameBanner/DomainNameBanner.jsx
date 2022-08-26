@@ -37,7 +37,6 @@ export const DomainNameBanner = () => {
       className="domain-name-banner"
       closable
       handleOnClick={closeBanner}
-      linkTitle={"Consulter les Conditions Générales d'Utilisation"}
       type="attention"
     >
       Notre nom de domaine évolue ! Vous avez été automatiquement redirigé

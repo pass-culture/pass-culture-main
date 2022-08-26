@@ -5,6 +5,7 @@ import { api } from 'apiClient/api'
 import Icon from 'components/layout/Icon'
 import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
+import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import Button from 'ui-kit/Button/Button'
@@ -59,10 +60,14 @@ const PricingPoint = ({
       </div>
       {!readOnly && !venue.pricingPoint && isBannerVisible && (
         <Banner
-          href={`https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`}
-          linkTitle="En savoir plus sur les barèmes de remboursement"
+          links={[
+            {
+              href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
+              linkTitle: 'En savoir plus sur les barèmes de remboursement',
+              Icon: ExternalSiteIcon,
+            },
+          ]}
           type="notification-info"
-          icon={'ico-external-site-filled'}
         >
           Si vous souhaitez vous faire rembourser les offres de votre lieu sans
           SIRET, vous devez sélectionner un lieu avec SIRET dans votre structure

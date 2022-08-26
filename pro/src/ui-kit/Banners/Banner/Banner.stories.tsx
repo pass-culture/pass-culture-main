@@ -26,8 +26,16 @@ Light.args = { type: 'light', closable: true }
 
 export const WithLink = Template.bind({})
 WithLink.args = {
-  href: 'https://pro.testing.passculture.team',
-  linkTitle: 'Lien vers le pass culture',
+  links: [
+    {
+      href: 'https://pro.testing.passculture.team',
+      linkTitle: 'Lien vers le pass culture',
+    },
+    {
+      href: '#',
+      linkTitle: 'Un autre lien',
+    },
+  ],
   closable: false,
   type: 'notification-info',
 }

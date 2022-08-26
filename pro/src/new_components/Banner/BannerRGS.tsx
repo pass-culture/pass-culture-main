@@ -11,8 +11,12 @@ const BannerRGS = ({ closable = false, onClose }: Props): JSX.Element => (
   <Banner
     closable={closable}
     handleOnClick={() => onClose?.()}
-    href="https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-"
-    linkTitle="Consulter nos recommandations de sécurité"
+    links={[
+      {
+        href: 'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-',
+        linkTitle: 'Consulter nos recommandations de sécurité',
+      },
+    ]}
     type="attention"
   >
     <strong>Soyez vigilant !</strong>

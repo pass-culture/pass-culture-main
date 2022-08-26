@@ -46,8 +46,12 @@ const BankInformation = ({ offerer, hasBusinessUnitError }) => (
     ) : (
       offerer.demarchesSimplifieesApplicationId && (
         <Banner
-          href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
-          linkTitle="Accéder au dossier"
+          links={[
+            {
+              href: `https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`,
+              linkTitle: 'Accéder au dossier',
+            },
+          ]}
         >
           Votre dossier est en cours pour cette structure
         </Banner>
@@ -57,8 +61,12 @@ const BankInformation = ({ offerer, hasBusinessUnitError }) => (
       <InvalidBusinessUnits hasTitle={false} offererId={offerer.id} />
     )}
     <Banner
-      href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
-      linkTitle="En savoir plus sur les remboursements"
+      links={[
+        {
+          href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
+          linkTitle: 'En savoir plus sur les remboursements',
+        },
+      ]}
       type="notification-info"
     />
   </div>

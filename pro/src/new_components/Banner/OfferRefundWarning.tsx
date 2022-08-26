@@ -6,8 +6,12 @@ import { CGU_URL } from 'utils/config'
 const OfferRefundWarning = () => {
   return (
     <Banner
-      href={CGU_URL}
-      linkTitle={"Consulter les Conditions Générales d'Utilisation"}
+      links={[
+        {
+          href: CGU_URL,
+          linkTitle: "Consulter les Conditions Générales d'Utilisation",
+        },
+      ]}
       type="attention"
     >
       Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus
