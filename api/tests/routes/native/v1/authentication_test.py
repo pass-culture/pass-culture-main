@@ -492,7 +492,7 @@ def test_validate_email_dms_orphan(execute_query, client):
     assert user.isEmailValidated
     assert response.status_code == 200
 
-    fraud_check = subscription_api._get_eligible_and_ok_identity_fraud_check(user)
+    fraud_check = subscription_api._get_activable_identity_check(user)
     assert fraud_check is not None
 
 

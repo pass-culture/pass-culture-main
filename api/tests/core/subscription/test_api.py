@@ -732,148 +732,6 @@ class CommonSubscritpionTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class GetActivableFraudCheckTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
-    UNDERAGE_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
-
-    def eligible_user(
-        self,
-        validate_phone: bool,
-        city: typing.Optional[str] = "Quito",
-        activity: typing.Optional[users_models.ActivityEnum] = "Étudiant",
-        is_underage: bool = False,
-    ):
-        phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
-        return users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE if not is_underage else self.UNDERAGE_ELIGIBLE_BIRTH_DATE,
-            phoneValidationStatus=phone_validation_status,
-            city=city,
-            activity=activity,
-        )
-
-    def test_no_missing_step(self):
-        user = self.eligible_user(validate_phone=True)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
-        )
-        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-
-        assert subscription_api._get_activable_identity_fraud_check(user) == identity_fraud_check
-
-    def test_no_missing_step_underage(self):
-        user = self.eligible_user(validate_phone=False, is_underage=True)
-        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-        fraud_factories.ProfileCompletionFraudCheckFactory(
-            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
-        )
-
-        assert subscription_api._get_activable_identity_fraud_check(user) == identity_fraud_check
-
-    @override_features(ENABLE_USER_PROFILING=False)
-    def test_no_missing_step_with_user_profiling_disabled(self):
-        user = self.eligible_user(validate_phone=True)
-
-        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-
-        assert subscription_api._get_activable_identity_fraud_check(user) == identity_fraud_check
-
-    @override_features(ENABLE_USER_PROFILING=False)
-    def test_missing_step_with_user_profiling_disabled_but_profiling_ko(self):
-        user = self.eligible_user(validate_phone=True)
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.KO
-        )
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert subscription_api._get_activable_identity_fraud_check(user) is None
-
-    @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_missing_step(self):
-        user = self.eligible_user(validate_phone=False)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert subscription_api._get_activable_identity_fraud_check(user) is None
-
-    @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_rejected_import(self):
-        user = self.eligible_user(validate_phone=False)
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.KO
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert subscription_api._get_activable_identity_fraud_check(user) is None
-
-    @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_missing_all(self):
-        user = self.eligible_user(validate_phone=False)
-
-        assert subscription_api._get_activable_identity_fraud_check(user) is None
-
-    def test_missing_userprofiling_after_dms_application(self):
-        user = self.eligible_user(validate_phone=True)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-        assert not subscription_api._get_activable_identity_fraud_check(user)
-
-    def test_missing_profile_after_dms_application(self):
-        user = self.eligible_user(validate_phone=True, city=None)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert not subscription_api._get_activable_identity_fraud_check(user)
-
-
-@pytest.mark.usefixtures("db_session")
 class SubscriptionItemTest:
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
@@ -1419,3 +1277,119 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert to_invalidate_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
         assert user.firstName is None
         assert user.lastName is None
+
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    UNDERAGE_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
+
+    def eligible_user(
+        self,
+        validate_phone: bool,
+        city: typing.Optional[str] = "Quito",
+        activity: typing.Optional[users_models.ActivityEnum] = "Étudiant",
+        is_underage: bool = False,
+    ):
+        phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
+        return users_factories.UserFactory(
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE if not is_underage else self.UNDERAGE_ELIGIBLE_BIRTH_DATE,
+            phoneValidationStatus=phone_validation_status,
+            city=city,
+            activity=activity,
+        )
+
+    def test_activation_success_underage(self):
+        user = self.eligible_user(validate_phone=False, is_underage=True)
+        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                first_name="Léo",
+                last_name="Nard",
+                birth_date=self.UNDERAGE_ELIGIBLE_BIRTH_DATE,
+            ),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
+
+        is_success = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_success
+        assert user.is_beneficiary
+        assert user.firstName == "Léo"
+        assert user.lastName == "Nard"
+        assert user.dateOfBirth.date() == self.UNDERAGE_ELIGIBLE_BIRTH_DATE.date()
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value
+        )
+        assert user.deposit.source == f"dossier FraudCheckType.EDUCONNECT [{identity_fraud_check.thirdPartyId}]"
+        assert user.deposit.amount == 30
+
+    @override_features(ENABLE_USER_PROFILING=False)
+    def test_no_missing_step_with_user_profiling_disabled(self):
+        user = self.eligible_user(validate_phone=True, is_underage=False)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        assert subscription_api.activate_beneficiary_if_no_missing_step(user)
+        assert user.is_beneficiary
+
+    @override_features(ENABLE_USER_PROFILING=False)
+    def test_missing_step_with_user_profiling_disabled_but_profiling_ko(self):
+        user = self.eligible_user(validate_phone=True, is_underage=False)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.KO
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert not subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+    @override_features(ENABLE_PHONE_VALIDATION=False)
+    def test_rejected_identity(self):
+        user = self.eligible_user(validate_phone=False)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.KO
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        assert not subscription_api.activate_beneficiary_if_no_missing_step(user)
+        assert not user.is_beneficiary
+
+    def test_missing_profile_after_dms_application(self):
+        user = self.eligible_user(validate_phone=True, city=None)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert not subscription_api.activate_beneficiary_if_no_missing_step(user)
+        assert not user.is_beneficiary
