@@ -14,17 +14,11 @@ export type CollectiveOfferResponseModel = {
   interventionArea: Array<string>;
   isActive: boolean;
   isEditable: boolean;
-  isEducational: boolean;
-  isEvent: boolean;
-  isShowcase?: boolean | null;
-  isThing: boolean;
+  isShowcase: boolean;
   name: string;
-  offerId?: string | null;
-  productIsbn?: string | null;
   status: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
-  thumbUrl?: string | null;
   venue: ListOffersVenueResponseModel;
   venueId: string;
 };
