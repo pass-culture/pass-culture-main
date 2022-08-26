@@ -23,7 +23,7 @@ RECREDIT_BATCH_SIZE = 1000
 
 def has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
     first_registration_datetime = subscription_api.get_first_registration_date(
-        user, users_models.EligibilityType.UNDERAGE
+        user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE
     )
     if first_registration_datetime is None:
         logger.error("No registration date for user to be recredited", extra={"user_id": user.id})
