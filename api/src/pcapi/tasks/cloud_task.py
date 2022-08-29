@@ -11,9 +11,9 @@ from google.api_core import retry
 from google.api_core.exceptions import AlreadyExists
 from google.cloud import tasks_v2
 from google.protobuf import timestamp_pb2  # type: ignore [import]
-import requests
 
 from pcapi import settings
+from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
