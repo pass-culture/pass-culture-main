@@ -4,6 +4,7 @@ import { DialogContent, DialogOverlay } from '@reach/dialog'
 import React, { FunctionComponent } from 'react'
 
 import CloseButton from './CloseButton'
+import styles from './DialogBox.module.scss'
 
 interface DialogProps {
   extraClassNames?: string
@@ -28,7 +29,11 @@ const DialogBox: FunctionComponent<DialogProps> = ({
     onDismiss={onDismiss}
   >
     <DialogContent aria-labelledby={labelledBy} className="dialog-box-content">
-      {hasCloseButton && <CloseButton onCloseClick={onDismiss} />}
+      {hasCloseButton && (
+        <span className={styles['dialog-box-close-container']}>
+          <CloseButton onCloseClick={onDismiss} />
+        </span>
+      )}
       <section className={extraClassNames}>{children}</section>
     </DialogContent>
   </DialogOverlay>
