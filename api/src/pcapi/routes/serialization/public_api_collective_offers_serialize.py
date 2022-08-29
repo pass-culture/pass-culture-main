@@ -15,6 +15,16 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
+class AuthErrorResponseModel(BaseModel):
+    # only used as documentation for openapi
+    errors: dict[str, str]
+
+
+class ErrorResponseModel(BaseModel):
+    # only used as documentation for openapi
+    errors: dict[str, list[str]]
+
+
 class ListCollectiveOffersQueryModel(BaseModel):
     status: OfferStatus | None
     venue_id: int | None
@@ -142,7 +152,7 @@ class CollectiveOffersResponseModel(BaseModel):
         return cls(
             id=offer.id,
             beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
-            status=offer.status.name,  # type: ignore [attr-defined]
+            status=offer.status.value,  # type: ignore [attr-defined]
             venueId=offer.venueId,
         )
 
@@ -282,7 +292,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             domains=[domain.name for domain in offer.domains],
             durationMinutes=offer.durationMinutes,
             interventionArea=offer.interventionArea,
-            students=[student.name for student in offer.students],
+            students=[student.value for student in offer.students],
             dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),
             hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
             isActive=offer.isActive,

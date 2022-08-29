@@ -1,5 +1,8 @@
+from typing import cast
+
 from pcapi.core.educational import api as educational_api
 from pcapi.routes.pro import blueprint
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -18,8 +21,14 @@ from pcapi.validation.routes.users_authentifications import api_key_required
                     public_api_collective_offers_serialize.CollectiveOffersListEducationalInstitutionResponseModel,
                     "La liste des établissement scolaires éligibles.",
                 ),
-                "HTTP_400": (None, "Requête malformée"),
-                "HTTP_401": (None, "Authentification nécessaire"),
+                "HTTP_400": (
+                    cast(BaseModel, public_api_collective_offers_serialize.ErrorResponseModel),
+                    "Requête malformée",
+                ),
+                "HTTP_401": (
+                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    "Authentification nécessaire",
+                ),
             }
         )
     ),
