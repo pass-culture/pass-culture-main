@@ -234,18 +234,16 @@ class NextStepTest:
         ENABLE_USER_PROFILING=True,
     )
     @pytest.mark.parametrize(
-        "underage_fraud_check_status,underage_ubble_status",
+        "underage_fraud_check_status",
         [
-            (fraud_models.FraudCheckStatus.PENDING, ubble_fraud_models.UbbleIdentificationStatus.PROCESSING),
-            (fraud_models.FraudCheckStatus.OK, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.KO, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.SUSPICIOUS, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.CANCELED, ubble_fraud_models.UbbleIdentificationStatus.ABORTED),
-            (None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSING),
-            (None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
+            fraud_models.FraudCheckStatus.PENDING,
+            fraud_models.FraudCheckStatus.KO,
+            fraud_models.FraudCheckStatus.SUSPICIOUS,
+            fraud_models.FraudCheckStatus.CANCELED,
+            None,
         ],
     )
-    def test_next_subscription_full_ubble_turned_18(self, client, underage_fraud_check_status, underage_ubble_status):
+    def test_underage_not_ok_turned_18(self, client, underage_fraud_check_status):
         # User has already performed id check with Ubble for underage credit (successfully or not), 2 years ago
         with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
             user = users_factories.UserFactory(
@@ -266,7 +264,6 @@ class NextStepTest:
                 user=user,
                 type=fraud_models.FraudCheckType.UBBLE,
                 status=underage_fraud_check_status,
-                resultContent=fraud_factories.UbbleContentFactory(status=underage_ubble_status),
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
 
