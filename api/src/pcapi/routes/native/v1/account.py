@@ -151,7 +151,7 @@ def update_cultural_survey(user: users_models.User, body: serializers.CulturalSu
             user.needsToFillCulturalSurvey = False
         if body.cultural_survey_id:
             logger.info("User %s updated cultural survey", user.id, extra={"actor": user.id})
-            user.culturalSurveyId = body.cultural_survey_id  # type: ignore [call-overload]
+            user.culturalSurveyId = body.cultural_survey_id
             user.culturalSurveyFilledDate = datetime.utcnow()
     return
 

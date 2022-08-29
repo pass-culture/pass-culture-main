@@ -36,7 +36,7 @@ mypy==0.941
 notion-client==0.9.0
 openpyxl
 pgcli # a tool not used in code. There is no point in pinning its version
-phonenumberslite==8.12.23
+phonenumberslite==8.12.*
 Pillow>=8.1.1
 pydantic[email]==1.9.1
 PyJWT[crypto]==2.4.0

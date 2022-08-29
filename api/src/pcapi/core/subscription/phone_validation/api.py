@@ -36,7 +36,7 @@ def _check_phone_number_validation_is_authorized(user: users_models.User) -> Non
         raise exceptions.UserAlreadyBeneficiary
 
 
-def _check_phone_number_is_legit(user: users_models.User, phone_number: str, country_code: str) -> None:
+def _check_phone_number_is_legit(user: users_models.User, phone_number: str, country_code: int | None) -> None:
     if phone_number in settings.BLACKLISTED_SMS_RECIPIENTS:
         fraud_api.handle_blacklisted_sms_recipient(user, phone_number)
         raise exceptions.InvalidPhoneNumber()

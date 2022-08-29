@@ -11,6 +11,6 @@ class PhoneNumberValidator:
         value = field.data
         if value:
             try:
-                phone_number.parse_phone_number(value, "FR")
+                phone_number.parse_phone_number(value)
             except phone_validation_exceptions.InvalidPhoneNumber:
                 raise ValidationError("Numéro de téléphone invalide")
