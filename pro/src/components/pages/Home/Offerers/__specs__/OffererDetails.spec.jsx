@@ -988,11 +988,11 @@ describe('offererDetailsLegacy', () => {
         managedVenues: [
           {
             ...physicalVenue,
-            hasReimbursementPoint: false,
+            hasMissingReimbursementPoint: true,
           },
           {
             ...physicalVenueWithPublicName,
-            hasReimbursementPoint: true,
+            hasMissingReimbursementPoint: false,
           },
         ],
       }
@@ -1017,11 +1017,11 @@ describe('offererDetailsLegacy', () => {
         managedVenues: [
           {
             ...physicalVenue,
-            hasReimbursementPoint: true,
+            hasMissingReimbursementPoint: false,
           },
           {
             ...physicalVenueWithPublicName,
-            hasReimbursementPoint: true,
+            hasMissingReimbursementPoint: false,
           },
         ],
       }

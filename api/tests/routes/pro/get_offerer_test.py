@@ -85,7 +85,7 @@ def test_basics(client):
                 "city": venue.city,
                 "comment": venue.comment,
                 "departementCode": venue.departementCode,
-                "hasReimbursementPoint": bool(venue.current_reimbursement_point_id),
+                "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
                 "id": humanize(venue.id),
                 "isValidated": venue.isValidated,
                 "isVirtual": venue.isVirtual,
@@ -133,3 +133,31 @@ def test_unauthorized_offerer(client):
     response = client.get(f"/offerers/{humanize(offerer.id)}")
 
     assert response.status_code == 403
+
+
+def test_serialize_venue_has_missing_reimbursement_point(client):
+    pro = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer, reimbursement_point=None, name="A - Venue without reimbursement point"
+    )
+    venue_with_pending_application = offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        reimbursement_point=None,
+        name="B - Venue without reimbursement point with pending application",
+    )
+    finance_factories.BankInformationFactory(venue=venue_with_pending_application, applicationId=4, status="DRAFT")
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer, name="C - Venue with reimbursement point", reimbursement_point="self"
+    )
+
+    offerer_id = offerer.id
+    client = client.with_session_auth(pro.email)
+
+    response = client.get(f"/offerers/{humanize(offerer_id)}")
+    assert response.status_code == 200
+    assert response.json["managedVenues"][0]["hasMissingReimbursementPoint"] == True
+    assert response.json["managedVenues"][1]["hasMissingReimbursementPoint"] == False
+    assert response.json["managedVenues"][2]["hasMissingReimbursementPoint"] == False
