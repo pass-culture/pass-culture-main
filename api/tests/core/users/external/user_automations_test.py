@@ -245,7 +245,8 @@ class UserAutomationsTest:
         assert mock_import_contacts.call_args.args[0].update_existing_contacts == True
         assert mock_import_contacts.call_args.args[0].empty_contacts_attributes == False
 
-        mock_get_process.assert_called()
+        # Not called because we do no longer wait for import completed
+        mock_get_process.assert_not_called()
 
         assert result is True
 
