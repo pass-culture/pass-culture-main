@@ -52,7 +52,7 @@ const UserPasswordForm = ({
               <PasswordInput
                 name="oldPassword"
                 label="Mot de passe actuel"
-                placeholder="Mon mot de passe actuel"
+                placeholder="Votre mot de passe actuel"
                 renderTooltip={false}
               />
             </FormLayout.Row>
@@ -60,7 +60,7 @@ const UserPasswordForm = ({
               <PasswordInput
                 name="newPassword"
                 label="Nouveau mot de passe"
-                placeholder="Mon nouveau mot de pass"
+                placeholder="Votre nouveau mot de passe"
                 renderTooltip={false}
               />
             </FormLayout.Row>
@@ -68,7 +68,7 @@ const UserPasswordForm = ({
               <PasswordInput
                 name="newConfirmationPassword"
                 label="Confirmer votre nouveau mot de passe"
-                placeholder="Mon nouveau mot de pass"
+                placeholder="Votre nouveau mot de passe"
                 renderTooltip={false}
               />
             </FormLayout.Row>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { IUserIdentityFormValues } from 'new_components/UserIdentityForm/types'
 
 import { Forms } from './constants'
@@ -8,6 +9,7 @@ import UserEmail, { IUserEmailInitialValues } from './UserEmail/UserEmail'
 import { UserIdentity } from './UserIdentity'
 import { UserPassword } from './UserPassword'
 import { UserPhone } from './UserPhone'
+import styles from './UserProfile.module.scss'
 
 interface IUserProfileProps {
   userIdentityInitialValues: IUserIdentityFormValues
@@ -23,7 +25,8 @@ const UserProfile = ({
   const [currentForm, setCurrentForm] = useState<Forms | null>(null)
   return (
     <>
-      <h1>Profil</h1>
+      <PageTitle title="Profil" />
+      <h1 className={styles['profil-title']}>Profil</h1>
       <UserIdentity
         setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
         initialValues={userIdentityInitialValues}

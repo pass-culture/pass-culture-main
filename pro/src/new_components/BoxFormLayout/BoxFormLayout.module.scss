@@ -3,21 +3,22 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 
 .box-form-layout {
-  margin-bottom: rem.torem(16px);
-}
-
-.profile-form-description-banner {
-  margin: rem.torem(16px);
+  margin-bottom: rem.torem(24px);
 }
 
 .box-form-layout-header-title {
   margin-bottom: rem.torem(8px);
-}
-
-.box-form-layout-header-subtitle {
   color: colors.$grey-dark;
 }
 
 .box-form-layout-fields {
   width: rem.torem(400px);
+}
+
+.box-form-layout-form-header {
+  margin-bottom: rem.torem(16px);
+}
+
+.box-form-layout-form-header-secondary {
+  color: colors.$grey-dark;
 }

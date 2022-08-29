@@ -94,7 +94,6 @@ class ProUpdateEmailTest:
                 "password": "does_not_matter",
             },
         )
-        print(response.json)
         assert response.status_code == 204
 
         assert pro.email == self.origin_email
@@ -107,7 +106,7 @@ class ProUpdateEmailTest:
         MAX_EMAIL_UPDATE_ATTEMPTS email update change within the last
         N days.
         """
-        self.send_two_requests(client, "Trop de tentatives")
+        self.send_two_requests(client, "Trop de tentatives, réessayez dans 24 heures")
 
     @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=2)
     def test_token_exists(self, app, client):

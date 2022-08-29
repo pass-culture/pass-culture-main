@@ -31,7 +31,7 @@ const UserIdentity = ({
         ) : (
           <BoxFormLayout.Header
             subtitle={`${initialValues.firstName} ${initialValues.lastName}`}
-            title="Prénom et Nom"
+            title="Prénom et nom"
           />
         )}
       </BoxRounded>

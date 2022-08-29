@@ -128,13 +128,13 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
         errors.add_error("email", "Une demande de modification d'adresse e-mail est déjà en cours")
         raise errors from exc
     except users_exceptions.EmailUpdateInvalidPassword as exc:
-        errors.add_error("password", "Mot de passe invalide")
+        errors.add_error("password", "Votre mot de passe est incorrect")
         raise errors from exc
     except users_exceptions.InvalidEmailError as exc:
-        errors.add_error("email", "Adresse email invalide")
+        errors.add_error("email", "Votre adresse e-mail est invalide")
         raise errors from exc
     except users_exceptions.EmailUpdateLimitReached as exc:
-        errors.add_error("email", "Trop de tentatives")
+        errors.add_error("email", "Trop de tentatives, réessayez dans 24 heures")
         raise errors from exc
     except users_exceptions.EmailExistsError:
         # Returning an error message might help the end client find
