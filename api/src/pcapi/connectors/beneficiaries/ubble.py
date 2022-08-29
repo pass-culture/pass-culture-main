@@ -3,20 +3,19 @@ import typing
 import urllib.parse
 
 from pydantic import networks as pydantic_networks
-from requests import exceptions as requests_exceptions
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
-from pcapi.utils import requests as requests_utils
+from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
 
 
-def configure_session() -> requests_utils.Session:
-    session = requests_utils.Session()
+def configure_session() -> requests.Session:
+    session = requests.Session()
     session.auth = (settings.UBBLE_CLIENT_ID, settings.UBBLE_CLIENT_SECRET)
     session.headers.update(
         {
@@ -124,7 +123,7 @@ def start_identification(
 
     try:
         response = session.post(build_url("/identifications/"), json=data)
-    except (urllib3_exceptions.HTTPError, requests_exceptions.RequestException) as e:
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
@@ -136,7 +135,7 @@ def start_identification(
                 "request_type": "start-identification",
             },
         )
-        raise requests_utils.ExternalAPIException(is_retryable=True) from e
+        raise requests.ExternalAPIException(is_retryable=True) from e
 
     if not response.ok:
         # https://ubbleai.github.io/developer-documentation/#errors
@@ -154,7 +153,7 @@ def start_identification(
                     "response_text": response.text,
                 },
             )
-            raise requests_utils.ExternalAPIException(is_retryable=True)
+            raise requests.ExternalAPIException(is_retryable=True)
 
         core_logging.log_for_supervision(
             logger,
@@ -168,7 +167,7 @@ def start_identification(
             },
         )
 
-        raise requests_utils.ExternalAPIException(is_retryable=False)
+        raise requests.ExternalAPIException(is_retryable=False)
 
     content = _extract_useful_content_from_response(response.json())
     core_logging.log_for_supervision(
@@ -196,14 +195,14 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
 
     try:
         response = session.get(build_url(f"/identifications/{identification_id}/"))
-    except (urllib3_exceptions.HTTPError, requests_exceptions.RequestException) as e:
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
             "Ubble get-content: Network error",
             extra={"exception": e, "error_type": "http"} | base_extra_log,
         )
-        raise requests_utils.ExternalAPIException(is_retryable=True) from e
+        raise requests.ExternalAPIException(is_retryable=True) from e
 
     if not response.ok:
         if response.status_code >= 500 or response.status_code == 429:
@@ -215,7 +214,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
                 extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
                 | base_extra_log,
             )
-            raise requests_utils.ExternalAPIException(is_retryable=True)
+            raise requests.ExternalAPIException(is_retryable=True)
 
         core_logging.log_for_supervision(
             logger,
@@ -224,7 +223,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
             extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
             | base_extra_log,
         )
-        raise requests_utils.ExternalAPIException(is_retryable=False)
+        raise requests.ExternalAPIException(is_retryable=False)
 
     content = _extract_useful_content_from_response(response.json())
     core_logging.log_for_supervision(
@@ -244,29 +243,29 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
 
 def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
     try:
-        response = requests_utils.get(http_url, stream=True)
-    except (urllib3_exceptions.HTTPError, requests_exceptions.RequestException) as e:
-        raise requests_utils.ExternalAPIException(is_retryable=True) from e
+        response = requests.get(http_url, stream=True)
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        raise requests.ExternalAPIException(is_retryable=True) from e
 
     if response.status_code == 429 or response.status_code >= 500:
         logger.warning(
             "Ubble picture-download: external error",
             extra={"url": str(http_url), "status_code": response.status_code},
         )
-        raise requests_utils.ExternalAPIException(is_retryable=True)
+        raise requests.ExternalAPIException(is_retryable=True)
 
     if response.status_code == 403:
         logger.error(
             "Ubble picture-download: request has expired",
             extra={"url": str(http_url), "status_code": response.status_code},
         )
-        raise requests_utils.ExternalAPIException(is_retryable=False)
+        raise requests.ExternalAPIException(is_retryable=False)
 
     if response.status_code != 200:
         logger.error(  # pylint: disable=logging-fstring-interpolation
             f"Ubble picture-download: unexpected error: {response.status_code}",
             extra={"url": str(http_url)},
         )
-        raise requests_utils.ExternalAPIException(is_retryable=False)
+        raise requests.ExternalAPIException(is_retryable=False)
 
     return response.headers.get("content-type"), response.raw
