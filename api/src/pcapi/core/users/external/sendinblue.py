@@ -329,7 +329,11 @@ def _wait_for_process(api_instance: ProcessApi, process_id: int) -> bool:
         except urllib3.exceptions.HTTPError:
             pass
         else:
-            logger.info("ProcessApi->get_process(%d) returned: %s", process_id, api_response)
+            logger.info(
+                "ProcessApi->get_process returned: %s",
+                api_response,
+                extra={"process_id": process_id, "status": api_response.status},
+            )
             status = api_response.status
         seconds += 1
 
@@ -344,7 +348,14 @@ def _send_import_request(api_instance: ContactsApi, sib_list_id: int, count: int
     logger.info("ContactsApi->import_contacts: %d emails, size: %d KB", count, len(file_body) / 1024)
 
     import_response: CreatedProcessId = api_instance.import_contacts(request_contact_import)
-    logger.info("ContactsApi->import_contacts(%d) returned: %s", sib_list_id, import_response)
+    logger.info(
+        "ContactsApi->import_contacts returned: %s",
+        import_response,
+        extra={
+            "list_id": sib_list_id,
+            "process_id": import_response.process_id,
+        },
+    )
 
     return import_response.process_id
 
@@ -376,7 +387,11 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
             remove_response: PostContactInfo = contacts_api_instance.remove_contact_from_list(
                 sib_list_id, remove_contact
             )
-            logger.info("ContactsApi->remove_contact_from_list(%d) returned: %s", sib_list_id, remove_response)
+            logger.info(
+                "ContactsApi->remove_contact_from_list returned: %s",
+                remove_response,
+                extra={"list_id": sib_list_id, "process_id": remove_response.contacts.process_id},
+            )
 
             # While developing, this process takes up to 25 seconds to remove 2 contacts from the list!
             # We must wait until process LIST_USERS_DELETE is completed, otherwise it may remove a contact which was
@@ -387,19 +402,25 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
         except SendinblueApiException as exception:
             if exception.status == 524:
                 # Handled first because response is a generic html page, not the expected json body
-                logger.exception("Timeout when calling ContactsApi->remove_contact_from_list(%d)", sib_list_id)
+                logger.exception(
+                    "Timeout when calling ContactsApi->remove_contact_from_list",
+                    extra={"list_id": sib_list_id},
+                )
                 return False
             try:
                 message = json.loads(exception.body).get("message")
             except json.JSONDecodeError:
                 message = exception.body
             if exception.status == 400 and message == "Contacts already removed from list and/or does not exist":
-                logger.info("ContactsApi->remove_contact_from_list(%d): list was already empty", sib_list_id)
+                logger.info(
+                    "ContactsApi->remove_contact_from_list: list was already empty",
+                    extra={"list_id": sib_list_id},
+                )
             else:
                 logger.exception(
-                    "Exception when calling ContactsApi->remove_contact_from_list(%d): %s",
-                    sib_list_id,
+                    "Exception when calling ContactsApi->remove_contact_from_list: %s",
                     exception,
+                    extra={"list_id": sib_list_id},
                 )
                 return False
 
@@ -412,7 +433,6 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
         # that the body is not bigger than 8 MB. Reading statistics, the average address length is between 20 and 25.
         # We are safe :-)
         max_emails_per_import = 200000
-        process_ids = []
 
         def chunk(it, size) -> Iterable:  # type: ignore [no-untyped-def]
             it = iter(it)
@@ -420,13 +440,16 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
 
         for emails in chunk(user_emails, max_emails_per_import):
             file_body = "EMAIL\n" + "\n".join(emails)
-            process_ids.append(_send_import_request(contacts_api_instance, sib_list_id, len(emails), file_body))
+            _send_import_request(contacts_api_instance, sib_list_id, len(emails), file_body)
 
-        for process_id in process_ids:
-            _wait_for_process(process_api_instance, process_id)
+        # Don't wait for processes completed, it would take too much time in the cron process
 
     except SendinblueApiException as exception:
-        logger.exception("Exception when calling ContactsApi->import_contacts: %s", exception)
+        logger.exception(
+            "Exception when calling ContactsApi->import_contacts: %s",
+            exception,
+            extra={"list_id": sib_list_id},
+        )
         return False
 
     return True
