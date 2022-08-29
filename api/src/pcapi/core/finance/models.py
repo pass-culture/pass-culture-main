@@ -268,7 +268,7 @@ class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
 
     # The transaction id is a UUID that will be included in the wire
     # transfer file that is sent to the bank.
-    transactionId = sqla.Column(  # type: ignore [misc]
+    transactionId = sqla.Column(
         sqla_psql.UUID(as_uuid=True), nullable=False, unique=True, server_default=sqla.func.gen_random_uuid()
     )
 
@@ -454,7 +454,7 @@ class Payment(Base, Model):  # type: ignore [valid-type, misc]
     )
     comment = sqla.Column(sqla.Text, nullable=True)
     author = sqla.Column(sqla.String(27), nullable=False)
-    transactionEndToEndId = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)  # type: ignore [misc]
+    transactionEndToEndId = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)
     transactionLabel = sqla.Column(sqla.String(140), nullable=True)
     paymentMessageId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment_message.id"), nullable=True)
     paymentMessage = sqla_orm.relationship(  # type: ignore [misc]

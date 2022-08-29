@@ -792,7 +792,7 @@ def _filter_user_accounts(
 
         # phone number
         try:
-            parsed_phone_number = phone_number_utils.parse_phone_number(term, "FR")
+            parsed_phone_number = phone_number_utils.parse_phone_number(term)
             term_as_phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
         except phone_validation_exceptions.InvalidPhoneNumber:
             pass  # term can't be a phone number
