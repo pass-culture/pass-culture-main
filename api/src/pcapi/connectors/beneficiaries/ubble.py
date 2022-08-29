@@ -3,7 +3,6 @@ import typing
 import urllib.parse
 
 from pydantic import networks as pydantic_networks
-import requests
 from requests import exceptions as requests_exceptions
 from urllib3 import exceptions as urllib3_exceptions
 
@@ -16,8 +15,8 @@ from pcapi.utils import requests as requests_utils
 logger = logging.getLogger(__name__)
 
 
-def configure_session() -> requests.Session:
-    session = requests.Session()
+def configure_session() -> requests_utils.Session:
+    session = requests_utils.Session()
     session.auth = (settings.UBBLE_CLIENT_ID, settings.UBBLE_CLIENT_SECRET)
     session.headers.update(
         {
@@ -245,7 +244,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
 
 def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
     try:
-        response = requests.get(http_url, stream=True)
+        response = requests_utils.get(http_url, stream=True)
     except (urllib3_exceptions.HTTPError, requests_exceptions.RequestException) as e:
         raise requests_utils.ExternalAPIException(is_retryable=True) from e
 
