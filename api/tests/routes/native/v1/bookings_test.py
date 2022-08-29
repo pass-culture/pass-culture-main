@@ -235,6 +235,37 @@ class GetBookingsTest:
         for booking in response.json["ongoing_bookings"]:
             assert booking["qrCodeData"] is not None
 
+    def test_offer_url_is_not_overrided_by_cancelled_booking_url(self, app, client):
+        OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        stock = StockFactory(offer__url=OFFER_URL)
+
+        cancelled_booking = booking_factories.CancelledIndividualBookingFactory(
+            individualBooking__user=user, displayAsEnded=True, stock=stock
+        )
+        ongoing_booking = booking_factories.IndividualBookingFactory(
+            individualBooking__user=user,
+            stock=stock,
+        )
+
+        test_client = client.with_token(user.email)
+
+        response = test_client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+
+        assert ongoing_booking.token in response.json["ongoing_bookings"][0]["stock"]["offer"]["url"]
+        assert (
+            response.json["ongoing_bookings"][0]["completedUrl"]
+            == response.json["ongoing_bookings"][0]["stock"]["offer"]["url"]
+        )
+
+        assert cancelled_booking.token in response.json["ended_bookings"][0]["stock"]["offer"]["url"]
+        assert (
+            response.json["ended_bookings"][0]["completedUrl"]
+            == response.json["ended_bookings"][0]["stock"]["offer"]["url"]
+        )
+
     @freeze_time("2021-03-12")
     def test_get_bookings_withdrawal_informations(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
