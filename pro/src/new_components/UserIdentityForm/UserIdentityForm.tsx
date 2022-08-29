@@ -64,10 +64,14 @@ const UserIdentityForm = ({
         <Form onSubmit={formik.handleSubmit}>
           <FormLayout>
             <FormLayout.Row>
-              <TextInput label="Prénom" name="firstName" />
+              <TextInput
+                label="Prénom"
+                name="firstName"
+                placeholder="Votre prénom"
+              />
             </FormLayout.Row>
             <FormLayout.Row>
-              <TextInput label="Nom" name="lastName" />
+              <TextInput label="Nom" name="lastName" placeholder="Votre nom" />
             </FormLayout.Row>
           </FormLayout>
 

@@ -12,21 +12,15 @@ const passwordErrorMessage = `Votre mot de passe doit contenir au moins :
 const validationSchema = yup.object().shape({
   oldPassword: yup
     .string()
-    .test('isPasswordValid', passwordErrorMessage, isPasswordValid)
     .required('Veuillez renseigner votre ancien mot de passe'),
   newPassword: yup
     .string()
     .test('isPasswordValid', passwordErrorMessage, isPasswordValid)
-    .oneOf(
-      [yup.ref('newConfirmationPassword'), null],
-      'Vos nouveaux mots de passe ne correspondent pas'
-    )
     .required('Veuillez renseigner votre nouveau mot de passe'),
   newConfirmationPassword: yup
     .string()
-    .test('isPasswordValid', passwordErrorMessage, isPasswordValid)
     .oneOf(
-      [yup.ref('newPassword'), null],
+      [yup.ref('newPassword'), ''],
       'Vos nouveaux mots de passe ne correspondent pas'
     )
     .required('Veuillez confirmer votre nouveau mot de passe'),
