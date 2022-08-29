@@ -1,12 +1,15 @@
+from typing import cast
+
 from pcapi.core.educational import repository as educational_repository
 from pcapi.routes.pro import blueprint
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@blueprint.pro_public_api_v2.route("/collective/domains", methods=["GET"])
+@blueprint.pro_public_api_v2.route("/collective/educational-domains", methods=["GET"])
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
@@ -18,7 +21,10 @@ from pcapi.validation.routes.users_authentifications import api_key_required
                     public_api_collective_offers_serialize.CollectiveOffersListDomainsResponseModel,
                     "La liste des domaines d'éducation.",
                 ),
-                "HTTP_401": (None, "Authentification nécessaire"),
+                "HTTP_401": (
+                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    "Authentification nécessaire",
+                ),
             }
         )
     ),

@@ -43,7 +43,7 @@ class CollectiveOffersPublicGetOfferTest:
             "isSoldOut": False,
             "numberOfTickets": 25,
             "status": "ACTIVE",
-            "students": ["GENERAL2"],
+            "students": ["Lycée - Seconde"],
             "subcategoryId": offer.subcategoryId,
             "totalPrice": 10000,
             "hasBookingLimitDatetimesPassed": False,

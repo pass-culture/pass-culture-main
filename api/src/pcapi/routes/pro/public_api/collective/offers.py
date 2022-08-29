@@ -12,9 +12,12 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 BASE_CODE_DESCRIPTIONS = {
-    "HTTP_401": (None, "Authentification nécessaire"),
-    "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour voir cette offre collective"),
-    "HTTP_404": (None, "L'offre collective n'existe pas"),
+    "HTTP_401": (public_api_collective_offers_serialize.AuthErrorResponseModel, "Authentification nécessaire"),
+    "HTTP_403": (
+        public_api_collective_offers_serialize.ErrorResponseModel,
+        "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
+    ),
+    "HTTP_404": (public_api_collective_offers_serialize.ErrorResponseModel, "L'offre collective n'existe pas"),
 }
 
 
@@ -119,10 +122,19 @@ def get_collective_offer_public(
                     public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
                     "L'offre collective à été créée avec succes",
                 ),
-                "HTTP_400": (None, "Requête malformée"),
-                "HTTP_401": (None, "Authentification nécessaire"),
-                "HTTP_403": (None, "Non éligible pour les offres collectives"),
-                "HTTP_404": (None, "L'une des resources pour la création de l'offre n'a pas été trouvée"),
+                "HTTP_400": (public_api_collective_offers_serialize.ErrorResponseModel, "Requête malformée"),
+                "HTTP_401": (
+                    public_api_collective_offers_serialize.AuthErrorResponseModel,
+                    "Authentification nécessaire",
+                ),
+                "HTTP_403": (
+                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    "Non éligible pour les offres collectives",
+                ),
+                "HTTP_404": (
+                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    "L'une des resources pour la création de l'offre n'a pas été trouvée",
+                ),
             }
         )
     ),
@@ -141,28 +153,28 @@ def post_collective_offer_public(
     except educational_exceptions.CulturalPartnerNotFoundException:
         raise ApiErrors(
             errors={
-                "global": "Non éligible pour les offres collectives.",
+                "global": ["Non éligible pour les offres collectives."],
             },
             status_code=403,
         )
     except offerers_exceptions.VenueNotFoundException:
         raise ApiErrors(
             errors={
-                "venueId": "Ce lieu n'à pas été trouvée.",
+                "venueId": ["Ce lieu n'à pas été trouvée."],
             },
             status_code=404,
         )
     except educational_exceptions.InvalidInterventionArea as exc:
         raise ApiErrors(
             errors={
-                "interventionArea": f"Les valeurs {exc.errors} ne sont pas valides.",
+                "interventionArea": [f"Les valeurs {exc.errors} ne sont pas valides."],
             },
             status_code=404,
         )
     except educational_exceptions.EducationalInstitutionUnknown:
         raise ApiErrors(
             errors={
-                "educationalInstitutionId": "Établissement scolaire non trouvé.",
+                "educationalInstitutionId": ["Établissement scolaire non trouvé."],
             },
             status_code=404,
         )
@@ -182,11 +194,23 @@ def post_collective_offer_public(
                     public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel,
                     "L'offre collective à été édité avec succes",
                 ),
-                "HTTP_400": (None, "Requête malformée"),
-                "HTTP_401": (None, "Authentification nécessaire"),
-                "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour éditer cette offre collective"),
-                "HTTP_404": (None, "L'une des resources pour la création de l'offre n'a pas été trouvée"),
-                "HTTP_422": (None, "Cetains champs ne peuvent pas être édités selon l'état de l'offre"),
+                "HTTP_400": (public_api_collective_offers_serialize.ErrorResponseModel, "Requête malformée"),
+                "HTTP_401": (
+                    public_api_collective_offers_serialize.AuthErrorResponseModel,
+                    "Authentification nécessaire",
+                ),
+                "HTTP_403": (
+                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    "Vous n'avez pas les droits nécessaires pour éditer cette offre collective",
+                ),
+                "HTTP_404": (
+                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    "L'une des resources pour la création de l'offre n'a pas été trouvée",
+                ),
+                "HTTP_422": (
+                    public_api_collective_offers_serialize.ErrorResponseModel,
+                    "Cetains champs ne peuvent pas être édités selon l'état de l'offre",
+                ),
             }
         )
     ),
@@ -215,7 +239,7 @@ def patch_collective_offer_public(
         if field in new_values and new_values[field] is None:
             raise ApiErrors(
                 errors={
-                    field: "Ce champ peut ne pas être présent mais ne peut pas être null.",
+                    field: ["Ce champ peut ne pas être présent mais ne peut pas être null."],
                 },
                 status_code=400,
             )
@@ -257,37 +281,44 @@ def patch_collective_offer_public(
     except educational_exceptions.CulturalPartnerNotFoundException:
         raise ApiErrors(
             errors={
-                "global": "Non éligible pour les offres collectives.",
+                "global": ["Non éligible pour les offres collectives."],
             },
             status_code=403,
         )
     except offerers_exceptions.VenueNotFoundException:
         raise ApiErrors(
             errors={
-                "venueId": "Ce lieu n'a pas été trouvé.",
+                "venueId": ["Ce lieu n'a pas été trouvé."],
             },
             status_code=404,
         )
     except educational_exceptions.InvalidInterventionArea as exc:
         raise ApiErrors(
             errors={
-                "interventionArea": f"Les valeurs {exc.errors} ne sont pas valides.",
+                "interventionArea": [f"Les valeurs {exc.errors} ne sont pas valides."],
             },
             status_code=404,
         )
     except educational_exceptions.EducationalInstitutionUnknown:
         raise ApiErrors(
             errors={
-                "educationalInstitutionId": "Établissement scolaire non trouvé.",
+                "educationalInstitutionId": ["Établissement scolaire non trouvé."],
             },
             status_code=404,
         )
     except educational_exceptions.EducationalDomainsNotFound:
         raise ApiErrors(
             errors={
-                "domains": "Domaine scolaire non trouvé.",
+                "domains": ["Domaine scolaire non trouvé."],
             },
             status_code=404,
+        )
+    except educational_exceptions.CollectiveOfferNotEditable:
+        raise ApiErrors(
+            errors={
+                "global": ["Offre non éditable."],
+            },
+            status_code=422,
         )
 
     return public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel.from_orm(offer)
