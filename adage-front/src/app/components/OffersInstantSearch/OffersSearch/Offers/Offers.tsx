@@ -54,6 +54,7 @@ export const OffersComponent = ({
   const [refinedIds, setRefinedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
+    let hasClearedOffers = false
     setQueriesAreLoading(true)
     if (
       !Array.from(refinedIds).every(id =>
@@ -64,6 +65,8 @@ export const OffersComponent = ({
         refinedIds.clear()
         return refinedIds
       })
+      refinedIds.clear()
+      hasClearedOffers = true
     }
 
     Promise.all(
@@ -94,11 +97,7 @@ export const OffersComponent = ({
         | CollectiveOfferTemplateResponseModel
       )[]
 
-      if (
-        !Array.from(refinedIds).every(id =>
-          hits.map(hit => hit.objectID).includes(id)
-        )
-      ) {
+      if (hasClearedOffers) {
         setOffers([...bookableOffers])
       } else {
         setOffers(offers => [...offers, ...bookableOffers])
