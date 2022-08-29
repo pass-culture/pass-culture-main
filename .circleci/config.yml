@@ -308,6 +308,9 @@ jobs:
       - skip_unchanged:
           paths: api
       - run:
+          name: Show installed Python packages
+          command: pip freeze
+      - run:
           name: Check imports are well organized with isort
           when: always
           command: isort . --check-only
@@ -370,6 +373,9 @@ jobs:
       - checkout
       - skip_unchanged:
           paths: api
+      - run:
+          name: Show installed Python packages
+          command: pip freeze
       - run:
           name: Check for alembic multiple heads
           command: |
