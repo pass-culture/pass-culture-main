@@ -59,6 +59,7 @@ class BookingOfferResponse(BaseModel):
     isDigital: bool
     isPermanent: bool
     subcategoryId: SubcategoryIdEnum
+    url: str | None
     venue: BookingVenueResponse
     withdrawalDetails: str | None
     withdrawalType: WithdrawalTypeEnum | None
@@ -113,6 +114,13 @@ class BookingReponse(BaseModel):
 
     @classmethod
     def from_orm(cls: Any, booking: Booking):  # type: ignore
+        # Native application should use `booking.completedUrl` but actually
+        # up to version 135, it uses booking.stock.offer.url instead.
+        # Therefore the API will override `booking.stock.offer.url` with
+        # `booking.completedUrl`.
+        # Unfortunate side-effect, the offer object has its url modified and
+        # needs to be rolledback.
+        booking.stock.offer.url = booking.completedUrl
         booking.confirmationDate = booking.cancellationLimitDate
         return super().from_orm(booking)
 

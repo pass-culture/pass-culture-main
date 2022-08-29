@@ -83,6 +83,7 @@ def test_public_api(client):
                         "isPermanent": {"title": "Ispermanent", "type": "boolean"},
                         "name": {"title": "Name", "type": "string"},
                         "subcategoryId": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
+                        "url": {"nullable": True, "title": "Url", "type": "string"},
                         "venue": {"$ref": "#/components/schemas/BookingVenueResponse"},
                         "withdrawalDelay": {"nullable": True, "title": "Withdrawaldelay", "type": "integer"},
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
