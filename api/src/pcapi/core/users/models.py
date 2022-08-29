@@ -477,7 +477,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         if not value:
             self._phoneNumber = None
         else:
-            self._phoneNumber = ParsedPhoneNumber(value, region="FR").phone_number
+            self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
     @phoneNumber.expression  # type: ignore [no-redef]
     def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument

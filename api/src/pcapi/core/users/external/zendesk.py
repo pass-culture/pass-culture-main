@@ -94,10 +94,7 @@ def update_contact_attributes(
 def _format_user_attributes(email: str, attributes: UserAttributes) -> dict:
     # https://developer.zendesk.com/api-reference/ticketing/users/users/#phone-number
     try:
-        parsed_phone_number = phone_number_utils.parse_phone_number(
-            attributes.phone_number,
-            "FR",
-        )
+        parsed_phone_number = phone_number_utils.parse_phone_number(attributes.phone_number)
         phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
     except phone_validation_exceptions.InvalidPhoneNumber:
         phone_number = None
