@@ -1061,12 +1061,12 @@ class SendPhoneValidationCodeTest:
             == subscription_models.SubscriptionItemStatus.KO
         )
 
-    def test_send_phone_validation_code_with_malformed_number(self, client):
+    def test_send_phone_validation_code_with_invalid_number(self, client):
         # user's phone number should be in international format (E.164): +33601020304
         user = users_factories.UserFactory(isEmailValidated=True)
         client.with_token(email=user.email)
 
-        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "0601020304"})
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "060102030405"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"

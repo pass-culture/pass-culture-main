@@ -114,7 +114,7 @@ class PublicAccountUpdateRequest(BaseModel):
 
         try:
             # Convert to international format
-            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
         except phone_validation_exceptions.InvalidPhoneNumber:
             raise ValueError(f"Format de numéro de téléphone invalide : {phone_number}")
 

@@ -7,7 +7,7 @@ from pcapi.repository import repository
 def register_user_session(user_id: int, session_uuid: UUID):  # type: ignore [no-untyped-def]
     session = UserSession()
     session.userId = user_id
-    session.uuid = session_uuid  # type: ignore [call-overload]
+    session.uuid = session_uuid
     repository.save(session)
 
 

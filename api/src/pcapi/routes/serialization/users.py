@@ -38,7 +38,7 @@ class PatchProUserBodyModel(BaseModel):
             return phone_number
 
         try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
         except Exception:
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
 
@@ -93,7 +93,7 @@ class UserPhoneBodyModel(BaseModel):
             return phone_number
 
         try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
         except Exception:
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
 
