@@ -9,6 +9,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { AuthErrorResponseModel } from './models/AuthErrorResponseModel';
 export { BookingFormula } from './models/BookingFormula';
 export { BookingOfferType } from './models/BookingOfferType';
 export type { CollectiveOffersCategoryResponseModel } from './models/CollectiveOffersCategoryResponseModel';
@@ -23,6 +24,7 @@ export type { CollectiveOffersListVenuesResponseModel } from './models/Collectiv
 export type { CollectiveOffersResponseModel } from './models/CollectiveOffersResponseModel';
 export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
 export type { CollectiveOffersVenueResponseModel } from './models/CollectiveOffersVenueResponseModel';
+export type { ErrorResponseModel } from './models/ErrorResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetListEducationalInstitutionsQueryModel } from './models/GetListEducationalInstitutionsQueryModel';
 export type { GetPublicCollectiveOfferResponseModel } from './models/GetPublicCollectiveOfferResponseModel';
@@ -41,4 +43,3 @@ export type { ValidationErrorElement } from './models/ValidationErrorElement';
 export { ApiContremarqueService } from './services/ApiContremarqueService';
 export { ApiOffresCollectivesService } from './services/ApiOffresCollectivesService';
 export { ApiStocksService } from './services/ApiStocksService';
-export { DefaultService } from './services/DefaultService';
