@@ -33,7 +33,7 @@ def reject_offers(product_id: int, dry_run: bool = True) -> int:
     if dry_run:
         LOGGER.info("%s offers related to product %s would have been rejected", offers_count, product_id)
 
-    else:
+    elif offers_count > 0:
         offers.update(
             values={
                 "validation": OfferValidationStatus.REJECTED,
