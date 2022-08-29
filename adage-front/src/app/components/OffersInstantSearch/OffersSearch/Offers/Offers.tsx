@@ -55,6 +55,16 @@ export const OffersComponent = ({
 
   useEffect(() => {
     setQueriesAreLoading(true)
+    if (
+      !Array.from(refinedIds).every(id =>
+        hits.map(hit => hit.objectID).includes(id)
+      )
+    ) {
+      setRefinedIds(refinedIds => {
+        refinedIds.clear()
+        return refinedIds
+      })
+    }
 
     Promise.all(
       hits.map(async hit => {
@@ -84,7 +94,15 @@ export const OffersComponent = ({
         | CollectiveOfferTemplateResponseModel
       )[]
 
-      setOffers(offers => [...offers, ...bookableOffers])
+      if (
+        !Array.from(refinedIds).every(id =>
+          hits.map(hit => hit.objectID).includes(id)
+        )
+      ) {
+        setOffers([...bookableOffers])
+      } else {
+        setOffers(offers => [...offers, ...bookableOffers])
+      }
 
       setRefinedIds(refinedIds => {
         hits.forEach(hit => {
