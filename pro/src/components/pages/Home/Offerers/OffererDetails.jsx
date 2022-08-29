@@ -82,7 +82,7 @@ const OffererDetails = ({
     if (!selectedOfferer) return false
     return selectedOfferer.managedVenues
       .filter(venue => !venue.isVirtual)
-      .map(venue => !venue.hasReimbursementPoint)
+      .map(venue => venue.hasMissingReimbursementPoint)
       .some(Boolean)
   }, [selectedOfferer, isNewBankInformationActive])
 
