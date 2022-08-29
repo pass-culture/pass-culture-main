@@ -159,9 +159,21 @@ def get_bookings(user: User) -> BookingsResponse:
             )
         ],
     )
-    # TODO: remove this once the booking.stock.offer.url = booking.completedUrl hack in serialization is removed
+    _update_booking_offer_url(result.ended_bookings)
+    _update_booking_offer_url(result.ongoing_bookings)
+
+    # TODO: some objects seem to be updated. remove rollback when this is fixed
     db.session.rollback()
     return result
+
+
+def _update_booking_offer_url(booking_response_list: list[BookingReponse]) -> None:
+    # Native application should use `booking.completedUrl` but actually
+    # it uses booking.stock.offer.url in some places.
+    # So we need to update the response object not to override the database object
+    # Remove when native app stops using booking.stock.offer.url
+    for booking in booking_response_list:
+        booking.stock.offer.url = booking.completedUrl
 
 
 def is_ended_booking(booking: Booking) -> bool:
