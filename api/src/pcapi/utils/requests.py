@@ -33,14 +33,20 @@ class ExternalAPIException(Exception):
         super().__init__(*args)
 
 
-def _redact_url(url: str) -> str:
+def _redact_url(url: str | bytes) -> str:
+    if isinstance(url, bytes):
+        return str(url)
     # Cine Digital Service (CDS) wants authentication token to appear in GET
     # requests. We don't want to log them.
     return re.sub("api_token=[^&^$]+", "api_token=[REDACTED]", url)
 
 
 def _wrapper(
-    request_func: Callable, method: str, url: str, log_at_warning_level: bool = True, **kwargs: Any
+    request_func: Callable,
+    method: str | bytes,
+    url: str | bytes,
+    log_at_warning_level: bool = True,
+    **kwargs: Any,
 ) -> Response:
     timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
     try:
@@ -85,12 +91,7 @@ def delete(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> 
         return session.request(method="DELETE", url=url, **kwargs)
 
 
-class _SessionMixin:
-    def request(self, method: str, url: str, *args: Any, **kwargs: Any) -> Response:
-        return _wrapper(super().request, method, url, *args, **kwargs)  # type: ignore [misc]
-
-
-class Session(_SessionMixin, requests.Session):  # type: ignore [misc]
+class Session(requests.Session):
     def __init__(self, *args, disable_synchronous_retry: bool = False, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(*args, **kwargs)
 
@@ -105,3 +106,6 @@ class Session(_SessionMixin, requests.Session):  # type: ignore [misc]
         self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
         self.mount(settings.UBBLE_API_URL, safe_adapter)
         self.mount(settings.BATCH_API_URL, unsafe_adapter)
+
+    def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> Response:
+        return _wrapper(super().request, method, url, *args, **kwargs)
