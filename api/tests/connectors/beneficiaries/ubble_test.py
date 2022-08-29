@@ -36,7 +36,7 @@ class StartIdentificationTest:
         assert attributes["redirect_url"] == "http://redirect/url"
 
         assert len(caplog.records) >= 1
-        record = caplog.records[0]
+        record = caplog.records[1]
         assert record.extra["status_code"] == 201
         assert record.extra["identification_id"] == str(response.identification_id)
         assert record.extra["request_type"] == "start-identification"
@@ -89,15 +89,15 @@ class GetContentTest:
             with caplog.at_level(logging.INFO):
                 ubble.get_content(ubble_response.data.attributes.identification_id)
 
-            assert len(caplog.records) == 1
-            record = caplog.records[0]
+            assert caplog.records[0].message == "External service called"
 
-            assert record.message == "Valid response from Ubble"
-            assert record.extra["status_code"] == 200
-            assert record.extra["identification_id"] == ubble_response.data.attributes.identification_id
-            assert record.extra["status"] == ubble_response.data.attributes.status.value
-            assert not record.extra["score"]
-            assert record.extra["request_type"] == "get-content"
+            supervision_record = caplog.records[1]
+            assert supervision_record.message == "Valid response from Ubble"
+            assert supervision_record.extra["status_code"] == 200
+            assert supervision_record.extra["identification_id"] == ubble_response.data.attributes.identification_id
+            assert supervision_record.extra["status"] == ubble_response.data.attributes.status.value
+            assert not supervision_record.extra["score"]
+            assert supervision_record.extra["request_type"] == "get-content"
 
     def test_get_content_http_error(self, requests_mock, caplog):
         identification_id = "some-id"
