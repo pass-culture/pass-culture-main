@@ -111,61 +111,9 @@ sa BDD locale via `pc restart-backend`. Sinon:
 - `pc start-backend`
 - `pc sandbox -n industrial`
 
-## Livrer
+## Déployer en staging, production et intégration
 
-### Tagging des versions
-
-_Poser le tag_ consiste à sélectionner un ensemble de commits validés par les Product Owners (POs) et de leur attribuer un numéro de version.
-
-Pour les hotfixes, [voir plus bas](#Hotfixes).
-
-1. Les POs élisent une version "Release Candidate" à déployer à partir de [cette liste de tickets](https://passculture.atlassian.net/jira/dashboards/10113).
-
-2. Checkout le tag "Release Candidate" `RC-{version}.0.0`.
-
-Par exemple, si le RC choisi est 1879, lancer dans un terminal : `git checkout RC-1878.0.0`
-
-2. Lancer la commande
-
-```bash
-./pc -t {numéro_de_version} tag
-```
-
-Par exemple
-
-```bash
-./pc -t 138.0.0 tag
-```
-
-Le fichier `version.txt` de l'API est mis à jours ainsi que les `package.json` de Pro et Adage-front. Le tag est
-posé sur la branche locale _checked out_. Il est ensuite
-poussé sur le repository distant. La CI lance alors des pipelines de tests.
-
-3. Sur [CircleCI](https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main), vérifier l'avancement du
-   pipeline de `pass-culture-main`.
-
-### Numéro de version
-
-- On n'utilise **pas** de _semantic versioning_
-- On utilise le format `I.P.S`
-  - I => numéro de l'**Itération**
-  - P => incrément de _fix_ en **Production**
-  - S => incrément de _fix_ en **Staging**
-- En amont de la pose d'un tag, il faut communiquer les migrations de BDD embarquées à l'équipe data pour éviter des
-  bugs sur les analytics
-
-#### Exemple
-
-- Jeudi, je livre en staging une nouvelle version en fin d'itération n°138 => `138.0.0`
-- Vendredi, un bug est détecté en staging, et je livre un correctif => `138.0.1`
-- Lundi, je livre en production => `138.0.1`
-- Mardi, on détecte un bug en production, je livre d'abord le correctif en staging => `138.1.0`
-- Mardi, tout se passe bien en staging, je livre en production => `138.1.0`
-- Jeudi, je livre en staging une nouvelle version en fin d'itération n°139 => `139.0.0`
-- Jeudi, on détecte un autre bug de la v138 en production, je livre d'abord en staging => `138.2.0`
-- Vendredi, je m'aperçois que mon fix est lui-même buggé, je livre un fix en staging => `138.2.1`
-- Vendredi, mes deux correctifs sont cette fois OK, je livre en production => `138.2.1`
-  et on déploie sur staging.
+Les instructions se trouvent sur notion (article Tag-MES-et-MEP).
 
 Pour connaître le numéro de version de l'api déployé :
 
@@ -173,44 +121,6 @@ Pour connaître le numéro de version de l'api déployé :
 https://backend.staging.passculture.team/health/api
 https://backend.passculture.app/health/api
 ```
-
-### Hotfixes
-
-Faire un hotfix consiste à créer un nouveau tag à partir du tag précédent avec des commits spécifiques.
-
-1. Vérifier que les commits à Hot Fix sont poussés sur `master`, déployés sur testing et validés par les POs.
-
-2. Se placer sur la branche de maintenance de l'itération `git checkout maint/v182`
-
-3. Choix des commits désirés (équipes des devs)
-
-NB: Chaque équipe est responsable du picorage de ses commits (avec l'accord de ses POs).
-
-Exemple :
-
-```
-> git cherry-pick 3e07b9420e93a2a560b2deec1aed2e983fc842e8
-> git cherry-pick c3eaa9395cfa9bc5b48d78256b9693af56cbc1d0
-```
-
-4. Pousser la branche de maintenance et attendre que la CI passe au vert
-
-5. Lancer la commande de création de tag hot fix (shérif):
-
-> **ATTENTION**: bien vérifier sur la CI que les tests de la branche de maintenance sont bien tous verts (`https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=maint%2Fv62` par exemple pour la v162)
-
-Trouver le dernier tag posé et poser le nouveau tag en incrémentant la version comme indiqué dans la section["Numéro de version"](#numéro-de-version):
-
-```bash
-> git tag -l | grep 162
-v162.0.0
-v162.0.1
-
-> ./pc -t {numero_de_version_incrémenté} tag-hotfix
-```
-
-Un commit `🚀 numéro de version` (`🚀 v162.0.2` par exemple) sera créé et poussé sur le dépôt.
-Une fois les tests de la CI passés et verts, on peut déployer ce tag.
 
 ### Déployer dans l'environnement Testing
 
