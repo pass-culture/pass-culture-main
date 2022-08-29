@@ -209,7 +209,7 @@ describe('venues', () => {
 
     it('should display add bank information when venue does not have a reimbursement point', async () => {
       // Given
-      props.hasReimbursementPoint = false
+      props.hasMissingReimbursementPoint = true
       const storeOverrides = configureTestStore({
         features: {
           list: [

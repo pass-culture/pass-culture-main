@@ -20,7 +20,7 @@ import VenueStat from './VenueStat'
 
 const Venue = ({
   hasBusinessUnit,
-  hasReimbursementPoint,
+  hasMissingReimbursementPoint,
   id,
   isVirtual,
   name,
@@ -142,7 +142,7 @@ const Venue = ({
               </span>
             </h3>
             <div className="button-group">
-              {((isNewBankInformationActive && !hasReimbursementPoint) ||
+              {((isNewBankInformationActive && hasMissingReimbursementPoint) ||
                 (isBankInformationWithSiretActive && !hasBusinessUnit)) &&
                 !isVirtual && (
                   <>

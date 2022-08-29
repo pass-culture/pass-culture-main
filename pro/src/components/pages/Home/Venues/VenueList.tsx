@@ -11,13 +11,13 @@ interface IVenueListProps {
     name: string
     publicName?: string
     businessUnitId?: string
-    hasReimbursementPoint: boolean
+    hasMissingReimbursementPoint: boolean
   }[]
   selectedOffererId: string
   virtualVenue: {
     id: string
     businessUnitId?: string
-    hasReimbursementPoint: boolean
+    hasMissingReimbursementPoint: boolean
   } | null
 }
 
@@ -71,7 +71,9 @@ export const VenueList = ({
           isVirtual
           name="Offres numériques"
           offererId={selectedOffererId}
-          hasReimbursementPoint={virtualVenue.hasReimbursementPoint}
+          hasMissingReimbursementPoint={
+            virtualVenue.hasMissingReimbursementPoint
+          }
         />
       )}
 
@@ -83,7 +85,7 @@ export const VenueList = ({
           name={venue.name}
           offererId={selectedOffererId}
           publicName={venue.publicName}
-          hasReimbursementPoint={venue.hasReimbursementPoint}
+          hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
         />
       ))}
     </div>

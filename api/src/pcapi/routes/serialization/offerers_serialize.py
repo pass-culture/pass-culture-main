@@ -21,7 +21,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     comment: str | None
     departementCode: str | None
-    hasReimbursementPoint: bool
+    hasMissingReimbursementPoint: bool
     id: str
     isValidated: bool
     isVirtual: bool
@@ -42,9 +42,14 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     def from_orm(cls, venue: offerers_models.Venue) -> "GetOffererVenueResponseModel":
         venue.nonHumanizedId = venue.id
         now = datetime.utcnow()
-        venue.hasReimbursementPoint = any(
-            now > link.timespan.lower and (link.timespan.upper is None or now < link.timespan.upper)
-            for link in venue.reimbursement_point_links
+        venue.hasMissingReimbursementPoint = not (
+            any(
+                (
+                    now > link.timespan.lower and (link.timespan.upper is None or now < link.timespan.upper)
+                    for link in venue.reimbursement_point_links
+                )
+            )
+            or venue.hasPendingBankInformationApplication
         )
         return super().from_orm(venue)
 
@@ -94,6 +99,7 @@ class GetOffererResponseModel(BaseModel):
         venues = (
             offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
             .options(sqla_orm.joinedload(offerers_models.Venue.reimbursement_point_links))
+            .options(sqla_orm.joinedload(offerers_models.Venue.bankInformation))
             .order_by(sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name))
             .all()
         )
