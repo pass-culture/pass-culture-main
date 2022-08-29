@@ -4,6 +4,14 @@ def test_public_api(client, app):
     assert response.json == {
         "components": {
             "schemas": {
+                "AuthErrorResponseModel": {
+                    "properties": {
+                        "errors": {"additionalProperties": {"type": "string"}, "title": "Errors", "type": "object"}
+                    },
+                    "required": ["errors"],
+                    "title": "AuthErrorResponseModel",
+                    "type": "object",
+                },
                 "BookingFormula": {
                     "description": "An enumeration.",
                     "enum": ["PLACE", "ABO"],
@@ -64,6 +72,11 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersListResponseModel",
                     "type": "array",
                 },
+                "CollectiveOffersListStudentLevelsResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersStudentLevelResponseModel"},
+                    "title": "CollectiveOffersListStudentLevelsResponseModel",
+                    "type": "array",
+                },
                 "CollectiveOffersListVenuesResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
                     "title": "CollectiveOffersListVenuesResponseModel",
@@ -80,6 +93,15 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersResponseModel",
                     "type": "object",
                 },
+                "CollectiveOffersStudentLevelResponseModel": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "CollectiveOffersStudentLevelResponseModel",
+                    "type": "object",
+                },
                 "CollectiveOffersVenueResponseModel": {
                     "properties": {
                         "address": {"nullable": True, "title": "Address", "type": "string"},
@@ -90,6 +112,18 @@ def test_public_api(client, app):
                     },
                     "required": ["id", "name"],
                     "title": "CollectiveOffersVenueResponseModel",
+                    "type": "object",
+                },
+                "ErrorResponseModel": {
+                    "properties": {
+                        "errors": {
+                            "additionalProperties": {"items": {"type": "string"}, "type": "array"},
+                            "title": "Errors",
+                            "type": "object",
+                        }
+                    },
+                    "required": ["errors"],
+                    "title": "ErrorResponseModel",
                     "type": "object",
                 },
                 "GetBookingResponse": {
@@ -604,7 +638,12 @@ def test_public_api(client, app):
                             },
                             "description": "La liste des catégories éligibles existantes.",
                         },
-                        "401": {"description": "Authentification nécessaire"},
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -616,7 +655,7 @@ def test_public_api(client, app):
                     "tags": ["API offres collectives"],
                 }
             },
-            "/v2/collective/domains": {
+            "/v2/collective/educational-domains": {
                 "get": {
                     "description": "",
                     "operationId": "ListEducationalDomains",
@@ -630,7 +669,12 @@ def test_public_api(client, app):
                             },
                             "description": "La liste des domaines d'éducation.",
                         },
-                        "401": {"description": "Authentification nécessaire"},
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -701,8 +745,18 @@ def test_public_api(client, app):
                             },
                             "description": "La liste des établissement scolaires éligibles.",
                         },
-                        "400": {"description": "Requête malformée"},
-                        "401": {"description": "Authentification nécessaire"},
+                        "400": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Requête malformée",
+                        },
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -757,11 +811,24 @@ def test_public_api(client, app):
                             },
                             "description": "L'offre collective existe",
                         },
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {
-                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective"
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
                         },
-                        "404": {"description": "L'offre collective n'existe pas"},
+                        "403": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
+                        },
+                        "404": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "L'offre collective n'existe pas",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -792,10 +859,30 @@ def test_public_api(client, app):
                             },
                             "description": "L'offre collective à été créée avec succes",
                         },
-                        "400": {"description": "Requête malformée"},
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {"description": "Non éligible pour les offres collectives"},
-                        "404": {"description": "L'une des resources pour la création de l'offre n'a pas été trouvée"},
+                        "400": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Requête malformée",
+                        },
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
+                        "403": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Non éligible pour les offres collectives",
+                        },
+                        "404": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "L'une des resources pour la création de l'offre n'a pas été trouvée",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -829,11 +916,24 @@ def test_public_api(client, app):
                             },
                             "description": "L'offre collective existe",
                         },
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {
-                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective"
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
                         },
-                        "404": {"description": "L'offre collective n'existe pas"},
+                        "403": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
+                        },
+                        "404": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "L'offre collective n'existe pas",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -872,15 +972,33 @@ def test_public_api(client, app):
                             },
                             "description": "L'offre collective à été édité avec succes",
                         },
-                        "400": {"description": "Requête malformée"},
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {
-                            "description": "Vous n'avez pas les droits nécessaires pour éditer cette offre collective"
+                        "400": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Requête malformée",
                         },
-                        "404": {"description": "L'une des resources pour la création de l'offre n'a pas été trouvée"},
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
+                        "403": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Vous n'avez pas les droits nécessaires pour éditer cette offre collective",
+                        },
+                        "404": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "L'une des resources pour la création de l'offre n'a pas été trouvée",
+                        },
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
                             "description": "Cetains champs ne peuvent pas être édités selon l'état de l'offre",
                         },
@@ -898,12 +1016,19 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/CollectiveOffersListDomainsResponseModel"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListStudentLevelsResponseModel"
+                                    }
                                 }
                             },
                             "description": "La liste des domaines d'éducation.",
                         },
-                        "401": {"description": "Authentification nécessaire"},
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -929,7 +1054,12 @@ def test_public_api(client, app):
                             },
                             "description": "La liste des lieux ou vous pouvez créer une offre.",
                         },
-                        "401": {"description": "Authentification nécessaire"},
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}

@@ -1,5 +1,8 @@
+from typing import cast
+
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.pro import blueprint
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -15,10 +18,13 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         **(
             {
                 "HTTP_200": (
-                    public_api_collective_offers_serialize.CollectiveOffersListDomainsResponseModel,
+                    public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel,
                     "La liste des domaines d'éducation.",
                 ),
-                "HTTP_401": (None, "Authentification nécessaire"),
+                "HTTP_401": (
+                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    "Authentification nécessaire",
+                ),
             }
         )
     ),

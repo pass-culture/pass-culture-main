@@ -1,5 +1,8 @@
+from typing import cast
+
 from pcapi.core.categories import categories
 from pcapi.routes.pro import blueprint
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -18,7 +21,10 @@ from pcapi.validation.routes.users_authentifications import api_key_required
                     public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel,
                     "La liste des catégories éligibles existantes.",
                 ),
-                "HTTP_401": (None, "Authentification nécessaire"),
+                "HTTP_401": (
+                    cast(BaseModel, public_api_collective_offers_serialize.AuthErrorResponseModel),
+                    "Authentification nécessaire",
+                ),
             }
         )
     ),
