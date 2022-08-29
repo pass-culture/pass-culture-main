@@ -184,7 +184,7 @@ const routes: IRoute[] = [
       public: true,
       layoutConfig: {
         fullscreen: true,
-        pageName: 'email-validation',
+        pageName: 'sign-in',
       },
     },
   },

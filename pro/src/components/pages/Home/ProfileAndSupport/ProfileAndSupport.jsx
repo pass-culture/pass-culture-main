@@ -122,6 +122,10 @@ const ProfileAndSupport = () => {
                     {formatPhoneNumber(user.phoneNumber)}
                   </span>
                 </li>
+                <li className="h-dl-row">
+                  <span className="h-dl-title">Mot de passe :</span>
+                  <span className="h-dl-description">***************</span>
+                </li>
               </ul>
             </div>
           </div>

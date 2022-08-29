@@ -12,7 +12,11 @@
 .modify-button-container {
   position: absolute;
   top: rem.torem(8px);
-  right: 0;
+  right: rem.torem(16px);
+
+  svg {
+    margin-right: 8px;
+  }
 
   &.hidden {
     display: none;

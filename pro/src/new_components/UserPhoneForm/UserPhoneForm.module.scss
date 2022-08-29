@@ -8,6 +8,8 @@
 }
 
 .buttons-field {
+  margin-top: rem.torem(24px);
+
   & > button:nth-child(2) {
     margin-left: rem.torem(16px);
   }
