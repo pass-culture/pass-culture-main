@@ -2,7 +2,7 @@ query getApplication(
   $demarcheNumber: Int!
   $after: String
   $state: DossierState
-  $since: String
+  $since: ISO8601DateTime
 ) {
   demarche(number: $demarcheNumber) {
     id
