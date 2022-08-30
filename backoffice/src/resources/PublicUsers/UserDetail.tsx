@@ -451,6 +451,7 @@ export const UserDetail = () => {
                     <UserDetailsCard
                       user={userBaseInfo}
                       firstFraudCheck={idsCheckHistory[0].items[0]}
+                      firstSubcriptionItems={subscriptionItems[0].items}
                     />
                   )}
               </div>

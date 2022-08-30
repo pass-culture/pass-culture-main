@@ -1,13 +1,13 @@
-import { Card, Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
+import { Button, Card, Grid, Stack, Tooltip, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
 import moment from 'moment'
 import React, { useState } from 'react'
 import {
   Form,
-  useNotify,
-  TextInput,
   SaveButton,
+  TextInput,
   UpdateParams,
+  useNotify,
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
@@ -17,14 +17,40 @@ import {
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
 import { dataProvider } from '../../../providers/dataProvider'
-import { FraudCheck, UserBaseInfo } from '../types'
+import {
+  FraudCheck,
+  SubscriptionItem,
+  SubscriptionItemStatus,
+  SubscriptionItemType,
+  UserBaseInfo,
+} from '../types'
 
 type Props = {
   user: UserBaseInfo
   firstFraudCheck: FraudCheck
+  firstSubcriptionItems: SubscriptionItem[]
 }
-export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
+export const UserDetailsCard = ({
+  user,
+  firstFraudCheck,
+  firstSubcriptionItems,
+}: Props) => {
   const notify = useNotify()
+
+  const isPhoneValidated = () => {
+    if (firstSubcriptionItems.length > 0) {
+      const item: SubscriptionItem | undefined = firstSubcriptionItems.find(
+        ({
+          type,
+        }: {
+          type: SubscriptionItemType
+          status: SubscriptionItemStatus
+        }) => type === SubscriptionItemType.PHONE_VALIDATION
+      )
+      return item ? item.status === SubscriptionItemStatus.OK : false
+    }
+    return false
+  }
 
   const [editable, setEditable] = useState(false)
 
@@ -196,7 +222,9 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
                   >
                     <div>
                       <Button
-                        disabled={!user.phoneNumber}
+                        disabled={
+                          !user.phoneNumber || isPhoneValidated() === true
+                        }
                         variant="outlined"
                         onClick={sendPhoneValidationCode}
                       >
