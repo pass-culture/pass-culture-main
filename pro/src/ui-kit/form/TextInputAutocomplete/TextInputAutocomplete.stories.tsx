@@ -10,7 +10,7 @@ export default {
   title: 'ui-kit/forms/TextInputAutocomplete',
   component: TextInputAutocomplete,
 }
-const getSuggestions = () => {
+const getSuggestions = async () => {
   return [
     { value: '1', label: '12 rue des étoiles - 75000 - Paris' },
     { value: '2', label: '19 rue de la république - 69000 - Lyon' },

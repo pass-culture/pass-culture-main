@@ -34,7 +34,7 @@ export default {
       latitude: f.geometry.coordinates[1],
       longitude: f.geometry.coordinates[0],
       label: f.properties.label,
-      postalCode: f.properties.postCode,
+      postalCode: f.properties.postcode,
     }))
   },
 }

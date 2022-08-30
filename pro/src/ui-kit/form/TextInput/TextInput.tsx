@@ -1,5 +1,5 @@
 import { useField } from 'formik'
-import React from 'react'
+import React, { ForwardedRef } from 'react'
 
 import { BaseInput, FieldLayout } from '../shared'
 
@@ -19,6 +19,7 @@ interface ITextInputProps
   rightButton?: () => JSX.Element
   step?: number | string
   inline?: boolean
+  refForInput?: ForwardedRef<HTMLInputElement>
 }
 
 const TextInput = ({
@@ -33,6 +34,7 @@ const TextInput = ({
   maxLength,
   smallLabel,
   isOptional = false,
+  refForInput,
   rightButton,
   step,
   inline = false,
@@ -65,6 +67,7 @@ const TextInput = ({
         step={step}
         type={type}
         rightButton={rightButton}
+        ref={refForInput}
         {...field}
         {...props}
       />
