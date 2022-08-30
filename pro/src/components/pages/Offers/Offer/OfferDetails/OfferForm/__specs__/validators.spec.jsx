@@ -61,7 +61,7 @@ describe('validators', () => {
         '',
         'robert.machin+@example.com',
         '+robert.machin+@example.com',
-        'Bourgoin-Jallieu@clubfl.net',
+        'Robert-Machin@example.net',
       ]
 
       // when
