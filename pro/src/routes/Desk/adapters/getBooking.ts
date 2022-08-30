@@ -52,6 +52,18 @@ const getBookingFailure = (
       },
     }
   }
+  if (apiResponseError.status === HTTP_STATUS.FORBIDDEN) {
+    const apiReimbursedErrorMessage = apiResponseError.body['payment']
+    if (apiReimbursedErrorMessage) {
+      return {
+        error: {
+          isTokenValidated: false,
+          message: apiReimbursedErrorMessage,
+          variant: MESSAGE_VARIANT.ERROR,
+        },
+      }
+    }
+  }
   return {
     error: {
       isTokenValidated: false,
