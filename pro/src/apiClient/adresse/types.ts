@@ -7,7 +7,7 @@ export interface IFeatureAdresseApi {
     city: string
     id: string
     label: string
-    postCode: string
+    postcode: string
   }
 }
 

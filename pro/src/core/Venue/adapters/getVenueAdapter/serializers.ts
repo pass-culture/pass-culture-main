@@ -4,10 +4,12 @@ import { IVenue } from 'core/Venue'
 
 export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
   return {
+    address: venue.address || '',
     bannerMeta: venue.bannerMeta
       ? serializeBannerMetaApi(venue.bannerMeta)
       : undefined,
     bannerUrl: venue.bannerUrl || '',
+    city: venue.city || '',
     comment: venue.comment || '',
     contact: {
       phoneNumber: venue.contact?.phoneNumber || '',
@@ -18,9 +20,12 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     id: venue.id,
     isPermanent: venue.isPermanent || false,
     isVenueVirtual: venue.isVirtual,
+    latitude: venue.latitude || 0,
+    longitude: venue.longitude || 0,
     mail: venue.bookingEmail || '',
     name: venue.name,
     publicName: venue.publicName || '',
+    postalCode: venue.postalCode || '',
     siret: venue.siret || '',
     venueLabel: venue.venueLabelId || '',
     venueType: venue.venueTypeCode || '',

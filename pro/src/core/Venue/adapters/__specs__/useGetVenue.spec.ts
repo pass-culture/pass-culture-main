@@ -8,6 +8,7 @@ import { useGetVenue } from '../getVenueAdapter'
 describe('useGetVenue', () => {
   it('should return loading payload then success payload', async () => {
     const apiVenue: GetVenueResponseModel = {
+      address: '12 rue du pilas',
       bannerMeta: {
         image_credit: null,
         original_image_url:
@@ -20,6 +21,7 @@ describe('useGetVenue', () => {
         },
       },
       bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
+      city: 'Paris',
       collectiveDomains: [],
       contact: {
         email: 'test@test.com',
@@ -32,6 +34,8 @@ describe('useGetVenue', () => {
       isValidated: true,
       isVirtual: false,
       isPermanent: true,
+      latitude: 12.3,
+      longitude: 14.2,
       managingOfferer: {
         city: 'Paris',
         dateCreated: '2022-07-29T12:18:43.087097Z',
@@ -44,6 +48,7 @@ describe('useGetVenue', () => {
       managingOffererId: 'AA',
       name: 'Lieu name',
       nonHumanizedId: 12,
+      postalCode: '75000',
       publicName: 'Cinéma des iles',
       description: 'description du lieu',
       comment: 'commentaire lieu sans siret',
@@ -61,6 +66,7 @@ describe('useGetVenue', () => {
     expect(loadingState.error).toBeUndefined()
 
     const venue = {
+      address: '12 rue du pilas',
       bannerMeta: {
         image_credit: '',
         original_image_url:
@@ -73,6 +79,7 @@ describe('useGetVenue', () => {
         },
       },
       bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
+      city: 'Paris',
       contact: {
         email: 'test@test.com',
         phoneNumber: '0606060606',
@@ -80,6 +87,9 @@ describe('useGetVenue', () => {
       },
       id: 'AE',
       isPermanent: true,
+      latitude: 12.3,
+      longitude: 14.2,
+      postalCode: '75000',
       publicName: 'Cinéma des iles',
       description: 'description du lieu',
       isVenueVirtual: false,
