@@ -21,6 +21,7 @@ import { FieldValues } from 'react-hook-form'
 
 import { Colors } from '../../layout/Colors'
 import {
+  getErrorMessage,
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
@@ -131,7 +132,7 @@ export const UserSearch = () => {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
       } else {
-        notify('Une erreur est survenue !', { type: 'error' })
+        notify(getErrorMessage('errors.api.generic'), { type: 'error' })
       }
       captureException(error)
     }

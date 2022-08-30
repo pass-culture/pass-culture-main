@@ -1,10 +1,11 @@
 import decodeJwt from 'jwt-decode'
 import { UserManager } from 'oidc-client'
-import { AuthProvider, useTranslate } from 'react-admin'
+import { AuthProvider } from 'react-admin'
 
 import { env } from '../libs/environment/env'
 import { eventMonitoring } from '../libs/monitoring/sentry'
 
+import { getErrorMessage } from './apiHelpers'
 import { getProfileFromToken } from './getProfileFromToken'
 import { AuthToken, tokenApiPayload } from './types'
 
@@ -16,10 +17,6 @@ const userManager = new UserManager({
   scope: 'openid email profile', // Allow to retrieve the email and user name later api side
 })
 
-const translate = (key: string) => {
-  const translator = useTranslate()
-  return translator(key)
-}
 const cleanup = () => {
   // Remove the ?code&state from the URL
   window.history.replaceState({}, window.document.title, window.location.origin)
@@ -59,7 +56,7 @@ export const authProvider: AuthProvider = {
 
       const tokenApi = localStorage.getItem('tokenApi')
       if (!tokenApi) {
-        throw new Error(translate('errors.token.api'))
+        throw new Error(getErrorMessage('errors.token.api'))
       }
 
       await userManager.clearStaleState()
@@ -82,7 +79,7 @@ export const authProvider: AuthProvider = {
   async checkAuth() {
     const token = localStorage.getItem('token')
     if (!token) {
-      throw new Error(translate('errors.token.notFound'))
+      throw new Error(getErrorMessage('errors.token.login'))
     }
 
     // This is specific to the Google authentication implementation
@@ -92,7 +89,7 @@ export const authProvider: AuthProvider = {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 12356
     if (now.getTime() > jwt.exp * 1000) {
-      throw new Error(translate('errors.token.expired'))
+      throw new Error(getErrorMessage('errors.token.expired'))
     }
   },
   async logout() {
@@ -110,7 +107,7 @@ export const authProvider: AuthProvider = {
         avatar: jwt.picture,
       }
     } catch (error) {
-      throw new Error(translate('errors.token.notFound'))
+      throw new Error(getErrorMessage('errors.token.notFound'))
     }
   },
   // authorization
@@ -121,7 +118,7 @@ export const authProvider: AuthProvider = {
         ? Promise.resolve(JSON.parse(permissionString))
         : Promise.reject()
     } catch (error) {
-      throw new Error(translate('errors.permissions.notFound'))
+      throw new Error(getErrorMessage('errors.permissions.notFound'))
     }
   },
 }
