@@ -78,9 +78,12 @@ def _update_fraud_check_with_new_content(
     fraud_check: fraud_models.BeneficiaryFraudCheck, new_content: fraud_models.DMSContent
 ) -> None:
     fraud_check.resultContent = new_content.dict()
-    fraud_check.eligibilityType = fraud_api.decide_eligibility(
+    new_eligibility = fraud_api.decide_eligibility(
         fraud_check.user, new_content.get_birth_date(), new_content.get_registration_datetime()
     )
+    if new_eligibility != fraud_check.eligibilityType:
+        logger.warning("[DMS] User changed the eligibility in application %s", fraud_check.thirdPartyId)
+        fraud_check.eligibilityType = new_eligibility
 
 
 def _compute_birth_date_error_details(
@@ -355,13 +358,6 @@ def _process_accepted_application(
         return
 
     dms_content: fraud_models.DMSContent = fraud_check.source_data()  # type: ignore [assignment]
-    eligibility_type = fraud_api.decide_eligibility(
-        user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
-    )
-
-    if fraud_check.eligibilityType != eligibility_type:
-        logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
-        fraud_check.eligibilityType = eligibility_type
 
     try:
         fraud_api.on_dms_fraud_result(user, fraud_check)
