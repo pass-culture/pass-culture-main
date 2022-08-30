@@ -1,10 +1,6 @@
 import '@testing-library/jest-dom'
 
-import {
-  isUrlValid,
-  isUrlWithStringInterpolationValid,
-  isEmailValid,
-} from '../validators'
+import { isUrlValid, isEmailValid } from '../validators'
 
 describe('validators', () => {
   describe('isUrlValid', () => {
@@ -12,9 +8,19 @@ describe('validators', () => {
       // given
       const urls = [
         'http://kikou.com',
+        'http://kikou.com/',
+        'https://kikou.com/',
+        'http://www.kikou.com/',
+        'http://kikou_lol.com',
+        'http://kikou@lol.com',
         null,
         '',
-        'https://ABxc123.lol/bla?kikou=bla',
+        'http://182.168.1.200',
+        'http://182.168.1.200/M/lol/blabla/fiche.php?&typearticle=68092',
+        'http://kikou--lol.com',
+        'http://KIKOU_lol.com',
+        'https://kikou.com/évêöù?%$£()Æ&«»""숲',
+        'http://kikou.com?token={token}&email={email}&offerId={offerId}',
       ]
 
       // when
@@ -35,50 +41,11 @@ describe('validators', () => {
         ' http://kikou.com',
         'http://kikou.com ',
         'http://kikou.com http://kikou.com',
-        'http://kikou.com?token={token}&email={email}&offerId={offerId}',
+        'http://kikou.com?token={token}&email={email}& offerId={offerId}',
       ]
 
       // when
       const results = urls.map(isUrlValid)
-
-      // then
-      expect(results.every(element => element === false)).toBe(true)
-    })
-  })
-
-  describe('isUrlWithStringInterpolationValid', () => {
-    it('should return true for valid urls', () => {
-      // given
-      const urls = [
-        'http://kikou.com',
-        null,
-        '',
-        'https://ABxc123.lol/bla?kikou=bla',
-        'http://kikou.com?token={token}&email={email}&offerId={offerId}',
-      ]
-
-      // when
-      const results = urls.map(isUrlWithStringInterpolationValid)
-
-      // then
-      expect(results.every(element => element === true)).toBe(true)
-    })
-
-    it('should return false for invalid urls', () => {
-      // given
-      const urls = [
-        'kikou.com',
-        'http://kikou',
-        'http://.com',
-        'http://kikou.c',
-        'http://kik&$ou.com',
-        ' http://kikou.com',
-        'http://kikou.com ',
-        'http://kikou.com http://kikou.com',
-      ]
-
-      // when
-      const results = urls.map(isUrlWithStringInterpolationValid)
 
       // then
       expect(results.every(element => element === false)).toBe(true)
@@ -88,7 +55,14 @@ describe('validators', () => {
   describe('isEmailValid', () => {
     it('should return true for valid emails', async () => {
       // given
-      const emails = ['robert.machin@example.com', null, '']
+      const emails = [
+        'robert.machin@example.com',
+        null,
+        '',
+        'robert.machin+@example.com',
+        '+robert.machin+@example.com',
+        'Bourgoin-Jallieu@clubfl.net',
+      ]
 
       // when
       const results = await Promise.all(emails.map(isEmailValid))
@@ -106,6 +80,21 @@ describe('validators', () => {
         'robert.machinexample.com',
         'robert.machin@example.com ',
         'robert.machin@example.com robert2.machin@example.com',
+        'plainaddress',
+        '#@%^%#$@#$@#.com',
+        '@example.com',
+        'Joe Smith <email@example.com>',
+        'email.example.com',
+        'email@example@example.com',
+        '.email@example.com',
+        'email.@example.com',
+        'email..email@example.com',
+        'email@example.com (Joe Smith)',
+        'email@example',
+        'email@-example.com',
+        'email@111.222.333.44444',
+        'email@example..com',
+        'Abc..123@example.com',
       ]
 
       // when
