@@ -53,11 +53,7 @@ import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
 import { OfferWithdrawalTypeOptions } from './OfferWithdrawalTypeOptions'
 import SynchronizedProviderInformation from './SynchronisedProviderInfos'
-import {
-  isUrlValid,
-  isUrlWithStringInterpolationValid,
-  isEmailValid,
-} from './validators'
+import { isUrlValid, isEmailValid } from './validators'
 
 const OfferForm = ({
   areAllVenuesVirtual,
@@ -472,7 +468,7 @@ const OfferForm = ({
       newFormErrors['disabilityCompliant'] = 'Ce champ est obligatoire.'
     }
 
-    if (!isUrlWithStringInterpolationValid(formValues.url)) {
+    if (!isUrlValid(formValues.url)) {
       newFormErrors['url'] = 'Veuillez renseigner une URL valide'
     }
 
@@ -666,7 +662,7 @@ const OfferForm = ({
   )
 
   const handleUrlUpdate = event => {
-    if (isUrlWithStringInterpolationValid(event.target.value)) {
+    if (isUrlValid(event.target.value)) {
       resetFormError('url')
     }
 
