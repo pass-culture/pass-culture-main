@@ -144,7 +144,7 @@ def handle_dms_application(
     return fraud_check
 
 
-def _notify_field_error(field_errors: list[dms_types.DmsFieldErrorDetails], application_scalar_id: str) -> None:
+def _send_field_error_dms_email(field_errors: list[dms_types.DmsFieldErrorDetails], application_scalar_id: str) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     client.send_user_message(
         application_scalar_id,
@@ -153,7 +153,7 @@ def _notify_field_error(field_errors: list[dms_types.DmsFieldErrorDetails], appl
     )
 
 
-def _notify_eligibility_error(
+def _send_eligibility_error_dms_email(
     birth_date: date | None,
     application_scalar_id: str,
     extra_data: dict | None = None,
@@ -215,10 +215,10 @@ def _process_draft_application(
         return
 
     if current_fraud_check.eligibilityType is None:
-        _notify_eligibility_error(birth_date, application_scalar_id, extra_data=log_extra_data)
+        _send_eligibility_error_dms_email(birth_date, application_scalar_id, extra_data=log_extra_data)
         _on_dms_eligibility_error(user, current_fraud_check, birth_date, extra_data=log_extra_data)
     if field_errors:
-        _notify_field_error(field_errors, application_scalar_id)
+        _send_field_error_dms_email(field_errors, application_scalar_id)
         subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=True)
         _update_fraud_check_with_field_errors(current_fraud_check, field_errors, fraud_check_status=draft_status)
 
