@@ -64,11 +64,11 @@ def build_field_errors_user_message(field_errors: list[dms_models.DmsFieldErrorD
     )
 
 
-def build_dms_error_message_user_not_eligible(birth_date: datetime.date) -> str:
+def build_dms_error_message_user_not_eligible(formatted_birth_date: str) -> str:
     return (
         "Bonjour,\n"
         "\n"
-        f"Nous avons bien reçu ton dossier, mais la date de naissance que tu as renseignée ({birth_date.isoformat()}) indique que tu n’as pas l’âge requis pour profiter du pass Culture (tu dois avoir entre 15 et 18 ans).\n"
+        f"Nous avons bien reçu ton dossier, mais la date de naissance que tu as renseignée ({formatted_birth_date}) indique que tu n’as pas l’âge requis pour profiter du pass Culture (tu dois avoir entre 15 et 18 ans).\n"
         f"S’il s’agit d’une erreur, tu peux modifier ton dossier.\n"
         "\n"
         'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>'

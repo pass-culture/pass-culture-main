@@ -769,8 +769,12 @@ class DmsWebhookApplicationTest:
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
-        assert fraud_check.reason == "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_NOT_VALID]
+        assert (
+            fraud_check.reason
+            == f"Erreur dans les données soumises dans le dossier DMS : 'birth_date' ({birthday_date.isoformat()})"
+        )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_application_on_going(self, execute_query, client):
