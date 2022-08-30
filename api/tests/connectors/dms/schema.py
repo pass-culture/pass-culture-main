@@ -3,6 +3,10 @@ import graphql as gql
 from . import fixtures
 
 
+ISO8601DateTime = gql.GraphQLScalarType(
+    name="ISO8601DateTime", description="ISO8601 DateTime", serialize=lambda d: d.isoformat()
+)
+
 address_type_enum = gql.GraphQLEnumType(
     "AddressType",
     {
@@ -654,8 +658,8 @@ demarche_type = gql.GraphQLObjectType(
                 "first": gql.GraphQLArgument(gql.GraphQLInt),
                 "last": gql.GraphQLArgument(gql.GraphQLInt),
                 "order": gql.GraphQLArgument(order_enum),
-                "createdSince": gql.GraphQLArgument(gql.GraphQLString),
-                "updatedSince": gql.GraphQLArgument(gql.GraphQLString),
+                "createdSince": gql.GraphQLArgument(ISO8601DateTime),
+                "updatedSince": gql.GraphQLArgument(ISO8601DateTime),
                 "state": gql.GraphQLArgument(dossier_state_enum),
                 "archived": gql.GraphQLArgument(gql.GraphQLBoolean),
                 "revision": gql.GraphQLArgument(gql.GraphQLID),
