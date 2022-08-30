@@ -191,6 +191,37 @@ describe('src | routes | Desk', () => {
     expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
   })
 
+  it('test getBooking failure, booking reimbursed', async () => {
+    const cancelledErrorMessage = 'Cette réservation a été remboursée'
+    jest.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: HTTP_STATUS.FORBIDDEN,
+          body: { payment: 'Cette réservation a été remboursée' },
+        } as ApiResult,
+        cancelledErrorMessage
+      )
+    )
+
+    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
+
+    userEvent.click(buttonGetBooking)
+    await waitFor(() => {
+      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
+        testToken
+      )
+    })
+    // to fix - no-conditional-in-test
+    const response = JSON.parse(responseDataContainer.textContent || '')
+
+    expect(Object.keys(response)).toHaveLength(1)
+    expect(response.error).toBeDefined()
+    expect(response.error.isTokenValidated).toBe(false)
+    expect(response.error.message).toBe(cancelledErrorMessage)
+    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
+  })
+
   it('test getBooking failure, api error', async () => {
     const globalErrorMessage = 'Server error'
     jest
