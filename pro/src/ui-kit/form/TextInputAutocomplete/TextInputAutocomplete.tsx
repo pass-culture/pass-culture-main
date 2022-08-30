@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useField, useFormikContext } from 'formik'
-import React, { useEffect, useRef, useState } from 'react'
+import { debounce } from 'lodash'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 
@@ -19,7 +20,7 @@ export interface ITextInputAutocompleteProps {
   disabled?: boolean
   fieldName: string
   filterLabel?: string
-  getSuggestions: (search: string) => IAutocompleteItemProps[]
+  getSuggestions: (search: string) => Promise<IAutocompleteItemProps[]>
   hideFooter?: boolean
   isOptional?: boolean
   label: string
@@ -31,6 +32,7 @@ export interface ITextInputAutocompleteProps {
   smallLabel?: boolean
   placeholder?: string
   hideArrow?: boolean
+  useDebounce?: boolean
 }
 
 const AutocompleteTextInput = ({
@@ -45,9 +47,11 @@ const AutocompleteTextInput = ({
   onSelectCustom,
   smallLabel = false,
   placeholder,
+  useDebounce = false,
 }: ITextInputAutocompleteProps): JSX.Element => {
   const [suggestions, setSuggestions] = useState<SelectOption[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [isFocus, setIsFocus] = useState(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -58,24 +62,42 @@ const AutocompleteTextInput = ({
   const [lastSelectedValue, setLastSelectedValue] =
     useState<IAutocompleteItemProps>()
 
-  const { setFieldValue } = useFormikContext()
+  const { setFieldValue, setFieldTouched } = useFormikContext()
 
-  const updateSuggestions = (search: string) => {
-    const suggestions = getSuggestions(search)
-    if (suggestions.length > 0) {
-      setSuggestions(suggestions)
-      setIsOpen(true)
-    } else {
-      setIsOpen(false)
-    }
-  }
-  const handleSearchChange = (search: string) => {
-    updateSuggestions(search)
-    if (!search) {
-      setIsOpen(false)
-    }
-    setFieldValue(`search-${fieldName}`, search, false)
-  }
+  const updateSuggestions = useCallback(
+    async (search: string) => {
+      const suggestions = await getSuggestions(search)
+      if (suggestions.length > 0) {
+        setSuggestions(suggestions)
+        if (isFocus) {
+          setIsOpen(true)
+        }
+      } else {
+        setIsOpen(false)
+      }
+    },
+    [isFocus]
+  )
+
+  const debouncedSearch = useCallback(debounce(updateSuggestions, 300), [
+    isFocus,
+  ])
+
+  const handleSearchChange = useCallback(
+    (search: string) => {
+      if (useDebounce) {
+        debouncedSearch(search)
+      } else {
+        updateSuggestions(search)
+      }
+
+      if (!search) {
+        setIsOpen(false)
+      }
+      setFieldValue(`search-${fieldName}`, search, false)
+    },
+    [updateSuggestions, debouncedSearch]
+  )
 
   const updateFieldWithSelectedItem = (
     selectedItem?: IAutocompleteItemProps
@@ -90,6 +112,7 @@ const AutocompleteTextInput = ({
     setLastSelectedValue(selectedItem)
     updateFieldWithSelectedItem(selectedItem)
     setIsOpen(false)
+    setIsFocus(false)
   }
 
   const renderSuggestion = (item: SelectOption, disabled?: boolean) => (
@@ -110,22 +133,28 @@ const AutocompleteTextInput = ({
       readOnly
     />
   )
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent): void => {
+  const handleClickOutside = useCallback(
+    (e: MouseEvent): void => {
       if (!containerRef.current?.contains(e.target as Node)) {
         if (isOpen || !searchField.value) {
           updateFieldWithSelectedItem(lastSelectedValue)
           setIsOpen(false)
+          setFieldTouched(fieldName)
         }
+        setIsFocus(false)
       }
-    }
+    },
+    [isOpen, lastSelectedValue, updateFieldWithSelectedItem]
+  )
+
+  useEffect(() => {
     if (containerRef.current) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [containerRef, isOpen, lastSelectedValue, updateFieldWithSelectedItem])
+  }, [containerRef, handleClickOutside])
 
   return (
     <FieldLayout
@@ -143,6 +172,12 @@ const AutocompleteTextInput = ({
         ref={containerRef}
       >
         <BaseInput
+          onFocus={() => {
+            setIsFocus(true)
+            if (suggestions.length > 0) {
+              setIsOpen(true)
+            }
+          }}
           placeholder={placeholder ?? label}
           hasError={meta.touched && !!meta.error}
           type="text"

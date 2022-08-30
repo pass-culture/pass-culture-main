@@ -25,7 +25,7 @@ describe('src | ui-kit | form | TextInputAutocomplete', () => {
   let initialValues = {}
   let props: ITextInputAutocompleteProps
   const onSelectCustom = jest.fn()
-  const getSuggestions = (search: string) => {
+  const getSuggestions = async (search: string) => {
     if (search == 'testNoSuggestions') {
       return []
     }
