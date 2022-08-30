@@ -777,6 +777,55 @@ class DmsWebhookApplicationTest:
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    @freezegun.freeze_time("2021-12-20 09:00:00")
+    @testing.override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
+    def test_on_going_birth_date_and_first_name_error(self, send_user_message, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            6044787,
+            state=dms_models.GraphQLApplicationStates.on_going.value,
+            email=user.email,
+            birth_date=datetime.date(2012, 5, 12),
+            first_name=r"J/\cques",
+        )
+
+        form_data = {
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        send_user_message.assert_not_called()
+
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : les champs ‘ta date de naissance, ton prénom’ ne sont pas valides."
+        )
+
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.reasonCodes == [
+            fraud_models.FraudReasonCode.AGE_NOT_VALID,
+            fraud_models.FraudReasonCode.ERROR_IN_DATA,
+        ]
+        assert (
+            fraud_check.reason
+            == r"Erreur dans les données soumises dans le dossier DMS : 'birth_date' (2012-05-12),'first_name' (J/\cques)"
+        )
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_application_on_going(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(

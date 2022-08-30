@@ -154,11 +154,26 @@ def handle_dms_application(
     birth_date_error = _compute_birth_date_error_details(fraud_check, application_content)
 
     if state == dms_models.GraphQLApplicationStates.draft:
-        _process_draft_application(user, fraud_check, application_scalar_id, field_errors, birth_date_error)
+        _process_in_progress_application(
+            user,
+            fraud_check,
+            fraud_models.FraudCheckStatus.STARTED,
+            application_scalar_id,
+            field_errors,
+            birth_date_error,
+            is_application_updatable=True,
+        )
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
-        subscription_messages.on_dms_application_received(user)
-        fraud_check.status = fraud_models.FraudCheckStatus.PENDING
+        _process_in_progress_application(
+            user,
+            fraud_check,
+            fraud_models.FraudCheckStatus.PENDING,
+            application_scalar_id,
+            field_errors,
+            birth_date_error,
+            is_application_updatable=False,
+        )
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
         _process_accepted_application(user, fraud_check, field_errors)
@@ -203,40 +218,44 @@ def _send_eligibility_error_dms_email(
     )
 
 
-def _process_draft_application(
+def _process_in_progress_application(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
+    fraud_check_status: fraud_models.FraudCheckStatus,
     application_scalar_id: str,
     field_errors: list[dms_types.DmsFieldErrorDetails],
     birth_date_error: dms_types.DmsFieldErrorDetails | None,
+    is_application_updatable: bool,
 ) -> None:
-    draft_status = fraud_models.FraudCheckStatus.STARTED
-
     if not field_errors and birth_date_error is None:
         subscription_messages.on_dms_application_received(user)
-        fraud_check.status = draft_status
+        fraud_check.status = fraud_check_status
         return
 
     errors = []
     reason_codes = []
 
     if birth_date_error is not None:
-        _send_eligibility_error_dms_email(birth_date_error.value, application_scalar_id, fraud_check.thirdPartyId)  # type: ignore [arg-type]
+        if is_application_updatable:
+            _send_eligibility_error_dms_email(birth_date_error.value, application_scalar_id, fraud_check.thirdPartyId)  # type: ignore [arg-type]
         reason_codes.append(fraud_models.FraudReasonCode.AGE_NOT_VALID)
         errors.append(birth_date_error)
 
     if field_errors:
-        _send_field_error_dms_email(field_errors, application_scalar_id)
+        if is_application_updatable:
+            _send_field_error_dms_email(field_errors, application_scalar_id)
         reason_codes.append(fraud_models.FraudReasonCode.ERROR_IN_DATA)
         errors.extend(field_errors)
 
     logger.warning(
         "[DMS] Errors found in DMS application",
-        extra={"third_party_id": fraud_check.thirdPartyId, "errors": errors, "status": draft_status},
+        extra={"third_party_id": fraud_check.thirdPartyId, "errors": errors, "status": fraud_check_status},
     )
-    subscription_messages.on_dms_application_field_errors(user, errors, is_application_updatable=True)
+    subscription_messages.on_dms_application_field_errors(
+        user, errors, is_application_updatable=is_application_updatable
+    )
     _update_fraud_check_with_field_errors(
-        fraud_check, errors, fraud_check_status=draft_status, reason_codes=reason_codes
+        fraud_check, errors, fraud_check_status=fraud_check_status, reason_codes=reason_codes
     )
 
 
