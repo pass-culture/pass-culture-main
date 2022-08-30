@@ -276,11 +276,9 @@ const VenueCreation = () => {
 
   return (
     <div className="venue-page">
-      <GoBackLink
-        to={`/accueil?structure=${offererId}`}
-        title="Accueil"
-        className="venue-page-links"
-      />
+      <div className="venue-page-links">
+        <GoBackLink to={`/accueil?structure=${offererId}`} title="Accueil" />
+      </div>
       <PageTitle title="Créer un lieu" />
       <Titles title="Lieu" />
       <p className="advice">Ajoutez un lieu où accéder à vos offres.</p>
