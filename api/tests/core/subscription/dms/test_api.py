@@ -173,6 +173,7 @@ class HandleDmsApplicationTest:
         assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
 
     @patch("pcapi.core.subscription.dms.api.subscription_messages.on_dms_application_received")
+    @freezegun.freeze_time("2016-11-02")
     def test_multiple_call_for_same_application(self, mock_on_dms_application_received, db_session):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
@@ -182,10 +183,11 @@ class HandleDmsApplicationTest:
             application_number=application_number,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
-            birth_date=datetime.datetime(2016, 1, 1),
+            birth_date=datetime.datetime(2000, 1, 1),
         )
 
         dms_subscription_api.handle_dms_application(dms_response)
+
         mock_on_dms_application_received.assert_called_once_with(user)
         mock_on_dms_application_received.reset_mock()
         dms_fraud_check = [
@@ -270,7 +272,7 @@ class HandleDmsApplicationTest:
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
             subscription_message.userMessage
-            == f"Nous avons bien reçu ton dossier le {datetime.date.today():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘ta pièce d'identité’ n’est pas valide."
         )
 
         send_dms_message_mock.assert_not_called()
