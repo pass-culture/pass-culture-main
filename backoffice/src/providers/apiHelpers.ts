@@ -1,5 +1,7 @@
 import { fetchUtils, HttpError } from 'react-admin'
 
+import { i18nProvider } from './i18nProvider'
+
 export class PcApiHttpError extends HttpError {
   readonly message!: string
   readonly status!: number
@@ -23,4 +25,9 @@ export async function safeFetch(url: string, options: RequestInit = {}) {
 
 export function getHttpApiErrorMessage(error: PcApiHttpError) {
   return Object.values(error.body)[0]
+}
+
+export const getErrorMessage = (message: string) => {
+  const i18nContext = i18nProvider
+  return i18nContext.translate(message, null)
 }
