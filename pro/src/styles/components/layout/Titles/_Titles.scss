@@ -87,5 +87,6 @@ h3.section-title {
 
 .title-description {
   @include fonts.body();
+
   margin-top: rem.torem(20px);
 }

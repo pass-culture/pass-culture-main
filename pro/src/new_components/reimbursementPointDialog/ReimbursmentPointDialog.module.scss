@@ -4,26 +4,33 @@
 
 .dialog-box {
   width: rem.torem(600px);
+
   .title {
     @include fonts.title3();
+
     max-width: rem.torem(500px);
     margin-bottom: rem.torem(32px);
     line-height: rem.torem(24px);
   }
+
   .subtitle {
     margin-bottom: rem.torem(8px);
   }
+
   .description {
     margin-bottom: rem.torem(16px);
-    max-width: rem.torem(500px);;
+    max-width: rem.torem(500px);
   }
+
   .separator {
-    border: rem.torem(1px) solid #CBCDD2;
+    border: rem.torem(1px) solid #cbcdd2;
     margin: rem.torem(32px) 0;
   }
+
   .link-button {
     margin-top: rem.torem(15px);
   }
+
   .icon-button {
     margin-right: rem.torem(10px);
   }

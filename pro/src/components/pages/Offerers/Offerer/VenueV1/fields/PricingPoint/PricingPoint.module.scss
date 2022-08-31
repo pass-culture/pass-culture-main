@@ -4,16 +4,20 @@
   font-size: rem.torem(16px);
   font-weight: 600;
 }
+
 .reimbursement-subtitle {
   margin: rem.torem(24px) 0;
   font-size: rem.torem(15px);
+
   .text-hightlight {
     font-weight: 600;
   }
 }
+
 .text-dialog {
   margin-bottom: rem.torem(30px);
 }
+
 .dropDown-container {
   display: flex;
   align-items: center;
@@ -23,9 +27,11 @@
     width: rem.torem(550px);
     text-overflow: ellipsis;
   }
+
   .space-left {
     margin-left: rem.torem(16px);
   }
+
   .space-text-left {
     margin-left: rem.torem(10px);
     font-weight: 500;

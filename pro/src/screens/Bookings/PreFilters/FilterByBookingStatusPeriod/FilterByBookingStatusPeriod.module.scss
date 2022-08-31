@@ -2,14 +2,17 @@
 
 .satus-period-filter {
   display: flex;
+
   select,
   :global(.period-filter-inputs) {
     margin-top: 0 !important;
   }
+
   :global(.input-select-full-width > select) {
     border-right: none;
     border-radius: rem.torem(20px) 0 0 rem.torem(20px);
   }
+
   :global(.period-filter .field-date-begin) {
     border-radius: 0;
   }

@@ -4,6 +4,7 @@
 
 .venue-image {
   $height: rem.torem(176px);
+
   width: math.div($height * 3, 2);
   height: $height;
   object-fit: cover;

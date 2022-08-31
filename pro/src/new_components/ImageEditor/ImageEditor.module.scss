@@ -14,6 +14,7 @@
 
   &-label {
     @include fonts.body;
+
     padding-top: rem.torem(24px);
   }
 
@@ -21,12 +22,12 @@
     width: 100%;
     display: flex;
     align-items: center;
-
     padding-top: rem.torem(8px);
     padding-bottom: rem.torem(24px);
 
     &-label {
       @include fonts.caption;
+
       margin-left: rem.torem(28px);
       margin-right: rem.torem(28px);
       padding-bottom: rem.torem(4px);

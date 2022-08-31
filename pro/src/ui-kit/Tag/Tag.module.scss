@@ -13,26 +13,29 @@
   display: inline-flex;
   line-height: rem.torem(16px);
   padding: 0 rem.torem(4px) rem.torem(1px) rem.torem(4px);
+
   &-closeable {
     background-color: colors.$grey-light;
     border-color: colors.$grey-light;
     color: colors.$black;
   }
+
   &-close-button {
     @include fonts.highlight();
+
     line-height: rem.torem(16px);
     background: none;
-    border:none;
+    border: none;
     display: flex;
 
     &--disabled {
       cursor: default;
+
       .tag-close-button-icon {
         cursor: default;
       }
     }
-    
-   
+
     &-icon {
       margin: rem.torem(3.2px) 0 rem.torem(1.6px) rem.torem(4.8px);
       fill: colors.$black;
@@ -41,5 +44,4 @@
       cursor: pointer;
     }
   }
-  
 }

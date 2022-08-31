@@ -10,6 +10,7 @@
 .or-separator {
   margin-bottom: rem.torem(24px);
 }
+
 .select-description {
   margin-bottom: rem.torem(16px);
 }
@@ -22,6 +23,7 @@
 
 .label-reimbursment-point {
   @include fonts.body();
+
   margin-bottom: rem.torem(8px);
 }
 

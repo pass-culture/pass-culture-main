@@ -5,6 +5,7 @@
 .display-venue-link {
   &-container {
     @include fonts.button();
+
     display: inline-flex;
     color: colors.$primary;
   }

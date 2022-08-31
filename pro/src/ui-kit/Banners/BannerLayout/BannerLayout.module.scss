@@ -45,6 +45,7 @@
   &-text {
     line-height: rem.torem(20px);
     text-align: left;
+
     &.with-margin {
       margin-bottom: rem.torem(12px);
     }
@@ -74,5 +75,5 @@
 }
 
 .domain-name-banner {
-  margin: rem.torem(0px) 0 rem.torem(32px) 0;
+  margin: rem.torem(0) 0 rem.torem(32px) 0;
 }

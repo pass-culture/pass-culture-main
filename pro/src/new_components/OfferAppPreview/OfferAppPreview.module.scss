@@ -39,6 +39,7 @@
 
   .offer-title {
     @include fonts.button();
+
     max-width: rem.torem(224px);
     overflow-wrap: break-word;
     text-align: center;
@@ -52,6 +53,7 @@
 
   .offer-description {
     @include fonts.preview-text();
+
     padding: rem.torem(0) rem.torem(15px) rem.torem(15px);
     word-break: break-word;
   }

@@ -17,7 +17,7 @@
       @include fonts.caption();
 
       align-content: space-between;
-      background-color: #F1F1F4;
+      background-color: #f1f1f4;
       border-radius: rem.torem(6px);
       display: flex;
       flex-flow: row wrap;
@@ -25,6 +25,7 @@
 
       .provider-name {
         @include fonts.title4();
+
         flex: 1;
         margin: auto;
       }

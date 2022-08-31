@@ -8,11 +8,12 @@
       margin-bottom: 0;
     }
   }
+
   &-horizontal {
     display: flex;
+
     .radio-group-item {
       margin-right: rem.torem(16px);
-
     }
   }
 }
