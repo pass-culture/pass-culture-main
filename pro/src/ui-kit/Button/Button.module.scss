@@ -5,11 +5,12 @@
 .button {
   @include fonts.button();
 
-  display: flex;
+  display: inline-flex;
   align-items: center;
   border: rem.torem(2px) solid;
   border-radius: rem.torem(24px);
   height: rem.torem(40px);
+  justify-content: center;
   padding: 0 rem.torem(16px);
 
   &:focus {
