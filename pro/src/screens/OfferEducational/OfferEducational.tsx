@@ -107,6 +107,10 @@ const OfferEducational = ({
           audio: Boolean(venue?.audioDisabilityCompliant),
           none: noDisabilityCompliant,
         },
+        eventAddress: {
+          ...formik.values.eventAddress,
+          venueId: formik.values.venueId,
+        },
       })
     }
   }, [formik.values.venueId, formik.values.offererId])

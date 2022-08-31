@@ -63,4 +63,47 @@ describe('screens | OfferEducational : event address step', () => {
 
     await waitFor(() => expect(accessibilityCheckboxes).toHaveLength(2))
   })
+
+  it('should prefill event address venue when selecting venue for reimbursement', async () => {
+    props.userOfferers = [
+      ...props.userOfferers,
+      userOffererFactory({
+        id: 'offerer',
+        managedVenues: [
+          managedVenueFactory({ id: 'first_venue', name: 'First venue name' }),
+          managedVenueFactory({
+            id: 'second_venue',
+            name: 'Second venue name',
+          }),
+        ],
+      }),
+    ]
+    renderEACOfferForm(props, store)
+
+    const offererSelect = await screen.findByLabelText('Structure')
+
+    await userEvent.selectOptions(offererSelect, ['offerer'])
+
+    const venuesSelect = await screen.findByLabelText(
+      'Lieu qui percevra le remboursement'
+    )
+    await userEvent.selectOptions(venuesSelect, ['first_venue'])
+
+    const offerVenueSelect = await screen.findByLabelText(
+      'Sélectionner le lieu'
+    )
+    expect(offerVenueSelect).toHaveValue('first_venue')
+
+    expect(
+      screen.getByText('First venue name', { exact: false, selector: 'div' })
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(venuesSelect, ['second_venue'])
+
+    expect(offerVenueSelect).toHaveValue('second_venue')
+
+    expect(
+      screen.getByText('Second venue name', { exact: false, selector: 'div' })
+    ).toBeInTheDocument()
+  })
 })
