@@ -50,7 +50,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
     )
 
     return models.SendinblueTransactionalEmailData(
-        template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,  # id_prod à zero -> à changer avec l'id du template sur le compte sib de prod
+        template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,
         params={
             "BOOKING_LINK": booking_app_link(individual_booking.booking),
             "EVENT_DATE": formatted_event_beginning_date,
