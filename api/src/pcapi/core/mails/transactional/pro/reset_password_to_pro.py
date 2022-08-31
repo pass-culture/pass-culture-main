@@ -9,6 +9,7 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
@@ -50,7 +51,11 @@ def send_reset_password_link_to_admin_email(created_user: User, admin_email: Use
 
 
 def get_reset_password_from_connected_pro_email_data(user: User) -> SendinblueTransactionalEmailData:
-    now = datetime.utcnow()
+    departmentCode = user.departementCode
+    if departmentCode:
+        now = utc_datetime_to_department_timezone(datetime.utcnow(), departmentCode)
+    else:
+        now = utc_datetime_to_department_timezone(datetime.utcnow(), "75")
 
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_CONNECTED_PRO.value,
