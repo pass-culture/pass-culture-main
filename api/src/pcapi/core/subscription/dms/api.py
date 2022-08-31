@@ -77,6 +77,8 @@ def _is_fraud_check_up_to_date(
 def _update_fraud_check_with_new_content(
     fraud_check: fraud_models.BeneficiaryFraudCheck, new_content: fraud_models.DMSContent
 ) -> None:
+    fraud_check.reason = None
+    fraud_check.reasonCodes = []
     fraud_check.resultContent = new_content.dict()
     new_eligibility = fraud_api.decide_eligibility(
         fraud_check.user, new_content.get_birth_date(), new_content.get_registration_datetime()

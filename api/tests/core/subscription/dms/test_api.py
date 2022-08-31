@@ -403,3 +403,40 @@ class HandleDmsApplicationTest:
 
         mock_send_user_message.assert_called_once()
         assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    @freezegun.freeze_time("2022-05-13")
+    def test_correcting_application_resets_errors(self, mock_send_user_message, db_session):
+        user = users_factories.UserFactory(email="john.stiles@example.com")
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email="john.stiles@example.com",
+            last_modification_date="2022-05-13T09:09:46.000+02:00",
+            birth_date=datetime.datetime(2000, 1, 1),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=user.id, type=fraud_models.FraudCheckType.DMS
+        ).first()
+
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_NOT_VALID]
+        assert fraud_check.reason == "Erreur dans les données soumises dans le dossier DMS : 'birth_date' (2000-01-01)"
+
+        # User then fixes date error
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email="john.stiles@example.com",
+            last_modification_date="2022-05-15T09:09:46.000+02:00",
+            birth_date=datetime.datetime(2004, 1, 1),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        db_session.refresh(fraud_check)
+
+        assert fraud_check.reasonCodes == []
+        assert fraud_check.reason is None
