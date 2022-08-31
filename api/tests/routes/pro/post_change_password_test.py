@@ -6,9 +6,11 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
-    @freeze_time("2020-11-17 15:00:00")
-    @pytest.mark.usefixtures("db_session")
+    @freeze_time("2020-11-17 15:00:00", tz_offset=-2)
     def when_current_user_changes_password(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
@@ -28,11 +30,26 @@ class Returns200Test:
         assert user.checkPassword("N3W_p4ssw0rd") is True
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"] == {"EVENT_DATE": "17 novembre 2020", "EVENT_HOUR": "15h00"}
+        expected_params = {"EVENT_DATE": "17 novembre 2020", "EVENT_HOUR": "16h00"}
+        assert mails_testing.outbox[0].sent_data["params"] == expected_params
+
+    @freeze_time("2020-11-17 15:00:00")
+    def when_current_user_who_lives_at_wallis_changes_password(self, client):
+        # given
+        user = users_factories.UserFactory(email="user@example.com", departementCode="986")
+        data = {
+            "oldPassword": user.clearTextPassword,
+            "newPassword": "N3W_p4ssw0rd",
+            "newConfirmationPassword": "N3W_p4ssw0rd",
+        }
+
+        client = client.with_session_auth(user.email)
+        client.post("/users/password", json=data)
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"] == {"EVENT_DATE": "18 novembre 2020", "EVENT_HOUR": "03h00"}
 
 
 class Returns400Test:
-    @pytest.mark.usefixtures("db_session")
     def when_data_is_empty_in_the_request_body(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
@@ -45,14 +62,12 @@ class Returns400Test:
         # when
         client = client.with_session_auth(user.email)
         response = client.post("/users/password", json=data)
-        print(response)
         # then
         assert response.status_code == 400
         assert response.json["oldPassword"] == ["ensure this value has at least 12 characters"]
         assert response.json["newPassword"] == ["ensure this value has at least 12 characters"]
         assert response.json["newConfirmationPassword"] == ["ensure this value has at least 12 characters"]
 
-    @pytest.mark.usefixtures("db_session")
     def when_data_is_missing_in_the_request_body(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
