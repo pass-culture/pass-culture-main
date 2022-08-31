@@ -31,16 +31,7 @@ from pcapi.core.educational.repository import get_and_lock_collective_stock
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
-from pcapi.core.mails.transactional.bookings.booking_cancellation import (
-    send_booking_cancellation_emails_to_user_and_offerer,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (
-    send_booking_cancellation_by_beneficiary_to_pro_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
-    send_individual_booking_confirmation_email_to_beneficiary,
-)
-from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Stock
@@ -52,8 +43,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.cds import get_cds_show_id_from_uuid
-from pcapi.workers.push_notification_job import send_cancel_booking_notification
-from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
+from pcapi.workers import push_notification_job
+from pcapi.workers import user_emails_job
 
 from . import exceptions
 from . import validation
@@ -148,12 +139,12 @@ def book_offer(
         },
     )
 
-    if not send_user_new_booking_to_pro_email(individual_booking, first_venue_booking):
+    if not transactional_mails.send_user_new_booking_to_pro_email(individual_booking, first_venue_booking):
         logger.warning(
             "Could not send booking confirmation email to offerer",
             extra={"booking": booking.id},
         )
-    if not send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
+    if not transactional_mails.send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
         logger.warning("Could not send booking=%s confirmation email to beneficiary", booking.id)
 
     search.async_index_offer_ids([stock.offerId])
@@ -331,15 +322,14 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
-
-    send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
+    user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
 def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, BookingCancellationReasons.OFFERER)
-    send_cancel_booking_notification.delay([booking.id])
-    send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
+    push_notification_job.send_cancel_booking_notification.delay([booking.id])
+    user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
@@ -376,7 +366,7 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
     _cancel_booking(booking, BookingCancellationReasons.FRAUD)
     logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
 
-    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
+    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
         logger.warning(
             "Could not send booking cancellation emails to offerer",
             extra={"booking": booking.id},
@@ -388,7 +378,7 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
     logger.info("Cancelled booking on user-requested account suspension", extra={"booking": booking.id})
 
-    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
+    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
         logger.warning(
             "Could not send booking= cancellation emails to offerer and beneficiary",
             extra={"booking": booking.id},
@@ -449,7 +439,7 @@ def mark_as_cancelled(booking: Booking) -> None:
         raise exceptions.BookingIsAlreadyRefunded()
 
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY, cancel_even_if_used=True, raise_if_error=True)
-    send_booking_cancellation_by_beneficiary_to_pro_email(booking)
+    transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
 def mark_as_unused(booking: Booking) -> None:

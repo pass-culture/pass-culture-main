@@ -4,9 +4,7 @@ import logging
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
-    send_recredit_email_to_underage_beneficiary,
-)
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.payments import models as payments_models
 import pcapi.core.payments.conf as deposit_conf
 from pcapi.core.subscription import api as subscription_api
@@ -106,7 +104,7 @@ def recredit_underage_users() -> None:
 
         for user, recredit_amount in users_and_recredit_amounts:
             users_external.update_external_user(user)
-            if not send_recredit_email_to_underage_beneficiary(user, recredit_amount):  # type: ignore [arg-type]
+            if not transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit_amount):  # type: ignore [arg-type]
                 logger.error("Failed to send recredit email to: %s", user.email)
 
         start_index += RECREDIT_BATCH_SIZE

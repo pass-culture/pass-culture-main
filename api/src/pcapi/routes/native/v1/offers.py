@@ -4,7 +4,7 @@ from pcapi.core.booking_providers.models import BookingProviderName
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
-from pcapi.core.mails.transactional.users.offer_link_to_ios_user import send_offer_link_to_ios_user_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
@@ -12,15 +12,15 @@ from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
+import pcapi.core.providers.models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.workers.push_notification_job import send_offer_link_by_push_job
+from pcapi.workers import push_notification_job
 
 from . import blueprint
-from ....core.providers.models import CinemaProviderPivot
 from .serialization import offers as serializers
 from .serialization import subcategories_v2 as subcategories_v2_serializers
 
@@ -54,9 +54,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
             .options(joinedload(VenueBookingProvider.bookingProvider, innerjoin=True))
             .one_or_none()
         )
-        venue_cinema_pivot = CinemaProviderPivot.query.filter(
-            CinemaProviderPivot.venueId == offer.venueId
-        ).one_or_none()
+        venue_cinema_pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=offer.venueId).one_or_none()
         if (
             venue_booking_provider
             and venue_booking_provider.bookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE
@@ -103,7 +101,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
     give them webapp link.
     """
     offer = Offer.query.options(joinedload(Offer.venue)).filter(Offer.id == offer_id).first_or_404()
-    send_offer_link_to_ios_user_email(user, offer)
+    transactional_mails.send_offer_link_to_ios_user_email(user, offer)
 
 
 @blueprint.native_v1.route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
@@ -111,7 +109,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
 @authenticated_and_active_user_required
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
     Offer.query.get_or_404(offer_id)
-    send_offer_link_by_push_job.delay(user.id, offer_id)
+    push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)
 
 
 @blueprint.native_v1.route("/subcategories", methods=["GET"])

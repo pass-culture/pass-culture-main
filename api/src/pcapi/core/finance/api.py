@@ -60,7 +60,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.logging import log_elapsed
-from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
@@ -1738,7 +1738,7 @@ def generate_and_store_invoice(
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
-        send_invoice_available_to_pro_email(invoice, use_reimbursement_point)
+        transactional_mails.send_invoice_available_to_pro_email(invoice, use_reimbursement_point)
 
 
 def _generate_invoice(

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.core.fraud.utils import is_latin
-from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
+import pcapi.core.mails.transactional as transaction_mails
 from pcapi.core.payments import exceptions as payments_exceptions
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -721,7 +721,7 @@ def handle_dms_redirection_review(
     else:
         review.reason += " ; Redirigé vers DMS"
 
-    send_subscription_document_error_email(user.email, "unread-document")
+    transaction_mails.send_subscription_document_error_email(user.email, "unread-document")
     subscription_messages.on_redirect_to_dms_from_idcheck(user)
 
 

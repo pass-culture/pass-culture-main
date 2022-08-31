@@ -27,10 +27,7 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
 import pcapi.core.mails.models as mails_models
-from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
-from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import (
-    send_eac_new_collective_prebooking_email_to_pro,
-)
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -120,7 +117,7 @@ def book_collective_offer(
         },
     )
 
-    if not send_eac_new_collective_prebooking_email_to_pro(booking):
+    if not transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking):
         logger.warning(
             "Could not send new prebooking email to pro",
             extra={"booking": booking.id},
@@ -204,7 +201,7 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
         },
     )
 
-    if not send_eac_new_booking_email_to_pro(collective_booking):
+    if not transactional_mails.send_eac_new_booking_email_to_pro(collective_booking):
         logger.warning(
             "Could not send new booking confirmation email to offerer",
             extra={"booking": collective_booking.id},

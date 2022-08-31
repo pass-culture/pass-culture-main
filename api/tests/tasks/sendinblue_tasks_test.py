@@ -6,9 +6,7 @@ from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 
 
 class SendinblueTasksTest:
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_primary_task(self, mock_send_transac_email, client):
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/sendinblue/send-transactional-email-primary",
@@ -38,9 +36,7 @@ class SendinblueTasksTest:
             "name": "pass Culture",
         }
 
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_secondary_task(self, mock_send_transac_email, client):
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/sendinblue/send-transactional-email-secondary",

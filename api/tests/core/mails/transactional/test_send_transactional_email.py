@@ -16,7 +16,7 @@ from pcapi.utils import requests
 
 class TransactionalEmailWithTemplateTest:
     @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
+        "sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
         side_effect=ApiException(status=400, reason="Bad Request"),
     )
     def test_bad_request(self, mock, caplog):
@@ -36,7 +36,7 @@ class TransactionalEmailWithTemplateTest:
         assert len(caplog.records) == 1
 
     @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
+        "sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
         side_effect=ApiException(status=524, reason="Bad Request"),
     )
     def test_external_api_unavailable(self, mock, caplog):
@@ -52,9 +52,7 @@ class TransactionalEmailWithTemplateTest:
 
         assert len(caplog.records) == 0
 
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_template_id_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
@@ -79,9 +77,7 @@ class TransactionalEmailWithTemplateTest:
             "name": "pass Culture",
         }
 
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_reply_to_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
@@ -103,9 +99,7 @@ class TransactionalEmailWithTemplateTest:
         assert mock_send_transac_email.call_args[0][0].tags is None
         assert mock_send_transac_email.call_args[0][0].reply_to == {"email": "reply@example.com", "name": "reply"}
 
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_template_id_success_empty_params(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
@@ -148,9 +142,7 @@ class TransactionalEmailWithoutTemplateTest:
         reply_to=None,
     )
 
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),
@@ -175,9 +167,7 @@ class TransactionalEmailWithoutTemplateTest:
             "name": "pass Culture",
         }
 
-    @patch(
-        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
-    )
+    @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_success_empty_attachement(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender=dataclasses.asdict(self.data.sender.value),

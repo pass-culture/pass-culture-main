@@ -5,17 +5,12 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.mails import models
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
-    send_booking_cancellation_by_beneficiary_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (
-    send_booking_cancellation_by_beneficiary_to_pro_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
-    send_booking_cancellation_by_pro_to_beneficiary_email,
-)
 from pcapi.utils.date import format_datetime
 from pcapi.utils.mailing import get_event_datetime
+
+from .booking_cancellation_by_beneficiary import send_booking_cancellation_by_beneficiary_email
+from .booking_cancellation_by_beneficiary_to_pro import send_booking_cancellation_by_beneficiary_to_pro_email
+from .booking_cancellation_by_pro_to_beneficiary import send_booking_cancellation_by_pro_to_beneficiary_email
 
 
 def send_booking_cancellation_emails_to_user_and_offerer(

@@ -1,9 +1,7 @@
 import logging
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.mails.transactional.bookings.booking_cancellation import (
-    send_booking_cancellation_emails_to_user_and_offerer,
-)
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
@@ -17,7 +15,9 @@ def send_booking_cancellation_emails_to_user_and_offerer_job(booking_id: int) ->
     if not booking:
         logger.error("Booking with id:%s not found", booking_id)
         return
-    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
+    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
+        booking, booking.cancellationReason
+    ):
         logger.warning(
             "Could not send booking cancellation emails",
             extra={"booking": booking.id},

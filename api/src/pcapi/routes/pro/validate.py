@@ -2,7 +2,7 @@ import logging
 
 from flask_login import login_required
 
-from pcapi.core.mails.transactional.pro.welcome_to_pro import send_welcome_to_pro_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 import pcapi.core.offerers.models as offerers_models
@@ -59,7 +59,7 @@ def validate_user(token) -> None:  # type: ignore [no-untyped-def]
     user_to_validate.isEmailValidated = True
     repository.save(user_to_validate)
 
-    if not send_welcome_to_pro_email(user_to_validate):
+    if not transactional_mails.send_welcome_to_pro_email(user_to_validate):
         logger.warning(
             "Could not send welcome email when pro user is valid",
             extra={"user": user_to_validate.id},

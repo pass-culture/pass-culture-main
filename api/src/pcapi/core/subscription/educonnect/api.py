@@ -4,7 +4,7 @@ import logging
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.mails.transactional.users import duplicate_beneficiary
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -75,7 +75,7 @@ def _handle_validation_errors(
 
     if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:  # type: ignore [operator]
         subscription_messages.on_educonnect_duplicate_user(user)
-        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
+        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 
     if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_check.reasonCodes:  # type: ignore [operator]
         subscription_messages.on_educonnect_duplicate_ine(user)

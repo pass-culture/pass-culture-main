@@ -17,7 +17,7 @@ from wtforms.validators import ValidationError
 from pcapi.admin.base_configuration import BaseAdminView
 import pcapi.admin.rules as pcapi_rules
 from pcapi.admin.validators import PhoneNumberValidator
-from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
+import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.api as users_api
@@ -188,7 +188,9 @@ class ProUserView(SuspensionMixin, BaseAdminView):
             reset_password_link = build_pc_pro_create_password_link(resetPasswordToken.value)  # type: ignore [arg-type]
             flash(f"Lien de création de mot de passe : {reset_password_link}")
             if current_user:
-                send_reset_password_link_to_admin_email(model, current_user.email, reset_password_link)
+                transactional_mails.send_reset_password_link_to_admin_email(
+                    model, current_user.email, reset_password_link
+                )
         super().after_model_change(form, model, is_created)
 
         update_external_pro(model.email)

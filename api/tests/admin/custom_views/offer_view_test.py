@@ -216,7 +216,7 @@ class OfferValidationViewTest:
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
+    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     def test_approve_virtual_offer_and_send_mail_to_managing_offerer(
         self,
         mocked_send_offer_validation_status_update_email,
@@ -250,7 +250,7 @@ class OfferValidationViewTest:
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
+    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     def test_approve_physical_offer_and_send_mail_to_venue_booking_email(
         self,
         mocked_send_offer_validation_status_update_email,
@@ -420,7 +420,7 @@ class OfferValidationViewTest:
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_offer_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -468,7 +468,7 @@ class OfferValidationViewTest:
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_offer_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -684,7 +684,7 @@ class OfferValidationViewTest:
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_collective_offer_template_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -734,7 +734,7 @@ class OfferValidationViewTest:
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_template_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -922,7 +922,7 @@ class OfferValidationViewTest:
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_collective_offer_and_send_mail_to_administration_and_notify_adage(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -979,7 +979,7 @@ class OfferValidationViewTest:
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -1271,8 +1271,8 @@ class GetOfferValidationViewTest:
 class OfferViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_approved_offer(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -1305,8 +1305,8 @@ class OfferViewTest:
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_rejected_offer(
         self,
         mocked_send_offer_validation_notification_to_administration,
@@ -1335,9 +1335,9 @@ class OfferViewTest:
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
-    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
-    @patch("pcapi.admin.custom_views.offer_view.send_cancel_booking_notification.delay")
+    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
+    @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
+    @patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
     def test_reject_approved_offer_with_bookings(
         self,
         mocked_send_cancel_booking_notification,

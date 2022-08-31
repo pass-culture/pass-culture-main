@@ -15,13 +15,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.educational.repository as educational_repository
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
-    send_education_booking_cancellation_by_institution_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary import (
-    send_expired_bookings_to_beneficiary_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users.models import User
 from pcapi.models import db
 
@@ -121,7 +115,7 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None
     notified_users_str = []
     for user_id in user_ids:
         user = User.query.get(user_id)
-        send_expired_bookings_to_beneficiary_email(
+        transactional_mails.send_expired_bookings_to_beneficiary_email(
             user,
             [
                 individual_booking.booking
@@ -154,7 +148,7 @@ def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = N
     notified_offerers = []
 
     for offerer, individual_bookings in expired_individual_bookings_grouped_by_offerer.items():
-        send_bookings_expiration_to_pro_email(
+        transactional_mails.send_bookings_expiration_to_pro_email(
             offerer,
             [individual_booking.booking for individual_booking in individual_bookings],
         )
@@ -175,7 +169,7 @@ def notify_offerers_of_expired_collective_bookings() -> None:
     expired_collective_bookings = educational_repository.find_expired_collective_bookings()
 
     for collective_booking in expired_collective_bookings:
-        send_education_booking_cancellation_by_institution_email(collective_booking)
+        transactional_mails.send_education_booking_cancellation_by_institution_email(collective_booking)
 
     logger.info(
         "[notify_offerers_of_expired_collective_bookings] %d Offerers have been notified",

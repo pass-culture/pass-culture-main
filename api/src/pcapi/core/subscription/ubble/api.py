@@ -16,8 +16,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.fraud.ubble import constants as ubble_constants
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
-from pcapi.core.mails.transactional.users import duplicate_beneficiary
-from pcapi.core.mails.transactional.users import subscription_document_error
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -112,7 +111,7 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
             subscription_messages.on_idcheck_unread_document_with_retry(user)
         else:
             subscription_messages.on_idcheck_unread_document(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "unread-document")
+        transactional_mails.send_subscription_document_error_email(user.email, "unread-document")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
         if can_retry:
@@ -122,32 +121,32 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
 
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
         subscription_messages.on_idcheck_document_data_not_matching(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "information-error")
+        transactional_mails.send_subscription_document_error_email(user.email, "information-error")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
         if can_retry:
             subscription_messages.on_idcheck_document_not_supported_with_retry(user)
         else:
             subscription_messages.on_idcheck_document_not_supported(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "unread-mrz-document")
+        transactional_mails.send_subscription_document_error_email(user.email, "unread-mrz-document")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
         if can_retry:
             subscription_messages.on_idcheck_invalid_document_date_with_retry(user)
         else:
             subscription_messages.on_idcheck_invalid_document_date(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "invalid-document")
+        transactional_mails.send_subscription_document_error_email(user.email, "invalid-document")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
         subscription_messages.on_idcheck_rejected(user)
 
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
         subscription_messages.on_duplicate_user(user)
-        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
+        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         subscription_messages.on_duplicate_user(user)
-        duplicate_beneficiary.send_duplicate_beneficiary_email(
+        transactional_mails.send_duplicate_beneficiary_email(
             user, fraud_check.source_data(), is_id_piece_number_duplicate=True  # type: ignore [arg-type]
         )
 
