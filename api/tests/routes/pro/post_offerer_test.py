@@ -4,15 +4,13 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.users import testing as sendinblue_testing
-from pcapi.core.users.factories import AdminFactory
-from pcapi.core.users.factories import ProFactory
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.users.factories as users_factories
+import pcapi.core.users.testing as users_testing
 
-from tests.conftest import TestClient
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 api_entreprise_json_mock = {
@@ -21,141 +19,136 @@ api_entreprise_json_mock = {
 DEFAULT_DIGITAL_VENUE_LABEL = "Offre numérique"
 
 
-class Returns201Test:
-    @patch("pcapi.connectors.api_entreprises.requests.get")
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_virtual_venue(self, mock_api_entreprise, app):
-        # given
-        mock_api_entreprise.return_value = MagicMock(
-            status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
-        )
+@patch("pcapi.connectors.api_entreprises.requests.get")
+def test_create_virtual_venue(mock_api_entreprise, client):
+    # given
+    mock_api_entreprise.return_value = MagicMock(
+        status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
+    )
 
-        pro = ProFactory()
-        offerers_factories.VirtualVenueTypeFactory()
+    pro = users_factories.ProFactory()
+    offerers_factories.VirtualVenueTypeFactory()
 
-        body = {
-            "name": "Test Offerer",
-            "siren": "418166096",
-            "address": "123 rue de Paris",
-            "postalCode": "93100",
-            "city": "Montreuil",
-        }
+    body = {
+        "name": "Test Offerer",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+    }
 
-        # when
-        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
+    # when
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
 
-        # then
-        assert response.status_code == 201
-        assert response.json["siren"] == "418166096"
-        assert response.json["name"] == "Test Offerer"
-        virtual_venues = list(filter(lambda v: v["isVirtual"], response.json["managedVenues"]))
-        assert len(virtual_venues) == 1
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+    # then
+    assert response.status_code == 201
+    assert response.json["siren"] == "418166096"
+    assert response.json["name"] == "Test Offerer"
+    virtual_venues = list(filter(lambda v: v["isVirtual"], response.json["managedVenues"]))
+    assert len(virtual_venues) == 1
+    assert len(users_testing.sendinblue_requests) == 1
 
-    @patch("pcapi.connectors.api_entreprises.requests.get")
-    @pytest.mark.usefixtures("db_session")
-    def when_no_address_is_provided(self, mock_api_entreprise, app):
-        # given
-        mock_api_entreprise.return_value = MagicMock(
-            status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
-        )
 
-        pro = ProFactory()
-        offerers_factories.VirtualVenueTypeFactory()
-        body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
+@patch("pcapi.connectors.api_entreprises.requests.get")
+def test_when_no_address_is_provided(mock_api_entreprise, client):
+    # given
+    mock_api_entreprise.return_value = MagicMock(
+        status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
+    )
 
-        # when
-        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
+    pro = users_factories.ProFactory()
+    offerers_factories.VirtualVenueTypeFactory()
+    body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
-        # then
-        assert response.status_code == 201
-        assert response.json["siren"] == "418166096"
-        assert response.json["name"] == "Test Offerer"
-        assert len(sendinblue_testing.sendinblue_requests) == 1
+    # when
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
 
-    @patch("pcapi.connectors.api_entreprises.requests.get")
-    @pytest.mark.usefixtures("db_session")
-    def when_current_user_is_admin(self, mock_api_entreprise, app):
-        # Given
-        mock_api_entreprise.return_value = MagicMock(
-            status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
-        )
+    # then
+    assert response.status_code == 201
+    assert response.json["siren"] == "418166096"
+    assert response.json["name"] == "Test Offerer"
+    assert len(users_testing.sendinblue_requests) == 1
 
-        admin = AdminFactory()
-        offerers_factories.VirtualVenueTypeFactory()
-        body = {
-            "name": "Test Offerer",
-            "siren": "418166096",
-            "address": "123 rue de Paris",
-            "postalCode": "93100",
-            "city": "Montreuil",
-        }
 
-        # When
-        response = TestClient(app.test_client()).with_session_auth(admin.email).post("/offerers", json=body)
+@patch("pcapi.connectors.api_entreprises.requests.get")
+def test_when_current_user_is_admin(mock_api_entreprise, client):
+    # Given
+    mock_api_entreprise.return_value = MagicMock(
+        status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
+    )
 
-        # then
-        assert response.status_code == 201
+    admin = users_factories.AdminFactory()
+    offerers_factories.VirtualVenueTypeFactory()
+    body = {
+        "name": "Test Offerer",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+    }
 
-    @patch("pcapi.connectors.api_entreprises.requests.get")
-    @pytest.mark.usefixtures("db_session")
-    def expect_the_current_user_to_have_access_to_new_offerer(self, mock_api_entreprise, app):
-        # Given
-        mock_api_entreprise.return_value = MagicMock(
-            status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
-        )
+    # When
+    client = client.with_session_auth(admin.email)
+    response = client.post("/offerers", json=body)
 
-        pro = ProFactory()
-        offerers_factories.VirtualVenueTypeFactory()
-        body = {
-            "name": "Test Offerer",
-            "siren": "418166096",
-            "address": "123 rue de Paris",
-            "postalCode": "93100",
-            "city": "Montreuil",
-        }
+    # then
+    assert response.status_code == 201
 
-        # when
-        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
-        # then
-        assert response.status_code == 201
-        offerer = Offerer.query.first()
-        assert offerer.UserOfferers[0].user == pro
+@patch("pcapi.connectors.api_entreprises.requests.get")
+def test_current_user_has_access_to_created_offerer(mock_api_entreprise, client):
+    # Given
+    mock_api_entreprise.return_value = MagicMock(
+        status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
+    )
 
-    @patch("pcapi.domain.admin_emails.make_offerer_internal_validation_email")
-    @patch("pcapi.connectors.api_entreprises.requests.get")
-    @pytest.mark.usefixtures("db_session")
-    def when_offerer_already_have_user_offerer_new_user_offerer_has_validation_token(
-        self, mock_api_entreprise, make_offerer_internal_validation_email, app
-    ):
-        # Given
-        make_offerer_internal_validation_email.return_value = SendinblueTransactionalWithoutTemplateEmailData(
-            subject=None, html_content=None
-        )
-        mock_api_entreprise.return_value = MagicMock(
-            status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
-        )
+    pro = users_factories.ProFactory()
+    offerers_factories.VirtualVenueTypeFactory()
+    body = {
+        "name": "Test Offerer",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+    }
 
-        pro = ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer, validationToken=None)
-        offerers_factories.VirtualVenueTypeFactory()
-        body = {
-            "name": offerer.name,
-            "siren": offerer.siren,
-            "address": offerer.address,
-            "postalCode": offerer.postalCode,
-            "city": offerer.city,
-        }
+    # when
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
 
-        # when
-        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
+    # then
+    assert response.status_code == 201
+    offerer = offerers_models.Offerer.query.one()
+    assert offerer.UserOfferers[0].user == pro
 
-        # then
-        assert response.status_code == 201
-        offerer = Offerer.query.first()
-        created_user_offerer = (
-            UserOfferer.query.filter(UserOfferer.offerer == offerer).filter(UserOfferer.user == pro).one()
-        )
-        assert created_user_offerer.validationToken is not None
+
+@patch("pcapi.connectors.api_entreprises.requests.get")
+def test_new_user_offerer_has_validation_token(mock_api_entreprise, client):
+    # Given
+    mock_api_entreprise.return_value = MagicMock(
+        status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
+    )
+
+    pro = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(offerer=offerer, validationToken=None)
+    offerers_factories.VirtualVenueTypeFactory()
+    body = {
+        "name": offerer.name,
+        "siren": offerer.siren,
+        "address": offerer.address,
+        "postalCode": offerer.postalCode,
+        "city": offerer.city,
+    }
+
+    # when
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
+
+    # then
+    assert response.status_code == 201
+    offerer = offerers_models.Offerer.query.one()
+    created_user_offerer = offerers_models.UserOfferer.query.filter_by(offerer=offerer, user=pro).one()
+    assert created_user_offerer.validationToken is not None
