@@ -260,7 +260,8 @@ def request_password_reset(user: models.User | None) -> None:
     if not user:
         return
 
-    is_email_sent = transactional_mails.send_reset_password_email_to_user(user)
+    token = create_reset_password_token(user)
+    is_email_sent = transactional_mails.send_reset_password_email_to_user(user, token)
 
     if not is_email_sent:
         logger.error("Email service failure when user requested password reset for email '%s'", user.email)
@@ -271,7 +272,8 @@ def handle_create_account_with_existing_email(user: models.User) -> None:
     if not user:
         return
 
-    is_email_sent = transactional_mails.send_email_already_exists_email(user)
+    token = create_reset_password_token(user)
+    is_email_sent = transactional_mails.send_email_already_exists_email(user, token)
 
     if not is_email_sent:
         logger.error("Email service failure when user email already exists in database '%s'", user.email)

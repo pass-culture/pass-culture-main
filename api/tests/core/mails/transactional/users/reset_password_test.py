@@ -16,10 +16,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class SendinblueSendResetPasswordToUserEmailTest:
     def test_send_email(self) -> None:
         # given
-        user = users_factories.UserFactory(firstName="Bobby", email="bobby@example.com")
+        user = users_factories.UserFactory()
+        token = users_factories.ResetPasswordToken(user=user)
 
         # when
-        send_reset_password_email_to_user(user)
+        send_reset_password_email_to_user(user, token)
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
@@ -35,11 +36,9 @@ class SendinblueSendResetPasswordToUserEmailTest:
 
     def test_get_email_metadata(self) -> None:
         # Given
-        user = users_factories.UserFactory.build(
-            email="ewing+demo@example.com",
-            firstName="Bobby",
-        )
+        user = users_factories.UserFactory.build()
         users_factories.ResetPasswordToken.build(user=user, value="abc", expirationDate=datetime(2020, 1, 1))
+
         # When
         reset_password_email_data = get_reset_password_email_data(
             user, user.tokens[0], TransactionalEmail.NEW_PASSWORD_REQUEST.value

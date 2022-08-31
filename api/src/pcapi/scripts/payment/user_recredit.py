@@ -8,6 +8,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.payments import models as payments_models
 import pcapi.core.payments.conf as deposit_conf
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.users import api as users_api
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -104,7 +105,8 @@ def recredit_underage_users() -> None:
 
         for user, recredit_amount in users_and_recredit_amounts:
             users_external.update_external_user(user)
-            if not transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit_amount):  # type: ignore [arg-type]
+            domains_credit = users_api.get_domains_credit(user)
+            if not transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit_amount, domains_credit):  # type: ignore [arg-type]
                 logger.error("Failed to send recredit email to: %s", user.email)
 
         start_index += RECREDIT_BATCH_SIZE

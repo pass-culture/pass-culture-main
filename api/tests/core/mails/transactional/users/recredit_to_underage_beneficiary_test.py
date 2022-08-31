@@ -19,10 +19,11 @@ class SendinblueSendNewlyEligibleUserEmailTest:
     def test_send_recredit_email_to_underage_beneficiary(self):
         # given
         user = users_factories.UnderageBeneficiaryFactory()
+        domains_credit = get_domains_credit(user)
         recredit_amount = 30
 
         # when
-        send_recredit_email_to_underage_beneficiary(user, recredit_amount)
+        send_recredit_email_to_underage_beneficiary(user, recredit_amount, domains_credit)
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
@@ -40,7 +41,7 @@ class SendinblueSendNewlyEligibleUserEmailTest:
         recredit_amount = 30
 
         # when
-        data = get_recredit_to_underage_beneficiary_email_data(user, recredit_amount)
+        data = get_recredit_to_underage_beneficiary_email_data(user, recredit_amount, domains_credit)
 
         # then
         assert data.params["FIRSTNAME"] == user.firstName

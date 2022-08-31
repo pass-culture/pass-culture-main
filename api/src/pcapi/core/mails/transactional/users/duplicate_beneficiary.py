@@ -1,7 +1,6 @@
 import logging
 
 from pcapi.core import mails
-from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -16,6 +15,8 @@ def send_duplicate_beneficiary_email(
     identity_content: common_fraud_models.IdentityCheckContent,
     is_id_piece_number_duplicate: bool = False,
 ) -> bool:
+    from pcapi.core.fraud import api as fraud_api
+
     if is_id_piece_number_duplicate:
         duplicate_beneficiary = fraud_api.find_duplicate_id_piece_number_user(
             identity_content.get_id_piece_number(), rejected_user.id

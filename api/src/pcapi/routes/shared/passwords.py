@@ -4,6 +4,7 @@ from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_password_and_external_user
@@ -37,12 +38,13 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
         # Here we also return a 204 to prevent attacker from discovering which email exists in db
         return
 
+    token = users_api.create_reset_password_token(user)
     if user.is_beneficiary:
         send_email = transactional_mails.send_reset_password_email_to_user
     else:
         send_email = transactional_mails.send_reset_password_email_to_pro
 
-    if not send_email(user):
+    if not send_email(user, token):
         logger.warning("Could not send reset password email", extra={"user": user.id})
 
 
