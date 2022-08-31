@@ -168,8 +168,9 @@ def get_bookings(user: User) -> BookingsResponse:
 
 
 def _update_booking_offer_url(booking_response_list: list[BookingReponse]) -> None:
+    # TODO: remove after all AppNative client use version >= 203
     # Native application should use `booking.completedUrl` but actually
-    # it uses booking.stock.offer.url in some places.
+    # it uses booking.stock.offer.url until versions < 203
     # So we need to update the response object not to override the database object
     # Remove when native app stops using booking.stock.offer.url
     for booking in booking_response_list:
