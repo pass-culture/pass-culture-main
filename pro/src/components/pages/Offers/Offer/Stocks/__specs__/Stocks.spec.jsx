@@ -2320,7 +2320,7 @@ describe('stocks page', () => {
 
       // Then
       await expect(
-        screen.findByText('Offre créée !', { selectof: 'h2' })
+        screen.findByText('Offre publiée !', { selectof: 'h2' })
       ).resolves.toBeInTheDocument()
     })
 
@@ -2741,7 +2741,7 @@ describe('stocks page', () => {
         expect(successMessage).toBeInTheDocument()
 
         await expect(
-          screen.findByText('Offre créée !', { selectof: 'h2' })
+          screen.findByText('Offre publiée !', { selectof: 'h2' })
         ).resolves.toBeInTheDocument()
       })
     })

@@ -131,7 +131,9 @@ describe('confirmation page', () => {
     })
 
     // When
-    await userEvent.click(screen.getByText('Visualiser dans l’app'))
+    await userEvent.click(
+      screen.getByText('Visualiser l’offre dans l’application')
+    )
 
     // Then
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
