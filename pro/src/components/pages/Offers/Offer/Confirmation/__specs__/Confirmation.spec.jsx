@@ -30,7 +30,7 @@ describe('confirmation page', () => {
     // Then
     expect(screen.queryByText('active')).not.toBeInTheDocument()
     expect(
-      screen.getByText('Offre créée !', { selector: 'h2' })
+      screen.getByText('Offre publiée !', { selector: 'h2' })
     ).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -39,7 +39,9 @@ describe('confirmation page', () => {
       )
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Visualiser dans l’app', { selector: 'a' })
+      screen.getByText('Visualiser l’offre dans l’application', {
+        selector: 'a',
+      })
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
@@ -79,7 +81,9 @@ describe('confirmation page', () => {
       )
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Visualiser dans l’app', { selector: 'a' })
+      screen.getByText('Visualiser l’offre dans l’application', {
+        selector: 'a',
+      })
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
