@@ -2,8 +2,7 @@ from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
-from pcapi.core.mails.models.sendinblue_models import EmailInfo
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -11,7 +10,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 def get_new_booking_to_pro_email_data(
     individual_booking: IndividualBooking, first_venue_booking: bool = False
-) -> SendinblueTransactionalEmailData:
+) -> models.SendinblueTransactionalEmailData:
     booking = individual_booking.booking
     offer = booking.stock.offer
     venue = offer.venue
@@ -42,8 +41,8 @@ def get_new_booking_to_pro_email_data(
     else:
         template = TransactionalEmail.NEW_BOOKING_TO_PRO.value
 
-    data = SendinblueTransactionalEmailData(
-        reply_to=EmailInfo(
+    data = models.SendinblueTransactionalEmailData(
+        reply_to=models.EmailInfo(
             email=individual_booking.user.email,
             name=f"{individual_booking.user.firstName} {individual_booking.user.lastName}",
         ),

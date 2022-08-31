@@ -1,12 +1,12 @@
 from pcapi.core import mails
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import find_new_offerer_user_email
 
 
-def get_new_offerer_validation_email_data(offerer: Offerer) -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
+def get_new_offerer_validation_email_data(offerer: Offerer) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.NEW_OFFERER_VALIDATION.value, params={"OFFERER_NAME": offerer.name}
     )
 

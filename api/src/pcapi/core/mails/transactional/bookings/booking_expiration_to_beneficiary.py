@@ -5,15 +5,15 @@ from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 
 
 def get_expired_bookings_to_beneficiary_data(
     beneficiary: User, bookings: list[Booking], withdrawal_period: int
-) -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
+) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value,
         params={
             "FIRSTNAME": beneficiary.firstName,

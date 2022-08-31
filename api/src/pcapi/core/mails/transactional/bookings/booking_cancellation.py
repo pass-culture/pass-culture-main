@@ -4,7 +4,7 @@ from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
     send_booking_cancellation_by_beneficiary_email,
 )
@@ -67,7 +67,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(booking: Booking) ->
         venue=venue,
     )
 
-    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
+    return models.SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
         subject=email_subject,
         html_content=email_html,
     )

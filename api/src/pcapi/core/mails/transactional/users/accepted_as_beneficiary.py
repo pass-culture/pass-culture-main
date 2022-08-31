@@ -1,15 +1,15 @@
 from pcapi.core import mails
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 
 
-def get_accepted_as_beneficiary_email_data(user: User) -> SendinblueTransactionalEmailData:
+def get_accepted_as_beneficiary_email_data(user: User) -> models.SendinblueTransactionalEmailData:
     if not user.has_active_deposit:
         raise ValueError("Beneficiary should have a deposit")
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value,
         params={
             "CREDIT": int(user.deposit.amount),  # type: ignore [union-attr, arg-type]
@@ -17,11 +17,11 @@ def get_accepted_as_beneficiary_email_data(user: User) -> SendinblueTransactiona
     )
 
 
-def get_accepted_as_underage_beneficiary_email_data(user: User) -> SendinblueTransactionalEmailData:
-    if user.has_active_deposit is None:
+def get_accepted_as_underage_beneficiary_email_data(user: User) -> models.SendinblueTransactionalEmailData:
+    if not user.has_active_deposit:
         raise ValueError("Beneficiary should have a deposit")
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value,
         params={
             "FIRSTNAME": user.firstName,

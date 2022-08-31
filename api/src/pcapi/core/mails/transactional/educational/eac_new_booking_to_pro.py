@@ -1,6 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -14,14 +14,14 @@ def send_eac_new_booking_email_to_pro(booking: CollectiveBooking) -> bool:
     return mails.send(recipients=[booking_email], data=data)
 
 
-def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> SendinblueTransactionalEmailData:
+def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.SendinblueTransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
     price = f"{stock.price} €" if stock.price > 0 else "Gratuit"
     educational_redactor = booking.educationalRedactor
     educational_institution = booking.educationalInstitution
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.EAC_NEW_BOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

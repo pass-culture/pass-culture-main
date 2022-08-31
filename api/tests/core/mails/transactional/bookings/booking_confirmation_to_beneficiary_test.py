@@ -8,7 +8,7 @@ import pytest
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.categories import subcategories
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     get_booking_confirmation_to_beneficiary_email_data,
@@ -40,7 +40,7 @@ def sendinblue_send_email_test():
 
 
 def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
-    email_data = SendinblueTransactionalEmailData(
+    email_data = models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
             "USER_FIRST_NAME": booking.firstName,

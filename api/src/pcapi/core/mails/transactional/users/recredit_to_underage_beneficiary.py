@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from pcapi.core import mails
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -10,10 +10,9 @@ from pcapi.core.users.api import get_domains_credit
 def get_recredit_to_underage_beneficiary_email_data(
     user: users_models.User,
     recredit_amount: Decimal,
-) -> SendinblueTransactionalEmailData:
+) -> models.SendinblueTransactionalEmailData:
     domains_credit = get_domains_credit(user)
-
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.RECREDIT_TO_UNDERAGE_BENEFICIARY.value,
         params={
             "FIRSTNAME": user.firstName,

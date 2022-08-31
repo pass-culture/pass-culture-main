@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from pcapi.core import mails
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import Token
@@ -13,10 +12,10 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
-def get_reset_password_to_pro_email_data(user: User, token: Token) -> SendinblueTransactionalEmailData:
+def get_reset_password_to_pro_email_data(user: User, token: Token) -> models.SendinblueTransactionalEmailData:
     reinit_password_url = build_pc_pro_reset_password_link(token.value)  # type: ignore [arg-type]
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_PRO.value,
         params={
             "LIEN_NOUVEAU_MDP": reinit_password_url,
@@ -32,9 +31,9 @@ def send_reset_password_email_to_pro(user: User) -> bool:
 
 def get_reset_password_link_to_admin_email_data(
     created_user: User, reset_password_link: str
-) -> SendinblueTransactionalWithoutTemplateEmailData:
+) -> models.SendinblueTransactionalWithoutTemplateEmailData:
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return models.SendinblueTransactionalWithoutTemplateEmailData(
         subject="Création d'un compte pro",
         html_content=(
             "<html><head></head><body>"
@@ -50,14 +49,14 @@ def send_reset_password_link_to_admin_email(created_user: User, admin_email: Use
     return mails.send(recipients=[admin_email], data=data)
 
 
-def get_reset_password_from_connected_pro_email_data(user: User) -> SendinblueTransactionalEmailData:
+def get_reset_password_from_connected_pro_email_data(user: User) -> models.SendinblueTransactionalEmailData:
     departmentCode = user.departementCode
     if departmentCode:
         now = utc_datetime_to_department_timezone(datetime.utcnow(), departmentCode)
     else:
         now = utc_datetime_to_department_timezone(datetime.utcnow(), "75")
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_CONNECTED_PRO.value,
         params={"EVENT_DATE": get_date_formatted_for_email(now), "EVENT_HOUR": get_time_formatted_for_email(now)},
     )

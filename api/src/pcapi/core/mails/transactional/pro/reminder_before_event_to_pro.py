@@ -1,17 +1,16 @@
 from babel.dates import format_date
 
 from pcapi.core import mails
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Stock
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
-def get_reminder_7_days_before_event_email_data(stock: Stock) -> SendinblueTransactionalEmailData:
+def get_reminder_7_days_before_event_email_data(stock: Stock) -> models.SendinblueTransactionalEmailData:
     event_datetime = get_event_datetime(stock)
-
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value,
         params={
             "OFFER_NAME": stock.offer.name,

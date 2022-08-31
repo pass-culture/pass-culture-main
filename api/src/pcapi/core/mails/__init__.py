@@ -1,17 +1,15 @@
 from typing import Iterable
 
 from pcapi import settings
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.utils.module_loading import import_string
 
-from .models import models  # noqa: F401
+from . import models
 
 
 def send(
     *,
     recipients: Iterable[str],
-    data: dict | SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
+    data: dict | models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
 ) -> bool:
     """Try to send an e-mail and return whether it was successful."""
     if isinstance(recipients, str):

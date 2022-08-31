@@ -3,7 +3,7 @@ from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
@@ -20,7 +20,7 @@ def send_individual_booking_confirmation_email_to_beneficiary(individual_booking
 
 def get_booking_confirmation_to_beneficiary_email_data(
     individual_booking: IndividualBooking,
-) -> SendinblueTransactionalEmailData:
+) -> models.SendinblueTransactionalEmailData:
     stock = individual_booking.booking.stock
     offer = stock.offer
     venue = offer.venue
@@ -83,7 +83,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
         else None
     )
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
             "USER_FIRST_NAME": beneficiary.firstName,

@@ -1,6 +1,6 @@
 from pcapi import settings
 from pcapi.core import mails
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
@@ -18,12 +18,12 @@ def send_email_reported_offer_by_user(user: User, offer: Offer, reason: str, cus
 
 def get_reported_offer_email_data(
     user: User, offer: Offer, reason: str, custom_reason: str | None = None
-) -> SendinblueTransactionalEmailData:
+) -> models.SendinblueTransactionalEmailData:
     reason = Reason.get_meta(reason).title
     if custom_reason:
         reason = f"[{reason}] {custom_reason}"
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.REPORTED_OFFER_BY_USER.value,
         params={
             "USER_ID": user.id,
