@@ -67,7 +67,7 @@ class Token(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True))  # type: ignore [misc]
 
-    value = sa.Column(sa.String, index=True, unique=True, nullable=False)
+    value: str = sa.Column(sa.String, index=True, unique=True, nullable=False)
 
     type = sa.Column(sa.Enum(TokenType, create_constraint=False), nullable=False)
 
