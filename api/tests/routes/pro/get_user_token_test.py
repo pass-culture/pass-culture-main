@@ -9,7 +9,7 @@ class Returns200Test:
         # given
         token = "U2NCXTNB2"
         user = users_factories.BeneficiaryGrant18Factory()
-        users_factories.ResetPasswordToken(value=token, user=user)
+        users_factories.PasswordResetTokenFactory(value=token, user=user)
 
         # when
         request = client.get("/users/token/" + token)

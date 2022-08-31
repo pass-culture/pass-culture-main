@@ -169,7 +169,7 @@ class DeleteExpiredTokensTest:
 class DeleteUserTokenTest:
     def test_delete_user_token(self):
         user = users_factories.UserFactory()
-        users_factories.ResetPasswordToken(user=user)
+        users_factories.PasswordResetTokenFactory(user=user)
         users_factories.EmailValidationToken(user=user)
 
         other_user = users_factories.BeneficiaryGrant18Factory()

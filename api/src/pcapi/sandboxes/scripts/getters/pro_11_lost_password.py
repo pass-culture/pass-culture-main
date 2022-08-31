@@ -18,5 +18,5 @@ def get_pro_validated_with_reset_password_token_user():  # type: ignore [no-unty
         offerer__validationToken=None,
         user__validationToken=None,
     )
-    users_factories.ResetPasswordToken(user=user_offerer.user)
+    users_factories.PasswordResetTokenFactory(user=user_offerer.user)
     return {"user": get_pro_helper(user_offerer.user)}

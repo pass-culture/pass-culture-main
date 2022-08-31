@@ -31,7 +31,7 @@ class SendAdminUserValidationEmailTest:
     def test_send_mail_to_admin_user(self):
         # Given
         user = users_factories.AdminFactory()
-        token = users_factories.ResetPasswordToken(user=user)
+        token = users_factories.PasswordResetTokenFactory(user=user)
 
         # When
         send_email_validation_to_admin_email(user, token)

@@ -270,7 +270,7 @@ def test_reset_password_success(client):
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory()
-    token = users_factories.ResetPasswordToken(user=user)
+    token = users_factories.PasswordResetTokenFactory(user=user)
 
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = client.post("/native/v1/reset_password", json=data)
@@ -288,7 +288,7 @@ def test_reset_password_for_unvalidated_email(try_dms_orphan_adoption_mock, clie
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory(isEmailValidated=False)
-    token = users_factories.ResetPasswordToken(user=user)
+    token = users_factories.PasswordResetTokenFactory(user=user)
 
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = client.post("/native/v1/reset_password", json=data)
@@ -302,7 +302,7 @@ def test_reset_password_for_unvalidated_email(try_dms_orphan_adoption_mock, clie
 
 def test_reset_password_fail_for_password_strength(client):
     user = users_factories.UserFactory()
-    token = users_factories.ResetPasswordToken(user=user)
+    token = users_factories.PasswordResetTokenFactory(user=user)
 
     old_password = user.password
     new_password = "weak_password"

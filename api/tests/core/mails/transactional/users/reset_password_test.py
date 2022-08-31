@@ -17,7 +17,7 @@ class SendinblueSendResetPasswordToUserEmailTest:
     def test_send_email(self) -> None:
         # given
         user = users_factories.UserFactory()
-        token = users_factories.ResetPasswordToken(user=user)
+        token = users_factories.PasswordResetTokenFactory(user=user)
 
         # when
         send_reset_password_email_to_user(user, token)
@@ -37,7 +37,7 @@ class SendinblueSendResetPasswordToUserEmailTest:
     def test_get_email_metadata(self) -> None:
         # Given
         user = users_factories.UserFactory.build()
-        users_factories.ResetPasswordToken.build(user=user, value="abc", expirationDate=datetime(2020, 1, 1))
+        users_factories.PasswordResetTokenFactory.build(user=user, value="abc", expirationDate=datetime(2020, 1, 1))
 
         # When
         reset_password_email_data = get_reset_password_email_data(

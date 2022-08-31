@@ -16,7 +16,7 @@ class SendinblueProResetPasswordEmailDataTest:
     def test_get_email_correct_metadata(self):
         # Given
         pro = users_factories.ProFactory(email="pro@example.com")
-        users_factories.ResetPasswordToken(user=pro, value="ABCDEFG")
+        users_factories.PasswordResetTokenFactory(user=pro, value="ABCDEFG")
 
         # When
         reset_password_email_data = get_reset_password_to_pro_email_data(user=pro, token=pro.tokens[0])
@@ -32,7 +32,7 @@ class SendinblueProResetPasswordEmailDataTest:
     ):
         # given
         user = users_factories.ProFactory(email="pro@example.com")
-        token = users_factories.ResetPasswordToken(user=user)
+        token = users_factories.PasswordResetTokenFactory(user=user)
 
         # when
         send_reset_password_email_to_pro(user, token)
@@ -48,7 +48,7 @@ class SendinblueProResetPasswordEmailDataTest:
     ):
         # given
         user = users_factories.ProFactory(email="pro@example.com")
-        users_factories.ResetPasswordToken(user=user, value="ABCDEFG")
+        users_factories.PasswordResetTokenFactory(user=user, value="ABCDEFG")
         reset_password_link = "http://exemple.com/reset/?ABCDEFG"
 
         # when
