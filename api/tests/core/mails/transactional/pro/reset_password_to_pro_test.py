@@ -32,9 +32,10 @@ class SendinblueProResetPasswordEmailDataTest:
     ):
         # given
         user = users_factories.ProFactory(email="pro@example.com")
+        token = users_factories.ResetPasswordToken(user=user)
 
         # when
-        send_reset_password_email_to_pro(user)
+        send_reset_password_email_to_pro(user, token)
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent

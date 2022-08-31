@@ -3,6 +3,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 
@@ -109,11 +110,9 @@ class Returns204Test:
         now = datetime.utcnow()
         assert (now + timedelta(hours=23)) < user.tokens[0].expirationDate < (now + timedelta(hours=25))
 
-    @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_pro")
     @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     def test_should_send_reset_password_email_when_user_is_a_pro(
         self,
-        send_reset_password_email_to_pro_mock,
         check_recaptcha_token_is_valid_mock,
         client,
         db_session,
@@ -126,4 +125,4 @@ class Returns204Test:
         client.post("/users/reset-password", json=data)
 
         # then
-        send_reset_password_email_to_pro_mock.assert_called_once_with(pro)
+        assert len(mails_testing.outbox) == 1
