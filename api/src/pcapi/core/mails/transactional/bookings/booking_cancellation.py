@@ -41,7 +41,9 @@ def send_booking_cancellation_confirmation_by_pro_to_pro_email(booking: Booking)
     return mails.send(recipients=[offerer_booking_email], data=email)
 
 
-def get_booking_cancellation_confirmation_by_pro_email_data(booking: Booking) -> dict:
+def get_booking_cancellation_confirmation_by_pro_email_data(
+    booking: Booking,
+) -> models.SendinblueTransactionalWithoutTemplateEmailData:
     stock_name = booking.stock.offer.name
     venue = booking.venue
     user_name = booking.userName
@@ -67,7 +69,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(booking: Booking) ->
         venue=venue,
     )
 
-    return models.SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
+    return models.SendinblueTransactionalWithoutTemplateEmailData(
         subject=email_subject,
         html_content=email_html,
     )

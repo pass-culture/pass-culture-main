@@ -9,10 +9,11 @@ def get_accepted_as_beneficiary_email_data(user: User) -> models.SendinblueTrans
     if not user.has_active_deposit:
         raise ValueError("Beneficiary should have a deposit")
 
+    assert user.deposit  # helps mypy
     return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value,
         params={
-            "CREDIT": int(user.deposit.amount),  # type: ignore [union-attr, arg-type]
+            "CREDIT": int(user.deposit.amount),  # type: ignore [arg-type]
         },
     )
 
@@ -21,11 +22,12 @@ def get_accepted_as_underage_beneficiary_email_data(user: User) -> models.Sendin
     if not user.has_active_deposit:
         raise ValueError("Beneficiary should have a deposit")
 
+    assert user.deposit  # helps mypy
     return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value,
         params={
             "FIRSTNAME": user.firstName,
-            "CREDIT": int(user.deposit.amount),  # type: ignore [union-attr, arg-type]
+            "CREDIT": int(user.deposit.amount),  # type: ignore [arg-type]
         },
     )
 

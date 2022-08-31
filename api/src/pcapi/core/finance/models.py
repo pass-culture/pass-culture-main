@@ -385,7 +385,7 @@ class Invoice(Base, Model):  # type: ignore [valid-type, misc]
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
     reimbursementPoint = sqla_orm.relationship("Venue", foreign_keys=[reimbursementPointId])  # type: ignore [misc]
     # See the note about `amount` at the beginning of this module.
-    amount = sqla.Column(sqla.Integer, nullable=False)
+    amount: int = sqla.Column(sqla.Integer, nullable=False)
     token = sqla.Column(sqla.Text, unique=True, nullable=False)
     lines = sqla_orm.relationship("InvoiceLine", back_populates="invoice")  # type: ignore [misc]
     cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")  # type: ignore [misc]

@@ -46,6 +46,6 @@ def get_booking_cancellation_by_beneficiary_email_data(
     )
 
 
-def send_booking_cancellation_by_beneficiary_email(individual_booking: IndividualBooking) -> None:
+def send_booking_cancellation_by_beneficiary_email(individual_booking: IndividualBooking) -> bool:
     data = get_booking_cancellation_by_beneficiary_email_data(individual_booking)
-    return mails.send(recipients=[individual_booking.user.email], data=data)  # type: ignore [return-value]
+    return mails.send(recipients=[individual_booking.user.email], data=data)

@@ -9,11 +9,11 @@ from pcapi.utils.mailing import get_event_datetime
 from pcapi.utils.urls import booking_app_link
 
 
-def send_batch_booking_postponement_email_to_users(bookings: list[Booking]) -> list[bool]:
+def send_batch_booking_postponement_email_to_users(bookings: list[Booking]) -> bool:
     success = True
     for booking in bookings:
         success &= send_booking_postponement_email_to_users(booking)
-    return success  # type: ignore [return-value]
+    return success
 
 
 def send_booking_postponement_email_to_users(booking: Booking) -> bool:

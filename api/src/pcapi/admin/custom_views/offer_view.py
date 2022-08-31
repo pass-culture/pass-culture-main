@@ -293,6 +293,7 @@ class OfferView(BaseAdminView):
         if hasattr(form, "validation"):
             previous_validation = form._fields["validation"].object_data
             new_validation = offer.validation
+            assert new_validation  # helps mypy
             if previous_validation != new_validation:
                 offer.lastValidationDate = datetime.utcnow()
                 offer.lastValidationType = OfferValidationType.MANUAL
@@ -312,7 +313,7 @@ class OfferView(BaseAdminView):
                     else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
                 )
                 send_offer_validation_status_update_email(offer, new_validation, recipients)
-                send_offer_validation_notification_to_administration(new_validation, offer)  # type: ignore [arg-type]
+                send_offer_validation_notification_to_administration(new_validation, offer)
 
                 flash("Le statut de l'offre a bien été modifié", "success")
 
