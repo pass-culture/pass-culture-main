@@ -185,7 +185,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
                 model,
                 expiration=datetime.datetime.utcnow() + RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED,
             )
-            reset_password_link = build_pc_pro_create_password_link(resetPasswordToken.value)  # type: ignore [arg-type]
+            reset_password_link = build_pc_pro_create_password_link(resetPasswordToken.value)
             flash(f"Lien de création de mot de passe : {reset_password_link}")
             if current_user:
                 transactional_mails.send_reset_password_link_to_admin_email(
