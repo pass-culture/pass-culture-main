@@ -5,6 +5,7 @@
 .go-back {
   &-button {
     @include fonts.button();
+
     color: colors.$primary;
     align-items: center;
     display: flex;

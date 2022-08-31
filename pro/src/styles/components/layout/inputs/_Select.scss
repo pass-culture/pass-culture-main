@@ -18,7 +18,8 @@
     @include fonts.body();
 
     appearance: none;
-    background: url('/icons/dropdown-disclosure-down-b.svg') no-repeat right
+    background:
+      url('/icons/dropdown-disclosure-down-b.svg') no-repeat right
       rem.torem(15px) top 56%;
     border: rem.torem(1px) solid colors.$grey-medium;
     border-radius: rem.torem(20px);

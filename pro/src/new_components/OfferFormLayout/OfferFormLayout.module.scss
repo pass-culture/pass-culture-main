@@ -5,12 +5,14 @@
 .stepper {
   margin-top: rem.torem(32px);
 }
+
 .content {
   margin-top: rem.torem(32px);
 }
 
 h4 {
   @include fonts.title4();
+
   font-weight: 500;
 }
 

@@ -2,17 +2,17 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .description {
-    padding-top: rem.torem(8px);
+  padding-top: rem.torem(8px);
 }
 
 .spinner {
-    margin: rem.torem(32px);
+  margin: rem.torem(32px);
 }
 
 .collective-data-edition {
-    position: relative
+  position: relative;
 }
 
 .go-back-link {
-    margin-bottom: rem.torem(30px);
+  margin-bottom: rem.torem(30px);
 }

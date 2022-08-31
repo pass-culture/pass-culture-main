@@ -26,6 +26,7 @@ $buttonHeight: rem.torem(40px);
   .banner {
     margin-bottom: rem.torem(16px);
   }
+
   .banners {
     margin-bottom: rem.torem(32px);
   }
@@ -64,11 +65,12 @@ $buttonHeight: rem.torem(40px);
     }
 
     &.shadow {
-      background-image: radial-gradient(
-        ellipse at bottom,
-        colors.$black-shadow,
-        transparent 75%
-      );
+      background-image:
+        radial-gradient(
+          ellipse at bottom,
+          colors.$black-shadow,
+          transparent 75%
+        );
       bottom: $actionsPaddingBottom + $actionsPaddingTop + $buttonHeight;
       position: sticky;
     }

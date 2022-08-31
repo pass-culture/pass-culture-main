@@ -5,6 +5,7 @@
 .educational-form {
   &-information {
     @include fonts.caption();
+
     margin-bottom: rem.torem(32px);
     color: colors.$grey-dark;
   }

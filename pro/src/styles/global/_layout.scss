@@ -11,7 +11,6 @@
 
 html {
   font-size: rem.torem(16px);
-
   color: colors.$black;
   height: 100%;
 }
@@ -33,7 +32,8 @@ body {
 #root {
   display: grid;
   grid-template-columns: [col-start] 1fr [col-main] rem.torem(874px) 1fr;
-  grid-template-rows: [row-nav] rem.torem(72px) [row-header] rem.torem(80px) [row-main] 1fr [row-footer] rem.torem(
+  grid-template-rows:
+    [row-nav] rem.torem(72px) [row-header] rem.torem(80px) [row-main] 1fr [row-footer] rem.torem(
       48px
     );
   min-height: 100%;

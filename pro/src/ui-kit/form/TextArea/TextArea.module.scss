@@ -7,6 +7,7 @@
   $line-height: 1.3;
   $padding: rem.torem(8px);
   $font-size: rem.torem(16px);
+
   padding-top: rem.torem($padding);
   padding-bottom: rem.torem($padding);
   min-height: rem.torem($line-height * $font-size * 3 + $padding * 2);

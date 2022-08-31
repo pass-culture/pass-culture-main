@@ -5,6 +5,7 @@
 
 @mixin input-theme {
   @include fonts.body();
+
   width: 100%;
   outline: none;
   -webkit-appearance: none;
@@ -38,6 +39,7 @@
 
   &::placeholder {
     @include fonts.placeholder();
+
     color: forms.$placeholder-text-color;
   }
 
@@ -76,5 +78,6 @@
 
 @mixin input-icon-button-wrapper($icon-width: 32px) {
   @include input-icon-wrapper($icon-width);
+
   pointer-events: initial;
 }

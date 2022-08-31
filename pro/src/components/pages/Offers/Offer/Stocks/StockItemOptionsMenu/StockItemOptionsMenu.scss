@@ -24,10 +24,13 @@
     }
   }
 }
+
 .stock-options-menu-item-text {
   @include fonts.button();
+
   color: colors.$black;
 }
+
 .stock-options-menu-item-icon {
   max-height: rem.torem(20px);
   max-width: rem.torem(20px);
@@ -50,15 +53,17 @@
   &[data-selected] {
     background-color: transparent;
     display: flex;
+
     .stock-options-menu-item-icon {
       path {
-      fill: colors.$black;
+        fill: colors.$black;
       }
     }
   }
 
   &:not([data-selected]) {
     display: flex;
+
     path {
       fill: colors.$black;
     }
@@ -69,23 +74,26 @@
   padding: rem.torem(12px) 0;
   white-space: pre-wrap;
   width: rem.torem(215px);
+
   .stock-options-menu-item:hover {
     background: colors.$grey-medium;
   }
-  .stock-options-menu-item:last-child > svg{
-      min-height: rem.torem(32px);
-      min-width: rem.torem(32px);
-      margin: rem.torem(-5px);
+
+  .stock-options-menu-item:last-child > svg {
+    min-height: rem.torem(32px);
+    min-width: rem.torem(32px);
+    margin: rem.torem(-5px);
   }
 }
 
 [data-reach-menu-popover] {
   z-index: 3;
-  border: rem.torem(1px) solid #F1F1F4;
+  border: rem.torem(1px) solid #f1f1f4;
   box-shadow: 0 rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
   border-radius: rem.torem(6px);
   overflow: hidden;
 }
-div > [data-reach-menu-list]{
+
+div > [data-reach-menu-list] {
   border: none;
 }

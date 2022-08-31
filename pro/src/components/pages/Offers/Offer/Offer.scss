@@ -16,6 +16,7 @@
 
   .sub-title {
     @include fonts.title4();
+
     font-weight: 500;
   }
 
@@ -27,7 +28,7 @@
     margin-top: rem.torem(25px);
 
     .no-physical-venue {
-        margin-top: rem.torem(24px);
+      margin-top: rem.torem(24px);
     }
 
     .sidebar-container {
@@ -86,6 +87,7 @@
     display: flex;
     justify-content: center;
     margin-top: rem.torem(64px);
+
     button,
     a {
       flex: 1;
@@ -97,7 +99,8 @@
       }
     }
   }
+
   .edit-buttons {
     width: rem.torem(600px);
-}
+  }
 }
