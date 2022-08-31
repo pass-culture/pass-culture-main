@@ -18,7 +18,12 @@ const FormContact = ({
       <TextInput label={PHONE_LABEL} name="phone" disabled={disableForm} />
     </FormLayout.Row>
     <FormLayout.Row>
-      <TextInput label={EMAIL_LABEL} name="email" disabled={disableForm} />
+      <TextInput
+        label={EMAIL_LABEL}
+        name="email"
+        disabled={disableForm}
+        placeholder="https://exemple.com"
+      />
     </FormLayout.Row>
   </FormLayout.Section>
 )

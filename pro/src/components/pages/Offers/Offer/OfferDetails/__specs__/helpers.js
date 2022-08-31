@@ -9,7 +9,10 @@ export const fieldLabels = {
   },
   description: { label: 'Description', exact: false },
   durationMinutes: { label: 'Durée', exact: false },
-  externalTicketOfficeUrl: { label: /URL de redirection externe/, exact: true },
+  externalTicketOfficeUrl: {
+    label: /URL de votre site ou billetterie/,
+    exact: true,
+  },
   isbn: { label: 'ISBN', exact: false },
   isDuo: { label: 'Accepter les réservations "duo"', exact: false },
   audioDisabilityCompliant: { label: 'Auditif', exact: true },

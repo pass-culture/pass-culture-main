@@ -18,7 +18,7 @@ export const validationSchema = yup.object().shape({
   collectiveStudents: yup.array(),
   collectiveWebsite: yup.string().test({
     name: 'matchWebsiteUrl',
-    message: 'l’URL renseignée n’est pas valide',
+    message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',
     test: (url?: string) => (url ? url.match(urlRegex) !== null : true),
   }),
   collectivePhone: yup.string().test({
@@ -26,5 +26,5 @@ export const validationSchema = yup.object().shape({
     message: 'Votre numéro de téléphone n’est pas valide',
     test: isPhoneValid,
   }),
-  collectiveEmail: yup.string().email('Votre email n’est pas valide'),
+  collectiveEmail: yup.string().email('Veuillez renseigner un email valide'),
 })

@@ -157,7 +157,7 @@ const SignupForm = (): JSX.Element => {
                   <TextInput
                     label="Adresse e-mail"
                     name="email"
-                    placeholder="nom@exemple.fr"
+                    placeholder="email@exemple.com"
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>

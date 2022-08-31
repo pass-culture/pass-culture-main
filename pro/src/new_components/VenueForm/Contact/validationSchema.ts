@@ -14,13 +14,11 @@ const validationSchema = {
     }),
   email: yup
     .string()
-    .required('Votre email n’est pas valide')
-    .email(
-      'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
-    ),
+    .required('Veuillez renseigner une adresse email')
+    .email('Veuillez renseigner un email valide'),
   webSiteAddress: yup.string().test({
     name: 'matchWebsiteUrl',
-    message: 'l’URL renseignée n’est pas valide',
+    message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',
     test: (url?: string) => (url ? url.match(urlRegex) !== null : true),
   }),
 }
