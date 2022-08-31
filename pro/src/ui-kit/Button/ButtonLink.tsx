@@ -44,7 +44,8 @@ const ButtonLink = ({
   )
 
   if (linkIsExternal(link)) {
-    const { to, ...linkProps } = link
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { to, isExternal, ...linkProps } = link
     return (
       <a
         className={classNames}
