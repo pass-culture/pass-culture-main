@@ -170,10 +170,10 @@ class DeleteUserTokenTest:
     def test_delete_user_token(self):
         user = users_factories.UserFactory()
         users_factories.PasswordResetTokenFactory(user=user)
-        users_factories.EmailValidationToken(user=user)
+        users_factories.EmailValidationTokenFactory(user=user)
 
         other_user = users_factories.BeneficiaryGrant18Factory()
-        other_token = users_factories.EmailValidationToken(user=other_user)
+        other_token = users_factories.EmailValidationTokenFactory(user=other_user)
 
         users_api.delete_all_users_tokens(user)
 
