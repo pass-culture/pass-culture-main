@@ -5,9 +5,7 @@ from operator import attrgetter
 
 from pcapi import settings
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import (
-    send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,
-)
+import pcapi.core.mails.transactional as transactional_mails
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +34,7 @@ def notify_users_of_soon_to_be_expired_individual_bookings(given_date: datetime.
     notified_users = []
 
     for user, individual_bookings in expired_individual_bookings_grouped_by_user.items():
-        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
+        transactional_mails.send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             user, [individual_booking.booking for individual_booking in individual_bookings]
         )
         notified_users.append(user)

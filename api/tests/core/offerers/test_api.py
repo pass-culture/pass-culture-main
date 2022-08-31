@@ -420,7 +420,7 @@ class ApiKeyTest:
 
 
 class CreateOffererTest:
-    @patch("pcapi.core.offerers.api.admin_emails.maybe_send_offerer_validation_email", return_value=True)
+    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_new_offerer_with_validation_token_if_siren_is_not_already_registered(
         self, mock_maybe_send_offerer_validation_email
     ):
@@ -452,7 +452,7 @@ class CreateOffererTest:
             created_user_offerer.offerer, created_user_offerer
         )
 
-    @patch("pcapi.core.offerers.api.admin_emails.maybe_send_offerer_validation_email", return_value=True)
+    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_digital_venue_if_siren_is_not_already_registered(self, mock_maybe_send_offerer_validation_email):
         # Given
         offerers_factories.VirtualVenueTypeFactory()
@@ -469,7 +469,7 @@ class CreateOffererTest:
         assert len(created_offerer.managedVenues) == 1
         assert created_offerer.managedVenues[0].isVirtual is True
 
-    @patch("pcapi.core.offerers.api.admin_emails.maybe_send_offerer_validation_email", return_value=True)
+    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered(
         self, mock_maybe_send_offerer_validation_email
     ):
@@ -498,7 +498,7 @@ class CreateOffererTest:
             created_user_offerer.offerer, created_user_offerer
         )
 
-    @patch("pcapi.core.offerers.api.admin_emails.maybe_send_offerer_validation_email", return_value=True)
+    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(
         self, mock_maybe_send_offerer_validation_email
     ):
@@ -545,10 +545,7 @@ class ValidateOffererAttachmentTest:
         # Then
         assert applicant.has_pro_role
 
-    @patch(
-        "pcapi.core.offerers.api.offerer_attachment_validation.send_offerer_attachment_validation_email_to_pro",
-        return_value=True,
-    )
+    @patch("pcapi.core.mails.transactional.send_offerer_attachment_validation_email_to_pro")
     def test_send_validation_confirmation_email(self, mocked_send_validation_confirmation_email_to_pro):
         # Given
         applicant = users_factories.UserFactory()
@@ -623,7 +620,7 @@ class ValidateOffererTest:
         called_args, _ = mocked_async_index_offers_of_venue_ids.call_args
         assert set(called_args[0]) == {venue_1.id, venue_2.id}
 
-    @patch("pcapi.core.offerers.api.new_offerer_validation.send_new_offerer_validation_email_to_pro", return_value=True)
+    @patch("pcapi.core.mails.transactional.send_new_offerer_validation_email_to_pro", return_value=True)
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_send_validation_confirmation_email(
         self, mocked_async_index_offers_of_venue_ids, mocked_send_new_offerer_validation_email_to_pro

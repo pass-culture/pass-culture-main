@@ -17,10 +17,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.common import models as common_fraud_models
-from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
-from pcapi.core.mails.transactional.users import reset_password
-from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
-import pcapi.core.mails.transactional.users.unsuspension as suspension_mails
+import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
@@ -256,14 +253,14 @@ def update_user_information_from_external_source(
 
 def request_email_confirmation(user: models.User) -> None:
     token = create_email_validation_token(user)
-    send_email_confirmation_email(user, token=token)
+    transactional_mails.send_email_confirmation_email(user, token=token)
 
 
 def request_password_reset(user: models.User | None) -> None:
     if not user:
         return
 
-    is_email_sent = reset_password.send_reset_password_email_to_user(user)
+    is_email_sent = transactional_mails.send_reset_password_email_to_user(user)
 
     if not is_email_sent:
         logger.error("Email service failure when user requested password reset for email '%s'", user.email)
@@ -274,7 +271,7 @@ def handle_create_account_with_existing_email(user: models.User) -> None:
     if not user:
         return
 
-    is_email_sent = reset_password.send_email_already_exists_email(user)
+    is_email_sent = transactional_mails.send_email_already_exists_email(user)
 
     if not is_email_sent:
         logger.error("Email service failure when user email already exists in database '%s'", user.email)
@@ -409,7 +406,7 @@ def unsuspend_account(user: models.User, actor: models.User, send_email: bool = 
     )
 
     if send_email:
-        suspension_mails.send_unsuspension_email(user)
+        transactional_mails.send_unsuspension_email(user)
 
 
 def bulk_unsuspend_account(user_ids: list[int], actor: models.User) -> None:
@@ -601,7 +598,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
 
     repository.save(*objects_to_save)
 
-    if not send_email_validation_to_pro_email(new_pro_user):
+    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
         logger.warning(
             "Could not send validation email when creating pro user",
             extra={"user": new_pro_user.id},

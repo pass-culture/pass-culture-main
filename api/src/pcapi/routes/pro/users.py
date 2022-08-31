@@ -8,7 +8,7 @@ from flask_login import logout_user
 from jwt import InvalidTokenError
 import pydantic
 
-from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_email_to_connected_pro
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
@@ -170,7 +170,7 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
     old_password = body.oldPassword
     check_password_validity(new_password, new_confirmation_password, old_password, user)
     update_user_password(user, new_password)
-    send_reset_password_email_to_connected_pro(user)
+    transactional_mails.send_reset_password_email_to_connected_pro(user)
 
 
 @blueprint.pro_private_api.route("/users/signin", methods=["POST"])

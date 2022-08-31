@@ -109,8 +109,8 @@ class Returns204Test:
         now = datetime.utcnow()
         assert (now + timedelta(hours=23)) < user.tokens[0].expirationDate < (now + timedelta(hours=25))
 
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_pro")
+    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     def test_should_send_reset_password_email_when_user_is_a_pro(
         self,
         send_reset_password_email_to_pro_mock,

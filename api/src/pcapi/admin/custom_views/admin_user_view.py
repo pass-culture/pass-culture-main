@@ -10,7 +10,7 @@ from wtforms.validators import Length
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
-from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_admin_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users import api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
@@ -104,7 +104,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
                 model,
                 expiration=datetime.datetime.utcnow() + RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED,
             )
-            send_email_validation_to_admin_email(model, token)
+            transactional_mails.send_email_validation_to_admin_email(model, token)
             flash(f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(token.value)}")  # type: ignore [arg-type]
 
         super().after_model_change(form, model, is_created)

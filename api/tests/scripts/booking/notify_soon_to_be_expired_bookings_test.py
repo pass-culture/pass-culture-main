@@ -15,9 +15,7 @@ from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import (
 
 @pytest.mark.usefixtures("db_session")
 class NotifyUsersOfSoonToBeExpiredBookingsTest:
-    @mock.patch(
-        "pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary"
-    )
+    @mock.patch("pcapi.core.mails.transactional.send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary")
     def should_call_email_service_for_individual_bookings_which_will_expire_in_7_days(
         self, mocked_email_recap, app
     ) -> None:

@@ -611,7 +611,7 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
 
-    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
+    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     def test_create_stock_for_non_approved_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
@@ -627,7 +627,7 @@ class UpsertStocksTest:
 
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
-    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
+    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     def test_edit_stock_of_non_approved_offer_fails(
         self,
         mocked_send_first_venue_approved_offer_email_to_pro,
@@ -649,7 +649,7 @@ class UpsertStocksTest:
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
+    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     @override_features(OFFER_FORM_SUMMARY_PAGE=False)
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
@@ -669,7 +669,7 @@ class UpsertStocksTest:
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
+    @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
         self,

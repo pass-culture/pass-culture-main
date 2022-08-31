@@ -7,7 +7,7 @@ import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
-from pcapi.core.mails.transactional.users import accepted_as_beneficiary
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.payments import api as payments_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
@@ -71,7 +71,7 @@ def activate_beneficiary_for_eligibility(
     db.session.commit()
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
 
-    is_email_sent = accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user)
+    is_email_sent = transactional_mails.send_accepted_as_beneficiary_email(user=user)
     if not is_email_sent:
         logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
 

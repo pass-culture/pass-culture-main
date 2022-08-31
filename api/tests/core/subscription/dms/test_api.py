@@ -372,7 +372,7 @@ class HandleDmsApplicationTest:
         )
         assert result_content.first_name == ""
 
-    @patch("pcapi.core.subscription.dms.api.dms_subscription_emails.send_create_account_after_dms_email")
+    @patch("pcapi.core.mails.transactional.send_create_account_after_dms_email")
     def test_processing_accepted_orphan_application_is_idempotent(self, mock_send_create_account_after_dms_email):
         dms_response = make_parsed_graphql_application(
             application_number=1,

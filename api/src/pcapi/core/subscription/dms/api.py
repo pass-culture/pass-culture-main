@@ -10,8 +10,7 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
-from pcapi.core.mails.transactional.users import dms_subscription_emails
-from pcapi.core.mails.transactional.users import duplicate_beneficiary
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
@@ -345,7 +344,7 @@ def _process_user_not_found_error(
             subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
         )
     elif state == dms_models.GraphQLApplicationStates.accepted:
-        dms_subscription_emails.send_create_account_after_dms_email(email)
+        transactional_mails.send_create_account_after_dms_email(email)
 
 
 def _process_accepted_application(
@@ -355,7 +354,7 @@ def _process_accepted_application(
 ) -> None:
     if field_errors:
         subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=False)
-        dms_subscription_emails.send_pre_subscription_from_dms_error_email_to_beneficiary(
+        transactional_mails.send_pre_subscription_from_dms_error_email_to_beneficiary(
             user.email,
             field_errors,
         )
@@ -402,7 +401,7 @@ def _process_accepted_application(
     )
 
     if not has_completed_all_steps:
-        dms_subscription_emails.send_complete_subscription_after_dms_email(user.email)
+        transactional_mails.send_complete_subscription_after_dms_email(user.email)
         users_external.update_external_user(user)
 
 
@@ -413,10 +412,10 @@ def _handle_validation_errors(
 ) -> None:
     if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
         subscription_messages.on_duplicate_user(user)
-        duplicate_beneficiary.send_duplicate_beneficiary_email(user, dms_content, False)
+        transactional_mails.send_duplicate_beneficiary_email(user, dms_content, False)
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         subscription_messages.on_duplicate_user(user)
-        duplicate_beneficiary.send_duplicate_beneficiary_email(user, dms_content, True)
+        transactional_mails.send_duplicate_beneficiary_email(user, dms_content, True)
 
     reason = ", ".join([code.name for code in reason_codes])
 

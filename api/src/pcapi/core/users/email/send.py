@@ -2,10 +2,7 @@ from datetime import datetime
 from urllib.parse import urlencode
 
 from pcapi import settings
-from pcapi.core.mails.transactional.users.email_address_change import send_confirmation_email_change_email
-from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
-from pcapi.core.mails.transactional.users.email_address_change import send_pro_confirmation_email_change_email
-from pcapi.core.mails.transactional.users.email_address_change import send_pro_information_email_change_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.utils import encode_jwt_payload
@@ -31,9 +28,9 @@ def send_beneficiary_user_emails_for_email_change(user: User, new_email: str, ex
     if user_with_new_email:
         return True  # type: ignore [return-value]
 
-    success = send_information_email_change_email(user)
+    success = transactional_mails.send_information_email_change_email(user)
     link_for_email_change = _build_link_for_email_change(user.email, new_email, expiration_date)
-    success &= send_confirmation_email_change_email(user, new_email, link_for_email_change)
+    success &= transactional_mails.send_confirmation_email_change_email(user, new_email, link_for_email_change)
     return success  # type: ignore [return-value]
 
 
@@ -53,7 +50,7 @@ def send_pro_user_emails_for_email_change(user: User, new_email: str, expiration
     user_with_new_email = find_user_by_email(new_email)
     if user_with_new_email:
         return True
-    success = send_pro_information_email_change_email(user, new_email)
+    success = transactional_mails.send_pro_information_email_change_email(user, new_email)
     link_to_email_change = build_pro_link_for_email_change(user.email, new_email, expiration_date)
-    success &= send_pro_confirmation_email_change_email(new_email, link_to_email_change)
+    success &= transactional_mails.send_pro_confirmation_email_change_email(new_email, link_to_email_change)
     return success

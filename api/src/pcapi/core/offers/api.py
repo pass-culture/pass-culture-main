@@ -31,25 +31,7 @@ from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
-    send_booking_cancellation_by_pro_to_beneficiary_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
-    send_booking_cancellation_confirmation_by_pro_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
-    send_collective_booking_cancellation_confirmation_by_pro_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_beneficiary import (
-    send_batch_booking_postponement_email_to_users,
-)
-from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pro import (
-    send_event_offer_postponement_confirmation_email_to_pro,
-)
-from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import (
-    send_first_venue_approved_offer_email_to_pro,
-)
-from pcapi.core.mails.transactional.users.reported_offer_by_user import send_email_reported_offer_by_user
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation
@@ -94,7 +76,7 @@ from pcapi.utils import image_conversion
 from pcapi.utils.cds import get_cds_show_id_from_uuid
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
-from pcapi.workers.push_notification_job import send_cancel_booking_notification
+from pcapi.workers import push_notification_job
 
 from . import exceptions
 from . import models
@@ -513,7 +495,7 @@ def _edit_stock(
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: List[Booking]):  # type: ignore [no-untyped-def]
     if stock.offer.isEvent:
-        if not send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
+        if not transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
             logger.warning(
                 "Could not notify pro about update of stock concerning an event offer",
                 extra={"stock": stock.id},
@@ -527,7 +509,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: List[Booking])
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days  # type: ignore [operator]
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
-        if not send_batch_booking_postponement_email_to_users(bookings):
+        if not transactional_mails.send_batch_booking_postponement_email_to_users(bookings):
             logger.warning(
                 "Could not notify beneficiaries about update of stock",
                 extra={"stock": stock.id},
@@ -670,7 +652,7 @@ def update_offer_fraud_information(
         and not venue_already_has_validated_offer
         and isinstance(offer, Offer)
     ):
-        if not send_first_venue_approved_offer_email_to_pro(offer):
+        if not transactional_mails.send_first_venue_approved_offer_email_to_pro(offer):
             logger.warning("Could not send first venue approved offer email", extra={"offer_id": offer.id})
 
 
@@ -696,18 +678,18 @@ def delete_stock(stock: Stock) -> None:
     )
     if cancelled_bookings:
         for booking in cancelled_bookings:
-            if not send_booking_cancellation_by_pro_to_beneficiary_email(booking):
+            if not transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking):
                 logger.warning(
                     "Could not notify beneficiary about deletion of stock",
                     extra={"stock": stock.id, "booking": booking.id},
                 )
-        if not send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings):
+        if not transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings):
             logger.warning(
                 "Could not notify offerer about deletion of stock",
                 extra={"stock": stock.id},
             )
 
-        send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+        push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
 
 
 def create_mediation(
@@ -1063,7 +1045,7 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: str | Non
             raise ReportMalformed() from error
         raise
 
-    if not send_email_reported_offer_by_user(user, offer, reason, custom_reason):
+    if not transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason):
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
@@ -1109,7 +1091,7 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
                 "collectiveBookingId": cancelled_booking.id,
             },
         )
-    if not send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
+    if not transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
         logger.warning(
             "Could not notify offerer about deletion of stock",
             extra={"collectiveStock": collective_stock.id},

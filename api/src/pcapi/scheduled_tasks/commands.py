@@ -15,14 +15,7 @@ import pcapi.core.educational.api as educational_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.fraud.api as fraud_api
-from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
-    send_individual_booking_event_reminder_email_to_beneficiary,
-)
-from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
-from pcapi.core.mails.transactional.pro.reminder_venue_creation import send_reminder_venue_creation_to_pro
-from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
-    send_birthday_age_18_email_to_newly_eligible_user,
-)
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.repository import find_offerers_validated_3_days_ago_with_no_venues
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -159,7 +152,7 @@ def notify_newly_eligible_age_18_users() -> None:
         return
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in get_newly_eligible_age_18_users(yesterday):
-        send_birthday_age_18_email_to_newly_eligible_user(user)
+        transactional_mails.send_birthday_age_18_email_to_newly_eligible_user(user)
 
 
 @blueprint.cli.command("clean_expired_tokens")
@@ -209,7 +202,7 @@ def send_email_reminder_7_days_before_event() -> None:
     """Triggers email to be sent for events happening in 7 days"""
     stocks = find_event_stocks_happening_in_x_days(7).options(sqla_orm.joinedload(Stock.offer).joinedload(Offer.venue))
     for stock in stocks:
-        send_reminder_7_days_before_event_to_pro(stock)
+        transactional_mails.send_reminder_7_days_before_event_to_pro(stock)
 
 
 def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
@@ -217,7 +210,7 @@ def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
     individual_bookings = bookings_repository.find_individual_bookings_event_happening_tomorrow_query()
     for individual_booking in individual_bookings:
         try:
-            send_individual_booking_event_reminder_email_to_beneficiary(individual_booking)
+            transactional_mails.send_individual_booking_event_reminder_email_to_beneficiary(individual_booking)
         except Exception:  # pylint: disable=broad-except
             logger.exception(
                 "Could not send email reminder tomorrow event to beneficiary",
@@ -235,7 +228,7 @@ def send_email_reminder_venue_creation_to_pro() -> None:
     offerers = find_offerers_validated_3_days_ago_with_no_venues()
     for offerer in offerers:
         try:
-            send_reminder_venue_creation_to_pro(offerer)
+            transactional_mails.send_reminder_venue_creation_to_pro(offerer)
         except Exception:  # pylint: disable=broad-except
             logger.exception(
                 "Could not send email reminder venue creation to pro",

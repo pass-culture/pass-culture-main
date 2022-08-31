@@ -240,7 +240,7 @@ class InactiveAccountRequestResetPasswordTest:
         assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
 
 
-@patch("pcapi.core.users.api.reset_password.send_reset_password_email_to_user")
+@patch("pcapi.core.mails.transactional.send_reset_password_email_to_user")
 def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_user, client):
     email = "tt_user@example.com"
     data = {"email": email}

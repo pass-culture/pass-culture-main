@@ -11,8 +11,7 @@ from pcapi.core import search
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 import pcapi.core.finance.models as finance_models
-from pcapi.core.mails.transactional.pro import new_offerer_validation
-from pcapi.core.mails.transactional.pro import offerer_attachment_validation
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.external as users_external
@@ -406,7 +405,7 @@ def validate_offerer_attachment(token: str) -> None:
 
     users_external.update_external_pro(user_offerer.user.email)
 
-    if not offerer_attachment_validation.send_offerer_attachment_validation_email_to_pro(user_offerer):
+    if not transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer):
         logger.warning(
             "Could not send attachment validation email to offerer",
             extra={"user_offerer": user_offerer.id},
@@ -431,7 +430,7 @@ def validate_offerer(token: str) -> None:
     for applicant in applicants:
         users_external.update_external_pro(applicant.email)
 
-    if not new_offerer_validation.send_new_offerer_validation_email_to_pro(offerer):
+    if not transactional_mails.send_new_offerer_validation_email_to_pro(offerer):
         logger.warning(
             "Could not send validation confirmation email to offerer",
             extra={"offerer": offerer.id},
