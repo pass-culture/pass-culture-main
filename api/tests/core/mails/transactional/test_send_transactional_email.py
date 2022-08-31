@@ -4,8 +4,7 @@ from unittest.mock import patch
 import pytest
 from sib_api_v3_sdk.rest import ApiException
 
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
@@ -142,8 +141,11 @@ class TransactionalEmailWithTemplateTest:
 
 class TransactionalEmailWithoutTemplateTest:
 
-    data = SendinblueTransactionalWithoutTemplateEmailData(
-        subject="test", html_content="contenu test", sender=SendinblueTransactionalSender.SUPPORT, reply_to=None
+    data = models.SendinblueTransactionalWithoutTemplateEmailData(
+        subject="test",
+        html_content="contenu test",
+        sender=models.SendinblueTransactionalSender.SUPPORT,
+        reply_to=None,
     )
 
     @patch(

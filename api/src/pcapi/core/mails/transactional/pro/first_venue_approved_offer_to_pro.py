@@ -1,14 +1,14 @@
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.categories import subcategories
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
-def get_first_venue_approved_offer_email_data(offer: Offer) -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
+def get_first_venue_approved_offer_email_data(offer: Offer) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

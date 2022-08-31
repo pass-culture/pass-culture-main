@@ -1,14 +1,13 @@
 from pcapi.core import mails
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
-def retrieve_data_for_offer_approval_email(offer: Offer) -> SendinblueTransactionalEmailData:
-
-    return SendinblueTransactionalEmailData(
+def retrieve_data_for_offer_approval_email(offer: Offer) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.OFFER_APPROVAL_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
@@ -18,8 +17,8 @@ def retrieve_data_for_offer_approval_email(offer: Offer) -> SendinblueTransactio
     )
 
 
-def retrieve_data_for_offer_rejection_email(offer: Offer) -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
+def retrieve_data_for_offer_rejection_email(offer: Offer) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.OFFER_REJECTION_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

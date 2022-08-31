@@ -5,7 +5,7 @@ from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -14,8 +14,8 @@ from pcapi.utils.mailing import build_pc_pro_offer_link
 
 def get_bookings_expiration_to_pro_email_data(
     offerer: Offerer, bookings: list[Booking], withdrawal_period: int
-) -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
+) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value,
         params={
             "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings),

@@ -1,7 +1,7 @@
 from pcapi.core import mails
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import IndividualBooking
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
@@ -21,7 +21,7 @@ def send_individual_booking_event_reminder_email_to_beneficiary(individual_booki
 
 def get_booking_event_reminder_to_beneficiary_email_data(
     individual_booking: IndividualBooking,
-) -> SendinblueTransactionalEmailData | None:
+) -> models.SendinblueTransactionalEmailData | None:
     if individual_booking.booking.stock.beginningDatetime is None:
         return None
 
@@ -49,7 +49,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
         else None
     )
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,  # id_prod à zero -> à changer avec l'id du template sur le compte sib de prod
         params={
             "BOOKING_LINK": booking_app_link(individual_booking.booking),

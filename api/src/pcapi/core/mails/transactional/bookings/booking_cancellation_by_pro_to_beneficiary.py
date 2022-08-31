@@ -2,7 +2,7 @@ from babel.dates import format_date
 
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -10,7 +10,7 @@ from pcapi.utils.mailing import get_event_datetime
 
 def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     booking: Booking,
-) -> SendinblueTransactionalEmailData:
+) -> models.SendinblueTransactionalEmailData:
     stock = booking.stock
     offer = stock.offer
     if offer.isEvent:
@@ -23,7 +23,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     is_free_offer = stock.price == 0
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value,
         params={
             "EVENT_DATE": event_date,

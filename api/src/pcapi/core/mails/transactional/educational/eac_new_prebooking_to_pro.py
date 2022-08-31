@@ -2,7 +2,7 @@ from babel.dates import format_date
 
 from pcapi.core import mails
 from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -17,11 +17,11 @@ def send_eac_new_collective_prebooking_email_to_pro(booking: CollectiveBooking) 
     return mails.send(recipients=[booking.collectiveStock.collectiveOffer.bookingEmail], data=data)
 
 
-def get_eac_new_collective_prebooking_email_data(booking: CollectiveBooking) -> SendinblueTransactionalEmailData:
+def get_eac_new_collective_prebooking_email_data(booking: CollectiveBooking) -> models.SendinblueTransactionalEmailData:
     stock: Stock = booking.collectiveStock  # type: ignore [assignment]
     offer: Offer = stock.collectiveOffer
 
-    return SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.EAC_NEW_PREBOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

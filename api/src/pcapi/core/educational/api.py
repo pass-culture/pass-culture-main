@@ -26,7 +26,7 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+import pcapi.core.mails.models as mails_models
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import (
     send_eac_new_collective_prebooking_email_to_pro,
@@ -255,7 +255,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
     booking_email = collective_booking.collectiveStock.collectiveOffer.bookingEmail
     if booking_email:
         collective_stock = collective_booking.collectiveStock
-        data = SendinblueTransactionalEmailData(
+        data = mails_models.SendinblueTransactionalEmailData(
             template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
             params={
                 "OFFER_NAME": collective_stock.collectiveOffer.name,

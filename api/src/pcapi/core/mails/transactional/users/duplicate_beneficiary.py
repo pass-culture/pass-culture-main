@@ -3,7 +3,7 @@ import logging
 from pcapi.core import mails
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
-from pcapi.core.mails.models import sendinblue_models
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import models as users_models
 
@@ -36,7 +36,7 @@ def send_duplicate_beneficiary_email(
 
     return mails.send(
         recipients=[rejected_user.email],
-        data=sendinblue_models.SendinblueTransactionalEmailData(
+        data=models.SendinblueTransactionalEmailData(
             template=TransactionalEmail.SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY.value,
             params={"DUPLICATE_BENEFICIARY_EMAIL": anonymized_email},
         ),

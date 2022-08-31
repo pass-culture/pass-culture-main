@@ -3,14 +3,12 @@ import logging
 from typing import Iterable
 
 from pcapi import settings
-from pcapi.core.mails.models.models import MailResult
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 
+from .. import models
 from .base import BaseBackend
 
 
@@ -21,9 +19,9 @@ class SendinblueBackend(BaseBackend):
     def send_mail(
         self,
         recipients: Iterable,
-        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
-    ) -> MailResult:
-        if isinstance(data, SendinblueTransactionalEmailData):
+        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+    ) -> models.MailResult:
+        if isinstance(data, models.SendinblueTransactionalEmailData):
             payload = SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 template_id=data.template.id,
@@ -40,7 +38,7 @@ class SendinblueBackend(BaseBackend):
             else:
                 send_transactional_email_secondary_task.delay(payload)
 
-        elif isinstance(data, SendinblueTransactionalWithoutTemplateEmailData):
+        elif isinstance(data, models.SendinblueTransactionalWithoutTemplateEmailData):
             payload = SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 sender=asdict(data.sender.value),
@@ -57,15 +55,15 @@ class SendinblueBackend(BaseBackend):
         else:
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
 
-        return MailResult(sent_data=asdict(data), successful=True)
+        return models.MailResult(sent_data=asdict(data), successful=True)
 
 
 class ToDevSendinblueBackend(SendinblueBackend):
     def send_mail(
         self,
         recipients: Iterable,
-        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
-    ) -> MailResult:
+        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+    ) -> models.MailResult:
         whitelisted_recipients = set()
         for recipient in recipients:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)

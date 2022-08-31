@@ -2,13 +2,11 @@ from dataclasses import asdict
 import logging
 import typing
 
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
+from .. import models
+from .base import BaseBackend
 
 
 logger = logging.getLogger(__name__)
-from ..models.models import MailResult
-from .base import BaseBackend
 
 
 class LoggerBackend(BaseBackend):
@@ -20,11 +18,11 @@ class LoggerBackend(BaseBackend):
     def send_mail(
         self,
         recipients: typing.Iterable[str],
-        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
-    ) -> MailResult:
+        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+    ) -> models.MailResult:
         recipients = ", ".join(recipients)
         sent_data = asdict(data)
         logger.info("An e-mail would be sent via Sendinblue to=%s: %s", recipients, sent_data)
-        result = MailResult(sent_data=sent_data, successful=True)
+        result = models.MailResult(sent_data=sent_data, successful=True)
 
         return result

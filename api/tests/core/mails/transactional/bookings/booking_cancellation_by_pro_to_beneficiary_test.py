@@ -4,7 +4,7 @@ from datetime import timezone
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.mails.models.sendinblue_models import Template
+from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     get_booking_cancellation_by_pro_to_beneficiary_email_data,
@@ -97,7 +97,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
 
         # Then
-        assert email_data.template == Template(id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"])
+        assert email_data.template == models.Template(id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"])
         assert email_data.params == {
             "EVENT_DATE": None,
             "EVENT_HOUR": None,

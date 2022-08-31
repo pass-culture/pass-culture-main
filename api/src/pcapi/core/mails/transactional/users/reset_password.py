@@ -1,5 +1,5 @@
 from pcapi.core import mails
-from pcapi.core.mails.models import sendinblue_models
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as user_models
@@ -19,8 +19,8 @@ def send_email_already_exists_email(user: user_models.User) -> bool:
 
 
 def get_reset_password_email_data(
-    user: user_models.User, token: user_models.Token, email_template: sendinblue_models.Template
-) -> sendinblue_models.SendinblueTransactionalEmailData:
+    user: user_models.User, token: user_models.Token, email_template: models.Template
+) -> models.SendinblueTransactionalEmailData:
     reset_password_link = generate_firebase_dynamic_link(
         path="mot-de-passe-perdu",
         params={
@@ -30,7 +30,7 @@ def get_reset_password_email_data(
         },
     )
 
-    return sendinblue_models.SendinblueTransactionalEmailData(
+    return models.SendinblueTransactionalEmailData(
         template=email_template,
         params={
             "FIRSTNAME": user.firstName,

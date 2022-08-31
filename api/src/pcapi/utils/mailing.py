@@ -12,8 +12,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
+import pcapi.core.mails.models as mails_models
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -85,7 +84,7 @@ def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
 def make_offerer_internal_validation_email(
     offerer: offerers_models.Offerer,
     user_offerer: offerers_models.UserOfferer,
-) -> SendinblueTransactionalWithoutTemplateEmailData:
+) -> mails_models.SendinblueTransactionalWithoutTemplateEmailData:
     siren_info: sirene.SirenInfo | dict | None = None
     if FeatureToggle.USE_INSEE_SIRENE_API.is_active():
         try:
@@ -115,16 +114,16 @@ def make_offerer_internal_validation_email(
         api_url=settings.API_URL,
     )
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return mails_models.SendinblueTransactionalWithoutTemplateEmailData(
         subject="%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
         html_content=email_html,
-        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+        sender=mails_models.SendinblueTransactionalSender.SUPPORT_PRO,
     )
 
 
 def make_offer_creation_notification_email(
     offer: Offer | CollectiveOffer | CollectiveOfferTemplate,
-) -> SendinblueTransactionalWithoutTemplateEmailData:
+) -> mails_models.SendinblueTransactionalWithoutTemplateEmailData:
     author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
     pro_link_to_offer = build_pc_pro_offer_link(offer)
@@ -142,16 +141,16 @@ def make_offer_creation_notification_email(
     location_information = offer.venue.departementCode or "numérique"
     is_educational_offer_label = "EAC " if offer.isEducational else ""
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return mails_models.SendinblueTransactionalWithoutTemplateEmailData(
         subject=f"[Création d’offre {is_educational_offer_label}- {location_information}] {offer.name}",
         html_content=html,
-        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+        sender=mails_models.SendinblueTransactionalSender.SUPPORT_PRO,
     )
 
 
 def make_offer_rejection_notification_email(
     offer: Offer | CollectiveOfferTemplate | CollectiveOffer,
-) -> SendinblueTransactionalWithoutTemplateEmailData:
+) -> mails_models.SendinblueTransactionalWithoutTemplateEmailData:
     author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
     pro_link_to_offer = build_pc_pro_offer_link(offer)
     venue = offer.venue
@@ -167,10 +166,10 @@ def make_offer_rejection_notification_email(
     location_information = offer.venue.departementCode or "numérique"
     is_educational_offer_label = "" if isinstance(offer, Offer) else "EAC "
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return mails_models.SendinblueTransactionalWithoutTemplateEmailData(
         subject=f"[Création d’offre {is_educational_offer_label}: refus - {location_information}] {offer.name}",
         html_content=html,
-        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+        sender=mails_models.SendinblueTransactionalSender.SUPPORT_PRO,
     )
 
 
@@ -190,7 +189,7 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
 
 def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
     fraudulent_users: dict, nb_cancelled_bookings: int
-) -> SendinblueTransactionalWithoutTemplateEmailData:
+) -> mails_models.SendinblueTransactionalWithoutTemplateEmailData:
     html = render_template(
         "mails/suspend_fraudulent_beneficiary_by_ids_notification_email.html",
         fraudulent_users=fraudulent_users,
@@ -198,10 +197,10 @@ def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
         nb_fraud_users=len(fraudulent_users),
     )
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return mails_models.SendinblueTransactionalWithoutTemplateEmailData(
         subject="Fraude : suspension des utilisateurs frauduleux par ids",
         html_content=html,
-        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+        sender=mails_models.SendinblueTransactionalSender.SUPPORT_PRO,
     )
 
 
