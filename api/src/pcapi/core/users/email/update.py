@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 
 def request_email_update(user: User, email: str, password: str) -> None:
+    check_user_password(user, password)
     check_email_update_attempts(user)
 
     expiration_date = generate_token_expiration_date()
     check_no_active_token_exists(user, expiration_date)
 
     check_email_address_does_not_exist(email)
-    check_user_password(user, password)
 
     email_history = UserEmailHistory.build_update_request(user=user, new_email=email)
     repository.save(email_history)

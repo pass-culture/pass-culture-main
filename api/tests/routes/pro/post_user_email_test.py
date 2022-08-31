@@ -91,7 +91,7 @@ class ProUpdateEmailTest:
             "/users/email",
             json={
                 "email": other_user.email,
-                "password": "does_not_matter",
+                "password": settings.TEST_DEFAULT_PASSWORD,
             },
         )
         assert response.status_code == 204

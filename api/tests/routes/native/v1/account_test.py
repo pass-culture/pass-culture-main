@@ -594,7 +594,8 @@ class UpdateUserEmailTest:
         Test that if the email already exists, an OK response is sent
         but nothing is sent (avoid user enumeration).
         """
-        user = users_factories.UserFactory(email=self.identifier)
+        password = "some_random_string"
+        user = users_factories.UserFactory(email=self.identifier, password=password)
         other_user = users_factories.UserFactory(email="other_" + self.identifier)
 
         client.with_token(user.email)
@@ -602,7 +603,7 @@ class UpdateUserEmailTest:
             "/native/v1/profile/update_email",
             json={
                 "email": other_user.email,
-                "password": "does_not_matter",
+                "password": password,
             },
         )
 
@@ -652,7 +653,7 @@ class UpdateUserEmailTest:
             "/native/v1/profile/update_email",
             json={
                 "email": "updated_twice_" + user.email,
-                "password": "does_not_matter",
+                "password": password,
             },
         )
 
