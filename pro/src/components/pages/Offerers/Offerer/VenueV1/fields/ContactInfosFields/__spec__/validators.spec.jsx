@@ -44,7 +44,7 @@ describe('has fill fields with correct format', () => {
   })
   // rename it and wrong and goo values
   it('should return an error message when Email is invalid', async () => {
-    const errorMessage = 'Votre email n’est pas valide'
+    const errorMessage = 'Veuillez renseigner un email valide'
 
     const emailWithTwoArrowbases = 'jeans@@gmail.com'
     const emailWithNoDot = 'jeans@hotmailfr'
@@ -84,7 +84,8 @@ describe('has fill fields with correct format', () => {
   })
 
   it('should return an error message when Url is invalid', async () => {
-    const errorMessage = 'L’URL renseignée n’est pas valide'
+    const errorMessage =
+      'Veuillez renseigner une URL valide. Ex : https://exemple.com'
 
     const stringText = 'some text'
     const urlWithoutSlash = 'http:someFakeUrl.com'

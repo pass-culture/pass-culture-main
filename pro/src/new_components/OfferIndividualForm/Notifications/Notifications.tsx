@@ -41,6 +41,7 @@ const Notifications = (): JSX.Element => {
             label="Email auquel envoyer les notifications :"
             maxLength={90}
             name="bookingEmail"
+            placeholder="email@exemple.com"
           />
         </FormLayout.Row>
       )}

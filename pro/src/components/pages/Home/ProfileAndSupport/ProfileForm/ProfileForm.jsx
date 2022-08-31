@@ -79,6 +79,7 @@ const ProfileForm = ({ onCancel, onSuccess, initialValues }) => {
           name="email-input"
           onChange={setInput(setEmail)}
           value={email}
+          placeholder="email@exemple.com"
         />
         <TextInput
           error={formErrors.phoneNumber?.[0]}

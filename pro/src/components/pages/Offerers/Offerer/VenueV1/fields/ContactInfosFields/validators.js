@@ -20,7 +20,7 @@ export const validateEmail = async val => {
     return
   }
   if (!isValid) {
-    return 'Votre email n’est pas valide'
+    return 'Veuillez renseigner un email valide'
   }
 }
 
@@ -29,6 +29,6 @@ export const validateUrl = async url => {
     return
   }
   if (!urlRegex.test(url)) {
-    return 'L’URL renseignée n’est pas valide'
+    return 'Veuillez renseigner une URL valide. Ex : https://exemple.com'
   }
 }

@@ -469,12 +469,13 @@ const OfferForm = ({
     }
 
     if (!isUrlValid(formValues.url)) {
-      newFormErrors['url'] = 'Veuillez renseigner une URL valide'
+      newFormErrors['url'] =
+        'Veuillez renseigner une URL valide. Ex : https://exemple.com'
     }
 
     if (!isUrlValid(formValues.externalTicketOfficeUrl)) {
       newFormErrors['externalTicketOfficeUrl'] =
-        'Veuillez renseigner une URL valide'
+        'Veuillez renseigner une URL valide. Ex : https://exemple.com'
     }
 
     if (
@@ -489,8 +490,7 @@ const OfferForm = ({
     }
 
     if (!(await isEmailValid(formValues.bookingEmail))) {
-      newFormErrors['bookingEmail'] =
-        'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
+      newFormErrors['bookingEmail'] = 'Veuillez renseigner un email valide'
     }
 
     setFormErrors(newFormErrors)
@@ -1087,6 +1087,7 @@ const OfferForm = ({
                     required
                     type="text"
                     value={formValues.url}
+                    placeholder="https://exemple.com"
                   />
                 </div>
               )}
@@ -1130,7 +1131,7 @@ const OfferForm = ({
             />
 
             <section className="form-section">
-              <h3 className="section-title">Lien de réservation externe</h3>
+              <h3 className="section-title">Lien pour le grand public</h3>
               <p className="section-description">
                 {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
                   'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
@@ -1138,7 +1139,7 @@ const OfferForm = ({
               <TextInput
                 disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
                 error={getErrorMessage('externalTicketOfficeUrl')}
-                label="URL de redirection externe"
+                label="URL de votre site ou billetterie"
                 name="externalTicketOfficeUrl"
                 onChange={handleExternalTicketOfficeUrlUpdate}
                 subLabel={
@@ -1148,6 +1149,7 @@ const OfferForm = ({
                 }
                 type="text"
                 value={formValues.externalTicketOfficeUrl}
+                placeholder="https://exemple.com"
               />
             </section>
 
@@ -1173,7 +1175,7 @@ const OfferForm = ({
                     label="Email auquel envoyer les notifications :"
                     name="bookingEmail"
                     onChange={handleBookingEmailUpdate}
-                    placeholder="adresse@email.com"
+                    placeholder="email@exemple.com"
                     required
                     type="email"
                     value={formValues.bookingEmail}

@@ -5,10 +5,8 @@ const validationSchema = {
     is: (receiveNotificationEmails: boolean) => receiveNotificationEmails,
     then: yup
       .string()
-      .required('Veuillez renseigner une adresse e-mail')
-      .email(
-        'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
-      ),
+      .required('Veuillez renseigner une adresse email')
+      .email('Veuillez renseigner un email valide'),
   }),
 }
 

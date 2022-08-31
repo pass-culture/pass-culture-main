@@ -17,10 +17,18 @@ const Contact = () => {
         <TextInput name="phoneNumber" label="Téléphone" />
       </FormLayout.Row>
       <FormLayout.Row>
-        <TextInput name="email" label="Adresse e-mail" />
+        <TextInput
+          name="email"
+          label="Adresse e-mail"
+          placeholder="email@exemple.com"
+        />
       </FormLayout.Row>
       <FormLayout.Row>
-        <TextInput name="webSite" label="URL de votre site web" />
+        <TextInput
+          name="webSite"
+          label="URL de votre site web"
+          placeholder="https://exemple.com"
+        />
       </FormLayout.Row>
     </FormLayout.Section>
   )

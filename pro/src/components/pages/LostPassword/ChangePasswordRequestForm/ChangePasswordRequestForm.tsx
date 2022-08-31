@@ -32,7 +32,7 @@ const ChangePasswordRequestForm = ({
           label="Adresse e-mail"
           name="email"
           onChange={onChange}
-          placeholder="nom@exemple.fr"
+          placeholder="email@exemple.com"
           required
           subLabel="obligatoire"
           type="email"

@@ -217,10 +217,12 @@ describe('CollectiveDataEdition', () => {
         screen.queryByText('Votre numéro de téléphone n’est pas valide')
       ).toBeInTheDocument()
       expect(
-        screen.queryByText('l’URL renseignée n’est pas valide')
+        screen.queryByText(
+          'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+        )
       ).toBeInTheDocument()
       expect(
-        screen.queryByText('Votre email n’est pas valide')
+        screen.queryByText('Veuillez renseigner un email valide')
       ).toBeInTheDocument()
     })
 
@@ -242,14 +244,16 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(
-          screen.queryByText('Votre email n’est pas valide')
+          screen.queryByText('Veuillez renseigner un email valide')
         ).not.toBeInTheDocument()
       )
       expect(
         screen.queryByText('Votre numéro de téléphone n’est pas valide')
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByText('l’URL renseignée n’est pas valide')
+        screen.queryByText(
+          'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+        )
       ).not.toBeInTheDocument()
     })
 
@@ -270,14 +274,16 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(
-          screen.queryByText('Votre email n’est pas valide')
+          screen.queryByText('Veuillez renseigner un email valide')
         ).not.toBeInTheDocument()
       )
       expect(
         screen.queryByText('Votre numéro de téléphone n’est pas valide')
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByText('l’URL renseignée n’est pas valide')
+        screen.queryByText(
+          'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+        )
       ).not.toBeInTheDocument()
     })
   })

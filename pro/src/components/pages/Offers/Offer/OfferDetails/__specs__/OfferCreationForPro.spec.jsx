@@ -749,7 +749,7 @@ describe('offerDetails - Creation - pro user', () => {
         })
       })
 
-      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Lien de réservation externe" and "Notification" section', async () => {
+      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Lien pour le grand public" and "Notification" section', async () => {
         // Given
         await renderOffers(props, store)
 
@@ -781,7 +781,7 @@ describe('offerDetails - Creation - pro user', () => {
         ).toBeInTheDocument()
         expect(
           screen.getByRole('heading', {
-            name: 'Lien de réservation externe',
+            name: 'Lien pour le grand public',
             level: 3,
           })
         ).toBeInTheDocument()
@@ -894,9 +894,7 @@ describe('offerDetails - Creation - pro user', () => {
         await userEvent.paste('wrong email')
         await userEvent.click(screen.getByText('Étape suivante'))
         expect(
-          screen.getByText(
-            'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
-          )
+          screen.getByText('Veuillez renseigner un email valide')
         ).toBeInTheDocument()
       })
 
@@ -1865,7 +1863,7 @@ describe('offerDetails - Creation - pro user', () => {
       await userEvent.click(screen.getByLabelText(/Visuel/))
       await userEvent.type(screen.getByLabelText(/Durée/), '1:30')
       await userEvent.type(
-        screen.getByLabelText(/URL de redirection externe/),
+        screen.getByLabelText(/URL de votre site ou billetterie/),
         'http://example.net'
       )
       await userEvent.selectOptions(
@@ -2147,7 +2145,7 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues({ externalTicketOfficeUrl: 'NotAValidUrl' })
 
       await userEvent.type(
-        await screen.findByLabelText(/URL de redirection externe/),
+        await screen.findByLabelText(/URL de votre site ou billetterie/),
         'NotAValidUrl'
       )
       // When

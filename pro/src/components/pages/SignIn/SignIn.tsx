@@ -105,7 +105,7 @@ const SignIn = (): JSX.Element => {
                 label="Adresse e-mail"
                 name="identifier"
                 onChange={handleOnChangeEmail}
-                placeholder="Identifiant (e-mail)"
+                placeholder="email@exemple.com"
                 required
                 type="email"
                 value={emailValue}

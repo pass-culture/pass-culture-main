@@ -77,19 +77,15 @@ export const validationSchema = yup.object().shape({
     }),
   email: yup
     .string()
-    .required('Veuillez renseigner une adresse e-mail')
-    .email(
-      'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
-    ),
+    .required('Veuillez renseigner une adresse email')
+    .email('Veuillez renseigner un email valide'),
   notifications: yup.boolean(),
   notificationEmail: yup.string().when('notifications', {
     is: true,
     then: yup
       .string()
-      .required('Veuillez renseigner une adresse e-mail')
-      .email(
-        'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
-      ),
+      .required('Veuillez renseigner une adresse email')
+      .email('Veuillez renseigner un email valide'),
   }),
   domains: yup.array().test({
     message: 'Veuillez renseigner un domaine',

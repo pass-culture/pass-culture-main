@@ -15,7 +15,7 @@ export const validationSchema = yup.object().shape({
     .string()
     .max(120)
     .email('Veuillez renseigner un email valide')
-    .required('Veuillez renseigner un email'),
+    .required('Veuillez renseigner une adresse email'),
   password: yup
     .string()
     .required('Veuillez renseigner un mot de passe')
@@ -42,7 +42,7 @@ export const validationSchema = yup.object().shape({
   contactOk: yup.string(),
   siren: yup
     .string()
-    .required('Veuillez rensigner le siren de votre entreprise')
+    .required('Veuillez renseigner le siren de votre entreprise')
     .min(9, 'Veuillez saisir 9 chiffres')
     .max(11, 'Veuillez saisir 9 chiffres'),
 })
