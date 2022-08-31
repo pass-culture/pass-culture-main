@@ -175,15 +175,17 @@
 
       .h-card {
         flex: 1 1;
-        margin-left: rem.torem(
-          24px
-        ); // in case it's inside a section-row with multiple cards
+        margin-left:
+          rem.torem(
+            24px
+          ); // in case it's inside a section-row with multiple cards
 
         &:first-child {
           margin-left: 0;
         }
       }
     }
+
     .newsletter {
       position: relative;
       margin-top: rem.torem(16px);
@@ -234,9 +236,10 @@
     }
 
     .h-card-inner {
-      padding-bottom: rem.torem(
-        16px
-      ); // FIXME: remove this fix when venue list card get content.
+      padding-bottom:
+        rem.torem(
+          16px
+        ); // FIXME: remove this fix when venue list card get content.
     }
   }
 }

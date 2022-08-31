@@ -4,6 +4,7 @@
 
 .button {
   @include fonts.button();
+
   display: flex;
   align-items: center;
   border: rem.torem(2px) solid;
@@ -47,6 +48,7 @@
       background-color: colors.$primary-disabled;
       border-color: colors.$primary-disabled;
     }
+
     &:disabled .button-icon,
     &.button-disabled .button-icon {
       fill: colors.$grey-medium;
@@ -75,6 +77,7 @@
       border-color: colors.$primary-disabled;
       color: colors.$primary-disabled;
     }
+
     &:disabled .button-icon,
     &.button-disabled .button-icon {
       fill: colors.$grey-medium;
@@ -87,6 +90,7 @@
 
   &-ternary {
     @include fonts.button();
+
     color: colors.$black;
     background-color: transparent;
     border-color: transparent;
@@ -104,6 +108,7 @@
       color: colors.$grey-dark;
       text-decoration: none;
     }
+
     &:disabled .button-icon,
     &.button-disabled .button-icon {
       fill: colors.$grey-dark;

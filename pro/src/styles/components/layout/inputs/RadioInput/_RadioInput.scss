@@ -14,40 +14,44 @@ input[type='radio'] {
   width: rem.torem(20px);
 
   &:checked {
-    background: radial-gradient(
-      colors.$grey-dark 0%,
-      colors.$grey-dark 40%,
-      transparent 50%,
-      transparent
-    );
-
-    &:hover {
-      background: radial-gradient(
-        colors.$primary 0%,
-        colors.$primary 40%,
+    background:
+      radial-gradient(
+        colors.$grey-dark 0%,
+        colors.$grey-dark 40%,
         transparent 50%,
         transparent
       );
+
+    &:hover {
+      background:
+        radial-gradient(
+          colors.$primary 0%,
+          colors.$primary 40%,
+          transparent 50%,
+          transparent
+        );
       border-color: colors.$primary;
     }
 
     &:focus {
-      background: radial-gradient(
-        colors.$primary-dark 0%,
-        colors.$primary-dark 40%,
-        transparent 50%,
-        transparent
-      );
+      background:
+        radial-gradient(
+          colors.$primary-dark 0%,
+          colors.$primary-dark 40%,
+          transparent 50%,
+          transparent
+        );
       border-color: colors.$primary-dark;
     }
 
     &:disabled {
-      background: radial-gradient(
-        colors.$grey-medium 0%,
-        colors.$grey-medium 40%,
-        transparent 50%,
-        transparent
-      );
+      background:
+        radial-gradient(
+          colors.$grey-medium 0%,
+          colors.$grey-medium 40%,
+          transparent 50%,
+          transparent
+        );
       border-color: colors.$grey-medium;
       cursor: not-allowed;
       opacity: 1;

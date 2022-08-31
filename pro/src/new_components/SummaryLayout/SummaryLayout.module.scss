@@ -9,6 +9,7 @@
   &-content {
     width: rem.torem(485px);
   }
+
   &-side {
     width: rem.torem(231px);
   }
@@ -20,16 +21,17 @@
       margin-bottom: rem.torem(24px);
 
       &-content {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
       }
+
       &-edit-link {
         height: unset;
 
         & > svg {
-            height: rem.torem(16px);
+          height: rem.torem(16px);
         }
       }
 
@@ -50,7 +52,6 @@
     &-separator {
       border-bottom: rem.torem(1px) solid colors.$grey-medium;
       margin-top: rem.torem(24px);
-
     }
 
     &:last-child &-separator {

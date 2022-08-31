@@ -6,6 +6,7 @@
 
 .select-input {
   @include formsM.input-theme();
+
   line-height: rem.torem(36px);
   padding-right: rem.torem(forms.$input-right-icon-padding);
 
@@ -25,6 +26,7 @@
 
   &-wrapper {
     position: relative;
+
     &.has-description {
       display: inline-block;
       vertical-align: middle;
@@ -33,6 +35,7 @@
 
   &-placeholder {
     @include fonts.placeholder();
+
     color: colors.$grey-dark;
   }
 }

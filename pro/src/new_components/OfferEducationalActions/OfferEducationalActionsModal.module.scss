@@ -1,8 +1,7 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .modal-icon-wrapper {
-    svg {
-      fill: colors.$grey-dark;
-    }
+  svg {
+    fill: colors.$grey-dark;
   }
-
+}

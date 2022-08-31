@@ -1,9 +1,9 @@
 @use 'styles/mixins/_rem.scss' as rem;
 
 .collective-data-row:not(:last-of-type) {
-    margin-bottom: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
 }
 
 .collective-data-title {
-    display: inline;
+  display: inline;
 }

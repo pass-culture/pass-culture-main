@@ -27,6 +27,7 @@
 
   &-right-button {
     @include forms.input-icon-button-wrapper(32px);
+
     button {
       background: none;
       border: none;
@@ -35,8 +36,8 @@
       outline: none;
 
       svg {
-          width: rem.torem(32px);
-          height: 100%
+        width: rem.torem(32px);
+        height: 100%;
       }
     }
   }

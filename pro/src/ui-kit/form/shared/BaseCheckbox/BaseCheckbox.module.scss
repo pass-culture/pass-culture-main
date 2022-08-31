@@ -11,6 +11,7 @@
     display: flex;
     margin-top: rem.torem(-1.6px);
     width: 100%;
+
     :disabled + & {
       color: forms.$input-text-color-disabled;
       cursor: default;

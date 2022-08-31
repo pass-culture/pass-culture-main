@@ -15,6 +15,7 @@
       margin: rem.torem(10px) auto rem.torem(15px);
       width: rem.torem(328px);
     }
+
     :global(.input-text .labels) {
       margin: 0 auto;
       width: rem.torem(328px);
@@ -23,11 +24,12 @@
 }
 
 .desk-button {
-  background-image: linear-gradient(
-    to left,
-    colors.$primary 10%,
-    transparent 0%
-  );
+  background-image:
+    linear-gradient(
+      to left,
+      colors.$primary 10%,
+      transparent 0%
+    );
   background-position: center;
   background-repeat: repeat-x;
   background-size: rem.torem(6px) rem.torem(1px);

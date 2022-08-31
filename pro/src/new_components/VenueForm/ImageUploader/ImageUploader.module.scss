@@ -8,6 +8,7 @@
   &-image-container {
     display: flex;
   }
+
   &-icon-container {
     display: flex;
     flex-direction: column;
@@ -16,4 +17,3 @@
     margin-left: rem.torem(32px);
   }
 }
-

@@ -19,8 +19,10 @@
 }
 
 .legend {
-  border:none;
+  border: none;
+
   @include fonts.title4();
+
   margin-bottom: rem.torem(24px);
 }
 

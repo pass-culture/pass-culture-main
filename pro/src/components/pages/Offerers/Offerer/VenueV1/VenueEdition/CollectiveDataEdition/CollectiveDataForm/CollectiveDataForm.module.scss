@@ -3,20 +3,20 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 
 .section {
-    @include fonts.title4();
-  
-    border-bottom: thin solid colors.$grey-medium;
-    margin: rem.torem(32px) 0 rem.torem(16px);
-    padding-bottom: rem.torem(8px);
+  @include fonts.title4();
+
+  border-bottom: thin solid colors.$grey-medium;
+  margin: rem.torem(32px) 0 rem.torem(16px);
+  padding-bottom: rem.torem(8px);
+}
+
+.row {
+  label {
+    min-width: rem.torem(200px);
+    white-space: break-spaces;
   }
-  
-  .row {
-      label {
-          min-width: rem.torem(200px);
-          white-space: break-spaces;
-      }
-  }
+}
 
 .collective-data-form-actions {
-    justify-content: space-between;
+  justify-content: space-between;
 }

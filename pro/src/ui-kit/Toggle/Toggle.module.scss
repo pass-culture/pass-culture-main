@@ -4,6 +4,7 @@
 
 .Toggle {
   @include fonts.title4();
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -23,6 +24,7 @@
 .ToggleDisplay {
   --offset: 2px;
   --diameter: 28px;
+
   display: inline-flex;
   align-items: center;
   justify-content: space-around;
@@ -31,12 +33,12 @@
   height: rem.torem(32px);
   position: relative;
   border-radius: 100vw;
-  background-color: #90949D;
+  background-color: #90949d;
   transform: inherit;
 }
 
 .ToggleDisplay::before {
-  content:"";
+  content: "";
   z-index: 2;
   position: absolute;
   top: 50%;
@@ -50,7 +52,8 @@
   will-change: transform;
   transition: inherit;
 }
-.Toggle:focus .ToggleDisplay{
+
+.Toggle:focus .ToggleDisplay {
   outline: rem.torem(1px) dotted colors.$black;
   outline-offset: rem.torem(2px);
 }
@@ -60,7 +63,7 @@
   outline: 0;
 }
 
-.Toggle[aria-pressed="true"] .ToggleDisplay{
+.Toggle[aria-pressed="true"] .ToggleDisplay {
   background-color: colors.$green-valid;
 }
 
@@ -76,7 +79,7 @@
   cursor: not-allowed;
 }
 
-.Toggle[disabled] .ToggleDisplay:before {
+.Toggle[disabled] .ToggleDisplay::before {
   background: center / contain no-repeat url("./assets/lock.png") white;
   background-size: rem.torem(16px);
 }

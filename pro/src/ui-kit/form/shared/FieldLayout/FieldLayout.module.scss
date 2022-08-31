@@ -22,7 +22,7 @@
     display: flex;
 
     .field-layout-content {
-      width: 100%
+      width: 100%;
     }
 
     /*
@@ -38,6 +38,7 @@
 
   &-optional {
     @include fonts.caption();
+
     color: colors.$grey-dark;
   }
 
@@ -54,6 +55,7 @@
 
   &-counter {
     @include fonts.caption();
+
     color: colors.$grey-dark;
     flex: initial;
     justify-self: flex-end;
