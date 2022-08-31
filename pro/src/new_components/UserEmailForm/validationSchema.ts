@@ -4,7 +4,7 @@ const validationSchema = yup.object().shape({
   email: yup
     .string()
     .max(120)
-    .email('Veuillez renseigner un adresse e-mail valide')
+    .email('Veuillez renseigner un email valide')
     .required('Veuillez renseigner votre nouvel email'),
   password: yup
     .string()
