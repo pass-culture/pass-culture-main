@@ -6,12 +6,12 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 
 def get_education_booking_cancellation_by_institution_email_data(
     booking: CollectiveBooking,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
     institution = booking.educationalInstitution
     redactor = booking.educationalRedactor
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
         params={
             "OFFER_NAME": offer.name,

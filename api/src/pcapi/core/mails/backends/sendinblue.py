@@ -19,9 +19,9 @@ class SendinblueBackend(BaseBackend):
     def send_mail(
         self,
         recipients: Iterable,
-        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     ) -> models.MailResult:
-        if isinstance(data, models.SendinblueTransactionalEmailData):
+        if isinstance(data, models.TransactionalEmailData):
             payload = SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 template_id=data.template.id,
@@ -38,7 +38,7 @@ class SendinblueBackend(BaseBackend):
             else:
                 send_transactional_email_secondary_task.delay(payload)
 
-        elif isinstance(data, models.SendinblueTransactionalWithoutTemplateEmailData):
+        elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
             payload = SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 sender=asdict(data.sender.value),
@@ -62,7 +62,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
     def send_mail(
         self,
         recipients: Iterable,
-        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     ) -> models.MailResult:
         whitelisted_recipients = set()
         for recipient in recipients:

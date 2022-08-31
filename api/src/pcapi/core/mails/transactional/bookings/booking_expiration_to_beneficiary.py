@@ -9,8 +9,8 @@ from pcapi.core.users.models import User
 
 def get_expired_bookings_to_beneficiary_data(
     beneficiary: User, bookings: list[Booking], withdrawal_period: int
-) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value,
         params={
             "FIRSTNAME": beneficiary.firstName,

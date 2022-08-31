@@ -12,7 +12,7 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 
 def get_booking_cancellation_by_beneficiary_email_data(
     individual_booking: IndividualBooking,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     stock = individual_booking.booking.stock
     beneficiary = individual_booking.user
     offer = stock.offer
@@ -29,7 +29,7 @@ def get_booking_cancellation_by_beneficiary_email_data(
         event_date = None
         event_hour = None
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY.value,
         params={
             "EVENT_DATE": event_date,

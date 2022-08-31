@@ -10,7 +10,7 @@ from pcapi.utils.mailing import get_event_datetime
 
 def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     booking: Booking,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     stock = booking.stock
     offer = stock.offer
     if offer.isEvent:
@@ -23,7 +23,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     is_free_offer = stock.price == 0
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value,
         params={
             "EVENT_DATE": event_date,

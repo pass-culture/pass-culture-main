@@ -4,8 +4,8 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users.models import User
 
 
-def get_user_request_to_delete_account_email_data(user: User) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_user_request_to_delete_account_email_data(user: User) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.USER_REQUEST_DELETE_ACCOUNT_RECEPTION.value,
         params={
             "FIRSTNAME": user.firstName,

@@ -12,10 +12,10 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
-def get_reset_password_to_pro_email_data(user: User, token: Token) -> models.SendinblueTransactionalEmailData:
+def get_reset_password_to_pro_email_data(user: User, token: Token) -> models.TransactionalEmailData:
     reinit_password_url = build_pc_pro_reset_password_link(token.value)  # type: ignore [arg-type]
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_PRO.value,
         params={
             "LIEN_NOUVEAU_MDP": reinit_password_url,
@@ -31,9 +31,9 @@ def send_reset_password_email_to_pro(user: User) -> bool:
 
 def get_reset_password_link_to_admin_email_data(
     created_user: User, reset_password_link: str
-) -> models.SendinblueTransactionalWithoutTemplateEmailData:
+) -> models.TransactionalWithoutTemplateEmailData:
 
-    return models.SendinblueTransactionalWithoutTemplateEmailData(
+    return models.TransactionalWithoutTemplateEmailData(
         subject="Création d'un compte pro",
         html_content=(
             "<html><head></head><body>"
@@ -49,14 +49,14 @@ def send_reset_password_link_to_admin_email(created_user: User, admin_email: Use
     return mails.send(recipients=[admin_email], data=data)
 
 
-def get_reset_password_from_connected_pro_email_data(user: User) -> models.SendinblueTransactionalEmailData:
+def get_reset_password_from_connected_pro_email_data(user: User) -> models.TransactionalEmailData:
     departmentCode = user.departementCode
     if departmentCode:
         now = utc_datetime_to_department_timezone(datetime.utcnow(), departmentCode)
     else:
         now = utc_datetime_to_department_timezone(datetime.utcnow(), "75")
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_CONNECTED_PRO.value,
         params={"EVENT_DATE": get_date_formatted_for_email(now), "EVENT_HOUR": get_time_formatted_for_email(now)},
     )

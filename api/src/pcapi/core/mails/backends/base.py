@@ -7,6 +7,6 @@ class BaseBackend:
     def send_mail(
         self,
         recipients: Iterable,
-        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     ) -> models.MailResult:
         raise NotImplementedError()

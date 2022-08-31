@@ -43,7 +43,7 @@ def send_booking_cancellation_confirmation_by_pro_to_pro_email(booking: Booking)
 
 def get_booking_cancellation_confirmation_by_pro_email_data(
     booking: Booking,
-) -> models.SendinblueTransactionalWithoutTemplateEmailData:
+) -> models.TransactionalWithoutTemplateEmailData:
     stock_name = booking.stock.offer.name
     venue = booking.venue
     user_name = booking.userName
@@ -69,7 +69,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
         venue=venue,
     )
 
-    return models.SendinblueTransactionalWithoutTemplateEmailData(
+    return models.TransactionalWithoutTemplateEmailData(
         subject=email_subject,
         html_content=email_html,
     )

@@ -6,8 +6,8 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
-def retrieve_data_for_offer_approval_email(offer: Offer) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def retrieve_data_for_offer_approval_email(offer: Offer) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.OFFER_APPROVAL_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
@@ -17,8 +17,8 @@ def retrieve_data_for_offer_approval_email(offer: Offer) -> models.SendinblueTra
     )
 
 
-def retrieve_data_for_offer_rejection_email(offer: Offer) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def retrieve_data_for_offer_rejection_email(offer: Offer) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.OFFER_REJECTION_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

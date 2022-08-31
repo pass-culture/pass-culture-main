@@ -14,7 +14,7 @@ class TestingBackend(BaseBackend):
     def send_mail(
         self,
         recipients: Iterable[str],
-        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     ) -> models.MailResult:
         sent_data = asdict(data)
         sent_data["To"] = ", ".join(recipients)
@@ -29,7 +29,7 @@ class FailingBackend(BaseBackend):
     def send_mail(
         self,
         recipients: Iterable[str],
-        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     ) -> models.MailResult:
         sent_data = asdict(data)
         sent_data["To"] = ", ".join(recipients)

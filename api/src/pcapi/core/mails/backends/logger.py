@@ -18,7 +18,7 @@ class LoggerBackend(BaseBackend):
     def send_mail(
         self,
         recipients: typing.Iterable[str],
-        data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     ) -> models.MailResult:
         recipients = ", ".join(recipients)
         sent_data = asdict(data)

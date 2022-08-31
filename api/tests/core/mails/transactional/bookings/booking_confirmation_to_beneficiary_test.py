@@ -40,7 +40,7 @@ def sendinblue_send_email_test():
 
 
 def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
-    email_data = models.SendinblueTransactionalEmailData(
+    email_data = models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
             "USER_FIRST_NAME": booking.firstName,

@@ -23,7 +23,7 @@ def send_booking_postponement_email_to_users(booking: Booking) -> bool:
 
 def get_booking_postponed_by_pro_to_beneficiary_email_data(
     booking: Booking,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     stock = booking.stock
     offer = stock.offer
 
@@ -34,7 +34,7 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
         event_date = None
         event_hour = None
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value,
         params={
             "OFFER_NAME": offer.name,

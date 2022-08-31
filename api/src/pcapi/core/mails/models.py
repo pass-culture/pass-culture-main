@@ -16,24 +16,24 @@ class EmailInfo:
     name: str
 
 
-class SendinblueTransactionalSender(Enum):
+class TransactionalSender(Enum):
     SUPPORT = EmailInfo(settings.SUPPORT_EMAIL_ADDRESS, "pass Culture")
     SUPPORT_PRO = EmailInfo(settings.SUPPORT_PRO_EMAIL_ADDRESS, "pass Culture")
     COMPLIANCE = EmailInfo(settings.COMPLIANCE_EMAIL_ADDRESS, "pass Culture")
 
 
 @dataclasses.dataclass
-class SendinblueTransactionalAttachment:
+class TransactionalAttachment:
     content: str
     name: str
 
 
 @dataclasses.dataclass
-class SendinblueTransactionalWithoutTemplateEmailData:
+class TransactionalWithoutTemplateEmailData:
     subject: str
     html_content: str
-    sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT_PRO
-    attachment: SendinblueTransactionalAttachment | None = None
+    sender: TransactionalSender = TransactionalSender.SUPPORT_PRO
+    attachment: TransactionalAttachment | None = None
     reply_to: EmailInfo = None  # type: ignore [assignment]
 
     def __post_init__(self) -> None:
@@ -47,7 +47,7 @@ class Template:
     id_not_prod: int
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
-    sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT
+    sender: TransactionalSender = TransactionalSender.SUPPORT
 
     @property
     def id(self) -> int:
@@ -56,11 +56,11 @@ class Template:
 
 @dataclasses.dataclass
 class TemplatePro(Template):
-    sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT_PRO
+    sender: TransactionalSender = TransactionalSender.SUPPORT_PRO
 
 
 @dataclasses.dataclass
-class SendinblueTransactionalEmailData:
+class TransactionalEmailData:
     template: Template
     params: dict = dataclasses.field(default_factory=dict)
     reply_to: EmailInfo = None  # type: ignore [assignment]

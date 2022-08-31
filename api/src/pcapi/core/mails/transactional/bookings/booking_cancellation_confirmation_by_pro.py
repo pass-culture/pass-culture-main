@@ -9,7 +9,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 def get_booking_cancellation_confirmation_by_pro_email_data(
     bookings: list[Booking],
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     booking = bookings[0]
     stock = booking.stock
     offer = stock.offer
@@ -19,7 +19,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
     quantity = sum(booking.quantity for booking in bookings)
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_CONFIRMATION_BY_PRO.value,
         params={
             "OFFER_NAME": offer.name,
@@ -37,7 +37,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
 
 def get_collective_booking_cancellation_confirmation_by_pro_email_data(
     booking: CollectiveBooking,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
     event_date = format_booking_date_for_email(booking)
@@ -45,7 +45,7 @@ def get_collective_booking_cancellation_confirmation_by_pro_email_data(
     offer_price = str(stock.price) if stock.price > 0 else "Gratuit"
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_CONFIRMATION_BY_PRO.value,
         params={
             "OFFER_NAME": offer.name,

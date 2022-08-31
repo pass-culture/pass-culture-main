@@ -17,11 +17,11 @@ def send_eac_new_collective_prebooking_email_to_pro(booking: educational_models.
 
 def get_eac_new_collective_prebooking_email_data(
     booking: educational_models.CollectiveBooking,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     stock: educational_models.CollectiveStock = booking.collectiveStock  # type: ignore [assignment]
     offer: educational_models.CollectiveOffer = stock.collectiveOffer  # type: ignore [assignment]
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_NEW_PREBOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

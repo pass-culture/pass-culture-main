@@ -8,9 +8,9 @@ from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
-def get_reminder_7_days_before_event_email_data(stock: Stock) -> models.SendinblueTransactionalEmailData:
+def get_reminder_7_days_before_event_email_data(stock: Stock) -> models.TransactionalEmailData:
     event_datetime = get_event_datetime(stock)
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value,
         params={
             "OFFER_NAME": stock.offer.name,

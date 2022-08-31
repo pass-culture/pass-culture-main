@@ -6,8 +6,8 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 
 
-def get_email_validation_to_pro_email_data(user: User) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_email_validation_to_pro_email_data(user: User) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value,
         params={
             "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
@@ -20,8 +20,8 @@ def send_email_validation_to_pro_email(user: User) -> bool:
     return mails.send(recipients=[user.email], data=data)
 
 
-def get_email_validation_to_admin_email_data(token: str) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_email_validation_to_admin_email_data(token: str) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value,
         params={
             "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/creation-de-mot-de-passe/{token}",

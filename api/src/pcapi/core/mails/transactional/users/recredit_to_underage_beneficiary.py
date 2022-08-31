@@ -10,9 +10,9 @@ from pcapi.core.users.api import get_domains_credit
 def get_recredit_to_underage_beneficiary_email_data(
     user: users_models.User,
     recredit_amount: Decimal,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     domains_credit = get_domains_credit(user)
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.RECREDIT_TO_UNDERAGE_BENEFICIARY.value,
         params={
             "FIRSTNAME": user.firstName,

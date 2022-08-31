@@ -21,7 +21,7 @@ def send_individual_booking_event_reminder_email_to_beneficiary(individual_booki
 
 def get_booking_event_reminder_to_beneficiary_email_data(
     individual_booking: IndividualBooking,
-) -> models.SendinblueTransactionalEmailData | None:
+) -> models.TransactionalEmailData | None:
     if individual_booking.booking.stock.beginningDatetime is None:
         return None
 
@@ -49,7 +49,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
         else None
     )
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,
         params={
             "BOOKING_LINK": booking_app_link(individual_booking.booking),

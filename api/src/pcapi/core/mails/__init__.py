@@ -9,7 +9,7 @@ from . import models
 def send(
     *,
     recipients: Iterable[str],
-    data: models.SendinblueTransactionalEmailData | models.SendinblueTransactionalWithoutTemplateEmailData,
+    data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
 ) -> bool:
     """Try to send an e-mail and return whether it was successful."""
     if isinstance(recipients, str):

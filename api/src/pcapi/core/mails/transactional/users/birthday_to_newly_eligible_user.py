@@ -4,8 +4,8 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users import models as users_models
 
 
-def get_birthday_age_18_to_newly_eligible_user_email_data() -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_birthday_age_18_to_newly_eligible_user_email_data() -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER.value,
     )
 

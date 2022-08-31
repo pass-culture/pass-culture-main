@@ -14,14 +14,14 @@ def send_eac_new_booking_email_to_pro(booking: CollectiveBooking) -> bool:
     return mails.send(recipients=[booking_email], data=data)
 
 
-def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.SendinblueTransactionalEmailData:
+def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.TransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
     price = f"{stock.price} €" if stock.price > 0 else "Gratuit"
     educational_redactor = booking.educationalRedactor
     educational_institution = booking.educationalInstitution
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_NEW_BOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

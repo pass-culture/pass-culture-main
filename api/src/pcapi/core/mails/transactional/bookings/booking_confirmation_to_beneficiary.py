@@ -20,7 +20,7 @@ def send_individual_booking_confirmation_email_to_beneficiary(individual_booking
 
 def get_booking_confirmation_to_beneficiary_email_data(
     individual_booking: IndividualBooking,
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     stock = individual_booking.booking.stock
     offer = stock.offer
     venue = offer.venue
@@ -83,7 +83,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
         else None
     )
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
             "USER_FIRST_NAME": beneficiary.firstName,

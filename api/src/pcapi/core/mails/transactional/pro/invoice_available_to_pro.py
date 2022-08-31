@@ -7,7 +7,7 @@ from pcapi.core.offerers import repository as offerers_repository
 
 
 def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, use_reimbursement_point: bool) -> bool:
-    data = models.SendinblueTransactionalEmailData(
+    data = models.TransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={
             "MONTANT_REMBOURSEMENT": -finance_utils.to_euros(invoice.amount),

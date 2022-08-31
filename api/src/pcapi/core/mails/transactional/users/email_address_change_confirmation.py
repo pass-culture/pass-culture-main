@@ -9,7 +9,7 @@ from pcapi.utils.urls import generate_firebase_dynamic_link
 
 def get_email_confirmation_email_data(
     user: users_models.User, token: users_models.Token
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     # Email confirmation token always have an expiration date.
     assert token.expirationDate  # helps mypy
     expiration_timestamp = int(token.expirationDate.timestamp())
@@ -18,7 +18,7 @@ def get_email_confirmation_email_data(
         params={"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email},
     )
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EMAIL_CONFIRMATION.value,
         params={
             "CONFIRMATION_LINK": email_confirmation_link,
