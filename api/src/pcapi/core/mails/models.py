@@ -38,7 +38,7 @@ class SendinblueTransactionalWithoutTemplateEmailData:
 
     def __post_init__(self) -> None:
         if self.reply_to is None:
-            self.reply_to = self.sender
+            self.reply_to = self.sender.value
 
 
 @dataclasses.dataclass

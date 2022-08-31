@@ -157,7 +157,7 @@ class TransactionalEmailWithoutTemplateTest:
             recipients=["avery.kelly@woobmail.com"],
             subject="Bienvenue au pass Culture",
             html_content="Bonjour",
-            reply_to=dataclasses.asdict(self.data.reply_to.value),
+            reply_to=dataclasses.asdict(self.data.reply_to),
         )
         send_transactional_email(payload)
 
@@ -185,7 +185,7 @@ class TransactionalEmailWithoutTemplateTest:
             subject="Bienvenue au pass Culture",
             html_content="Bonjour",
             attachment=None,
-            reply_to=dataclasses.asdict(self.data.reply_to.value),
+            reply_to=dataclasses.asdict(self.data.reply_to),
         )
         send_transactional_email(payload)
 

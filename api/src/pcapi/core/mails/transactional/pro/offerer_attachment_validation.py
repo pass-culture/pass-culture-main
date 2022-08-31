@@ -4,8 +4,10 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.offerers.models as offerers_models
 
 
-def get_offerer_attachment_validation_email_data(offerer: offerers_models.Offerer) -> dict:
-    return models.SendinblueTransactionalEmailData(  # type: ignore [return-value]
+def get_offerer_attachment_validation_email_data(
+    offerer: offerers_models.Offerer,
+) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value,
         params={"OFFERER_NAME": offerer.name},
     )

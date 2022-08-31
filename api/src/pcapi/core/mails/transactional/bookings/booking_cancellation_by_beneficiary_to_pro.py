@@ -6,8 +6,10 @@ from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
 
-def get_booking_cancellation_by_beneficiary_to_pro_email_data(booking: Booking) -> dict:
-    return models.SendinblueTransactionalEmailData(  # type: ignore [return-value]
+def get_booking_cancellation_by_beneficiary_to_pro_email_data(
+    booking: Booking,
+) -> models.SendinblueTransactionalEmailData:
+    return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value,
         params={
             "DEPARTMENT_CODE": booking.stock.offer.venue.departementCode or "numérique",

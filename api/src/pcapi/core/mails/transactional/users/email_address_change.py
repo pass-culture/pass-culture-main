@@ -4,7 +4,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users.models import User
 
 
-def get_information_email_change_data(first_name: str) -> models.SendinblueTransactionalEmailData:
+def get_information_email_change_data(first_name: str | None) -> models.SendinblueTransactionalEmailData:
     return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.EMAIL_CHANGE_REQUEST.value,
         params={
@@ -14,12 +14,12 @@ def get_information_email_change_data(first_name: str) -> models.SendinblueTrans
 
 
 def send_information_email_change_email(user: User) -> bool:
-    data = get_information_email_change_data(user.firstName)  # type: ignore [arg-type]
+    data = get_information_email_change_data(user.firstName)
     return mails.send(recipients=[user.email], data=data)
 
 
 def get_confirmation_email_change_data(
-    first_name: str, confirmation_link: str
+    first_name: str | None, confirmation_link: str
 ) -> models.SendinblueTransactionalEmailData:
     return models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.EMAIL_CHANGE_CONFIRMATION.value,
@@ -28,7 +28,7 @@ def get_confirmation_email_change_data(
 
 
 def send_confirmation_email_change_email(user: User, new_email: str, confirmation_link: str) -> bool:
-    data = get_confirmation_email_change_data(user.firstName, confirmation_link)  # type: ignore [arg-type]
+    data = get_confirmation_email_change_data(user.firstName, confirmation_link)
     return mails.send(recipients=[new_email], data=data)
 
 

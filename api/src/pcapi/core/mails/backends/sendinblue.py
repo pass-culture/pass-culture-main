@@ -28,7 +28,7 @@ class SendinblueBackend(BaseBackend):
                 params=data.params,
                 tags=data.template.tags,
                 sender=asdict(data.template.sender.value),
-                reply_to=asdict(data.reply_to),  # reply_to equal to sender if reply_to is None
+                reply_to=asdict(data.reply_to),  # equal to template sender if reply_to is None
                 subject=None,
                 html_content=None,
                 attachment=None,
@@ -45,7 +45,7 @@ class SendinblueBackend(BaseBackend):
                 subject=data.subject,
                 html_content=data.html_content,
                 attachment=data.attachment,
-                reply_to=asdict(data.reply_to.value),  # type: ignore [attr-defined]
+                reply_to=asdict(data.reply_to),  # equal to sender if reply_to is None
                 template_id=None,
                 params=None,
                 tags=None,

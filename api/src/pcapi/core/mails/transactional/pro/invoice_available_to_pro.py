@@ -10,7 +10,7 @@ def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, use_rei
     data = models.SendinblueTransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={
-            "MONTANT_REMBOURSEMENT": -finance_utils.to_euros(invoice.amount),  # type: ignore [arg-type]
+            "MONTANT_REMBOURSEMENT": -finance_utils.to_euros(invoice.amount),
         },
     )
     if use_reimbursement_point:

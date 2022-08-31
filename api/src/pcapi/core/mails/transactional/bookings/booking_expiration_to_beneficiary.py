@@ -1,6 +1,3 @@
-from typing import List
-from typing import Tuple
-
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
@@ -37,7 +34,7 @@ def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) ->
     return bookings_info
 
 
-def send_expired_bookings_to_beneficiary_email(beneficiary: User, bookings: list[Booking]) -> None:
+def send_expired_bookings_to_beneficiary_email(beneficiary: User, bookings: list[Booking]) -> bool:
     success = True
     books_bookings, other_bookings = _filter_books_bookings(bookings)
 
@@ -53,10 +50,10 @@ def send_expired_bookings_to_beneficiary_email(beneficiary: User, bookings: list
         )
         success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
-    return success  # type: ignore [return-value]
+    return success
 
 
-def _filter_books_bookings(bookings: list[Booking]) -> Tuple[List[Booking], List[Booking]]:
+def _filter_books_bookings(bookings: list[Booking]) -> tuple[list[Booking], list[Booking]]:
     books_bookings = []
     other_bookings = []
 
