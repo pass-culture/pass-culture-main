@@ -139,10 +139,8 @@ describe('screens | OfferEducational : event address step', () => {
       const offerVenueSelect = await screen.findByLabelText(
         'Sélectionner le lieu'
       )
-      expect(offerVenueSelect).toHaveValue('')
-      expect(offerVenueSelect.children).toHaveLength(3)
-      await userEvent.selectOptions(offerVenueSelect, 'VENUE_1')
       expect(offerVenueSelect).toHaveValue('VENUE_1')
+      expect(offerVenueSelect.children).toHaveLength(3)
 
       await userEvent.selectOptions(offerVenueSelect, '')
       await userEvent.tab()
