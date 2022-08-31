@@ -151,7 +151,7 @@ const CollectiveDataForm = ({
             <TextInput
               name="collectiveWebsite"
               label="URL de votre site web :"
-              placeholder="http://exemple.com"
+              placeholder="https://exemple.com"
               inline
               className={styles.row}
             />

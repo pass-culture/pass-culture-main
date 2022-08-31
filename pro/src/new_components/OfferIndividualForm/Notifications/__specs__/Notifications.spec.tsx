@@ -99,7 +99,7 @@ describe('OfferIndividual section: Notifications', () => {
     await userEvent.clear(bookingEmailInput)
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText('Veuillez renseigner une adresse e-mail')
+      await screen.findByText('Veuillez renseigner une adresse email')
     ).toBeInTheDocument()
 
     // when email is wrong
@@ -107,9 +107,7 @@ describe('OfferIndividual section: Notifications', () => {
     await userEvent.paste('not an email')
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText(
-        'L’e-mail renseigné n’est pas valide. Exemple : votrenom@votremail.com'
-      )
+      await screen.findByText('Veuillez renseigner un email valide')
     ).toBeInTheDocument()
   })
 })
