@@ -280,7 +280,7 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         if self.educationalBooking is not None:
             return self.educationalBooking.educationalRedactor.firstName
 
-        return None
+        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
 
     @property
     def lastName(self) -> str | None:
@@ -290,27 +290,27 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         if self.educationalBooking is not None:
             return self.educationalBooking.educationalRedactor.lastName
 
-        return None
+        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
 
     @property
-    def userName(self) -> str | None:
+    def userName(self) -> str:
         if self.individualBooking is not None:
             return f"{self.individualBooking.user.firstName} {self.individualBooking.user.lastName}"
 
         if self.educationalBooking is not None:
             return f"{self.educationalBooking.educationalRedactor.firstName} {self.educationalBooking.educationalRedactor.lastName}"
 
-        return None
+        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
 
     @property
-    def email(self) -> str | None:
+    def email(self) -> str:
         if self.individualBooking is not None:
             return self.individualBooking.user.email
 
         if self.educationalBooking is not None:
             return self.educationalBooking.educationalRedactor.email
 
-        return None
+        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
 
     @hybrid_property
     def isExternal(self) -> bool:

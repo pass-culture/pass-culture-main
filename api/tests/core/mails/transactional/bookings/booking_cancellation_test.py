@@ -13,7 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class SendOffererDrivenCancellationEmailToOffererTest:
     def test_should_send_cancellation_by_offerer_email_to_offerer(self):
         # Given
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.IndividualBookingFactory(
             stock__offer__bookingEmail="offer@example.com",
         )
 
