@@ -106,6 +106,7 @@ class Session(requests.Session):
         self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
         self.mount(settings.UBBLE_API_URL, safe_adapter)
         self.mount(settings.BATCH_API_URL, unsafe_adapter)
+        self.mount("https://api.insee.fr/entreprises/sirene/V3", safe_adapter)
 
     def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> Response:
         return _wrapper(super().request, method, url, *args, **kwargs)
