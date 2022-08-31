@@ -45,4 +45,4 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
 
 def send_booking_cancellation_by_pro_to_beneficiary_email(booking: Booking) -> bool:
     data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-    return mails.send(recipients=[booking.email], data=data)  # type: ignore [list-item]
+    return mails.send(recipients=[booking.email], data=data)

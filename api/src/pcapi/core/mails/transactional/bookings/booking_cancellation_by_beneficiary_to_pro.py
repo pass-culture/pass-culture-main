@@ -24,7 +24,10 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
             "USER_NAME": f"{booking.firstName} {booking.lastName}",
             "VENUE_NAME": booking.stock.offer.venue.name,
         },
-        reply_to=models.EmailInfo(email=booking.email, name=f"{booking.firstName} {booking.lastName}"),  # type: ignore [arg-type]
+        reply_to=models.EmailInfo(
+            email=booking.email,
+            name=f"{booking.firstName} {booking.lastName}",
+        ),
     )
 
 

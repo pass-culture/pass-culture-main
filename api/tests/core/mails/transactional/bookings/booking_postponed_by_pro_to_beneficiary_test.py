@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_beneficiary import (
     get_booking_postponed_by_pro_to_beneficiary_email_data,
 )
@@ -16,7 +16,7 @@ class GetBookingPostponedByProToBeneficiaryTest:
     def test_should_get_sendinblue_email_data_when_stock_date_have_been_changed(self):
         # Given
         stock = EventStockFactory(beginningDatetime=datetime(2019, 8, 20, 12, 0, 0))
-        booking = BookingFactory(stock=stock)
+        booking = bookings_factories.IndividualBookingFactory(stock=stock)
 
         # When
         booking_info_for_sendinblue = get_booking_postponed_by_pro_to_beneficiary_email_data(booking)
