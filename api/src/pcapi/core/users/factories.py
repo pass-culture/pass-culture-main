@@ -279,7 +279,7 @@ class TokenFactory(BaseFactory):
     value = factory.Sequence("XYZ{0}".format)
 
 
-class ResetPasswordToken(TokenFactory):
+class PasswordResetTokenFactory(TokenFactory):
     type = models.TokenType.RESET_PASSWORD
     expirationDate = factory.LazyFunction(lambda: datetime.utcnow() + constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
 

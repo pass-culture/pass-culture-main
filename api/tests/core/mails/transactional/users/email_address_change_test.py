@@ -13,7 +13,7 @@ class SendinblueEmailAddressChangeTest:
     def test_should_return_sendinblue_data_when_feature_toggled(self):
         # Given
         user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
-        users_factories.ResetPasswordToken(user=user, value="ABCD123")
+        users_factories.PasswordResetTokenFactory(user=user, value="ABCD123")
 
         # When
         data = get_information_email_change_data(user.firstName)
