@@ -3,14 +3,26 @@ import logging
 from google.cloud.exceptions import NotFound
 from google.cloud.storage import Client
 from google.cloud.storage.bucket import Bucket
+import google.cloud.storage.retry
 from google.oauth2.service_account import Credentials
 
 from pcapi import settings
 
+from .base import BaseBackend
+
 
 logger = logging.getLogger(__name__)
 
-from .base import BaseBackend
+# `google.cloud.storage.constants._DEFAULT_TIMEOUT` is 60 seconds.
+# Our files are not big, no operation should take that long.
+TIMEOUT = 20
+# The default retry strategy for the methods used in this module is
+# DEFAULT_RETRY_IF_GENERATION_SPECIFIED. Since we don't specify the
+# generation, there is no retry by default. We need to specify it.
+# This strategy is safe because the "generation" feature is disabled
+# on our buckets. We set the deadline to TIMEOUT so that the operation
+# does not exceed this TIMEOUT even with multiple retries.
+RETRY_STRATEGY = google.cloud.storage.retry.DEFAULT_RETRY.with_deadline(TIMEOUT)
 
 
 class GCPBackend(BaseBackend):
@@ -35,7 +47,12 @@ class GCPBackend(BaseBackend):
         try:
             bucket = self.get_gcp_storage_client_bucket()
             gcp_cloud_blob = bucket.blob(storage_path)
-            gcp_cloud_blob.upload_from_string(blob, content_type=content_type)
+            gcp_cloud_blob.upload_from_string(
+                blob,
+                content_type=content_type,
+                timeout=TIMEOUT,
+                retry=RETRY_STRATEGY,
+            )
         except Exception as exc:
             logger.exception(
                 "An error has occured while trying to upload file on GCP bucket",
@@ -53,7 +70,7 @@ class GCPBackend(BaseBackend):
         try:
             bucket = self.get_gcp_storage_client_bucket()
             gcp_cloud_blob = bucket.blob(storage_path)
-            gcp_cloud_blob.delete()
+            gcp_cloud_blob.delete(timeout=TIMEOUT, retry=RETRY_STRATEGY)
         except NotFound:
             logger.info("File not found on deletion on GCP bucket: %s", storage_path)
         except Exception as exc:
