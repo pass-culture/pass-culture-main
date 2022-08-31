@@ -3,12 +3,12 @@
 L'envoi de mails se fait via la fonction
 `pcapi.core.mails.send(recipients, data)`.
 
-`data` est une dataclasse de type SendinblueTransactionalEmailData ou SendinblueTransactionalWithoutTemplateEmailData
+`data` est une dataclasse de type TransactionalEmailData ou TransactionalWithoutTemplateEmailData
 , généralement créé par une fonction définie dans un sous-module de `pcapi.core.mails.transactionals` :
 
 ```python
-def get_frobulation_email_data(user) -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
+def get_frobulation_email_data(user) -> TransactionalEmailData:
+    return TransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value,
         params={
             "CREDIT": int(user.deposit.amount), 
@@ -26,7 +26,7 @@ en base de données via le modèle `pcapi.core.mails.models.Email`.
 
 ## Format des données pour les modèles Sendinblue
 
-SendinblueTransactionalEmailData est utilisé pour les emails qui ont un template Sendinblue listé dans 
+TransactionalEmailData est utilisé pour les emails qui ont un template Sendinblue listé dans 
 `pcapi.core.mails.transactional.sendinblue_template_ids.TransactionalEmail`
 
 Un template possède les attributs suivants: 
@@ -37,7 +37,7 @@ class Template:
     id_not_prod: int
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
-    sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT
+    sender: TransactionalSender = TransactionalSender.SUPPORT
 ```
 id_prod = id du template Sendinblue en production
 id_not_prod = id du template Sendinblue en testing et staging (même compte Sendinblue)
@@ -45,7 +45,7 @@ tags = permet de filtrer les emails côtés dashboard Sendinblue -> les tags iss
 use_priority_queue = avec ce paramètre on peut définir ce template comme prioritaire (à utiliser pour les emails type inscription utilisateur)
 
 Le contexte à injecter dans les modèles (*templates*) Sendinblue est à
-définir dans un dictionnaire sous la clé "params" de la dataclasse "SendinblueTransactionalEmailData". On peut y mettre :
+définir dans un dictionnaire sous la clé "params" de la dataclasse "TransactionalEmailData". On peut y mettre :
 - les variables dans params sont définies en MAJUSCULE (par convention)
 - des chaînes de caractères comme le nom de l'offre... ;
 - des booléens commençant par `IS_` **sous forme de booléens python (True ou False)** ;
@@ -53,7 +53,7 @@ définir dans un dictionnaire sous la clé "params" de la dataclasse "Sendinblue
 - des prix sous forme de float ou chaîne de caractères (Sendinblue accepte les deux);
 
 
-SendinblueTransactionalWithoutTemplateEmailData, est un format pour les emails avec un sujet, 
+TransactionalWithoutTemplateEmailData, est un format pour les emails avec un sujet, 
 contenu html et/ou pièces jointes
 
 ## Backends

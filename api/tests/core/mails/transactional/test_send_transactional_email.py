@@ -141,10 +141,10 @@ class TransactionalEmailWithTemplateTest:
 
 class TransactionalEmailWithoutTemplateTest:
 
-    data = models.SendinblueTransactionalWithoutTemplateEmailData(
+    data = models.TransactionalWithoutTemplateEmailData(
         subject="test",
         html_content="contenu test",
-        sender=models.SendinblueTransactionalSender.SUPPORT,
+        sender=models.TransactionalSender.SUPPORT,
         reply_to=None,
     )
 

@@ -18,12 +18,12 @@ def send_email_reported_offer_by_user(user: User, offer: Offer, reason: str, cus
 
 def get_reported_offer_email_data(
     user: User, offer: Offer, reason: str, custom_reason: str | None = None
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     reason = Reason.get_meta(reason).title
     if custom_reason:
         reason = f"[{reason}] {custom_reason}"
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.REPORTED_OFFER_BY_USER.value,
         params={
             "USER_ID": user.id,

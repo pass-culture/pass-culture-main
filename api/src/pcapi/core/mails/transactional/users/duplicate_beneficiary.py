@@ -36,7 +36,7 @@ def send_duplicate_beneficiary_email(
 
     return mails.send(
         recipients=[rejected_user.email],
-        data=models.SendinblueTransactionalEmailData(
+        data=models.TransactionalEmailData(
             template=TransactionalEmail.SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY.value,
             params={"DUPLICATE_BENEFICIARY_EMAIL": anonymized_email},
         ),

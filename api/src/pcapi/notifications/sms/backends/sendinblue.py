@@ -60,7 +60,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
             if not super().send_transactional_sms(recipient, content):
                 return False
 
-        mail_content = mails_models.SendinblueTransactionalWithoutTemplateEmailData(
+        mail_content = mails_models.TransactionalWithoutTemplateEmailData(
             subject="Code de validation du téléphone",
             html_content=(
                 f"<div>Le contenu suivant serait envoyé par sms au numéro {recipient}</div>"

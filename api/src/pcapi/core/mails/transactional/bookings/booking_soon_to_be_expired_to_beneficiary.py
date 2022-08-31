@@ -38,8 +38,8 @@ def _filter_books_bookings(bookings: list[Booking]) -> Tuple[List[Booking], List
 
 def build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
     beneficiary: User, bookings: list[Booking], days_before_cancel: int, days_from_booking: int
-) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value,
         params={
             "FIRSTNAME": beneficiary.firstName,

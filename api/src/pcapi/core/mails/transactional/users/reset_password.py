@@ -20,7 +20,7 @@ def send_email_already_exists_email(user: user_models.User) -> bool:
 
 def get_reset_password_email_data(
     user: user_models.User, token: user_models.Token, email_template: models.Template
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     # We called `create_reset_password_token()` without explicly
     # passing an empty expiration date. The token hence has one.
     assert token.expirationDate  # helps mypy
@@ -33,7 +33,7 @@ def get_reset_password_email_data(
         },
     )
 
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=email_template,
         params={
             "FIRSTNAME": user.firstName,

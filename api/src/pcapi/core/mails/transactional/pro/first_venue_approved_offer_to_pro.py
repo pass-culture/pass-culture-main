@@ -7,8 +7,8 @@ from pcapi.core.offers.models import Offer
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
-def get_first_venue_approved_offer_email_data(offer: Offer) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_first_venue_approved_offer_email_data(offer: Offer) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

@@ -4,8 +4,8 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users.models import User
 
 
-def get_welcome_to_pro_email_data() -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_welcome_to_pro_email_data() -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.WELCOME_TO_PRO.value,
     )
 

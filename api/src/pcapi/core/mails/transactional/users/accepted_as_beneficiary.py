@@ -5,12 +5,12 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 
 
-def get_accepted_as_beneficiary_email_data(user: User) -> models.SendinblueTransactionalEmailData:
+def get_accepted_as_beneficiary_email_data(user: User) -> models.TransactionalEmailData:
     if not user.has_active_deposit:
         raise ValueError("Beneficiary should have a deposit")
 
     assert user.deposit  # helps mypy
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value,
         params={
             "CREDIT": int(user.deposit.amount),  # type: ignore [arg-type]
@@ -18,12 +18,12 @@ def get_accepted_as_beneficiary_email_data(user: User) -> models.SendinblueTrans
     )
 
 
-def get_accepted_as_underage_beneficiary_email_data(user: User) -> models.SendinblueTransactionalEmailData:
+def get_accepted_as_underage_beneficiary_email_data(user: User) -> models.TransactionalEmailData:
     if not user.has_active_deposit:
         raise ValueError("Beneficiary should have a deposit")
 
     assert user.deposit  # helps mypy
-    return models.SendinblueTransactionalEmailData(
+    return models.TransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value,
         params={
             "FIRSTNAME": user.firstName,

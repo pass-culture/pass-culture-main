@@ -6,8 +6,8 @@ from pcapi.core.offers.utils import offer_app_redirect_link
 from pcapi.core.users.models import User
 
 
-def get_offer_link_to_ios_user_email_data(user: User, offer: Offer) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_offer_link_to_ios_user_email_data(user: User, offer: Offer) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.OFFER_WEBAPP_LINK_TO_IOS_USER.value,
         params={
             "OFFER_WEBAPP_LINK": offer_app_redirect_link(offer),

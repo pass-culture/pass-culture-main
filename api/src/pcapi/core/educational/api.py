@@ -255,7 +255,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
     booking_email = collective_booking.collectiveStock.collectiveOffer.bookingEmail
     if booking_email:
         collective_stock = collective_booking.collectiveStock
-        data = mails_models.SendinblueTransactionalEmailData(
+        data = mails_models.TransactionalEmailData(
             template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
             params={
                 "OFFER_NAME": collective_stock.collectiveOffer.name,

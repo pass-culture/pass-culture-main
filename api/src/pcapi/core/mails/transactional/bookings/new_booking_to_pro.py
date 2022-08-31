@@ -10,7 +10,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 def get_new_booking_to_pro_email_data(
     individual_booking: IndividualBooking, first_venue_booking: bool = False
-) -> models.SendinblueTransactionalEmailData:
+) -> models.TransactionalEmailData:
     booking = individual_booking.booking
     offer = booking.stock.offer
     venue = offer.venue
@@ -41,7 +41,7 @@ def get_new_booking_to_pro_email_data(
     else:
         template = TransactionalEmail.NEW_BOOKING_TO_PRO.value
 
-    data = models.SendinblueTransactionalEmailData(
+    data = models.TransactionalEmailData(
         reply_to=models.EmailInfo(
             email=individual_booking.user.email,
             name=f"{individual_booking.user.firstName} {individual_booking.user.lastName}",

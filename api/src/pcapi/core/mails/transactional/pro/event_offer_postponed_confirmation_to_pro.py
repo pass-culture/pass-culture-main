@@ -17,8 +17,8 @@ def send_event_offer_postponement_confirmation_email_to_pro(stock: Stock, bookin
 
 def get_event_offer_postponed_confirmation_to_pro_email_data(
     stock: Stock, booking_count: int
-) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value,
         params={
             "OFFER_NAME": stock.offer.name,

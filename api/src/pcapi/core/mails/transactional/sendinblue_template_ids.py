@@ -123,13 +123,13 @@ class TransactionalEmail(Enum):
         id_prod=349,
         id_not_prod=49,
         tags=["pro_validation_offre"],
-        sender=models.SendinblueTransactionalSender.COMPLIANCE,
+        sender=models.TransactionalSender.COMPLIANCE,
     )
     OFFER_REJECTION_TO_PRO = models.TemplatePro(
         id_prod=375,
         id_not_prod=48,
         tags=["pro_offre_refusee"],
-        sender=models.SendinblueTransactionalSender.COMPLIANCE,
+        sender=models.TransactionalSender.COMPLIANCE,
     )
     OFFERER_ATTACHMENT_VALIDATION = models.TemplatePro(
         id_prod=488, id_not_prod=62, tags=["pro_rattachement_structure_valide"]

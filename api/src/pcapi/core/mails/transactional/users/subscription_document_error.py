@@ -8,7 +8,7 @@ def send_subscription_document_error_email(email: str, code: str) -> bool:
     return mails.send(recipients=[email], data=data)
 
 
-def get_subscription_document_error_email_data(code: str) -> models.SendinblueTransactionalEmailData:
+def get_subscription_document_error_email_data(code: str) -> models.TransactionalEmailData:
     error_codes_switch = {
         "information-error": TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR,
         "unread-document": TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR,
@@ -16,4 +16,4 @@ def get_subscription_document_error_email_data(code: str) -> models.SendinblueTr
         "unread-mrz-document": TransactionalEmail.SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR,
     }
     template = error_codes_switch.get(code, TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR)
-    return models.SendinblueTransactionalEmailData(template=template.value)
+    return models.TransactionalEmailData(template=template.value)

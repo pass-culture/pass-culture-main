@@ -7,8 +7,8 @@ from pcapi.settings import PRO_URL
 from pcapi.utils.human_ids import humanize
 
 
-def get_reminder_venue_creation_email_data(offerer: Offerer) -> models.SendinblueTransactionalEmailData:
-    return models.SendinblueTransactionalEmailData(
+def get_reminder_venue_creation_email_data(offerer: Offerer) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
         template=TransactionalEmail.REMINDER_VENUE_CREATION_TO_PRO.value,
         params={
             "PRO_URL": PRO_URL,
