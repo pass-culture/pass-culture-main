@@ -40,8 +40,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
     { id: 2, name: 'Architecture' },
   ]),
   getFeatures: jest.fn().mockResolvedValue([]),
-  logCatalogView: jest.fn(),
-  logSearchButton: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -78,6 +76,8 @@ jest.mock('apiClient/api', () => ({
     }),
     getVenueById: jest.fn(),
     getVenueBySiret: jest.fn(),
+    logCatalogView: jest.fn(),
+    logSearchButtonClick: jest.fn(),
   },
 }))
 

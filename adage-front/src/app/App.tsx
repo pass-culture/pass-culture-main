@@ -85,9 +85,9 @@ export const App = (): JSX.Element => {
     <FacetFiltersContextProvider uai={user?.uai}>
       {notification && <NotificationComponent notification={notification} />}
       {user?.role &&
-        [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
-          user.role
-        ) ? (
+      [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+        user.role
+      ) ? (
         <AppLayout
           removeVenueFilter={removeVenueFilter}
           user={user}
