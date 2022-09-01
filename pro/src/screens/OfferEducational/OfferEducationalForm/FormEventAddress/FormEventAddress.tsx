@@ -105,6 +105,23 @@ const FormEventAddress = ({
       return setCurrentVenue(null)
     }
 
+    if (
+      values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
+      !values.eventAddress.venueId &&
+      values.venueId
+    ) {
+      if (currentOfferer) {
+        const selectedVenue = currentOfferer.managedVenues.find(
+          venue => venue.id === values.venueId
+        )
+        if (selectedVenue) {
+          setFieldValue('eventAddress.venueId', values.venueId)
+          return setCurrentVenue(selectedVenue)
+        }
+      }
+      return setCurrentVenue(null)
+    }
+
     if (!values.eventAddress.venueId) {
       return setCurrentVenue(null)
     }
