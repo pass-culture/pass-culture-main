@@ -184,7 +184,7 @@ def handle_dms_application(
 
     elif state == dms_models.GraphQLApplicationStates.refused:
         fraud_check.status = fraud_models.FraudCheckStatus.KO
-        fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]  # type: ignore [list-item]
+        fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
         subscription_messages.on_dms_application_refused(user)
 
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
@@ -276,7 +276,7 @@ def _update_fraud_check_with_field_errors(
 ) -> None:
     errors = ",".join([f"'{field_error.key.value}' ({field_error.value})" for field_error in field_errors])
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
-    fraud_check.reasonCodes = reason_codes  # type: ignore [assignment]
+    fraud_check.reasonCodes = reason_codes
     fraud_check.status = fraud_check_status
 
     pcapi_repository.repository.save(fraud_check)

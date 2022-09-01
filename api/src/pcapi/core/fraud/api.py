@@ -430,7 +430,7 @@ def _create_failed_phone_validation_fraud_check(
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         reason=reason,
-        reasonCodes=reason_codes,  # type: ignore [arg-type]
+        reasonCodes=reason_codes,
         type=models.FraudCheckType.PHONE_VALIDATION,
         thirdPartyId=f"PC-{user.id}",
         resultContent=fraud_check_data,  # type: ignore [arg-type]
@@ -511,7 +511,7 @@ def validate_frauds(
 
     fraud_check.status = fraud_check_status
     fraud_check.reason = reason
-    fraud_check.reasonCodes = reason_codes  # type: ignore [assignment]
+    fraud_check.reasonCodes = reason_codes
     repository.save(fraud_check)
 
     return fraud_items
@@ -830,7 +830,7 @@ def invalidate_fraud_check_if_duplicate(fraud_check: models.BeneficiaryFraudChec
     fraud_check.status = models.FraudCheckStatus.SUSPICIOUS
     if not fraud_check.reasonCodes:
         fraud_check.reasonCodes = []
-    fraud_check.reasonCodes.append(models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
+    fraud_check.reasonCodes.append(models.FraudReasonCode.DUPLICATE_USER)
     fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user.id}"
 
     repository.save(fraud_check)
