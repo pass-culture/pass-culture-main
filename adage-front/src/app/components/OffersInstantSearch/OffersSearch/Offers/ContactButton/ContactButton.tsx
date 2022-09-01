@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { Button, ModalLayout } from 'app/ui-kit'
 import { ReactComponent as MailIcon } from 'assets/mail.svg'
 
@@ -18,6 +19,7 @@ const ContactButton = ({
 
   const handleButtonClick = () => {
     setIsModalOpen(true)
+    api.logContactModalButtonClick()
   }
 
   const closeModal = () => {
