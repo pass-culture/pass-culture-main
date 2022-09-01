@@ -115,6 +115,7 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
 
 @blueprint.pro_private_api.route("/users/email", methods=["POST"])
 @login_required
+@ip_rate_limiter()
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     errors = ApiErrors()
@@ -136,10 +137,9 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     except users_exceptions.EmailUpdateLimitReached as exc:
         errors.add_error("email", "Trop de tentatives, réessayez dans 24 heures")
         raise errors from exc
-    except users_exceptions.EmailExistsError:
-        # Returning an error message might help the end client find
-        # existing email addresses.
-        pass
+    except users_exceptions.EmailExistsError as exc:
+        errors.add_error("email", "Un compte lié à cet e-mail existe déjà")
+        raise errors from exc
 
 
 @blueprint.pro_private_api.route("/users/email_pending_validation", methods=["GET"])
