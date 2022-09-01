@@ -60,6 +60,8 @@ jest.mock('apiClient/api', () => ({
     getVenueById: jest.fn(),
     authenticate: jest.fn(),
     getVenueBySiret: jest.fn(),
+    logSearchButtonClick: jest.fn(),
+    logCatalogView: jest.fn(),
   },
 }))
 

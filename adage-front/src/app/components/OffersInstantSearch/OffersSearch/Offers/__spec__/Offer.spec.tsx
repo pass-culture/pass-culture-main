@@ -21,7 +21,11 @@ import {
 import { ResultType } from 'utils/types'
 
 jest.mock('apiClient/api', () => ({
-  api: { getCollectiveOffer: jest.fn() },
+  api: {
+    getCollectiveOffer: jest.fn(),
+    logOfferDetailsButtonClick: jest.fn(),
+    logOfferTemplateDetailsButtonClick: jest.fn(),
+  },
 }))
 
 jest.mock('react-instantsearch-dom', () => {
