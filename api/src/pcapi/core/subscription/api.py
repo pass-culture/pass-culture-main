@@ -536,7 +536,7 @@ def _update_fraud_check_eligibility_with_history(
     )
     if fraud_check.reasonCodes is None:
         fraud_check.reasonCodes = []
-    fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)  # type: ignore [arg-type]
+    fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)
     fraud_check.thirdPartyId = f"deprecated-{fraud_check.thirdPartyId}"
 
     pcapi_repository.repository.save(fraud_check, new_fraud_check)
