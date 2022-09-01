@@ -6,7 +6,6 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
@@ -50,7 +49,7 @@ def handle_educonnect_authentication(
         if not is_activated:
             users_external.update_external_user(user)
     else:
-        _handle_validation_errors(user, fraud_check, educonnect_user)
+        _handle_validation_errors(user, fraud_check)
         logger.warning(
             "Fraud suspicion after educonnect authentication with codes: %s",
             (", ").join([code.value for code in fraud_check.reasonCodes]),  # type: ignore [union-attr]
@@ -63,23 +62,9 @@ def handle_educonnect_authentication(
 def _handle_validation_errors(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    educonnect_user: educonnect_models.EduconnectUser,
 ) -> None:
-    if fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in fraud_check.reasonCodes:  # type: ignore [operator]
-        subscription_messages.on_already_beneficiary(user)
-
-    if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_check.reasonCodes:  # type: ignore [operator]
-        subscription_messages.on_educonnect_age_not_valid(user, educonnect_user)
-
-    elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in fraud_check.reasonCodes:  # type: ignore [operator]
-        subscription_messages.on_educonnect_not_eligible(user, educonnect_user)
-
     if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:  # type: ignore [operator]
-        subscription_messages.on_educonnect_duplicate_user(user)
         transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
-
-    if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_check.reasonCodes:  # type: ignore [operator]
-        subscription_messages.on_educonnect_duplicate_ine(user)
 
 
 def get_educonnect_subscription_item_status(

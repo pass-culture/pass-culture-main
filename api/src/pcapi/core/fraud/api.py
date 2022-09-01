@@ -12,7 +12,6 @@ import pcapi.core.mails.transactional as transaction_mails
 from pcapi.core.payments import exceptions as payments_exceptions
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
-from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
@@ -407,18 +406,7 @@ def on_user_profiling_result(
         eligibilityType=user.eligibility,
     )
     repository.save(fraud_check)
-    on_user_profiling_check_result(user, risk_rating)
     return fraud_check
-
-
-def on_user_profiling_check_result(
-    user: users_models.User,
-    risk_rating: models.UserProfilingRiskRating,
-) -> None:
-    user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
-
-    if not user_profiling_status == models.FraudStatus.OK:
-        subscription_messages.on_user_subscription_journey_stopped(user)
 
 
 def _create_failed_phone_validation_fraud_check(
@@ -722,21 +710,12 @@ def handle_dms_redirection_review(
         review.reason += " ; Redirigé vers DMS"
 
     transaction_mails.send_subscription_document_error_email(user.email, "unread-document")
-    subscription_messages.on_redirect_to_dms_from_idcheck(user)
-
-
-def handle_ko_review(
-    user: users_models.User,
-    _review: models.BeneficiaryFraudReview,
-    _eligibility: users_models.EligibilityType | None,
-) -> None:
-    subscription_messages.on_fraud_review_ko(user)
 
 
 REVIEW_HANDLERS = {
     models.FraudReviewStatus.OK: handle_ok_manual_review,
     models.FraudReviewStatus.REDIRECTED_TO_DMS: handle_dms_redirection_review,
-    models.FraudReviewStatus.KO: handle_ko_review,
+    models.FraudReviewStatus.KO: None,
 }
 
 

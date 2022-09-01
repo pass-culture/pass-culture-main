@@ -1,12 +1,6 @@
 import dataclasses
 import enum
 
-import sqlalchemy
-
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models.pc_object import PcObject
-
 
 class SubscriptionStep(enum.Enum):
     EMAIL_VALIDATION = "email-validation"
@@ -59,25 +53,3 @@ class PopOverIcon(enum.Enum):
     CLOCK = "CLOCK"
     FILE = "FILE"
     MAGNIFYING_GLASS = "MAGNIFYING_GLASS"
-
-
-class SubscriptionMessage(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    __tablename__ = "beneficiary_subscription_message"
-
-    dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
-
-    userId = sqlalchemy.Column(
-        sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    user = sqlalchemy.orm.relationship("User", foreign_keys=[userId], backref="subscriptionMessages")  # type: ignore [misc]
-
-    userMessage = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
-
-    callToActionTitle = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
-
-    callToActionLink = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
-
-    callToActionIcon = sqlalchemy.Column(sqlalchemy.Enum(CallToActionIcon, create_constraint=False), nullable=True)
-
-    popOverIcon = sqlalchemy.Column(sqlalchemy.Enum(PopOverIcon, create_constraint=False), nullable=True)
