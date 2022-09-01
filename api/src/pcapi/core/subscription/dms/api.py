@@ -254,7 +254,12 @@ def _process_in_progress_application(
 
     logger.warning(
         "[DMS] Errors found in DMS application",
-        extra={"third_party_id": fraud_check.thirdPartyId, "errors": errors, "status": fraud_check_status},
+        extra={
+            "third_party_id": fraud_check.thirdPartyId,
+            # `errors` is a list of `DmsFieldErrorDetails`.
+            "errors": [{error.key.value: error.value} for error in errors],
+            "status": fraud_check_status,
+        },
     )
     subscription_messages.on_dms_application_field_errors(
         user, errors, is_application_updatable=is_application_updatable
