@@ -2,6 +2,7 @@
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -17,7 +18,7 @@ def upgrade() -> None:
         "beneficiary_fraud_check",
         sa.Column(
             "reasonCodes",
-            sa.ARRAY(sa.Text()),
+            postgresql.ARRAY(sa.Text()),
             nullable=True,
         ),
     )
