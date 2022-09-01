@@ -999,10 +999,13 @@ class CineDigitalServiceBookTicketTest:
         assert create_transaction_body_arg_call.ticket_sale_collection[0].seat_number == "A_1"
         assert create_transaction_body_arg_call.ticket_sale_collection[1].id == -2
         assert create_transaction_body_arg_call.ticket_sale_collection[1].seat_number == "A_2"
-        assert len(create_transaction_body_arg_call.payement_collection) == 1
+        assert len(create_transaction_body_arg_call.payement_collection) == 2
         assert create_transaction_body_arg_call.payement_collection[0].id == -1
-        assert create_transaction_body_arg_call.payement_collection[0].amount == 0
+        assert create_transaction_body_arg_call.payement_collection[0].amount == 5.0
         assert create_transaction_body_arg_call.payement_collection[0].payement_type.id == 12
+        assert create_transaction_body_arg_call.payement_collection[1].id == -2
+        assert create_transaction_body_arg_call.payement_collection[1].amount == 5.0
+        assert create_transaction_body_arg_call.payement_collection[1].payement_type.id == 12
 
         assert len(tickets) == 2
         assert tickets[0].barcode == "141414141414"
