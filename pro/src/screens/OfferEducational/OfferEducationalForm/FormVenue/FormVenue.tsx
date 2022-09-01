@@ -61,9 +61,9 @@ const FormVenue = ({
             },
           ]}
         >
-          Pour proposer des offres à destination d’un groupe, vous devez être
-          référencé auprès du ministère de l’Éducation Nationale et du ministère
-          de la Culture.
+          Pour proposer des offres à destination d’un groupe scolaire, vous
+          devez être référencé auprès du ministère de l’Éducation Nationale et
+          du ministère de la Culture.
         </Banner>
       )}
 
@@ -76,8 +76,8 @@ const FormVenue = ({
             },
           ]}
         >
-          Pour proposer des offres à destination d’un groupe, vous devez
-          renseigner un lieu pour pouvoir être remboursé.
+          Pour proposer des offres à destination d’un groupe scolaire, vous
+          devez renseigner un lieu pour pouvoir être remboursé.
         </Banner>
       )}
       {offerersOptions.length === 0 && (
