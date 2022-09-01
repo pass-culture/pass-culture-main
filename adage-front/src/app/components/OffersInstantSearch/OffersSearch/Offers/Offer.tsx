@@ -6,10 +6,10 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient'
+import { api } from 'apiClient/api'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
-import { logOfferDetail } from 'repository/pcapi/pcapi'
 import { LOGS_DATA } from 'utils/config'
 
 import ContactButton from './ContactButton'
@@ -33,8 +33,10 @@ export const Offer = ({
   const openOfferDetails = (
     offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
   ) => {
-    if (isOfferCollectiveOffer(offer) && LOGS_DATA) {
-      logOfferDetail(offer.stock.id)
+    if (LOGS_DATA) {
+      isOfferCollectiveOffer(offer)
+        ? api.logOfferDetailsButtonClick({ stockId: offer.stock.id })
+        : api.logOfferTemplateDetailsButtonClick({ offerId: offer.id })
     }
     setDisplayDetails(!displayDetails)
   }
