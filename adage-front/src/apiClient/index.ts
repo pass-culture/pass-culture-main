@@ -24,6 +24,7 @@ export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferDomain } from './models/OfferDomain';
+export type { OfferIdBody } from './models/OfferIdBody';
 export type { OfferManagingOffererResponse } from './models/OfferManagingOffererResponse';
 export type { OfferStockResponse } from './models/OfferStockResponse';
 export type { OfferVenueResponse } from './models/OfferVenueResponse';

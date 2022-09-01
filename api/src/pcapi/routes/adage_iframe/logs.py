@@ -46,6 +46,21 @@ def log_offer_details_button_click(
     return
 
 
+@blueprint.adage_iframe.route("/logs/offer-template-detail", methods=["POST"])
+@adage_jwt_required
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+def log_offer_template_details_button_click(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.OfferIdBody,
+) -> None:
+    educational_utils.log_information_for_data_purpose(
+        event_name="TemplateOfferDetailButtonClick",
+        extra_data={"offerId": body.offerId},
+        user_email=authenticated_information.email,
+    )
+    return
+
+
 @blueprint.adage_iframe.route("/logs/booking-modal-button", methods=["POST"])
 @adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
@@ -56,6 +71,21 @@ def log_booking_modal_button_click(
     educational_utils.log_information_for_data_purpose(
         event_name="BookingModalButtonClick",
         extra_data={"stockId": body.stockId},
+        user_email=authenticated_information.email,
+    )
+    return
+
+
+@blueprint.adage_iframe.route("/logs/contact-modal-button", methods=["POST"])
+@adage_jwt_required
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+def log_contact_modal_button_click(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.OfferIdBody,
+) -> None:
+    educational_utils.log_information_for_data_purpose(
+        event_name="ContactModalButtonClick",
+        extra_data={"offerId": body.offerId},
         user_email=authenticated_information.email,
     )
     return
