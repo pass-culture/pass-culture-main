@@ -24,6 +24,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -480,7 +481,7 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND
+        assert send_user_message.call_args[0][2] == dms_internal_mailing.DMS_ERROR_MESSAGE_USER_NOT_FOUND
 
         orphan_dms_application = fraud_models.OrphanDmsApplication.query.filter(
             fraud_models.OrphanDmsApplication.email == "user@example.com"

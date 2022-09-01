@@ -11,9 +11,9 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
+from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
@@ -186,7 +186,6 @@ def handle_dms_application(
     elif state == dms_models.GraphQLApplicationStates.refused:
         fraud_check.status = fraud_models.FraudCheckStatus.KO
         fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
-        subscription_messages.on_dms_application_refused(user)
 
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
@@ -247,7 +246,7 @@ def _send_field_error_dms_email(field_errors: list[dms_types.DmsFieldErrorDetail
     client.send_user_message(
         application_scalar_id,
         settings.DMS_INSTRUCTOR_ID,
-        subscription_messages.build_field_errors_user_message(field_errors),
+        dms_internal_mailing.build_field_errors_user_message(field_errors),
     )
 
 
@@ -266,7 +265,7 @@ def _send_eligibility_error_dms_email(
     client.send_user_message(
         application_scalar_id,
         settings.DMS_INSTRUCTOR_ID,
-        subscription_messages.build_dms_error_message_user_not_eligible(formatted_birth_date),
+        dms_internal_mailing.build_dms_error_message_user_not_eligible(formatted_birth_date),
     )
 
 
@@ -280,7 +279,6 @@ def _process_in_progress_application(
     is_application_updatable: bool,
 ) -> None:
     if not field_errors and birth_date_error is None:
-        subscription_messages.on_dms_application_received(user)
         fraud_check.status = fraud_check_status
         return
 
@@ -308,9 +306,7 @@ def _process_in_progress_application(
             "status": fraud_check_status,
         },
     )
-    subscription_messages.on_dms_application_field_errors(
-        user, errors, is_application_updatable=is_application_updatable
-    )
+
     _update_fraud_check_with_field_errors(
         fraud_check, errors, fraud_check_status=fraud_check_status, reason_codes=reason_codes
     )
@@ -389,7 +385,7 @@ def _process_user_not_found_error(
         dms_connector_api.DMSGraphQLClient().send_user_message(
             application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
-            subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
+            dms_internal_mailing.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
         )
     elif state == dms_models.GraphQLApplicationStates.accepted:
         transactional_mails.send_create_account_after_dms_email(email)
@@ -401,7 +397,6 @@ def _process_accepted_application(
     field_errors: list[dms_types.DmsFieldErrorDetails],
 ) -> None:
     if field_errors:
-        subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=False)
         transactional_mails.send_pre_subscription_from_dms_error_email_to_beneficiary(
             user.email,
             field_errors,
@@ -459,10 +454,8 @@ def _handle_validation_errors(
     dms_content: fraud_models.DMSContent,
 ) -> None:
     if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        subscription_messages.on_duplicate_user(user)
         transactional_mails.send_duplicate_beneficiary_email(user, dms_content, False)
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
-        subscription_messages.on_duplicate_user(user)
         transactional_mails.send_duplicate_beneficiary_email(user, dms_content, True)
 
     reason = ", ".join([code.name for code in reason_codes])

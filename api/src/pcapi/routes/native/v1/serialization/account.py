@@ -21,7 +21,6 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import DepositType
-from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -113,32 +112,6 @@ class SubscriptionMessage(BaseModel):
         allow_population_by_field_name = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-
-    @classmethod
-    def from_model(cls, model_instance: subscription_models.SubscriptionMessage) -> "SubscriptionMessage":
-        cta_message = None
-        if any((model_instance.callToActionTitle, model_instance.callToActionLink, model_instance.callToActionIcon)):
-            cta_message = CallToActionMessage(
-                callToActionTitle=model_instance.callToActionTitle,
-                callToActionLink=model_instance.callToActionLink,
-                callToActionIcon=model_instance.callToActionIcon,
-            )
-        subscription_message = SubscriptionMessage(
-            userMessage=model_instance.userMessage,
-            callToAction=cta_message,
-            popOverIcon=model_instance.popOverIcon,
-            updatedAt=model_instance.dateCreated,
-        )
-        return subscription_message
-
-    @classmethod
-    def beneficiary_maintenance_message(cls) -> "SubscriptionMessage":
-        return cls(
-            userMessage="La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
-            callToAction=None,
-            popOverIcon=subscription_models.PopOverIcon.CLOCK,
-            updatedAt=datetime.datetime.utcnow(),
-        )
 
 
 class ChangeBeneficiaryEmailBody(BaseModel):
@@ -241,22 +214,6 @@ class UserProfileResponse(BaseModel):
         return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
 
     @classmethod
-    def _get_subscription_message(cls, user: User) -> SubscriptionMessage | None:
-        """
-        Return the user's latest subscription message, regarding his
-        signup process UNLESS the beneficiary signup process has been
-        deactivated: return a generic maintenance message in this case.
-        """
-        if subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.MAINTENANCE:
-            return SubscriptionMessage.beneficiary_maintenance_message()
-
-        latest_message = subscription_api.get_latest_subscription_message(user)
-        if latest_message:
-            return SubscriptionMessage.from_model(latest_message)
-
-        return None
-
-    @classmethod
     def from_orm(cls, user: User):  # type: ignore
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
@@ -266,7 +223,7 @@ class UserProfileResponse(BaseModel):
         user.eligibility_end_datetime = users_api.get_eligibility_end_datetime(user.dateOfBirth)
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.dateOfBirth)
         user.isBeneficiary = user.is_beneficiary
-        user.subscriptionMessage = cls._get_subscription_message(user)
+        user.subscriptionMessage = None
 
         if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False
