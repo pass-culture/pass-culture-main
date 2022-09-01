@@ -174,9 +174,9 @@ class HandleDmsApplicationTest:
 
         assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
 
-    @patch("pcapi.core.subscription.dms.api.subscription_messages.on_dms_application_received")
+    @patch("pcapi.core.subscription.dms.api._process_in_progress_application")
     @freezegun.freeze_time("2016-11-02")
-    def test_multiple_call_for_same_application(self, mock_on_dms_application_received, db_session):
+    def test_multiple_call_for_same_application(self, mock_process_in_progress, db_session):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
         )
@@ -190,20 +190,21 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        mock_on_dms_application_received.assert_called_once_with(user)
-        mock_on_dms_application_received.reset_mock()
-        dms_fraud_check = [
+        mock_process_in_progress.assert_called_once()
+        dms_fraud_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == fraud_models.FraudCheckType.DMS
-        ][0]
+        )
         assert (
             dms_fraud_check.source_data().get_latest_modification_datetime()
             == dms_response.latest_modification_datetime
         )
 
+        mock_process_in_progress.reset_mock()
         dms_subscription_api.handle_dms_application(dms_response)
-        mock_on_dms_application_received.assert_not_called()
+
+        mock_process_in_progress.assert_not_called()
         db_session.refresh(dms_fraud_check)
         assert (
             dms_fraud_check.source_data().get_latest_modification_datetime()

@@ -30,10 +30,6 @@ from . import models
 logger = logging.getLogger(__name__)
 
 
-def get_latest_subscription_message(user: users_models.User) -> models.SubscriptionMessage | None:
-    return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
-
-
 def _get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
     first_registration_date = get_first_registration_date(user, user.dateOfBirth, eligibility)
     if not first_registration_date or not user.dateOfBirth:

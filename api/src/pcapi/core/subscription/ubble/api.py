@@ -18,7 +18,6 @@ from pcapi.core.fraud.ubble import constants as ubble_constants
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.users import external as users_external
@@ -46,7 +45,6 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
     user = fraud_check.user
 
     if status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSING:
-        subscription_messages.on_review_pending(user)
         fraud_check.status = fraud_models.FraudCheckStatus.PENDING
         pcapi_repository.repository.save(user, fraud_check)
 
@@ -64,8 +62,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         subscription_api.update_user_birth_date_if_not_beneficiary(user, content.get_birth_date())
 
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-            can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
-            handle_validation_errors(user, fraud_check, can_retry=can_retry)
+            handle_validation_errors(user, fraud_check)
             return
 
         payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
@@ -103,68 +100,28 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
 def handle_validation_errors(  # type: ignore [no-untyped-def]
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    can_retry: bool = False,  # when available
 ):
     reason_codes = fraud_check.reasonCodes or []
 
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
-        if can_retry:
-            subscription_messages.on_idcheck_unread_document_with_retry(user)
-        else:
-            subscription_messages.on_idcheck_unread_document(user)
         transactional_mails.send_subscription_document_error_email(user.email, "unread-document")
 
-    elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
-        if can_retry:
-            subscription_messages.on_idcheck_not_authentic_document_with_retry(user)
-        else:
-            subscription_messages.on_idcheck_not_authentic_document(user)
-
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
-        subscription_messages.on_idcheck_document_data_not_matching(user)
         transactional_mails.send_subscription_document_error_email(user.email, "information-error")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
-        if can_retry:
-            subscription_messages.on_idcheck_document_not_supported_with_retry(user)
-        else:
-            subscription_messages.on_idcheck_document_not_supported(user)
         transactional_mails.send_subscription_document_error_email(user.email, "unread-mrz-document")
 
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
-        if can_retry:
-            subscription_messages.on_idcheck_invalid_document_date_with_retry(user)
-        else:
-            subscription_messages.on_idcheck_invalid_document_date(user)
         transactional_mails.send_subscription_document_error_email(user.email, "invalid-document")
 
-    elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
-        subscription_messages.on_idcheck_rejected(user)
-
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        subscription_messages.on_duplicate_user(user)
         transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
-        subscription_messages.on_duplicate_user(user)
         transactional_mails.send_duplicate_beneficiary_email(
             user, fraud_check.source_data(), is_id_piece_number_duplicate=True  # type: ignore [arg-type]
         )
-
-    elif fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in reason_codes:
-        subscription_messages.on_already_beneficiary(user)
-
-    elif fraud_models.FraudReasonCode.AGE_TOO_YOUNG in reason_codes:
-        subscription_messages.on_age_too_young(user)
-
-    elif fraud_models.FraudReasonCode.AGE_TOO_OLD in reason_codes:
-        subscription_messages.on_age_too_old(user)
-
-    elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes:
-        subscription_messages.on_not_eligible(user)
-
-    else:
-        subscription_messages.on_ubble_journey_cannot_continue(user)
 
 
 def get_ubble_subscription_item_status(

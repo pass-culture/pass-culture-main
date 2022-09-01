@@ -26,8 +26,6 @@ from pcapi.core.fraud.ubble import models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.subscription.api as subscription_api
-import pcapi.core.subscription.factories as subscription_factories
-import pcapi.core.subscription.messages as subscription_messages
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -102,10 +100,7 @@ class AccountTest:
             publicName="jdo",
             **USER_DATA,
         )
-        subscription_factories.SubscriptionMessageFactory(user=user)
-        subscription_message = subscription_factories.SubscriptionMessageFactory(
-            user=user, dateCreated=datetime.utcnow()
-        )
+
         booking = IndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
         CancelledIndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
 
@@ -135,16 +130,7 @@ class AccountTest:
             "recreditAmountToShow": None,
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
-            "subscriptionMessage": {
-                "userMessage": subscription_message.userMessage,
-                "popOverIcon": subscription_message.popOverIcon.value,
-                "updatedAt": "2018-06-01T00:00:00Z",
-                "callToAction": {
-                    "callToActionTitle": subscription_message.callToActionTitle,
-                    "callToActionLink": subscription_message.callToActionLink,
-                    "callToActionIcon": subscription_message.callToActionIcon.value,
-                },
-            },
+            "subscriptionMessage": None,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -183,38 +169,6 @@ class AccountTest:
         client.with_token(email=self.identifier)
         me_response = client.get("/native/v1/me")
         assert me_response.json["recreditAmountToShow"] == 3000
-
-    def test_user_messages_passes_pydantic_serialization(self, client):
-        user = users_factories.UserFactory()
-        client.with_token(user.email)
-
-        subscription_messages.on_fraud_review_ko(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_redirect_to_dms_from_idcheck(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_idcheck_invalid_document_date(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_idcheck_unread_document(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_dms_application_received(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_dms_application_refused(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_duplicate_user(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
 
     @override_features(ALLOW_IDCHECK_REGISTRATION=False)
     def test_maintenance_message(self, client):
