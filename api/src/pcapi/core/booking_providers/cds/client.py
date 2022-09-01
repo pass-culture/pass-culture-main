@@ -205,14 +205,14 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
             raise cds_exceptions.CineDigitalServiceAPIException(f"Unavailable pass culture tariff for show={show.id}")
 
         ticket_sale_collection = self._create_ticket_sale_dict(show, quantity, screen, show_voucher_type)
-        payment = self._create_transaction_payment(show_voucher_type)
+        payement_collection = self._create_transaction_payment(quantity, show_voucher_type)
 
         create_transaction_body = cds_serializers.CreateTransactionBodyCDS(
             cinema_id=self.cinema_id,
             is_cancelled=False,
             transaction_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
             ticket_sale_collection=ticket_sale_collection,
-            payement_collection=[payment],
+            payement_collection=payement_collection,
         )
 
         json_response = post_resource(
@@ -263,16 +263,21 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         return ticket_sale_list
 
     def _create_transaction_payment(
-        self, show_voucher_type: cds_serializers.VoucherTypeCDS
-    ) -> cds_serializers.TransactionPayementCDS:
+        self, booking_quantity: int, show_voucher_type: cds_serializers.VoucherTypeCDS
+    ) -> list[cds_serializers.TransactionPayementCDS]:
         payment_type = self.get_voucher_payment_type()
 
-        return cds_serializers.TransactionPayementCDS(
-            id=-1,
-            amount=0,
-            payement_type=cds_serializers.IdObjectCDS(id=payment_type.id),
-            voucher_type=cds_serializers.IdObjectCDS(id=show_voucher_type.id),
-        )
+        payement_collection = []
+        for i in range(booking_quantity):
+            payment = cds_serializers.TransactionPayementCDS(
+                id=(i + 1) * -1,
+                amount=show_voucher_type.tariff.price,
+                payement_type=cds_serializers.IdObjectCDS(id=payment_type.id),
+                voucher_type=cds_serializers.IdObjectCDS(id=show_voucher_type.id),
+            )
+            payement_collection.append(payment)
+
+        return payement_collection
 
     def get_voucher_type_for_show(self, show: cds_serializers.ShowCDS) -> cds_serializers.VoucherTypeCDS | None:
         pc_voucher_types = self.get_pc_voucher_types()
