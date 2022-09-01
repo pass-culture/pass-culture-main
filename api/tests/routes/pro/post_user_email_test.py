@@ -94,8 +94,8 @@ class ProUpdateEmailTest:
                 "password": settings.TEST_DEFAULT_PASSWORD,
             },
         )
-        assert response.status_code == 204
-
+        assert response.status_code == 400
+        assert response.json == {"email": ["Un compte lié à cet e-mail existe déjà"]}
         assert pro.email == self.origin_email
         assert not mails_testing.outbox
 
