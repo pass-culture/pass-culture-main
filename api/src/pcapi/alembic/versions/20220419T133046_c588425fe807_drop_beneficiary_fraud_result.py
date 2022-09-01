@@ -2,6 +2,7 @@
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -31,7 +32,7 @@ def downgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         sa.Column(
             "reason_codes",
-            sa.ARRAY(sa.TEXT()),
+            postgresql.ARRAY(sa.TEXT()),
             server_default="{}",
             nullable=False,
         ),

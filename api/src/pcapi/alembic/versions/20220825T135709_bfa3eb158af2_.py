@@ -2,6 +2,7 @@
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # pre/post deployment: pre
@@ -19,7 +20,7 @@ def upgrade():
         sa.Column("procedureId", sa.Integer(), nullable=False),
         sa.Column("latestImportDatetime", sa.DateTime(), nullable=False),
         sa.Column("isProcessing", sa.Boolean(), nullable=False),
-        sa.Column("processedApplications", sa.ARRAY(sa.Integer()), nullable=False),
+        sa.Column("processedApplications", postgresql.ARRAY(sa.Integer()), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
 
