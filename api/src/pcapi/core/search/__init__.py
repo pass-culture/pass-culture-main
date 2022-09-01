@@ -382,9 +382,15 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
     to_add = []
     to_delete = []
-    # FIXME (dbaty, 2021-07-05): join-load Stock, Venue, Offerer,
-    # etc. to avoid N+1 queries on each offer.
-    offers = Offer.query.filter(Offer.id.in_(offer_ids))
+    offers = (
+        Offer.query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
+        .options(joinedload(Offer.criteria))
+        .options(joinedload(Offer.mediations))
+        .options(joinedload(Offer.product))
+        .options(joinedload(Offer.stocks))
+        .filter(Offer.id.in_(offer_ids))
+    )
+
     for offer in offers:
         if offer and offer.is_eligible_for_search:
             to_add.append(offer)
