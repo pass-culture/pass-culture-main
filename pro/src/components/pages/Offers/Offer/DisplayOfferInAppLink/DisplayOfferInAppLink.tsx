@@ -1,27 +1,28 @@
 import React, { FunctionComponent } from 'react'
 
-import { DisplayInAppLink } from 'new_components/DisplayInAppLink'
+import { ButtonLinkNewWindow } from 'new_components/ButtonLinkNewWindow'
+import { SharedButtonProps } from 'ui-kit/Button/types'
 import { WEBAPP_URL } from 'utils/config'
 
-type Props = {
+interface IDisplayOfferInAppLinkProps extends SharedButtonProps {
   nonHumanizedId: number
-  children?: never
   tracking?: { isTracked: boolean; trackingFunction: () => void }
+  text?: string
 }
 
-export const DisplayOfferInAppLink: FunctionComponent<Props> = ({
-  nonHumanizedId,
-  tracking,
-}) => {
+export const DisplayOfferInAppLink: FunctionComponent<
+  IDisplayOfferInAppLinkProps
+> = ({ nonHumanizedId, tracking, Icon, variant, text }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${nonHumanizedId}`
 
   return (
-    <DisplayInAppLink
-      className={'secondary-link'}
-      link={offerPreviewUrl}
+    <ButtonLinkNewWindow
+      linkTo={offerPreviewUrl}
       tracking={tracking}
+      variant={variant}
+      Icon={Icon}
     >
-      Visualiser dans l’app
-    </DisplayInAppLink>
+      {text ? text : 'Visualiser dans l’app'}
+    </ButtonLinkNewWindow>
   )
 }

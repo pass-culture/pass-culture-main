@@ -247,6 +247,7 @@ const Summary = ({
                       isEdition: true,
                     }),
                 }}
+                variant={ButtonVariant.SECONDARY}
               />
             </div>
           )}

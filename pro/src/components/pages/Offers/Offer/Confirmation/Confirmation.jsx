@@ -6,6 +6,7 @@ import useAnalytics from 'components/hooks/useAnalytics'
 import Spinner from 'components/layout/Spinner'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
+import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -14,8 +15,6 @@ import {
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { ButtonLink } from 'ui-kit'
-import { WEBAPP_URL } from 'utils/config'
 
 const Confirmation = ({ offer, setOffer, reloadOffer }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -34,30 +33,6 @@ const Confirmation = ({ offer, setOffer, reloadOffer }) => {
     reloadOffer()
     setIsLoading(false)
   }, [])
-
-  const offerPreviewUrl = `${WEBAPP_URL}/offre/${offer.nonHumanizedId}`
-
-  const openWindow = useCallback(
-    event => {
-      event.preventDefault()
-
-      window
-        .open(
-          offerPreviewUrl,
-          'targetWindow',
-          'toolbar=no, width=375, height=667'
-        )
-        ?.focus()
-
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OfferBreadcrumbStep.CONFIRMATION,
-        to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
-        isEdition: false,
-      })
-    },
-    [offerPreviewUrl]
-  )
 
   if (isLoading) return <Spinner />
 
@@ -90,14 +65,21 @@ const Confirmation = ({ offer, setOffer, reloadOffer }) => {
         </div>
       )}
       <div className="display-in-app-link">
-        <ButtonLink
-          link={{ to: offerPreviewUrl, isExternal: true }}
-          className={'kikou'}
+        <DisplayOfferInAppLink
+          nonHumanizedId={offer.nonHumanizedId}
+          tracking={{
+            isTracked: true,
+            trackingFunction: () =>
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OfferBreadcrumbStep.CONFIRMATION,
+                to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
+                isEdition: false,
+              }),
+          }}
+          text="Visualiser l’offre dans l’application"
           Icon={LinkIcon}
-          onClick={openWindow}
-        >
-          Visualiser l’offre dans l’application
-        </ButtonLink>
+        />
       </div>
       <div className="oc-actions">
         <Link
