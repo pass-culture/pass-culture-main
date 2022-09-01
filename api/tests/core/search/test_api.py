@@ -7,6 +7,7 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 
@@ -93,6 +94,15 @@ class ReindexOfferIdsTest:
         assert search_testing.search_store["offers"] == {}
         search.reindex_offer_ids([offer.id])
         assert offer.id in search_testing.search_store["offers"]
+
+    def test_no_unexpected_query_made(self):
+        offer_ids = [make_bookable_offer().id for _ in range(3)]
+
+        # 1: get offers
+        # 2. get FF
+        # 3. get the offers's venue id
+        with assert_num_queries(3):
+            search.reindex_offer_ids(offer_ids)
 
     def test_unindex_unbookable_offer(self, app):
         offer = make_unbookable_offer()
