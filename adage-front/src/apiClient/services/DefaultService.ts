@@ -8,6 +8,7 @@ import type { CategoriesResponseModel } from '../models/CategoriesResponseModel'
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
+import type { OfferIdBody } from '../models/OfferIdBody';
 import type { StockIdBody } from '../models/StockIdBody';
 import type { VenueResponse } from '../models/VenueResponse';
 
@@ -159,6 +160,28 @@ export class DefaultService {
   }
 
   /**
+   * log_contact_modal_button_click <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logContactModalButtonClick(
+    requestBody?: OfferIdBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/contact-modal-button',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * log_offer_details_button_click <POST>
    * @param requestBody
    * @returns void
@@ -170,6 +193,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/offer-detail',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_offer_template_details_button_click <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logOfferTemplateDetailsButtonClick(
+    requestBody?: OfferIdBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/offer-template-detail',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
