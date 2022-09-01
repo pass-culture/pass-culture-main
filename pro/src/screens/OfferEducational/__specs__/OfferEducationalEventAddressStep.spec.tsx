@@ -142,16 +142,35 @@ describe('screens | OfferEducational : event address step', () => {
       expect(offerVenueSelect).toHaveValue('VENUE_1')
       expect(offerVenueSelect.children).toHaveLength(3)
 
+      await userEvent.selectOptions(offerVenueSelect, 'VENUE_2')
       await userEvent.selectOptions(offerVenueSelect, '')
       await userEvent.tab()
 
-      expect(offerVenueSelect).toHaveValue('')
+      expect(offerVenueSelect).toHaveValue('VENUE_1')
+    })
 
-      await waitFor(() =>
-        expect(
-          screen.getByText(/Veuillez sélectionner un lieu/)
-        ).toBeInTheDocument()
+    it('should prefill the venue data when switching from one event adress type to offerer venue type', async () => {
+      renderEACOfferForm(props)
+
+      // wait for page to be rendered
+      const offererSelect = await screen.findByLabelText(
+        'Lieu qui percevra le remboursement'
       )
+      // select venue to open step Address
+      await userEvent.selectOptions(offererSelect, ['VENUE_1'])
+
+      const offerVenueSelect = await screen.findByLabelText(
+        'Sélectionner le lieu'
+      )
+      expect(offerVenueSelect).toHaveValue('VENUE_1')
+
+      await userEvent.click(await screen.findByLabelText('Autre'))
+      expect(screen.getByLabelText('Autre')).toBeChecked()
+
+      await userEvent.click(await screen.findByLabelText('Dans votre lieu'))
+      expect(screen.getByLabelText('Dans votre lieu')).toBeChecked()
+
+      expect(offerVenueSelect).toHaveValue('VENUE_1')
     })
   })
 
