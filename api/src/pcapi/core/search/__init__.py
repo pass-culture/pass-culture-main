@@ -246,11 +246,23 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
 
 def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Collection[int]) -> None:
     logger.info("Starting to index venues", extra={"count": len(venue_ids)})
-    venues = Venue.query.filter(Venue.id.in_(venue_ids)).options(joinedload(Venue.managingOfferer))
+    venues = (
+        Venue.query.filter(Venue.id.in_(venue_ids))
+        .options(joinedload(Venue.managingOfferer))
+        .options(joinedload(Venue.contact))
+        .options(joinedload(Venue.criteria))
+    )
 
-    to_add = [venue for venue in venues if venue.is_eligible_for_search]
+    to_add = []
+    to_delete_ids = []
+
+    for venue in venues:
+        if venue.is_eligible_for_search:
+            to_add.append(venue)
+        else:
+            to_delete_ids.append(venue.id)
+
     to_add_ids = [venue.id for venue in to_add]
-    to_delete_ids = [venue.id for venue in venues if not venue.is_eligible_for_search]
 
     try:
         backend.index_venues(to_add)
