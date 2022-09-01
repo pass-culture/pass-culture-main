@@ -357,7 +357,6 @@ describe('test page : VenueEdition', () => {
         await screen.findByText('Informations lieu')
       ).parentNode
 
-      // console.log(informationsNode)
       const emailBookingField = await within(informationsNode).findByLabelText(
         'Mail :',
         {

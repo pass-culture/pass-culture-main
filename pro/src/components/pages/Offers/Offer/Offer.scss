@@ -103,4 +103,12 @@
   .edit-buttons {
     width: rem.torem(600px);
   }
+
+  .offer-details-offer-preview-app-link {
+    text-align: center;
+
+    & > a {
+      width: 100%;
+    }
+  }
 }

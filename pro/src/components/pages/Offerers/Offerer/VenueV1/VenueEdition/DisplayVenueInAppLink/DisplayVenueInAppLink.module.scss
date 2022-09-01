@@ -1,17 +1,5 @@
 @use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
 
-.display-venue-link {
-  &-container {
-    @include fonts.button();
-
-    display: inline-flex;
-    color: colors.$primary;
-  }
-
-  &-icon {
-    margin-right: rem.torem(8px);
-    width: rem.torem(20px);
-  }
+.display-venue-link-container {
+  color: colors.$primary;
 }
