@@ -80,7 +80,7 @@ pc alembic upgrade e7b46b06f6dd:head --sql
 
 ## Do/Don't
 
-### Do
+### Format de la migration
 
 Il est possible d'effectuer une migration soit par des commandes SQL :
 
@@ -93,3 +93,7 @@ soit par les fonctions fournies par la bibliothèque alembic:
 ```python
 op.add_column('venue_provider', sa.Column('syncWorkerId', sa.VARCHAR(24), nullable=True))
 ```
+
+### Typing
+
+Pour un meilleur typage des colonnes de type "ARRAY", utiliser `sqlalchemy.dialects.postgresql.ARRAY` plutôt que `sqlalchemy.typing`.
