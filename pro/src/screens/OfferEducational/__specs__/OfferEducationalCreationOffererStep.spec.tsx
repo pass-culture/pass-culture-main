@@ -63,7 +63,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(
         await screen.findByText(
-          'Pour proposer des offres à destination d’un groupe, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.'
+          'Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.'
         )
       ).toBeInTheDocument()
 
@@ -97,12 +97,12 @@ describe('screens | OfferEducational : creation offerer step', () => {
       ).toBeInTheDocument()
       expect(
         screen.queryByText(
-          /Pour proposer des offres à destination d’un groupe, vous devez renseigner un lieu pour pouvoir être remboursé./
+          /Pour proposer des offres à destination d’un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
         )
       ).not.toBeInTheDocument()
       expect(
         screen.queryByText(
-          /Pour proposer des offres à destination d’un groupe, vous devez être référencé/
+          /Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé/
         )
       ).not.toBeInTheDocument()
     })
