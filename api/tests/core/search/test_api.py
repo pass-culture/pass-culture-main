@@ -150,6 +150,18 @@ class ReindexVenueIdsTest:
         search.reindex_venue_ids([venue.id])
         assert venue.id in search_testing.search_store["venues"]
 
+    def test_no_unexpected_query_made(self):
+        venues = offerers_factories.VenueFactory.create_batch(3, isPermanent=True)
+        venue_ids = [venue.id for venue in venues]
+
+        assert search_testing.search_store["venues"] == {}
+
+        # load venues (1 query)
+        # load FF (1 query)
+        # find whether venue has at least one bookable offer (1 query per venue)
+        with assert_num_queries(5):
+            search.reindex_venue_ids(venue_ids)
+
     def test_unindex_ineligible_venues(self):
         indexable_venue = offerers_factories.VenueFactory(
             isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
