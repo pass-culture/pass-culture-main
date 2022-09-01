@@ -1,42 +1,49 @@
 import React, { FunctionComponent, useCallback, MouseEventHandler } from 'react'
 
-export interface IDisplayInAppLinkProps {
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
+
+export interface IButtonLinkNewWindowProps extends SharedButtonProps {
   className?: string
-  link: string
+  linkTo: string
   children?: React.ReactNode
   tracking?: { isTracked: boolean; trackingFunction: () => void }
 }
 
-export const DisplayInAppLink: FunctionComponent<IDisplayInAppLinkProps> = ({
+export const ButtonLinkNewWindow: FunctionComponent<
+  IButtonLinkNewWindowProps
+> = ({
   className,
-  link,
+  linkTo,
   children,
   tracking,
+  Icon,
+  variant = ButtonVariant.TERNARY,
 }) => {
   const openWindow: MouseEventHandler = useCallback(
     event => {
       event.preventDefault()
 
       window
-        .open(link, 'targetWindow', 'toolbar=no, width=375, height=667')
+        .open(linkTo, 'targetWindow', 'toolbar=no, width=375, height=667')
         ?.focus()
 
       if (tracking?.isTracked) {
         tracking.trackingFunction()
       }
     },
-    [link]
+    [linkTo]
   )
 
   return (
-    <a
+    <ButtonLink
       className={className}
-      href={link}
+      link={{ to: linkTo, isExternal: true }}
+      Icon={Icon}
       onClick={openWindow}
-      rel="noopener noreferrer"
-      target="_blank"
+      variant={variant}
     >
       {children}
-    </a>
+    </ButtonLink>
   )
 }

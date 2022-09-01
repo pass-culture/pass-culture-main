@@ -17,6 +17,7 @@ import {
 import { useGetCategories } from 'core/Offers/adapters'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -286,19 +287,22 @@ const OfferDetails = ({
               <OfferPreview offerPreviewData={offerPreviewData} />
             </div>
             {!isCreatingOffer ? (
-              <DisplayOfferInAppLink
-                nonHumanizedId={offer.nonHumanizedId}
-                tracking={{
-                  isTracked: true,
-                  trackingFunction: () =>
-                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                      from: OfferBreadcrumbStep.DETAILS,
-                      to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                      used: OFFER_FORM_NAVIGATION_MEDIUM.DETAILS_PREVIEW,
-                      isEdition: true,
-                    }),
-                }}
-              />
+              <div className="offer-details-offer-preview-app-link">
+                <DisplayOfferInAppLink
+                  nonHumanizedId={offer.nonHumanizedId}
+                  tracking={{
+                    isTracked: true,
+                    trackingFunction: () =>
+                      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                        from: OfferBreadcrumbStep.DETAILS,
+                        to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                        used: OFFER_FORM_NAVIGATION_MEDIUM.DETAILS_PREVIEW,
+                        isEdition: true,
+                      }),
+                  }}
+                  variant={ButtonVariant.SECONDARY}
+                />
+              </div>
             ) : null}
           </div>
         )}

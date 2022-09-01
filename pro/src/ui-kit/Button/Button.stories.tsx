@@ -52,6 +52,14 @@ DefaultButtonWithIcon.args = {
   Icon: LinkIcon,
 }
 
+export const DefaultSecondaryButton = Template.bind({})
+
+DefaultSecondaryButton.args = {
+  children: 'Hello world',
+  disabled: false,
+  variant: ButtonVariant.SECONDARY,
+}
+
 export const LinkButton = TemplateLink.bind({})
 
 LinkButton.args = {
