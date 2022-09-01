@@ -360,7 +360,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
     url = sa.Column(sa.String(255), nullable=True)
 
     # FIXME (cgaunet, 2022-08-02): this field seems to be unused
-    mediaUrls = sa.Column(sa.ARRAY(sa.String(220)), nullable=False, default=[])
+    mediaUrls = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
@@ -402,7 +402,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
-    fieldsUpdated = sa.Column(sa.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}")
+    fieldsUpdated = sa.Column(postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}")
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.

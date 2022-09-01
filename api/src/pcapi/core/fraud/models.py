@@ -8,6 +8,7 @@ from pydantic.class_validators import validator
 import pydantic.datetime_parse
 import pydantic.errors
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import models as users_models
@@ -397,7 +398,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
     reason = sa.Column(sa.Text, nullable=True)
 
     reasonCodes = sa.Column(
-        sa.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
+        postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )
 
