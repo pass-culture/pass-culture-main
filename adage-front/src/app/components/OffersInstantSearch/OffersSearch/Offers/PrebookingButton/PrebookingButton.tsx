@@ -2,6 +2,7 @@ import { format } from 'date-fns-tz'
 import React, { useCallback, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient'
+import { api } from 'apiClient/api'
 import {
   Notification,
   NotificationComponent,
@@ -10,7 +11,6 @@ import {
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import './PrebookingButton.scss'
-import { logBookingModalButton } from 'repository/pcapi/pcapi'
 import { LOGS_DATA } from 'utils/config'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
@@ -31,7 +31,7 @@ const PrebookingButton = ({
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA) {
-      logBookingModalButton(stockId)
+      api.logBookingModalButtonClick({ stockId })
     }
     setIsModalOpen(true)
   }

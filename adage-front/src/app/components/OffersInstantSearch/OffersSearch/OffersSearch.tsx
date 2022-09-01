@@ -6,6 +6,7 @@ import { connectSearchBox } from 'react-instantsearch-dom'
 
 import { VenueResponse } from 'apiClient'
 import { AuthenticatedResponse } from 'apiClient'
+import { api } from 'apiClient/api'
 import { INITIAL_QUERY } from 'app/constants'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
@@ -13,7 +14,6 @@ import { Filters } from 'app/types'
 import Tabs from 'app/ui-kit/Tabs'
 import { ReactComponent as InstitutionIcon } from 'assets/institution.svg'
 import { ReactComponent as OffersIcon } from 'assets/offers.svg'
-import { logSearchButton } from 'repository/pcapi/pcapi'
 import { LOGS_DATA } from 'utils/config'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
@@ -83,7 +83,7 @@ export const OffersSearchComponent = ({
   const handleLaunchSearchButton = (filters: Filters): void => {
     setIsLoading(true)
     if (LOGS_DATA) {
-      logSearchButton()
+      api.logSearchButtonClick()
     }
     setFacetFilters(
       populateFacetFilters({
