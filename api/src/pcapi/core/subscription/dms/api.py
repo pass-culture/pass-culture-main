@@ -252,7 +252,7 @@ def _process_in_progress_application(
         reason_codes.append(fraud_models.FraudReasonCode.ERROR_IN_DATA)
         errors.extend(field_errors)
 
-    logger.warning(
+    logger.info(
         "[DMS] Errors found in DMS application",
         extra={
             "third_party_id": fraud_check.thirdPartyId,
