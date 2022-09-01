@@ -13,7 +13,6 @@ import {
 } from 'apiClient'
 import { api } from 'apiClient/api'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
-import { logCatalogView } from 'repository/pcapi/pcapi'
 import { LOGS_DATA } from 'utils/config'
 
 import { AppLayout } from './AppLayout'
@@ -71,7 +70,7 @@ export const App = (): JSX.Element => {
       .finally(() => {
         setIsLoading(false)
         if (LOGS_DATA) {
-          logCatalogView()
+          api.logCatalogView()
         }
       })
   }, [])
@@ -86,9 +85,9 @@ export const App = (): JSX.Element => {
     <FacetFiltersContextProvider uai={user?.uai}>
       {notification && <NotificationComponent notification={notification} />}
       {user?.role &&
-      [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
-        user.role
-      ) ? (
+        [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+          user.role
+        ) ? (
         <AppLayout
           removeVenueFilter={removeVenueFilter}
           user={user}
