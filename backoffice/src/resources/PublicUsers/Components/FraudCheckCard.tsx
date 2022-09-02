@@ -22,11 +22,17 @@ type Props = {
 
 export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
   const cardStyle = {
+    maxwidth: '99vw',
     width: '100%',
     marginTop: '20px',
     padding: 30,
   }
-  const gridStyle = { width: '100%', height: '100%', overflow: 'auto' }
+  const gridStyle = {
+    maxwidth: '99vw',
+    width: '100%',
+    height: '100%',
+    overflow: 'scroll',
+  }
 
   const [checked, setChecked] = useState(false)
 
@@ -115,7 +121,10 @@ export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
                 <Grid item style={gridStyle}>
                   <Collapse in={checked}>
                     <pre>
-                      <code data-testid="fraudCheckTechnicalDetails">
+                      <code
+                        data-testid="fraudCheckTechnicalDetails"
+                        style={{ overflow: 'scroll' }}
+                      >
                         {fraudCheckItem.technicalDetails &&
                           JSON.stringify(
                             fraudCheckItem.technicalDetails,

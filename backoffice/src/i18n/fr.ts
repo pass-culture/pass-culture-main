@@ -28,10 +28,10 @@ const messages: TranslationMessages = {
       generic: 'Une erreur est survenue !',
     },
     token: {
-      expired: 'Votre token a expiré !',
+      expired: 'Veuillez vous identifier de nouveau.',
       api: 'Il semblerait que le token API ne soit pas renseigné...',
       notFound: 'Votre token semble absent !',
-      login: 'Veuillez vous connecter',
+      login: 'Veuillez vous identifier.',
     },
     permissions: {
       notFound: 'Aucune permission ne semble vous être attribuée',
