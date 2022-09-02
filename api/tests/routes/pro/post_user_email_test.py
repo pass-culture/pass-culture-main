@@ -1,4 +1,5 @@
 from typing import Any
+from unittest.mock import patch
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
@@ -6,7 +7,6 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 
 
@@ -99,7 +99,7 @@ class ProUpdateEmailTest:
         assert pro.email == self.origin_email
         assert not mails_testing.outbox
 
-    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
+    @patch("pcapi.core.users.constants.MAX_EMAIL_UPDATE_ATTEMPTS_FOR_PRO", 1)
     def test_update_email_too_many_attempts(self, app, client):
         """
         Test that a user cannot request more than
@@ -107,17 +107,6 @@ class ProUpdateEmailTest:
         N days.
         """
         self.send_two_requests(client, "Trop de tentatives, réessayez dans 24 heures")
-
-    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=2)
-    def test_token_exists(self, app, client):
-        """
-        Test that the expected error code is sent back when a token
-        already exists.
-
-        Note: override MAX_EMAIL_UPDATE_ATTEMPTS to avoid any
-        EMAIL_UPDATE_ATTEMPTS_LIMIT error.
-        """
-        self.send_two_requests(client, "Une demande de modification d'adresse e-mail est déjà en cours")
 
     def send_two_requests(self, client, error_message):
         pro = users_factories.ProFactory(email=self.origin_email)

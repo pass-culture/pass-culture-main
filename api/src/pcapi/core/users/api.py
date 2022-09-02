@@ -435,16 +435,11 @@ def bulk_unsuspend_account(user_ids: list[int], actor: models.User) -> None:
     )
 
 
-def change_user_email(
-    current_email: str,
+def change_email(
+    current_user: models.User,
     new_email: str,
     admin: bool = False,
 ) -> None:
-    current_user = users_repository.find_user_by_email(current_email)
-
-    if not current_user:
-        raise exceptions.UserDoesNotExist()
-
     email_history = models.UserEmailHistory.build_validation(user=current_user, new_email=new_email, admin=admin)
 
     try:
@@ -463,6 +458,29 @@ def change_user_email(
     repository.delete(*sessions)
 
     logger.info("User has changed their email", extra={"user": current_user.id})
+
+
+def change_user_email(
+    current_email: str,
+    new_email: str,
+    admin: bool = False,
+) -> None:
+    current_user = users_repository.find_user_by_email(current_email)
+
+    if not current_user:
+        raise exceptions.UserDoesNotExist()
+    change_email(current_user, new_email, admin)
+
+
+def change_pro_user_email(
+    current_email: str,
+    new_email: str,
+    user_id: int,
+) -> None:
+    current_user = users_repository.find_user_by_email(current_email)
+    if not current_user or current_user.id != user_id:
+        raise exceptions.UserDoesNotExist()
+    change_email(current_user, new_email)
 
 
 def update_user_password(user: models.User, new_password: str) -> None:
