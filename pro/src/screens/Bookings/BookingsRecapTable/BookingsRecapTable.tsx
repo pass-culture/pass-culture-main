@@ -152,11 +152,11 @@ const BookingsRecapTable = <
   }
 
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
-    setFilters(filters => ({
-      ...filters,
-      ...updatedFilters,
-    }))
-    applyFilters()
+    setFilters(filters => {
+      const newFilters = { ...filters, ...updatedFilters }
+      applyFilters(newFilters)
+      return newFilters
+    })
   }
 
   const applyFilters = (filtersBookingResults?: BookingsFilters) => {
