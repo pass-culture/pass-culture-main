@@ -10,7 +10,6 @@ import pytest
 
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
-from pcapi.connectors.dms import serializer as dms_serializer
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -141,26 +140,6 @@ class RunTest:
         import_dms_accepted_applications(6712558)
 
         activate_beneficiary_if_no_missing_step.assert_called_with(user=applicant)
-
-
-class FieldErrorsTest:
-    def test_beneficiary_information_postalcode_error(self):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
-        application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
-
-        assert len(application_content.field_errors) == 1
-        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.postal_code
-        assert application_content.field_errors[0].value == "Strasbourg"
-
-    @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
-    def test_beneficiary_information_id_piece_number_error(self, possible_value):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
-
-        application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
-
-        assert len(application_content.field_errors) == 1
-        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.id_piece_number
-        assert application_content.field_errors[0].value == possible_value
 
 
 @pytest.mark.usefixtures("db_session")

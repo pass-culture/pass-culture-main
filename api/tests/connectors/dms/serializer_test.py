@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 
 from tests.scripts.beneficiary import fixture
@@ -144,3 +145,23 @@ class ParseBeneficiaryInformationTest:
         )
 
         assert base_content == labels_edited_content
+
+
+class FieldErrorsTest:
+    def test_beneficiary_information_postalcode_error(self):
+        application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
+        application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
+
+        assert len(application_content.field_errors) == 1
+        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.postal_code
+        assert application_content.field_errors[0].value == "Strasbourg"
+
+    @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
+    def test_beneficiary_information_id_piece_number_error(self, possible_value):
+        application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
+
+        application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
+
+        assert len(application_content.field_errors) == 1
+        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.id_piece_number
+        assert application_content.field_errors[0].value == possible_value
