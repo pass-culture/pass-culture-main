@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import Venue from 'components/pages/Home/Venues/VenueLegacy'
+import Venue from 'components/pages/Home/Venues/Venue'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { ReactComponent as WhitePenIcon } from 'icons/ico-external-site-filled-white.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
