@@ -32,7 +32,11 @@ const UserPasswordForm = ({
   }
 
   const formik = useFormik({
-    initialValues: {},
+    initialValues: {
+      oldPassword: '',
+      newPassword: '',
+      newConfirmationPassword: '',
+    },
     onSubmit: onSubmit,
     validationSchema,
     validateOnChange: false,
