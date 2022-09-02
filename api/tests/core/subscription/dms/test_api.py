@@ -1,4 +1,5 @@
 import datetime
+from unittest import mock
 from unittest.mock import patch
 
 import freezegun
@@ -477,3 +478,52 @@ class HandleDmsAnnotationsTest:
     )
     def test_compute_new_annotation(self, field_errors, birth_date_error, expected_annotation):
         assert dms_subscription_api._compute_new_annotation(field_errors, birth_date_error) == expected_annotation
+
+    @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
+    def test_update_application_annotations(self, mock_update_annotations):
+        dms_subscription_api._update_application_annotations(
+            "St1l3s",
+            fraud_factories.DMSContentFactory(
+                annotation=fraud_models.DmsAnnotation(
+                    id="AnnotationId",
+                    label="AN_001: Some label",
+                    text="This is a test annotation",
+                )
+            ),
+            field_errors=[],
+            birth_date_error=None,
+        )
+
+        mock_update_annotations.assert_called_once_with(
+            "St1l3s", "AnnotationId", "Aucune erreur détectée. Le dossier peut être passé en instruction."
+        )
+
+    @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
+    def test_update_application_annotations_dont_update_if_no_modification(self, mock_update_annotations):
+        dms_subscription_api._update_application_annotations(
+            "St1l3s",
+            fraud_factories.DMSContentFactory(
+                annotation=fraud_models.DmsAnnotation(
+                    id="AnnotationId",
+                    label="AN_001: Some label",
+                    text="Aucune erreur détectée. Le dossier peut être passé en instruction.",
+                )
+            ),
+            field_errors=[],
+            birth_date_error=None,
+        )
+
+        mock_update_annotations.assert_not_called()
+
+    @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
+    def test_update_application_annotations_with_no_annotation_logs_error(self, mock_update_annotations, caplog):
+        dms_content = fraud_factories.DMSContentFactory()
+        dms_subscription_api._update_application_annotations(
+            "St1l3s",
+            dms_content,
+            field_errors=[],
+            birth_date_error=None,
+        )
+
+        mock_update_annotations.assert_not_called()
+        assert f"[DMS] No annotation defined for procedure {dms_content.procedure_number}" in caplog.text
