@@ -1,8 +1,7 @@
-""" user offerer """
+from uuid import UUID
 
-from sqlalchemy import BigInteger
-from sqlalchemy import Column
-from sqlalchemy.dialects.postgresql import UUID
+import sqlalchemy as sa
+import sqlalchemy.dialects.postgresql as sa_psql
 
 from pcapi.models import Base
 from pcapi.models import Model
@@ -10,6 +9,6 @@ from pcapi.models.pc_object import PcObject
 
 
 class UserSession(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    userId = Column(BigInteger, nullable=False)
+    userId = sa.Column(sa.BigInteger, nullable=False)
 
-    uuid = Column(UUID(as_uuid=True), unique=True, nullable=False)
+    uuid: UUID = sa.Column(sa_psql.UUID(as_uuid=True), unique=True, nullable=False)

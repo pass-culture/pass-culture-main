@@ -7,6 +7,7 @@ from decimal import Decimal
 import enum
 from operator import attrgetter
 import typing
+import uuid
 
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -177,7 +178,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     clearTextPassword = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
-    culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
+    culturalSurveyId: uuid.UUID = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)
     departementCode = sa.Column(sa.String(3), nullable=True)
