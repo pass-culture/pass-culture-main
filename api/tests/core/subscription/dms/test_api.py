@@ -251,6 +251,11 @@ class HandleDmsApplicationTest:
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+        assert fraud_check.source_data().field_errors == [
+            fraud_models.DmsFieldErrorDetails(
+                key=fraud_models.DmsFieldErrorKeyEnum.id_piece_number, value="(wrong_number)"
+            )
+        ]
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_field_error_when_on_going(self, send_dms_message_mock):
@@ -374,6 +379,12 @@ class HandleDmsApplicationTest:
             2020, 5, 13, 9, 9, 46, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
         )
         assert result_content.first_name == ""
+        assert result_content.field_errors == [
+            fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.first_name, value=""),
+            fraud_models.DmsFieldErrorDetails(
+                key=fraud_models.DmsFieldErrorKeyEnum.id_piece_number, value="(wrong_number)"
+            ),
+        ]
 
     @patch("pcapi.core.mails.transactional.send_create_account_after_dms_email")
     def test_processing_accepted_orphan_application_is_idempotent(self, mock_send_create_account_after_dms_email):
@@ -452,12 +463,12 @@ class HandleDmsAnnotationsTest:
             ([], None, "Aucune erreur détectée. Le dossier peut être passé en instruction."),
             (
                 [],
-                dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
+                fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
                 "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n",
             ),
             (
-                [dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.first_name, value="/taylor")],
-                dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
+                [fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.first_name, value="/taylor")],
+                fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
                 (
                     "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n"
                     "Champs invalides :\n- Le prénom: /taylor\n"
@@ -465,9 +476,11 @@ class HandleDmsAnnotationsTest:
             ),
             (
                 [
-                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.first_name, value="/taylor"),
-                    dms_types.DmsFieldErrorDetails(
-                        key=dms_types.DmsFieldErrorKeyEnum.birth_date, value="trente juillet deux mille quatre"
+                    fraud_models.DmsFieldErrorDetails(
+                        key=fraud_models.DmsFieldErrorKeyEnum.first_name, value="/taylor"
+                    ),
+                    fraud_models.DmsFieldErrorDetails(
+                        key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value="trente juillet deux mille quatre"
                     ),
                 ],
                 None,
@@ -491,7 +504,6 @@ class HandleDmsAnnotationsTest:
                     text="This is a test annotation",
                 )
             ),
-            field_errors=[],
             birth_date_error=None,
         )
 
@@ -510,7 +522,6 @@ class HandleDmsAnnotationsTest:
                     text="Aucune erreur détectée. Le dossier peut être passé en instruction.",
                 )
             ),
-            field_errors=[],
             birth_date_error=None,
         )
 
@@ -522,7 +533,6 @@ class HandleDmsAnnotationsTest:
         dms_subscription_api._update_application_annotations(
             "St1l3s",
             dms_content,
-            field_errors=[],
             birth_date_error=None,
         )
 

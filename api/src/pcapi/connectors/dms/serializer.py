@@ -1,13 +1,11 @@
 import logging
 import re
-import typing
 
 from dateutil import parser as date_parser
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.users import models as users_models
 from pcapi.utils.date import FrenchParserInfo
 
@@ -33,7 +31,7 @@ DMS_ANNOTATION_SLUG = "AN_001"
 
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse,
-) -> typing.Tuple[fraud_models.DMSContent, list[dms_types.DmsFieldErrorDetails]]:
+) -> fraud_models.DMSContent:
 
     application_number = application_detail.number
     civility = application_detail.applicant.civility
@@ -54,16 +52,16 @@ def parse_beneficiary_information_graphql(
     postal_code = None
     annotation = None
 
-    field_errors: list[dms_types.DmsFieldErrorDetails] = []
+    field_errors: list[fraud_models.DmsFieldErrorDetails] = []
 
     if not fraud_api.is_subscription_name_valid(first_name):
         field_errors.append(
-            dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.first_name, value=first_name)
+            fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.first_name, value=first_name)
         )
 
     if not fraud_api.is_subscription_name_valid(last_name):
         field_errors.append(
-            dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.last_name, value=last_name)
+            fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.last_name, value=last_name)
         )
 
     for field in application_detail.fields:
@@ -83,7 +81,7 @@ def parse_beneficiary_information_graphql(
                 birth_date = date_parser.parse(value, FrenchParserInfo())
             except date_parser.ParserError:
                 field_errors.append(
-                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.birth_date, value=value)
+                    fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value=value)
                 )
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
@@ -91,7 +89,9 @@ def parse_beneficiary_information_graphql(
             value = value.strip()
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 field_errors.append(
-                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.id_piece_number, value=value)
+                    fraud_models.DmsFieldErrorDetails(
+                        key=fraud_models.DmsFieldErrorKeyEnum.id_piece_number, value=value
+                    )
                 )
             else:
                 id_piece_number = value
@@ -107,7 +107,7 @@ def parse_beneficiary_information_graphql(
             match = re.search("^[0-9]{5}", space_free_value)
             if match is None:
                 field_errors.append(
-                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.postal_code, value=value)
+                    fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.postal_code, value=value)
                 )
                 continue
             postal_code = match.group(0)
@@ -122,15 +122,17 @@ def parse_beneficiary_information_graphql(
             )
             break
 
-    result_content = fraud_models.DMSContent(
+    return fraud_models.DMSContent(
         activity=activity,
         address=address,
+        annotation=annotation,
         application_number=application_number,
         birth_date=birth_date,
         city=city,
         civility=_parse_dms_civility(civility),
         department=department,
         email=email,
+        field_errors=field_errors,
         first_name=first_name,
         id_piece_number=id_piece_number,
         last_name=last_name,
@@ -141,10 +143,7 @@ def parse_beneficiary_information_graphql(
         processed_datetime=processed_datetime,
         registration_datetime=registration_datetime,
         state=application_detail.state.value,
-        annotation=annotation,
     )
-
-    return result_content, field_errors
 
 
 def _parse_dms_civility(civility: dms_models.Civility) -> users_models.GenderEnum | None:

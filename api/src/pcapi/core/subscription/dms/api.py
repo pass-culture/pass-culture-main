@@ -14,7 +14,6 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
-from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -90,14 +89,14 @@ def _update_fraud_check_with_new_content(
 
 def _compute_birth_date_error_details(
     fraud_check: fraud_models.BeneficiaryFraudCheck, application_content: fraud_models.DMSContent
-) -> dms_types.DmsFieldErrorDetails | None:
+) -> fraud_models.DmsFieldErrorDetails | None:
     if fraud_check.eligibilityType is not None:
         return None
 
     birth_date = application_content.get_birth_date()
 
-    return dms_types.DmsFieldErrorDetails(
-        key=dms_types.DmsFieldErrorKeyEnum.birth_date,
+    return fraud_models.DmsFieldErrorDetails(
+        key=fraud_models.DmsFieldErrorKeyEnum.birth_date,
         value=birth_date.isoformat() if birth_date else None,
     )
 
@@ -132,8 +131,8 @@ def handle_dms_application(
         )
         return None
 
-    application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(dms_application)
-    if not field_errors:
+    application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application)
+    if not application_content.field_errors:
         core_logging.log_for_supervision(
             logger=logger,
             log_level=logging.INFO,
@@ -160,28 +159,26 @@ def handle_dms_application(
 
     if state == dms_models.GraphQLApplicationStates.draft:
         _process_in_progress_application(
-            user,
             fraud_check,
+            application_content,
             fraud_models.FraudCheckStatus.STARTED,
             application_scalar_id,
-            field_errors,
             birth_date_error,
             is_application_updatable=True,
         )
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
         _process_in_progress_application(
-            user,
             fraud_check,
+            application_content,
             fraud_models.FraudCheckStatus.PENDING,
             application_scalar_id,
-            field_errors,
             birth_date_error,
             is_application_updatable=False,
         )
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
-        _process_accepted_application(user, fraud_check, field_errors)
+        _process_accepted_application(user, fraud_check, application_content.field_errors)
 
     elif state == dms_models.GraphQLApplicationStates.refused:
         fraud_check.status = fraud_models.FraudCheckStatus.KO
@@ -190,7 +187,7 @@ def handle_dms_application(
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
 
-    _update_application_annotations(application_scalar_id, application_content, field_errors, birth_date_error)
+    _update_application_annotations(application_scalar_id, application_content, birth_date_error)
 
     pcapi_repository.repository.save(fraud_check)
     return fraud_check
@@ -199,15 +196,13 @@ def handle_dms_application(
 def _update_application_annotations(
     application_scalar_id: str,
     application_content: fraud_models.DMSContent,
-    field_errors: list[dms_types.DmsFieldErrorDetails],
-    birth_date_error: dms_types.DmsFieldErrorDetails | None,
+    birth_date_error: fraud_models.DmsFieldErrorDetails | None,
 ) -> None:
     annotation = application_content.annotation
     if not annotation:
         logger.error("[DMS] No annotation defined for procedure %s", application_content.procedure_number)
         return
-
-    new_annotation_value = _compute_new_annotation(field_errors, birth_date_error)
+    new_annotation_value = _compute_new_annotation(application_content.field_errors, birth_date_error)
     if new_annotation_value == annotation.text:
         return
 
@@ -223,8 +218,8 @@ def _update_application_annotations(
 
 
 def _compute_new_annotation(
-    field_errors: list[dms_types.DmsFieldErrorDetails],
-    birth_date_error: dms_types.DmsFieldErrorDetails | None,
+    field_errors: list[fraud_models.DmsFieldErrorDetails] | None,
+    birth_date_error: fraud_models.DmsFieldErrorDetails | None,
 ) -> str:
     annotation = ""
     if birth_date_error:
@@ -241,7 +236,9 @@ def _compute_new_annotation(
     return annotation
 
 
-def _send_field_error_dms_email(field_errors: list[dms_types.DmsFieldErrorDetails], application_scalar_id: str) -> None:
+def _send_field_error_dms_email(
+    field_errors: list[fraud_models.DmsFieldErrorDetails], application_scalar_id: str
+) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     client.send_user_message(
         application_scalar_id,
@@ -270,15 +267,14 @@ def _send_eligibility_error_dms_email(
 
 
 def _process_in_progress_application(
-    user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
+    application_content: fraud_models.DMSContent,
     fraud_check_status: fraud_models.FraudCheckStatus,
     application_scalar_id: str,
-    field_errors: list[dms_types.DmsFieldErrorDetails],
-    birth_date_error: dms_types.DmsFieldErrorDetails | None,
+    birth_date_error: fraud_models.DmsFieldErrorDetails | None,
     is_application_updatable: bool,
 ) -> None:
-    if not field_errors and birth_date_error is None:
+    if not application_content.field_errors and birth_date_error is None:
         fraud_check.status = fraud_check_status
         return
 
@@ -291,11 +287,11 @@ def _process_in_progress_application(
         reason_codes.append(fraud_models.FraudReasonCode.AGE_NOT_VALID)
         errors.append(birth_date_error)
 
-    if field_errors:
+    if application_content.field_errors:
         if is_application_updatable:
-            _send_field_error_dms_email(field_errors, application_scalar_id)
+            _send_field_error_dms_email(application_content.field_errors, application_scalar_id)
         reason_codes.append(fraud_models.FraudReasonCode.ERROR_IN_DATA)
-        errors.extend(field_errors)
+        errors.extend(application_content.field_errors)
 
     logger.info(
         "[DMS] Errors found in DMS application",
@@ -314,7 +310,7 @@ def _process_in_progress_application(
 
 def _update_fraud_check_with_field_errors(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    field_errors: list[dms_types.DmsFieldErrorDetails],
+    field_errors: list[fraud_models.DmsFieldErrorDetails],
     fraud_check_status: fraud_models.FraudCheckStatus,
     reason_codes: list[fraud_models.FraudReasonCode],
 ) -> None:
@@ -394,7 +390,7 @@ def _process_user_not_found_error(
 def _process_accepted_application(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    field_errors: list[dms_types.DmsFieldErrorDetails],
+    field_errors: list[fraud_models.DmsFieldErrorDetails] | None,
 ) -> None:
     if field_errors:
         transactional_mails.send_pre_subscription_from_dms_error_email_to_beneficiary(
