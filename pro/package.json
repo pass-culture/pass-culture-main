@@ -112,7 +112,7 @@
     "@types/node-fetch": "^2.6.1",
     "@types/papaparse": "^5.3.2",
     "@types/query-string": "^6.3.0",
-    "@types/react-avatar-editor": "^12.0.0",
+    "@types/react-avatar-editor": "^13.0.0",
     "@types/react-datepicker": "^4.3.2",
     "@types/react-dom": "^18.0.0",
     "@types/react-redux": "^7.1.18",
