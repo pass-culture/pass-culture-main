@@ -1,0 +1,25 @@
+var _path, _path2;
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+import * as React from "react";
+
+var SvgIcoEyeClose = function SvgIcoEyeClose(props) {
+  return /*#__PURE__*/React.createElement("svg", _extends({
+    width: "1em",
+    height: "1em",
+    viewBox: "0 0 20 20",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, props), _path || (_path = /*#__PURE__*/React.createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M16.778 4.02a.393.393 0 0 0 0-.569.427.427 0 0 0-.59 0l-2.062 1.993C12.91 4.708 11.506 4.167 10 4.167c-2.444 0-4.622 1.425-6.159 2.799a18.32 18.32 0 0 0-2.332 2.528 10.505 10.505 0 0 0-.166.227l-.01.014-.002.003-.001.002a.463.463 0 0 0 0 .52v.001l.003.004.008.011a6.485 6.485 0 0 0 .145.198c.1.134.246.324.435.553.376.458 1.433 1.475 2.113 2.114l.167.129c.355.274.692.535 1.02.777l-2 1.932a.393.393 0 0 0 0 .57.427.427 0 0 0 .59 0l2.093-2.022.021.014 1.7-1.638a1.532 1.532 0 0 1-.022-.018l1.52-1.468.028.018 1.27-1.223a1.022 1.022 0 0 1-.028-.022l2.557-2.47.025.032 1.892-1.821a29.608 29.608 0 0 0-.039-.027l1.95-1.884ZM10 6.25c.85 0 1.7.326 2.376.885l-2.375 2.294L10 9.375c0-.411.238-.767.585-.936a1.667 1.667 0 0 0-2.031 2.39l-1.52 1.467A3.735 3.735 0 0 1 6.25 10c0-2.072 1.875-3.75 3.75-3.75Z",
+    fill: "#161617"
+  })), _path2 || (_path2 = /*#__PURE__*/React.createElement("path", {
+    d: "m16.042 6.862-2.38 2.335c.057.257.088.525.088.803 0 2.163-1.678 3.75-3.75 3.75a3.76 3.76 0 0 1-.876-.103l-1.727 1.694c.76.313 1.591.492 2.603.492 2.444 0 4.429-1.319 5.966-2.692.774-.692 1.593-1.49 2.025-2.007a16.228 16.228 0 0 0 .666-.856l.01-.013.002-.004.001-.001a.463.463 0 0 0 0-.52v-.002l-.004-.003-.009-.014a6.09 6.09 0 0 0-.166-.227 18.314 18.314 0 0 0-2.448-2.632Z",
+    fill: "#161617"
+  })));
+};
+
+export default SvgIcoEyeClose;
