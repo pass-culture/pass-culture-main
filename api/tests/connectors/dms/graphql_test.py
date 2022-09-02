@@ -14,6 +14,7 @@ class DMSGraphQLTest:
     def setup(self):
         self.client = Client(schema=DmsSchema)
         self.expected_dossier = dms_models.DmsApplicationResponse(
+            annotations=[],
             champs=[
                 dms_models.DmsField(id="1", label="champ 1 address", stringValue="valeur 1"),
                 dms_models.DmsField(id="2", label="champ 2 piece justificative", stringValue="valeur 2"),

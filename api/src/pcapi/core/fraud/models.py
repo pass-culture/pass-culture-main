@@ -181,6 +181,12 @@ class JouveContent(common_models.IdentityCheckContent):
         return self.bodyPieceNumber
 
 
+class DmsAnnotation(pydantic.BaseModel):
+    id: str
+    label: str
+    text: str | None
+
+
 class DMSContent(common_models.IdentityCheckContent):
     activity: str | None
     address: str | None
@@ -201,6 +207,7 @@ class DMSContent(common_models.IdentityCheckContent):
     processed_datetime: datetime.datetime | None
     registration_datetime: datetime.datetime | None
     state: str | None
+    annotation: DmsAnnotation | None
 
     class Config:
         allow_population_by_field_name = True
