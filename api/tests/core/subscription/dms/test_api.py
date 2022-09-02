@@ -11,6 +11,7 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
+from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -440,3 +441,39 @@ class HandleDmsApplicationTest:
 
         assert fraud_check.reasonCodes == []
         assert fraud_check.reason is None
+
+
+class HandleDmsAnnotationsTest:
+    @pytest.mark.parametrize(
+        "field_errors,birth_date_error,expected_annotation",
+        [
+            ([], None, "Aucune erreur détectée. Le dossier peut être passé en instruction."),
+            (
+                [],
+                dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
+                "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n",
+            ),
+            (
+                [dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.first_name, value="/taylor")],
+                dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
+                (
+                    "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n"
+                    "Champs invalides :\n- Le prénom: /taylor\n"
+                ),
+            ),
+            (
+                [
+                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.first_name, value="/taylor"),
+                    dms_types.DmsFieldErrorDetails(
+                        key=dms_types.DmsFieldErrorKeyEnum.birth_date, value="trente juillet deux mille quatre"
+                    ),
+                ],
+                None,
+                (
+                    "Champs invalides :\n- Le prénom: /taylor\n- La date de naissance: trente juillet deux mille quatre\n"
+                ),
+            ),
+        ],
+    )
+    def test_compute_new_annotation(self, field_errors, birth_date_error, expected_annotation):
+        assert dms_subscription_api._compute_new_annotation(field_errors, birth_date_error) == expected_annotation

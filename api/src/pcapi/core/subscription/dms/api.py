@@ -194,6 +194,25 @@ def handle_dms_application(
     return fraud_check
 
 
+def _compute_new_annotation(
+    field_errors: list[dms_types.DmsFieldErrorDetails],
+    birth_date_error: dms_types.DmsFieldErrorDetails | None,
+) -> str:
+    annotation = ""
+    if birth_date_error:
+        annotation += f"{birth_date_error.get_instructor_field_label()} ({birth_date_error.value}) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n"
+
+    if field_errors:
+        annotation += "Champs invalides :\n"
+        for field_error in field_errors:
+            annotation += f"- {field_error.get_instructor_field_label()}: {field_error.value}\n"
+
+    if not annotation:
+        annotation = "Aucune erreur détectée. Le dossier peut être passé en instruction."
+
+    return annotation
+
+
 def _send_field_error_dms_email(field_errors: list[dms_types.DmsFieldErrorDetails], application_scalar_id: str) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     client.send_user_message(
