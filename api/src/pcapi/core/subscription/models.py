@@ -53,3 +53,17 @@ class PopOverIcon(enum.Enum):
     CLOCK = "CLOCK"
     FILE = "FILE"
     MAGNIFYING_GLASS = "MAGNIFYING_GLASS"
+
+
+@dataclasses.dataclass
+class CallToActionMessage:
+    title: str | None = None
+    link: str | None = None
+    icon: CallToActionIcon | None = None
+
+
+@dataclasses.dataclass
+class SubscriptionMessage:
+    user_message: str
+    call_to_action: CallToActionMessage | None = None
+    pop_over_icon: PopOverIcon | None = None

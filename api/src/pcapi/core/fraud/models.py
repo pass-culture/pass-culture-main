@@ -196,11 +196,15 @@ class DmsFieldErrorKeyEnum(enum.Enum):
 
 
 FIELD_LABEL = {
-    DmsFieldErrorKeyEnum.birth_date: "ta date de naissance",
-    DmsFieldErrorKeyEnum.first_name: "ton prénom",
-    DmsFieldErrorKeyEnum.id_piece_number: "ta pièce d'identité",
-    DmsFieldErrorKeyEnum.last_name: "ton nom",
-    DmsFieldErrorKeyEnum.postal_code: "ton code postal",
+    DmsFieldErrorKeyEnum.birth_date: {"defined_article": "la", "pronoun": "ta", "label": "date de naissance"},
+    DmsFieldErrorKeyEnum.first_name: {"defined_article": "le", "pronoun": "ton", "label": "prénom"},
+    DmsFieldErrorKeyEnum.id_piece_number: {
+        "defined_article": "le",
+        "pronoun": "ton",
+        "label": "numéro de pièce d'identité",
+    },
+    DmsFieldErrorKeyEnum.last_name: {"defined_article": "le", "pronoun": "ton", "label": "nom de famille"},
+    DmsFieldErrorKeyEnum.postal_code: {"defined_article": "le", "pronoun": "ton", "label": "code postal"},
 }
 
 
@@ -208,11 +212,18 @@ class DmsFieldErrorDetails(pydantic.BaseModel):
     key: DmsFieldErrorKeyEnum
     value: str | None
 
-    def get_field_label(self) -> str:
-        return FIELD_LABEL.get(self.key, self.key.value)
+    def get_field_label(self, with_pronoun: bool = True, with_defined_article: bool = False) -> str:
+        label_with_pronoun = FIELD_LABEL.get(self.key)
+        if not label_with_pronoun:
+            return self.key.value
+        if with_pronoun:
+            return label_with_pronoun.get("pronoun", "") + " " + label_with_pronoun.get("label", self.key.value)
+        if with_defined_article:
+            return label_with_pronoun.get("defined_article", "") + " " + label_with_pronoun.get("label", self.key.value)
+        return label_with_pronoun.get("label", self.key.value)
 
     def get_instructor_field_label(self) -> str:
-        return INSTRUCTOR_FIELD_LABEL.get(self.key, self.key.value)
+        return self.get_field_label(with_pronoun=False, with_defined_article=True).capitalize()
 
 
 class DMSContent(common_models.IdentityCheckContent):
@@ -421,7 +432,9 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow
+    )
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
@@ -467,14 +480,14 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
 
     def get_min_date_between_creation_and_registration(self) -> datetime.datetime:
         if self.type not in IDENTITY_CHECK_TYPES or not self.resultContent:
-            return self.dateCreated  # type: ignore [return-value]
+            return self.dateCreated
         try:
             registration_datetime = self.source_data().get_registration_datetime()  # type: ignore [union-attr]
         except ValueError:  # TODO(viconnex) migrate Educonnect fraud checks that do not have registration date in their content
-            return self.dateCreated  # type: ignore [return-value]
+            return self.dateCreated
         if registration_datetime:
-            return min(self.dateCreated, registration_datetime)  # type: ignore [type-var, return-value]
-        return self.dateCreated  # type: ignore [return-value]
+            return min(self.dateCreated, registration_datetime)
+        return self.dateCreated
 
     @property
     def applicable_eligibilities(self) -> list[users_models.EligibilityType]:

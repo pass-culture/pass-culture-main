@@ -11,9 +11,10 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
-import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
+from pcapi.core.subscription.dms import messages
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -463,3 +464,44 @@ def _handle_validation_errors(
         dms_content.procedure_number,
         extra={"user_id": user.id},
     )
+
+
+def get_dms_subscription_message(
+    dms_fraud_check: fraud_models.BeneficiaryFraudCheck,
+) -> subscription_models.SubscriptionMessage | None:
+    if dms_fraud_check.resultContent is None:
+        # old FraudChecks may not have resultContent filled
+        application_content = None
+        birth_date_error = None
+    else:
+        application_content = typing.cast(fraud_models.DMSContent, dms_fraud_check.source_data())
+        birth_date_error = _compute_birth_date_error_details(dms_fraud_check, application_content)
+
+    if dms_fraud_check.status == fraud_models.FraudCheckStatus.STARTED:
+        if dms_fraud_check.reasonCodes:
+            return messages.get_error_updatable_message(application_content, birth_date_error)
+        return messages.get_application_received_message(dms_fraud_check.dateCreated)
+
+    if dms_fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+        if dms_fraud_check.reasonCodes:
+            return messages.get_error_not_updatable_message(
+                dms_fraud_check.user.id, dms_fraud_check.reasonCodes or [], application_content, birth_date_error
+            )
+        return messages.get_application_received_message(dms_fraud_check.dateCreated)
+
+    if dms_fraud_check.status == fraud_models.FraudCheckStatus.OK:
+        return None
+
+    if dms_fraud_check.status in (
+        fraud_models.FraudCheckStatus.SUSPICIOUS,
+        fraud_models.FraudCheckStatus.KO,
+        fraud_models.FraudCheckStatus.ERROR,
+    ):
+        return messages.get_error_not_updatable_message(
+            dms_fraud_check.user.id, dms_fraud_check.reasonCodes or [], application_content, birth_date_error
+        )
+
+    if dms_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED:
+        return None
+
+    return None

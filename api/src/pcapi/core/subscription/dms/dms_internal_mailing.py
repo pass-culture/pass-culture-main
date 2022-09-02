@@ -21,9 +21,9 @@ def build_field_errors_user_message(field_errors: list[fraud_models.DmsFieldErro
     error_keys = [error.key for error in field_errors]
     field_errors_list_str = "\n".join(f" - {field.get_field_label()}" for field in field_errors)
     message = (
-        f"Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant {field_errors[0].get_field_label()}, inscrit sur le formulaire en ligne:\n"
+        f"Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant {field_errors[0].get_field_label()}, inscrit sur le formulaire en ligne :\n"
         if len(field_errors) == 1
-        else f"Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne:\n{field_errors_list_str}\n\n"
+        else f"Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne :\n{field_errors_list_str}\n\n"
         "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
         "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t’invitons à consulter les articles suivants :\n"
         'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
