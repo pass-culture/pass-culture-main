@@ -40,18 +40,17 @@
   .h-card-title {
     overflow: hidden;
 
-    .tertiary-button {
-      .h-card-title-ico {
-        margin-left: 0;
-        margin-right: rem.torem(8px);
-      }
+    .h-card-title-ico {
+      margin-left: 0;
+      margin-right: rem.torem(8px);
 
-      img {
+      svg {
         height: rem.torem(12px);
         vertical-align: middle;
         width: rem.torem(12px);
       }
     }
+
 
     .title-text {
       display: block;

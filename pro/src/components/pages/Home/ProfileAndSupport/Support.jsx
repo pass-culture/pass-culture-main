@@ -2,8 +2,10 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
-import Icon from 'components/layout/Icon'
 import { Events } from 'core/FirebaseEvents/constants'
+import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as MailIcon } from 'icons/ico-mail.svg'
+import { ButtonLink } from 'ui-kit'
 
 const Support = () => {
   const { logEvent } = useAnalytics()
@@ -16,60 +18,60 @@ const Support = () => {
         <div className="h-card-content">
           <ul className="hs-link-list">
             <li>
-              <a
-                className="hs-link tertiary-link"
-                href="https://aide.passculture.app"
+              <ButtonLink
+                link={{
+                  to: 'https://aide.passculture.app',
+                  isExternal: true,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                }}
+                Icon={LinkIcon}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_HELP_CENTER, {
                     from: location.pathname,
                   })
                 }
-                rel="noopener noreferrer"
-                target="_blank"
               >
-                <div className="ico-container">
-                  <Icon svg="ico-external-site" />
-                </div>
                 Centre d’aide
-              </a>
+              </ButtonLink>
             </li>
 
             <li>
-              <a
-                className="hs-link tertiary-link"
-                href="mailto:support-pro@passculture.app"
+              <ButtonLink
+                link={{
+                  to: 'mailto:support-pro@passculture.app',
+                  isExternal: true,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                }}
+                Icon={MailIcon}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_CONSULT_SUPPORT, {
                     from: location.pathname,
                   })
                 }
-                rel="noopener noreferrer"
-                target="_blank"
               >
-                <div className="ico-container">
-                  <Icon className="ico-mail" svg="ico-mail" />
-                </div>
                 Contacter le support
-              </a>
+              </ButtonLink>
             </li>
 
             <li>
-              <a
-                className="hs-link tertiary-link"
-                href="https://pass.culture.fr/cgu-professionnels/"
+              <ButtonLink
+                link={{
+                  to: 'https://pass.culture.fr/cgu-professionnels/',
+                  isExternal: true,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                }}
+                Icon={LinkIcon}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_CONSULT_CGU, {
                     from: location.pathname,
                   })
                 }
-                rel="noopener noreferrer"
-                target="_blank"
               >
-                <div className="ico-container">
-                  <Icon svg="ico-external-site" />
-                </div>
                 Conditions Générales d’Utilisation
-              </a>
+              </ButtonLink>
             </li>
           </ul>
         </div>

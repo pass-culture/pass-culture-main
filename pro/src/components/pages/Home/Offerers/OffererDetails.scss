@@ -20,10 +20,10 @@
       }
     }
 
-    .tertiary-button.od-primary {
+    .od-primary {
       color: colors.$primary;
 
-      & .svg-color {
+      svg {
         fill: colors.$primary;
       }
     }
