@@ -1,5 +1,5 @@
 from pcapi import settings
-from pcapi.core.subscription.dms import models as dms_models
+from pcapi.core.fraud import models as fraud_models
 
 
 INBOX_URL = "passculture://openInbox"
@@ -11,7 +11,7 @@ MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+
 
 
 def _generate_form_field_error(
-    error_text_singular: str, error_text_plural: str, error_fields: list[dms_models.DmsFieldErrorDetails]
+    error_text_singular: str, error_text_plural: str, error_fields: list[fraud_models.DmsFieldErrorDetails]
 ) -> str:
     field_text = ", ".join(field.get_field_label() for field in error_fields)
     if len(error_fields) == 1:

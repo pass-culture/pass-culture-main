@@ -105,8 +105,8 @@ def _mark_cancel_dms_fraud_check(application_number: int) -> None:
 
 
 def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationResponse) -> bool:
-    application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(dms_application)
-    if field_errors:
+    application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application)
+    if application_content.field_errors:
         return True
     applicant_birth_date = application_content.get_birth_date()
     applicant_postal_code = application_content.get_postal_code()

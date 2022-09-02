@@ -18,7 +18,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.api as subscription_api
-from pcapi.core.subscription.dms import models as dms_types
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -147,19 +146,21 @@ class RunTest:
 class FieldErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
-        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail)
+        application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
-        assert field_errors[0].key == dms_types.DmsFieldErrorKeyEnum.postal_code
-        assert field_errors[0].value == "Strasbourg"
+        assert len(application_content.field_errors) == 1
+        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.postal_code
+        assert application_content.field_errors[0].value == "Strasbourg"
 
     @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
     def test_beneficiary_information_id_piece_number_error(self, possible_value):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
 
-        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail)
+        application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
-        assert field_errors[0].key == dms_types.DmsFieldErrorKeyEnum.id_piece_number
-        assert field_errors[0].value == possible_value
+        assert len(application_content.field_errors) == 1
+        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.id_piece_number
+        assert application_content.field_errors[0].value == possible_value
 
 
 @pytest.mark.usefixtures("db_session")
