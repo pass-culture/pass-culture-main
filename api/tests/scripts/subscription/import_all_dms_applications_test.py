@@ -45,7 +45,7 @@ class DmsImportTest:
         orphan_dms_application = fraud_models.OrphanDmsApplication.query.first()
         latest_import_record = dms_models.LatestDmsImport.query.first()
 
-        assert mock_get_applications_with_details.call_count == 3  # 1 call for each state
+        assert mock_get_applications_with_details.call_count == 1
         assert user_dms_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert user_dms_fraud_check.type == fraud_models.FraudCheckType.DMS
 
