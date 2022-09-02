@@ -118,6 +118,7 @@ class DmsApplicationResponse(pydantic.BaseModel):
     """
 
     applicant: Applicant = pydantic.Field(alias="demandeur")
+    annotations: list[DmsField]
     processed_datetime: datetime.datetime | None = pydantic.Field(None, alias="dateTraitement")
     draft_date: datetime.datetime = pydantic.Field(alias="datePassageEnConstruction")
     fields: list[DmsField] = pydantic.Field(alias="champs")

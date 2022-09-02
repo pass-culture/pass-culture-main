@@ -62,6 +62,7 @@ class DMSContentFactory(factory.Factory):
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
     civility = users_models.GenderEnum.F
+    annotation = None
     email = factory.Faker("ascii_safe_email")
     application_number = factory.Faker("pyint")
     procedure_number = factory.Faker("pyint")

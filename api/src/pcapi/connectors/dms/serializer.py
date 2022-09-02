@@ -28,6 +28,8 @@ DMS_ACTIVITY_ENUM_MAPPING = {
     "Volontaire en service civique rémunéré": users_models.ActivityEnum.VOLUNTEER.value,
 }
 
+DMS_ANNOTATION_SLUG = "AN_001"
+
 
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse,
@@ -50,6 +52,7 @@ def parse_beneficiary_information_graphql(
     id_piece_number = None
     phone = None
     postal_code = None
+    annotation = None
 
     field_errors: list[dms_types.DmsFieldErrorDetails] = []
 
@@ -112,6 +115,13 @@ def parse_beneficiary_information_graphql(
         elif dms_models.FieldLabelKeyword.CITY_1.value in label or dms_models.FieldLabelKeyword.CITY_2.value in label:
             city = value
 
+    for remote_annotation in application_detail.annotations:
+        if DMS_ANNOTATION_SLUG in remote_annotation.label:
+            annotation = fraud_models.DmsAnnotation(
+                id=remote_annotation.id, label=remote_annotation.label, text=remote_annotation.value
+            )
+            break
+
     result_content = fraud_models.DMSContent(
         activity=activity,
         address=address,
@@ -131,6 +141,7 @@ def parse_beneficiary_information_graphql(
         processed_datetime=processed_datetime,
         registration_datetime=registration_datetime,
         state=application_detail.state.value,
+        annotation=annotation,
     )
 
     return result_content, field_errors
