@@ -1,4 +1,4 @@
-from pcapi.core.subscription.dms import models as dms_models
+from pcapi.core.fraud import models as fraud_models
 
 
 DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
@@ -17,7 +17,7 @@ DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
                 L’équipe pass Culture"""
 
 
-def build_field_errors_user_message(field_errors: list[dms_models.DmsFieldErrorDetails]) -> str:
+def build_field_errors_user_message(field_errors: list[fraud_models.DmsFieldErrorDetails]) -> str:
     error_keys = [error.key for error in field_errors]
     field_errors_list_str = "\n".join(f" - {field.get_field_label()}" for field in field_errors)
     message = (
@@ -29,10 +29,10 @@ def build_field_errors_user_message(field_errors: list[dms_models.DmsFieldErrorD
         'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
         'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n\n'
     )
-    if dms_models.DmsFieldErrorKeyEnum.postal_code in error_keys:
+    if fraud_models.DmsFieldErrorKeyEnum.postal_code in error_keys:
         message += "Ton code postal doit être renseigné sous format 5 chiffres uniquement, sans lettre ni espace\n"
         message += '<a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">Comment bien renseigner mon adresse et mon code postal lors de l’inscription ? </a>\n\n'
-    if dms_models.DmsFieldErrorKeyEnum.id_piece_number in error_keys:
+    if fraud_models.DmsFieldErrorKeyEnum.id_piece_number in error_keys:
         message += "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
         message += '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n\n'
     general_help_article_link = '<a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>'

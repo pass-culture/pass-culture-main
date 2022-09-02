@@ -1,7 +1,7 @@
 from pcapi.core import mails
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.subscription.dms import models as dms_models
 
 
 def send_create_account_after_dms_email(user_email: str) -> bool:
@@ -19,7 +19,7 @@ def send_complete_subscription_after_dms_email(user_email: str) -> bool:
 
 
 def send_pre_subscription_from_dms_error_email_to_beneficiary(
-    user_email: str, field_errors: list[dms_models.DmsFieldErrorDetails]
+    user_email: str, field_errors: list[fraud_models.DmsFieldErrorDetails]
 ) -> bool:
 
     if len(field_errors) == 0:
@@ -28,10 +28,10 @@ def send_pre_subscription_from_dms_error_email_to_beneficiary(
 
     ### ----- TODO: remove when PROD template is updated to use the new DMS_ERRORS param ------ ###
     postal_code_error = next(
-        (error for error in field_errors if error.key == dms_models.DmsFieldErrorKeyEnum.postal_code), None
+        (error for error in field_errors if error.key == fraud_models.DmsFieldErrorKeyEnum.postal_code), None
     )
     id_card_number_error = next(
-        (error for error in field_errors if error.key == dms_models.DmsFieldErrorKeyEnum.id_piece_number),
+        (error for error in field_errors if error.key == fraud_models.DmsFieldErrorKeyEnum.id_piece_number),
         None,
     )
     if postal_code_error:

@@ -187,6 +187,34 @@ class DmsAnnotation(pydantic.BaseModel):
     text: str | None
 
 
+class DmsFieldErrorKeyEnum(enum.Enum):
+    birth_date = "birth_date"
+    first_name = "first_name"
+    id_piece_number = "id_piece_number"
+    last_name = "last_name"
+    postal_code = "postal_code"
+
+
+FIELD_LABEL = {
+    DmsFieldErrorKeyEnum.birth_date: "ta date de naissance",
+    DmsFieldErrorKeyEnum.first_name: "ton prénom",
+    DmsFieldErrorKeyEnum.id_piece_number: "ta pièce d'identité",
+    DmsFieldErrorKeyEnum.last_name: "ton nom",
+    DmsFieldErrorKeyEnum.postal_code: "ton code postal",
+}
+
+
+class DmsFieldErrorDetails(pydantic.BaseModel):
+    key: DmsFieldErrorKeyEnum
+    value: str | None
+
+    def get_field_label(self) -> str:
+        return FIELD_LABEL.get(self.key, self.key.value)
+
+    def get_instructor_field_label(self) -> str:
+        return INSTRUCTOR_FIELD_LABEL.get(self.key, self.key.value)
+
+
 class DMSContent(common_models.IdentityCheckContent):
     activity: str | None
     address: str | None
@@ -197,6 +225,7 @@ class DMSContent(common_models.IdentityCheckContent):
     deletion_datetime: datetime.datetime | None
     department: str | None  # this field is not filled anymore
     email: str
+    field_errors: list[DmsFieldErrorDetails] | None
     first_name: str
     id_piece_number: str | None
     last_name: str
