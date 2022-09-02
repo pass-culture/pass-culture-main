@@ -58,7 +58,7 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
   return (
     <div
-      style={{ width: '100%' }}
+      style={{ maxWidth: '99vw', width: '100%' }}
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
@@ -82,6 +82,7 @@ function a11yProps(index: number) {
 }
 
 const cardStyle = {
+  maxWidth: '99vw',
   width: '100%',
   marginTop: '20px',
   padding: 30,
@@ -109,7 +110,9 @@ export const UserDetail = () => {
     // redirect to the list if the book is not found
     { onError: () => redirect('/public_users/search') }
   )
+
   const notify = useNotify()
+
   async function resendValidationEmail() {
     try {
       const response = await dataProvider.postResendValidationEmail(
@@ -129,6 +132,7 @@ export const UserDetail = () => {
       captureException(error)
     }
   }
+
   if (isLoading) {
     return <CircularProgress size={18} thickness={2} />
   } else if (!userBaseInfo) {
@@ -209,6 +213,7 @@ export const UserDetail = () => {
       direction="column"
       alignItems="center"
       justifyContent="center"
+      sx={{ maxWidth: '99vw', width: '100%' }}
     >
       <Card style={cardStyle}>
         <Grid container spacing={1}>
@@ -285,7 +290,7 @@ export const UserDetail = () => {
       <Grid container spacing={1}>
         <Grid item xs={4}>
           <Card style={{ ...cardStyle, height: '9rem' }}>
-            <Typography variant={'h5'}>
+            <Typography variant={'h5'} component={'div'}>
               {userBaseInfo.userCredit.remainingCredit}&euro;
             </Typography>
             <Stack
@@ -393,7 +398,7 @@ export const UserDetail = () => {
             Bientôt disponible
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <Stack spacing={3}>
+            <Stack spacing={4}>
               <Card style={cardStyle}>
                 <Typography
                   variant={'body1'}
@@ -412,7 +417,7 @@ export const UserDetail = () => {
                       DÉTAILS UTILISATEUR
                     </Link>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     <Link
                       role={'link'}
                       href={'#parcours-register'}
