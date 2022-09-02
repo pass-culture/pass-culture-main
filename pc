@@ -278,9 +278,9 @@ elif [[ "$CMD" == "pgcli" ]]; then
   COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     source "$ROOT_PATH"/env_file
-    RUN='docker exec -it pc-flask bash -c "pgcli $DATABASE_URL"'
+    RUN='docker exec -it pc-flask bash -c "bin/pgcli-wrapper.sh"'
   else
-    kubectl -n $ENV exec -it $(pod_console) -- bash -c 'pgcli "$DATABASE_URL"'
+    kubectl -n $ENV exec -it $(pod_console) -- bash -c 'bin/pgcli-wrapper.sh'
     exit
   fi
 
