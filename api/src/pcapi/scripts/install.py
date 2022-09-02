@@ -5,7 +5,7 @@ import flask
 
 def install_commands(app: flask.Flask) -> None:
     module_paths = (
-        "pcapi.core.educational.utils",
+        "pcapi.core.educational.commands",
         "pcapi.scheduled_tasks.search_commands",
         "pcapi.scheduled_tasks.commands",
         "pcapi.scheduled_tasks.titelive_commands",
