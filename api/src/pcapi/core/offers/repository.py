@@ -571,6 +571,11 @@ def delete_past_draft_offers() -> None:
         criteria_models.OfferCriterion.offerId == Offer.id,
         *filters,
     ).delete(synchronize_session=False)
+    ActivationCode.query.filter(
+        ActivationCode.stockId == Stock.id,
+        Stock.offerId == Offer.id,
+        *filters,
+    ).delete(synchronize_session=False)
     Stock.query.filter(Stock.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
     Offer.query.filter(*filters).delete()
     db.session.commit()

@@ -1217,7 +1217,8 @@ class DeletePastDraftOfferTest:
             dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.DRAFT, criteria=[criterion]
         )
         factories.MediationFactory(offer=offer)
-        factories.StockFactory(offer=offer)
+        stock = factories.StockFactory(offer=offer)
+        factories.ActivationCodeFactory(stock=stock)
         past_offer = factories.OfferFactory(
             dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.PENDING
         )
