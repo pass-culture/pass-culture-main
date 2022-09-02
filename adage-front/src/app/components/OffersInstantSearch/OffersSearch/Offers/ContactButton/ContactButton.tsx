@@ -10,16 +10,18 @@ const ContactButton = ({
   className,
   contactEmail,
   contactPhone,
+  offerId,
 }: {
   className?: string
   contactEmail?: string
   contactPhone?: string
+  offerId: number
 }): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleButtonClick = () => {
     setIsModalOpen(true)
-    api.logContactModalButtonClick()
+    api.logContactModalButtonClick({ offerId })
   }
 
   const closeModal = () => {
