@@ -19,6 +19,7 @@ from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
 import pcapi.repository as pcapi_repository
 from pcapi.repository import repository
 
@@ -190,8 +191,36 @@ def handle_dms_application(
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
 
+    _update_application_annotations(application_scalar_id, application_content, field_errors, birth_date_error)
+
     pcapi_repository.repository.save(fraud_check)
     return fraud_check
+
+
+def _update_application_annotations(
+    application_scalar_id: str,
+    application_content: fraud_models.DMSContent,
+    field_errors: list[dms_types.DmsFieldErrorDetails],
+    birth_date_error: dms_types.DmsFieldErrorDetails | None,
+) -> None:
+    annotation = application_content.annotation
+    if not annotation:
+        logger.error("[DMS] No annotation defined for procedure %s", application_content.procedure_number)
+        return
+
+    new_annotation_value = _compute_new_annotation(field_errors, birth_date_error)
+    if new_annotation_value == annotation.text:
+        return
+
+    logger.info("[DMS] Updating annotation for application %s", application_content.application_number)
+    try:
+        update_demarches_simplifiees_text_annotations(application_scalar_id, annotation.id, new_annotation_value)
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception(
+            "[DMS] Error while updating annotation for application %s",
+            application_content.application_number,
+            extra={"error": str(exc), "application_scalar_id": application_scalar_id},
+        )
 
 
 def _compute_new_annotation(
