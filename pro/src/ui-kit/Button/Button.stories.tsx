@@ -2,6 +2,7 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -35,6 +36,7 @@ const TemplateLink: Story<{
     isExternal: boolean
   }
   Icon?: SharedButtonProps['Icon']
+  isDisabled: boolean
 }> = args => <ButtonLink {...args}>{args.children}</ButtonLink>
 
 export const DefaultButton = Template.bind({})
@@ -64,6 +66,7 @@ export const LinkButton = TemplateLink.bind({})
 
 LinkButton.args = {
   children: 'Hello world',
+  isDisabled: false,
   variant: ButtonLink.variant.TERNARY,
   link: { to: '/my-path', isExternal: false },
 }
@@ -72,5 +75,5 @@ export const LinkButtonWithIcon = TemplateLink.bind({})
 
 LinkButtonWithIcon.args = {
   ...LinkButton.args,
-  Icon: LinkIcon,
+  Icon: PenIcon,
 }

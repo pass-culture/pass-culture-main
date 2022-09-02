@@ -750,11 +750,11 @@ describe('offererDetailsLegacy', () => {
       await waitForElements()
 
       // Then
-      const [offererUpdateButton] = screen.getAllByRole('button', {
+      const [offererUpdateButton] = screen.getAllByRole('link', {
         name: 'Modifier',
       })
       expect(offererUpdateButton).toBeInTheDocument()
-      expect(offererUpdateButton).toBeDisabled()
+      expect(offererUpdateButton).toHaveAttribute('aria-disabled')
     })
 
     it('should not allow user to add venue and virtual offer', async () => {
