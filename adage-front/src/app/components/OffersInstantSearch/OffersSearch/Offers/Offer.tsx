@@ -57,6 +57,7 @@ export const Offer = ({
             className="offer-prebooking-button"
             contactEmail={offer.contactEmail}
             contactPhone={offer.contactPhone}
+            offerId={offer.id}
           />
         ) : (
           <PrebookingButton
