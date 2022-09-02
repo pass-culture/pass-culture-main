@@ -42,25 +42,16 @@ def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     processed_applications: list = []
     new_import_datetime = None
-    states_to_import = [
-        dms_models.GraphQLApplicationStates.accepted,
-        dms_models.GraphQLApplicationStates.refused,
-        dms_models.GraphQLApplicationStates.without_continuation,
-    ]
-    for state in states_to_import:
-        for application_details in client.get_applications_with_details(procedure_id, state=state):
-            if application_details.number in already_processed_applications_ids:
-                continue
-            try:
-                dms_api.handle_dms_application(application_details)
-                processed_applications.append(application_details.number)
-                if (
-                    new_import_datetime is None
-                    or application_details.latest_modification_datetime > new_import_datetime
-                ):
-                    new_import_datetime = application_details.latest_modification_datetime
-            except Exception:  # pylint: disable=broad-except
-                logger.exception("[DMS] Error in script while importing application %s", application_details.number)
+    for application_details in client.get_applications_with_details(procedure_id):
+        if application_details.number in already_processed_applications_ids:
+            continue
+        try:
+            dms_api.handle_dms_application(application_details)
+            processed_applications.append(application_details.number)
+            if new_import_datetime is None or application_details.latest_modification_datetime > new_import_datetime:
+                new_import_datetime = application_details.latest_modification_datetime
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("[DMS] Error in script while importing application %s", application_details.number)
     if new_import_datetime is None:
         logger.error("[DMS] No import for procedure %s", procedure_id)
         return
