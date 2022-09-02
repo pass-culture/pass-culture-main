@@ -2,6 +2,8 @@ import * as PropTypes from 'prop-types'
 import React from 'react'
 
 import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 export const VenueStat = ({ stat }) => (
   <div className="h-card-col" data-testid="venue-stat">
@@ -11,12 +13,16 @@ export const VenueStat = ({ stat }) => (
       <LoaderSvg className="venue-stat-spinner" title="Chargement en cours" />
     )}
     <div>{stat.label}</div>
-    <a
+    <ButtonLink
       className="tertiary-link"
-      href={stat.link.pathname ? `${stat.link.pathname}` : `${stat.link}`}
+      variant={ButtonVariant.TERNARY}
+      link={{
+        to: stat.link.pathname ? `${stat.link.pathname}` : `${stat.link}`,
+        isExternal: false,
+      }}
     >
       Voir
-    </a>
+    </ButtonLink>
   </div>
 )
 

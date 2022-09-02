@@ -1,12 +1,14 @@
 import * as PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
-import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { venueCreateOfferLink } from 'core/Venue/utils'
+import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import VenueStat from './VenueStat'
 
@@ -76,26 +78,45 @@ const Venue = ({
                 className="h-card-title-ico"
                 svg={isVirtual ? 'ico-screen-play' : 'ico-box'}
               />
-              <Link className="tertiary-link" to={showVenueLink}>
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                link={{
+                  to: showVenueLink,
+                  isExternal: false,
+                }}
+                Icon={IcoPlus}
+              >
                 <span className="title-text" title={publicName || name}>
                   {publicName || name}
                 </span>
-              </Link>
+              </ButtonLink>
             </h3>
             {isBankInformationWithSiretActive && !hasBusinessUnit && (
               <>
                 <span className="button-group-separator" />
-                <Link className="tertiary-link" to={editVenueLink}>
-                  <IcoPlus />
+                <ButtonLink
+                  variant={ButtonVariant.TERNARY}
+                  link={{
+                    to: editVenueLink,
+                    isExternal: false,
+                  }}
+                  Icon={IcoPlus}
+                >
                   Ajouter un RIB
-                </Link>
+                </ButtonLink>
               </>
             )}
             {(!isVirtual || isBankInformationWithSiretActive) && (
-              <Link className="tertiary-link" to={editVenueLink}>
-                <Icon svg="ico-outer-pen" />
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                link={{
+                  to: editVenueLink,
+                  isExternal: false,
+                }}
+                Icon={PenIcon}
+              >
                 Modifier
-              </Link>
+              </ButtonLink>
             )}
           </div>
           <div className="venue-stats">
@@ -107,17 +128,20 @@ const Venue = ({
             ))}
 
             <div className="h-card-col v-add-offer-link">
-              <Link
-                className="tertiary-link"
-                to={venueCreateOfferLink(offererId, id, isVirtual)}
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                link={{
+                  to: venueCreateOfferLink(offererId, id, isVirtual),
+                  isExternal: false,
+                }}
+                Icon={IcoPlus}
               >
-                <IcoPlus />
                 <div>
                   {isVirtual
                     ? 'Créer une nouvelle offre numérique'
                     : 'Créer une nouvelle offre'}
                 </div>
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         </div>

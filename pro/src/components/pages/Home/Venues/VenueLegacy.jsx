@@ -1,10 +1,8 @@
 import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
-import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'core/Bookings'
 import {
   Events,
@@ -13,8 +11,13 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
+import { ReactComponent as DownIcon } from 'icons/ico-caret-down.svg'
+import { ReactComponent as RightIcon } from 'icons/ico-caret-right.svg'
+import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { Button, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import VenueStat from './VenueStat'
 
@@ -126,17 +129,14 @@ const Venue = ({
             }`}
           >
             <h3 className="h-card-title">
-              <button
-                className="tertiary-button"
-                onClick={() => setIsStatOpen(prev => !prev)}
-                title={isStatOpen ? 'Masquer' : 'Afficher'}
+              <Button
+                className="h-card-title-ico"
+                variant={ButtonVariant.TERNARY}
+                Icon={isStatOpen ? DownIcon : RightIcon}
                 type="button"
-              >
-                <Icon
-                  className="h-card-title-ico"
-                  svg={isStatOpen ? 'ico-caret-down' : 'ico-caret-right'}
-                />
-              </button>
+                title={isStatOpen ? 'Masquer' : 'Afficher'}
+                onClick={() => setIsStatOpen(prev => !prev)}
+              />
               <span className="title-text" title={publicName || name}>
                 {publicName || name}
               </span>
@@ -146,20 +146,30 @@ const Venue = ({
                 (isBankInformationWithSiretActive && !hasBusinessUnit)) &&
                 !isVirtual && (
                   <>
-                    <Link
+                    <ButtonLink
                       className="add-rib-link tertiary-link"
-                      to={editVenueLink}
+                      variant={ButtonVariant.TERNARY}
+                      link={{
+                        to: editVenueLink,
+                        isExternal: false,
+                      }}
+                      Icon={IcoPlus}
                     >
-                      <IcoPlus />
                       Ajouter un RIB
-                    </Link>
+                    </ButtonLink>
                     <span className="button-group-separator" />
                   </>
                 )}
-              <Link className="tertiary-link" to={editVenueLink}>
-                <Icon svg="ico-outer-pen" />
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                link={{
+                  to: editVenueLink,
+                  isExternal: false,
+                }}
+                Icon={PenIcon}
+              >
                 Modifier
-              </Link>
+              </ButtonLink>
             </div>
           </div>
           {isStatOpen && (
@@ -170,8 +180,13 @@ const Venue = ({
                 </Fragment>
               ))}
               <div className="h-card-col v-add-offer-link">
-                <Link
-                  className="tertiary-link"
+                <ButtonLink
+                  variant={ButtonVariant.TERNARY}
+                  link={{
+                    to: venueCreateOfferLink(offererId, id, isVirtual),
+                    isExternal: false,
+                  }}
+                  Icon={IcoPlus}
                   onClick={() =>
                     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OFFER_FORM_NAVIGATION_IN.HOME,
@@ -182,15 +197,13 @@ const Venue = ({
                       isEdition: false,
                     })
                   }
-                  to={venueCreateOfferLink(offererId, id, isVirtual)}
                 >
-                  <IcoPlus />
                   <div>
                     {isVirtual
                       ? 'Créer une nouvelle offre numérique'
                       : 'Créer une nouvelle offre'}
                   </div>
-                </Link>
+                </ButtonLink>
               </div>
             </div>
           )}
