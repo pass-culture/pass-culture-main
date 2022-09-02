@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-import { ReactComponent as PenIcon } from 'icons/ico-outer-pen.svg'
+import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {

@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Banner } from 'ui-kit'
+import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
+import { Banner, ButtonLink, Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 
@@ -139,23 +140,15 @@ const OffererDetails = ({
             selectedValue={selectedOfferer.id}
           />
           <div className="od-separator vertical" />
-          <button
-            className={`tertiary-button${isExpanded ? ' od-primary' : ''}`}
+          <Button
+            className={isExpanded ? ' od-primary' : ''}
+            variant={ButtonVariant.TERNARY}
+            Icon={isExpanded ? ClosedEyeSvg : OpenedEyeSvg}
             onClick={toggleVisibility}
             type="button"
           >
-            {isExpanded ? (
-              <>
-                <ClosedEyeSvg />
-                Masquer
-              </>
-            ) : (
-              <>
-                <OpenedEyeSvg />
-                Afficher
-              </>
-            )}
-          </button>
+            {isExpanded ? 'Masquer' : 'Afficher'}
+          </Button>
           {isBankInformationWithSiretActive ? (
             hasInvalidBusinessUnits ? (
               <Icon
@@ -184,25 +177,22 @@ const OffererDetails = ({
             )
           )}
           <div className="od-separator vertical small" />
-          {isUserOffererValidated ? (
-            <Link
-              className="tertiary-link"
-              to={`/structures/${selectedOfferer.id}`}
-              onClick={() =>
-                logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
-                  offerer_id: selectedOfferer.id,
-                })
-              }
-            >
-              <Icon svg="ico-outer-pen" />
-              Modifier
-            </Link>
-          ) : (
-            <button className="tertiary-button" disabled type="button">
-              <Icon svg="ico-outer-pen" />
-              Modifier
-            </button>
-          )}
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: `/structures/${selectedOfferer.id}`,
+              isExternal: false,
+            }}
+            Icon={PenIcon}
+            isDisabled={!isUserOffererValidated}
+            onClick={() =>
+              logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
+                offerer_id: selectedOfferer.id,
+              })
+            }
+          >
+            Modifier
+          </ButtonLink>
         </div>
 
         {isExpanded && (

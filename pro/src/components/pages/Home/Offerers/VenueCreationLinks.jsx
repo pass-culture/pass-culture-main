@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import {
@@ -11,6 +11,8 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { isAPISireneAvailable } from 'store/features/selectors'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const VenueCreationLinks = ({
@@ -29,21 +31,27 @@ const VenueCreationLinks = ({
   const renderLinks = ({ insideCard }) => {
     return (
       <div className="actions-container">
-        <Link
-          className={insideCard ? 'primary-link' : 'secondary-link'}
+        <ButtonLink
+          variant={insideCard ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
+          link={{
+            to: venueCreationUrl,
+            isExternal: false,
+          }}
           onClick={() => {
             logEvent?.(Events.CLICKED_CREATE_VENUE, { from: location.pathname })
             logEvent?.(Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER, {
               from: location.pathname,
             })
           }}
-          to={venueCreationUrl}
         >
           {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
-        </Link>
-
-        <Link
-          className="secondary-link"
+        </ButtonLink>
+        <ButtonLink
+          variant={ButtonVariant.SECONDARY}
+          link={{
+            to: `/offre/creation?structure=${offererId}`,
+            isExternal: false,
+          }}
           onClick={() =>
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OFFER_FORM_NAVIGATION_IN.HOME,
@@ -52,10 +60,9 @@ const VenueCreationLinks = ({
               isEdition: false,
             })
           }
-          to={`/offre/creation?structure=${offererId}`}
         >
           Créer une offre
-        </Link>
+        </ButtonLink>
       </div>
     )
   }

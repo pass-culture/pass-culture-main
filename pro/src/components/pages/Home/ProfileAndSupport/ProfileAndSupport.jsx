@@ -3,8 +3,8 @@ import React, { useCallback, useState } from 'react'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
-import Icon from 'components/layout/Icon'
 import { Events } from 'core/FirebaseEvents/constants'
+import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -86,8 +86,8 @@ const ProfileAndSupport = () => {
                   variant={ButtonVariant.TERNARY}
                   onClick={showProfileInfoModal}
                   type="button"
+                  Icon={EditIcon}
                 >
-                  <Icon svg="ico-outer-pen" />
                   Modifier
                 </Button>
               )}
@@ -96,8 +96,8 @@ const ProfileAndSupport = () => {
                   variant={ButtonVariant.TERNARY}
                   link={{ to: '/profile', isExternal: false }}
                   type="button"
+                  Icon={EditIcon}
                 >
-                  <Icon svg="ico-outer-pen" />
                   Modifier
                 </ButtonLink>
               )}
