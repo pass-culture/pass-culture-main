@@ -37,6 +37,6 @@ class PreSubscriptionDmsErrorEmailSendinblueTest:
             "ID_CARD_NUMBER": id_card_number,
             "DMS_ERRORS": [
                 {"name": "ton code postal", "value": postal_code},
-                {"name": "ta pièce d'identité", "value": id_card_number},
+                {"name": "ton numéro de pièce d'identité", "value": id_card_number},
             ],
         }

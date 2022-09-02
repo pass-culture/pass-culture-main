@@ -24,7 +24,9 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
+from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -321,11 +323,12 @@ class DmsWebhookApplicationTest:
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.source_data().state == "en_construction"
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == subscription_models.PopOverIcon.FILE
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+            message.user_message
+            == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
     @freezegun.freeze_time("2021-10-30 09:00:00")
@@ -348,16 +351,17 @@ class DmsWebhookApplicationTest:
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
-        assert len(user.subscriptionMessages) == 1
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
         assert fraud_check.source_data().state == "en_instruction"
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == subscription_models.PopOverIcon.FILE
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+            message.user_message
+            == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -380,16 +384,17 @@ class DmsWebhookApplicationTest:
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
-        assert len(user.subscriptionMessages) == 1
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert fraud_check.source_data().state == "refuse"
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.ERROR
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == subscription_models.PopOverIcon.ERROR
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n’es malheureusement pas éligible au pass Culture."
+            message.user_message
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n'es malheureusement pas éligible au pass Culture."
         )
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
@@ -422,8 +427,8 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == (
             "Bonjour,\n"
             "\n"
-            "Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne:\n"
-            " - ta pièce d'identité\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne :\n"
+            " - ton numéro de pièce d'identité\n"
             " - ton code postal\n"
             "\n"
             "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
@@ -445,12 +450,6 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
-        assert (
-            user.subscriptionMessages[0].userMessage
-            == "Il semblerait que les champs ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
-        )
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
@@ -459,6 +458,14 @@ class DmsWebhookApplicationTest:
             fraud_check.reason
             == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (error_identity_piece_number),'postal_code' (error_postal_code)"
         )
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == None
+        assert (
+            message.user_message
+            == "Il semblerait que les champs ‘numéro de pièce d'identité, code postal’ soient invalides. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
+        )
+        assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
@@ -490,7 +497,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_dms_request_with_unexisting_user_with_ongoin_application(self, send_user_message, execute_query, client):
+    def test_dms_request_with_unexisting_user_with_ongoing_application(self, send_user_message, execute_query, client):
         fraud_factories.OrphanDmsApplicationFactory(application_id=6044787, email="user@example.com")
         execute_query.return_value = make_single_application(
             6044787, state=dms_models.GraphQLApplicationStates.on_going.value, email="user@example.com"
@@ -565,7 +572,7 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == (
             "Bonjour,\n"
             "\n"
-            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ta pièce d'identité, inscrit sur le formulaire en ligne:\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton numéro de pièce d'identité, inscrit sur le formulaire en ligne :\n"
             "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
             '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n'
             "\n"
@@ -577,11 +584,14 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == None
+        assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+            message.user_message
+            == "Il semblerait que le champ ‘numéro de pièce d'identité’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -610,7 +620,7 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == (
             "Bonjour,\n"
             "\n"
-            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton prénom, inscrit sur le formulaire en ligne:\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton prénom, inscrit sur le formulaire en ligne :\n"
             "Merci de corriger ton dossier.\n"
             "\n"
             'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
@@ -619,11 +629,13 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == None
+        assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ton prénom’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+            message.user_message
+            == "Il semblerait que le champ ‘prénom’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -656,9 +668,9 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == (
             "Bonjour,\n"
             "\n"
-            "Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne:\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne :\n"
             " - ton prénom\n"
-            " - ton nom\n"
+            " - ton nom de famille\n"
             "\n"
             "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
             "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t’invitons à consulter les articles suivants :\n"
@@ -673,11 +685,14 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == None
+        assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Il semblerait que les champs ‘ton prénom, ton nom’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
+            message.user_message
+            == "Il semblerait que les champs ‘prénom, nom de famille’ soient invalides. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -705,7 +720,7 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == (
             "Bonjour,\n"
             "\n"
-            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton code postal, inscrit sur le formulaire en ligne:\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton code postal, inscrit sur le formulaire en ligne :\n"
             "Ton code postal doit être renseigné sous format 5 chiffres uniquement, sans lettre ni espace\n"
             '<a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">Comment bien renseigner mon adresse et mon code postal lors de l’inscription ? </a>\n'
             "\n"
@@ -717,11 +732,13 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message.pop_over_icon == None
+        assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+            message.user_message
+            == "Il semblerait que le champ ‘code postal’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -760,12 +777,6 @@ class DmsWebhookApplicationTest:
             "Bonne journée,\n"
             "\n"
             "L’équipe du pass Culture"
-        )
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
-        assert (
-            user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
         fraud_check = user.beneficiaryFraudChecks[0]
@@ -806,13 +817,6 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         send_user_message.assert_not_called()
-
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
-        assert (
-            user.subscriptionMessages[0].userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : les champs ‘ta date de naissance, ton prénom’ ne sont pas valides."
-        )
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
