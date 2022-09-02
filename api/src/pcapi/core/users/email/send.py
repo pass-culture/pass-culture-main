@@ -34,8 +34,10 @@ def send_beneficiary_user_emails_for_email_change(user: User, new_email: str, ex
     return success  # type: ignore [return-value]
 
 
-def build_pro_link_for_email_change(current_email: str, new_email: str, expiration_date: datetime) -> str:
-    token = encode_jwt_payload({"current_email": current_email, "new_email": new_email}, expiration_date)
+def build_pro_link_for_email_change(current_email: str, new_email: str, user_id: int, expiration_date: datetime) -> str:
+    token = encode_jwt_payload(
+        {"current_email": current_email, "new_email": new_email, "user_id": user_id}, expiration_date
+    )
     expiration = int(expiration_date.timestamp())
 
     path = "email_validation"
@@ -51,6 +53,6 @@ def send_pro_user_emails_for_email_change(user: User, new_email: str, expiration
     if user_with_new_email:
         return True
     success = transactional_mails.send_pro_information_email_change_email(user, new_email)
-    link_to_email_change = build_pro_link_for_email_change(user.email, new_email, expiration_date)
+    link_to_email_change = build_pro_link_for_email_change(user.email, new_email, user.id, expiration_date)
     success &= transactional_mails.send_pro_confirmation_email_change_email(new_email, link_to_email_change)
     return success

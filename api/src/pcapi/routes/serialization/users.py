@@ -246,6 +246,7 @@ class ChangeProEmailBody(BaseModel):
 class ChangeEmailTokenContent(BaseModel):
     current_email: EmailStr
     new_email: EmailStr
+    user_id: int
 
     @validator("current_email", "new_email", pre=True)
     @classmethod
@@ -267,12 +268,13 @@ class ChangeEmailTokenContent(BaseModel):
         ) as error:
             raise InvalidTokenError() from error
 
-        if not {"new_email", "current_email"} <= set(jwt_payload):
+        if not {"new_email", "current_email", "user_id"} <= set(jwt_payload):
             raise InvalidTokenError()
 
         current_email = jwt_payload["current_email"]
         new_email = jwt_payload["new_email"]
-        return cls(current_email=current_email, new_email=new_email)
+        user_id = jwt_payload["user_id"]
+        return cls(current_email=current_email, new_email=new_email, user_id=user_id)
 
 
 class ChangePasswordBodyModel(BaseModel):

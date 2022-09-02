@@ -32,10 +32,20 @@ def request_email_update(user: User, email: str, password: str) -> None:
     email_history = UserEmailHistory.build_update_request(user=user, new_email=email)
     repository.save(email_history)
 
-    if user.is_beneficiary:
-        send_beneficiary_user_emails_for_email_change(user, email, expiration_date)
-    else:
-        send_pro_user_emails_for_email_change(user, email, expiration_date)
+    send_beneficiary_user_emails_for_email_change(user, email, expiration_date)
+
+
+def request_email_update_from_pro(user: User, email: str, password: str) -> None:
+    check_user_password(user, password)
+    check_pro_email_update_attempts(user)
+    check_email_address_does_not_exist(email)
+
+    expiration_date = generate_token_expiration_date()
+
+    email_history = UserEmailHistory.build_update_request(user=user, new_email=email)
+    repository.save(email_history)
+
+    send_pro_user_emails_for_email_change(user, email, expiration_date)
 
 
 def check_email_update_attempts(user: User) -> None:
@@ -46,6 +56,17 @@ def check_email_update_attempts(user: User) -> None:
         app.redis_client.expire(update_email_attempts_key, settings.EMAIL_UPDATE_ATTEMPTS_TTL)  # type: ignore [attr-defined]
 
     if count > settings.MAX_EMAIL_UPDATE_ATTEMPTS:
+        raise exceptions.EmailUpdateLimitReached()
+
+
+def check_pro_email_update_attempts(user: User) -> None:
+    update_email_attempts_key = f"update_email_attemps_user_{user.id}"
+    count = app.redis_client.incr(update_email_attempts_key)  # type: ignore [attr-defined]
+
+    if count == 1:
+        app.redis_client.expire(update_email_attempts_key, constants.EMAIL_PRO_UPDATE_ATTEMPTS_TTL)  # type: ignore [attr-defined]
+
+    if count > constants.MAX_EMAIL_UPDATE_ATTEMPTS_FOR_PRO:
         raise exceptions.EmailUpdateLimitReached()
 
 

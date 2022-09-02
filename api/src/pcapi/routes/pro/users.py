@@ -97,7 +97,9 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
     errors.status_code = 400
     try:
         payload = users_serializers.ChangeEmailTokenContent.from_token(body.token)
-        users_api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
+        users_api.change_pro_user_email(
+            current_email=payload.current_email, new_email=payload.new_email, user_id=payload.user_id
+        )
     except pydantic.ValidationError as exc:
         errors.add_error("global", "Adresse email invalide")
         raise errors from exc
@@ -124,7 +126,7 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     if not user.has_pro_role and not user.has_admin_role:
         abort(400)
     try:
-        email_api.request_email_update(user, body.email, body.password)
+        email_api.request_email_update_from_pro(user, body.email, body.password)
     except users_exceptions.EmailUpdateTokenExists as exc:
         errors.add_error("email", "Une demande de modification d'adresse e-mail est déjà en cours")
         raise errors from exc
