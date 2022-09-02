@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import * as useAnalytics from 'components/hooks/useAnalytics'
-import Venue from 'components/pages/Home/Venues/VenueLegacy'
+import Venue from 'components/pages/Home/Venues/Venue'
 import { Events } from 'core/FirebaseEvents/constants'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
