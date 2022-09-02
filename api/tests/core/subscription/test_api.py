@@ -1550,3 +1550,93 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
+
+
+@pytest.mark.usefixtures("db_session")
+class SubscriptionMessageTest:
+    def test_not_eligible(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=20))
+
+        assert subscription_api.get_subscription_message(user) is None
+
+    def test_already_beneficiary(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        assert subscription_api.get_subscription_message(user) is None
+
+    def test_other_next_step(self):
+        user_needing_honor_statement = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=17)
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            eligibilityType=EligibilityType.UNDERAGE,
+            user=user_needing_honor_statement,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            eligibilityType=EligibilityType.UNDERAGE,
+            user=user_needing_honor_statement,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+
+        assert subscription_api.get_subscription_message(user_needing_honor_statement) is None
+
+    @override_features(ENABLE_UBBLE=False)
+    def test_maintenance(self):
+        user_needing_identity_check = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            user=user_needing_identity_check,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        message = subscription_api.get_subscription_message(user_needing_identity_check)
+
+        assert (
+            message.user_message
+            == "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite."
+        )
+        assert message.pop_over_icon == subscription_models.PopOverIcon.CLOCK
+
+    @patch("pcapi.core.subscription.dms.api.get_dms_subscription_message")
+    def test_dms_message_is_returned(self, mocked_dms_message):
+        dms_returned_message = subscription_models.SubscriptionMessage(
+            user_message="Ferme ton application. Attends 10 secondes. Ouvre la, referme. Mange un steak. Reviens. C'est bon.",
+            pop_over_icon=subscription_models.PopOverIcon.MAGNIFYING_GLASS,
+        )
+        mocked_dms_message.return_value = dms_returned_message
+
+        user_with_dms_pending = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            user=user_with_dms_pending,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            user=user_with_dms_pending,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            user=user_with_dms_pending,
+            status=fraud_models.FraudCheckStatus.ERROR,
+        )
+        last_dms_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            user=user_with_dms_pending,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+
+        message = subscription_api.get_subscription_message(user_with_dms_pending)
+
+        mocked_dms_message.assert_called_once_with(last_dms_check)
+        assert message == dms_returned_message

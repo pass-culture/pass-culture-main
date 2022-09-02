@@ -17,6 +17,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.api as subscription_api
+from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -462,12 +463,12 @@ class RunIntegrationTest:
         assert fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes
         assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
 
-        sub_msg = user.subscriptionMessages[0]
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert (
-            sub_msg.userMessage
-            == "Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
+            message.user_message
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
         )
-        assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}
@@ -509,13 +510,6 @@ class RunIntegrationTest:
         fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert fraud_content.birth_date == applicant.dateOfBirth.date()
         assert fraud_content.address == "3 La Bigotais 22800 Saint-Donan"
-
-        sub_msg = applicant.subscriptionMessages[0]
-        assert (
-            sub_msg.userMessage
-            == "Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
-        )
-        assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_native_app_user(self, get_applications_with_details):
@@ -820,13 +814,6 @@ class GraphQLSourceProcessApplicationTest:
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
-        assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0]
-        assert (
-            user.subscriptionMessages[0].userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : les champs ‘ta pièce d'identité, ton code postal’ ne sont pas valides."
-        )
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):

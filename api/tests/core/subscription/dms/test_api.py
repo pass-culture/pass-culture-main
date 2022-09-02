@@ -2,6 +2,7 @@ import datetime
 from unittest import mock
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
@@ -10,9 +11,9 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
-from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -139,7 +140,7 @@ class HandleDmsApplicationTest:
     id_piece_number_not_accepted_message = (
         "Bonjour,\n"
         "\n"
-        "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ta pièce d'identité, inscrit sur le formulaire en ligne:\n"
+        "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton numéro de pièce d'identité, inscrit sur le formulaire en ligne :\n"
         "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
         '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n'
         "\n"
@@ -237,10 +238,12 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
-        assert (
-            subscription_message.userMessage
-            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Il semblerait que le champ ‘numéro de pièce d'identité’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
+            call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
+            pop_over_icon=None,
         )
 
         send_dms_message_mock.assert_called_once()
@@ -277,10 +280,12 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
-        assert (
-            subscription_message.userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘ta pièce d'identité’ n’est pas valide."
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
         )
 
         send_dms_message_mock.assert_not_called()
@@ -309,10 +314,12 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
-        assert (
-            subscription_message.userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘ta pièce d'identité’ n’est pas valide."
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
         )
 
         send_dms_message_mock.assert_not_called()
@@ -342,17 +349,18 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
-        assert (
-            subscription_message.userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n’es malheureusement pas éligible au pass Culture."
-        )
-
         send_dms_message_mock.assert_not_called()
         assert len(mails_testing.outbox) == 0
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+        )
 
     @override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
     def test_field_error_allows_fraud_check_content(self):
@@ -538,3 +546,184 @@ class HandleDmsAnnotationsTest:
 
         mock_update_annotations.assert_not_called()
         assert f"[DMS] No annotation defined for procedure {dms_content.procedure_number}" in caplog.text
+
+
+@pytest.mark.usefixtures("db_session")
+class DmsSubscriptionMessageTest:
+    user_email = "déesse@dms.com"
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_started_no_error(self, mock_send_user_message):
+        users_factories.UserFactory(email=self.user_email)
+        dms_response = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=self.user_email,
+            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(dms_response)
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message=f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.FILE,
+        )
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_started_error_wrong_birth_date(self, mock_send_user_message):
+        users_factories.UserFactory(email=self.user_email)
+        wrong_birth_date_application = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=self.user_email,
+            birth_date=datetime.datetime.utcnow(),
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(wrong_birth_date_application)
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Il semblerait que le champ ‘date de naissance’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
+            call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
+            pop_over_icon=None,
+        )
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_started_error_wrong_birth_date_and_id_piece_number(self, mock_send_user_message):
+        users_factories.UserFactory(email=self.user_email)
+        wrong_birth_date_application = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=self.user_email,
+            birth_date=datetime.datetime.utcnow(),
+            id_piece_number="r2d2",
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(wrong_birth_date_application)
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Il semblerait que les champs ‘numéro de pièce d'identité, date de naissance’ soient invalides. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier.",
+            call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
+            pop_over_icon=None,
+        )
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_pending_error_not_eligible_date(self, mock_send_user_message):
+        users_factories.UserFactory(email=self.user_email)
+        not_eligible_application = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.on_going,
+            email=self.user_email,
+            birth_date=datetime.datetime.utcnow() - relativedelta(years=20),
+            construction_datetime=datetime.datetime.utcnow(),
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(not_eligible_application)
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+        )
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_ko_not_eligible(self, mock_send_user_message):
+        users_factories.UserFactory(email=self.user_email)
+        not_eligible_application = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=self.user_email,
+            birth_date=datetime.datetime.utcnow() - relativedelta(years=20),
+            construction_datetime=datetime.datetime.utcnow(),
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(not_eligible_application)
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+        )
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_accepted(self, mock_send_user_message):
+        users_factories.UserFactory(email=self.user_email)
+        application_ok = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=self.user_email,
+            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(application_ok)
+
+        assert dms_subscription_api.get_dms_subscription_message(fraud_check) is None
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_refused_by_operator(self, mock_send_user_message):
+        users_factories.UserFactory(email=self.user_email)
+        refused_application = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.refused,
+            email=self.user_email,
+            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(refused_application)
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n'es malheureusement pas éligible au pass Culture.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+        )
+
+    @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
+    def test_duplicate(self, mock_send_user_message):
+        first_name = "Jean-Michel"
+        last_name = "Doublon"
+        birth_date = datetime.datetime.utcnow() - relativedelta(years=18, days=1)
+        users_factories.BeneficiaryGrant18Factory(firstName=first_name, lastName=last_name, dateOfBirth=birth_date)
+
+        applicant = users_factories.UserFactory(email=self.user_email)
+        duplicate_application = make_parsed_graphql_application(
+            application_number=1,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=self.user_email,
+            birth_date=birth_date,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        fraud_check = dms_subscription_api.handle_dms_application(duplicate_application)
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations.",
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Contacter le support",
+                link=f"mailto:support@example.com?subject=%23{applicant.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",
+                icon=subscription_models.CallToActionIcon.EMAIL,
+            ),
+            pop_over_icon=None,
+        )
+
+    def test_ko_no_info(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            resultContent=None,
+            status=fraud_models.FraudCheckStatus.KO,
+            reasonCodes=None,
+        )
+
+        message = dms_subscription_api.get_dms_subscription_message(fraud_check)
+
+        assert message == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+        )

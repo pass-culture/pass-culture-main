@@ -9,6 +9,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.payments import api as payments_api
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
@@ -199,6 +200,16 @@ def get_profile_completion_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.PROFILE_COMPLETION, status=status)
 
 
+def _get_identity_fraud_checks_for_eligibility(
+    user: users_models.User, eligibility: users_models.EligibilityType | None
+) -> list[fraud_models.BeneficiaryFraudCheck]:
+    return [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES and eligibility in fraud_check.applicable_eligibilities
+    ]
+
+
 def get_identity_check_subscription_status(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
@@ -210,11 +221,7 @@ def get_identity_check_subscription_status(
     if eligibility is None:
         return models.SubscriptionItemStatus.VOID  # type: ignore [return-value]
 
-    identity_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES and eligibility in fraud_check.applicable_eligibilities
-    ]
+    identity_fraud_checks = _get_identity_fraud_checks_for_eligibility(user, eligibility)
 
     dms_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.DMS]
     educonnect_checks = [
@@ -625,3 +632,41 @@ def get_first_registration_date(
     ]
 
     return min(registration_dates_when_eligible) if registration_dates_when_eligible else None
+
+
+def get_subscription_message(user: users_models.User) -> models.SubscriptionMessage | None:
+    """The subscription message is meant to help the user have information about the subscription status."""
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+        return None
+
+    next_step = get_next_subscription_step(user)
+
+    if next_step is not None and next_step not in [
+        models.SubscriptionStep.IDENTITY_CHECK,
+        models.SubscriptionStep.MAINTENANCE,
+    ]:
+        # in this case the user is not supposed to need any information and can proceed with the subscription
+        return None
+
+    if next_step == models.SubscriptionStep.MAINTENANCE:
+        return subscription_messages.MAINTENANCE_PAGE_MESSAGE
+
+    identity_fraud_checks = sorted(
+        _get_identity_fraud_checks_for_eligibility(user, user.eligibility),
+        key=lambda check: check.dateCreated,
+        reverse=True,
+    )
+
+    dms_check = next(
+        (
+            check
+            for check in identity_fraud_checks
+            if check.type == fraud_models.FraudCheckType.DMS and check.status != fraud_models.FraudCheckStatus.CANCELED
+        ),
+        None,
+    )
+
+    if dms_check is not None:
+        return dms_subscription_api.get_dms_subscription_message(dms_check)
+
+    return None

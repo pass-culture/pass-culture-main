@@ -1,22 +1,27 @@
 from pcapi import settings
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models
 
 
-INBOX_URL = "passculture://openInbox"
 MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
-REDIRECT_TO_DMS_VIEW = "passculture://verification-identite/demarches-simplifiees"
-REDIRECT_TO_IDENTIFICATION = "passculture://verification-identite/identification"
-
 MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e"
 
+MAINTENANCE_PAGE_MESSAGE = models.SubscriptionMessage(
+    user_message="La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
+    call_to_action=None,
+    pop_over_icon=models.PopOverIcon.CLOCK,
+)
 
-def _generate_form_field_error(
-    error_text_singular: str, error_text_plural: str, error_fields: list[fraud_models.DmsFieldErrorDetails]
-) -> str:
-    field_text = ", ".join(field.get_field_label() for field in error_fields)
-    if len(error_fields) == 1:
-        user_message = error_text_singular.format(formatted_error_fields=field_text)
-    else:
-        user_message = error_text_plural.format(formatted_error_fields=field_text)
+REDIRECT_TO_DMS_VIEW_LINK = "passculture://verification-identite/demarches-simplifiees"
+REDIRECT_TO_DMS_CALL_TO_ACTION = models.CallToActionMessage(
+    title="Accéder au site Démarches-Simplifiées",
+    link=REDIRECT_TO_DMS_VIEW_LINK,
+    icon=models.CallToActionIcon.EXTERNAL,
+)
 
-    return user_message
+
+def compute_support_call_to_action(user_id: int) -> models.CallToActionMessage:
+    return models.CallToActionMessage(
+        title="Contacter le support",
+        link=MAILTO_SUPPORT + MAILTO_SUPPORT_PARAMS.format(id=user_id),
+        icon=models.CallToActionIcon.EMAIL,
+    )
