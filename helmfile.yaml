@@ -28,7 +28,7 @@ environments:
       - chartVersion: 0.16.2
   production:
     values:
-      - chartVersion: 0.16.0
+      - chartVersion: 0.16.2
   ops:
     values:
       - chartVersion: 0.16.0
