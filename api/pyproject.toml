@@ -46,6 +46,7 @@ ignore_missing_imports = true
 show_column_numbers = true
 warn_unused_ignores = true
 show_error_codes = true
+warn_redundant_casts = true
 plugins="sqlalchemy.ext.mypy.plugin, pydantic.mypy"
 exclude = """
 (?x)(
