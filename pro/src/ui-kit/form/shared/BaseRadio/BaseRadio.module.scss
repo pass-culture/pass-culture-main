@@ -1,12 +1,24 @@
 @use 'styles/variables/_colors.scss' as colors;
 @use 'styles/variables/_forms.scss' as forms;
 @use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
 
 .base-radio {
-  display: inline-flex;
-  cursor: pointer;
-  align-items: center;
-  width: 100%;
+  &-label-row {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    width: 100%;
+  }
+  &-description {
+    @include fonts.caption();
+    margin-left: rem.torem(28px);
+
+    color: colors.$grey-dark;
+    &.disabled {
+      color: colors.$grey-medium;
+    }
+  }
 
   &-label {
     line-height: rem.torem(16px);
@@ -37,7 +49,12 @@
 
     &:checked {
       box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background: radial-gradient(colors.$primary 0%, colors.$primary 40%, transparent 50%, transparent);
+      background: radial-gradient(
+        colors.$primary 0%,
+        colors.$primary 40%,
+        transparent 50%,
+        transparent
+      );
     }
 
     &:hover:checked,
@@ -69,7 +86,12 @@
   .base-radio-input {
     &:checked {
       border-color: colors.$primary;
-      background: radial-gradient(colors.$primary 0%, colors.$primary 40%, transparent 50%, transparent);
+      background: radial-gradient(
+        colors.$primary 0%,
+        colors.$primary 40%,
+        transparent 50%,
+        transparent
+      );
     }
   }
 }
