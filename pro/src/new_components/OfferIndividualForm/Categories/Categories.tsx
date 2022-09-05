@@ -17,12 +17,14 @@ export interface ICategoriesProps {
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
   readOnlyFields?: string[]
+  Banner?: React.ReactNode
 }
 
 const Categories = ({
   categories,
   subCategories,
   readOnlyFields = [],
+  Banner,
 }: ICategoriesProps): JSX.Element => {
   const {
     values: formValues,
@@ -85,6 +87,8 @@ const Categories = ({
           <ShowTypes readOnly={readOnlyFields.includes('showType')} />
         </FormLayout.Row>
       )}
+
+      <FormLayout.Row>{!!Banner && Banner}</FormLayout.Row>
     </FormLayout.Section>
   )
 }

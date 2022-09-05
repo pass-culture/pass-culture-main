@@ -117,7 +117,9 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
+    expect(
+      await screen.findByLabelText('Choisir une catégorie')
+    ).toBeInTheDocument()
   })
 
   it('should display subCategories select when a category is choosed', async () => {
