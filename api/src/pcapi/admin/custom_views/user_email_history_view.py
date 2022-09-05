@@ -81,7 +81,7 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
             )
         else:
             try:
-                users_api.change_user_email(current_email=entry.oldEmail, new_email=entry.newEmail, admin=True)
+                users_api.change_user_email(current_email=entry.oldEmail, new_email=entry.newEmail, by_admin=True)
             except users_exceptions.UserDoesNotExist:
                 flash(f"L'utilisateur avec l'adresse email {entry.oldEmail} n'a pas été trouvé", category="error")
             except users_exceptions.EmailExistsError:
