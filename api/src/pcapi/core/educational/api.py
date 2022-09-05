@@ -1068,3 +1068,21 @@ def edit_collective_offer_public(
         updated_fields,
     )
     return offer
+
+
+def synchronize_adage_ids_on_venues() -> None:
+    adage_cultural_partners = get_cultural_partners(force_update=True)
+
+    filtered_cultural_partner_by_ids = {}
+    for cultural_partner in adage_cultural_partners.partners:
+        if cultural_partner.venueId is not None and cultural_partner.synchroPass:
+            filtered_cultural_partner_by_ids[cultural_partner.venueId] = cultural_partner
+
+    venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
+        offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys())
+    ).all()
+
+    for venue in venues:
+        venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
+
+    db.session.commit()
