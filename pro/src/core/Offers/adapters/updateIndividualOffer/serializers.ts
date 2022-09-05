@@ -58,6 +58,7 @@ export const serializePatchOffer = (
     description: formValues.description,
     extraData: serializeExtraData(formValues),
     isNational: formValues.isNational,
+    isDuo: !!formValues.isDuo,
     mentalDisabilityCompliant:
       formValues.accessibility[AccessiblityEnum.MENTAL],
     motorDisabilityCompliant: formValues.accessibility[AccessiblityEnum.MOTOR],

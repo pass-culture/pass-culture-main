@@ -97,6 +97,7 @@ describe('setFormReadOnlyFields', () => {
       description: 'Offer description',
       isEvent: true,
       isNational: false,
+      isDuo: false,
       musicSubType: '',
       musicType: '',
       name: 'Offer name',

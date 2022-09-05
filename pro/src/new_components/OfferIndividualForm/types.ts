@@ -28,4 +28,5 @@ export interface IOfferIndividualFormValues {
   durationMinutes?: string
   receiveNotificationEmails: boolean
   bookingEmail: string
+  isDuo: boolean
 }
