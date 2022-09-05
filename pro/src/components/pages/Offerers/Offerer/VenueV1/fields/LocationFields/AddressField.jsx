@@ -111,26 +111,28 @@ export const AddressField = ({
   required,
   validate,
   ...addressProps
-}) => (
-  <Field
-    format={format}
-    name={name}
-    render={addressFieldRender({
-      className,
-      disabled,
-      form,
-      id,
-      innerClassName,
-      label,
-      name,
-      placeholder,
-      readOnly,
-      required,
-      addressProps,
-    })}
-    validate={composeValidators(validate, getRequiredValidate(required))}
-  />
-)
+}) => {
+  return (
+    <Field
+      format={format}
+      name={name}
+      render={addressFieldRender({
+        className,
+        disabled,
+        form,
+        id,
+        innerClassName,
+        label,
+        name,
+        placeholder,
+        readOnly,
+        required,
+        addressProps,
+      })}
+      validate={composeValidators(validate, getRequiredValidate(required))}
+    />
+  )
+}
 
 AddressField.defaultProps = {
   className: '',

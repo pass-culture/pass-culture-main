@@ -1,51 +1,75 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
+import { configureTestStore } from 'store/testUtils'
 
 import OffererCreationForm from '../OffererCreationForm'
 
 describe('src | components | pages | OffererCreationForm', () => {
-  it('should be clickable when values have been changed and are valid', () => {
+  const renderOffererCreationForm = () => {
+    const store = configureTestStore()
+    return render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Form onSubmit={() => {}} component={OffererCreationForm} />
+        </MemoryRouter>
+      </Provider>
+    )
+  }
+
+  it('should be clickable when values have been changed and are valid', async () => {
     // given
-    const props = {
-      pristine: false,
-      invalid: false,
-      handleSubmit: () => {},
-    }
+    jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+      isOk: true,
+      message: '',
+      payload: {
+        values: {
+          address: '4 rue du test',
+          city: 'Plessix-Balisson',
+          latitude: 1.1,
+          longitude: 1.1,
+          name: 'Ma Petite structure',
+          postalCode: '22350',
+          siren: '881457238',
+        },
+      },
+    })
 
     // When
-    const wrapper = shallow(<OffererCreationForm {...props} />)
+    renderOffererCreationForm()
+    const input = screen.getByRole('textbox')
+    await userEvent.type(input, '123456789')
+    await userEvent.tab()
 
     // Then
-    expect(wrapper.find('button').prop('disabled')).toBe(false)
+    expect(screen.getByRole('button')).not.toHaveAttribute('disabled')
   })
 
-  it('should not be clickable when form is invalid', () => {
+  it('should not be clickable when form is invalid', async () => {
     // given
-    const props = {
-      pristine: false,
-      invalid: true,
-      handleSubmit: () => {},
-    }
 
     // When
-    const wrapper = shallow(<OffererCreationForm {...props} />)
+    renderOffererCreationForm()
+    const input = screen.getByRole('textbox')
+    await userEvent.type(input, '12345678981723')
 
     // Then
-    expect(wrapper.find('button').prop('disabled')).toBe(true)
+    expect(screen.getByRole('button')).toHaveAttribute('disabled')
   })
 
   it('should not be clickable when values have not been changed', () => {
     // given
-    const props = {
-      pristine: true,
-      invalid: false,
-      handleSubmit: () => {},
-    }
 
     // When
-    const wrapper = shallow(<OffererCreationForm {...props} />)
+    renderOffererCreationForm()
 
     // Then
-    expect(wrapper.find('button').prop('disabled')).toBe(true)
+    expect(screen.getByRole('button')).toHaveAttribute('disabled')
   })
 })

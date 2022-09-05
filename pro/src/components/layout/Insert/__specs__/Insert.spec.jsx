@@ -1,4 +1,5 @@
-import { mount, shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import Insert from '../Insert'
@@ -8,14 +9,7 @@ describe('src | components | layout | Insert', () => {
 
   beforeEach(() => {
     props = {
-      children: `{'Les'}
-        <b>
-          {' réservations d’évènements '}
-        </b>
-        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’évènement.'}
-        <p />
-        <p />
-        {'La contremarque ne peut être validée qu’après ce délai.'}`,
+      children: `I'm a child`,
       icon: 'example-icon-name',
     }
   })
@@ -23,28 +17,18 @@ describe('src | components | layout | Insert', () => {
   describe('render', () => {
     it('should render an Icon', () => {
       // when
-      const wrapper = shallow(<Insert {...props} />)
+      render(<Insert {...props} />)
 
       // then
-      const icon = wrapper.find('Icon')
-      expect(icon).toHaveLength(1)
+      expect(screen.getByRole('img')).toBeInTheDocument()
     })
 
     it('should render a children', () => {
       // when
-      const wrapper = mount(<Insert {...props} />)
+      render(<Insert {...props} />)
 
       // then
-      const span = wrapper.find('span')
-      const expected = `{'Les'}
-        <b>
-          {' réservations d’évènements '}
-        </b>
-        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’évènement.'}
-        <p />
-        <p />
-        {'La contremarque ne peut être validée qu’après ce délai.'}`
-      expect(span.text()).toBe(expected)
+      expect(screen.getByText("I'm a child")).toBeInTheDocument()
     })
   })
 })

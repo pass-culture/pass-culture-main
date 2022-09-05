@@ -1,27 +1,18 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import PendingOffererItem from '../PendingOffererItem'
 
 describe('src | components | pages | Offerers | OffererItem | PendingOffererItem', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
-      offerer: {},
-    }
-  })
-
   it('should display sentences', () => {
     // when
-    const wrapper = shallow(<PendingOffererItem {...props} />)
+    render(<PendingOffererItem offerer={{}} />)
 
     // then
-    const sentence1 = wrapper.find('p')
-    const sentence2 = wrapper.find({
-      children: 'Rattachement en cours de validation',
-    })
-    expect(sentence1.at(0).text()).toBe(' (SIREN: )')
-    expect(sentence2).toHaveLength(1)
+    expect(
+      screen.getByText('Rattachement en cours de validation')
+    ).toBeInTheDocument()
+    expect(screen.getByText('(SIREN: )')).toBeInTheDocument()
   })
 })
