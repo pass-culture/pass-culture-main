@@ -11,7 +11,6 @@ from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 import pcapi.core.bookings.repository as bookings_repository
-import pcapi.core.educational.api as educational_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.fraud.api as fraud_api
@@ -384,9 +383,3 @@ def handle_deleted_dms_applications_cron() -> None:
 @log_cron_with_transaction
 def update_pending_ubble_applications_cron() -> None:
     ubble_script.update_pending_ubble_applications(dry_run=False)
-
-
-@blueprint.cli.command("refresh_adage_cultural_partners_cache")
-@log_cron_with_transaction
-def refresh_adage_cultural_partners_cache() -> None:
-    educational_api.get_cultural_partners(force_update=True)

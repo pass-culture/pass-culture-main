@@ -9,6 +9,7 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 from pcapi.core import search
+from pcapi.core.educational import api
 
 
 @blueprint.cli.command("reindex_all_collective_offers")
@@ -28,3 +29,8 @@ def generate_fake_adage_token() -> None:
     """
     token = create_adage_jwt_fake_valid_token()
     print(f"Adage localhost URL: http://localhost:3002/?token={token}")
+
+
+@blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
+def synchronize_venues_from_adage_cultural_partners() -> None:
+    api.synchronize_adage_ids_on_venues()
