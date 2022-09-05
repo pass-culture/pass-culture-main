@@ -26,15 +26,7 @@ const setDefaultInitialFormValues = (
   let initialVenueId = FORM_DEFAULT_VALUES.venueId
   let initialWithdrawalDetails = FORM_DEFAULT_VALUES.withdrawalDetails
   let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
-  if (initialOffererId !== FORM_DEFAULT_VALUES.offererId) {
-    const offererVenues = venueList.filter(
-      (venue: TOfferIndividualVenue) =>
-        venue.managingOffererId === initialOffererId
-    )
-    if (offererVenues.length === 1) {
-      initialVenueId = offererVenues[0].id
-    }
-  }
+
   const venue = venueList.find(venue => venue.id === venueId)
   if (venueId && venue) {
     initialVenueId = venueId

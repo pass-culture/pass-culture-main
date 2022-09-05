@@ -6,9 +6,9 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import { filterCategories } from '..'
 
 describe('filterCategories', () => {
-  let venue: TOfferIndividualVenue
-  let categories: IOfferCategory[] = []
-  let subCategories: IOfferSubCategory[] = []
+  let venue: TOfferIndividualVenue | undefined
+  let categories: IOfferCategory[]
+  let subCategories: IOfferSubCategory[]
 
   beforeEach(() => {
     venue = {
@@ -146,15 +146,29 @@ describe('filterCategories', () => {
       filteredCategories.find((c: IOfferCategory) => c.id === 'D')
     ).toBeUndefined()
     expect(
-      filteredSubCategories.find((c: IOfferCategory) => c.id === 'C-D')
+      filteredSubCategories.find((c: IOfferSubCategory) => c.id === 'C-D')
+    ).toBeUndefined()
+  })
+
+  it('should return selectable categories and subCategories when venue is undefined', () => {
+    venue = undefined
+    const [filteredCategories, filteredSubCategories] = filterCategories(
+      categories,
+      subCategories,
+      venue
+    )
+
+    expect(
+      filteredCategories.find((c: IOfferCategory) => c.id === 'D')
+    ).toBeUndefined()
+    expect(
+      filteredSubCategories.find((c: IOfferSubCategory) => c.id === 'C-D')
     ).toBeUndefined()
   })
 
   it('should return ONLINE categories and subCategories when venue is virtual', () => {
-    venue = {
-      ...venue,
-      isVirtual: true,
-    }
+    if (venue) venue.isVirtual = true
+
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
@@ -173,10 +187,8 @@ describe('filterCategories', () => {
   })
 
   it('should return OFFLINE categories and subCategories when venue is physical', () => {
-    venue = {
-      ...venue,
-      isVirtual: false,
-    }
+    if (venue) venue.isVirtual = false
+
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
