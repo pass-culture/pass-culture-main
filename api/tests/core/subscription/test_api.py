@@ -1640,3 +1640,80 @@ class SubscriptionMessageTest:
 
         mocked_dms_message.assert_called_once_with(last_dms_check)
         assert message == dms_returned_message
+
+    @patch("pcapi.core.subscription.ubble.api.get_ubble_subscription_message")
+    def test_ubble_pending_message_is_returned(self, mocked_ubble_message):
+        ubble_returned_message = subscription_models.SubscriptionMessage(
+            user_message="Prends un miroir, recoiffe-toi, entraine-toi à sourire et reviens.",
+            pop_over_icon=subscription_models.PopOverIcon.MAGNIFYING_GLASS,
+        )
+        mocked_ubble_message.return_value = ubble_returned_message
+
+        user_with_ubble_pending = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.ERROR,
+        )
+        last_ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+
+        message = subscription_api.get_subscription_message(user_with_ubble_pending)
+
+        mocked_ubble_message.assert_called_once_with(last_ubble_check, is_retryable=False)
+        assert message == ubble_returned_message
+
+    @patch("pcapi.core.subscription.ubble.api.get_ubble_subscription_message")
+    def test_ubble_retryable_message_is_returned(self, mocked_ubble_message):
+        ubble_returned_message = subscription_models.SubscriptionMessage(
+            user_message="Prends un miroir, recoiffe-toi, entraine-toi à sourire et reviens.",
+            pop_over_icon=subscription_models.PopOverIcon.MAGNIFYING_GLASS,
+        )
+        mocked_ubble_message.return_value = ubble_returned_message
+
+        user_with_ubble_pending = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.ERROR,
+        )
+        last_ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user_with_ubble_pending,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+        )
+
+        message = subscription_api.get_subscription_message(user_with_ubble_pending)
+
+        mocked_ubble_message.assert_called_once_with(last_ubble_check, is_retryable=True)
+        assert message == ubble_returned_message
