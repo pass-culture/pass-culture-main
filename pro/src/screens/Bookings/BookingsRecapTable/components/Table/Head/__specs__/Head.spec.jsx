@@ -1,7 +1,6 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
-
-import Icon from 'components/layout/Icon'
 
 import TableHead from '../TableHead'
 
@@ -33,25 +32,28 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    const wrapper = shallow(<TableHead {...props} />)
+    render(<TableHead {...props} />)
 
     // Then
-    expect(wrapper.find('th')).toHaveLength(2)
-    expect(wrapper.find('th').at(0).text()).toBe('Offres')
-    expect(wrapper.find('th').at(1).text()).toBe('Beneficiaires')
+
+    expect(screen.getAllByRole('columnheader')).toHaveLength(2)
+    expect(screen.getAllByRole('columnheader')[0]).toHaveTextContent('Offres')
+    expect(screen.getAllByRole('columnheader')[1]).toHaveTextContent(
+      'Beneficiaires'
+    )
   })
 
-  it('should return no line when there is no headers', () => {
+  it('should return no line when there is no headers', async () => {
     // Given
     const props = {
       headerGroups: [],
     }
 
     // When
-    const wrapper = shallow(<TableHead {...props} />)
+    render(<TableHead {...props} />)
 
     // Then
-    expect(wrapper.find('tr')).toHaveLength(0)
+    expect(await screen.queryByRole('row')).not.toBeInTheDocument()
   })
 
   it('should render one line with default sorting icon when column is sortable', () => {
@@ -75,18 +77,15 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    const wrapper = shallow(<TableHead {...props} />)
-
+    render(<TableHead {...props} />)
     // Then
-    const firstColumn = wrapper.find('th')
-    expect(firstColumn).toHaveLength(1)
-    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
-    const defaultSortingIcon = firstColumn.find(Icon)
-    expect(defaultSortingIcon).toHaveLength(1)
-    expect(defaultSortingIcon.prop('svg')).toBe('ico-unfold')
+    expect(screen.getByRole('button')).toHaveAttribute(
+      'src',
+      expect.stringContaining('ico-unfold')
+    )
   })
 
-  it('should render one line with no default sorting icon when column is not sortable', () => {
+  it('should render one line with no default sorting icon when column is not sortable', async () => {
     // Given
     const props = {
       headerGroups: [
@@ -107,14 +106,11 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    const wrapper = shallow(<TableHead {...props} />)
+    render(<TableHead {...props} />)
 
     // Then
-    const firstColumn = wrapper.find('th')
-    expect(firstColumn).toHaveLength(1)
-    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
-    const defaultSortingIcon = firstColumn.find(Icon)
-    expect(defaultSortingIcon).toHaveLength(0)
+    expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
+    expect(await screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
   it('should render one line with icon sorted ASC when column is sorted by ASC', () => {
@@ -139,15 +135,14 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    const wrapper = shallow(<TableHead {...props} />)
+    render(<TableHead {...props} />)
 
     // Then
-    const firstColumn = wrapper.find('th')
-    expect(firstColumn).toHaveLength(1)
-    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
-    const defaultSortingIcon = firstColumn.find(Icon)
-    expect(defaultSortingIcon).toHaveLength(1)
-    expect(defaultSortingIcon.prop('svg')).toBe('ico-arrow-down-r')
+    expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
+    expect(screen.getByRole('button')).toHaveAttribute(
+      'src',
+      expect.stringContaining('ico-arrow-down-r')
+    )
   })
 
   it('should render one line with icon sorted DESC when column is sorted by DESC', () => {
@@ -173,14 +168,13 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    const wrapper = shallow(<TableHead {...props} />)
+    render(<TableHead {...props} />)
 
     // Then
-    const firstColumn = wrapper.find('th')
-    expect(firstColumn).toHaveLength(1)
-    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
-    const defaultSortingIcon = firstColumn.find(Icon)
-    expect(defaultSortingIcon).toHaveLength(1)
-    expect(defaultSortingIcon.prop('svg')).toBe('ico-arrow-up-r')
+    expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
+    expect(screen.getByRole('button')).toHaveAttribute(
+      'src',
+      expect.stringContaining('ico-arrow-up-r')
+    )
   })
 })
