@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import api as fraud_api
@@ -11,6 +12,7 @@ from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 
 from . import exceptions
+from . import messages
 
 
 logger = logging.getLogger(__name__)
@@ -85,3 +87,20 @@ def get_educonnect_subscription_item_status(
         return subscription_models.SubscriptionItemStatus.TODO
 
     return subscription_models.SubscriptionItemStatus.VOID
+
+
+def get_educonnect_subscription_message(
+    educonnect_fraud_check: fraud_models.BeneficiaryFraudCheck,
+) -> subscription_models.SubscriptionMessage | None:
+    if educonnect_fraud_check.status == fraud_models.FraudCheckStatus.OK:
+        return None
+
+    if educonnect_fraud_check.resultContent is None:
+        birth_date = None
+    else:
+        content = typing.cast(fraud_models.EduconnectContent, educonnect_fraud_check.source_data())
+        birth_date = content.get_birth_date()
+
+    return messages.get_educonnect_failure_subscription_message(
+        educonnect_fraud_check.reasonCodes or [], birth_date, educonnect_fraud_check.user.id
+    )

@@ -1717,3 +1717,45 @@ class SubscriptionMessageTest:
 
         mocked_ubble_message.assert_called_once_with(last_ubble_check, is_retryable=True)
         assert message == ubble_returned_message
+
+    @patch("pcapi.core.subscription.educonnect.api.get_educonnect_subscription_message")
+    def test_educonnect_message_is_returned(self, mocked_educonnect_message):
+        educonnect_returned_message = subscription_models.SubscriptionMessage(
+            user_message="Pour une vie édulcorée.",
+            pop_over_icon=subscription_models.PopOverIcon.MAGNIFYING_GLASS,
+        )
+        mocked_educonnect_message.return_value = educonnect_returned_message
+
+        user_with_educonnect = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=16),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            user=user_with_educonnect,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            user=user_with_educonnect,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=user_with_educonnect,
+            status=fraud_models.FraudCheckStatus.KO,
+        )
+        last_educocheck = fraud_factories.BeneficiaryFraudCheckFactory(
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=user_with_educonnect,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+        )
+
+        message = subscription_api.get_subscription_message(user_with_educonnect)
+
+        mocked_educonnect_message.assert_called_once_with(last_educocheck)
+        assert message == educonnect_returned_message

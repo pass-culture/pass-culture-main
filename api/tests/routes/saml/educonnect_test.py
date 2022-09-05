@@ -14,6 +14,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_status
+from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
@@ -350,10 +351,12 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
-        assert len(user.subscriptionMessages) == 1
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte ÉduConnect (21/11/2007) indique que tu n'as pas entre 15 et 17 ans."
+            message.user_message
+            == "Ton dossier a été refusé. La date de naissance sur ton compte Éduconnect (21/11/2007) indique que tu n'as pas entre 15 et 17 ans."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
@@ -371,10 +374,12 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid18YearsOld"
         )
-        assert len(user.subscriptionMessages) == 1
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte ÉduConnect (21/11/2003) indique que tu n'as pas entre 15 et 17 ans."
+            message.user_message
+            == "Ton dossier a été refusé. La date de naissance sur ton compte Éduconnect (21/11/2003) indique que tu n'as pas entre 15 et 17 ans."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
@@ -392,10 +397,11 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
-        assert len(user.subscriptionMessages) == 1
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
-            user.subscriptionMessages[0].userMessage
-            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte ÉduConnect (21/11/2001) indique que tu n'as pas entre 15 et 17 ans."
+            message.user_message
+            == "Ton dossier a été refusé. La date de naissance sur ton compte Éduconnect (21/11/2001) indique que tu n'as pas entre 15 et 17 ans."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
