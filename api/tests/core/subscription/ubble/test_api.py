@@ -117,9 +117,10 @@ class UbbleWorkflowTest:
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
-            message = subscription_models.SubscriptionMessage.query.one()
-            assert message.userMessage == "Ton document d'identité est en cours de vérification."
-            assert message.popOverIcon == subscription_models.PopOverIcon.CLOCK
+
+            message = ubble_subscription_api.get_ubble_subscription_message(fraud_check, False)
+            assert message.user_message == "Ton document d'identité est en cours de vérification."
+            assert message.pop_over_icon == subscription_models.PopOverIcon.CLOCK
 
     def test_ubble_workflow_rejected_add_inapp_message(self, ubble_mocker):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
@@ -140,17 +141,17 @@ class UbbleWorkflowTest:
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
-            message = subscription_models.SubscriptionMessage.query.one()
+            message = ubble_subscription_api.get_ubble_subscription_message(fraud_check, False)
             assert (
-                message.userMessage
-                == "Ton dossier a été bloqué : Les informations que tu as renseignées ne correspondent pas à celles de ta pièce d'identité. Tu peux contacter le support pour plus d'informations."
+                message.user_message
+                == "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support pour plus d'informations."
             )
             assert (
-                message.callToActionLink
+                message.call_to_action.link
                 == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
             )
-            assert message.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
-            assert message.callToActionTitle == "Contacter le support"
+            assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
+            assert message.call_to_action.title == "Contacter le support"
 
     @freezegun.freeze_time("2020-05-05")
     def test_ubble_workflow_with_eligibility_change_17_18(self, ubble_mocker):
@@ -660,3 +661,140 @@ class ArchiveUbbleUserIdPicturesTest:
         db.session.refresh(fraud_check)
         assert fraud_check.idPicturesStored is expected_id_pictures_stored
         assert mock_s3_client.return_value.upload_file.call_count == 1
+
+
+@pytest.mark.usefixtures("db_session")
+class SubscriptionMessageTest:
+    def test_started(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, status=FraudCheckStatus.STARTED
+        )
+        assert ubble_subscription_api.get_ubble_subscription_message(fraud_check, False) is None
+
+    def test_pending(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, status=FraudCheckStatus.PENDING
+        )
+        assert ubble_subscription_api.get_ubble_subscription_message(
+            fraud_check, False
+        ) == subscription_models.SubscriptionMessage(
+            user_message="Ton document d'identité est en cours de vérification.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.CLOCK,
+        )
+
+    def test_ok(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, status=FraudCheckStatus.OK
+        )
+        assert ubble_subscription_api.get_ubble_subscription_message(fraud_check, False) is None
+
+    @pytest.mark.parametrize(
+        "reason_codes,expected_message",
+        [
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+                "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité.",
+            ),
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
+                "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité.",
+            ),
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+                "Ton document d'identité ne te permet pas de bénéficier du pass Culture. Réessaye avec un passeport ou une carte d'identité française en cours de validité.",
+            ),
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+                "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
+            ),
+            (
+                None,
+                "La vérification de ton identité a échoué. Tu peux réessayer.",
+            ),
+        ],
+    )
+    def test_retryable(self, reason_codes, expected_message):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=reason_codes,
+        )
+        assert ubble_subscription_api.get_ubble_subscription_message(
+            fraud_check, True
+        ) == subscription_models.SubscriptionMessage(
+            user_message=expected_message,
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Réessayer la vérification de mon identité",
+                link="passculture://verification-identite/identification",
+                icon=subscription_models.CallToActionIcon.RETRY,
+            ),
+            pop_over_icon=None,
+        )
+
+    def test_not_retryable_ask_support(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+        )
+        assert ubble_subscription_api.get_ubble_subscription_message(
+            fraud_check, False
+        ) == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations.",
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Contacter le support",
+                link=f"mailto:support@example.com?subject=%23{fraud_check.user.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",
+                icon=subscription_models.CallToActionIcon.EMAIL,
+            ),
+            pop_over_icon=None,
+        )
+
+    @pytest.mark.parametrize(
+        "reason_codes,expected_message",
+        [
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+                "Ton document d'identité ne te permet pas de bénéficier du pass Culture. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande.",
+            ),
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER],
+                "Ton dossier a été refusé. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande.",
+            ),
+            (
+                None,
+                "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande.",
+            ),
+        ],
+    )
+    def test_not_retryable_go_dms(self, reason_codes, expected_message):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=reason_codes,
+        )
+        assert ubble_subscription_api.get_ubble_subscription_message(
+            fraud_check, False
+        ) == subscription_models.SubscriptionMessage(
+            user_message=expected_message,
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Accéder au site Démarches-Simplifiées",
+                link="passculture://verification-identite/demarches-simplifiees",
+                icon=subscription_models.CallToActionIcon.EXTERNAL,
+            ),
+            pop_over_icon=None,
+        )
+
+    def test_not_eligible(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.AGE_TOO_OLD],
+        )
+        assert ubble_subscription_api.get_ubble_subscription_message(
+            fraud_check, False
+        ) == subscription_models.SubscriptionMessage(
+            user_message="Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
+            call_to_action=None,
+            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+        )
