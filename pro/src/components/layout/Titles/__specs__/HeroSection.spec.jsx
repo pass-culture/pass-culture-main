@@ -1,4 +1,5 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import Titles from '../Titles'
@@ -14,12 +15,15 @@ describe('src | components | layout | Titles', () => {
         }
 
         // when
-        const wrapper = mount(<Titles {...props} />)
-        const subtitle = wrapper.find('h2')
+        render(<Titles {...props} />)
 
         // then
-        expect(subtitle).toHaveLength(1)
-        expect(subtitle.text()).toBe('FAKE SUBTITLE')
+        expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+          'FAKE SUBTITLE'
+        )
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+          'Fake title'
+        )
       })
     })
   })
