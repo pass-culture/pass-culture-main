@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -148,12 +149,102 @@ describe('OfferIndividualForm', () => {
     }
   })
 
-  it('should render the component', async () => {
-    renderOfferIndividualForm({
-      initialValues,
-      onSubmit,
-      props,
+  describe('venue banner', () => {
+    it('should display venue banner when subcategory is not virtual and venue is only virtual', async () => {
+      const onlyVirtualVenueList = [
+        {
+          id: 'virtual',
+          name: 'Venue AAAA',
+          managingOffererId: 'virtualAndPhysical',
+          isVirtual: true,
+          withdrawalDetails: '',
+          accessibility: {
+            visual: false,
+            mental: false,
+            audio: false,
+            motor: false,
+            none: true,
+          },
+        },
+      ]
+      props = { ...props, venueList: onlyVirtualVenueList }
+
+      renderOfferIndividualForm({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      const categorySelect = await screen.findByLabelText(
+        'Choisir une catégorie'
+      )
+      await userEvent.selectOptions(categorySelect, 'physical')
+      const subcategorySelect = await screen.findByLabelText(
+        'Choisir une sous-catégorie'
+      )
+      await userEvent.selectOptions(subcategorySelect, 'physical')
+
+      expect(await screen.queryByText('+ Ajouter un lieu')).toBeInTheDocument()
     })
-    expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
+
+    it('should not display venue banner when subcategory is virtual', async () => {
+      const onlyVirtualVenueList = [
+        {
+          id: 'virtual',
+          name: 'Venue AAAA',
+          managingOffererId: 'virtualAndPhysical',
+          isVirtual: true,
+          withdrawalDetails: '',
+          accessibility: {
+            visual: false,
+            mental: false,
+            audio: false,
+            motor: false,
+            none: true,
+          },
+        },
+      ]
+      props = { ...props, venueList: onlyVirtualVenueList }
+
+      renderOfferIndividualForm({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      const categorySelect = await screen.findByLabelText(
+        'Choisir une catégorie'
+      )
+      await userEvent.selectOptions(categorySelect, 'virtual')
+      const subcategorySelect = await screen.findByLabelText(
+        'Choisir une sous-catégorie'
+      )
+      await userEvent.selectOptions(subcategorySelect, 'virtual')
+
+      expect(
+        await screen.queryByText('+ Ajouter un lieu')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display venue banner when subcategory is not virtual but both venue type exist', async () => {
+      renderOfferIndividualForm({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      const categorySelect = await screen.findByLabelText(
+        'Choisir une catégorie'
+      )
+      await userEvent.selectOptions(categorySelect, 'physical')
+      const subcategorySelect = await screen.findByLabelText(
+        'Choisir une sous-catégorie'
+      )
+      await userEvent.selectOptions(subcategorySelect, 'physical')
+
+      expect(
+        await screen.queryByText('+ Ajouter un lieu')
+      ).not.toBeInTheDocument()
+    })
   })
 })
