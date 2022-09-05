@@ -1,8 +1,9 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Link, Router } from 'react-router-dom'
+import { Router } from 'react-router-dom'
 
 import { configureTestStore } from 'store/testUtils'
 
@@ -78,37 +79,34 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         }
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
             </Router>
           </Provider>
         )
-        const caret = wrapper.find('.caret')
-        const navLink = caret.find(Link)
-
+        const navLink = screen.getAllByRole('link')[0]
         // then
-        expect(navLink.prop('to')).toBe('/accueil?structure=AE')
+        expect(navLink).toHaveAttribute('href', '/accueil?structure=AE')
       })
     })
 
     describe('offerer name', () => {
       it('should be rendered with a link', () => {
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
             </Router>
           </Provider>
         )
-        const createOffer = wrapper.find('.name')
-        const navLink = createOffer.find(Link)
+        const navLink = screen.getAllByRole('link')[0]
 
         // then
-        expect(navLink.text()).toBe('Fake Name')
-        expect(navLink.prop('to')).toBe('/accueil?structure=AE')
+        expect(navLink).toHaveAttribute('href', '/accueil?structure=AE')
+        expect(navLink).toHaveTextContent('Fake Name')
       })
     })
 
@@ -123,19 +121,20 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
             },
           ]
           // when
-          const wrapper = mount(
+          render(
             <Provider store={store}>
               <Router history={history}>
                 <OffererItem {...props} />
               </Router>
             </Provider>
           )
-          const createOffer = wrapper.find('#create-offer-action')
-          const navLink = createOffer.find(Link)
+
+          const navLink = screen.getAllByRole('link')[1]
 
           // then
-          expect(navLink.text()).toBe('Nouvelle offre numérique')
-          expect(navLink.prop('to')).toBe(
+          expect(navLink).toHaveTextContent('Nouvelle offre numérique')
+          expect(navLink).toHaveAttribute(
+            'href',
             '/offre/creation?structure=AE&lieu=DY'
           )
         })
@@ -144,19 +143,21 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       describe('when offerer has one virtual venue and only one physical venue', () => {
         it('should display a link to create offer', () => {
           // when
-          const wrapper = mount(
+          render(
             <Provider store={store}>
               <Router history={history}>
                 <OffererItem {...props} />
               </Router>
             </Provider>
           )
-          const createOffer = wrapper.find('#create-offer-action')
-          const navLink = createOffer.find(Link)
+          const navLink = screen.getAllByRole('link')[1]
 
           // then
-          expect(navLink.text()).toBe('Nouvelle offre')
-          expect(navLink.prop('to')).toBe('/offre/creation?structure=AE')
+          expect(navLink).toHaveTextContent('Nouvelle offre')
+          expect(navLink).toHaveAttribute(
+            'href',
+            '/offre/creation?structure=AE'
+          )
         })
       })
     })
@@ -167,23 +168,17 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         props.offerer.nOffers = 42
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
             </Router>
           </Provider>
         )
-
-        const offersCount = wrapper
-          .findWhere(node => node.text() === '42 offres')
-          .first()
+        const navLink = screen.getByText('42 offres')
 
         // then
-        expect(offersCount).toHaveLength(1)
-        expect(offersCount.find('a').at(0).prop('href')).toBe(
-          '/offres?structure=AE'
-        )
+        expect(navLink).toHaveAttribute('href', '/offres?structure=AE')
       })
 
       it('should display 0 offer and no link to offers page when offerer has no offers', () => {
@@ -191,7 +186,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         props.offerer.nOffers = 0
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
@@ -200,10 +195,8 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         )
 
         // then
-        const offersCount = wrapper.find({ children: '0 offre' })
-        const offersLink = offersCount.find('a')
-        expect(offersCount).toHaveLength(1)
-        expect(offersLink).toHaveLength(0)
+        const navLink = screen.getByText('0 offre')
+        expect(navLink).not.toHaveAttribute('href')
       })
     })
 
@@ -227,19 +220,18 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         ]
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
             </Router>
           </Provider>
         )
-        const actions = wrapper.find('#count-venues-action')
-        const navLink = actions.find(Link)
+
+        const navLink = screen.getByText('3 lieux')
 
         // then
-        expect(navLink.text()).toBe('3 lieux')
-        expect(navLink.at(0).prop('to')).toBe('/structures/AE/')
+        expect(navLink).toHaveAttribute('href', '/structures/AE/')
       })
 
       it('should display 0 venue with a link to offerer page', () => {
@@ -248,19 +240,17 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         props.offerer.managedVenues = []
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
             </Router>
           </Provider>
         )
-        const actions = wrapper.find('#count-venues-action')
-        const navLink = actions.find(Link)
+        const navLink = screen.getByText('0 lieu')
 
         // then
-        expect(navLink.text()).toBe('0 lieu')
-        expect(navLink.at(0).prop('to')).toBe('/structures/AE/')
+        expect(navLink).toHaveAttribute('href', '/structures/AE/')
       })
     })
 
@@ -276,17 +266,17 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         }
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
             </Router>
           </Provider>
         )
-        const createVenueLink = wrapper.find('#create-venue-action').find(Link)
+        const navLink = screen.getByText('Nouveau lieu')
 
         // then
-        expect(createVenueLink.prop('to')).toBe('/structures/AE/lieux/creation')
+        expect(navLink).toHaveAttribute('href', '/structures/AE/lieux/creation')
       })
 
       it('should redirect to unavailable page when venue creation is not available', () => {
@@ -301,17 +291,17 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         }
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <OffererItem {...props} />
             </Router>
           </Provider>
         )
-        const createVenueLink = wrapper.find('#create-venue-action').find(Link)
+        const navLink = screen.getByText('Nouveau lieu')
 
         // then
-        expect(createVenueLink.prop('to')).toBe('/erreur/indisponible')
+        expect(navLink).toHaveAttribute('href', '/erreur/indisponible')
       })
     })
   })

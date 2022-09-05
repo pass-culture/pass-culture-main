@@ -1,4 +1,5 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -19,7 +20,7 @@ describe('src | components | pages | OffererCreation | Venues', () => {
   })
   const mountReturnVenues = props => {
     const store = configureTestStore({ app: { logEvent: jest.fn() } })
-    return mount(
+    return render(
       <Provider store={store}>
         <MemoryRouter>
           <Venues {...props} />
@@ -31,26 +32,27 @@ describe('src | components | pages | OffererCreation | Venues', () => {
   describe('render', () => {
     it('should render a title link', () => {
       // given
-      const wrapper = mountReturnVenues(props)
+      mountReturnVenues(props)
 
       // when
-      const title = wrapper.find('h2')
+      const title = screen.getByRole('heading', { level: 2 })
 
       // then
-      expect(title.text()).toBe('Lieux')
+      expect(title).toHaveTextContent('Lieux')
     })
 
     describe('create new venue link', () => {
       describe('when the venue creation is available', () => {
         it('should render a create venue link', () => {
           // given
-          const wrapper = mountReturnVenues(props)
+          mountReturnVenues(props)
 
           // when
-          const link = wrapper.find({ children: '+ Ajouter un lieu' })
+          const link = screen.getAllByRole('link')[0]
 
           // then
-          expect(link.first().prop('to')).toBe(
+          expect(link).toHaveAttribute(
+            'href',
             '/structures/5767Fdtre/lieux/creation'
           )
         })
@@ -59,13 +61,13 @@ describe('src | components | pages | OffererCreation | Venues', () => {
         it('should render a create venue link', () => {
           // given
           props.isVenueCreationAvailable = false
-          const wrapper = mountReturnVenues(props)
+          mountReturnVenues(props)
 
           // when
-          const link = wrapper.find({ children: '+ Ajouter un lieu' })
+          const link = screen.getAllByRole('link')[0]
 
           // then
-          expect(link.first().prop('to')).toBe('/erreur/indisponible')
+          expect(link).toHaveAttribute('href', '/erreur/indisponible')
         })
       })
     })

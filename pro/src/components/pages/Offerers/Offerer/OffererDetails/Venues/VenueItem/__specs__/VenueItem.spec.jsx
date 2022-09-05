@@ -1,8 +1,9 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Link, Router } from 'react-router-dom'
+import { Router } from 'react-router-dom'
 
 import { configureTestStore } from 'store/testUtils'
 
@@ -30,20 +31,18 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
     describe('venue name link', () => {
       it('should render link to see venue details with venue name when no public name provided', () => {
         // given
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <VenueItem {...props} />
             </Router>
           </Provider>
         )
-        const venueName = wrapper.find('.name')
-        const navLink = venueName.find(Link)
+        const navLink = screen.getAllByRole('link')[0]
 
         // then
-        expect(venueName.text()).toBe('fake name')
-        expect(navLink.prop('id')).toBe('a-fake-name')
-        expect(navLink.prop('to')).toBe('/structures/ABC/lieux/AAA')
+        expect(navLink).toHaveTextContent('fake name')
+        expect(navLink).toHaveAttribute('href', '/structures/ABC/lieux/AAA')
       })
 
       it('should render link to see venue details with venue public name when public name provided', () => {
@@ -51,37 +50,35 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
         props.venue.publicName = 'fake public name'
 
         // when
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <VenueItem {...props} />
             </Router>
           </Provider>
         )
-        const venueName = wrapper.find('.name')
-        const navLink = venueName.find(Link)
+        const navLink = screen.getAllByRole('link')[0]
 
         // then
-        expect(venueName.text()).toBe('fake public name')
-        expect(navLink.prop('id')).toBe('a-fake-public-name')
+        expect(navLink).toHaveTextContent('fake public name')
       })
     })
 
     describe('create new offer in the venue link', () => {
       it('should redirect to offer creation page', () => {
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <VenueItem {...props} />
             </Router>
           </Provider>
         )
-        const actions = wrapper.find('.actions')
-        const navLink = actions.find(Link)
+        const navLink = screen.getAllByRole('link')[1]
 
         // then
-        expect(navLink.text()).toBe(' Créer une offre')
-        expect(navLink.at(0).prop('to')).toBe(
+        expect(navLink).toHaveTextContent('Créer une offre')
+        expect(navLink).toHaveAttribute(
+          'href',
           '/offre/creation?lieu=AAA&structure=ABC'
         )
       })
@@ -89,18 +86,16 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
 
     describe('see venue details link', () => {
       it('should redirect to venue details page', () => {
-        const wrapper = mount(
+        render(
           <Provider store={store}>
             <Router history={history}>
               <VenueItem {...props} />
             </Router>
           </Provider>
         )
-        const caret = wrapper.find('.caret')
-        const navLink = caret.find(Link)
-
+        const navLink = screen.getAllByRole('link')[2]
         // then
-        expect(navLink.prop('to')).toBe('/structures/ABC/lieux/AAA')
+        expect(navLink).toHaveAttribute('href', '/structures/ABC/lieux/AAA')
       })
     })
   })

@@ -1,4 +1,6 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import Select from '../Select'
@@ -25,25 +27,22 @@ describe('src | components | layout | form | Select', () => {
     props.options = []
 
     // when
-    const wrapper = await mount(<Select {...props} />)
+    render(<Select {...props} />)
 
     // then
-    const select = wrapper.find('select').at(0)
-    const options = select.find('option')
-    expect(options).toHaveLength(1)
-    expect(options.at(0).text()).toBe(props.defaultOption.displayName)
+    const option = screen.getByRole('option')
+    expect(option).toHaveTextContent(props.defaultOption.displayName)
   })
 
   it('should render a select input containing given options in given order', async () => {
     // when
-    const wrapper = await mount(<Select {...props} />)
+    render(<Select {...props} />)
 
     // then
-    const select = wrapper.find('select').at(0)
-    const options = select.find('option')
+    const options = screen.getAllByRole('option')
     expect(options).toHaveLength(3)
-    expect(options.at(1).text()).toBe(props.options[0].displayName)
-    expect(options.at(2).text()).toBe(props.options[1].displayName)
+    expect(options[1]).toHaveTextContent(props.options[0].displayName)
+    expect(options[2]).toHaveTextContent(props.options[1].displayName)
   })
 
   it('should have given option selected when value is given', async () => {
@@ -51,38 +50,34 @@ describe('src | components | layout | form | Select', () => {
     props.selectedValue = props.options[0].id
 
     // when
-    const wrapper = await mount(<Select {...props} />)
+    render(<Select {...props} />)
 
     // then
-    const select = wrapper.find('select').at(0)
-    expect(select.props().value).toBe(props.options[0].id)
+    const select = screen.getByRole('combobox')
+    expect(select).toHaveValue(props.options[0].id)
   })
 
   it('should call callback on blur', async () => {
-    // given
-    const selectedOption = { target: { value: '1' } }
-    const wrapper = await mount(<Select {...props} />)
-    const select = wrapper.find('select')
+    render(<Select {...props} />)
+    const options = screen.getAllByRole('option')
 
     // when
-    await select.invoke('onBlur')(selectedOption)
+    await userEvent.click(options[1])
+    await userEvent.tab()
 
     // then
-    const handleSelectionParameters = props.handleSelection.mock.calls[0][0]
-    expect(handleSelectionParameters.target).toBe(selectedOption.target)
+    expect(props.handleSelection).toHaveBeenCalledTimes(1)
   })
 
   it('should call callback on change', async () => {
-    // given
-    const selectedOption = { target: { value: '1' } }
-    const wrapper = await mount(<Select {...props} />)
-    const select = wrapper.find('select')
+    render(<Select {...props} />)
+    const options = screen.getAllByRole('option')
 
     // when
-    await select.invoke('onChange')(selectedOption)
+    await userEvent.click(options[1])
+    await userEvent.tab()
 
     // then
-    const handleSelectionParameters = props.handleSelection.mock.calls[0][0]
-    expect(handleSelectionParameters.target).toBe(selectedOption.target)
+    expect(props.handleSelection).toHaveBeenCalledTimes(1)
   })
 })

@@ -1,4 +1,5 @@
-import { mount } from 'enzyme'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Form } from 'react-final-form'
 
@@ -6,82 +7,71 @@ import NumberField from '../NumberField'
 
 describe('src | components | layout | form | NumberField', () => {
   it('should submit a form with number field when number is a decimal with a dot', async () => {
-    await new Promise(done => {
-      // given
-      const initialValues = {
-        bar: '3',
-        foo: '5.6',
-      }
-      const wrapper = mount(
-        <Form
-          initialValues={initialValues}
-          onSubmit={handleOnSubmit}
-          render={({ handleSubmit }) => (
-            <form>
-              <NumberField name="bar" />
-              <NumberField name="foo" />
-              <button onClick={handleSubmit} type="submit">
-                Submit
-              </button>
-            </form>
-          )}
-        />
-      )
+    // given
+    const initialValues = {
+      bar: '3',
+      foo: '5.6',
+    }
+    render(
+      <Form
+        initialValues={initialValues}
+        onSubmit={handleOnSubmit}
+        render={({ handleSubmit }) => (
+          <form>
+            <NumberField name="bar" />
+            <NumberField name="foo" />
+            <button onClick={handleSubmit} type="submit">
+              Submit
+            </button>
+          </form>
+        )}
+      />
+    )
 
-      // when
-      wrapper
-        .find(NumberField)
-        .find({ name: 'bar' })
-        .find('input')
-        .simulate('change', { target: { value: '6' } })
-      wrapper.find('button[type="submit"]').simulate('click')
+    // when
+    const barInput = screen.getAllByRole('spinbutton')[0]
+    await userEvent.clear(barInput)
+    await userEvent.type(barInput, '6')
 
-      // then
-      function handleOnSubmit(formValues) {
-        expect(formValues.bar).toBe(6)
-        expect(formValues.foo).toStrictEqual(initialValues.foo)
-        done()
-      }
-    })
+    await userEvent.click(screen.getByRole('button'))
+
+    // then
+    function handleOnSubmit(formValues) {
+      expect(formValues.bar).toBe(6)
+      expect(formValues.foo).toStrictEqual(initialValues.foo)
+    }
   })
 
   it('should submit a form with number field when number is a decimal with a comma', async () => {
-    await new Promise(done => {
-      // given
-      const initialValues = {
-        bar: '3',
-        foo: '5,6',
-      }
-      const wrapper = mount(
-        <Form
-          initialValues={initialValues}
-          onSubmit={handleOnSubmit}
-          render={({ handleSubmit }) => (
-            <form>
-              <NumberField name="bar" />
-              <NumberField name="foo" />
-              <button onClick={handleSubmit} type="submit">
-                Submit
-              </button>
-            </form>
-          )}
-        />
-      )
+    // given
+    const initialValues = {
+      bar: '3',
+      foo: '5,6',
+    }
+    render(
+      <Form
+        initialValues={initialValues}
+        onSubmit={handleOnSubmit}
+        render={({ handleSubmit }) => (
+          <form>
+            <NumberField name="bar" />
+            <NumberField name="foo" />
+            <button onClick={handleSubmit} type="submit">
+              Submit
+            </button>
+          </form>
+        )}
+      />
+    )
+    const barInput = screen.getAllByRole('spinbutton')[0]
+    await userEvent.clear(barInput)
+    await userEvent.type(barInput, '6')
 
-      // when
-      wrapper
-        .find(NumberField)
-        .find({ name: 'bar' })
-        .find('input')
-        .simulate('change', { target: { value: '6' } })
-      wrapper.find('button[type="submit"]').simulate('click')
-
-      // then
-      function handleOnSubmit(formValues) {
-        expect(formValues.bar).toBe(6)
-        expect(formValues.foo).toStrictEqual(initialValues.foo)
-        done()
-      }
-    })
+    await userEvent.click(screen.getByRole('button'))
+    // then
+    function handleOnSubmit(formValues) {
+      expect(formValues.bar).toBe(6)
+      expect(formValues.foo).toStrictEqual(initialValues.foo)
+    }
   })
 })
