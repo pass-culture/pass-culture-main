@@ -10,6 +10,7 @@ interface IRadioButtonProps {
   disabled?: boolean
   name: string
   label: string
+  description?: string
   value: string
   className?: string
   checked?: boolean
@@ -20,6 +21,7 @@ const RadioButton = ({
   disabled,
   name,
   label,
+  description,
   value,
   withBorder,
   className,
@@ -38,6 +40,7 @@ const RadioButton = ({
         disabled={disabled}
         id={name}
         label={label}
+        description={description}
         value={value}
         className={cn(style['radio-input'], {
           [style['radio-input-checked']]: field.checked,
