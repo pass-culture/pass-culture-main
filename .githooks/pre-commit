@@ -148,7 +148,7 @@ then
   then
       echo -e "\033[0;96mRunning mypy for type checking...\033[0m"
       if [[ ! $MYPY_FILES == "" ]]; then
-        mypy $MYPY_FILES --pretty --show-error-codes
+        mypy $MYPY_FILES --pretty
         if [[ "$?" != 0 ]]; then
             counter=$((counter + 1))
         fi

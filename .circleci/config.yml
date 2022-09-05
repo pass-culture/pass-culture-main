@@ -328,7 +328,7 @@ jobs:
       - run:
           name: Run mypy
           when: always
-          command: mypy src --show-error-codes
+          command: mypy src
           working_directory: /usr/src/app
       - when:
           condition:
