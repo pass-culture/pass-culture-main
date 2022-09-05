@@ -5,8 +5,12 @@ import useCurrentUser from 'components/hooks/useCurrentUser'
 import { TOffererName } from 'core/Offerers/types'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
 import FormLayout from 'new_components/FormLayout'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
+import {
+  IOfferIndividualFormValues,
+  PLATFORM,
+} from 'new_components/OfferIndividualForm'
 
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
@@ -36,7 +40,7 @@ const OfferIndividualForm = ({
     currentUser: { isAdmin },
   } = useCurrentUser()
   const {
-    values: { subcategoryId, venueId },
+    values: { offererId, subcategoryId, venueId },
   } = useFormikContext<IOfferIndividualFormValues>()
 
   const filteredVenueList = useFilteredVenueList({
@@ -51,14 +55,23 @@ const OfferIndividualForm = ({
     v => v.id === venueId
   )?.isVirtual
 
+  const areAllVenuesVirtual = venueList
+    .filter(v => v.managingOffererId == offererId)
+    .every(v => v.isVirtual)
+
+  const displayVenueBanner =
+    offerSubCategory &&
+    offerSubCategory.onlineOfflinePlatform === PLATFORM.OFFLINE &&
+    areAllVenuesVirtual
+
   return (
     <FormLayout>
       <Categories
         categories={categories}
         subCategories={subCategories}
         readOnlyFields={readOnlyFields}
+        Banner={displayVenueBanner && <BannerAddVenue offererId={offererId} />}
       />
-
       {subcategoryId.length > 0 && filteredVenueList.length > 0 && (
         <>
           <Informations readOnlyFields={readOnlyFields} />
