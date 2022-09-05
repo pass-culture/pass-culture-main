@@ -58,6 +58,7 @@ export const serializePostOffer = (
     extraData: serializeExtraData(formValues),
     isEducational: false,
     isNational: formValues.isNational,
+    isDuo: !!formValues.isDuo,
     mentalDisabilityCompliant:
       formValues.accessibility[AccessiblityEnum.MENTAL],
     motorDisabilityCompliant: formValues.accessibility[AccessiblityEnum.MOTOR],
