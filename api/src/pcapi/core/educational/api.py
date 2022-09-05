@@ -216,10 +216,6 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
     if collective_booking is None:
         raise exceptions.EducationalBookingNotFound()
 
-    collective_booking = cast(
-        educational_models.CollectiveBooking, collective_booking
-    )  # we already checked it was not None
-
     if collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED:
         return collective_booking
 
