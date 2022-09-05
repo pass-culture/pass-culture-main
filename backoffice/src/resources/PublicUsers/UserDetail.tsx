@@ -153,57 +153,32 @@ export const UserDetail = () => {
 
   const digitalCreditProgression = (remainingCredit / initialCredit) * 100
 
-  let subscriptionItems: EligibilitySubscriptionItem[] = []
-  let idsCheckHistory: EligibilityFraudCheck[] = []
+  const subscriptionItems: EligibilitySubscriptionItem[] = []
+  const idsCheckHistory: EligibilityFraudCheck[] = []
 
-  const idCheckHistoryLengthAge18 = AGE18?.idCheckHistory?.length
-  const idCheckHistoryLengthUnderage = UNDERAGE?.idCheckHistory?.length
-
-  if (idCheckHistoryLengthAge18 > 0 && idCheckHistoryLengthUnderage === 0) {
+  if (AGE18?.idCheckHistory?.length > 0) {
     idsCheckHistory.push({
       role: PublicUserRolesEnum.beneficiary,
       items: AGE18.idCheckHistory,
     })
+  }
+  if (AGE18?.subscriptionItems?.length > 0) {
     subscriptionItems.push({
       role: PublicUserRolesEnum.beneficiary,
       items: AGE18.subscriptionItems,
     })
-  } else if (
-    idCheckHistoryLengthUnderage > 0 &&
-    idCheckHistoryLengthAge18 === 0
-  ) {
+  }
+  if (UNDERAGE?.idCheckHistory?.length > 0) {
     idsCheckHistory.push({
       role: PublicUserRolesEnum.underageBeneficiary,
       items: UNDERAGE.idCheckHistory,
     })
+  }
+  if (UNDERAGE?.subscriptionItems?.length > 0) {
     subscriptionItems.push({
       role: PublicUserRolesEnum.underageBeneficiary,
       items: UNDERAGE.subscriptionItems,
     })
-  } else if (
-    idCheckHistoryLengthAge18 > 0 &&
-    idCheckHistoryLengthUnderage > 0
-  ) {
-    idsCheckHistory.push(
-      {
-        role: PublicUserRolesEnum.beneficiary,
-        items: AGE18.idCheckHistory,
-      },
-      {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: UNDERAGE.idCheckHistory,
-      }
-    )
-    subscriptionItems.push(
-      { role: PublicUserRolesEnum.beneficiary, items: AGE18.subscriptionItems },
-      {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: UNDERAGE.subscriptionItems,
-      }
-    )
-  } else {
-    idsCheckHistory = []
-    subscriptionItems = []
   }
 
   return (
@@ -455,13 +430,10 @@ export const UserDetail = () => {
                 </Grid>
               </Card>
               <div id="details-user">
-                {idsCheckHistory.length > 0 &&
-                  idsCheckHistory[0].items.length > 0 && (
-                    <UserDetailsCard
-                      user={userBaseInfo}
-                      firstFraudCheck={idsCheckHistory[0].items[0]}
-                    />
-                  )}
+                <UserDetailsCard
+                  user={userBaseInfo}
+                  firstFraudCheck={idsCheckHistory[0]?.items[0]}
+                />
               </div>
               <div id="parcours-register">
                 {subscriptionItems.map(subscriptionItem => (
