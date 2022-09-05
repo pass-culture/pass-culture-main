@@ -6,6 +6,7 @@ import dateutil
 from flask import current_app
 from freezegun.api import freeze_time
 import pytest
+import requests_mock
 
 from pcapi.core import search
 from pcapi.core.educational import api as educational_api
@@ -14,6 +15,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_settings
@@ -56,7 +58,6 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
         """
 
 
-# @freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class EditCollectiveOfferStocksTest:
     def test_should_update_all_fields_when_all_changed(self) -> None:
@@ -825,3 +826,63 @@ class GetCulturalPartnersTest:
                 },
             ]
         }
+
+
+@override_settings(
+    ADAGE_API_URL="https://adage-api-url",
+    ADAGE_API_KEY="adage-api-key",
+    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+)
+def test_synchronize_adage_ids_on_venues(db_session):
+    venue1 = offerers_factories.VenueFactory()
+    venue2 = offerers_factories.VenueFactory()
+    venue3 = offerers_factories.VenueFactory()
+    venue4 = offerers_factories.VenueFactory()
+
+    BASE_DATA = {
+        "siret": "",
+        "regionId": None,
+        "academieId": None,
+        "statutId": None,
+        "labelId": None,
+        "typeId": 8,
+        "communeId": "26324",
+        "libelle": "Fête du livre jeunesse de St Paul les trois Châteaux",
+        "adresse": "Place Charles Chausy",
+        "siteWeb": "http://www.fetedulivrejeunesse.fr/",
+        "latitude": 44.350457,
+        "longitude": 4.765918,
+        "actif": 1,
+        "dateModification": "2021-09-01T00:00:00",
+        "statutLibelle": None,
+        "labelLibelle": None,
+        "typeIcone": "town",
+        "typeLibelle": "Association ou fondation pour la promotion, le développement et la diffusion d\u0027oeuvres",
+        "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+        "communeDepartement": "026",
+        "academieLibelle": "GRENOBLE",
+        "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+        "domaines": "Univers du livre, de la lecture et des écritures",
+        "domaineIds": "11",
+        "synchroPass": 1,
+    }
+    venue1_data = {**BASE_DATA, "id": 128028, "venueId": venue1.id}
+    venue2_data = {**BASE_DATA, "id": 128029, "venueId": venue2.id}
+    venue3_data = {**BASE_DATA, "id": 128030, "venueId": venue3.id, "synchroPass": 0}
+    venue4_data = {**BASE_DATA, "id": 128031, "venueId": None}
+
+    with requests_mock.Mocker() as request_mock:
+        request_mock.get(
+            "https://adage-api-url/v1/partenaire-culturel",
+            request_headers={
+                "X-omogen-api-key": "adage-api-key",
+            },
+            status_code=200,
+            json=[venue1_data, venue2_data, venue3_data, venue4_data],
+        )
+        educational_api.synchronize_adage_ids_on_venues()
+
+    assert venue1.adageId == "128028"
+    assert venue2.adageId == "128029"
+    assert venue3.adageId is None
+    assert venue4.adageId is None
