@@ -27,6 +27,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
+from pcapi.core.subscription.ubble import messages as ubble_messages
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -1518,29 +1519,31 @@ class UbbleWebhookTest:
         assert mails_testing.outbox[0].sent_data["To"] == user.email
 
     @pytest.mark.parametrize(
-        "age,reason_code,reason,inappmessage",
+        "age,reason_code,reason,in_app_message",
         [
             (
                 14,
                 fraud_models.FraudReasonCode.AGE_TOO_YOUNG,
                 "L'utilisateur n'a pas encore l'âge requis (14 ans)",
-                "Ton dossier a été bloqué : Tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit.",
+                "Ton dossier a été refusé : tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit.",
             ),
             (
                 19,
                 fraud_models.FraudReasonCode.AGE_TOO_OLD,
                 "L'utilisateur a dépassé l'âge maximum (19 ans)",
-                "Ton dossier a été bloqué : Tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
+                "Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
             ),
             (
                 28,
                 fraud_models.FraudReasonCode.AGE_TOO_OLD,
                 "L'utilisateur a dépassé l'âge maximum (28 ans)",
-                "Ton dossier a été bloqué : Tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
+                "Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
             ),
         ],
     )
-    def test_decision_age_cannot_become_beneficiary(self, client, ubble_mocker, age, reason_code, reason, inappmessage):
+    def test_decision_age_cannot_become_beneficiary(
+        self, client, ubble_mocker, age, reason_code, reason, in_app_message
+    ):
         document_birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=age)
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
@@ -1598,9 +1601,9 @@ class UbbleWebhookTest:
 
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
-        message = subscription_models.SubscriptionMessage.query.one()
-        assert message.userMessage == inappmessage
-        assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
+        assert message.user_message == in_app_message
+        assert message.pop_over_icon == subscription_models.PopOverIcon.ERROR
 
         assert len(mails_testing.outbox) == 0
 
@@ -1666,17 +1669,17 @@ class UbbleWebhookTest:
 
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
         assert (
-            message.userMessage
-            == "Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
+            message.user_message
+            == "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
         )
         assert (
-            message.callToActionLink
+            message.call_to_action.link
             == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
         )
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
-        assert message.callToActionTitle == "Contacter le support"
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
+        assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "sho***@me.com"}
@@ -1742,17 +1745,17 @@ class UbbleWebhookTest:
 
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
         assert (
-            message.userMessage
-            == "Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
+            message.user_message
+            == "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
         )
         assert (
-            message.callToActionLink
+            message.call_to_action.link
             == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
         )
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
-        assert message.callToActionTitle == "Contacter le support"
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
+        assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "pre***@me.com"}
@@ -1814,17 +1817,17 @@ class UbbleWebhookTest:
 
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
         assert (
-            message.userMessage
-            == "Ton dossier a été bloqué : Les informations que tu as renseignées ne correspondent pas à celles de ta pièce d'identité. Tu peux contacter le support pour plus d'informations."
+            message.user_message
+            == "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support pour plus d'informations."
         )
         assert (
-            message.callToActionLink
+            message.call_to_action.link
             == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
         )
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
-        assert message.callToActionTitle == "Contacter le support"
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
+        assert message.call_to_action.title == "Contacter le support"
 
         self._assert_email_sent(user, 410)
 
@@ -1887,14 +1890,14 @@ class UbbleWebhookTest:
 
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, True)
         assert (
-            message.userMessage
+            message.user_message
             == "Ton document d'identité ne te permet pas de bénéficier du pass Culture. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
         )
-        assert message.callToActionLink == subscription_messages.REDIRECT_TO_IDENTIFICATION
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.RETRY
-        assert message.callToActionTitle == "Réessayer la vérification de mon identité"
+        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         self._assert_email_sent(user, 385)
 
@@ -1961,14 +1964,14 @@ class UbbleWebhookTest:
 
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, True)
         assert (
-            message.userMessage
+            message.user_message
             == "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
         )
-        assert message.callToActionLink == subscription_messages.REDIRECT_TO_IDENTIFICATION
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.RETRY
-        assert message.callToActionTitle == "Réessayer la vérification de mon identité"
+        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         self._assert_email_sent(user, 384)
 
@@ -2028,14 +2031,14 @@ class UbbleWebhookTest:
 
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, True)
         assert (
-            message.userMessage
+            message.user_message
             == "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité."
         )
-        assert message.callToActionLink == subscription_messages.REDIRECT_TO_IDENTIFICATION
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.RETRY
-        assert message.callToActionTitle == "Réessayer la vérification de mon identité"
+        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         assert len(mails_testing.outbox) == 0
 
@@ -2102,14 +2105,14 @@ class UbbleWebhookTest:
 
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
         assert (
-            message.userMessage
-            == "Ton dossier a été rejeté car le document que tu as présenté n’est pas authentique.  Passe par le site démarches simplifiées pour renouveler ta demande."
+            message.user_message
+            == "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
         )
-        assert message.callToActionLink == subscription_messages.REDIRECT_TO_DMS_VIEW
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.EXTERNAL
-        assert message.callToActionTitle == "Accéder au site Démarches-Simplifiées"
+        assert message.call_to_action.link == subscription_messages.REDIRECT_TO_DMS_VIEW_LINK
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
+        assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
 
         assert len(mails_testing.outbox) == 0
 
@@ -2180,12 +2183,12 @@ class UbbleWebhookTest:
 
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry not allowed
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
         assert (
-            message.userMessage
-            == "Ton dossier a été bloqué : Les informations que tu as renseignées ne te permettent pas de bénéficier du pass Culture."
+            message.user_message
+            == "Ton dossier a été refusé. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
         )
-        assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
+        assert message.call_to_action.link == subscription_messages.REDIRECT_TO_DMS_VIEW_LINK
 
         assert len(mails_testing.outbox) == 0
 
@@ -2268,13 +2271,13 @@ class UbbleWebhookTest:
 
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
-        message = subscription_models.SubscriptionMessage.query.one()
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, True)
         assert (
-            message.userMessage
-            == "Nous n'avons pas réussi à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé."
+            message.user_message
+            == "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé."
         )
-        assert message.callToActionLink == subscription_messages.REDIRECT_TO_IDENTIFICATION
-        assert message.callToActionIcon == subscription_models.CallToActionIcon.RETRY
-        assert message.callToActionTitle == "Réessayer la vérification de mon identité"
+        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         self._assert_email_sent(user, 304)

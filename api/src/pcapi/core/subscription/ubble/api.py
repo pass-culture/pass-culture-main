@@ -27,6 +27,7 @@ from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 
 from . import exceptions
+from . import messages
 
 
 logger = logging.getLogger(__name__)
@@ -250,3 +251,27 @@ def _generate_storable_picture_filename(
         mime_type = "image/png"  # ubble default picture type is png
     extension = mimetypes.guess_extension(mime_type, strict=True)
     return f"{fraud_check.userId}-{fraud_check.thirdPartyId}-{face_name}{extension}"
+
+
+def get_ubble_subscription_message(
+    ubble_fraud_check: fraud_models.BeneficiaryFraudCheck, is_retryable: bool
+) -> subscription_models.SubscriptionMessage | None:
+    if ubble_fraud_check.status == fraud_models.FraudCheckStatus.STARTED:
+        return None
+
+    if ubble_fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+        return messages.PENDING_UBBLE_SUBSCRIPTION_MESSAGE
+
+    if ubble_fraud_check.status == fraud_models.FraudCheckStatus.OK:
+        return None
+
+    if ubble_fraud_check.status in (
+        fraud_models.FraudCheckStatus.SUSPICIOUS,
+        fraud_models.FraudCheckStatus.KO,
+        fraud_models.FraudCheckStatus.ERROR,
+    ):
+        if is_retryable:
+            return messages.get_ubble_retryable_message(ubble_fraud_check.reasonCodes or [])
+        return messages.get_ubble_not_retryable_message(ubble_fraud_check.reasonCodes or [], ubble_fraud_check.user.id)
+
+    return None

@@ -669,4 +669,12 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
     if dms_check is not None:
         return dms_subscription_api.get_dms_subscription_message(dms_check)
 
+    ubble_check = next(
+        (check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.UBBLE),
+        None,
+    )
+
+    if ubble_check is not None:
+        return ubble_subscription_api.get_ubble_subscription_message(ubble_check, is_retryable=next_step is not None)
+
     return None
