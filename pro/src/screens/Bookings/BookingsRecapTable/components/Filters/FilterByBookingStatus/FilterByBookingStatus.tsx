@@ -1,4 +1,3 @@
-import isEqual from 'lodash.isequal'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 import {
@@ -77,12 +76,10 @@ const FilterByBookingStatus = <
   }
 
   useEffect(() => {
-    if (!isEqual(bookingStatuses, bookingStatusFilters)) {
-      updateGlobalFilters({
-        bookingStatus: bookingStatusFilters,
-      })
-    }
-  }, [bookingStatusFilters, bookingStatuses, updateGlobalFilters])
+    updateGlobalFilters({
+      bookingStatus: bookingStatusFilters,
+    })
+  }, [bookingStatusFilters, updateGlobalFilters])
 
   const computeIconSrc = () => {
     if (bookingStatusFilters.length > 0) {
