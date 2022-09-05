@@ -11,7 +11,6 @@ from pcapi.admin.custom_views.support_view.api import get_beneficiary_activation
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_models
-from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -339,11 +338,6 @@ class BeneficiaryValidationViewTest:
         assert review.author == admin
         assert review.review == fraud_models.FraudReviewStatus.KO
         assert user.has_beneficiary_role is False
-
-        assert subscription_models.SubscriptionMessage.query.count() == 1
-        message = subscription_models.SubscriptionMessage.query.first()
-        assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
-        assert message.userMessage == "Ton dossier a été refusé : tu n’es malheureusement pas éligible au pass Culture."
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_with_non_default_eligibility(self, client):

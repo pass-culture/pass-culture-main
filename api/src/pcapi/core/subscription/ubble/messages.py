@@ -88,9 +88,7 @@ def get_ubble_not_retryable_message(
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     else:
-        user_message = (
-            "Ton dossier a été refusé. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
-        )
+        user_message = "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     return subscription_models.SubscriptionMessage(

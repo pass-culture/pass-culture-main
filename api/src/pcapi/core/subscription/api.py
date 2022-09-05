@@ -677,4 +677,12 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
     if ubble_check is not None:
         return ubble_subscription_api.get_ubble_subscription_message(ubble_check, is_retryable=next_step is not None)
 
+    educonnect_check = next(
+        (check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.EDUCONNECT),
+        None,
+    )
+
+    if educonnect_check is not None:
+        return educonnect_subscription_api.get_educonnect_subscription_message(educonnect_check)
+
     return None

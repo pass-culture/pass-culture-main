@@ -16,7 +16,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions.models import Permissions
-from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1230,11 +1229,6 @@ class PostManualReviewTest:
         assert review.author == reviewer
         assert review.review == fraud_models.FraudReviewStatus.KO
         assert user.has_beneficiary_role is False
-
-        assert subscription_models.SubscriptionMessage.query.count() == 1
-        message = subscription_models.SubscriptionMessage.query.first()
-        assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
-        assert message.userMessage == "Ton dossier a été refusé : tu n’es malheureusement pas éligible au pass Culture."
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_with_unknown_data(self, client):
