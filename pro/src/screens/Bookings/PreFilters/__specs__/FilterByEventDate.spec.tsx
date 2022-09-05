@@ -1,4 +1,5 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { EMPTY_FILTER_VALUE } from 'core/Bookings'
@@ -18,22 +19,20 @@ describe('components | FilterByEventDate', () => {
 
   it('should display a DatePicker', async () => {
     // When
-    const wrapper = shallow(<FilterByEventDate {...props} />)
+    render(<FilterByEventDate {...props} />)
 
     // Then
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' })
-    expect(offerDateInput).toHaveLength(1)
+    expect(screen.getByPlaceholderText('JJ/MM/AAAA')).toBeInTheDocument()
   })
 
   it('should apply offerDate filter when choosing an offer date', async () => {
     // Given
     const selectedDate = new Date('2020-05-20')
-    const wrapper = shallow(<FilterByEventDate {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
+    render(<FilterByEventDate {...props} />)
+    const offerDateInput = screen.getByPlaceholderText('JJ/MM/AAAA')
 
     // When
-    offerDateInput.simulate('change', selectedDate)
-
+    fireEvent.change(offerDateInput, { target: { value: selectedDate } })
     // Then
     expect(props.updateFilters).toHaveBeenCalledWith({
       offerEventDate: selectedDate,
