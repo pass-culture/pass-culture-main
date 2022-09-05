@@ -29,8 +29,7 @@ describe('src | components | pages | Venue | Notification', () => {
   }
 
   it('should display a succes messsage when venue is created', () => {
-    const { debug } = renderNotificationMessage({ props })
-    debug()
+    renderNotificationMessage({ props })
     expect(
       queryByTextTrimHtml(
         screen,

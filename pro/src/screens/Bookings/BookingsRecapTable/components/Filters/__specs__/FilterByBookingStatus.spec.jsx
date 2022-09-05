@@ -1,4 +1,6 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import FilterByBookingStatus from '../FilterByBookingStatus'
@@ -60,123 +62,83 @@ describe('components | FilterByBookingStatus', () => {
 
   it('should display a black filter icon', () => {
     // when
-    const wrapper = mount(<FilterByBookingStatus {...props} />)
+    render(<FilterByBookingStatus {...props} />)
 
     // then
-    const filterIcon = wrapper.find('img')
-    expect(filterIcon.prop('src')).toContain('ico-filter-status-black.svg')
-    expect(filterIcon.prop('alt')).toBe('Filtrer par statut')
+    const filterIcon = screen.getByRole('img')
+    expect(filterIcon).toHaveAttribute(
+      'src',
+      expect.stringContaining('ico-filter-status-black.svg')
+    )
+    expect(filterIcon).toHaveAttribute('alt', 'Filtrer par statut')
   })
 
   it('should not display status filters', () => {
     // when
-    const wrapper = mount(<FilterByBookingStatus {...props} />)
+    render(<FilterByBookingStatus {...props} />)
 
     // then
-    const checkbox = wrapper.find('input')
-    const label = wrapper.find('label')
-    expect(checkbox).toHaveLength(0)
-    expect(label).toHaveLength(0)
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
   })
 
   describe('on focus on the filter icon', () => {
     it('should display a red filter icon', () => {
       // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      render(<FilterByBookingStatus {...props} />)
 
       // when
-      wrapper.find('button').simulate('focus')
+      screen.getByRole('button').focus()
 
       // then
-      const filterIcon = wrapper.find('img')
-      expect(filterIcon.prop('src')).toContain('ico-filter-status-red.svg')
-      expect(filterIcon.prop('alt')).toBe('Filtrer par statut')
+      const filterIcon = screen.getByRole('img')
+      expect(filterIcon).toHaveAttribute(
+        'src',
+        expect.stringContaining('ico-filter-status-red.svg')
+      )
+      expect(filterIcon).toHaveAttribute('alt', 'Filtrer par statut')
     })
 
-    it('should show filters with all available status in data', () => {
+    it('should show filters with all available status in data', async () => {
       // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
-      const filterIcon = wrapper.find('img')
-
-      // when
-      filterIcon.simulate('focus')
+      render(<FilterByBookingStatus {...props} />)
+      await userEvent.click(screen.getByRole('img'))
 
       // then
-      const checkbox = wrapper.find('input')
-      const label = wrapper.find('label')
+      const checkbox = screen.getAllByRole('checkbox')
       expect(checkbox).toHaveLength(2)
-      expect(checkbox.at(0).props()).toStrictEqual({
-        checked: true,
-        id: 'bs-booked',
-        name: 'booked',
-        onChange: expect.any(Function),
-        type: 'checkbox',
-      })
-      expect(checkbox.at(1).props()).toStrictEqual({
-        checked: true,
-        id: 'bs-validated',
-        name: 'validated',
-        onChange: expect.any(Function),
-        type: 'checkbox',
-      })
-      expect(label).toHaveLength(2)
-      expect(label.at(0).text()).toBe('réservé')
-      expect(label.at(1).text()).toBe('validé')
+      expect(checkbox[0]).toHaveAttribute('checked')
+      expect(checkbox[1]).toHaveAttribute('checked')
+      expect(screen.getByText('réservé')).toBeInTheDocument()
+      expect(screen.getByText('validé')).toBeInTheDocument()
     })
 
-    it('should not hide filters on click on a checkbox', () => {
+    it('should add value to filters when unchecking on a checkbox', async () => {
       // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
-      const filterIcon = wrapper.find('img')
-      filterIcon.simulate('focus')
-
-      const checkbox = wrapper.find('input').at(0)
+      render(<FilterByBookingStatus {...props} />)
+      await userEvent.click(screen.getByRole('img'))
+      const checkbox = screen.getAllByRole('checkbox')[1]
 
       // when
-      checkbox.simulate('mouseDown')
-      filterIcon.simulate('blur')
-      checkbox.simulate('mouseUp')
-
-      // then
-      const label = wrapper.find('label')
-      expect(label).toHaveLength(2)
-    })
-
-    it('should add value to filters when unchecking on a checkbox', () => {
-      // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
-      wrapper.find('img').simulate('focus')
-
-      const checkbox = wrapper.find('input').at(0)
-
-      // when
-      checkbox.simulate('change', {
-        target: { name: 'validated', checked: false },
-      })
-
+      checkbox.click()
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
         bookingStatus: ['validated'],
       })
     })
 
-    it('should remove value from filters when checking the checkbox', () => {
+    it('should remove value from filters when checking the checkbox', async () => {
       // given
       const propsWithInitialFilter = {
         ...props,
         bookingStatuses: ['validated'],
       }
-      const wrapper = mount(
-        <FilterByBookingStatus {...propsWithInitialFilter} />
-      )
-      wrapper.find('img').simulate('focus')
+      render(<FilterByBookingStatus {...propsWithInitialFilter} />)
+      await userEvent.click(screen.getByRole('img'))
 
-      const checkbox = wrapper.find('input').at(0)
+      const checkbox = screen.getAllByRole('checkbox')[1]
 
       // when
-      checkbox.simulate('change', {
-        target: { name: 'validated', checked: true },
-      })
+      checkbox.click()
 
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
@@ -184,21 +146,17 @@ describe('components | FilterByBookingStatus', () => {
       })
     })
 
-    it('should add value to already filtered booking status when clicking on a checkbox', () => {
+    it('should add value to already filtered booking status when clicking on a checkbox', async () => {
       // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
-      wrapper.find('img').simulate('focus')
+      render(<FilterByBookingStatus {...props} />)
+      await userEvent.click(screen.getByRole('img'))
 
-      const validatedStatusCheckbox = wrapper.find('input').at(0)
-      validatedStatusCheckbox.simulate('change', {
-        target: { name: 'validated', checked: false },
-      })
-      const bookedStatusCheckbox = wrapper.find('input').at(1)
+      const validatedStatusCheckbox = screen.getAllByRole('checkbox')[1]
+      validatedStatusCheckbox.click()
+      const bookedStatusCheckbox = screen.getAllByRole('checkbox')[0]
 
       // when
-      bookedStatusCheckbox.simulate('change', {
-        target: { name: 'booked', checked: false },
-      })
+      bookedStatusCheckbox.click()
 
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
