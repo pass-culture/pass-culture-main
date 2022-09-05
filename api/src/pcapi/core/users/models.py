@@ -634,14 +634,14 @@ class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc
         )
 
     @classmethod
-    def build_update_request(cls, user: User, new_email: str, admin: bool = False) -> "UserEmailHistory":
-        if admin:
+    def build_update_request(cls, user: User, new_email: str, by_admin: bool = False) -> "UserEmailHistory":
+        if by_admin:
             return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST)
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
 
     @classmethod
-    def build_validation(cls, user: User, new_email: str, admin: bool) -> "UserEmailHistory":
-        if admin:
+    def build_validation(cls, user: User, new_email: str, by_admin: bool) -> "UserEmailHistory":
+        if by_admin:
             return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_VALIDATION)
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.VALIDATION)
 

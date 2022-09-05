@@ -77,7 +77,7 @@ def request_email_update_from_admin(user: User, email: str) -> None:
     """
     check_email_address_does_not_exist(email)
 
-    email_history = UserEmailHistory.build_update_request(user=user, new_email=email, admin=True)
+    email_history = UserEmailHistory.build_update_request(user=user, new_email=email, by_admin=True)
 
     user.email = email
     user.isEmailValidated = False
