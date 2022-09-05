@@ -1,23 +1,12 @@
-import { mount, shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 
 import BookingsRecapTable from 'screens/Bookings/BookingsRecapTable/BookingsRecapTable'
-import {
-  TableWrapper,
-  BeneficiaryCell,
-  BookingDateCell,
-  BookingIsDuoCell,
-  BookingOfferCell,
-  BookingStatusCell,
-  BookingTokenCell,
-  Header,
-  NoFilteredBookings,
-} from 'screens/Bookings/BookingsRecapTable/components'
-import TablePagination from 'screens/Bookings/BookingsRecapTable/components/Table/Paginate'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { configureTestStore } from 'store/testUtils'
-import { ReactComponent } from 'utils/svgrMock'
 
 jest.mock(
   'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE',
@@ -29,11 +18,13 @@ jest.mock('lodash.debounce', () => jest.fn(callback => callback))
 jest.mock('../utils/filterBookingsRecap', () => jest.fn())
 
 describe('components | BookingsRecapTable', () => {
-  let store
-
-  beforeEach(() => {
-    store = configureTestStore({})
-  })
+  const renderBookingRecap = props => {
+    return render(
+      <Provider store={configureTestStore({})}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
+  }
 
   it('should render the expected table headers', () => {
     // Given
@@ -75,26 +66,17 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue(props.bookingsRecap)
 
     // When
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
     // Then
-    const firstHeader = wrapper.find('th').at(0)
-    const secondHeader = wrapper.find('th').at(1)
-    const thirdHeader = wrapper.find('th').at(2)
-    const fourthHeader = wrapper.find('th').at(3)
-    const fifthHeader = wrapper.find('th').at(4)
-    const sixthHeader = wrapper.find('th').at(5)
-    expect(wrapper.find('th')).toHaveLength(6)
-    expect(firstHeader.text()).toBe("Nom de l'offre")
-    expect(secondHeader.text()).toBe('')
-    expect(thirdHeader.text()).toBe('Bénéficiaire')
-    expect(fourthHeader.text()).toBe('Réservation')
-    expect(fifthHeader.text()).toBe('Contremarque')
-    expect(sixthHeader.text()).toContain('Statut')
+    const headers = screen.getAllByRole('columnheader')
+    expect(headers).toHaveLength(6)
+    expect(headers[0]).toHaveTextContent("Nom de l'offre")
+    expect(headers[1]).toHaveTextContent('')
+    expect(headers[2]).toHaveTextContent('Bénéficiaire')
+    expect(headers[3]).toHaveTextContent('Réservation')
+    expect(headers[4]).toHaveTextContent('Contremarque')
+    expect(headers[5]).toHaveTextContent('Statut')
   })
 
   it('should render a filter icon in "statut" header', () => {
@@ -137,16 +119,13 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue(props.bookingsRecap)
 
     // When
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
     // Then
-    const sixthHeader = wrapper.find('th').at(5)
-    expect(sixthHeader.find('img').prop('src')).toContain(
-      'ico-filter-status-black.svg'
+    const header = screen.getAllByRole('columnheader')[5]
+    expect(within(header).getByRole('img')).toHaveAttribute(
+      'src',
+      expect.stringContaining('ico-filter-status-black.svg')
     )
   })
 
@@ -192,41 +171,20 @@ describe('components | BookingsRecapTable', () => {
     }
 
     // When
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
     // Then
-    const bookingOfferCell = wrapper.find(BookingOfferCell)
-    expect(bookingOfferCell).toHaveLength(1)
-    expect(bookingOfferCell.props()).toStrictEqual({
-      offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' },
-    })
-    const duoCell = wrapper.find(BookingIsDuoCell)
-    expect(duoCell.find(ReactComponent).props()).toMatchObject({
-      title: 'Réservation DUO',
-    })
-    const beneficiaryCell = wrapper.find(BeneficiaryCell)
-    expect(beneficiaryCell).toHaveLength(1)
-    expect(beneficiaryCell.props()).toStrictEqual({
-      beneficiaryInfos: {
-        email: 'sonia.klepi@example.com',
-        firstname: 'Sonia',
-        lastname: 'Klepi',
-      },
-    })
-    const bookingDateCell = wrapper.find(BookingDateCell)
-    expect(bookingDateCell).toHaveLength(1)
-    expect(bookingDateCell.props()).toStrictEqual({
-      bookingDateTimeIsoString: '2020-04-03T12:00:00Z',
-    })
-    const bookingTokenCell = wrapper.find(BookingTokenCell)
-    expect(bookingTokenCell).toHaveLength(1)
-    expect(bookingTokenCell.props()).toStrictEqual({ bookingToken: 'ZEHBGD' })
-    const bookingStatusCell = wrapper.find(BookingStatusCell)
-    expect(bookingStatusCell).toHaveLength(1)
+    const bookingRow = screen.getAllByRole('cell')
+
+    expect(bookingRow[0]).toHaveTextContent('Avez-vous déjà vu')
+    expect(bookingRow[1].querySelector('div')).toHaveAttribute(
+      'title',
+      'Réservation DUO'
+    )
+    expect(bookingRow[2]).toHaveTextContent('Klepi Sonia')
+    expect(bookingRow[3]).toHaveTextContent('03/04/202012:00')
+    expect(bookingRow[4]).toHaveTextContent('ZEHBGD')
+    expect(bookingRow[5]).toHaveTextContent('validé')
   })
 
   it('should render a Header component when there is at least one filtered booking', () => {
@@ -267,18 +225,13 @@ describe('components | BookingsRecapTable', () => {
     }
 
     // When
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
+    renderBookingRecap(props)
 
     // Then
-    const header = wrapper.find(Header)
-    expect(header).toHaveLength(1)
-    expect(header.props()).toStrictEqual({
-      bookingsRecapFilteredLength: bookingsRecap.length,
-      isLoading: false,
-    })
+    expect(screen.getByText('1 réservation')).toBeInTheDocument()
   })
 
-  it('should not render a Header component when there is no filtered booking', () => {
+  it('should not render a Header component when there is no filtered booking', async () => {
     // given
     const bookingsRecap = []
     const props = {
@@ -288,14 +241,13 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue(bookingsRecap)
 
     // When
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
+    renderBookingRecap(props)
 
     // Then
-    const header = wrapper.find(Header)
-    expect(header).toHaveLength(0)
+    expect(await screen.queryByRole('row')).not.toBeInTheDocument()
   })
 
-  it('should update currentPage when clicking on next page button', () => {
+  it('should update currentPage when clicking on next page button', async () => {
     // Given
     const bookingsRecap = [
       {
@@ -367,94 +319,24 @@ describe('components | BookingsRecapTable', () => {
     }
 
     // When
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
+    renderBookingRecap(props)
+    await userEvent.click(screen.getAllByRole('button')[1])
+
+    // Then
+    const bookingRow = screen.getAllByRole('cell')
+
+    expect(bookingRow[0]).toHaveTextContent('Avez-vous déjà vu')
+    expect(bookingRow[1].querySelector('div')).toHaveAttribute(
+      'title',
+      'Réservation DUO'
     )
-    const paginate = wrapper.find(TablePagination)
-    const nextPageButton = paginate.find('button').at(1)
-    nextPageButton.simulate('click')
-
-    // Then
-    const table = wrapper.find(TableWrapper)
-    expect(table.prop('nbBookingsPerPage')).toBe(1)
-
-    const bookingOfferCell = wrapper.find(BookingOfferCell)
-    expect(bookingOfferCell).toHaveLength(1)
-    expect(bookingOfferCell.props()).toStrictEqual({
-      offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' },
-    })
-    const duoCell = wrapper.find(BookingIsDuoCell)
-    expect(duoCell.find(ReactComponent).props()).toStrictEqual({
-      title: 'Réservation DUO',
-    })
-    const beneficiaryCell = wrapper.find(BeneficiaryCell)
-    expect(beneficiaryCell).toHaveLength(1)
-    expect(beneficiaryCell.props()).toStrictEqual({
-      beneficiaryInfos: {
-        email: 'sonia.klepi@example.com',
-        firstname: 'Sonia',
-        lastname: 'Klepi',
-      },
-    })
-    const bookingDateCell = wrapper.find(BookingDateCell)
-    expect(bookingDateCell).toHaveLength(1)
-    expect(bookingDateCell.props()).toStrictEqual({
-      bookingDateTimeIsoString: '2020-04-03T12:00:00Z',
-    })
-    const bookingTokenCell = wrapper.find(BookingTokenCell)
-    expect(bookingTokenCell).toHaveLength(1)
-    expect(bookingTokenCell.props()).toStrictEqual({ bookingToken: 'ZEHBGD' })
-    const bookingStatusCell = wrapper.find(BookingStatusCell)
-    expect(bookingStatusCell).toHaveLength(1)
+    expect(bookingRow[2]).toHaveTextContent('Klepi Sonia')
+    expect(bookingRow[3]).toHaveTextContent('03/04/202012:00')
+    expect(bookingRow[4]).toHaveTextContent('ZEHBGD')
+    expect(bookingRow[5]).toHaveTextContent('validé')
   })
 
-  it('should not apply filters when component didnt receive new data', () => {
-    // given
-    const bookingsRecap = [
-      {
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_amount: 10,
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        venue_identifier: 'AE',
-      },
-    ]
-    filterBookingsRecap.mockReturnValue(bookingsRecap)
-    const props = {
-      bookingsRecap: bookingsRecap,
-      isLoading: false,
-    }
-
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
-
-    // When
-    wrapper.setProps(props)
-
-    // Then
-    const table = wrapper.find(TableWrapper)
-    expect(table.props()).toStrictEqual({
-      columns: expect.any(Object),
-      currentPage: 0,
-      data: props.bookingsRecap,
-      nbBookings: props.bookingsRecap.length,
-      nbBookingsPerPage: 1,
-      updateCurrentPage: expect.any(Function),
-    })
-  })
-
-  it('should render a NoFilteredBookings when no bookings', () => {
+  it('should render a NoFilteredBookings when no bookings', async () => {
     // given
     filterBookingsRecap.mockReturnValue([])
     const booking = {
@@ -491,24 +373,17 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: [booking],
       isLoading: false,
     }
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
-    const input = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
+
+    renderBookingRecap(props)
+
+    const input = screen.getByPlaceholderText("Rechercher par nom d'offre")
 
     // When
-    input.simulate('change', { target: { value: 'not findable' } })
-
+    await userEvent.type(input, 'not findable')
     // Then
-    const table = wrapper.find(TableWrapper)
-    expect(table).toHaveLength(0)
-    const noFilteredBookings = wrapper.find(NoFilteredBookings)
-    expect(noFilteredBookings).toHaveLength(1)
-    expect(noFilteredBookings.props()).toStrictEqual({
-      resetFilters: expect.any(Function),
-    })
+    expect(
+      screen.getByText('Aucune réservation trouvée pour votre recherche')
+    ).toBeInTheDocument()
   })
 
   it('should reset filters when clicking on "afficher toutes les réservations"', async () => {
@@ -549,32 +424,22 @@ describe('components | BookingsRecapTable', () => {
       isLoading: false,
     }
     filterBookingsRecap.mockReturnValue([])
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
+    renderBookingRecap(props)
 
-    const offerNameInput = wrapper.find({
-      placeholder: "Rechercher par nom d'offre",
-    })
-    await offerNameInput.simulate('change', {
-      target: { value: 'not findable' },
-    })
+    const input = screen.getByPlaceholderText("Rechercher par nom d'offre")
 
-    const noFilteredBookings = wrapper.find(NoFilteredBookings)
-    const displayAllBookingsButton = noFilteredBookings.find({
-      children: 'afficher toutes les réservations',
+    await userEvent.type(input, 'not findable')
+
+    const displayAllBookingsButton = screen.getByRole('button', {
+      text: 'afficher toutes les réservations',
     })
 
     // When
-    await displayAllBookingsButton.simulate('click')
+    await userEvent.click(displayAllBookingsButton)
 
     // Then
-    const offerName = wrapper.find({
-      placeholder: "Rechercher par nom d'offre",
-    })
-    expect(offerName.text()).toBe('')
+    const offerName = screen.getByPlaceholderText("Rechercher par nom d'offre")
+    expect(offerName).toHaveValue('')
   })
 
   // Skip is needed as this test is not compliant with a function component.
@@ -612,17 +477,6 @@ describe('components | BookingsRecapTable', () => {
         },
       ],
     }
-    const bookingsRecap = [booking]
-    filterBookingsRecap.mockReturnValueOnce(bookingsRecap).mockReturnValue([])
-    const props = {
-      bookingsRecap: bookingsRecap,
-      isLoading: false,
-    }
-    const wrapper = mount(
-      <Provider store={store}>
-        <BookingsRecapTable {...props} />
-      </Provider>
-    )
     const newBooking = {
       stock: {
         offer_name: 'Jurassic Park',
@@ -650,17 +504,24 @@ describe('components | BookingsRecapTable', () => {
         },
       ],
     }
-    const paginate = wrapper.find(TablePagination)
-    const nextPageButton = paginate.find('button').at(1)
-    nextPageButton.simulate('click')
+    const bookingsRecap = [booking]
+    filterBookingsRecap
+      .mockReturnValueOnce(bookingsRecap)
+      .mockReturnValue([newBooking])
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+    }
+    renderBookingRecap(props)
+
+    await userEvent.click(screen.getAllByRole('button')[1])
 
     // when
-    await wrapper.setProps({
-      bookingsRecap: bookingsRecap.concat([newBooking]),
-    })
+    const input = screen.getByPlaceholderText("Rechercher par nom d'offre")
+
+    await userEvent.type(input, 'not findable')
 
     // then
-    const table = wrapper.find(TableWrapper)
-    expect(table.prop('currentPage')).toBe(0)
+    expect(screen.getByText('Page 1/1')).toBeInTheDocument()
   })
 })

@@ -1,4 +1,6 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import FilterByOmniSearch from '../FilterByOmniSearch'
@@ -15,40 +17,41 @@ describe('components | FilterByOmniSearch', () => {
 
   it('should display a select input with the given options', () => {
     // When
-    const wrapper = shallow(<FilterByOmniSearch {...props} />)
-    const select = wrapper.find('select')
-    const options = select.find('option')
+    render(<FilterByOmniSearch {...props} />)
+
+    const options = screen.getAllByRole('option')
 
     // Then
-    expect(select).toHaveLength(1)
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(options).toHaveLength(4)
-    expect(options.at(0).text()).toBe('Offre')
-    expect(options.at(0).prop('value')).toBe('offre')
-    expect(options.at(1).text()).toBe('Bénéficiaire')
-    expect(options.at(1).prop('value')).toBe('bénéficiaire')
-    expect(options.at(2).text()).toBe('ISBN')
-    expect(options.at(2).prop('value')).toBe('isbn')
-    expect(options.at(3).text()).toBe('Contremarque')
-    expect(options.at(3).prop('value')).toBe('contremarque')
+    expect(options[0]).toHaveTextContent('Offre')
+    expect(options[0]).toHaveValue('offre')
+    expect(options[1]).toHaveTextContent('Bénéficiaire')
+    expect(options[1]).toHaveValue('bénéficiaire')
+    expect(options[2]).toHaveTextContent('ISBN')
+    expect(options[2]).toHaveValue('isbn')
+    expect(options[3]).toHaveTextContent('Contremarque')
+    expect(options[3]).toHaveValue('contremarque')
   })
 
   it('should display the correct placeholder for current option selected', () => {
     // When
-    const wrapper = shallow(<FilterByOmniSearch {...props} />)
-    const input = wrapper.find('input')
+    render(<FilterByOmniSearch {...props} />)
 
     // Then
-    expect(input.prop('placeholder')).toBe("Rechercher par nom d'offre")
+    expect(
+      screen.getByPlaceholderText("Rechercher par nom d'offre")
+    ).toBeInTheDocument()
   })
 
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
     // Given
     props.selectedOmniSearchCriteria = 'bénéficiaire'
-    const wrapper = shallow(<FilterByOmniSearch {...props} />)
-    const input = wrapper.find('input')
+    render(<FilterByOmniSearch {...props} />)
+    screen.getByPlaceholderText('Rechercher par nom ou email').focus()
 
     // When
-    await input.simulate('change', { target: { value: 'Firost' } })
+    await userEvent.paste('Firost')
 
     // Then
     expect(props.updateFilters).toHaveBeenCalledWith(
@@ -65,11 +68,11 @@ describe('components | FilterByOmniSearch', () => {
   it('should update the selected omniSearch criteria when selecting an omniSearchCriteria', async () => {
     // Given
     props.keywords = '12548'
-    let wrapper = await shallow(<FilterByOmniSearch {...props} />)
-    const omniSearchSelect = wrapper.find('select')
+    render(<FilterByOmniSearch {...props} />)
+    const omniSearchSelect = screen.getByRole('combobox')
 
     // When
-    await omniSearchSelect.simulate('change', { target: { value: 'isbn' } })
+    await userEvent.selectOptions(omniSearchSelect, 'isbn')
 
     // Then
     expect(props.updateFilters).toHaveBeenCalledWith(

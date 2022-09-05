@@ -1,7 +1,7 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
-
-import Icon from 'components/layout/Icon'
 
 import TablePagination from '../TablePagination'
 
@@ -25,13 +25,15 @@ describe('components | TablePagination', () => {
       props.canPreviousPage = true
 
       // when
-      const wrapper = shallow(<TablePagination {...props} />)
-
+      render(<TablePagination {...props} />)
       // then
-      const buttons = wrapper.find('button').find(Icon)
-      const previousButton = buttons.at(0)
-      expect(previousButton.prop('svg')).toBe('ico-left-arrow')
-      expect(previousButton.prop('disabled')).toBeUndefined()
+      const previousButton = screen.getAllByRole('button')[0]
+      const previousSvg = screen.getAllByRole('img')[0]
+      expect(previousSvg).toHaveAttribute(
+        'src',
+        expect.stringContaining('ico-left-arrow')
+      )
+      expect(previousButton).not.toHaveAttribute('disabled')
     })
 
     it('should display current page position', () => {
@@ -40,11 +42,10 @@ describe('components | TablePagination', () => {
       props.nbPages = 2
 
       // when
-      const wrapper = shallow(<TablePagination {...props} />)
+      render(<TablePagination {...props} />)
 
       // then
-      const currentPage = wrapper.find({ children: 'Page 1/2' })
-      expect(currentPage).toHaveLength(1)
+      expect(screen.getByText('Page 1/2')).toBeInTheDocument()
     })
 
     it('should display next button when user can go to next page', () => {
@@ -52,40 +53,42 @@ describe('components | TablePagination', () => {
       props.canNextPage = true
 
       // when
-      const wrapper = shallow(<TablePagination {...props} />)
+      render(<TablePagination {...props} />)
 
       // then
-      const buttons = wrapper.find('button').find(Icon)
-      const nextButton = buttons.at(1)
-      expect(nextButton).toHaveLength(1)
-      expect(nextButton.prop('svg')).toBe('ico-right-arrow')
+
+      const nextButton = screen.getAllByRole('button')[1]
+      const nextSvg = screen.getAllByRole('img')[1]
+      expect(nextSvg).toHaveAttribute(
+        'src',
+        expect.stringContaining('ico-right-arrow')
+      )
+      expect(nextButton).not.toHaveAttribute('disabled')
     })
   })
 
   describe('when clicking on buttons', () => {
-    it('should go back to previous page when click on previous button', () => {
+    it('should go back to previous page when click on previous button', async () => {
       // given
       props.canPreviousPage = true
-      const wrapper = shallow(<TablePagination {...props} />)
-      const buttons = wrapper.find('button')
-      const previousButton = buttons.at(0)
+      render(<TablePagination {...props} />)
+      const previousButton = screen.getAllByRole('button')[0]
 
       // when
-      previousButton.simulate('click')
+      await userEvent.click(previousButton)
 
       // then
       expect(props.previousPage).toHaveBeenCalledTimes(1)
     })
 
-    it('should go to next page when click on next button', () => {
+    it('should go to next page when click on next button', async () => {
       // given
       props.canNextPage = true
-      const wrapper = shallow(<TablePagination {...props} />)
-      const buttons = wrapper.find('button')
-      const nextButton = buttons.at(1)
+      render(<TablePagination {...props} />)
+      const nextButton = screen.getAllByRole('button')[1]
 
       // when
-      nextButton.simulate('click')
+      await userEvent.click(nextButton)
 
       // then
       expect(props.nextPage).toHaveBeenCalledTimes(1)

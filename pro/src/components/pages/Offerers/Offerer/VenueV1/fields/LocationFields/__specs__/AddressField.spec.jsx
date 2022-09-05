@@ -1,9 +1,7 @@
-import { shallow } from 'enzyme'
-
-import FieldErrors from 'components/layout/form/FieldErrors'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 
 import { addressFieldRender } from '../AddressField'
-import LocationViewer from '../LocationViewer'
 
 describe('src | components | pages | Venue | fields | AddressField', () => {
   describe('addressFieldRender', () => {
@@ -14,7 +12,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
     beforeEach(() => {
       props = {
         className: 'fake className',
-        disabled: false,
+        disabled: true,
         form: {},
         id: 'test-id',
         innerClassName: 'fake inner className',
@@ -31,14 +29,9 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
     it('should display a div with the right props', () => {
       // when
-      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
-
+      render(addressFieldRender({ ...props })({ input, meta }))
       // then
-      const mainDiv = wrapper.find('div').first()
-      expect(mainDiv.prop('className')).toBe(
-        'field text-field fake className is-label-aligned is-read-only'
-      )
-      expect(mainDiv.prop('id')).toBe('test-id-container')
+      expect(screen.getByText('fake label')).toBeInTheDocument()
     })
 
     it('should display the label and the required asterisk sign when not read only mode and label is provided', () => {
@@ -46,41 +39,24 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       props.readOnly = false
 
       // when
-      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
+      render(addressFieldRender({ ...props })({ input, meta }))
 
       // then
-      const label = wrapper.find('label')
-      expect(label.prop('htmlFor')).toBe('fake name')
-      expect(label.prop('className')).toBe('field-label')
-      const spans = label.find('span')
-      expect(spans).toHaveLength(3)
-      expect(spans.at(1).text()).toBe('fake label')
-      expect(spans.at(2).prop('className')).toBe('field-asterisk')
-      expect(spans.at(2).text()).toBe('*')
+      expect(screen.getByText('fake label')).toBeInTheDocument()
+      expect(screen.getByText('*')).toBeInTheDocument()
     })
 
-    it('should display a LocationViewer component with the right props when disabled, read only mode, required', () => {
+    it('should display a LocationViewer component with the right props when readOnly', () => {
       // when
-      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
 
+      render(addressFieldRender({ ...props })({ input, meta }))
       // then
-      const locationViewer = wrapper.find(LocationViewer)
-      expect(locationViewer).toHaveLength(1)
-      expect(locationViewer.prop('className')).toBe('field-input field-address')
-      expect(locationViewer.prop('disabled')).toBe(true)
-      expect(locationViewer.prop('name')).toBe('fake name')
-      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(
-        expect.any(Function)
-      )
-      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(
-        expect.any(Function)
-      )
-      expect(locationViewer.prop('onTextChange')).toStrictEqual(
-        expect.any(Function)
-      )
-      expect(locationViewer.prop('placeholder')).toBe('')
-      expect(locationViewer.prop('readOnly')).toBe(true)
-      expect(locationViewer.prop('required')).toBe(true)
+      const locationViewer = screen.getByRole('textbox')
+      expect(locationViewer).toHaveAttribute('readOnly')
+      expect(locationViewer).not.toHaveAttribute('disabled')
+      expect(locationViewer).not.toHaveAttribute('required')
+      expect(locationViewer).toHaveAttribute('name', 'fake name')
+      expect(locationViewer).toHaveClass('field-input', 'field-address')
     })
 
     it('should display a LocationViewer component with the right props when not disabled, not read only mode, not required', () => {
@@ -90,35 +66,23 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       props.required = false
 
       // when
-      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
+      render(addressFieldRender({ ...props })({ input, meta }))
 
       // then
-      const locationViewer = wrapper.find(LocationViewer)
-      expect(locationViewer).toHaveLength(1)
-      expect(locationViewer.prop('className')).toBe('field-input field-address')
-      expect(locationViewer.prop('disabled')).toBe(false)
-      expect(locationViewer.prop('name')).toBe('fake name')
-      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(
-        expect.any(Function)
-      )
-      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(
-        expect.any(Function)
-      )
-      expect(locationViewer.prop('onTextChange')).toStrictEqual(
-        expect.any(Function)
-      )
-      expect(locationViewer.prop('placeholder')).toBe('fake placeholder')
-      expect(locationViewer.prop('readOnly')).toBe(false)
-      expect(locationViewer.prop('required')).toBe(false)
+      const locationViewer = screen.getByRole('combobox')
+      expect(locationViewer).not.toHaveAttribute('disabled')
+      expect(locationViewer).not.toHaveAttribute('readOnly')
+      expect(locationViewer).not.toHaveAttribute('required')
+      expect(locationViewer).toHaveAttribute('name', 'fake name')
+      expect(locationViewer).toHaveAttribute('placeholder', 'fake placeholder')
+      expect(locationViewer).toHaveClass('field-input', 'field-address')
     })
 
     it('should display a FieldErrors component with the right props', () => {
       // when
-      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
-
-      // then
-      const fieldErrors = wrapper.find(FieldErrors)
-      expect(fieldErrors.prop('meta')).toStrictEqual({})
+      meta = { error: 'Custom error', touched: true }
+      render(addressFieldRender({ ...props })({ input, meta }))
+      expect(screen.getByText('Custom error')).toBeInTheDocument()
     })
   })
 })
