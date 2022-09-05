@@ -8,7 +8,7 @@ import styles from './Checkbox.module.scss'
 
 export interface ICheckboxProps {
   name: string
-  value: string
+  value?: string
   label: string
   description?: string
   className?: string

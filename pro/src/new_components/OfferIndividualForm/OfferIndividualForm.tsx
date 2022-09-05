@@ -15,6 +15,7 @@ import { useFilteredVenueList } from './hooks'
 import { Image } from './Image'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
+import { OptionDuo } from './OptionDuo'
 import { UsefulInformations } from './UsefulInformations'
 
 export interface IOfferIndividualFormProps {
@@ -72,6 +73,7 @@ const OfferIndividualForm = ({
             readOnlyFields={readOnlyFields}
           />
           <Accessibility readOnlyFields={readOnlyFields} />
+          <OptionDuo />
           <ExternalLink />
           <Notifications />
         </>
