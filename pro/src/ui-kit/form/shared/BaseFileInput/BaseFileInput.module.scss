@@ -1,7 +1,7 @@
 @use 'styles/variables/_colors.scss' as colors;
 @use 'styles/mixins/_rem.scss' as rem;
 
-.import-from-computer-input {
+.base-file-input-container {
   cursor: pointer;
   margin-bottom: rem.torem(16px);
   padding: 0 rem.torem(32px);
@@ -11,9 +11,9 @@
     background-color: colors.$primary-dark;
     border: rem.torem(3px) solid colors.$primary-dark;
   }
+}
 
-  &-file-input {
-    height: 0;
-    width: 0;
-  }
+.file-input {
+  height: 0;
+  width: 0;
 }

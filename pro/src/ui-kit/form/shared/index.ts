@@ -1,4 +1,5 @@
 export { default as BaseCheckbox } from './BaseCheckbox'
+export { BaseFileInput } from './BaseFileInput'
 export { default as BaseInput } from './BaseInput'
 export { default as BaseRadio } from './BaseRadio'
 export { default as FieldError } from './FieldError'

@@ -5,9 +5,9 @@ import Advices from 'new_components/Advices/Advices'
 import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
 import { Constraint } from 'new_components/ConstraintCheck/imageConstraints'
 import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
-import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/ImportFromComputerInput'
 import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
 import { Divider } from 'ui-kit'
+import { BaseFileInput } from 'ui-kit/form/shared'
 
 import style from './ImportFromComputer.module.scss'
 
@@ -42,10 +42,11 @@ export const ImportFromComputer: FunctionComponent<ImportFromComputerProps> = ({
           </h1>
         </header>
         <PreferredOrientation orientation={orientation} />
-        <ImportFromComputerInput
-          imageTypes={imageTypes}
+        <BaseFileInput
+          label="Importer une image depuis l’ordinateur"
+          fileTypes={imageTypes}
           isValid={!errors}
-          onSetImage={checkAndSetImage}
+          onChange={checkAndSetImage}
         />
         <ConstraintCheck
           constraints={constraints}

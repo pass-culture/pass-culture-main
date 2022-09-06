@@ -9,8 +9,8 @@ import {
 import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
-import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/ImportFromComputerInput'
 import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
+import { BaseFileInput } from 'ui-kit/form/shared'
 
 const constraints = [
   imageConstraints.formats(IMAGE_TYPE),
@@ -34,10 +34,11 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
   return (
     <form action="#" className="tnf-form">
       <PreferredOrientation orientation="portrait" />
-      <ImportFromComputerInput
-        imageTypes={IMAGE_TYPE}
+      <BaseFileInput
+        label="Importer une image depuis l’ordinateur"
+        fileTypes={IMAGE_TYPE}
         isValid={!errors}
-        onSetImage={checkAndSetImage}
+        onChange={checkAndSetImage}
       />
       <ConstraintCheck constraints={constraints} failingConstraints={errors} />
     </form>
