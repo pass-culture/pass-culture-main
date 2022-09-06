@@ -22,7 +22,7 @@ const FormContact = ({
         label={EMAIL_LABEL}
         name="email"
         disabled={disableForm}
-        placeholder="https://exemple.com"
+        placeholder="email@exemple.com"
       />
     </FormLayout.Row>
   </FormLayout.Section>

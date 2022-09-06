@@ -114,6 +114,7 @@ class IdentifierFields extends PureComponent {
             renderTooltip={this.handleTooltipBookingEmail(readOnly)}
             required={!venueIsVirtual}
             type="email"
+            placeholder="email@exemple.com"
           />
           {!isCreatedEntity && !readOnly && isDirtyFieldBookingEmail && (
             <CheckboxField
