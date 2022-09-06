@@ -12,7 +12,7 @@ const passwordErrorMessage = `Votre mot de passe doit contenir au moins :
 const validationSchema = yup.object().shape({
   oldPassword: yup
     .string()
-    .required('Veuillez renseigner votre ancien mot de passe'),
+    .required('Veuillez renseigner votre mot de passe actuel'),
   newPassword: yup
     .string()
     .test('isPasswordValid', passwordErrorMessage, isPasswordValid)

@@ -48,7 +48,11 @@ const PasswordInput = ({
         type={isPasswordHidden ? 'password' : 'text'}
         rightButton={() => (
           <button onClick={handleToggleHidden}>
-            {isPasswordHidden ? <IcoEyeClose /> : <IcoEyeOpen />}
+            {isPasswordHidden ? (
+              <IcoEyeClose className={styles['password-input-eye-ico']} />
+            ) : (
+              <IcoEyeOpen className={styles['password-input-eye-ico']} />
+            )}
           </button>
         )}
       />
