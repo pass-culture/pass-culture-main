@@ -59,36 +59,43 @@ const UserIdentityForm = ({
   }
 
   return (
-    <BoxFormLayout.Fields>
-      <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit}>
-          <FormLayout>
-            <FormLayout.Row>
-              <TextInput
-                label="Prénom"
-                name="firstName"
-                placeholder="Votre prénom"
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <TextInput label="Nom" name="lastName" placeholder="Votre nom" />
-            </FormLayout.Row>
-          </FormLayout>
+    <>
+      <BoxFormLayout.RequiredMessage />
+      <BoxFormLayout.Fields>
+        <FormikProvider value={formik}>
+          <Form onSubmit={formik.handleSubmit}>
+            <FormLayout>
+              <FormLayout.Row>
+                <TextInput
+                  label="Prénom"
+                  name="firstName"
+                  placeholder="Votre prénom"
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <TextInput
+                  label="Nom"
+                  name="lastName"
+                  placeholder="Votre nom"
+                />
+              </FormLayout.Row>
+            </FormLayout>
 
-          <div className={styles['buttons-field']}>
-            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-              Annuler
-            </Button>
-            <SubmitButton
-              className="primary-button"
-              isLoading={formik.isSubmitting}
-            >
-              Enregistrer
-            </SubmitButton>
-          </div>
-        </Form>
-      </FormikProvider>
-    </BoxFormLayout.Fields>
+            <div className={styles['buttons-field']}>
+              <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+                Annuler
+              </Button>
+              <SubmitButton
+                className="primary-button"
+                isLoading={formik.isSubmitting}
+              >
+                Enregistrer
+              </SubmitButton>
+            </div>
+          </Form>
+        </FormikProvider>
+      </BoxFormLayout.Fields>
+    </>
   )
 }
 

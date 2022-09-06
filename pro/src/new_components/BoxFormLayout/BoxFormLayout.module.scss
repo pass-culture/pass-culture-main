@@ -22,3 +22,10 @@
 .box-form-layout-form-header-secondary {
   color: colors.$grey-dark;
 }
+
+.box-form-layout-required-message {
+    font-size: rem.torem(12px);
+    font-weight: 600;
+    color: colors.$grey-dark;
+    margin-bottom: rem.torem(16px);
+}
