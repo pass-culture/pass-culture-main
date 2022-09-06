@@ -1,5 +1,6 @@
 import logging
 
+from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.subscription.dms import api as dms_api
@@ -53,7 +54,10 @@ def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
         except Exception:  # pylint: disable=broad-except
             logger.exception("[DMS] Error in script while importing application %s", application_details.number)
     if new_import_datetime is None:
-        logger.error("[DMS] No import for procedure %s", procedure_id)
+        # This is a normal situation outside prod, when we have few
+        # applications to process (and often no applications at all).
+        log = logger.error if settings.IS_PROD else logger.info
+        log("[DMS] No import for procedure %s", procedure_id)
         return
     new_import_record = dms_models.LatestDmsImport(
         procedureId=procedure_id,
