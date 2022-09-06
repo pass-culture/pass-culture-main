@@ -10,6 +10,8 @@ import {
 import { generateSiretValidationSchema } from 'new_components/VenueForm/Informations/SiretOrCommentFields'
 import { Title } from 'ui-kit'
 
+import style from './VenueFormScreen.module.scss'
+
 interface IVenueEditionProps {
   isCreatingVenue: boolean
   initialValues: IVenueFormValues
@@ -48,9 +50,11 @@ const VenueFormScreen = ({
 
   return (
     <div>
-      <Title level={1}>{isCreatingVenue ? 'Création d’un lieu' : 'Lieu'}</Title>
+      <Title level={1} className={style['venue-form-heading']}>
+        {isCreatingVenue ? 'Création d’un lieu' : 'Lieu'}
+      </Title>
       {!isCreatingVenue && (
-        <Title level={2}>
+        <Title level={2} className={style['venue-form-heading']}>
           {initialValues.publicName || initialValues.name}
         </Title>
       )}

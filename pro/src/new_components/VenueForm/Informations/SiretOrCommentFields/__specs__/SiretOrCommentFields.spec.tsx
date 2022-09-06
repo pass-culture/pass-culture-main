@@ -82,7 +82,7 @@ describe('components | SiretOrCommentFields', () => {
     })
     const siretField = screen.getByLabelText('Siret field')
     expect(siretField).toBeInTheDocument()
-    const commentField = screen.queryByText('Commentaire du lieu sans SIRET :')
+    const commentField = screen.queryByText('Commentaire du lieu sans SIRET')
     expect(commentField).not.toBeInTheDocument()
   })
 
@@ -101,7 +101,7 @@ describe('components | SiretOrCommentFields', () => {
     const siretField = screen.queryByText('Siret field')
     expect(siretField).not.toBeInTheDocument()
     const commentField = screen.getByLabelText(
-      'Commentaire du lieu sans SIRET :',
+      'Commentaire du lieu sans SIRET',
       {
         exact: false,
       }
