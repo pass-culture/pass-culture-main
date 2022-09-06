@@ -72,7 +72,6 @@ export const authProvider: AuthProvider = {
     // if (status === 401 || status === 403) {
     //   localStorage.removeItem('username');
     // }
-    console.log('login error', error)
     eventMonitoring.captureException(error)
     throw error
   },
@@ -93,8 +92,9 @@ export const authProvider: AuthProvider = {
     }
   },
   async logout() {
-    // localStorage.removeItem('token')
-    //localStorage.removeItem('tokenApi')
+    localStorage.removeItem('token')
+    localStorage.removeItem('tokenApi')
+    localStorage.removeItem('permissions')
     googleLogout()
   },
   async getIdentity() {
