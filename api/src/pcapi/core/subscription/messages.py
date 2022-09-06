@@ -25,3 +25,11 @@ def compute_support_call_to_action(user_id: int) -> models.CallToActionMessage:
         link=MAILTO_SUPPORT + MAILTO_SUPPORT_PARAMS.format(id=user_id),
         icon=models.CallToActionIcon.EMAIL,
     )
+
+
+def get_user_profiling_ko_message(user_id: int) -> models.SubscriptionMessage:
+    return models.SubscriptionMessage(
+        user_message="Ton inscription n'a pas pu aboutir. Contacte le support pour plus d'informations",
+        call_to_action=compute_support_call_to_action(user_id),
+        pop_over_icon=None,
+    )
