@@ -3,7 +3,7 @@ from pcapi.core.offerers import factories as offerer_factories
 
 class Returns200Test:
     def test_get_all_venues_serialization(self, client, db_session) -> None:
-        venue1 = offerer_factories.VenueFactory(
+        venue1 = offerer_factories.CollectiveVenueFactory(
             name="a beautiful name",
             siret=None,
             comment="no siret",

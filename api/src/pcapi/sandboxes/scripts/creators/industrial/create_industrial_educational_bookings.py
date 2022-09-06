@@ -256,6 +256,18 @@ PASSED_STOCK_DATA: list[StockData] = [
     ),
 ]
 
+MAINLAND_INTERVENTION_AREA = [str(i) for i in chain(range(1, 95), ["2A", "2B", "mainland"]) if i != 20]
+ALL_INTERVENTION_AREA = [
+    *MAINLAND_INTERVENTION_AREA,
+    "971",
+    "972",
+    "973",
+    "974",
+    "975",
+    "976",
+    "all",
+]
+
 TEMPLATE_OFFERS_DATA = [
     TemplateOfferData(
         name="Visite du studio d'enregistrement de l'EAC collectif",
@@ -285,7 +297,7 @@ TEMPLATE_OFFERS_DATA = [
         name="Une offre vitrine pour toute la france metro",
         addressType="offererVenue",
         otherAddress="",
-        interventionArea=[str(i) for i in chain(range(1, 95), ["2A", "2B", "mainland"]) if i != 20],
+        interventionArea=MAINLAND_INTERVENTION_AREA,
     ),
 ]
 ADDRESSES = [
@@ -321,9 +333,9 @@ def create_industrial_educational_bookings() -> None:
 
     educational_institutions = [
         educational_factories.EducationalInstitutionFactory(institutionId="0780032L"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0781839A"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0290047U"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0290198H"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0752525M"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0760100W"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0921545E"),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0910620E",
             institutionType="LYCEE POLYVALENT",
@@ -332,19 +344,19 @@ def create_industrial_educational_bookings() -> None:
             postalCode="91100",
         ),
         educational_factories.EducationalInstitutionFactory(
-            institutionId="0560071Y",
+            institutionId="0221518F",
             email=None,
             institutionType="COLLEGE",
-            name="JEAN LE COUTALLER",
-            city="LORIENT",
-            postalCode="56100",
+            name="FRANCOIS CLECH",
+            city="BEGARD",
+            postalCode="22140",
         ),
         educational_factories.EducationalInstitutionFactory(
-            institutionId="0780004F",
-            name="DE ST GERMAIN EN LAYE",
-            institutionType="LYCEE D ENSEIGNEMENT GENERAL ET TECHNOLOGIQUE PROFESSIONNEL AGRICOLE",
-            city="SAINT-GERMAIN-EN-LAYE",
-            postalCode="78100",
+            institutionId="0010819K",
+            name="LYC LES SARDIERES - BOURG EN BRESS",
+            institutionType="",
+            city="BOURG-EN-BRESSE",
+            postalCode="01000",
         ),
     ]
     offerer_with_right_siren = offerers_factories.CollectiveOffererFactory(
@@ -356,16 +368,41 @@ def create_industrial_educational_bookings() -> None:
         offerers_factories.VenueEducationalStatusFactory(id=adage_id, name=name)
 
     venues = []
-    for i in range(0, 3):
-        venues.append(
-            offerers_factories.CollectiveVenueFactory(
-                name=f"[EAC] Opéra Royal de Versailles - Salle {i}",
-                siret=f"9504694940002{i}",
-                managingOfferer=offerer_with_right_siren,
-                adageId=None,
-                venueEducationalStatusId=(i % len(VENUE_EDUCATIONAL_STATUS)) + 2,
-            )
+    venues.append(
+        offerers_factories.CollectiveVenueFactory(
+            name="[EAC] Opéra Royal de Versailles - Salle 1",
+            siret="95046949400021",
+            managingOfferer=offerer_with_right_siren,
+            adageId=None,
+            venueEducationalStatusId=(1 % len(VENUE_EDUCATIONAL_STATUS)) + 2,
+            collectiveDomains=[get_educational_domain(), get_educational_domain()],
+            collectiveNetwork=["127830", "128029", "130265"],
+            collectiveInterventionArea=ALL_INTERVENTION_AREA,
         )
+    )
+    venues.append(
+        offerers_factories.CollectiveVenueFactory(
+            name="[EAC] Opéra Royal de Versailles - Salle 2",
+            siret="95046949400022",
+            managingOfferer=offerer_with_right_siren,
+            adageId=None,
+            venueEducationalStatusId=(2 % len(VENUE_EDUCATIONAL_STATUS)) + 2,
+            collectiveDomains=[get_educational_domain()],
+            collectiveNetwork=["127344"],
+            collectiveInterventionArea=MAINLAND_INTERVENTION_AREA,
+        )
+    )
+    venues.append(
+        offerers_factories.CollectiveVenueFactory(
+            name="[EAC] Opéra Royal de Versailles - Salle 3",
+            siret="95046949400023",
+            managingOfferer=offerer_with_right_siren,
+            adageId=None,
+            venueEducationalStatusId=(3 % len(VENUE_EDUCATIONAL_STATUS)) + 2,
+            collectiveDomains=[get_educational_domain(), get_educational_domain(), get_educational_domain()],
+            collectiveNetwork=["126531", "130079"],
+        )
+    )
 
     cnl_like_offerer = offerers_factories.CollectiveOffererFactory(name="[EAC] Structure factice CNL")
     for i in range(0, 3):
@@ -395,7 +432,7 @@ def create_industrial_educational_bookings() -> None:
 
     deposits = []
     for educational_institution in educational_institutions:
-        if educational_institution.institutionId == "0780004F":
+        if educational_institution.institutionId == "0010819K":
             deposits.append(
                 educational_factories.EducationalDepositFactory(
                     ministry=educational_models.Ministry.AGRICULTURE,

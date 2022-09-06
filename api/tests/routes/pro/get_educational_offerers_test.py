@@ -14,7 +14,7 @@ class GetEducationalOfferersTest:
         offerer_2 = offerers_factories.OffererFactory()
         not_validated_offerer = offerers_factories.OffererFactory(validationToken="validationToken")
         venue_offerer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1, collectiveInterventionArea=None)
-        venue_offerer_2 = offerers_factories.VenueFactory(managingOfferer=offerer_2)
+        venue_offerer_2 = offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_offerer)
@@ -91,8 +91,8 @@ class GetEducationalOfferersTest:
         admin_user = users_factories.AdminFactory()
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
-        offerers_factories.VenueFactory(managingOfferer=offerer_1)
-        venue_offerer_2 = offerers_factories.VenueFactory(managingOfferer=offerer_2)
+        offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_1)
+        venue_offerer_2 = offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_2)
 
         # when
         api_url = f"/offerers/educational?offerer_id={humanize(offerer_2.id)}"

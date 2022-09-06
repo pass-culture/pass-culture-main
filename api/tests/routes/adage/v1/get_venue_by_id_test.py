@@ -10,7 +10,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     def test_get_venue_by_id(self, client: Any) -> None:
-        venue = offerer_factories.VenueFactory()
+        venue = offerer_factories.CollectiveVenueFactory()
 
         client.with_eac_token()
         response = client.get(f"/adage/v1/venues/id/{venue.id}")
