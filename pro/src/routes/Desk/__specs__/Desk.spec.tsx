@@ -222,6 +222,41 @@ describe('src | routes | Desk', () => {
     expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
   })
 
+  it('test getBooking failure, booking cant be validated yet', async () => {
+    const notConfirmedErrorMessage =
+      'Cette réservation a été effectuée le 05/09/2022.\nVeuillez attendre jusqu’au 07/09/2022 pour valider la contremarque.'
+    jest.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: HTTP_STATUS.FORBIDDEN,
+          body: {
+            booking:
+              'Cette réservation a été effectuée le 05/09/2022.\nVeuillez attendre jusqu’au 07/09/2022 pour valider la contremarque.',
+          },
+        } as ApiResult,
+        notConfirmedErrorMessage
+      )
+    )
+
+    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
+
+    userEvent.click(buttonGetBooking)
+    await waitFor(() => {
+      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
+        testToken
+      )
+    })
+    // to fix - no-conditional-in-test
+    const response = JSON.parse(responseDataContainer.textContent || '')
+
+    expect(Object.keys(response)).toHaveLength(1)
+    expect(response.error).toBeDefined()
+    expect(response.error.isTokenValidated).toBe(false)
+    expect(response.error.message).toBe(notConfirmedErrorMessage)
+    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
+  })
+
   it('test getBooking failure, api error', async () => {
     const globalErrorMessage = 'Server error'
     jest
