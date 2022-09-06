@@ -48,50 +48,53 @@ const UserPasswordForm = ({
   }
 
   return (
-    <BoxFormLayout.Fields>
-      <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit}>
-          <FormLayout>
-            <FormLayout.Row>
-              <PasswordInput
-                name="oldPassword"
-                label="Mot de passe actuel"
-                placeholder="Votre mot de passe actuel"
-                renderTooltip={false}
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <PasswordInput
-                name="newPassword"
-                label="Nouveau mot de passe"
-                placeholder="Votre nouveau mot de passe"
-                renderTooltip={false}
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <PasswordInput
-                name="newConfirmationPassword"
-                label="Confirmer votre nouveau mot de passe"
-                placeholder="Votre nouveau mot de passe"
-                renderTooltip={false}
-              />
-            </FormLayout.Row>
-          </FormLayout>
+    <>
+      <BoxFormLayout.RequiredMessage />
+      <BoxFormLayout.Fields>
+        <FormikProvider value={formik}>
+          <Form onSubmit={formik.handleSubmit}>
+            <FormLayout>
+              <FormLayout.Row>
+                <PasswordInput
+                  name="oldPassword"
+                  label="Mot de passe actuel"
+                  placeholder="Votre mot de passe actuel"
+                  renderTooltip={false}
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <PasswordInput
+                  name="newPassword"
+                  label="Nouveau mot de passe"
+                  placeholder="Votre nouveau mot de passe"
+                  renderTooltip={false}
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <PasswordInput
+                  name="newConfirmationPassword"
+                  label="Confirmer votre nouveau mot de passe"
+                  placeholder="Votre nouveau mot de passe"
+                  renderTooltip={false}
+                />
+              </FormLayout.Row>
+            </FormLayout>
 
-          <div className={styles['buttons-field']}>
-            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-              Annuler
-            </Button>
-            <SubmitButton
-              className="primary-button"
-              isLoading={formik.isSubmitting}
-            >
-              Enregistrer
-            </SubmitButton>
-          </div>
-        </Form>
-      </FormikProvider>
-    </BoxFormLayout.Fields>
+            <div className={styles['buttons-field']}>
+              <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+                Annuler
+              </Button>
+              <SubmitButton
+                className="primary-button"
+                isLoading={formik.isSubmitting}
+              >
+                Enregistrer
+              </SubmitButton>
+            </div>
+          </Form>
+        </FormikProvider>
+      </BoxFormLayout.Fields>
+    </>
   )
 }
 

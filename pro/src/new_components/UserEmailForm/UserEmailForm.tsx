@@ -50,6 +50,7 @@ const UserEmailForm = ({
 
   return (
     <>
+      <BoxFormLayout.RequiredMessage />
       <BoxFormLayout.FormHeader
         textSecondary="Adresse e-mail actuelle"
         textPrimary={currentUser.email}

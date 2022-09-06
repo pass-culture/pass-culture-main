@@ -6,6 +6,7 @@ import Banner from './BoxFormLayoutBanner'
 import Fields from './BoxFormLayoutFields'
 import FormHeader from './BoxFormLayoutFormHeader'
 import Header from './BoxFormLayoutHeader'
+import RequiredMessage from './BoxFormLayoutRequiredMessage'
 
 interface IBoxFormLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
@@ -23,5 +24,6 @@ BoxFormLayout.Header = Header
 BoxFormLayout.Banner = Banner
 BoxFormLayout.Fields = Fields
 BoxFormLayout.FormHeader = FormHeader
+BoxFormLayout.RequiredMessage = RequiredMessage
 
 export default BoxFormLayout
