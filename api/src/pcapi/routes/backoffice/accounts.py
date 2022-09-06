@@ -9,10 +9,12 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email.update import request_email_update_from_admin
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models.api_errors import ApiErrors
@@ -151,8 +153,24 @@ def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscrip
     user = utils.get_user_or_error(user_id)
 
     subscriptions = {}
+    eligibility_types = []
 
-    for eligibility in list(users_models.EligibilityType):
+    # Do not show information about eligibility types which are not possible depending on known user age
+    if user.dateOfBirth:
+        age_at_creation = users_utils.get_age_at_date(user.dateOfBirth, user.dateCreated)  # type: ignore [arg-type]
+        if age_at_creation <= users_constants.ELIGIBILITY_AGE_18:
+            if age_at_creation == users_constants.ELIGIBILITY_AGE_18:
+                eligibility_types.append(users_models.EligibilityType.AGE18)
+            else:
+                eligibility_types.append(users_models.EligibilityType.UNDERAGE)
+                age_now = users_utils.get_age_from_birth_date(user.dateOfBirth)
+                if age_now >= users_constants.ELIGIBILITY_AGE_18:
+                    eligibility_types.append(users_models.EligibilityType.AGE18)
+    else:
+        # Profile completion step not reached yet; can't guess eligibility, display all
+        eligibility_types = list(users_models.EligibilityType)
+
+    for eligibility in eligibility_types:
         subscriptions[eligibility.name] = serialization.EligibilitySubscriptionHistoryModel(
             subscriptionItems=[
                 serialization.SubscriptionItemModel.from_orm(method(user, eligibility))
