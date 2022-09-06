@@ -1444,19 +1444,15 @@ class ProfilingFraudScoreTest:
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     @override_features(ENABLE_USER_PROFILING=True)
-    @pytest.mark.parametrize(
-        "risk_rating,expected_check_status",
-        (
-            (fraud_models.UserProfilingRiskRating.HIGH, fraud_models.FraudCheckStatus.KO),
-            (fraud_models.UserProfilingRiskRating.MEDIUM, fraud_models.FraudCheckStatus.SUSPICIOUS),
-        ),
-    )
-    def test_fraud_result_on_risky_user_profiling(self, client, requests_mock, risk_rating, expected_check_status):
+    def test_fraud_result_on_high_risk_user_profiling(self, client, requests_mock):
         user = users_factories.UserFactory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
         )
         session_id = "8663ac09-db2a-46a1-9ccd-49a07d5cd7ae"
-        payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
+        payload = fraud_factories.UserProfilingFraudDataFactory(
+            risk_rating=fraud_models.UserProfilingRiskRating.HIGH
+        ).dict()
         payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
         payload["risk_rating"] = payload["risk_rating"].value  # because Enum is not json serializable
         requests_mock.register_uri(
@@ -1471,16 +1467,51 @@ class ProfilingFraudScoreTest:
 
         assert response.status_code == 204
 
-        assert len(user.subscriptionMessages) == 1
-        sub_message = user.subscriptionMessages[0]
-        assert sub_message.userMessage == "Ton inscription n'a pas pu aboutir."
+        assert fraud_models.BeneficiaryFraudCheck.query.count() == 1
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.userId == user.id
+        assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+
+        assert (
+            subscription_api.get_subscription_message(user).user_message
+            == "Ton inscription n'a pas pu aboutir. Contacte le support pour plus d'informations"
+        )
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @override_features(ENABLE_USER_PROFILING=True)
+    def test_fraud_result_on_medium_risk_user_profiling(self, client, requests_mock):
+        user = users_factories.UserFactory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+        )
+        session_id = "8663ac09-db2a-46a1-9ccd-49a07d5cd7ae"
+        payload = fraud_factories.UserProfilingFraudDataFactory(
+            risk_rating=fraud_models.UserProfilingRiskRating.MEDIUM
+        ).dict()
+        payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
+        payload["risk_rating"] = payload["risk_rating"].value  # because Enum is not json serializable
+        requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=payload,
+            status_code=200,
+        )
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "agent_mobile"})
+
+        assert response.status_code == 204
 
         assert fraud_models.BeneficiaryFraudCheck.query.count() == 1
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
-        assert fraud_check.eligibilityType == None
-        assert fraud_check.status == expected_check_status
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+
+        assert subscription_api.get_subscription_message(user) is None
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     @override_features(ENABLE_USER_PROFILING=True)
