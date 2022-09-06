@@ -32,7 +32,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -305,9 +304,6 @@ def check_can_unsuspend(user: models.User) -> None:
     A user can ask for unsuspension if it has been suspended upon his
     own request and if the unsuspension time limit has not been exceeded
     """
-    if not FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION.is_active():
-        raise exceptions.UnsuspensionNotEnabled()
-
     reason = user.suspension_reason
     if not reason:
         raise exceptions.NotSuspended()

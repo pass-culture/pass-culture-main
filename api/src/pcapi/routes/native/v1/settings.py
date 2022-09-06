@@ -32,7 +32,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_USER_PROFILING,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
-        FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION,
         FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
         FeatureToggle.APP_ENABLE_CATEGORY_FILTER_PAGE,
         FeatureToggle.APP_ENABLE_COOKIES_V2,
@@ -64,7 +63,6 @@ def get_settings() -> serializers.SettingsResponse:
         is_webapp_v2_enabled=True,
         object_storage_url=OBJECT_STORAGE_URL,
         pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
-        allow_account_unsuspension=features[FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION],
         account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
         app_enable_cookies_v2=features[FeatureToggle.APP_ENABLE_COOKIES_V2],
     )

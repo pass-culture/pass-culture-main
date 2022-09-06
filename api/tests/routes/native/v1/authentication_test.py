@@ -35,10 +35,9 @@ def test_account_is_active_account_state(client):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
 
-    with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-        response = client.post("/native/v1/signin", json=data)
-        assert response.status_code == 200
-        assert response.json["accountState"] == AccountState.ACTIVE.value
+    response = client.post("/native/v1/signin", json=data)
+    assert response.status_code == 200
+    assert response.json["accountState"] == AccountState.ACTIVE.value
 
 
 def test_account_suspended_upon_user_request_account_state(client):
@@ -46,10 +45,9 @@ def test_account_suspended_upon_user_request_account_state(client):
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
     users_factories.SuspendedUponUserRequestFactory(user=user)
 
-    with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-        response = client.post("/native/v1/signin", json=data)
-        assert response.status_code == 200
-        assert response.json["accountState"] == AccountState.SUSPENDED_UPON_USER_REQUEST.value
+    response = client.post("/native/v1/signin", json=data)
+    assert response.status_code == 200
+    assert response.json["accountState"] == AccountState.SUSPENDED_UPON_USER_REQUEST.value
 
 
 def test_account_deleted_account_state(client):
@@ -57,28 +55,17 @@ def test_account_deleted_account_state(client):
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
     users_factories.DeletedAccountSuspensionFactory(user=user)
 
-    with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-        response = client.post("/native/v1/signin", json=data)
-        assert response.status_code == 400
-        assert response.json["code"] == "ACCOUNT_DELETED"
+    response = client.post("/native/v1/signin", json=data)
+    assert response.status_code == 400
+    assert response.json["code"] == "ACCOUNT_DELETED"
 
 
-def test_allow_inactive_user_sign_when_ff_is_active(client):
+def test_allow_inactive_user_sign(client):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
 
-    with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-        response = client.post("/native/v1/signin", json=data)
-        assert response.status_code == 200
-
-
-def test_reject_inactive_user_sign_when_ff_is_disabled(client):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
-
-    with override_features(ALLOW_ACCOUNT_UNSUSPENSION=False):
-        response = client.post("/native/v1/signin", json=data)
-        assert response.status_code == 400
+    response = client.post("/native/v1/signin", json=data)
+    assert response.status_code == 200
 
 
 def test_user_logs_in_and_refreshes_token(client):
