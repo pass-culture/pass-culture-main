@@ -7,7 +7,7 @@ import {
   Switch,
   Typography,
 } from '@mui/material'
-import moment from 'moment'
+import { format, parseISO } from 'date-fns'
 import React, { useState } from 'react'
 
 import { snakeCaseToTitleCase } from '../../../helpers/textTools'
@@ -58,9 +58,12 @@ export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
             </Grid>
             <Grid item xs={6}>
               <p>
-                {moment(fraudCheckItem.dateCreated).format(
-                  'D/MM/YYYY à HH:mm:s'
-                )}
+                {fraudCheckItem &&
+                  fraudCheckItem.dateCreated &&
+                  format(
+                    parseISO(fraudCheckItem.dateCreated.toString()),
+                    'dd/MM/yyyy à HH:mm:s'
+                  )}
               </p>
             </Grid>
           </Stack>

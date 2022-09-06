@@ -1,6 +1,6 @@
 import { Card, Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
-import moment from 'moment'
+import { format, parseISO } from 'date-fns'
 import React, { useState } from 'react'
 import {
   Form,
@@ -82,7 +82,10 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
         const formData = {
           address: params.address,
           city: params.city,
-          dateOfBirth: moment(params.dateOfBirth).format(),
+          dateOfBirth: format(
+            parseISO(params.dateOfBirth.toString()),
+            'yyyy-MM-dd'
+          ),
           email: params.email,
           firstName: params.firstName,
           idPieceNumber:
@@ -231,7 +234,10 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
                   label={'Date de naissance'}
                   defaultValue={
                     user.dateOfBirth
-                      ? moment(user.dateOfBirth).format('YYYY-MM-DD')
+                      ? format(
+                          parseISO(user.dateOfBirth.toString()),
+                          'yyyy-MM-dd'
+                        )
                       : ''
                   }
                   disabled={!editable}
@@ -246,8 +252,9 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
 
                 <Typography variant={'body1'}>
                   {firstFraudCheck && firstFraudCheck.dateCreated
-                    ? moment(firstFraudCheck.dateCreated).format(
-                        'D/MM/YYYY à HH:mm'
+                    ? format(
+                        parseISO(firstFraudCheck.dateCreated.toString()),
+                        'dd/MM/yyyy'
                       )
                     : 'N/A'}
                 </Typography>
