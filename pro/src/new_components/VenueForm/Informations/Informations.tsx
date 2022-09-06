@@ -27,13 +27,11 @@ const Informations = ({
 }: IInformations) => {
   const { initialValues } = useFormikContext<IVenueFormValues>()
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
-  const siretLabel = isCreatedEntity
-    ? 'SIRET du lieu qui accueille vos offres (si applicable) :'
-    : 'SIRET :'
+  const siretLabel = isCreatedEntity ? 'SIRET de ce lieu' : 'SIRET'
 
   return (
     <>
-      <FormLayout.Section title="Informations lieu">
+      <FormLayout.Section title="Informations du lieu">
         <FormLayout.Row>
           {!venueIsVirtual && (
             <SiretOrCommentFields
@@ -49,17 +47,21 @@ const Informations = ({
         <FormLayout.Row>
           <TextInput
             name="name"
-            label="Nom du lieu :"
+            label="Nom du lieu"
             readOnly={isFieldNameFrozen}
           />
         </FormLayout.Row>
         <FormLayout.Row>
-          <TextInput name="publicName" label="Nom d’usage du lieu :" />
+          <TextInput
+            name="publicName"
+            label="Nom d'affichage du lieu"
+            isOptional
+          />
         </FormLayout.Row>
         <FormLayout.Row>
           <TextInput
             name="mail"
-            label="Mail :"
+            label="Adresse e-mail qui recevra les notifications de réservation"
             type="email"
             placeholder="email@exemple.com"
           />
@@ -67,11 +69,14 @@ const Informations = ({
         <FormLayout.Row>
           <Select
             options={[
-              { value: '', label: 'Choisissez un type de lieu dans la liste ' },
+              {
+                value: '',
+                label: 'Sélectionner celui qui correspond à votre lieu',
+              },
               ...venueTypes,
             ]}
             name="venueType"
-            label="Type de lieu :"
+            label="Type de lieu"
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -80,16 +85,23 @@ const Informations = ({
               {
                 value: '',
                 label:
-                  'Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste',
+                  'Si votre lieu est labellisé précisez-le en le sélectionnant',
               },
               ...venueLabels,
             ]}
             name="venueLabel"
-            label="Label du Ministère de la Culture ou du CNC :"
+            label="Label du Ministère de la Culture ou du CNC"
+            isOptional
           />
         </FormLayout.Row>
         <FormLayout.Row>
-          <TextArea name="description" label="Description :" maxLength={1000} />
+          <TextArea
+            name="description"
+            label="Description"
+            maxLength={1000}
+            countCharacters
+            isOptional
+          />
         </FormLayout.Row>
       </FormLayout.Section>
     </>

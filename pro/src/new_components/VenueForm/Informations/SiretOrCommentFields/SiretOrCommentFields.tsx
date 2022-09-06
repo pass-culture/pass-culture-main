@@ -83,7 +83,7 @@ const SiretOrCommentFields = ({
         />
       ) : (
         <TextArea
-          label="Commentaire du lieu sans SIRET :"
+          label="Commentaire du lieu sans SIRET"
           name="comment"
           placeholder="Je suis un équipement culturel (ou autre) donc je n’ai pas de SIRET ou je n’ai pas la gestion de ce lieu, il accueille simplement une proposition...
           "

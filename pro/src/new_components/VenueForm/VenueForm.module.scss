@@ -1,0 +1,12 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
+.venue-form {
+  &-description {
+    @include fonts.caption();
+
+    margin-bottom: rem.torem(32px);
+    color: colors.$grey-dark;
+  }
+}
