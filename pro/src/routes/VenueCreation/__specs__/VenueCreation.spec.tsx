@@ -32,7 +32,7 @@ jest.mock('new_components/VenueForm', () => {
   return {
     ...jest.requireActual('new_components/VenueForm'),
     setDefaultInitialFormValues: jest.fn().mockImplementation(() => {
-      return { publicName: 'Cinéma des iles' }
+      return { publicName: 'Cinéma des iles', description: '' }
     }),
   }
 })

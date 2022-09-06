@@ -52,7 +52,7 @@ describe('components | Informations', () => {
 
   beforeEach(() => {
     const updateIsSiretValued = jest.fn()
-    initialValues = {}
+    initialValues = { description: '' }
     props = {
       isCreatedEntity: true,
       readOnly: false,
@@ -120,7 +120,7 @@ describe('components | Informations', () => {
 
     await userEvent.selectOptions(
       venueTypeSelect,
-      'Choisissez un type de lieu dans la liste '
+      'Sélectionner celui qui correspond à votre lieu'
     )
     await userEvent.tab()
     expect(

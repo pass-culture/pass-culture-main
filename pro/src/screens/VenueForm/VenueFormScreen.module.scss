@@ -1,0 +1,5 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
+.venue-form-heading {
+  margin-bottom: rem.torem(32px);
+}

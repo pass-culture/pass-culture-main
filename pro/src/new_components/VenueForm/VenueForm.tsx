@@ -7,6 +7,7 @@ import { SubmitButton } from 'ui-kit'
 import { Contact } from './Contact'
 import ImageUploader from './ImageUploader/ImageUploader'
 import { Informations } from './Informations'
+import styles from './VenueForm.module.scss'
 
 import { IVenueFormValues } from '.'
 
@@ -28,7 +29,10 @@ const VenueForm = ({
 
   return (
     <div>
-      <FormLayout>
+      <FormLayout className={styles['venue-form']} small>
+        <p className={styles['venue-form-description']}>
+          Tous les champs sont obligatoires sauf mention contraire.
+        </p>
         <Informations
           isCreatedEntity={isCreatingVenue}
           readOnly={!isCreatingVenue}
