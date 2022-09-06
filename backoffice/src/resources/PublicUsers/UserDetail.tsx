@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material'
 import { captureException } from '@sentry/react'
-import moment from 'moment'
+import { format, parseISO } from 'date-fns'
 import React, { useState } from 'react'
 import {
   Identifier,
@@ -258,8 +258,10 @@ export const UserDetail = () => {
                 <Typography variant="body1" gutterBottom component="div">
                   Crédité le :{' '}
                   {userBaseInfo.userCredit &&
-                    moment(userBaseInfo.userCredit.dateCreated).format(
-                      'D/MM/YYYY'
+                    userBaseInfo.userCredit.dateCreated &&
+                    format(
+                      parseISO(userBaseInfo.userCredit.dateCreated.toString()),
+                      'dd/MM/yyyy'
                     )}
                 </Typography>
               </Grid>
@@ -365,8 +367,10 @@ export const UserDetail = () => {
               importé le :{' '}
               {idsCheckHistory.length > 0 &&
                 idsCheckHistory[0].items.length > 0 &&
-                moment(idsCheckHistory[0].items[0].dateCreated).format(
-                  'D/MM/YYYY à HH:mm'
+                idsCheckHistory[0].items[0].dateCreated &&
+                format(
+                  parseISO(idsCheckHistory[0].items[0].dateCreated.toString()),
+                  'dd/MM/yyyy'
                 )}
             </Typography>
           </Card>

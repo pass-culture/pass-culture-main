@@ -21,7 +21,6 @@ export function App() {
     })
   }, [])
   const client_id = process.env.REACT_APP_OIDC_CLIENT_ID
-  console.log('client id ', client_id)
   return (
     <>
       <GoogleOAuthProvider clientId={client_id ? client_id : 'test'}>

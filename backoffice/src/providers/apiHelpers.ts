@@ -16,7 +16,7 @@ export async function safeFetch(url: string, options: RequestInit = {}) {
   if (token) {
     options.headers = new Headers({
       ...options.headers,
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${JSON.parse(token)}`,
     })
   }
 
