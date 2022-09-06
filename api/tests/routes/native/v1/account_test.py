@@ -16,6 +16,7 @@ import jwt
 import pytest
 
 from pcapi import settings
+from pcapi.core import testing
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
@@ -286,6 +287,57 @@ class AccountTest:
             response = client.get("/native/v1/me")
 
         assert response.json["needsToFillCulturalSurvey"] == needsToFillCulturalSurvey
+
+    def test_num_queries_with_next_step(self, client):
+        user = users_factories.UserFactory(
+            activity=users_models.ActivityEnum.STUDENT.value,
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            email=self.identifier,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+        )
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+        client.with_token(user.email)
+
+        n_queries = 1  # get user
+        n_queries += 1  # get bookings
+        n_queries += 1  # get user_profiling fraud_check
+        n_queries += 1  # get feature enable_user_profiling
+        n_queries += 1  # get profile completion fraud_check
+        n_queries += 1  # get feature allow_id_check_registration
+        n_queries += 1  # get feature enable_ubble
+        n_queries += 1  # get feature enable_subscription_limitatin
+        n_queries += 1  # get feature enable_native_cultural_survey
+
+        with testing.assert_num_queries(n_queries):
+            response = client.get("/native/v1/me")
+
+    def test_num_queries_beneficiary(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+        client.with_token(user.email)
+
+        n_queries = 1  # get user
+        n_queries += 1  # get bookings for deposit remaining amount
+        n_queries += 1  # get bookings for booked offers info
+        n_queries += 1  # get feature enable_native_cultural_survey
+
+        with testing.assert_num_queries(n_queries):
+            response = client.get("/native/v1/me")
 
 
 class AccountCreationTest:
