@@ -173,8 +173,8 @@ const CollectiveDataForm = ({
               hideTags
               options={venueInterventionOptions}
               fieldName="collectiveInterventionArea"
-              label="Périmètre d’intervention :"
-              placeholder="Sélectionner un ou plusieurs territoire(s) d'intervention"
+              label="Zone de mobilité :"
+              placeholder="Sélectionner une ou plusieurs zone(s) de mobilité"
               className={styles.row}
               inline
             />

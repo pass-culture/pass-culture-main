@@ -140,9 +140,7 @@ describe('CollectiveDataEdition', () => {
       const domainsField = screen.getByLabelText(
         /Domaine artistique et culturel :/
       )
-      const interventionAreaField = screen.getByLabelText(
-        /Périmètre d’intervention :/
-      )
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       const statusField = screen.getByLabelText(/Statut :/)
       const culturalPartnersField = screen.getByLabelText(
         /Réseaux partenaires EAC :/
@@ -294,9 +292,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const interventionAreaField = screen.getByLabelText(
-        /Périmètre d’intervention :/
-      )
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(
@@ -317,9 +313,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const interventionAreaField = screen.getByLabelText(
-        /Périmètre d’intervention :/
-      )
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
@@ -336,9 +330,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const interventionAreaField = screen.getByLabelText(
-        /Périmètre d’intervention :/
-      )
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
@@ -361,9 +353,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const interventionAreaField = screen.getByLabelText(
-        /Périmètre d’intervention :/
-      )
+      const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
