@@ -70,6 +70,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_NEW_BANK_INFORMATIONS_CREATION = (
         "Active le nouveau parcours d'ajout de coordonnées bancaires sur la page lieu"
     )
+    ENABLE_NEW_IDENTIFICATION_FLOW = "Activer le nouveau flux d'inscription jeune pré-Ubble"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PHONE_VALIDATION_IN_STEPPER = (
@@ -164,6 +165,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
+    FeatureToggle.ENABLE_NEW_IDENTIFICATION_FLOW,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
