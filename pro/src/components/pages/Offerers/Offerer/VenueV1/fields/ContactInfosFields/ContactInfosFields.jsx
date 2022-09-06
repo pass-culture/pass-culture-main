@@ -29,7 +29,7 @@ const ContactInfosFields = ({ readOnly }) => (
       className="field text-field"
       label="Mail :"
       name="contact.email"
-      placeholder="mail@exemple.com"
+      placeholder="email@exemple.com"
       readOnly={readOnly}
       type="email"
       validate={validateEmail}
