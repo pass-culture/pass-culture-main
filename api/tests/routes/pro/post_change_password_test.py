@@ -64,9 +64,24 @@ class Returns400Test:
         response = client.post("/users/password", json=data)
         # then
         assert response.status_code == 400
-        assert response.json["oldPassword"] == ["ensure this value has at least 12 characters"]
-        assert response.json["newPassword"] == ["ensure this value has at least 12 characters"]
-        assert response.json["newConfirmationPassword"] == ["ensure this value has at least 12 characters"]
+        assert response.json["oldPassword"] == ["Ton ancien mot de passe est incorrect."]
+        assert "Ton mot de passe doit contenir au moins :" in response.json["newPassword"][0]
+
+    def when_data_password_don_t_match_in_the_request_body(self, client):
+        # given
+        user = users_factories.UserFactory(email="user@example.com")
+        data = {
+            "oldPassword": user.clearTextPassword,
+            "newPassword": "N3W_Valid_p4ssw0rd",
+            "newConfirmationPassword": "N3W_NotMatch_p4ssw0rd",
+        }
+
+        # when
+        client = client.with_session_auth(user.email)
+        response = client.post("/users/password", json=data)
+        # then
+        assert response.status_code == 400
+        assert response.json["newConfirmationPassword"] == ["Les deux mots de passe ne sont pas identiques."]
 
     def when_data_is_missing_in_the_request_body(self, client):
         # given
