@@ -43,7 +43,6 @@ class SettingsTest:
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": False,
-            "allowAccountUnsuspension": True,
             "accountUnsuspensionLimit": 60,
             "appEnableCookiesV2": False,
         }
@@ -57,7 +56,6 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         PRO_DISABLE_EVENTS_QRCODE=True,
-        ALLOW_ACCOUNT_UNSUSPENSION=True,
         APP_ENABLE_AUTOCOMPLETE=False,
         APP_ENABLE_CATEGORY_FILTER_PAGE=True,
         APP_ENABLE_COOKIES_V2=True,
@@ -84,7 +82,6 @@ class SettingsTest:
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": True,
-            "allowAccountUnsuspension": True,
             "accountUnsuspensionLimit": 60,
             "appEnableCookiesV2": True,
         }

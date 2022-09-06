@@ -1953,28 +1953,18 @@ class UnsuspendAccountTest:
         assert mail.sent_data["template"] == dataclasses.asdict(TransactionalEmail.ACCOUNT_UNSUSPENDED.value)
         assert mail.sent_data["To"] == user.email
 
-    def test_error_when_ff_not_enabled(self, client):
-        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        users_factories.SuspendedUponUserRequestFactory(user=user)
-
-        with override_features(ALLOW_ACCOUNT_UNSUSPENSION=False):
-            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
-            self.assert_code_and_not_active(response, user, "ACCOUNT_UNSUSPENSION_NOT_ENABLED")
-
     def test_error_when_not_suspended(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=True)
 
-        with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
-            self.assert_code(response, "ALREADY_UNSUSPENDED")
+        response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+        self.assert_code(response, "ALREADY_UNSUSPENDED")
 
     def test_error_when_not_suspended_upon_user_request(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         users_factories.UserSuspensionByFraudFactory(user=user)
 
-        with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
-            self.assert_code_and_not_active(response, user, "UNSUSPENSION_NOT_ALLOWED")
+        response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+        self.assert_code_and_not_active(response, user, "UNSUSPENSION_NOT_ALLOWED")
 
     def test_error_when_suspension_time_limit_reached(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
@@ -1982,9 +1972,8 @@ class UnsuspendAccountTest:
         suspension_date = date.today() - timedelta(days=users_constants.ACCOUNT_UNSUSPENSION_DELAY + 1)
         users_factories.SuspendedUponUserRequestFactory(user=user, eventDate=suspension_date)
 
-        with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
-            self.assert_code_and_not_active(response, user, "UNSUSPENSION_LIMIT_REACHED")
+        response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+        self.assert_code_and_not_active(response, user, "UNSUSPENSION_LIMIT_REACHED")
 
     def assert_code(self, response, code):
         assert response.status_code == 403

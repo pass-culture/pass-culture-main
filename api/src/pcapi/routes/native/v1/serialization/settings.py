@@ -30,7 +30,6 @@ class SettingsResponse(BaseModel):
     is_webapp_v2_enabled: bool
     object_storage_url: str
     pro_disable_events_qrcode: bool
-    allow_account_unsuspension: bool
     account_unsuspension_limit: int
     app_enable_cookies_v2: bool
 
