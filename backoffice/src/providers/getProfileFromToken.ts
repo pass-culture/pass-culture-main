@@ -4,5 +4,5 @@ import { AuthToken } from './types'
 
 export const getProfileFromToken = (tokenJson: string) => {
   const token = JSON.parse(tokenJson)
-  return jwtDecode<AuthToken>(token.id_token)
+  return jwtDecode<AuthToken>(token)
 }
