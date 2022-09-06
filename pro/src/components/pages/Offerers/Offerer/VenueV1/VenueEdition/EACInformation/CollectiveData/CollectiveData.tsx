@@ -64,7 +64,7 @@ const CollectiveData = ({
         venue.collectiveInterventionArea.length > 0 && (
           <div className={styles['collective-data-row']}>
             <Title className={styles['collective-data-title']} level={4}>
-              Périmètre d’intervention :{' '}
+              Zone de mobilité :{' '}
             </Title>
             {getInterventionAreaLabels(venue.collectiveInterventionArea)}
           </div>
