@@ -75,6 +75,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
             is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
+            return
 
         if not is_activated:
             users_external.update_external_user(user)
