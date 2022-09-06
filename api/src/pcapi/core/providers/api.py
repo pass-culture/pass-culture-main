@@ -46,6 +46,11 @@ def create_venue_provider(
     else:
         new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
 
+    logger.info(  # type: ignore [call-arg]
+        "La synchronisation d'offre a été activée",
+        extra={"venue_id": venue_id, "provider_id": provider_id},
+        technical_message_id="offer.sync.activated",
+    )
     return new_venue_provider
 
 
@@ -112,10 +117,11 @@ def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> Non
     venue_id = venue_provider.venueId
     provider_name = venue_provider.provider.name
     repository.delete(venue_provider)
-    logger.info(
+    logger.info(  # type: ignore [call-arg]
         "Deleted VenueProvider for venue %d",
         venue_id,
         extra={"venue_id": venue_id, "provider_name": provider_name},
+        technical_message_id="offer.sync.deleted",
     )
 
 
@@ -127,11 +133,12 @@ def update_venue_provider(
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
         )
-        logger.info(
+        logger.info(  # type: ignore [call-arg]
             "Updated VenueProvider %s isActive attribut to %s",
             venue_provider.id,
             venue_provider.isActive,
             extra={"is_active": venue_provider.isActive, "venue_provider_id": venue_provider.id},
+            technical_message_id="offer.sync.activated" if venue_provider.isActive else "offer.sync.deactivated",
         )
 
     if venue_provider.isFromAllocineProvider:
@@ -186,7 +193,6 @@ def connect_venue_to_provider(
 def connect_venue_to_cinema_provider(
     venue: Venue, provider: providers_models.Provider, payload: providers_models.VenueProviderCreationPayload
 ) -> providers_models.VenueProvider:
-
     provider_pivot = providers_repository.get_cinema_provider_pivot_for_venue(venue)
 
     if not provider_pivot:
@@ -276,11 +282,11 @@ def synchronize_stocks(
         venue,
         provider_id,
     )
-    new_offers_references = [new_offer.idAtProvider for new_offer in new_offers]
+    new_offers_references = [new_offer.idAtProvider for new_offer in new_offers if new_offer.idAtProvider]
 
     db.session.bulk_save_objects(new_offers)
 
-    new_offers_by_provider_reference = offers_repository.get_offers_map_by_id_at_provider(new_offers_references, venue)  # type: ignore [arg-type]
+    new_offers_by_provider_reference = offers_repository.get_offers_map_by_id_at_provider(new_offers_references, venue)
     offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
 
     stocks_provider_references = [stock.stocks_provider_reference for stock in stock_details]
