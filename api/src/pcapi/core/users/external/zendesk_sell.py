@@ -492,7 +492,7 @@ def create_venue(venue: offerers_models.Venue) -> None:
         return
 
     # API calls to Zendesk Sell are delayed in a GCP task to return quickly
-    zendesk_sell_tasks.create_venue_task.delay(venue.id)
+    zendesk_sell_tasks.create_venue_task.delay(zendesk_sell_tasks.VenuePayload(venue_id=venue.id))
 
 
 def do_create_venue(venue_id: int) -> None:
@@ -513,7 +513,7 @@ def update_venue(venue: offerers_models.Venue) -> None:
         return
 
     # API calls to Zendesk Sell are delayed in a GCP task to return quickly
-    zendesk_sell_tasks.update_venue_task.delay(venue.id)
+    zendesk_sell_tasks.update_venue_task.delay(zendesk_sell_tasks.VenuePayload(venue_id=venue.id))
 
 
 def do_update_venue(venue_id: int) -> None:
@@ -546,7 +546,7 @@ def create_offerer(offerer: offerers_models.Offerer) -> None:
         return
 
     # API calls to Zendesk Sell are delayed in a GCP task to return quickly
-    zendesk_sell_tasks.create_offerer_task.delay(offerer.id)
+    zendesk_sell_tasks.create_offerer_task.delay(zendesk_sell_tasks.OffererPayload(offerer_id=offerer.id))
 
 
 def do_create_offerer(offerer_id: int) -> None:
@@ -567,7 +567,7 @@ def update_offerer(offerer: offerers_models.Offerer) -> None:
         return
 
     # API calls to Zendesk Sell are delayed in a GCP task to return quickly
-    zendesk_sell_tasks.update_offerer_task.delay(offerer.id)
+    zendesk_sell_tasks.update_offerer_task.delay(zendesk_sell_tasks.OffererPayload(offerer_id=offerer.id))
 
 
 def do_update_offerer(offerer_id: int) -> None:
