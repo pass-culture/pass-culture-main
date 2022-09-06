@@ -1,47 +1,26 @@
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
-  CircularProgress,
   Divider,
   Stack,
   Typography,
 } from '@mui/material'
-import React, { useState } from 'react'
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google'
+import React from 'react'
 import { useLogin as userLogin } from 'react-admin'
-import {
-  GoogleLoginResponse,
-  GoogleLoginResponseOffline,
-  useGoogleLogin,
-} from 'react-google-login'
 
 import { Colors } from '../../layout/Colors'
 import { Logo } from '../../layout/Logo'
 import { GovernmentIcon } from '../Icons/GovernmentIcon'
 
 export const LoginForm = () => {
-  const [loading, setLoading] = useState(false)
   const login = userLogin()
 
-  const onLoginSucess = (
-    response: GoogleLoginResponse | GoogleLoginResponseOffline
-  ) => {
-    setLoading(false)
-    if ('getAuthResponse' in response) {
-      login({ token: response.getAuthResponse() })
+  const onLoginSucess = (response: CredentialResponse) => {
+    if (response) {
+      login({ token: response.credential })
     }
-  }
-  const client_id = process.env.REACT_APP_OIDC_CLIENT_ID
-
-  const { signIn } = useGoogleLogin({
-    clientId: client_id ? client_id : 'test',
-    onSuccess: onLoginSucess,
-  })
-
-  const handleLogin = async () => {
-    setLoading(true)
-    signIn()
   }
 
   return (
@@ -65,16 +44,14 @@ export const LoginForm = () => {
         </Typography>
       </CardContent>
       <CardActions sx={{ my: 5 }}>
-        <Button
-          variant="contained"
-          type="submit"
-          color="primary"
-          onClick={handleLogin}
-          disabled={loading}
-        >
-          {loading && <CircularProgress size={18} thickness={2} />}
-          M'authentifier avec Google
-        </Button>
+        <GoogleLogin
+          onSuccess={onLoginSucess}
+          theme={'outline'}
+          size={'large'}
+          shape={'square'}
+          text={'signin_with'}
+          context={'signin'}
+        />
       </CardActions>
     </Card>
   )
