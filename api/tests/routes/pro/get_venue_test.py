@@ -19,9 +19,10 @@ class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client):
         now = datetime.datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offerers_factories.VenueFactory(
+        venue = offerers_factories.CollectiveVenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
+            collectiveDescription="Description du lieu",
         )
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
@@ -128,7 +129,7 @@ class Returns200Test:
             "bannerMeta": None,
             "nonHumanizedId": venue.id,
             "collectiveAccessInformation": None,
-            "collectiveDescription": None,
+            "collectiveDescription": "Description du lieu",
             "collectiveDomains": [],
             "collectiveEmail": None,
             "collectiveInterventionArea": ["75", "92"],
