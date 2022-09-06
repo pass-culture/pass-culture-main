@@ -54,11 +54,21 @@ const getBookingFailure = (
   }
   if (apiResponseError.status === HTTP_STATUS.FORBIDDEN) {
     const apiReimbursedErrorMessage = apiResponseError.body['payment']
+    const apiCantBeValidatedErrorMessage = apiResponseError.body['booking']
     if (apiReimbursedErrorMessage) {
       return {
         error: {
           isTokenValidated: false,
           message: apiReimbursedErrorMessage,
+          variant: MESSAGE_VARIANT.ERROR,
+        },
+      }
+    }
+    if (apiCantBeValidatedErrorMessage) {
+      return {
+        error: {
+          isTokenValidated: false,
+          message: apiCantBeValidatedErrorMessage,
           variant: MESSAGE_VARIANT.ERROR,
         },
       }
