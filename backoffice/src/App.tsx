@@ -1,4 +1,5 @@
 import CssBaseline from '@mui/material/CssBaseline'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import React, { createElement, useEffect } from 'react'
 import { Admin, CustomRoutes, Resource } from 'react-admin'
 import { Route, BrowserRouter } from 'react-router-dom'
@@ -19,40 +20,43 @@ export function App() {
       enabled: process.env.NODE_ENV !== 'development',
     })
   }, [])
-
+  const client_id = process.env.REACT_APP_OIDC_CLIENT_ID
+  console.log('client id ', client_id)
   return (
     <>
-      <BrowserRouter>
-        <CssBaseline />
-        <Admin
-          dataProvider={dataProvider}
-          authProvider={authProvider}
-          i18nProvider={i18nProvider}
-          layout={CustomLayout}
-          theme={theme}
-          loginPage={LoginPage}
-        >
-          {/* users */}
-          {resources.map(resource => (
-            <Resource
-              key={resource.name}
-              name={resource.name}
-              list={resource.list}
-              edit={resource.edit}
-              create={resource.create}
-            />
-          ))}
-          <CustomRoutes>
-            {routes.map(route => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={createElement(route.component)}
+      <GoogleOAuthProvider clientId={client_id ? client_id : 'test'}>
+        <BrowserRouter>
+          <CssBaseline />
+          <Admin
+            dataProvider={dataProvider}
+            authProvider={authProvider}
+            i18nProvider={i18nProvider}
+            layout={CustomLayout}
+            theme={theme}
+            loginPage={LoginPage}
+          >
+            {/* users */}
+            {resources.map(resource => (
+              <Resource
+                key={resource.name}
+                name={resource.name}
+                list={resource.list}
+                edit={resource.edit}
+                create={resource.create}
               />
             ))}
-          </CustomRoutes>
-        </Admin>
-      </BrowserRouter>
+            <CustomRoutes>
+              {routes.map(route => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={createElement(route.component)}
+                />
+              ))}
+            </CustomRoutes>
+          </Admin>
+        </BrowserRouter>
+      </GoogleOAuthProvider>
     </>
   )
 }

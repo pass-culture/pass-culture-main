@@ -1,3 +1,4 @@
+import { googleLogout } from '@react-oauth/google'
 import decodeJwt from 'jwt-decode'
 import { UserManager } from 'oidc-client'
 import { AuthProvider } from 'react-admin'
@@ -30,14 +31,12 @@ async function getTokenApiFromAuthToken() {
 
   const authToken = JSON.parse(token)
   try {
-    const response = await fetch(
-      `${env.API_URL}/auth/token?token=${authToken.id_token}`
-    )
+    const response = await fetch(`${env.API_URL}/auth/token?token=${authToken}`)
     if (!response.ok) {
       eventMonitoring.captureException(response.statusText)
     }
     const res = await response.json()
-    localStorage.setItem('tokenApi', res.token)
+    localStorage.setItem('tokenApi', JSON.stringify(res.token))
   } catch (error) {
     eventMonitoring.captureException(error)
     throw error
@@ -73,6 +72,7 @@ export const authProvider: AuthProvider = {
     // if (status === 401 || status === 403) {
     //   localStorage.removeItem('username');
     // }
+    console.log('login error', error)
     eventMonitoring.captureException(error)
     throw error
   },
@@ -93,13 +93,16 @@ export const authProvider: AuthProvider = {
     }
   },
   async logout() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('tokenApi')
+    // localStorage.removeItem('token')
+    //localStorage.removeItem('tokenApi')
+    googleLogout()
   },
   async getIdentity() {
     try {
       const token = localStorage.getItem('token')
-      const jwt: AuthToken = getProfileFromToken(token as string)
+      const jwt: AuthToken = getProfileFromToken(
+        JSON.stringify(token) as string
+      )
 
       return {
         id: jwt.sub,
