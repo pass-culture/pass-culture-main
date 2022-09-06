@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import enum
 
 
@@ -67,3 +68,4 @@ class SubscriptionMessage:
     user_message: str
     call_to_action: CallToActionMessage | None = None
     pop_over_icon: PopOverIcon | None = None
+    updated_at: datetime.datetime | None = None

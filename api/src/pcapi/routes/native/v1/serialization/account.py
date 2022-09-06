@@ -21,6 +21,7 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import DepositType
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -91,27 +92,34 @@ class DomainsCredit(BaseModel):
 
 
 class CallToActionMessage(BaseModel):
-    callToActionTitle: str | None
-    callToActionLink: str | None
-    callToActionIcon: subscription_models.CallToActionIcon | None
+    title: str | None = Field(None, alias="callToActionTitle")
+    link: str | None = Field(None, alias="callToActionLink")
+    icon: subscription_models.CallToActionIcon | None = Field(None, alias="callToActionIcon")
 
     class Config:
+        orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
         use_enum_values = True
 
 
 class SubscriptionMessage(BaseModel):
-    userMessage: str
-    callToAction: CallToActionMessage | None
-    popOverIcon: subscription_models.PopOverIcon | None
-    updatedAt: datetime.datetime
+    user_message: str
+    call_to_action: CallToActionMessage | None
+    pop_over_icon: subscription_models.PopOverIcon | None
+    updated_at: datetime.datetime
 
     class Config:
+        orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
+
+    @classmethod
+    def from_orm(cls, subscription_message: subscription_models.SubscriptionMessage):  # type: ignore [no-untyped-def]
+        subscription_message.updated_at = datetime.datetime.utcnow()
+        return super().from_orm(subscription_message)
 
 
 class ChangeBeneficiaryEmailBody(BaseModel):
@@ -223,7 +231,7 @@ class UserProfileResponse(BaseModel):
         user.eligibility_end_datetime = users_api.get_eligibility_end_datetime(user.dateOfBirth)
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.dateOfBirth)
         user.isBeneficiary = user.is_beneficiary
-        user.subscriptionMessage = None
+        user.subscriptionMessage = subscription_api.get_subscription_message(user)
 
         if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False
