@@ -30,6 +30,8 @@ from . import models
 
 logger = logging.getLogger(__name__)
 
+USER_PROFILING_BLOCKING_STATUS = fraud_models.FraudCheckStatus.KO
+
 
 def _get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
     first_registration_date = get_first_registration_date(user, user.dateOfBirth, eligibility)
@@ -168,7 +170,7 @@ def get_user_profiling_subscription_item(
         if user_profiling:
             if user_profiling.status == fraud_models.FraudCheckStatus.OK:
                 status = models.SubscriptionItemStatus.OK
-            elif user_profiling.status == fraud_models.FraudCheckStatus.KO:
+            elif user_profiling.status == USER_PROFILING_BLOCKING_STATUS:
                 status = models.SubscriptionItemStatus.KO
             elif user_profiling.status == fraud_models.FraudCheckStatus.SUSPICIOUS:
                 status = models.SubscriptionItemStatus.SUSPICIOUS
@@ -651,8 +653,8 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
     if next_step == models.SubscriptionStep.MAINTENANCE:
         return subscription_messages.MAINTENANCE_PAGE_MESSAGE
 
-    identity_fraud_checks = sorted(
-        _get_identity_fraud_checks_for_eligibility(user, user.eligibility),
+    fraud_checks = sorted(
+        [check for check in user.beneficiaryFraudChecks if user.eligibility in check.applicable_eligibilities],
         key=lambda check: check.dateCreated,
         reverse=True,
     )
@@ -660,29 +662,38 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
     dms_check = next(
         (
             check
-            for check in identity_fraud_checks
+            for check in fraud_checks
             if check.type == fraud_models.FraudCheckType.DMS and check.status != fraud_models.FraudCheckStatus.CANCELED
         ),
         None,
     )
-
     if dms_check is not None:
         return dms_subscription_api.get_dms_subscription_message(dms_check)
 
     ubble_check = next(
-        (check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.UBBLE),
+        (check for check in fraud_checks if check.type == fraud_models.FraudCheckType.UBBLE),
         None,
     )
-
     if ubble_check is not None:
         return ubble_subscription_api.get_ubble_subscription_message(ubble_check, is_retryable=next_step is not None)
 
     educonnect_check = next(
-        (check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.EDUCONNECT),
+        (check for check in fraud_checks if check.type == fraud_models.FraudCheckType.EDUCONNECT),
         None,
     )
-
     if educonnect_check is not None:
         return educonnect_subscription_api.get_educonnect_subscription_message(educonnect_check)
+
+    user_profiling_ko_check = next(
+        (
+            check
+            for check in fraud_checks
+            if check.type == fraud_models.FraudCheckType.USER_PROFILING
+            and check.status == USER_PROFILING_BLOCKING_STATUS
+        ),
+        None,
+    )
+    if user_profiling_ko_check is not None:
+        return subscription_messages.get_user_profiling_ko_message(user.id)
 
     return None
