@@ -856,11 +856,12 @@ def cancel_pricing(
     use_pricing_point = FeatureToggle.USE_PRICING_POINT_FOR_PRICING.is_active()
 
     if use_pricing_point:
-        if not booking.venue.pricing_point_links:
-            return None
         if not booking.dateUsed:
             return None
-        pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+        if booking.venue.pricing_point_links:
+            pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+        else:
+            pricing_point_id = None
     else:
         business_unit_id = booking.venue.businessUnitId
         if not business_unit_id:
@@ -868,7 +869,21 @@ def cancel_pricing(
 
     with transaction():
         if use_pricing_point:
-            lock_pricing_point(pricing_point_id)
+            # If the venue does not have any pricing point, we cannot
+            # lock, but we must uncancel the pricing anyway. It should
+            # not cause any inconsistency because if the pricing point
+            # is missing, no booking can be priced at the same time.
+            # Let's be defensive and log anyway, just in case...
+            if pricing_point_id:
+                lock_pricing_point(pricing_point_id)
+            else:
+                logger.warning(
+                    "Could not lock pricing point while cancelling pricing",
+                    extra={
+                        "booking": booking.id,
+                        "booking_type": booking.__class__.__name__,
+                    },
+                )
         else:
             lock_business_unit(business_unit_id)
 
