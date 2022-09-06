@@ -278,6 +278,6 @@ class ChangeEmailTokenContent(BaseModel):
 
 
 class ChangePasswordBodyModel(BaseModel):
-    oldPassword: pydantic.constr(strip_whitespace=True, min_length=12)  # type: ignore [valid-type]
-    newPassword: pydantic.constr(strip_whitespace=True, min_length=12)  # type: ignore [valid-type]
-    newConfirmationPassword: pydantic.constr(strip_whitespace=True, min_length=12)  # type: ignore [valid-type]
+    oldPassword: str
+    newPassword: str
+    newConfirmationPassword: str
