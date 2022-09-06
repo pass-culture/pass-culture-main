@@ -27,6 +27,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
         FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
+        FeatureToggle.ENABLE_NEW_IDENTIFICATION_FLOW,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ENABLE_USER_PROFILING,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
@@ -50,6 +51,8 @@ def get_settings() -> serializers.SettingsResponse:
         enable_native_eac_individual=True,
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
         enable_native_id_check_verbose_debugging=features[FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING],
+        # TODO(anoukhello): remove enable_new_identification_flow when the flow is adopted by all users (PC-17223)
+        enable_new_identification_flow=features[FeatureToggle.ENABLE_NEW_IDENTIFICATION_FLOW],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)
         enable_underage_generalisation=True,
