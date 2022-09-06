@@ -905,6 +905,7 @@ def cancel_pricing(
         pricing.status = models.PricingStatus.CANCELLED
         db.session.add(pricing)
         db.session.commit()
+        logger.info("Cancelled pricing", extra={"pricing": pricing.id})
     return pricing
 
 
