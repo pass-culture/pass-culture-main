@@ -199,9 +199,44 @@ class AccountTest:
         assert response.status_code == 200
 
         msg = response.json["subscriptionMessage"]
-        assert msg["userMessage"] is not None
+        assert (
+            msg["userMessage"]
+            == "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite."
+        )
         assert msg["callToAction"] is None
         assert msg["popOverIcon"] == subscription_models.PopOverIcon.CLOCK.value
+
+    def test_subscription_message_with_call_to_action(self, client):
+        user = users_factories.UserFactory(
+            activity=users_models.ActivityEnum.STUDENT.value,
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            email=self.identifier,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+        )
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        msg = response.json["subscriptionMessage"]
+        assert (
+            msg["userMessage"]
+            == "Ton document d'identité ne te permet pas de bénéficier du pass Culture. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
+        )
+        assert msg["callToAction"] == {
+            "callToActionIcon": "RETRY",
+            "callToActionLink": "passculture://verification-identite/identification",
+            "callToActionTitle": "Réessayer la vérification de mon identité",
+        }
+        assert msg["popOverIcon"] is None
 
     @pytest.mark.parametrize(
         "feature_flags,roles,needsToFillCulturalSurvey",
