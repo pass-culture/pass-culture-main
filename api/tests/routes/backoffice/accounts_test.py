@@ -898,17 +898,6 @@ class GetUserHistoryTest:
                     {"status": "todo", "type": "honor-statement"},
                 ],
             },
-            "AGE18": {
-                "idCheckHistory": [],
-                "subscriptionItems": [
-                    {"status": "ok", "type": "email-validation"},
-                    {"status": "void", "type": "phone-validation"},
-                    {"status": "not-enabled", "type": "user-profiling"},
-                    {"status": "void", "type": "profile-completion"},
-                    {"status": "void", "type": "identity-check"},
-                    {"status": "void", "type": "honor-statement"},
-                ],
-            },
         }
 
     @override_features(ENABLE_BACKOFFICE_API=True)
@@ -921,17 +910,6 @@ class GetUserHistoryTest:
         data = self._test_user_history(client, user)
 
         assert data == {
-            "UNDERAGE": {
-                "idCheckHistory": [],
-                "subscriptionItems": [
-                    {"status": "ok", "type": "email-validation"},
-                    {"status": "not-applicable", "type": "phone-validation"},
-                    {"status": "not-applicable", "type": "user-profiling"},
-                    {"status": "void", "type": "profile-completion"},
-                    {"status": "void", "type": "identity-check"},
-                    {"status": "void", "type": "honor-statement"},
-                ],
-            },
             "AGE18": {
                 "idCheckHistory": [],
                 "subscriptionItems": [
@@ -971,18 +949,6 @@ class GetUserHistoryTest:
         )
 
         data = self._test_user_history(client, user)
-
-        assert data["UNDERAGE"] == {
-            "idCheckHistory": [],
-            "subscriptionItems": [
-                {"status": "ok", "type": "email-validation"},
-                {"status": "not-applicable", "type": "phone-validation"},
-                {"status": "not-applicable", "type": "user-profiling"},
-                {"status": "void", "type": "profile-completion"},
-                {"status": "void", "type": "identity-check"},
-                {"status": "void", "type": "honor-statement"},
-            ],
-        }
 
         assert data["AGE18"]["subscriptionItems"] == [
             {"status": "ok", "type": "email-validation"},
@@ -1061,18 +1027,6 @@ class GetUserHistoryTest:
         )
 
         data = self._test_user_history(client, user)
-
-        assert data["AGE18"] == {
-            "idCheckHistory": [],
-            "subscriptionItems": [
-                {"status": "ok", "type": "email-validation"},
-                {"status": "void", "type": "phone-validation"},
-                {"status": "not-enabled", "type": "user-profiling"},
-                {"status": "void", "type": "profile-completion"},
-                {"status": "void", "type": "identity-check"},
-                {"status": "void", "type": "honor-statement"},
-            ],
-        }
 
         assert data["UNDERAGE"]["subscriptionItems"] == [
             {"status": "ok", "type": "email-validation"},
