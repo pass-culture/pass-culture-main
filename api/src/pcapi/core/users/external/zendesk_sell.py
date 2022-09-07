@@ -512,13 +512,17 @@ def update_venue(venue: offerers_models.Venue) -> None:
     if venue.isVirtual or _stub_in_test_env("update", venue):
         return
 
+    logger.info("update_venue: venue.id=%s", venue.id)
+
     # API calls to Zendesk Sell are delayed in a GCP task to return quickly
     zendesk_sell_tasks.update_venue_task.delay(zendesk_sell_tasks.VenuePayload(venue_id=venue.id))
 
 
 def do_update_venue(venue_id: int) -> None:
     """Called asynchronously by GCP task"""
+    logger.info("do_update_venue: venue_id=%s", venue_id)
     venue = offerers_repository.find_venue_by_id(venue_id)
+    logger.info("do_update_venue: venue=%s", venue)
     if not venue:
         logger.error("Trying to update venue which does not exist", extra={"venue_id": venue_id})
         return
@@ -566,13 +570,17 @@ def update_offerer(offerer: offerers_models.Offerer) -> None:
     if is_offerer_only_virtual(offerer) or _stub_in_test_env("update", offerer):
         return
 
+    logger.info("update_offerer: offerer.id=%s", offerer.id)
+
     # API calls to Zendesk Sell are delayed in a GCP task to return quickly
     zendesk_sell_tasks.update_offerer_task.delay(zendesk_sell_tasks.OffererPayload(offerer_id=offerer.id))
 
 
 def do_update_offerer(offerer_id: int) -> None:
     """Called asynchronously by GCP task"""
+    logger.info("do_update_offerer: offerer_id=%s", offerer_id)
     offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    logger.info("do_update_offerer: offerer=%s", offerer)
     if not offerer:
         logger.error("Trying to update offerer which does not exist", extra={"offerer_id": offerer_id})
         return
