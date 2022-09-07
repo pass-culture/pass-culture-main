@@ -3,9 +3,10 @@ import React from 'react'
 
 import styles from './BaseCheckbox.module.scss'
 
-interface IBaseCheckboxProps
+export interface IBaseCheckboxProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string
+  description?: string
   hasError?: boolean
   className?: string
   Icon?: React.FunctionComponent<
@@ -17,26 +18,32 @@ interface IBaseCheckboxProps
 
 const BaseCheckbox = ({
   label,
+  description,
   hasError,
   className,
   Icon,
   ...props
 }: IBaseCheckboxProps): JSX.Element => (
   <label className={cn(styles['base-checkbox'], className)}>
-    <input
-      aria-invalid={hasError}
-      type="checkbox"
-      {...props}
-      className={cn(styles['base-checkbox-input'], {
-        [styles['has-error']]: hasError,
-      })}
-    />
-    {!!Icon && (
-      <span className={styles['base-checkbox-icon']}>
-        <Icon />
-      </span>
+    <div className={styles['base-checkbox-label-row']}>
+      <input
+        aria-invalid={hasError}
+        type="checkbox"
+        {...props}
+        className={cn(styles['base-checkbox-input'], {
+          [styles['has-error']]: hasError,
+        })}
+      />
+      {!!Icon && (
+        <span className={styles['base-checkbox-icon']}>
+          <Icon />
+        </span>
+      )}
+      <span className={styles['base-checkbox-label']}>{label}</span>
+    </div>
+    {description && (
+      <p className={styles['base-checkbox-description']}>{description}</p>
     )}
-    <span className={styles['base-checkbox-label']}>{label}</span>
   </label>
 )
 

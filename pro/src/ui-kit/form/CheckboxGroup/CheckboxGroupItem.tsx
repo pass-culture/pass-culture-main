@@ -7,6 +7,7 @@ interface ICheckboxProps {
   setGroupTouched(): void
   name: string
   label: string
+  description?: string
   Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   hasError?: boolean
   disabled?: boolean
@@ -15,6 +16,7 @@ interface ICheckboxProps {
 const CheckboxGroupItem = ({
   setGroupTouched,
   label,
+  description,
   name,
   hasError,
   Icon,
@@ -33,6 +35,7 @@ const CheckboxGroupItem = ({
       Icon={Icon}
       hasError={hasError}
       label={label}
+      description={description}
       onChange={onChange}
       disabled={disabled}
     />
