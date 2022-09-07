@@ -1,0 +1,19 @@
+.input-autocomplete-container {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+
+  .option {
+    input[type='checkbox'] {
+      opacity: 0;
+    }
+
+    &-disabled:hover {
+      background-color: white;
+    }
+
+    span {
+      position: absolute;
+    }
+  }
+}
