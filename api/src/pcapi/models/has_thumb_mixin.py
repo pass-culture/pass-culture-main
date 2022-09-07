@@ -8,7 +8,7 @@ from pcapi.utils.human_ids import humanize
 
 @declarative_mixin
 class HasThumbMixin:
-    thumbCount = Column(Integer(), nullable=False, default=0)
+    thumbCount: int = Column(Integer(), nullable=False, default=0)
 
     @property
     def thumb_path_component(self):  # type: ignore [no-untyped-def]

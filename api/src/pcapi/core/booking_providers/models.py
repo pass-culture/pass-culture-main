@@ -20,27 +20,27 @@ class BookingProviderName(enum.Enum):
 
 
 class BookingProvider(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id = Column(BigInteger, primary_key=True)
+    id: int = Column(BigInteger, primary_key=True)
 
-    name = Column(Enum(BookingProviderName), nullable=False)
+    name: BookingProviderName = Column(Enum(BookingProviderName), nullable=False)
 
-    apiUrl = Column(String, nullable=False)
+    apiUrl: str = Column(String, nullable=False)
 
 
 class VenueBookingProvider(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id = Column(BigInteger, primary_key=True)
+    id: int = Column(BigInteger, primary_key=True)
 
-    isActive = Column(Boolean, nullable=False, default=True)
+    isActive: bool = Column(Boolean, nullable=False, default=True)
 
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
 
-    bookingProviderId = Column(BigInteger, ForeignKey("booking_provider.id"), nullable=False)
+    bookingProviderId: int = Column(BigInteger, ForeignKey("booking_provider.id"), nullable=False)
 
     bookingProvider = relationship("BookingProvider", foreign_keys=[bookingProviderId])  # type: ignore [misc]
 
-    idAtProvider = Column(String(70), nullable=False)
+    idAtProvider: str = Column(String(70), nullable=False)
 
     token = Column(String)
 

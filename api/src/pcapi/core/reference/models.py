@@ -36,11 +36,11 @@ class ReferenceScheme(Base, Model):  # type: ignore [valid-type, misc]
     was used twice.
     """
 
-    id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     # known names and prefixes are:
     #   - invoice.reference: F
-    name = sqla.Column(sqla.Text, nullable=False)
-    prefix = sqla.Column(sqla.Text, nullable=False)
+    name: str = sqla.Column(sqla.Text, nullable=False)
+    prefix: str = sqla.Column(sqla.Text, nullable=False)
     year = sqla.Column(sqla.Integer)
     nextNumber = sqla.Column(sqla.Integer, default=1)
     numberPadding = sqla.Column(sqla.Integer, default=7)

@@ -7,4 +7,4 @@ from sqlalchemy.sql import expression
 
 @declarative_mixin
 class DeactivableMixin:
-    isActive = Column(Boolean, nullable=False, server_default=expression.true(), default=True)
+    isActive: bool = Column(Boolean, nullable=False, server_default=expression.true(), default=True)

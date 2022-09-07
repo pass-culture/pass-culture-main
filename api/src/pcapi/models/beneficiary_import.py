@@ -40,11 +40,11 @@ class BeneficiaryImport(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
     sourceId = sa.Column(sa.Integer, nullable=True)
 
-    source = sa.Column(sa.String(255), nullable=False)
+    source: str = sa.Column(sa.String(255), nullable=False)
 
     thirdPartyId = sa.Column(sa.TEXT, nullable=True, index=True)
 
-    eligibilityType = sa.Column(
+    eligibilityType: EligibilityType = sa.Column(
         sa.Enum(EligibilityType, create_constraint=False),
         nullable=False,
         default=EligibilityType.AGE18,  # TODO (viconnex) remove default values

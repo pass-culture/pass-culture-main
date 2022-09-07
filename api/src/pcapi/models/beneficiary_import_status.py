@@ -39,13 +39,13 @@ class BeneficiaryImportStatus(PcObject, Base, Model):  # type: ignore [valid-typ
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")
         return f"{self.status.value}, le {updated_at} par {author}"
 
-    status = Column(Enum(ImportStatus, create_constraint=False), nullable=False)
+    status: ImportStatus = Column(Enum(ImportStatus, create_constraint=False), nullable=False)
 
-    date = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    date: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     detail = Column(String(255), nullable=True)
 
-    beneficiaryImportId = Column(BigInteger, ForeignKey("beneficiary_import.id"), index=True, nullable=False)
+    beneficiaryImportId: int = Column(BigInteger, ForeignKey("beneficiary_import.id"), index=True, nullable=False)
 
     beneficiaryImport = relationship("BeneficiaryImport", foreign_keys=[beneficiaryImportId], backref="statuses")  # type: ignore [misc]
 

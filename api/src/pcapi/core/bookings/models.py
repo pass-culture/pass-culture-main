@@ -63,7 +63,7 @@ class BookingExportType(enum.Enum):
 class IndividualBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "individual_booking"
 
-    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    userId: int = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
     user = relationship(  # type: ignore [misc]
         "User",
         foreign_keys=[userId],
@@ -85,11 +85,11 @@ class IndividualBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
 
 class ExternalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
+    bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
     booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")  # type: ignore [misc]
 
-    barcode = Column(String, nullable=False)
+    barcode: str = Column(String, nullable=False)
 
     seat = Column(String)
 
@@ -97,26 +97,26 @@ class ExternalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "booking"
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
     Index("ix_booking_date_created", dateCreated)
 
     dateUsed = Column(DateTime, nullable=True, index=True)
 
-    stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
+    stockId: int = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
     stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")  # type: ignore [misc]
 
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId], backref="bookings")  # type: ignore [misc]
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref="bookings")  # type: ignore [misc]
 
-    quantity = Column(Integer, nullable=False, default=1)
+    quantity: int = Column(Integer, nullable=False, default=1)
 
-    token = Column(String(6), unique=True, nullable=False)
+    token: str = Column(String(6), unique=True, nullable=False)
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=True)
 
@@ -124,7 +124,7 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     user = relationship("User", foreign_keys=[userId], backref="userBookings")  # type: ignore [misc]
 
-    amount = Column(Numeric(10, 2), nullable=False)
+    amount: Decimal = Column(Numeric(10, 2), nullable=False)
 
     cancellationDate = Column(DateTime, nullable=True)
 
@@ -141,7 +141,7 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         nullable=True,
     )
 
-    status = Column("status", Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
+    status: BookingStatus = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
     Index("ix_booking_status", status)
 
     reimbursementDate = Column(DateTime, nullable=True, index=True)
