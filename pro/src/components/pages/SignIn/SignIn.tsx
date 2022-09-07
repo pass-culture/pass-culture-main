@@ -60,13 +60,12 @@ const SignIn = (): JSX.Element => {
     }
   }) => {
     const { errors, status } = payload
-
-    if (errors && Object.values(errors).length > 0) {
-      notification.error('Identifiant ou mot de passe incorrect.')
-    } else if (status === HTTP_STATUS.TOO_MANY_REQUESTS) {
+    if (status === HTTP_STATUS.TOO_MANY_REQUESTS) {
       notification.error(
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
+    } else if (errors && Object.values(errors).length > 0) {
+      notification.error('Identifiant ou mot de passe incorrect.')
     }
   }
 
