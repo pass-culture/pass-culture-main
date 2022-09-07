@@ -115,26 +115,31 @@ class UserEmailValidationResponseModel(BaseModel):
 
 
 class ProUserCreationBodyModel(BaseModel):
-    address: str | None
-    city: str | None
+    address: str
+    city: str
     email: pydantic.EmailStr
-    first_name: str | None
-    last_name: str | None
+    first_name: str
+    last_name: str
     latitude: float | None
     longitude: float | None
-    name: str | None
+    name: str
     password: str
     phone_number: str
-    postal_code: str | None
-    public_name: str | None
-    siren: str | None
-    contact_ok: bool | None
+    postal_code: str
+    public_name: str
+    siren: str
+    contact_ok: bool
 
     @validator("password")
     def validate_password_strength(cls, password: str) -> str:  # typing: ignore # pylint: disable=no-self-argument
         check_password_strength("password", password)
         return password
 
+    # FIXME (dbaty, 2022-09-09): we need this validator because the
+    # first request with an unchecked box comes with the empty string.
+    # Subsequent requests correctly come with `false`, which does not
+    # require this validator. It may be a bug in the frontend. Revisit
+    # this when we have switched the frontend from "pcapi" to "apiClient".
     @validator("contact_ok", pre=True, always=True)
     def cast_contact_ok_to_bool(  # typing: ignore # pylint: disable=no-self-argument
         cls, contact_ok: bool | None

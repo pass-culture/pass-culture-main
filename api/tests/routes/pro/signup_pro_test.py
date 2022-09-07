@@ -22,6 +22,7 @@ BASE_DATA_PRO = {
     "postalCode": "92000",
     "city": "Nanterre",
     "name": "Crédit Coopératif",
+    "contactOk": False,
 }
 
 
