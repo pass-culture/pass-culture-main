@@ -9,6 +9,7 @@ import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResp
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferIdBody } from '../models/OfferIdBody';
+import type { SearchBody } from '../models/SearchBody';
 import type { StockIdBody } from '../models/StockIdBody';
 import type { VenueResponse } from '../models/VenueResponse';
 
@@ -227,13 +228,18 @@ export class DefaultService {
 
   /**
    * log_search_button_click <POST>
+   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logSearchButtonClick(): CancelablePromise<void> {
+  public logSearchButtonClick(
+    requestBody?: SearchBody,
+  ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/search-button',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         404: `Not Found`,

@@ -38,7 +38,7 @@ def get_hashed_user_id(email: str) -> str:
 def log_information_for_data_purpose(
     event_name: str,
     user_email: str | None = None,
-    extra_data: dict[str, str | int] | None = None,
+    extra_data: dict[str, str | int | list[str]] | None = None,
 ) -> None:
     if extra_data is None:
         extra_data = {}
