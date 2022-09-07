@@ -1,6 +1,3 @@
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
-    create_industrial_activation_offers,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
@@ -120,8 +117,6 @@ def save_industrial_sandbox() -> None:
     create_industrial_invoices()
 
     create_industrial_pro_users_api_keys(offerers_by_name)
-
-    create_industrial_activation_offers()
 
     create_industrial_search_indexed_objects()
 
