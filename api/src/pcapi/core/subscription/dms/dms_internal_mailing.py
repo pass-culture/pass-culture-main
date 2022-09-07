@@ -1,6 +1,14 @@
 from pcapi.core.fraud import models as fraud_models
 
 
+FIELD_ERROR_LABELS = {
+    fraud_models.DmsFieldErrorKeyEnum.birth_date: "ta date de naissance",
+    fraud_models.DmsFieldErrorKeyEnum.first_name: "ton prénom",
+    fraud_models.DmsFieldErrorKeyEnum.id_piece_number: "ton numéro de pièce d'identité",
+    fraud_models.DmsFieldErrorKeyEnum.last_name: "ton nom de famille",
+    fraud_models.DmsFieldErrorKeyEnum.postal_code: "ton code postal",
+}
+
 DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
 
                 Nous avons bien reçu ton dossier. Cependant, nous avons remarqué que tu n’avais pas créé de compte sur l’application pass Culture avec l’adresse email que tu utilises sur le site Démarches Simplifiées.
@@ -19,9 +27,9 @@ DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
 
 def build_field_errors_user_message(field_errors: list[fraud_models.DmsFieldErrorDetails]) -> str:
     error_keys = [error.key for error in field_errors]
-    field_errors_list_str = "\n".join(f" - {field.get_field_label()}" for field in field_errors)
+    field_errors_list_str = "\n".join(f" - {FIELD_ERROR_LABELS.get(field.key)}" for field in field_errors)
     message = (
-        f"Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant {field_errors[0].get_field_label()}, inscrit sur le formulaire en ligne :\n"
+        f"Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant {FIELD_ERROR_LABELS.get(field_errors[0].key)}, inscrit sur le formulaire en ligne :\n"
         if len(field_errors) == 1
         else f"Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne :\n{field_errors_list_str}\n\n"
         "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"

@@ -195,35 +195,9 @@ class DmsFieldErrorKeyEnum(enum.Enum):
     postal_code = "postal_code"
 
 
-FIELD_LABEL = {
-    DmsFieldErrorKeyEnum.birth_date: {"defined_article": "la", "pronoun": "ta", "label": "date de naissance"},
-    DmsFieldErrorKeyEnum.first_name: {"defined_article": "le", "pronoun": "ton", "label": "prénom"},
-    DmsFieldErrorKeyEnum.id_piece_number: {
-        "defined_article": "le",
-        "pronoun": "ton",
-        "label": "numéro de pièce d'identité",
-    },
-    DmsFieldErrorKeyEnum.last_name: {"defined_article": "le", "pronoun": "ton", "label": "nom de famille"},
-    DmsFieldErrorKeyEnum.postal_code: {"defined_article": "le", "pronoun": "ton", "label": "code postal"},
-}
-
-
 class DmsFieldErrorDetails(pydantic.BaseModel):
     key: DmsFieldErrorKeyEnum
     value: str | None
-
-    def get_field_label(self, with_pronoun: bool = True, with_defined_article: bool = False) -> str:
-        label_with_pronoun = FIELD_LABEL.get(self.key)
-        if not label_with_pronoun:
-            return self.key.value
-        if with_pronoun:
-            return label_with_pronoun.get("pronoun", "") + " " + label_with_pronoun.get("label", self.key.value)
-        if with_defined_article:
-            return label_with_pronoun.get("defined_article", "") + " " + label_with_pronoun.get("label", self.key.value)
-        return label_with_pronoun.get("label", self.key.value)
-
-    def get_instructor_field_label(self) -> str:
-        return self.get_field_label(with_pronoun=False, with_defined_article=True).capitalize()
 
 
 class DMSContent(common_models.IdentityCheckContent):
