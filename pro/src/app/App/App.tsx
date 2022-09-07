@@ -20,7 +20,7 @@ const App = ({ children }: IAppProps): JSX.Element | null => {
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   const [isRoutePublic, fromUrl] = useIsRoutePublic()
 
-  useConfigureAnalytics(currentUser?.id)
+  useConfigureAnalytics(currentUser?.nonHumanizedId)
 
   useEffect(() => {
     window.scrollTo(0, 0)

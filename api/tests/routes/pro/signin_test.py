@@ -52,6 +52,7 @@ class Returns200Test:
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "id": humanize(user.id),
+            "nonHumanizedId": str(user.id),
             "isAdmin": False,
             "isEmailValidated": True,
             "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),
