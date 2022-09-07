@@ -382,7 +382,7 @@ class AlgoliaBackend(base.SearchBackend):
         venue = offer.venue
         offerer = venue.managingOfferer
         prices = map(lambda stock: stock.price, offer.bookableStocks)
-        prices_sorted = sorted(prices, key=float)  # type: ignore [arg-type]
+        prices_sorted = sorted(prices, key=float)
         dates = []
         times = []
         if offer.isEvent:
@@ -390,8 +390,8 @@ class AlgoliaBackend(base.SearchBackend):
             times = [
                 date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore[arg-type]
             ]
-        date_created = offer.dateCreated.timestamp()  # type: ignore [union-attr]
-        stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]  # type: ignore [union-attr]
+        date_created = offer.dateCreated.timestamp()
+        stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
         tags = [criterion.name for criterion in offer.criteria]
         extra_data = offer.extraData or {}
         artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))

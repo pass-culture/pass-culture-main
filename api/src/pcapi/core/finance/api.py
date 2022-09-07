@@ -653,7 +653,7 @@ def _price_booking(
     ]
     lines.append(
         models.PricingLine(
-            amount=amount - lines[0].amount,  # type: ignore [operator]
+            amount=amount - lines[0].amount,
             category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
         )
     )
@@ -951,7 +951,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     # id again after COMMITs in `_generate_cashflows()`.
     batch_id = batch.id
     _generate_cashflows(batch)
-    return batch_id  # type: ignore [return-value]
+    return batch_id
 
 
 def _generate_cashflows(batch: models.CashflowBatch) -> None:
@@ -1949,7 +1949,7 @@ def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: b
         venue = None
     else:
         venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
-    period_start, period_end = get_invoice_period(invoice.date)  # type: ignore [arg-type]
+    period_start, period_end = get_invoice_period(invoice.date)
 
     return dict(
         invoice=invoice,

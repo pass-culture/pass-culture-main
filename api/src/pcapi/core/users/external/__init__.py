@@ -194,7 +194,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         booking_count=len(user_bookings),
         booking_subcategories=bookings_attributes.booking_subcategories,
         city=user.city,
-        date_created=user.dateCreated,  # type: ignore [arg-type]
+        date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,  # type: ignore [arg-type]
         departement_code=user.departementCode,
         deposit_activation_date=user.deposit_activation_date,
@@ -204,7 +204,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         first_name=user.firstName,
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
         user_id=user.id,
-        is_active=user.isActive,  # type: ignore [arg-type]
+        is_active=user.isActive,
         is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
         is_current_beneficiary=user.is_beneficiary and has_remaining_credit,
         is_former_beneficiary=is_former_beneficiary,

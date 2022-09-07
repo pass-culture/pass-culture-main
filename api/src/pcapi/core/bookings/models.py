@@ -203,7 +203,7 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     @property
     def total_amount(self) -> Decimal:
-        return self.amount * self.quantity  # type: ignore [operator, return-value]
+        return self.amount * self.quantity
 
     # FIXME: many functions here are only used when serializing
     # bookings in the web API. They can be moved elsewhere once we

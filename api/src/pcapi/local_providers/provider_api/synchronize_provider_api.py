@@ -33,7 +33,7 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
         venue_provider.venueIdAtOfferProvider, provider_api, venue_provider.lastSyncDate  # type: ignore [arg-type]
     ):
         stock_details = _build_stock_details_from_raw_stocks(
-            raw_stocks, venue_provider.venueIdAtOfferProvider, provider, venue.id  # type: ignore [arg-type]
+            raw_stocks, venue_provider.venueIdAtOfferProvider, provider, venue.id
         )
         operations = synchronize_stocks(stock_details, venue, provider_id=provider.id)
         stats += Counter(operations)

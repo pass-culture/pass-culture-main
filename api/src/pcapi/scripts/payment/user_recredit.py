@@ -91,7 +91,7 @@ def recredit_underage_users() -> None:
                     )
                     users_and_recredit_amounts.append((user, recredit.amount))
                     recredit.deposit.amount += recredit.amount
-                    user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None  # type: ignore [operator]
+                    user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
 
                     db.session.add(user)
                     db.session.add(recredit)
@@ -106,7 +106,9 @@ def recredit_underage_users() -> None:
         for user, recredit_amount in users_and_recredit_amounts:
             users_external.update_external_user(user)
             domains_credit = users_api.get_domains_credit(user)
-            if not transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit_amount, domains_credit):  # type: ignore [arg-type]
+            if not transactional_mails.send_recredit_email_to_underage_beneficiary(
+                user, recredit_amount, domains_credit
+            ):
                 logger.error("Failed to send recredit email to: %s", user.email)
 
         start_index += RECREDIT_BATCH_SIZE

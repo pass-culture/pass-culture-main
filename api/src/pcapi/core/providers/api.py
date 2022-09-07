@@ -213,7 +213,7 @@ def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_
         raise providers_exceptions.ProviderWithoutApiImplementation()
 
     if not _siret_can_be_synchronized(id_at_provider, provider):
-        raise providers_exceptions.VenueSiretNotRegistered(provider.name, id_at_provider)  # type: ignore [arg-type]
+        raise providers_exceptions.VenueSiretNotRegistered(provider.name, id_at_provider)
     return
 
 

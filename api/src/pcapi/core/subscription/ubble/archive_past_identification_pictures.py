@@ -61,7 +61,7 @@ def archive_past_identification_pictures(
 
         for fraud_check in fraud_checks:
             try:
-                ubble_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)  # type: ignore [arg-type]
+                ubble_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
                 result.add_result(True)
             except (UbbleDownloadedFileEmpty, ExternalAPIException):
                 result.add_result(False)

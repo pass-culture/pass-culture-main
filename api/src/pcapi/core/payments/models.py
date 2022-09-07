@@ -121,7 +121,7 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [
 
     def apply(self, booking: "Booking"):  # type: ignore [no-untyped-def]
         if self.amount is not None:
-            return booking.quantity * self.amount  # type: ignore [operator]
+            return booking.quantity * self.amount
         return booking.total_amount * self.rate  # type: ignore [operator]
 
     @property

@@ -79,7 +79,7 @@ class Token(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     isUsed: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
 
-    extraData: dict = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)  # type: ignore [misc]
+    extraData: dict = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)
 
     def get_extra_data(self) -> TokenExtraData | None:
         return TokenExtraData(**self.extraData) if self.extraData else None
@@ -185,7 +185,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     departementCode = sa.Column(sa.String(3), nullable=True)
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
-    extraData: dict = sa.Column(  # type: ignore [misc]
+    extraData: dict = sa.Column(
         MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
     )
     firstName = sa.Column(sa.String(128), nullable=True)
@@ -200,7 +200,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     sa.Index("idx_user_trgm_last_name", lastName, postgresql_using="gin")
     married_name = sa.Column(sa.String(128), nullable=True)
     needsToFillCulturalSurvey = sa.Column(sa.Boolean, server_default=expression.true(), default=True)
-    notificationSubscriptions: dict = sa.Column(  # type: ignore [misc]
+    notificationSubscriptions: dict = sa.Column(
         MutableDict.as_mutable(postgresql.json.JSONB),
         nullable=True,
         default=asdict(NotificationSubscriptions()),
@@ -213,7 +213,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     publicName: str = sa.Column(sa.String(255), nullable=False)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
     UserOfferers: list["UserOfferer"] = orm.relationship("UserOfferer", back_populates="user")
-    roles: list[UserRole] = sa.Column(  # type: ignore [misc]
+    roles: list[UserRole] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
@@ -229,7 +229,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
             return
 
         current_roles = copy.deepcopy(self.roles) if self.roles else []
-        updated_roles = current_roles + [role]  # type: ignore [operator]
+        updated_roles = current_roles + [role]
 
         if UserRole.BENEFICIARY in updated_roles and UserRole.ADMIN in updated_roles:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
@@ -294,7 +294,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
 
     @property
     def is_active(self) -> bool:  # required by flask-login
-        return self.isActive  # type: ignore [return-value]
+        return self.isActive
 
     @property
     def is_anonymous(self) -> bool:  # required by flask-login

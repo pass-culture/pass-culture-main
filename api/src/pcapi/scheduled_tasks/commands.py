@@ -63,7 +63,7 @@ def update_booking_used() -> None:
 def synchronize_allocine_stocks() -> None:
     """Launch AlloCine synchronization."""
     allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
-    synchronize_venue_providers_for_provider(allocine_stocks_provider_id)  # type: ignore [arg-type]
+    synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
 
 
 @blueprint.cli.command("synchronize_cine_office_stocks")
@@ -72,7 +72,7 @@ def synchronize_allocine_stocks() -> None:
 def synchronize_cine_office_stocks() -> None:
     """Launch Cine Office synchronization."""
     cine_office_stocks_provider_id = get_provider_by_local_class("CDSStocks").id
-    synchronize_venue_providers_for_provider(cine_office_stocks_provider_id)  # type: ignore [arg-type]
+    synchronize_venue_providers_for_provider(cine_office_stocks_provider_id)
 
 
 # FIXME (asaunier, 2021-05-25): This clock must be removed once every application from procedure

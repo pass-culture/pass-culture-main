@@ -152,7 +152,7 @@ def _create_has_booked_some_bookings(
         if all_credit.remaining < MAX_RATIO_OF_INITIAL_CREDIT * float(all_credit.initial):
             break
 
-        is_activation_offer = offer.product.subcategoryId in (  # type: ignore [operator]
+        is_activation_offer = offer.product.subcategoryId in (
             subcategories.ACTIVATION_EVENT.id or subcategories.ACTIVATION_THING.id
         )
 

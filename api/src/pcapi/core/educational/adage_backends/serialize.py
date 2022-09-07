@@ -51,7 +51,7 @@ def _get_collective_offer_address(offer: models.CollectiveOffer) -> str:
         return default_address
 
     if address_type == "other":
-        return offer.offerVenue["otherAddress"]  # type: ignore[return-value]
+        return offer.offerVenue["otherAddress"]
 
     if address_type == "school":
         return "Dans l’établissement scolaire"

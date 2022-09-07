@@ -33,8 +33,8 @@ def synchronize_venue_providers_for_provider(provider_id: int, limit: int | None
             notion_connector.add_to_synchronization_error_database(
                 exception=exc,
                 provider_name=venue_provider.provider.name,
-                venue_id=venue_provider.venueId,  # type: ignore [arg-type]
-                venue_id_at_offer_provider=venue_provider.venueIdAtOfferProvider,  # type: ignore [arg-type]
+                venue_id=venue_provider.venueId,
+                venue_id_at_offer_provider=venue_provider.venueIdAtOfferProvider,
             )
             logger.exception(
                 "Could not synchronize venue provider",

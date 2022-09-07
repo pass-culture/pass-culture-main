@@ -72,8 +72,8 @@ def book_offer(
         validation.check_offer_already_booked(beneficiary, stock.offer)
         validation.check_quantity(stock.offer, quantity)
         validation.check_stock_is_bookable(stock, quantity)
-        total_amount = quantity * stock.price  # type: ignore [operator]
-        validation.check_expenses_limits(beneficiary, total_amount, stock.offer)  # type: ignore [arg-type]
+        total_amount = quantity * stock.price
+        validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
 
         is_activation_code_applicable = (
             stock.canHaveActivationCodes
@@ -120,7 +120,7 @@ def book_offer(
             depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
             userId=beneficiary.id,
         )
-        stock.dnBookedQuantity += booking.quantity  # type: ignore [operator]
+        stock.dnBookedQuantity += booking.quantity
         _book_external_offer(booking, stock)
 
         repository.save(individual_booking, stock)
@@ -179,7 +179,7 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         tickets = booking_providers_api.book_ticket(
             venue_id=stock.offer.venueId,
             show_id=show_id,
-            quantity=booking.quantity,  # type: ignore [arg-type]
+            quantity=booking.quantity,
         )
         booking.externalBookings = [
             ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
@@ -194,7 +194,7 @@ def _cancel_booking(
 ) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
     with transaction():
-        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)  # type: ignore [arg-type]
+        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         db.session.refresh(booking)
         old_status = booking.status
         try:
@@ -216,7 +216,7 @@ def _cancel_booking(
         if old_status is BookingStatus.USED:
             finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
         booking.cancellationReason = reason
-        stock.dnBookedQuantity -= booking.quantity  # type: ignore [operator]
+        stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
 
     logger.info(  # type: ignore [call-arg]
@@ -411,8 +411,8 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     with transaction():
         if booking.status == BookingStatus.CANCELLED:
             booking.uncancel_booking_set_used()
-            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)  # type: ignore [arg-type]
-            stock.dnBookedQuantity += booking.quantity  # type: ignore [operator]
+            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+            stock.dnBookedQuantity += booking.quantity
             db.session.add(stock)
     db.session.add(booking)
     db.session.commit()

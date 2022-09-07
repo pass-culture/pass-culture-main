@@ -292,7 +292,7 @@ def _process_in_progress_application(
 
     if birth_date_error is not None:
         if is_application_updatable:
-            _send_eligibility_error_dms_email(birth_date_error.value, application_scalar_id, fraud_check.thirdPartyId)  # type: ignore [arg-type]
+            _send_eligibility_error_dms_email(birth_date_error.value, application_scalar_id, fraud_check.thirdPartyId)
         reason_codes.append(fraud_models.FraudReasonCode.AGE_NOT_VALID)
         errors.append(birth_date_error)
 
@@ -429,7 +429,7 @@ def _process_accepted_application(
         user, "honor statement contained in DMS application", fraud_check.eligibilityType
     )
     _create_profile_completion_fraud_check_from_dms(
-        user, fraud_check.eligibilityType, dms_content, application_id=fraud_check.thirdPartyId  # type: ignore [arg-type]
+        user, fraud_check.eligibilityType, dms_content, application_id=fraud_check.thirdPartyId
     )
 
     try:

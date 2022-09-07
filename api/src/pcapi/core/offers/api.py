@@ -243,7 +243,7 @@ def update_offer(
 ) -> Offer:
     validation.check_validation_status(offer)
     if extraData != UNCHANGED:
-        extraData = validation.check_offer_extra_data(offer, offer.subcategoryId, extraData)  # type: ignore [arg-type]
+        extraData = validation.check_offer_extra_data(offer, offer.subcategoryId, extraData)
 
     # fmt: off
     modifications = {
@@ -261,7 +261,7 @@ def update_offer(
         try:
             changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
             changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
-            check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)  # type: ignore [arg-type]
+            check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
         except offers_exceptions.OfferCreationBaseException as error:
             raise ApiErrors(
                 error.errors,
@@ -280,7 +280,7 @@ def update_offer(
             product_has_been_updated = False
 
     if offer.isFromAllocine:
-        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))  # type: ignore [arg-type]
+        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
 
     repository.save(offer)
 

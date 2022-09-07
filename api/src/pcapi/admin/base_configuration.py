@@ -108,7 +108,7 @@ class AdminIndexView(AdminIndexBaseView):
         local_admin = users_api.create_account(
             email=email, password="not-so-secret-password", birthdate=datetime.date(1990, 1, 1), is_email_validated=True
         )
-        local_admin.roles = [users_models.UserRole.ADMIN]  # type: ignore [call-overload]
+        local_admin.roles = [users_models.UserRole.ADMIN]
         local_admin.firstName = first_name
         local_admin.lastName = last_name
         local_admin.publicName = given_name if given_name is not None else f"{first_name} {last_name}"

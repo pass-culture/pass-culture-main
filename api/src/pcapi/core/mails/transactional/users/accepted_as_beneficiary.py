@@ -13,7 +13,7 @@ def get_accepted_as_beneficiary_email_data(user: User) -> models.TransactionalEm
     return models.TransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value,
         params={
-            "CREDIT": int(user.deposit.amount),  # type: ignore [arg-type]
+            "CREDIT": int(user.deposit.amount),
         },
     )
 
@@ -27,7 +27,7 @@ def get_accepted_as_underage_beneficiary_email_data(user: User) -> models.Transa
         template=TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value,
         params={
             "FIRSTNAME": user.firstName,
-            "CREDIT": int(user.deposit.amount),  # type: ignore [arg-type]
+            "CREDIT": int(user.deposit.amount),
         },
     )
 

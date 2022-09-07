@@ -801,7 +801,7 @@ def invalidate_fraud_check_if_duplicate(fraud_check: models.BeneficiaryFraudChec
         last_name,
         identity_content.get_married_name(),
         birth_date,
-        fraud_check.userId,  # type: ignore [arg-type]
+        fraud_check.userId,
     )
     if not duplicate_user:
         return

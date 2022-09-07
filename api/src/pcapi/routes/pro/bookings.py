@@ -54,7 +54,7 @@ def get_booking_by_token(token: str) -> LegacyBookingResponse | None:
 
     bookings_validation.check_is_usable(booking)
 
-    if check_user_can_validate_bookings(current_user, booking.offererId):  # type: ignore [arg-type]
+    if check_user_can_validate_bookings(current_user, booking.offererId):
         response = _create_response_to_get_booking_by_token(booking)
         return LegacyBookingResponse(**response)
 
@@ -69,7 +69,7 @@ def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> 
     booking = booking_repository.find_by(token, email, offer_id)
 
     if current_user.is_authenticated:
-        check_user_has_access_to_offerer(current_user, booking.offererId)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, booking.offererId)
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 

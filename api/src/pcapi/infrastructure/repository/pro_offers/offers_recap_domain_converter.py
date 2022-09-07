@@ -18,7 +18,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
     return OfferRecap(
         id=offer.id,
         has_booking_limit_datetimes_passed=offer.hasBookingLimitDatetimesPassed,  # type: ignore [arg-type]
-        is_active=offer.isActive,  # type: ignore [arg-type]
+        is_active=offer.isActive,
         is_editable=offer.isEditable,
         is_event=typing.cast(bool, offer.isEvent),
         is_thing=offer.isThing,
