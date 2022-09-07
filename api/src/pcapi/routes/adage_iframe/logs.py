@@ -23,10 +23,14 @@ def log_catalog_view(authenticated_information: AuthenticatedInformation) -> Non
 @blueprint.adage_iframe.route("/logs/search-button", methods=["POST"])
 @adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
-def log_search_button_click(authenticated_information: AuthenticatedInformation) -> None:
+def log_search_button_click(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.SearchBody,
+) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="SearchButtonClicked",
         user_email=authenticated_information.email,
+        extra_data=body.dict(),
     )
     return
 

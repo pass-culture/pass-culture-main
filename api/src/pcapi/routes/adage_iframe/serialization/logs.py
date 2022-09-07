@@ -7,3 +7,8 @@ class StockIdBody(BaseModel):
 
 class OfferIdBody(BaseModel):
     offerId: int
+
+
+class SearchBody(BaseModel):
+    filters: list[str]
+    resultsCount: int
