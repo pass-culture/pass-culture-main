@@ -63,43 +63,6 @@ WithBorder.args = {
   withBorder: true,
 }
 
-export const WithDescription = Template.bind({})
-WithDescription.args = {
-  ...args,
-  group: [
-    {
-      label: 'Oui',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-      value: `question1`,
-    },
-    {
-      label: 'Non',
-      description: "Vous n'etes pas d'accord.",
-      value: `question2`,
-    },
-  ],
-}
-
-export const WithBorderAndDescription = Template.bind({})
-WithBorderAndDescription.args = {
-  ...args,
-  withBorder: true,
-  group: [
-    {
-      label: 'Oui',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-      value: `question1`,
-    },
-    {
-      label: 'Non',
-      description: "Vous n'etes pas d'accord.",
-      value: `question2`,
-    },
-  ],
-}
-
 export const Horizontal = Template.bind({})
 Horizontal.args = {
   ...args,
