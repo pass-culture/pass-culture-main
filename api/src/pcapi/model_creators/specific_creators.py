@@ -25,7 +25,7 @@ def create_offer_with_event_product(
     description: str | None = None,
     duration_minutes: int | None = 60,
     event_name: str = "Test event",
-    event_subcategory_id: str | None = subcategories.SPECTACLE_REPRESENTATION.id,
+    event_subcategory_id: str = subcategories.SPECTACLE_REPRESENTATION.id,
     id_at_provider: str = None,
     idx: int = None,
     is_active: bool = True,
@@ -90,7 +90,7 @@ def create_offer_with_thing_product(
     media_urls: Iterable[str] = ("test/urls",),
     product: Product = None,
     thing_name: str | None = "Test Book",
-    thing_subcategory_id: str | None = subcategories.VOD.id,
+    thing_subcategory_id: str = subcategories.VOD.id,
     thumb_count: int = 0,
     url: str | None = None,
     last_provider_id: int = None,
@@ -160,7 +160,7 @@ def create_offer_with_thing_product(
 
 def create_product_with_event_subcategory(
     event_name: str = "Test event",
-    event_subcategory_id: str | None = subcategories.SPECTACLE_REPRESENTATION.id,
+    event_subcategory_id: str = subcategories.SPECTACLE_REPRESENTATION.id,
     description: str = None,
     duration_minutes: int = 60,
     id_at_providers: str = None,
@@ -184,7 +184,7 @@ def create_product_with_event_subcategory(
 
 def create_product_with_thing_subcategory(
     thing_name: str = "Test Book",
-    thing_subcategory_id: str | None = subcategories.LIVRE_PAPIER.id,
+    thing_subcategory_id: str = subcategories.LIVRE_PAPIER.id,
     author_name: str = "Test Author",
     is_national: bool = False,
     id_at_providers: str = None,
@@ -284,11 +284,11 @@ def create_stock_from_offer(
 def create_stock_with_event_offer(
     offerer: Offerer,
     venue: Venue,
-    price: int = 10,
+    price: Decimal = Decimal(10),
     booking_email: str = "offer.booking.email@example.com",
     quantity: int = 10,
     is_soft_deleted: bool = False,
-    event_subcategory_id: str | None = subcategories.EVENEMENT_JEU.id,
+    event_subcategory_id: str = subcategories.EVENEMENT_JEU.id,
     name: str = "Mains, sorts et papiers",
     offer_id: int = None,
     beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
@@ -325,7 +325,7 @@ def create_stock_with_thing_offer(
     offerer: Offerer,
     venue: Venue,
     offer: Offer = None,
-    price: Decimal | None = 10,  # type: ignore [assignment]
+    price: Decimal = 10,  # type: ignore [assignment]
     quantity: int = 50,
     name: str = "Test Book",
     booking_email: str = "offer.booking.email@example.com",

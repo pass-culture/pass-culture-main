@@ -66,7 +66,7 @@ BOOKING_STATUS_LABELS = {
     "confirmed": "confirmé",
 }
 
-BOOKING_DATE_STATUS_MAPPING = {
+BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = {
     BookingStatusFilter.BOOKED: Booking.dateCreated,
     BookingStatusFilter.VALIDATED: Booking.dateUsed,
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,

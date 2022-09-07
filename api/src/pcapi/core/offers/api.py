@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import logging
 from typing import List
 
@@ -432,7 +433,7 @@ def _create_stock(
 
     return Stock(
         offer=offer,
-        price=price,
+        price=decimal.Decimal(price),
         quantity=quantity,
         beginningDatetime=beginning,
         bookingLimitDatetime=booking_limit_datetime,

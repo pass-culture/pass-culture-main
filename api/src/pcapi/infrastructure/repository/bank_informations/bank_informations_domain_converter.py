@@ -17,7 +17,7 @@ def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankIn
 def to_model(bank_informations: BankInformations) -> BankInformationsSQLEntity:
     bank_informations_sql_entity = BankInformationsSQLEntity()
     bank_informations_sql_entity.applicationId = bank_informations.application_id  # type: ignore [assignment]
-    bank_informations_sql_entity.status = bank_informations.status
+    bank_informations_sql_entity.status = bank_informations.status  # type: ignore [call-overload]
     bank_informations_sql_entity.iban = bank_informations.iban
     bank_informations_sql_entity.bic = bank_informations.bic
     bank_informations_sql_entity.offererId = bank_informations.offerer_id

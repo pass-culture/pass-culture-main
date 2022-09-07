@@ -251,7 +251,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         return cls(
             **offer_mapping,
             offerId=offer.id,
-            contactEmail=offer.extraData.get("contactEmail"),
+            contactEmail=offer.extraData.get("contactEmail", "").strip(),
             contactPhone=offer.extraData.get("contactPhone", "").strip(),
             offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [arg-type]
             students=students,  # type: ignore [arg-type]
@@ -446,7 +446,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
         return cls(
             **offer_mapping,
             offerId=offer.id,
-            contactEmail=offer.extraData.get("contactEmail"),
+            contactEmail=offer.extraData.get("contactEmail", "").strip(),
             contactPhone=offer.extraData.get("contactPhone", "").strip(),
             offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [arg-type]
             students=students,

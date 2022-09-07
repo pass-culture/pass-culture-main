@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
@@ -51,7 +52,7 @@ def create_stock(
     is_soft_deleted: bool = False,
     last_provider_id: int | None = None,
     offer: Offer | None = None,
-    price: float = 10,
+    price: decimal.Decimal = decimal.Decimal(10),
     quantity: int | None = None,
 ) -> Stock:
     stock = Stock()
