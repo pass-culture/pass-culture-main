@@ -444,8 +444,7 @@ def mark_as_cancelled(booking: Booking) -> None:
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
-    if FeatureToggle.PRICE_BOOKINGS.is_active():
-        finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
+    finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
 
