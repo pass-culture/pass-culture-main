@@ -192,6 +192,10 @@ def test_public_api(client):
                             "title": "Enablenativeidcheckverbosedebugging",
                             "type": "boolean",
                         },
+                        "enableNewIdentificationFlow": {
+                            "title": "Enablenewidentificationflow",
+                            "type": "boolean",
+                        },
                         "enablePhoneValidation": {"title": "Enablephonevalidation", "type": "boolean"},
                         "enableUnderageGeneralisation": {"title": "Enableunderagegeneralisation", "type": "boolean"},
                         "enableUserProfiling": {"title": "Enableuserprofiling", "type": "boolean"},
@@ -213,6 +217,7 @@ def test_public_api(client):
                         "enableNativeCulturalSurvey",
                         "enableNativeEacIndividual",
                         "enableNativeIdCheckVerboseDebugging",
+                        "enableNewIdentificationFlow",
                         "enablePhoneValidation",
                         "enableUnderageGeneralisation",
                         "enableUserProfiling",
