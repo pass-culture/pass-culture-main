@@ -2,23 +2,21 @@ import cx from 'classnames'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-import { SelectOption } from 'custom_types/form'
 
 import styles from './AutocompleteList.module.scss'
+import { IAutocompleteItemProps } from './type'
 
 // FIXME (MathildeDuboille - 15-06-22): improve accessibility and refactor if needed.
 // This component is used in SelectAutocomplete and MultiselectAutocomplete
 type AutocompleteListProps = {
   className?: string
   displayNumberOfSelectedValues?: boolean
-  filteredOptions: (SelectOption & { disabled?: boolean })[]
+  filteredOptions: IAutocompleteItemProps[]
   isOpen: boolean
   maxHeight?: number
   numberOfSelectedOptions?: number
   onButtonClick: () => void
-  renderOption: (
-    option: SelectOption & { disabled?: boolean }
-  ) => React.ReactNode
+  renderOption: (option: IAutocompleteItemProps) => React.ReactNode
   disabled?: boolean
   hideArrow?: boolean
 }
