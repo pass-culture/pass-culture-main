@@ -25,6 +25,8 @@ Si la valeur initiale est `False`, ajouter une ligne dans le tuple `FEATURES_DIS
 
 Lorsqu'on a besoin d'utiliser un Feature Flag sur l'app jeune, il faut transmettre le Feature Flag via l'endpoint [`/settings`](https://github.com/pass-culture/pass-culture-main/blob/d4eeed54c82aa616f10473198518b636c8e19d3c/api/tests/routes/native/v1/settings_test.py#L24)
 
+Pour que cet ajout soit mis à disposition dans le contrat d'interface généré par Swagger pour l'app native, il faut également l'ajouter à la classe de SettingsResponse dans le serializer de settings.py
+
 ### Supprimer un Feature Flag
 
 1. Enlever toute utilisation du flag
