@@ -24,6 +24,16 @@ jest.mock('react-instantsearch-dom', () => {
   return {
     ...jest.requireActual('react-instantsearch-dom'),
     Configure: jest.fn(() => <div />),
+    // eslint-disable-next-line react/display-name
+    connectStats: jest.fn(Component => (props: any) => (
+      <Component
+        {...props}
+        areHitsSorted={false}
+        nbHits={0}
+        nbSortedHits={0}
+        processingTimeMS={0}
+      />
+    )),
   }
 })
 

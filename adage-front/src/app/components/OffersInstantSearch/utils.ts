@@ -3,6 +3,11 @@ import flatMap from 'lodash/flatMap'
 import { VenueResponse } from 'apiClient'
 import { Facets, Option } from 'app/types'
 
+interface FacetsWithData {
+  queryFilters: Facets
+  filtersKeys: string[]
+}
+
 export const populateFacetFilters = ({
   departments,
   categories,
@@ -19,8 +24,9 @@ export const populateFacetFilters = ({
   venueFilter: VenueResponse | null
   onlyInMySchool: boolean
   uai?: string[] | null
-}): Facets => {
+}): FacetsWithData => {
   const updatedFilters: Facets = []
+  const filtersKeys: string[] = []
 
   const filteredDepartments: string[] = flatMap(
     departments,
@@ -48,34 +54,47 @@ export const populateFacetFilters = ({
   )
 
   if (filteredDepartments.length > 0) {
+    filtersKeys.push('departments')
+    filtersKeys.push('interventionArea')
     updatedFilters.push(filteredDepartments)
   }
 
   if (filteredCategories.length > 0) {
+    filtersKeys.push('categories')
     updatedFilters.push(filteredCategories)
   }
 
   if (filteredStudents.length > 0) {
+    filtersKeys.push('students')
     updatedFilters.push(filteredStudents)
   }
 
   if (filteredDomains.length > 0) {
+    filtersKeys.push('domains')
     updatedFilters.push(filteredDomains)
   }
 
   if (venueFilter?.id) {
+    filtersKeys.push('venue')
     updatedFilters.push(`venue.id:${venueFilter.id}`)
   }
 
   if (uai) {
+    if (!uai.includes('all')) {
+      filtersKeys.push('uaiCode')
+    }
     updatedFilters.push(
       uai.map(uaiCode => `offer.educationalInstitutionUAICode:${uaiCode}`)
     )
   }
 
   if (onlyInMySchool) {
+    filtersKeys.push('mySchool')
     updatedFilters.push('offer.eventAddressType:school')
   }
 
-  return updatedFilters
+  return {
+    queryFilters: updatedFilters,
+    filtersKeys: filtersKeys,
+  }
 }

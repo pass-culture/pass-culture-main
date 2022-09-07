@@ -46,6 +46,10 @@ describe('offersSearch component', () => {
       refine: jest.fn(),
       currentRefinement: '',
       isSearchStalled: false,
+      nbHits: 0,
+      nbSortedHits: 0,
+      processingTimeMS: 0,
+      areHitsSorted: false,
     }
   })
 
