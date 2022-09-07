@@ -657,10 +657,23 @@ class DomainsCreditTest:
 
 
 class CreateProUserTest:
+    data = {
+        "email": "prouser@example.com",
+        "password": "P@ssword12345",
+        "firstName": "Jean",
+        "lastName": "Test",
+        "contactOk": False,
+        "phoneNumber": "0666666666",
+        "name": "Le Petit Rintintin",
+        "publicName": "Le Petit Rintintin",
+        "siren": "123456789",
+        "address": "1 rue du test",
+        "postalCode": "44000",
+        "city": "Nantes",
+    }
+
     def test_create_pro_user(self):
-        pro_user_creation_body = ProUserCreationBodyModel(
-            email="prouser@example.com", password="P@ssword12345", phoneNumber="0666666666"
-        )
+        pro_user_creation_body = ProUserCreationBodyModel(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 
@@ -674,9 +687,7 @@ class CreateProUserTest:
 
     @override_settings(IS_INTEGRATION=True)
     def test_create_pro_user_in_integration(self):
-        pro_user_creation_body = ProUserCreationBodyModel(
-            email="prouser@example.com", password="P@ssword12345", phoneNumber="0666666666"
-        )
+        pro_user_creation_body = ProUserCreationBodyModel(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 
