@@ -20,6 +20,7 @@ class VenuePayload(BaseModel):
 def create_offerer_task(payload: OffererPayload) -> None:
     from pcapi.core.users.external import zendesk_sell
 
+    logger.info("create_offerer_task - payload: %s", payload)
     zendesk_sell.do_create_offerer(payload.offerer_id)
 
 
@@ -27,7 +28,7 @@ def create_offerer_task(payload: OffererPayload) -> None:
 def update_offerer_task(payload: OffererPayload) -> None:
     from pcapi.core.users.external import zendesk_sell
 
-    logger.info("update_offerer_task: payload=%s, payload.offerer_id=%s", payload, payload.offerer_id)
+    logger.info("update_offerer_task - payload: %s", payload)
     zendesk_sell.do_update_offerer(payload.offerer_id)
 
 
@@ -35,6 +36,7 @@ def update_offerer_task(payload: OffererPayload) -> None:
 def create_venue_task(payload: VenuePayload) -> None:
     from pcapi.core.users.external import zendesk_sell
 
+    logger.info("create_venue_task - payload: %s", payload)
     zendesk_sell.do_create_venue(payload.venue_id)
 
 
@@ -42,5 +44,5 @@ def create_venue_task(payload: VenuePayload) -> None:
 def update_venue_task(payload: VenuePayload) -> None:
     from pcapi.core.users.external import zendesk_sell
 
-    logger.info("update_venue_task: payload=%s, payload.venue_id=%s", payload, payload.venue_id)
+    logger.info("update_venue_task - payload: %s", payload)
     zendesk_sell.do_update_venue(payload.venue_id)
