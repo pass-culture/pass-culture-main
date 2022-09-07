@@ -10,12 +10,19 @@ import {
 } from 'context/OfferIndividualContext'
 import { IOfferIndividual } from 'core/Offers/types'
 
-import Template from '../Template'
+import Template, { ITemplateProps } from '../Template'
 
-const renderTemplate = (
-  contextOverride: Partial<IOfferIndividualContext> = {},
-  url = '/offre/AA/v3/creation/individuelle/informations'
-) => {
+interface IRenderTemplateProps {
+  contextOverride?: Partial<IOfferIndividualContext>
+  url?: string
+  props?: Partial<ITemplateProps>
+}
+
+const renderTemplate = ({
+  contextOverride = {},
+  url = '/offre/AA/v3/creation/individuelle/informations',
+  props = {},
+}: IRenderTemplateProps) => {
   const contextValues: IOfferIndividualContext = {
     offerId: null,
     offer: null,
@@ -29,7 +36,7 @@ const renderTemplate = (
   return render(
     <OfferIndividualContext.Provider value={contextValues}>
       <MemoryRouter initialEntries={[url]}>
-        <Template>
+        <Template {...props}>
           <div>Template child</div>
         </Template>
       </MemoryRouter>
@@ -39,7 +46,7 @@ const renderTemplate = (
 
 describe('test OfferIndividualStepper', () => {
   it('should render when no offer is given', async () => {
-    await renderTemplate()
+    await renderTemplate({})
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Informations')).toBeInTheDocument()
@@ -60,13 +67,12 @@ describe('test OfferIndividualStepper', () => {
     const contextOverride = {
       offer: offer as IOfferIndividual,
     }
-    await renderTemplate(contextOverride)
+    await renderTemplate({ contextOverride })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Informations')).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-    expect(screen.getByText('Confirmation')).toBeInTheDocument()
 
     expect(
       screen.getByRole('heading', { name: 'Créer une offre' })
@@ -84,22 +90,29 @@ describe('test OfferIndividualStepper', () => {
     const contextOverride = {
       offer: offer as IOfferIndividual,
     }
-    await renderTemplate(
+    await renderTemplate({
       contextOverride,
-      '/offre/AA/v3/individuelle/informations'
-    )
+      url: '/offre/AA/v3/individuelle/informations',
+    })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Informations')).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-    expect(screen.getByText('Confirmation')).toBeInTheDocument()
 
     expect(
-      screen.getByRole('heading', { name: 'Editez votre offre' })
+      screen.getByRole('heading', { name: "Modifier l'offre" })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: "Titre de l'offre" })
+    ).toBeInTheDocument()
+  })
+
+  it('should display custom title', async () => {
+    await renderTemplate({ props: { title: 'Custom title' } })
+
+    expect(
+      screen.getByRole('heading', { name: 'Custom title' })
     ).toBeInTheDocument()
   })
 })

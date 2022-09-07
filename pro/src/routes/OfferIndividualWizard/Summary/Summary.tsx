@@ -33,7 +33,7 @@ const Summary = (): JSX.Element | null => {
   )
 
   return (
-    <WizardTemplate withStepper={false}>
+    <WizardTemplate title="Récapitulatif" withStepper={false}>
       <SummaryScreen
         offerId={offer.id}
         providerName={providerName}

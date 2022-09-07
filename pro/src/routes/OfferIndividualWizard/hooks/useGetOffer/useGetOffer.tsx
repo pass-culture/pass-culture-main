@@ -54,7 +54,7 @@ const useGetOffer = (
   }, [offerId])
 
   if (isLoading === true) {
-    return { isLoading, reloadOffer: () => loadOffer }
+    return { isLoading, reloadOffer: loadOffer }
   }
 
   if (error !== undefined) {
@@ -63,7 +63,7 @@ const useGetOffer = (
       error: {
         message: error.message,
       },
-      reloadOffer: () => loadOffer,
+      reloadOffer: loadOffer,
     }
   }
 
@@ -71,7 +71,7 @@ const useGetOffer = (
     data: offer,
     isLoading,
     error: error,
-    reloadOffer: () => loadOffer,
+    reloadOffer: loadOffer,
   }
 }
 

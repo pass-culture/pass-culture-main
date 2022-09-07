@@ -66,7 +66,7 @@ const OfferSummary = ({
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const informationsUrls = isOfferFormV3
     ? {
-        creation: `/offre/:${offer.id}/v3/creation/individuelle/informations`,
+        creation: `/offre/${offer.id}/v3/creation/individuelle/informations`,
         edition: `/offre/${offer.id}/v3/individuelle/informations`,
       }
     : {
