@@ -15,10 +15,6 @@
       color: forms.$input-text-color-disabled;
       cursor: default;
     }
-
-    &-checked {
-      color: colors.$primary;
-    }
   }
 
   &-input {
@@ -37,7 +33,12 @@
 
     &:checked {
       box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background: radial-gradient(colors.$primary 0%, colors.$primary 40%, transparent 50%, transparent);
+      background: radial-gradient(
+        colors.$primary 0%,
+        colors.$primary 40%,
+        transparent 50%,
+        transparent
+      );
     }
 
     &:hover:checked,
@@ -69,7 +70,12 @@
   .base-radio-input {
     &:checked {
       border-color: colors.$primary;
-      background: radial-gradient(colors.$primary 0%, colors.$primary 40%, transparent 50%, transparent);
+      background: radial-gradient(
+        colors.$primary 0%,
+        colors.$primary 40%,
+        transparent 50%,
+        transparent
+      );
     }
   }
 }
