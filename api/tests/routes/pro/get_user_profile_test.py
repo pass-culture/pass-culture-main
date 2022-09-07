@@ -49,6 +49,7 @@ class Returns200Test:
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "id": humanize(user.id),
+            "nonHumanizedId": str(user.id),
             "idPieceNumber": None,
             "isAdmin": False,
             "isEmailValidated": True,
