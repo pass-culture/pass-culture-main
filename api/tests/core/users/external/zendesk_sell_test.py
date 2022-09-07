@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users.external import zendesk_sell
 
 
@@ -267,6 +268,7 @@ def test_create_venue_and_parent_offerer():
     assert response["id"] == ret_id
 
 
+@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_multiple_results_none_has_id():
     offerer = offerers_factories.OffererFactory()
 
@@ -307,6 +309,7 @@ def test_update_offerer_multiple_results_none_has_id():
     assert put.call_count == 0  # nothing updated in Zendesk
 
 
+@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_multiple_results_one_has_id():
     offerer = offerers_factories.OffererFactory()
 
@@ -353,6 +356,7 @@ def test_update_offerer_multiple_results_one_has_id():
     assert put.call_count == 1
 
 
+@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
 def test_update_venue_multiple_results_none_has_id():
     venue = offerers_factories.VenueFactory()
 
@@ -393,6 +397,7 @@ def test_update_venue_multiple_results_none_has_id():
     assert put.call_count == 0  # nothing updated in Zendesk
 
 
+@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
 def test_update_venue_multiple_results_one_has_id():
     venue = offerers_factories.VenueFactory()
 
