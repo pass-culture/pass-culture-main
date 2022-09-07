@@ -3,14 +3,12 @@ import React from 'react'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { TOffererName } from 'core/Offerers/types'
+import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
 import FormLayout from 'new_components/FormLayout'
-import {
-  IOfferIndividualFormValues,
-  PLATFORM,
-} from 'new_components/OfferIndividualForm'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
@@ -62,7 +60,7 @@ const OfferIndividualForm = ({
 
   const displayVenueBanner =
     offerSubCategory &&
-    offerSubCategory.onlineOfflinePlatform === PLATFORM.OFFLINE &&
+    offerSubCategory.onlineOfflinePlatform === CATEGORY_STATUS.OFFLINE &&
     areAllVenuesVirtual
 
   return (
