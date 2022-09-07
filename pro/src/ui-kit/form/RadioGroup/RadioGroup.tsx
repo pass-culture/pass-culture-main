@@ -19,7 +19,6 @@ export interface IRadioGroupProps {
   group: {
     label: string
     value: string
-    description?: string
   }[]
   className?: string
   withBorder?: boolean
@@ -54,7 +53,6 @@ const RadioGroup = ({
           <RadioButton
             disabled={disabled}
             label={item.label}
-            description={item.description}
             name={name}
             value={item.value}
             withBorder={withBorder}
