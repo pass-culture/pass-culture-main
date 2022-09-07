@@ -44,12 +44,15 @@ const OfferIndividualStepper = () => {
         : '/offre/:offerId/v3/individuelle/recapitulatif',
       isActive: hasStock,
     },
-    {
+  ]
+
+  if (isCreation) {
+    stepPatternList.push({
       id: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
       label: 'Confirmation',
       isActive: false,
-    },
-  ]
+    })
+  }
 
   const stepList = stepPatternList.map((stepPattern: IStepPattern): Step => {
     const step: Step = {
