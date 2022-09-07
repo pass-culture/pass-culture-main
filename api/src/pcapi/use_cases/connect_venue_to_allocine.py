@@ -55,6 +55,7 @@ def _create_allocine_venue_provider(
     allocine_venue_provider.venue = venue
     allocine_venue_provider.providerId = provider_id
     allocine_venue_provider.venueIdAtOfferProvider = allocine_pivot.theaterId
+    assert venue_provider_payload.isDuo is not None  # helps mypy, see PostVenueProviderBody
     allocine_venue_provider.isDuo = venue_provider_payload.isDuo
     allocine_venue_provider.quantity = venue_provider_payload.quantity
     allocine_venue_provider.internalId = allocine_pivot.internalId

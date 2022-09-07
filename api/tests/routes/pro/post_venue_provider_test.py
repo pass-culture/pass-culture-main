@@ -57,31 +57,6 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
-    def test_when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(
-        self, mock_synchronize_venue_provider, client
-    ):
-        # Given
-        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
-        user = user_factories.AdminFactory()
-        providers_factories.AllocineTheaterFactory(siret=venue.siret)
-        provider = providers_factories.AllocineProviderFactory()
-
-        venue_provider_data = {"providerId": humanize(provider.id), "venueId": humanize(venue.id), "price": "9.99"}
-
-        auth_request = client.with_session_auth(email=user.email)
-
-        # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
-
-        # Then
-        assert response.status_code == 201
-        json = response.json
-        venue_provider = VenueProvider.query.one()
-        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
-        assert json["venueId"] == humanize(venue_provider.venueId)
-
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     def test_when_add_allocine_stocks_provider_with_default_settings_at_import(
         self, mock_synchronize_venue_provider, client
     ):
@@ -365,6 +340,7 @@ class Returns400Test:
         venue_provider_data = {
             "providerId": humanize(provider.id),
             "venueId": humanize(venue.id),
+            "isDuo": True,
             "price": "wrong_price",
         }
 
@@ -534,7 +510,12 @@ class ConnectProviderToVenueTest:
         providers_factories.AllocineTheaterFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
 
-        venue_provider_data = {"providerId": humanize(provider.id), "venueId": humanize(venue.id), "price": "33.33"}
+        venue_provider_data = {
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
+            "price": "33.33",
+            "isDuo": True,
+        }
 
         auth_request = client.with_session_auth(email=user.email)
 
