@@ -24,7 +24,6 @@ from sqlalchemy.sql.sqltypes import Numeric
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions
-from pcapi.core.offers.models import Offer
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import offer_mixin
@@ -228,37 +227,6 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @classmethod
-    def create_from_offer(cls, offer: Offer) -> CollectiveOffer:
-        list_of_common_attributes = [
-            "isActive",
-            "venue",
-            "name",
-            "description",
-            "durationMinutes",
-            "dateCreated",
-            "subcategoryId",
-            "dateUpdated",
-            "bookingEmail",
-            "lastValidationDate",
-            "validation",
-            "audioDisabilityCompliant",
-            "mentalDisabilityCompliant",
-            "motorDisabilityCompliant",
-            "visualDisabilityCompliant",
-        ]
-        offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
-        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]
-        return cls(
-            **offer_mapping,
-            offerId=offer.id,
-            contactEmail=offer.extraData.get("contactEmail", "").strip(),
-            contactPhone=offer.extraData.get("contactPhone", "").strip(),
-            offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [arg-type]
-            students=students,  # type: ignore [arg-type]
-            interventionArea=[],
-        )
-
-    @classmethod
     def create_from_collective_offer_template(
         cls, collective_offer_template: CollectiveOfferTemplate
     ) -> CollectiveOffer:
@@ -420,38 +388,6 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
             **collective_offer_mapping,
             offerId=collective_offer.offerId,
             priceDetail=price_detail,
-        )
-
-    @classmethod
-    def create_from_offer(cls, offer: Offer, price_detail: str = None) -> CollectiveOfferTemplate:
-        list_of_common_attributes = [
-            "isActive",
-            "venue",
-            "name",
-            "description",
-            "durationMinutes",
-            "dateCreated",
-            "subcategoryId",
-            "dateUpdated",
-            "bookingEmail",
-            "lastValidationDate",
-            "validation",
-            "audioDisabilityCompliant",
-            "mentalDisabilityCompliant",
-            "motorDisabilityCompliant",
-            "visualDisabilityCompliant",
-        ]
-        offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
-        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]
-        return cls(
-            **offer_mapping,
-            offerId=offer.id,
-            contactEmail=offer.extraData.get("contactEmail", "").strip(),
-            contactPhone=offer.extraData.get("contactPhone", "").strip(),
-            offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [arg-type]
-            students=students,
-            priceDetail=price_detail,
-            interventionArea=[],
         )
 
 
