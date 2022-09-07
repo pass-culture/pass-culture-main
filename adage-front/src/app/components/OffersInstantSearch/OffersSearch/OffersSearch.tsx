@@ -2,7 +2,9 @@ import './OffersSearch.scss'
 import * as React from 'react'
 import { useEffect, useContext, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
+import type { StatsProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
+import { connectStats } from 'react-instantsearch-dom'
 
 import { VenueResponse } from 'apiClient'
 import { AuthenticatedResponse } from 'apiClient'
@@ -23,7 +25,7 @@ import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import { SearchBox } from './SearchBox/SearchBox'
 
-export interface SearchProps extends SearchBoxProvided {
+export interface SearchProps extends SearchBoxProvided, StatsProvided {
   user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
@@ -39,6 +41,7 @@ export const OffersSearchComponent = ({
   removeVenueFilter,
   venueFilter,
   refine,
+  nbHits,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
@@ -61,7 +64,7 @@ export const OffersSearchComponent = ({
           tab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
             : uaiCodeAllInstitutionsTab,
-      })
+      }).queryFilters
     )
   }
 
@@ -82,19 +85,21 @@ export const OffersSearchComponent = ({
 
   const handleLaunchSearchButton = (filters: Filters): void => {
     setIsLoading(true)
+    const updatedFilters = populateFacetFilters({
+      ...filters,
+      venueFilter,
+      uai:
+        activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+          ? uaiCodeShareWithMyInstitutionTab
+          : uaiCodeAllInstitutionsTab,
+    })
+    setFacetFilters(updatedFilters.queryFilters)
     if (LOGS_DATA) {
-      api.logSearchButtonClick()
-    }
-    setFacetFilters(
-      populateFacetFilters({
-        ...filters,
-        venueFilter,
-        uai:
-          activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
-            ? uaiCodeShareWithMyInstitutionTab
-            : uaiCodeAllInstitutionsTab,
+      api.logSearchButtonClick({
+        filters: updatedFilters.filtersKeys,
+        resultsCount: nbHits,
       })
-    )
+    }
     setQueryTag(query)
     refine(query)
   }
@@ -144,4 +149,6 @@ export const OffersSearchComponent = ({
   )
 }
 
-export const OffersSearch = connectSearchBox<SearchProps>(OffersSearchComponent)
+export const OffersSearch = connectStats(
+  connectSearchBox<SearchProps>(OffersSearchComponent)
+)
