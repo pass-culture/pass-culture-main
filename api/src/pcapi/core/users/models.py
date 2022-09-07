@@ -63,23 +63,23 @@ class TokenExtraData:
 class Token(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "token"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
     user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True))  # type: ignore [misc]
 
     value: str = sa.Column(sa.String, index=True, unique=True, nullable=False)
 
-    type = sa.Column(sa.Enum(TokenType, create_constraint=False), nullable=False)
+    type: TokenType = sa.Column(sa.Enum(TokenType, create_constraint=False), nullable=False)
 
-    creationDate = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     expirationDate = sa.Column(sa.DateTime, nullable=True)
 
-    isUsed = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
+    isUsed: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
 
-    extraData = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)  # type: ignore [misc]
+    extraData: dict = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)  # type: ignore [misc]
 
     def get_extra_data(self) -> TokenExtraData | None:
         return TokenExtraData(**self.extraData) if self.extraData else None
@@ -180,16 +180,18 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
     culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)
     departementCode = sa.Column(sa.String(3), nullable=True)
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
-    extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")  # type: ignore [misc]
+    extraData: dict = sa.Column(  # type: ignore [misc]
+        MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
+    )
     firstName = sa.Column(sa.String(128), nullable=True)
     sa.Index("idx_user_trgm_first_name", firstName, postgresql_using="gin")
-    hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
-    hasSeenProRgs = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
+    hasSeenProTutorials: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
+    hasSeenProRgs: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
     ineHash = sa.Column(sa.Text, nullable=True, unique=True)
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
@@ -198,20 +200,20 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     sa.Index("idx_user_trgm_last_name", lastName, postgresql_using="gin")
     married_name = sa.Column(sa.String(128), nullable=True)
     needsToFillCulturalSurvey = sa.Column(sa.Boolean, server_default=expression.true(), default=True)
-    notificationSubscriptions = sa.Column(  # type: ignore [misc]
+    notificationSubscriptions: dict = sa.Column(  # type: ignore [misc]
         MutableDict.as_mutable(postgresql.json.JSONB),
         nullable=True,
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
-    password = sa.Column(sa.LargeBinary(60), nullable=False)
+    password: bytes = sa.Column(sa.LargeBinary(60), nullable=False)
     _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
     publicName: str = sa.Column(sa.String(255), nullable=False)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
     UserOfferers: list["UserOfferer"] = orm.relationship("UserOfferer", back_populates="user")
-    roles = sa.Column(  # type: ignore [misc]
+    roles: list[UserRole] = sa.Column(  # type: ignore [misc]
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
@@ -564,11 +566,11 @@ class DomainsCredit:
 class Favorite(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "favorite"
 
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
     user = orm.relationship("User", foreign_keys=[userId], backref="favorites")  # type: ignore [misc]
 
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
     offer = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")  # type: ignore [misc]
 
@@ -602,7 +604,7 @@ class EmailHistoryEventTypeEnum(enum.Enum):
 class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_email_history"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
     user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True))  # type: ignore [misc]
@@ -615,7 +617,7 @@ class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc
 
     creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    eventType = sa.Column(sa.Enum(EmailHistoryEventTypeEnum), nullable=False)
+    eventType: EmailHistoryEventTypeEnum = sa.Column(sa.Enum(EmailHistoryEventTypeEnum), nullable=False)
 
     @classmethod
     def _build(
@@ -667,9 +669,9 @@ class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc
 class UserSuspension(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_suspension"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
     user = orm.relationship(  # type: ignore [misc]
         "User",
         foreign_keys=[userId],
@@ -678,7 +680,7 @@ class UserSuspension(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         ),
     )
 
-    eventType = sa.Column(sa.Enum(SuspensionEventType), nullable=False)
+    eventType: SuspensionEventType = sa.Column(sa.Enum(SuspensionEventType), nullable=False)
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
     eventDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now())

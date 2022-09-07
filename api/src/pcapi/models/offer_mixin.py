@@ -79,7 +79,7 @@ class ValidationMixin:
 
     lastValidationType = sa.Column(sa.Enum(OfferValidationType, name="validation_type"), nullable=True)
 
-    validation = sa.Column(
+    validation: OfferValidationStatus = sa.Column(
         sa.Enum(OfferValidationStatus, name="validation_status"),
         nullable=False,
         default=OfferValidationStatus.APPROVED,

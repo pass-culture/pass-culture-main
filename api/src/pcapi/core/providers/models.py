@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+import decimal
 import enum
 
 from sqlalchemy import BigInteger
@@ -35,9 +36,9 @@ from pcapi.models.providable_mixin import ProvidableMixin
 
 
 class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
-    id = Column(BigInteger, primary_key=True)
+    id: int = Column(BigInteger, primary_key=True)
 
-    name = Column(String(90), index=True, nullable=False)
+    name: str = Column(String(90), index=True, nullable=False)
 
     localClass = Column(
         String(60),
@@ -54,9 +55,9 @@ class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-
 
     authToken = Column(String, nullable=True)
 
-    enabledForPro = Column(Boolean, nullable=False, default=False, server_default=expression.false())
+    enabledForPro: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
-    pricesInCents = Column(Boolean, nullable=False, default=False, server_default=expression.false())
+    pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
     @property
     def isAllocine(self) -> bool:
@@ -83,15 +84,15 @@ class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-
 class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     """Stores specific sync settings for a Venue, and whether it is active"""
 
-    venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
+    venueId: int = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
 
-    providerId = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
+    providerId: int = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
 
     provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
 
-    venueIdAtOfferProvider = Column(String(70), nullable=False)
+    venueIdAtOfferProvider: str = Column(String(70), nullable=False)
 
     lastSyncDate = Column(DateTime, nullable=True)
 
@@ -146,11 +147,11 @@ class CinemaProviderPivot(PcObject, Base, Model):  # type: ignore [valid-type, m
 
     venue = relationship(Venue, foreign_keys=[venueId])  # type: ignore [misc]
 
-    providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
+    providerId: int = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
 
     provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
 
-    idAtProvider = Column(Text, nullable=False)
+    idAtProvider: str = Column(Text, nullable=False)
 
     __table_args__ = (
         UniqueConstraint(
@@ -170,21 +171,21 @@ class CDSCinemaDetails(PcObject, Base, Model):  # type: ignore [valid-type, misc
 
     cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
 
-    cinemaApiToken = Column(Text, nullable=False)
+    cinemaApiToken: str = Column(Text, nullable=False)
 
-    accountId = Column(Text, nullable=False)
+    accountId: str = Column(Text, nullable=False)
 
 
 class AllocineVenueProvider(VenueProvider):
     __tablename__ = "allocine_venue_provider"
 
-    id = Column(BigInteger, ForeignKey("venue_provider.id"), primary_key=True)
+    id: int = Column(BigInteger, ForeignKey("venue_provider.id"), primary_key=True)
 
-    isDuo = Column(Boolean, default=True, server_default=true(), nullable=False)
+    isDuo: bool = Column(Boolean, default=True, server_default=true(), nullable=False)
 
     quantity = Column(Integer, nullable=True)
 
-    internalId = Column(Text, nullable=False, unique=True)
+    internalId: str = Column(Text, nullable=False, unique=True)
 
     __mapper_args__ = {
         "polymorphic_identity": "allocine_venue_provider",
@@ -192,15 +193,19 @@ class AllocineVenueProvider(VenueProvider):
 
 
 class AllocineVenueProviderPriceRule(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    priceRule = Column(Enum(PriceRule), nullable=False)
+    priceRule: PriceRule = Column(Enum(PriceRule), nullable=False)
 
-    allocineVenueProviderId = Column(BigInteger, ForeignKey("allocine_venue_provider.id"), index=True, nullable=False)
+    allocineVenueProviderId: int = Column(
+        BigInteger, ForeignKey("allocine_venue_provider.id"), index=True, nullable=False
+    )
 
     allocineVenueProvider = relationship(  # type: ignore [misc]
         "AllocineVenueProvider", foreign_keys=[allocineVenueProviderId], backref="priceRules"
     )
 
-    price = Column(Numeric(10, 2), CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False)
+    price: decimal.Decimal = Column(
+        Numeric(10, 2), CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
+    )
 
     UniqueConstraint(
         allocineVenueProviderId,
@@ -242,21 +247,21 @@ class StockDetail:
 
 
 class AllocinePivot(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=False, unique=True)
+    venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue = relationship(Venue, foreign_keys=[venueId])  # type: ignore [misc]
 
-    theaterId = Column(String(20), nullable=False, unique=True)
+    theaterId: str = Column(String(20), nullable=False, unique=True)
 
-    internalId = Column(Text, nullable=False, unique=True)
+    internalId: str = Column(Text, nullable=False, unique=True)
 
 
 class AllocineTheater(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     siret = Column(String(14), nullable=True, unique=True)
 
-    theaterId = Column(String(20), nullable=False, unique=True)
+    theaterId: str = Column(String(20), nullable=False, unique=True)
 
-    internalId = Column(Text, nullable=False, unique=True)
+    internalId: str = Column(Text, nullable=False, unique=True)
 
 
 class LocalProviderEventType(enum.Enum):
@@ -270,8 +275,8 @@ class LocalProviderEventType(enum.Enum):
 
 
 class LocalProviderEvent(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
+    providerId: int = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
     provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
-    date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    type = Column(Enum(LocalProviderEventType), nullable=False)
+    date: datetime.datetime = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    type: LocalProviderEventType = Column(Enum(LocalProviderEventType), nullable=False)
     payload = Column(String(50), nullable=True)

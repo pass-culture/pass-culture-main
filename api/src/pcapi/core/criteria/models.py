@@ -6,7 +6,7 @@ from pcapi.models.pc_object import PcObject
 
 
 class Criterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    name = sqla.Column(sqla.String(140), nullable=False, unique=True)
+    name: str = sqla.Column(sqla.String(140), nullable=False, unique=True)
     description = sqla.Column(sqla.Text, nullable=True)
     startDateTime = sqla.Column(sqla.DateTime, nullable=True)
     endDateTime = sqla.Column(sqla.DateTime, nullable=True)
@@ -16,8 +16,10 @@ class Criterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
 
 class VenueCriterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
-    criterionId = sqla.Column(
+    venueId: int = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    criterionId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
@@ -32,8 +34,10 @@ class VenueCriterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
 class OfferCriterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __table_name__ = "offer_criterion"
-    offerId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
-    criterionId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False)
+    offerId: int = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    criterionId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False)
 
     __table_args__ = (
         sqla.UniqueConstraint(

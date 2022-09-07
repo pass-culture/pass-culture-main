@@ -168,7 +168,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
 
     publicName = Column(String(255), nullable=True)
 
-    isVirtual = Column(
+    isVirtual: bool = Column(
         Boolean,
         CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address"),
         nullable=False,
@@ -420,7 +420,7 @@ class VenueType(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_contact"
 
-    id = Column(BigInteger, primary_key=True)
+    id: int = Column(BigInteger, primary_key=True)
 
     venueId: int = Column(
         BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
@@ -434,7 +434,7 @@ class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     phone_number = Column(String(64), nullable=True)
 
-    social_medias = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")  # type: ignore [misc]
+    social_medias: dict = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")  # type: ignore [misc]
 
     def __repr__(self) -> str:
         return (
@@ -490,7 +490,7 @@ class VenuePricingPointLink(Base, Model):  # type: ignore [valid-type, misc]
     period during which this link is active.
     """
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     venue = relationship(Venue, foreign_keys=[venueId], back_populates="pricing_point_links")  # type: ignore [misc]
     pricingPointId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
@@ -520,7 +520,7 @@ class VenueReimbursementPointLink(Base, Model):  # type: ignore [valid-type, mis
     any other venue (that has a related bank account) of the same offerer.
     """
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     venue = relationship(Venue, foreign_keys=[venueId], back_populates="reimbursement_point_links")  # type: ignore [misc]
     reimbursementPointId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
@@ -648,9 +648,9 @@ offerer_ts_indexes = [
 
 class UserOfferer(PcObject, Base, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     __table_name__ = "user_offerer"
-    userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
+    userId: int = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
     user = relationship("User", foreign_keys=[userId], back_populates="UserOfferers")  # type: ignore [misc]
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True, nullable=False)
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True, nullable=False)
     offerer: Offerer = relationship(Offerer, foreign_keys=[offererId], back_populates="UserOfferers")
 
     __table_args__ = (
@@ -666,11 +666,11 @@ class ApiKey(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     # TODO: remove value colum when legacy keys are migrated
     value = Column(CHAR(64), index=True, nullable=True)
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))  # type: ignore [misc]
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     prefix = Column(Text, nullable=True, unique=True)
 

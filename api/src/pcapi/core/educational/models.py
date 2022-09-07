@@ -99,15 +99,15 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
 
-    isActive = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
     venue: RelationshipProperty["Venue"] = sa.orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOffers"
     )
 
-    name = sa.Column(sa.String(140), nullable=False)
+    name: str = sa.Column(sa.String(140), nullable=False)
 
     bookingEmail = sa.Column(sa.String(120), nullable=True)
 
@@ -117,7 +117,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
+    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -131,11 +131,11 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         "CollectiveStock", back_populates="collectiveOffer", uselist=False
     )
 
-    contactEmail = sa.Column(sa.String(120), nullable=False)
+    contactEmail: str = sa.Column(sa.String(120), nullable=False)
 
-    contactPhone = sa.Column(sa.Text, nullable=False)
+    contactPhone: str = sa.Column(sa.Text, nullable=False)
 
-    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
+    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
 
     interventionArea: list[str] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
@@ -297,15 +297,15 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
 
-    isActive = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
     venue: RelationshipProperty["Venue"] = sa.orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates"
     )
 
-    name = sa.Column(sa.String(140), nullable=False)
+    name: str = sa.Column(sa.String(140), nullable=False)
 
     description = sa.Column(sa.Text, nullable=True)
 
@@ -313,7 +313,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
+    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -327,13 +327,13 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     bookingEmail = sa.Column(sa.String(120), nullable=True)
 
-    contactEmail = sa.Column(sa.String(120), nullable=False)
+    contactEmail: str = sa.Column(sa.String(120), nullable=False)
 
-    contactPhone = sa.Column(sa.Text, nullable=False)
+    contactPhone: str = sa.Column(sa.Text, nullable=False)
 
-    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
+    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
 
-    interventionArea = sa.Column(MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}")  # type: ignore [misc]
+    interventionArea: list[str] = sa.Column(MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}")  # type: ignore [misc]
 
     domains: list["EducationalDomain"] = relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
@@ -462,7 +462,7 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
     )
 
-    dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateModified: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
 
@@ -539,19 +539,19 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "educational_institution"
 
-    institutionId = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
+    institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
     institutionType = sa.Column(sa.String(80), nullable=True)
 
-    name = sa.Column(sa.Text(), nullable=False)
+    name: str = sa.Column(sa.Text(), nullable=False)
 
-    city = sa.Column(sa.Text(), nullable=False)
+    city: str = sa.Column(sa.Text(), nullable=False)
 
     postalCode: str = sa.Column(sa.String(10), nullable=False)
 
     email = sa.Column(sa.Text(), nullable=True)
 
-    phoneNumber = sa.Column(sa.String(30), nullable=False)
+    phoneNumber: str = sa.Column(sa.String(30), nullable=False)
 
     collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
         "CollectiveOffer", back_populates="institution"
@@ -573,7 +573,7 @@ class EducationalDeposit(PcObject, Base, Model):  # type: ignore [valid-type, mi
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
 
-    educationalInstitutionId = sa.Column(
+    educationalInstitutionId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
 
@@ -581,7 +581,9 @@ class EducationalDeposit(PcObject, Base, Model):  # type: ignore [valid-type, mi
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
-    educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False)
+    educationalYearId: str = sa.Column(
+        sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False
+    )
 
     educationalYear: RelationshipProperty["EducationalYear"] = relationship(  # type: ignore [misc]
         EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
@@ -644,11 +646,11 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
         "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
     )
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
     venue: RelationshipProperty["Venue"] = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
 
-    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
     offerer: RelationshipProperty["Offerer"] = relationship(
         "Offerer", foreign_keys=[offererId], backref="collectiveBookings"
@@ -656,7 +658,7 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
-    cancellationLimitDate = sa.Column(sa.DateTime, nullable=False)
+    cancellationLimitDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
     cancellationReason = sa.Column(
         "cancellationReason",
@@ -667,28 +669,30 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
         nullable=True,
     )
 
-    status = sa.Column(
-        "status", sa.Enum(CollectiveBookingStatus), nullable=False, default=CollectiveBookingStatus.CONFIRMED
+    status: CollectiveBookingStatus = sa.Column(
+        sa.Enum(CollectiveBookingStatus), nullable=False, default=CollectiveBookingStatus.CONFIRMED
     )
 
     Index("ix_collective_booking_status", status)
 
     reimbursementDate = sa.Column(sa.DateTime, nullable=True)
 
-    educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
+    educationalInstitutionId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
+    )
     educationalInstitution: Mapped["EducationalInstitution"] = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
-    educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
+    educationalYearId: str = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
     educationalYear: Mapped["EducationalYear"] = relationship(EducationalYear, foreign_keys=[educationalYearId])
 
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
     confirmationDate = sa.Column(sa.DateTime, nullable=True)
-    confirmationLimitDate = sa.Column(sa.DateTime, nullable=False)
+    confirmationLimitDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
-    educationalRedactorId = sa.Column(
+    educationalRedactorId: int = sa.Column(
         sa.BigInteger,
         sa.ForeignKey("educational_redactor.id"),
         nullable=False,
@@ -785,10 +789,10 @@ class CollectiveOfferTemplateDomain(Base, Model):  # type: ignore [valid-type, m
 
     __tablename__ = "collective_offer_template_domain"
 
-    collectiveOfferTemplateId = sa.Column(
+    collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), index=True, primary_key=True
     )
-    educationalDomainId = sa.Column(
+    educationalDomainId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
     )
 
@@ -800,21 +804,21 @@ class CollectiveOfferDomain(Base, Model):  # type: ignore [valid-type, misc]
 
     __tablename__ = "collective_offer_domain"
 
-    collectiveOfferId = sa.Column(
+    collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), index=True, primary_key=True
     )
-    educationalDomainId = sa.Column(
+    educationalDomainId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
     )
 
 
 class EducationalDomainVenue(Base, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_domain_venue"
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-    educationalDomainId = sa.Column(
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    educationalDomainId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False)
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -828,7 +832,7 @@ class EducationalDomainVenue(Base, Model):  # type: ignore[valid-type, misc]
 class EducationalDomain(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "educational_domain"
 
-    name = sa.Column(sa.Text, nullable=False)
+    name: str = sa.Column(sa.Text, nullable=False)
     venues: "Mapped[list[Venue]]" = sa.orm.relationship(
         "Venue", back_populates="collectiveDomains", secondary="educational_domain_venue"
     )

@@ -6,4 +6,4 @@ from sqlalchemy.sql import expression
 
 @declarative_mixin
 class SoftDeletableMixin:
-    isSoftDeleted = Column(Boolean, nullable=False, default=False, server_default=expression.false())
+    isSoftDeleted: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())

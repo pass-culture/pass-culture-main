@@ -404,19 +404,19 @@ class FraudCheckStatus(enum.Enum):
 class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_check"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow
     )
 
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
     user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")  # type: ignore [misc]
 
-    type = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
+    type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
 
-    thirdPartyId = sa.Column(sa.TEXT(), nullable=False)
+    thirdPartyId: str = sa.Column(sa.TEXT(), nullable=False)
 
     resultContent = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
 
@@ -485,24 +485,24 @@ class OrphanDmsApplication(PcObject, Base, Model):  # type: ignore [valid-type, 
         sa.DateTime, nullable=True
     )  # This field copies the value provided in the DMS application
     email = sa.Column(sa.Text, nullable=True, index=True)
-    application_id = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
+    application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
     process_id = sa.Column(sa.BigInteger)
 
 
 class BeneficiaryFraudReview(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_review"
 
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
     user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews"))  # type: ignore [misc]
 
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
     author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")  # type: ignore [misc]
 
     review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
 
-    dateReviewed = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     reason = sa.Column(sa.Text)
 

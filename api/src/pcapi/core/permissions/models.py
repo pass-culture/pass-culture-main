@@ -70,7 +70,7 @@ role_permission_table = sa.Table(
 class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "permission"
 
-    name = sa.Column(sa.String(length=140), nullable=False, unique=True)
+    name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
     roles = sa.orm.relationship(  # type: ignore [misc]
         "Role", secondary=role_permission_table, back_populates="permissions"
@@ -80,7 +80,7 @@ class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class Role(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "role"
 
-    name = sa.Column(sa.String(140), nullable=False, unique=True)
+    name: str = sa.Column(sa.String(140), nullable=False, unique=True)
     permissions = sa.orm.relationship(  # type: ignore [misc]
         Permission, secondary=role_permission_table, back_populates="roles"
     )

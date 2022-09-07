@@ -61,7 +61,7 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [
     only one rule can be valid at a time.
     """
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=True)
 
@@ -139,28 +139,27 @@ class DepositType(enum.Enum):
 
 
 class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    amount = sa.Column(sa.Numeric(10, 2), nullable=False)
+    amount: Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
 
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
     user = relationship("User", foreign_keys=[userId], backref="deposits")  # type: ignore [misc]
 
     individual_bookings = relationship("IndividualBooking", back_populates="deposit")  # type: ignore [misc]
 
-    source = sa.Column(sa.String(300), nullable=False)
+    source: str = sa.Column(sa.String(300), nullable=False)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     dateUpdated = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
     expirationDate = sa.Column(sa.DateTime, nullable=True)
 
-    version = sa.Column(SmallInteger, nullable=False)
+    version: int = sa.Column(SmallInteger, nullable=False)
 
-    type = sa.Column(
-        "type",
+    type: DepositType = sa.Column(
         sa.Enum(DepositType, native_enum=False, create_constraint=False),
         nullable=False,
         server_default=DepositType.GRANT_18.value,
@@ -197,16 +196,15 @@ class RecreditType(enum.Enum):
 
 
 class Recredit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
+    depositId: int = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
 
     deposit = relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")  # type: ignore [misc]
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    amount = sa.Column(sa.Numeric(10, 2), nullable=False)
+    amount: Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
 
-    recreditType = sa.Column(
-        "recreditType",
+    recreditType: RecreditType = sa.Column(
         sa.Enum(RecreditType, native_enum=False, create_constraint=False),
         nullable=False,
     )

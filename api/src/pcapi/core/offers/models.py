@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from datetime import timedelta
+import decimal
 import enum
 import logging
 from typing import TYPE_CHECKING
@@ -61,15 +62,15 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
     # FIXME (cgaunet, 2022-08-02): this field seems to be unused
-    mediaUrls = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
+    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
     url = sa.Column(sa.String(255), nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
-    isGcuCompatible = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
-    isSynchronizationCompatible = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
-    isNational = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
+    isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
+    isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
+    isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     owningOffererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
     owningOfferer = sa_orm.relationship("Offerer", foreign_keys=[owningOffererId], backref="events")  # type: ignore [misc]
-    subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
+    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
 
     sa.Index("product_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
 
@@ -105,17 +106,17 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "mediation"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     credit = sa.Column(sa.String(255), nullable=True)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
     author = sa.orm.relationship("User", foreign_keys=[authorId], backref="mediations")  # type: ignore [misc]
 
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
     offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="mediations")  # type: ignore [misc]
 
@@ -125,9 +126,11 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "stock"
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
+    dateCreated: datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    )
 
-    dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateModified: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
 
@@ -135,7 +138,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type
 
     offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="stocks")  # type: ignore [misc]
 
-    price = sa.Column(
+    price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
 
@@ -364,15 +367,15 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
     url = sa.Column(sa.String(255), nullable=True)
 
     # FIXME (cgaunet, 2022-08-02): this field seems to be unused
-    mediaUrls = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
+    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    isNational = sa.Column(sa.Boolean, default=False, nullable=False)
+    isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
 
-    isDuo = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
+    isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     criteria = sa.orm.relationship(  # type: ignore [misc]
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
@@ -400,13 +403,15 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
     def isEducational(self) -> bool:
         return False
 
-    subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
+    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
-    fieldsUpdated = sa.Column(postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}")
+    fieldsUpdated: list[str] = sa.Column(
+        postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
+    )
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
@@ -619,13 +624,13 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 class ActivationCode(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "activation_code"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    code = sa.Column(sa.Text, nullable=False)
+    code: str = sa.Column(sa.Text, nullable=False)
 
     expirationDate = sa.Column(sa.DateTime, nullable=True, default=None)
 
-    stockId = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
+    stockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
 
     stock = sa.orm.relationship("Stock", back_populates="activationCodes")  # type: ignore [misc]
 
@@ -645,15 +650,15 @@ class ActivationCode(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class OfferValidationConfig(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offer_validation_config"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
 
     user = sa.orm.relationship("User", foreign_keys=[userId], backref="offer_validation_configs")  # type: ignore [misc]
 
-    specs = sa.Column("specs", sa.dialects.postgresql.JSONB, nullable=False)
+    specs: dict = sa.Column("specs", sa.dialects.postgresql.JSONB, nullable=False)
 
 
 @dataclass
@@ -723,19 +728,19 @@ class OfferReport(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         ),
     )
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
     user = sa.orm.relationship("User", foreign_keys=[userId], backref="reported_offers")  # type: ignore [misc]
 
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 
     offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="reports")  # type: ignore [misc]
 
-    reportedAt = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    reportedAt: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
+    reason: Reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
 
     # If the reason code is OTHER, save the user's custom reason
     customReasonContent = sa.Column(sa.Text, nullable=True)
