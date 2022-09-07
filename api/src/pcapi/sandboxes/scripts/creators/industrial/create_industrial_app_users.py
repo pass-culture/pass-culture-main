@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 DEPARTEMENT_CODES = ["93", "97"]
 BENEFICIARIES_TAGS = [
     "has-filled-cultural-survey",
-    "has-confirmed-activation",
     "has-booked-some",
     "has-booked-some-but-deposit-expired",
     "has-no-more-money",
@@ -43,7 +42,7 @@ UNDERAGE_BENEFICIARIES_TAGS = [
     "19-years-old-ex-underage-beneficiary",
     "19-years-old-ex-underage-beneficiary-ubble",
 ]
-OTHER_USERS_TAGS = ["has-signed-up", "has-booked-activation"]
+OTHER_USERS_TAGS = ["has-signed-up"]
 AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
 GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 

@@ -105,7 +105,3 @@ MOCK_DESCRIPTIONS = [
     "J'avais douze ans ; elle en avait bien seize.",
     "Se souvient-on qu'il fut jadis des roses ?",
 ]
-
-MOCK_ACTIVATION_NAME = "Activation de votre Pass Culture"
-
-MOCK_ACTIVATION_DESCRIPTION = "Venez à ce rendez-vous pour activer l'argent de votre pass."
