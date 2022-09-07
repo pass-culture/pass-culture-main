@@ -40,7 +40,7 @@ class AllocineStocks(LocalProvider):
         self.api_key = settings.ALLOCINE_API_KEY
         self.venue = allocine_venue_provider.venue
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
-        self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)  # type: ignore [arg-type]
+        self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
         self.isDuo = allocine_venue_provider.isDuo
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId

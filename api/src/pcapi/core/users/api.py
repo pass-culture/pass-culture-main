@@ -140,7 +140,7 @@ def create_account(
         dateOfBirth=datetime.datetime.combine(birthdate, datetime.datetime.min.time()),
         isEmailValidated=is_email_validated,
         publicName=models.VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
-        notificationSubscriptions=asdict(  # type: ignore [arg-type]
+        notificationSubscriptions=asdict(
             models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
         ),
         phoneNumber=phone_number,  # type: ignore [call-arg]
@@ -537,7 +537,7 @@ def get_domains_credit(
         return None
 
     if user_bookings is None:
-        deposit_bookings = bookings_repository.get_bookings_from_deposit(user.deposit.id)  # type: ignore [arg-type]
+        deposit_bookings = bookings_repository.get_bookings_from_deposit(user.deposit.id)
     else:
         deposit_bookings = [
             booking
@@ -549,8 +549,8 @@ def get_domains_credit(
 
     domains_credit = models.DomainsCredit(
         all=models.Credit(
-            initial=user.deposit.amount,  # type: ignore [arg-type]
-            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))  # type: ignore [arg-type, operator, misc]
+            initial=user.deposit.amount,
+            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
             if user.has_active_deposit
             else Decimal("0"),
         ),
@@ -628,7 +628,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
 def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
     new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))  # type: ignore [call-arg]
     new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)
-    new_pro_user.notificationSubscriptions = asdict(models.NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type, call-overload]
+    new_pro_user.notificationSubscriptions = asdict(models.NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type]
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
     new_pro_user.needsToFillCulturalSurvey = False
@@ -711,7 +711,7 @@ def update_notification_subscription(
     if subscriptions is None:
         return
 
-    user.notificationSubscriptions = {  # type: ignore [call-overload]
+    user.notificationSubscriptions = {
         "marketing_push": subscriptions.marketing_push,
         "marketing_email": subscriptions.marketing_email,
     }

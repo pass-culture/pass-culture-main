@@ -62,29 +62,29 @@ def _get_model(offer: CollectiveOffer | CollectiveOfferTemplate | Offer, paramet
 def parse_offer_validation_config(
     offer: CollectiveOffer | CollectiveOfferTemplate | Offer, config: OfferValidationConfig
 ) -> tuple[float, list[OfferValidationRuleItem]]:
-    minimum_score = float(config.specs["minimum_score"])  # type: ignore [call-overload, index]
-    rules = config.specs["rules"]  # type: ignore [call-overload, index]
+    minimum_score = float(config.specs["minimum_score"])
+    rules = config.specs["rules"]
 
     rule_items = []
     for rule in rules:
         validation_items = []
-        for parameter in rule["conditions"]:  # type: ignore [index]
+        for parameter in rule["conditions"]:
             try:
-                model = _get_model(offer, parameter.get("model", None))  # type: ignore [union-attr]
+                model = _get_model(offer, parameter.get("model", None))
             except UnapplicableModel:
                 break
 
             validation_item = OfferValidationItem(
                 model=model,
-                attribute=parameter["attribute"],  # type: ignore [index]
-                type=parameter.get("type"),  # type: ignore [union-attr]
-                condition=parameter["condition"],  # type: ignore [arg-type, index]
+                attribute=parameter["attribute"],
+                type=parameter.get("type"),
+                condition=parameter["condition"],
             )
             validation_items.append(validation_item)
         else:
             if validation_items:
                 rule_item = OfferValidationRuleItem(
-                    name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items  # type: ignore [index, arg-type]
+                    name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items
                 )
                 rule_items.append(rule_item)
     return minimum_score, rule_items

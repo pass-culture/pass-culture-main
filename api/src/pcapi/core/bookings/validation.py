@@ -130,7 +130,7 @@ def check_is_usable(booking: Booking) -> None:
             utc_datetime_to_department_timezone(
                 api.compute_cancellation_limit_date(
                     booking.stock.beginningDatetime,
-                    booking.dateCreated,  # type: ignore [arg-type]
+                    booking.dateCreated,
                 ),
                 venue_departement_code,
             ),

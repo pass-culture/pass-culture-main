@@ -173,17 +173,17 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     with transaction():
 
         deposit = educational_repository.get_and_lock_educational_deposit(
-            educational_institution_id, educational_year_id  # type: ignore [arg-type]
+            educational_institution_id, educational_year_id
         )
         validation.check_institution_fund(
-            educational_institution_id,  # type: ignore [arg-type]
-            educational_year_id,  # type: ignore [arg-type]
+            educational_institution_id,
+            educational_year_id,
             collective_booking.collectiveStock.price,
             deposit,
         )
         if FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION.is_active():
             validation.check_ministry_fund(
-                educational_year_id=educational_year_id,  # type: ignore [arg-type]
+                educational_year_id=educational_year_id,
                 booking_amount=collective_booking.collectiveStock.price,
                 booking_date=collective_booking.collectiveStock.beginningDatetime,
                 ministry=deposit.ministry,  # type: ignore [arg-type]
@@ -725,7 +725,7 @@ def create_collective_offer(
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
-        offerVenue=offer_data.offer_venue.dict(),  # type: ignore [arg-type]
+        offerVenue=offer_data.offer_venue.dict(),
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
@@ -972,7 +972,7 @@ def create_collective_offer_public(
         mentalDisabilityCompliant=body.mental_disability_compliant,
         motorDisabilityCompliant=body.motor_disability_compliant,
         visualDisabilityCompliant=body.visual_disability_compliant,
-        offerVenue=offer_venue,  # type: ignore [arg-type]
+        offerVenue=offer_venue,
         interventionArea=body.intervention_area,
         institutionId=body.educational_institution_id,
     )

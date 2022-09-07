@@ -97,7 +97,7 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
     @sa.ext.hybrid.hybrid_property
     def can_be_synchronized(self) -> bool:
         return (
-            self.isGcuCompatible  # type: ignore [operator]
+            self.isGcuCompatible
             & self.isSynchronizationCompatible
             & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
         )

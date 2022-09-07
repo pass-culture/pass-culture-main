@@ -434,7 +434,7 @@ class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     phone_number = Column(String(64), nullable=True)
 
-    social_medias: dict = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")  # type: ignore [misc]
+    social_medias: dict = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")
 
     def __repr__(self) -> str:
         return (

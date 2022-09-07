@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
-    content = ubble.get_content(fraud_check.thirdPartyId)  # type: ignore [arg-type]
+    content = ubble.get_content(fraud_check.thirdPartyId)
     status = content.status
 
     if not settings.IS_PROD and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
@@ -194,7 +194,7 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
         )
 
     try:
-        ubble_content = ubble.get_content(fraud_check.thirdPartyId)  # type: ignore [arg-type]
+        ubble_content = ubble.get_content(fraud_check.thirdPartyId)
     except requests_utils.ExternalAPIException:
         fraud_check.idPicturesStored = False
         pcapi_repository.repository.save(fraud_check)

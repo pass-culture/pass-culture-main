@@ -135,7 +135,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     contactPhone: str = sa.Column(sa.Text, nullable=False)
 
-    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
+    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     interventionArea: list[str] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
@@ -194,7 +194,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
     @property
     def isReleased(self) -> bool:
         return (
-            self.isActive  # type: ignore [return-value]
+            self.isActive
             and self.validation == offer_mixin.OfferValidationStatus.APPROVED
             and self.venue.isValidated
             and self.venue.managingOfferer.isActive
@@ -331,9 +331,11 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     contactPhone: str = sa.Column(sa.Text, nullable=False)
 
-    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
+    offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
-    interventionArea: list[str] = sa.Column(MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}")  # type: ignore [misc]
+    interventionArea: list[str] = sa.Column(
+        MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
+    )
 
     domains: list["EducationalDomain"] = relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
@@ -371,7 +373,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
     @property
     def isReleased(self) -> bool:
         return (
-            self.isActive  # type: ignore [return-value]
+            self.isActive
             and self.validation == offer_mixin.OfferValidationStatus.APPROVED
             and self.venue.isValidated
             and self.venue.managingOfferer.isActive
@@ -447,9 +449,9 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
             contactEmail=offer.extraData.get("contactEmail"),
             contactPhone=offer.extraData.get("contactPhone", "").strip(),
             offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [arg-type]
-            students=students,  # type: ignore [arg-type]
+            students=students,
             priceDetail=price_detail,
-            interventionArea=[],  # type: ignore [arg-type]
+            interventionArea=[],
         )
 
 
@@ -764,11 +766,11 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
     def has_confirmation_limit_date_passed(self) -> bool:
-        return self.confirmationLimitDate <= datetime.utcnow()  # type: ignore [operator]
+        return self.confirmationLimitDate <= datetime.utcnow()
 
     def mark_as_refused(self) -> None:
 
-        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():  # type: ignore [operator]
+        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
             raise exceptions.EducationalBookingNotRefusable()
 
         try:

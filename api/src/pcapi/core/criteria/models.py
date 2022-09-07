@@ -12,7 +12,7 @@ class Criterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     endDateTime = sqla.Column(sqla.DateTime, nullable=True)
 
     def __str__(self) -> str:
-        return self.name  # type: ignore [return-value]
+        return self.name
 
 
 class VenueCriterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]

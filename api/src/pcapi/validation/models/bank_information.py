@@ -26,8 +26,8 @@ def validate(bank_information: BankInformation, api_errors: ApiErrors) -> ApiErr
                 api_errors.add_error("bic", f'Le BIC renseigné ("{bank_information.bic}") est invalide')
     else:
         if bank_information.iban is not None:
-            api_errors.add_error("iban", f"L’IBAN doit être vide pour le statut {bank_information.status.name}")  # type: ignore [union-attr]
+            api_errors.add_error("iban", f"L’IBAN doit être vide pour le statut {bank_information.status.name}")
         if bank_information.bic is not None:
-            api_errors.add_error("bic", f"Le BIC doit être vide pour le statut {bank_information.status.name}")  # type: ignore [union-attr]
+            api_errors.add_error("bic", f"Le BIC doit être vide pour le statut {bank_information.status.name}")
 
     return api_errors

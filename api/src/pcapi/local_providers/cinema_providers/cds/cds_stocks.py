@@ -32,7 +32,7 @@ class CDSStocks(LocalProvider):
         self.apiUrl = settings.CDS_API_URL
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
-        cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)  # type: ignore [arg-type]
+        cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
         self.apiToken = cinema_details.cinemaApiToken
         self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
@@ -179,7 +179,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,  # type: ignore [arg-type]
+            account_id=self.accountId,
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )
@@ -190,7 +190,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,  # type: ignore [arg-type]
+            account_id=self.accountId,
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )
@@ -201,7 +201,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,  # type: ignore [arg-type]
+            account_id=self.accountId,
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )
@@ -212,7 +212,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,  # type: ignore [arg-type]
+            account_id=self.accountId,
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )

@@ -76,7 +76,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-
     def getProviderAPI(self) -> ProviderAPI:
         return ProviderAPI(
             api_url=self.apiUrl,  # type: ignore [arg-type]
-            name=self.name,  # type: ignore [arg-type]
+            name=self.name,
             authentication_token=self.authToken,
         )
 

@@ -213,7 +213,7 @@ def get_collective_booking_status(
     if collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
         return "REFUSED"  # type: ignore [return-value]
 
-    return collective_booking.status.value  # type: ignore [union-attr]
+    return collective_booking.status.value
 
 
 def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> Contact:
@@ -235,7 +235,7 @@ def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> 
         return default_address
 
     if address_type == "other":
-        return offer.offerVenue["otherAddress"]  # type: ignore [return-value]
+        return offer.offerVenue["otherAddress"]
 
     if address_type == "school":
         return "Dans l’établissement scolaire"
