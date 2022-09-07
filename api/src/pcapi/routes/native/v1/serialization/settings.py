@@ -22,6 +22,7 @@ class SettingsResponse(BaseModel):
     enable_native_cultural_survey: bool
     enable_native_eac_individual: bool
     enable_native_id_check_verbose_debugging: bool
+    enable_new_identification_flow: bool
     enable_phone_validation: bool
     enable_underage_generalisation: bool
     enable_user_profiling: bool
