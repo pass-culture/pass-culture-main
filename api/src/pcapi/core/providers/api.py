@@ -1,5 +1,6 @@
 from dataclasses import asdict
 from datetime import datetime
+import decimal
 import logging
 from typing import Iterable
 
@@ -425,7 +426,7 @@ def _build_stock_from_stock_detail(
         rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
         offerId=offers_id,
-        price=price,
+        price=decimal.Decimal(price),
         dateModified=datetime.utcnow(),
         idAtProviders=stock_detail.stocks_provider_reference,
         lastProviderId=provider_id,

@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 import re
 from typing import cast
 
@@ -208,7 +209,7 @@ class AllocineStocks(LocalProvider):
         if "price" not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
-    def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
+    def apply_allocine_price_rule(self, allocine_stock: Stock) -> decimal.Decimal:
         for price_rule in self.venue_provider.priceRules:
             if price_rule.priceRule(allocine_stock):
                 return price_rule.price

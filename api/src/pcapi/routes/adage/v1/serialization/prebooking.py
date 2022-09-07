@@ -203,15 +203,15 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
 
 def get_collective_booking_status(
     collective_booking: CollectiveBooking,
-) -> CollectiveBookingStatus:
+) -> str:
     if collective_booking.status in (
         CollectiveBookingStatus.USED,
         CollectiveBookingStatus.REIMBURSED,
     ):
-        return CollectiveBookingStatus.USED.value  # type: ignore [return-value]
+        return CollectiveBookingStatus.USED.value
 
     if collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
-        return "REFUSED"  # type: ignore [return-value]
+        return "REFUSED"
 
     return collective_booking.status.value
 
