@@ -52,6 +52,7 @@ export const OffersComponent = ({
     (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[]
   >([])
   const [refinedIds, setRefinedIds] = useState<Set<string>>(new Set())
+  const [queryId, setQueryId] = useState('')
 
   useEffect(() => {
     let hasClearedOffers = false
@@ -116,6 +117,15 @@ export const OffersComponent = ({
     })
   }, [hits, setIsLoading, refinedIds])
 
+  useEffect(() => {
+    if (hits.length == 0) {
+      return
+    }
+    if (queryId !== hits[0].__queryID) {
+      setQueryId(hits[0].__queryID)
+    }
+  }, [hits, queryId])
+
   if (queriesAreLoading && offers.length === 0) {
     return (
       <div className="offers-loader">
@@ -144,12 +154,14 @@ export const OffersComponent = ({
         />
       </div>
       <ul className="offers">
-        {offers.map(offer => (
+        {offers.map((offer, index) => (
           <div key={offer.id}>
             <Offer
               canPrebookOffers={userRole == AdageFrontRoles.REDACTOR}
               key={offer.id}
               offer={offer}
+              position={index}
+              queryId={queryId}
             />
           </div>
         ))}
