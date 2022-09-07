@@ -7,12 +7,13 @@ import { FieldSetLayout } from '../shared'
 import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
 
-interface ICheckboxGroupProps {
+export interface ICheckboxGroupProps {
   groupName: string
   legend: string
   group: {
     name: string
     label: string
+    description?: string
     icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   }[]
   className?: string
@@ -41,6 +42,7 @@ const CheckboxGroup = ({
             Icon={item.icon}
             hasError={meta.touched && !!meta.error}
             label={item.label}
+            description={item.description}
             name={item.name}
             setGroupTouched={() =>
               !meta.touched ? helpers.setTouched(true) : null

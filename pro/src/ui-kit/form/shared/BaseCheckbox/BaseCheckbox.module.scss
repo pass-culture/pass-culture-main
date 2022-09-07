@@ -1,10 +1,23 @@
 @use 'styles/variables/_forms.scss' as forms;
 @use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/variables/_colors.scss' as colors;
 
 .base-checkbox {
-  display: inline-flex;
-  cursor: pointer;
-  align-items: center;
+  &-label-row {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+  }
+  &-description {
+    @include fonts.caption();
+    margin-left: rem.torem(28px);
+
+    color: colors.$grey-dark;
+    &.disabled {
+      color: colors.$grey-medium;
+    }
+  }
 
   &-label {
     line-height: rem.torem(19.2px);

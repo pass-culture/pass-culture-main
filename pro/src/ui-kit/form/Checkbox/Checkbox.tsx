@@ -6,10 +6,11 @@ import { BaseCheckbox, FieldError } from '../shared'
 
 import styles from './Checkbox.module.scss'
 
-interface ICheckboxProps {
+export interface ICheckboxProps {
   name: string
   value: string
   label: string
+  description?: string
   className?: string
   hideFooter?: boolean
   Icon?: React.FunctionComponent<
@@ -24,6 +25,7 @@ const Checkbox = ({
   name,
   value,
   label,
+  description,
   className,
   Icon,
   hideFooter,
@@ -37,6 +39,7 @@ const Checkbox = ({
         Icon={Icon}
         hasError={meta.touched && !!meta.error}
         label={label}
+        description={description}
         value={value}
         disabled={disabled}
       />
