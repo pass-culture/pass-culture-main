@@ -5,6 +5,11 @@ import React from 'react'
 import TableHead from '../TableHead'
 
 describe('components | pages | TableWrapper | TableHead', () => {
+  const renderHead = props => {
+    return render(<TableHead {...props} />, {
+      container: document.body.appendChild(document.createElement('table')),
+    })
+  }
   it('should render one line with all columns', () => {
     // Given
     const props = {
@@ -32,7 +37,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    render(<TableHead {...props} />)
+    renderHead(props)
 
     // Then
 
@@ -50,7 +55,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    render(<TableHead {...props} />)
+    renderHead(props)
 
     // Then
     expect(await screen.queryByRole('row')).not.toBeInTheDocument()
@@ -77,7 +82,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    render(<TableHead {...props} />)
+    renderHead(props)
     // Then
     expect(screen.getByRole('button')).toHaveAttribute(
       'src',
@@ -106,7 +111,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    render(<TableHead {...props} />)
+    renderHead(props)
 
     // Then
     expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
@@ -135,7 +140,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    render(<TableHead {...props} />)
+    renderHead(props)
 
     // Then
     expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
@@ -168,7 +173,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
     }
 
     // When
-    render(<TableHead {...props} />)
+    renderHead(props)
 
     // Then
     expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
