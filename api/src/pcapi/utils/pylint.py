@@ -47,20 +47,15 @@ class MarkupSafeChecker(pylint.checkers.BaseChecker):
 
 WRONG_PYDANTIC_BASE_MODEL_IMPORT = "wrong-pydantic-base-model-import"
 
-BASE_MODEL_IMPORT_HELP = """\
-`You should not import BaseModel directly from pydantic.
-You should rather do `import BaseModel from pcapi.routes.serialization`.
-"""
-
 
 class BaseModelImportChecker(pylint.checkers.BaseChecker):
     name = "pydantic-import"
     priority = -1
     msgs = {
         "W4002": (
-            "This BaseModel does accept NaN and infinite values which can lead to inconsistent behavior.",
+            "This BaseModel does accept NaN and infinite values which can lead to inconsistent behavior.\nYou should rather do `import BaseModel from pcapi.routes.serialization`.",
             WRONG_PYDANTIC_BASE_MODEL_IMPORT,
-            BASE_MODEL_IMPORT_HELP,
+            "Accepting NaN and infinite values can lead to inconsistent behavior or security breaches.",
         ),
     }
     options = ()
