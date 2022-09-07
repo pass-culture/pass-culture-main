@@ -5,18 +5,22 @@ import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { OfferIndividualStepper } from 'new_components/OfferIndividualStepper'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 
-interface ITemplateProps {
-  children: JSX.Element
+export interface ITemplateProps {
+  title?: string
   withStepper?: boolean
+  children: JSX.Element
 }
 
-const Template = ({ children, withStepper = true }: ITemplateProps) => {
+const Template = ({ title, children, withStepper = true }: ITemplateProps) => {
   const { offer } = useOfferIndividualContext()
   const isCreation = useIsCreation()
+
+  const defaultTitle = isCreation ? 'Créer une offre' : "Modifier l'offre"
+
   return (
     <OfferFormLayout>
       <OfferFormLayout.TitleBlock>
-        <h1>{isCreation ? 'Créer une offre' : 'Editez votre offre'}</h1>
+        <h1>{title ? title : defaultTitle}</h1>
       </OfferFormLayout.TitleBlock>
 
       <OfferFormLayout.TitleBlock>
