@@ -16,6 +16,7 @@ class PostVenueProviderBody(BaseModel):
     providerId: str
     venueIdAtOfferProvider: str | None
     price: str | None
+    # absent/ignored for regular providers, required for cinema-related providers
     isDuo: bool | None
     quantity: int | None
     isActive: bool | None

@@ -163,6 +163,7 @@ def update_allocine_venue_provider(
     allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.AllocineVenueProvider:
     allocine_venue_provider.quantity = venue_provider_payload.quantity
+    assert venue_provider_payload.isDuo is not None  # helps mypy, see PostVenueProviderBody
     allocine_venue_provider.isDuo = venue_provider_payload.isDuo
     for price_rule in allocine_venue_provider.priceRules:
         # PriceRule.default is the only existing value at this time
