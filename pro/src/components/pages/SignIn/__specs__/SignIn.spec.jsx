@@ -262,7 +262,10 @@ describe('src | components | pages | SignIn', () => {
             {},
             {
               url: '',
-              errors: {},
+              errors: {
+                global:
+                  'Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute',
+              },
               status: HTTP_STATUS.TOO_MANY_REQUESTS,
             }
           )
