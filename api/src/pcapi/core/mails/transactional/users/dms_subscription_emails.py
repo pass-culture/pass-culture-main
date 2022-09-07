@@ -4,6 +4,15 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
+FIELD_ERROR_LABELS = {
+    fraud_models.DmsFieldErrorKeyEnum.birth_date: "ta date de naissance",
+    fraud_models.DmsFieldErrorKeyEnum.first_name: "ton prénom",
+    fraud_models.DmsFieldErrorKeyEnum.id_piece_number: "ton numéro de pièce d'identité",
+    fraud_models.DmsFieldErrorKeyEnum.last_name: "ton nom de famille",
+    fraud_models.DmsFieldErrorKeyEnum.postal_code: "ton code postal",
+}
+
+
 def send_create_account_after_dms_email(user_email: str) -> bool:
     return mails.send(
         recipients=[user_email],
@@ -40,6 +49,8 @@ def send_pre_subscription_from_dms_error_email_to_beneficiary(
         data.params["ID_CARD_NUMBER"] = id_card_number_error.value
     ### --------------------------------------------------------------------------------------- ###
 
-    data.params["DMS_ERRORS"] = [{"name": error.get_field_label(), "value": error.value} for error in field_errors]
+    data.params["DMS_ERRORS"] = [
+        {"name": FIELD_ERROR_LABELS.get(error.key), "value": error.value} for error in field_errors
+    ]
 
     return mails.send(recipients=[user_email], data=data)
