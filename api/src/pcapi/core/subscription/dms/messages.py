@@ -9,11 +9,19 @@ from pcapi.core.subscription import models
 MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
 MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e"
 
+FIELD_ERROR_LABELS = {
+    fraud_models.DmsFieldErrorKeyEnum.birth_date: "date de naissance",
+    fraud_models.DmsFieldErrorKeyEnum.first_name: "prénom",
+    fraud_models.DmsFieldErrorKeyEnum.id_piece_number: "numéro de pièce d'identité",
+    fraud_models.DmsFieldErrorKeyEnum.last_name: "nom de famille",
+    fraud_models.DmsFieldErrorKeyEnum.postal_code: "code postal",
+}
+
 
 def _generate_form_field_error(
     error_text_singular: str, error_text_plural: str, error_fields: list[fraud_models.DmsFieldErrorDetails]
 ) -> str:
-    field_text = ", ".join(field.get_field_label(with_pronoun=False) for field in error_fields)
+    field_text = ", ".join(FIELD_ERROR_LABELS.get(field.key, field.key.value) for field in error_fields)
     if len(error_fields) == 1:
         user_message = error_text_singular.format(formatted_error_fields=field_text)
     else:

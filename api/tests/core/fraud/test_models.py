@@ -3,7 +3,12 @@ import datetime
 import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models
 from pcapi.core.fraud.models import _parse_jouve_date
+from pcapi.core.mails.transactional.users import dms_subscription_emails
+from pcapi.core.subscription.dms import api as dms_api
+from pcapi.core.subscription.dms import dms_internal_mailing
+from pcapi.core.subscription.dms import messages as dms_subscription_messages
 
 
 class GetRegistrationDatetimeTest:
@@ -49,3 +54,21 @@ class FraudHelperFunctionsTest:
     )
     def test__parse_jouve_date_error(self, date):
         assert _parse_jouve_date(date) is None
+
+
+class DmsErrorKeyLabelTest:
+    def test_dms_mailing_labels(self):
+        for key in models.DmsFieldErrorKeyEnum:
+            assert dms_subscription_emails.FIELD_ERROR_LABELS.get(key) is not None
+
+    def test_dms_api_labels(self):
+        for key in models.DmsFieldErrorKeyEnum:
+            assert dms_api.FIELD_ERROR_LABELS.get(key) is not None
+
+    def test_dms_internal_mailing_labels(self):
+        for key in models.DmsFieldErrorKeyEnum:
+            assert dms_internal_mailing.FIELD_ERROR_LABELS.get(key) is not None
+
+    def test_dms_subscription_messages(self):
+        for key in models.DmsFieldErrorKeyEnum:
+            assert dms_subscription_messages.FIELD_ERROR_LABELS.get(key) is not None
