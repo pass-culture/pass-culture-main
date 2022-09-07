@@ -13,10 +13,6 @@ from pcapi.domain.price_rule import PriceRule
 from pcapi.repository import repository
 
 
-ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
-ERROR_CODE_SIRET_NOT_SUPPORTED = 422
-
-
 def connect_venue_to_allocine(
     venue: Venue, provider_id: int, venue_provider_payload: VenueProviderCreationPayload
 ) -> AllocineVenueProvider:
