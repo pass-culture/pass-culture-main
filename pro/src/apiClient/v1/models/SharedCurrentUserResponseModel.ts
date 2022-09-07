@@ -27,6 +27,7 @@ export type SharedCurrentUserResponseModel = {
   lastConnectionDate?: string | null;
   lastName?: string | null;
   needsToFillCulturalSurvey?: boolean | null;
+  nonHumanizedId: string;
   notificationSubscriptions?: any;
   phoneNumber?: string | null;
   phoneValidationStatus?: PhoneValidationStatusType | null;

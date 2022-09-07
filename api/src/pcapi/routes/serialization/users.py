@@ -169,6 +169,7 @@ class SharedLoginUserResponseModel(BaseModel):
     # post-deploy migrations have been done
     hasSeenProRgs: bool | None
     id: str
+    nonHumanizedId: str
     isAdmin: bool
     isEmailValidated: bool
     lastConnectionDate: datetime | None
@@ -192,6 +193,7 @@ class SharedLoginUserResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, user):  # type: ignore [no-untyped-def]
         user.isAdmin = user.has_admin_role
+        user.nonHumanizedId = user.id
         result = super().from_orm(user)
         return result
 
@@ -212,6 +214,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     hasSeenProTutorials: bool | None
     hasSeenProRgs: bool | None
     id: str
+    nonHumanizedId: str
     idPieceNumber: str | None
     isAdmin: bool
     isEmailValidated: bool
@@ -235,6 +238,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, user):  # type: ignore [no-untyped-def]
         user.isAdmin = user.has_admin_role
+        user.nonHumanizedId = user.id
         result = super().from_orm(user)
         return result
 

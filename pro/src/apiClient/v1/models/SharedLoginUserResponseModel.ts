@@ -24,6 +24,7 @@ export type SharedLoginUserResponseModel = {
   lastConnectionDate?: string | null;
   lastName?: string | null;
   needsToFillCulturalSurvey?: boolean | null;
+  nonHumanizedId: string;
   phoneNumber?: string | null;
   postalCode?: string | null;
   publicName?: string | null;
