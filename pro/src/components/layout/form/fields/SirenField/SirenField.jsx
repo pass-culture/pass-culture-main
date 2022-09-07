@@ -29,7 +29,7 @@ const SirenField = ({ label }) => (
         <TextInput
           error={meta.modified && meta.error ? meta.error : null}
           label={label}
-          maxLength="11"
+          maxLength={11}
           name="siren"
           onChange={input.onChange}
           placeholder="123456789"

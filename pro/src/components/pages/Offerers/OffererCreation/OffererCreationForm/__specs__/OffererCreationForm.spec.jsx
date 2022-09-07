@@ -17,7 +17,11 @@ describe('src | components | pages | OffererCreationForm', () => {
     return render(
       <Provider store={store}>
         <MemoryRouter>
-          <Form onSubmit={() => {}} component={OffererCreationForm} />
+          <Form
+            backTo="/accueil"
+            onSubmit={() => {}}
+            component={OffererCreationForm}
+          />
         </MemoryRouter>
       </Provider>
     )
@@ -52,7 +56,11 @@ describe('src | components | pages | OffererCreationForm', () => {
   })
 
   it('should not be clickable when form is invalid', async () => {
-    // given
+    jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+      isOk: false,
+      message: 'SIREN trop long',
+      payload: {},
+    })
 
     // When
     renderOffererCreationForm()
