@@ -31,6 +31,7 @@ describe('setDefaultInitialFormValues', () => {
       durationMinutes: '',
       isEvent: false,
       isNational: false,
+      isDuo: true,
       isbn: '',
       musicSubType: '',
       musicType: '',
