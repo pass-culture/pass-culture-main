@@ -49,6 +49,7 @@ describe('setDefaultInitialFormValues', () => {
       withdrawalDelay: undefined,
       withdrawalDetails: 'détails de retrait',
       withdrawalType: undefined,
+      isDuo: true,
     }
 
     offererNames = [
