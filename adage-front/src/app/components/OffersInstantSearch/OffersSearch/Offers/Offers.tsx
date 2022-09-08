@@ -52,6 +52,7 @@ export const OffersComponent = ({
     (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[]
   >([])
   const [refinedIds, setRefinedIds] = useState<Set<string>>(new Set())
+  const [queryId, setQueryId] = useState('')
 
   useEffect(() => {
     let hasClearedOffers = false
@@ -61,6 +62,12 @@ export const OffersComponent = ({
         hits.map(hit => hit.objectID).includes(id)
       )
     ) {
+      if (hits.length == 0) {
+        return
+      }
+      if (queryId !== hits[0].__queryID) {
+        setQueryId(hits[0].__queryID)
+      }
       setRefinedIds(refinedIds => {
         refinedIds.clear()
         return refinedIds
@@ -100,7 +107,15 @@ export const OffersComponent = ({
       if (hasClearedOffers) {
         setOffers([...bookableOffers])
       } else {
-        setOffers(offers => [...offers, ...bookableOffers])
+        setOffers(offers => {
+          const offersIdsSet = new Set(offers.map(offer => offer.id))
+          bookableOffers.forEach(offer => {
+            if (!offersIdsSet.has(offer.id)) {
+              offers.push(offer)
+            }
+          })
+          return [...offers]
+        })
       }
 
       setRefinedIds(refinedIds => {
@@ -114,7 +129,7 @@ export const OffersComponent = ({
       setQueriesAreLoading(false)
       setIsLoading(false)
     })
-  }, [hits, setIsLoading, refinedIds])
+  }, [hits, setIsLoading, refinedIds, queryId])
 
   if (queriesAreLoading && offers.length === 0) {
     return (
@@ -144,12 +159,14 @@ export const OffersComponent = ({
         />
       </div>
       <ul className="offers">
-        {offers.map(offer => (
+        {offers.map((offer, index) => (
           <div key={offer.id}>
             <Offer
               canPrebookOffers={userRole == AdageFrontRoles.REDACTOR}
               key={offer.id}
               offer={offer}
+              position={index}
+              queryId={queryId}
             />
           </div>
         ))}

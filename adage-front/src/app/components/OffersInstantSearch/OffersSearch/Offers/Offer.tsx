@@ -23,9 +23,13 @@ import { isOfferCollectiveOffer } from './utils/offerIsCollectiveOffer'
 export const Offer = ({
   offer,
   canPrebookOffers,
+  queryId,
+  position,
 }: {
   canPrebookOffers: boolean
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  queryId: string
+  position: number
 }): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const offerIsShowcase = !isOfferCollectiveOffer(offer)
@@ -58,11 +62,15 @@ export const Offer = ({
             contactEmail={offer.contactEmail}
             contactPhone={offer.contactPhone}
             offerId={offer.id}
+            position={position}
+            queryId={queryId}
           />
         ) : (
           <PrebookingButton
             canPrebookOffers={canPrebookOffers}
             className="offer-prebooking-button"
+            offerId={offer.id}
+            queryId={queryId}
             stock={offer.stock}
           />
         )}
