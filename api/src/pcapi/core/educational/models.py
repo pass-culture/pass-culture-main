@@ -623,82 +623,9 @@ class EducationalRedactor(PcObject, Base, Model):  # type: ignore [valid-type, m
 
     civility: str = sa.Column(sa.String(20), nullable=True)
 
-    educationalBookings: RelationshipProperty[list["EducationalBooking"]] = relationship(
-        "EducationalBooking",
-        back_populates="educationalRedactor",
-    )
-
     collectiveBookings: RelationshipProperty[list["CollectiveBooking"]] = relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
     )
-
-
-class EducationalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    __tablename__ = "educational_booking"
-
-    educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
-    educationalInstitution: RelationshipProperty["EducationalInstitution"] = relationship(  # type: ignore [misc]
-        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="educationalBookings"
-    )
-
-    educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
-    educationalYear: RelationshipProperty["EducationalYear"] = relationship(  # type: ignore [misc]
-        EducationalYear, foreign_keys=[educationalYearId]
-    )
-
-    Index("ix_educational_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
-
-    status = sa.Column(
-        "status",
-        sa.Enum(EducationalBookingStatus),
-        nullable=True,
-    )
-
-    confirmationDate = sa.Column(sa.DateTime, nullable=True)
-    confirmationLimitDate = sa.Column(sa.DateTime, nullable=True)
-
-    booking: RelationshipProperty["Booking"] = relationship(
-        "Booking",
-        back_populates="educationalBooking",
-        uselist=False,
-        lazy="joined",
-        innerjoin=True,
-    )
-
-    educationalRedactorId = sa.Column(
-        sa.BigInteger,
-        sa.ForeignKey("educational_redactor.id"),
-        nullable=False,
-        index=True,
-    )
-    educationalRedactor: RelationshipProperty["EducationalRedactor"] = relationship(  # type: ignore [misc]
-        EducationalRedactor,
-        back_populates="educationalBookings",
-        uselist=False,
-    )
-
-    def has_confirmation_limit_date_passed(self) -> bool:
-        return bool(self.confirmationLimitDate and self.confirmationLimitDate <= datetime.utcnow())
-
-    def mark_as_refused(self) -> None:
-        from pcapi.core.bookings import models as bookings_models
-
-        if (
-            self.booking.status != bookings_models.BookingStatus.PENDING
-            and self.booking.cancellationLimitDate
-            and self.booking.cancellationLimitDate <= datetime.utcnow()
-        ):
-            raise exceptions.EducationalBookingNotRefusable()
-
-        try:
-            self.booking.cancel_booking()
-            self.booking.cancellationReason = bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE  # type: ignore [attr-defined]
-        except booking_exceptions.BookingIsAlreadyUsed:
-            raise exceptions.EducationalBookingNotRefusable()
-        except booking_exceptions.BookingIsAlreadyCancelled:
-            raise exceptions.EducationalBookingAlreadyCancelled()
-
-        self.status = EducationalBookingStatus.REFUSED
 
 
 class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
