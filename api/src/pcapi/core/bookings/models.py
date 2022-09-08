@@ -309,15 +309,12 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         ).label("number_of_externalBookings")
 
 
-# FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been
-# populated after the deployment of v122, make the column NOT NULLable
-# and remove the filter below (add a migration for _each_ change).
 Booking.trig_ddl = f"""
     CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)
         RETURNS numeric
         AS $$
     DECLARE
-        deposit_amount bigint := (SELECT CASE WHEN ("expirationDate" > now() OR "expirationDate" IS NULL) THEN amount ELSE 0 END amount FROM deposit WHERE id = deposit_id);
+        deposit_amount bigint := (SELECT CASE WHEN "expirationDate" > now() THEN amount ELSE 0 END amount FROM deposit WHERE id = deposit_id);
         sum_bookings numeric;
     BEGIN
         IF deposit_amount IS NULL
@@ -368,8 +365,7 @@ Booking.trig_ddl = f"""
     END IF;
 
     IF (
-        (NEW."educationalBookingId" IS NULL AND OLD."educationalBookingId" IS NULL)
-        AND (NEW."individualBookingId" IS NOT NULL OR OLD."individualBookingId" IS NOT NULL)
+        (NEW."individualBookingId" IS NOT NULL OR OLD."individualBookingId" IS NOT NULL)
         AND (
         -- If this is a new booking, we probably want to check the wallet.
         OLD IS NULL
