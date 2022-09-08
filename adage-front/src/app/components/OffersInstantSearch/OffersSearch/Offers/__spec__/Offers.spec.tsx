@@ -59,6 +59,7 @@ const searchFakeResults: Hit<ResultType>[] = [
     },
     _highlightResult: {},
     isTemplate: false,
+    __queryID: 'queryId',
   },
   {
     objectID: '480',
@@ -73,6 +74,7 @@ const searchFakeResults: Hit<ResultType>[] = [
     },
     _highlightResult: {},
     isTemplate: false,
+    __queryID: 'queryId',
   },
 ]
 
@@ -275,6 +277,7 @@ describe('offers', () => {
       },
       _highlightResult: {},
       isTemplate: false,
+      __queryID: 'queryId',
     }
 
     // When
@@ -313,6 +316,7 @@ describe('offers', () => {
       },
       _highlightResult: {},
       isTemplate: false,
+      __queryID: 'queryId',
     }
 
     // When

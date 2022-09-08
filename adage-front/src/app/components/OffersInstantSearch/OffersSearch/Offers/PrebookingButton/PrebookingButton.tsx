@@ -11,6 +11,7 @@ import {
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import './PrebookingButton.scss'
+import { logOfferConversion } from 'libs/initAlgoliaAnalytics'
 import { LOGS_DATA } from 'utils/config'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
@@ -20,10 +21,14 @@ const PrebookingButton = ({
   className,
   stock,
   canPrebookOffers,
+  offerId,
+  queryId,
 }: {
   className?: string
   stock: OfferStockResponse
   canPrebookOffers: boolean
+  offerId: number
+  queryId: string
 }): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
@@ -41,6 +46,7 @@ const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
+    logOfferConversion(offerId.toString(), queryId)
     const { isOk, message } = await postBookingAdapater(stock.id)
 
     if (!isOk) {
@@ -52,7 +58,7 @@ const PrebookingButton = ({
     setNotification(
       new Notification(NotificationType.success, message as string)
     )
-  }, [stock.id])
+  }, [stock.id, offerId, queryId])
 
   return canPrebookOffers ? (
     <>

@@ -3,25 +3,30 @@ import React, { useState } from 'react'
 import { api } from 'apiClient/api'
 import { Button, ModalLayout } from 'app/ui-kit'
 import { ReactComponent as MailIcon } from 'assets/mail.svg'
-
 import './ContactButton.scss'
+import { logClickOnOffer } from 'libs/initAlgoliaAnalytics'
 
 const ContactButton = ({
   className,
   contactEmail,
   contactPhone,
   offerId,
+  position,
+  queryId,
 }: {
   className?: string
   contactEmail?: string
   contactPhone?: string
   offerId: number
+  position: number
+  queryId: string
 }): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleButtonClick = () => {
     setIsModalOpen(true)
     api.logContactModalButtonClick({ offerId })
+    logClickOnOffer(offerId.toString(), position, queryId)
   }
 
   const closeModal = () => {
