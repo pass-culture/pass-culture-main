@@ -63,7 +63,9 @@
     "react-instantsearch-dom": "^6.13.0",
     "react-modal": "^3.14.4",
     "react-select": "^5.2.1",
-    "sass-rem": "^3.0.0"
+    "sass-rem": "^3.0.0",
+    "search-insights": "^2.2.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.15.0",
