@@ -57,17 +57,14 @@ export const OffersComponent = ({
   useEffect(() => {
     let hasClearedOffers = false
     setQueriesAreLoading(true)
+    if (hits.length != 0 && queryId != hits[0].__queryID) {
+      setQueryId(hits[0].__queryID)
+    }
     if (
       !Array.from(refinedIds).every(id =>
         hits.map(hit => hit.objectID).includes(id)
       )
     ) {
-      if (hits.length == 0) {
-        return
-      }
-      if (queryId !== hits[0].__queryID) {
-        setQueryId(hits[0].__queryID)
-      }
       setRefinedIds(refinedIds => {
         refinedIds.clear()
         return refinedIds
@@ -129,7 +126,8 @@ export const OffersComponent = ({
       setQueriesAreLoading(false)
       setIsLoading(false)
     })
-  }, [hits, setIsLoading, refinedIds, queryId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hits, setIsLoading, refinedIds])
 
   if (queriesAreLoading && offers.length === 0) {
     return (

@@ -155,7 +155,7 @@ describe('offers', () => {
       venue: {
         id: 1,
         address: '1 boulevard Poissonnière',
-        city: 'Paris',
+        city: 'Cayenne',
         name: 'Le Petit Rintintin 33',
         postalCode: '97300',
         publicName: 'Le Petit Rintintin 33',
@@ -240,6 +240,8 @@ describe('offers', () => {
       hasPrevious: false,
       refinePrevious: jest.fn(),
     }
+
+    mockedPcapi.getCollectiveOffer.mockReset()
   })
 
   it('should display two offers with their respective stocks when two bookable offers', async () => {
@@ -337,11 +339,25 @@ describe('offers', () => {
 
   it('should show a loader while waiting for response', async () => {
     // Given
-    mockedPcapi.getCollectiveOffer.mockReturnValueOnce(
-      new CancelablePromise(resolve =>
-        setTimeout(() => resolve(offerInParis), 500)
+    mockedPcapi.getCollectiveOffer
+      .mockImplementationOnce(
+        () =>
+          new CancelablePromise(resolve =>
+            setTimeout(() => resolve(offerInParis), 500)
+          )
       )
-    )
+      .mockImplementationOnce(
+        () =>
+          new CancelablePromise(resolve =>
+            setTimeout(() => resolve(offerInCayenne), 500)
+          )
+      )
+      .mockImplementationOnce(
+        () =>
+          new CancelablePromise(resolve =>
+            setTimeout(() => resolve(offerInParis), 500)
+          )
+      )
     mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
