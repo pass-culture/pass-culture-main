@@ -1,7 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
 import enum
-import typing
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -32,12 +31,6 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
-
-
-if typing.TYPE_CHECKING:
-    from sqlalchemy.orm import Mapped
-
-    from pcapi.core.educational.models import EducationalBooking
 
 
 class BookingCancellationReasons(enum.Enum):
@@ -152,19 +145,6 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     Index("ix_booking_status", status)
 
     reimbursementDate = Column(DateTime, nullable=True, index=True)
-
-    educationalBookingId = Column(
-        BigInteger,
-        ForeignKey("educational_booking.id"),
-        nullable=True,
-        unique=True,
-        index=True,
-    )
-    educationalBooking: "Mapped[EducationalBooking]" = relationship(
-        "EducationalBooking",
-        back_populates="booking",
-        uselist=False,
-    )
 
     individualBookingId = Column(
         BigInteger,
