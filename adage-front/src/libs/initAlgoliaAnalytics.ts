@@ -5,7 +5,6 @@ import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
-  IS_DEV,
 } from 'utils/config'
 
 export const initAlgoliaAnalytics = () => {
@@ -17,9 +16,6 @@ export const initAlgoliaAnalytics = () => {
 }
 
 export const logOfferConversion = async (objectID: string, queryID: string) => {
-  if (!IS_DEV) {
-    return
-  }
   if (queryID === undefined) {
     return
   }
@@ -37,10 +33,6 @@ export const logClickOnOffer = async (
   position: number,
   queryID: string
 ) => {
-  if (!IS_DEV) {
-    return
-  }
-
   AlgoliaSearchInsights('clickedObjectIDsAfterSearch', {
     eventName: 'Offer clicked on adage',
     index: ALGOLIA_COLLECTIVE_OFFERS_INDEX,
