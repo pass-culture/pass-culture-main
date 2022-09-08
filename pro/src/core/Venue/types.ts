@@ -82,6 +82,7 @@ export interface IVenue {
     webSite: string
   }
   description: string
+  departmentCode: string
   id: string
   isPermanent: boolean
   isVenueVirtual: boolean
@@ -94,4 +95,29 @@ export interface IVenue {
   siret: string
   venueType: string
   venueLabel: string
+}
+
+export type IProviders = {
+  enabledForPro: boolean
+  id: string
+  isActive: boolean
+  name: string
+}
+
+export type IVenueProviderApi = {
+  id: string
+  idAtProviders: string | null
+  dateModifiedAtLastProvider: string | null
+  isActive: boolean
+  isFromAllocineProvider: boolean
+  lastProviderId: string | null
+  lastSyncDate: string | null
+  nOffers: number
+  providerId: string
+  venueId: string
+  venueIdAtOfferProvider: string
+  provider: any
+  quantity?: number
+  isDuo: boolean | null
+  price: number
 }

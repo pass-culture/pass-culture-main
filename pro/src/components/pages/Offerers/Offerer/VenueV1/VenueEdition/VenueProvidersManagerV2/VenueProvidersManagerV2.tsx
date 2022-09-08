@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import Spinner from 'components/layout/Spinner'
-import { IAPIVenue } from 'core/Venue/types'
+import { IVenue } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import AddVenueProviderButton from '../VenueProvidersManager/AddVenueProviderButton'
@@ -12,7 +12,7 @@ import styles from './VenueProvidersManagerV2.module.scss'
 import VenueProviderStatus from './VenueProviderStatus/VenueProviderStatus'
 
 export interface IVenueProvidersManagerV2Props {
-  venue: IAPIVenue
+  venue: IVenue
 }
 
 const VenueProvidersManagerV2 = ({

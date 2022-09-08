@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IAPIVenue } from 'core/Venue/types'
+import { IVenue } from 'core/Venue/types'
 
 import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 import VenueProviderItemV2 from '../VenueProviderItemV2/VenueProviderItemV2'
@@ -8,7 +8,7 @@ import VenueProviderItemV2 from '../VenueProviderItemV2/VenueProviderItemV2'
 export interface IVenueProviderListV2Props {
   afterVenueProviderDelete: (deletedVenueProvider: string) => void
   afterVenueProviderEdit: (editedVenueProvider: IVenueProviderApi) => void
-  venue: IAPIVenue
+  venue: IVenue
   venueProviders: IVenueProviderApi[]
 }
 
@@ -26,7 +26,7 @@ const VenueProviderListV2 = ({
           afterSubmit={afterVenueProviderEdit}
           key={venueProvider.id}
           venueProvider={venueProvider}
-          venueDepartmentCode={venue.departementCode}
+          venueDepartmentCode={venue.departmentCode}
         />
       ))}
     </ul>
