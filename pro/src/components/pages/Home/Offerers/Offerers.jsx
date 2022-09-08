@@ -19,7 +19,7 @@ import VenueCreationLinks from './VenueCreationLinks'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
-const Offerers = ({ setIsBannerHeritageDayVisible }) => {
+const Offerers = () => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
@@ -89,16 +89,6 @@ const Offerers = ({ setIsBannerHeritageDayVisible }) => {
     }
     selectedOffererId && loadOfferer(selectedOffererId)
   }, [selectedOffererId])
-
-  useEffect(() => {
-    if (
-      physicalVenues.some(
-        ({ venueTypeCode }) => venueTypeCode === 'PATRIMONY_TOURISM'
-      )
-    ) {
-      setIsBannerHeritageDayVisible(true)
-    }
-  }, [physicalVenues])
 
   const handleChangeOfferer = useCallback(
     event => {
