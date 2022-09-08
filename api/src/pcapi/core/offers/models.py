@@ -4,12 +4,16 @@ from datetime import timedelta
 import enum
 import logging
 from typing import TYPE_CHECKING
+from typing import Union
 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.elements import Case
+from sqlalchemy.sql.elements import UnaryExpression
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
@@ -154,11 +158,11 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type
         return self._bookable and self.offer.isReleased
 
     @sa.ext.hybrid.hybrid_property
-    def _bookable(self):
+    def _bookable(self) -> bool:
         return not self.isExpired and not self.isSoldOut
 
     @_bookable.expression  # type: ignore [no-redef]
-    def _bookable(cls):  # pylint: disable=no-self-argument
+    def _bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
     @property
@@ -168,36 +172,36 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type
         )
 
     @sa.ext.hybrid.hybrid_property
-    def hasBookingLimitDatetimePassed(self):
+    def hasBookingLimitDatetimePassed(self) -> bool:
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore [no-redef]
-    def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
 
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
     @sa.ext.hybrid.hybrid_property
-    def remainingQuantity(self):
+    def remainingQuantity(self) -> Union[int, str]:
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
     @remainingQuantity.expression  # type: ignore [no-redef]
-    def remainingQuantity(cls):  # pylint: disable=no-self-argument
+    def remainingQuantity(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
     @sa.ext.hybrid.hybrid_property
-    def isEventExpired(self):
+    def isEventExpired(self) -> bool:
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
 
     @isEventExpired.expression  # type: ignore [no-redef]
-    def isEventExpired(cls):  # pylint: disable=no-self-argument
+    def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
     @sa.ext.hybrid.hybrid_property
-    def isExpired(self):
+    def isExpired(self) -> bool:
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
     @isExpired.expression  # type: ignore [no-redef]
-    def isExpired(cls):  # pylint: disable=no-self-argument
+    def isExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.or_(cls.isEventExpired, cls.hasBookingLimitDatetimePassed)
 
     @property
@@ -208,7 +212,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type
         return limit_date_for_stock_deletion >= datetime.utcnow()
 
     @sa.ext.hybrid.hybrid_property
-    def isSoldOut(self):
+    def isSoldOut(self) -> bool:
         # pylint: disable=comparison-with-callable
         return (
             self.isSoftDeleted
@@ -217,7 +221,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type
         )
 
     @isSoldOut.expression  # type: ignore [no-redef]
-    def isSoldOut(cls):  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.or_(
             cls.isSoftDeleted,
             sa.and_(sa.not_(cls.beginningDatetime.is_(None)), cls.beginningDatetime <= sa.func.now()),
@@ -419,7 +423,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         return sa.orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     @sa.ext.hybrid.hybrid_property
-    def isSoldOut(self):
+    def isSoldOut(self) -> bool:
         for stock in self.stocks:
             if (
                 not stock.isSoftDeleted
@@ -430,7 +434,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         return True
 
     @isSoldOut.expression  # type: ignore [no-redef]
-    def isSoldOut(cls):  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return (
             ~sa.exists()
             .where(Stock.offerId == cls.id)
@@ -534,7 +538,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         return self.isReleased and self.isBookable
 
     @is_eligible_for_search.expression  # type: ignore [no-redef]
-    def is_eligible_for_search(cls):  # pylint: disable=no-self-argument
+    def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls._released, Stock._bookable)
 
     @sa.ext.hybrid.hybrid_property
@@ -544,7 +548,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         return False
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore [no-redef]
-    def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimesPassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(
             sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
             ~sa.exists()

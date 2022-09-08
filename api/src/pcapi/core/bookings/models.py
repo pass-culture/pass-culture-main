@@ -21,6 +21,8 @@ from sqlalchemy import exists
 from sqlalchemy import select
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.elements import Label
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
@@ -257,11 +259,11 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         return PcObject.restize_integrity_error(ie)
 
     @hybrid_property
-    def isConfirmed(self):
+    def isConfirmed(self) -> bool:
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore [no-redef]
-    def isConfirmed(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
     @hybrid_property
@@ -317,7 +319,7 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         return any(externalBooking.id for externalBooking in self.externalBookings)
 
     @isExternal.expression  # type: ignore [no-redef]
-    def isExternal(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    def isExternal(cls) -> Label:  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return select(
             [
                 case(
