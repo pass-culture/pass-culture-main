@@ -460,6 +460,10 @@ describe('offers', () => {
       })
 
       await waitFor(() => expect(loadMoreButton).not.toBeInTheDocument())
+      const noMoreResultsMessage = await screen.findByText(
+        'Vous avez vu toutes les offres qui correspondent à votre recherche.'
+      )
+      expect(noMoreResultsMessage).toBeInTheDocument()
     })
   })
 })
