@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-import { Formik } from 'formik'
+import userEvent from '@testing-library/user-event'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
@@ -10,6 +11,7 @@ import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
+import { SubmitButton } from 'ui-kit'
 
 import UsefulInformations, {
   IUsefulInformationsProps,
@@ -31,7 +33,10 @@ const renderUsefulInformations = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <UsefulInformations {...props} />
+      <Form>
+        <UsefulInformations {...props} />
+        <SubmitButton isLoading={false}>Submit</SubmitButton>
+      </Form>
     </Formik>
   )
 }
@@ -95,6 +100,45 @@ describe('OfferIndividual section: UsefulInformations', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should submit valid form', async () => {
+    initialValues.subcategoryId = 'CONCERT'
+    initialValues.subCategoryFields = ['withdrawalType']
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    const offererSelect = screen.getByLabelText('Structure')
+    await userEvent.selectOptions(offererSelect, 'AA')
+    const venueSelect = screen.getByLabelText('Lieu')
+    await userEvent.selectOptions(venueSelect, 'AAAA')
+    const withEmail = screen.getByLabelText('Envoi par e-mail')
+    await userEvent.click(withEmail)
+
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        accessibility: {
+          audio: false,
+          mental: false,
+          motor: false,
+          none: true,
+          visual: false,
+        },
+        offererId: 'AA',
+        subCategoryFields: ['withdrawalType'],
+        subcategoryId: 'CONCERT',
+        venueId: 'AAAA',
+        withdrawalDelay: undefined,
+        withdrawalDetails: '',
+        withdrawalType: 'by_email',
+      },
+      expect.anything()
+    )
+  })
+
   it('should contain isNational when user is admin', async () => {
     props.isUserAdmin = true
     renderUsefulInformations({
@@ -137,121 +181,123 @@ describe('OfferIndividual section: UsefulInformations', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display not reimbursment banner when subcategory is not reimbursed', async () => {
-    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-    props.offerSubCategory = {
-      id: 'A-A',
-      categoryId: 'A',
-      proLabel: 'Sous catégorie online de A',
-      isEvent: false,
-      conditionalFields: [],
-      canBeDuo: false,
-      canBeEducational: false,
-      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
-      isSelectable: true,
-    }
-    renderUsefulInformations({
-      initialValues,
-      onSubmit,
-      props,
+  describe('banners', () => {
+    it('should display not reimbursment banner when subcategory is not reimbursed', async () => {
+      initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+      props.offerSubCategory = {
+        id: 'A-A',
+        categoryId: 'A',
+        proLabel: 'Sous catégorie online de A',
+        isEvent: false,
+        conditionalFields: [],
+        canBeDuo: false,
+        canBeEducational: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+        reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
+        isSelectable: true,
+      }
+      renderUsefulInformations({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      await screen.findByRole('heading', { name: 'Informations pratiques' })
+
+      expect(
+        screen.queryByText(
+          'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
+        )
+      ).toBeInTheDocument()
     })
 
-    await screen.findByRole('heading', { name: 'Informations pratiques' })
+    it('should not display not reimbursment banner when subcategory is reimbursed', async () => {
+      initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+      props.offerSubCategory = {
+        id: 'A-A',
+        categoryId: 'A',
+        proLabel: 'Sous catégorie online de A',
+        isEvent: false,
+        conditionalFields: [],
+        canBeDuo: false,
+        canBeEducational: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+        reimbursementRule: REIMBURSEMENT_RULES.BOOK,
+        isSelectable: true,
+      }
+      renderUsefulInformations({
+        initialValues,
+        onSubmit,
+        props,
+      })
 
-    expect(
-      screen.queryByText(
-        'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
-      )
-    ).toBeInTheDocument()
-  })
+      await screen.findByRole('heading', { name: 'Informations pratiques' })
 
-  it('should not display not reimbursment banner when subcategory is reimbursed', async () => {
-    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-    props.offerSubCategory = {
-      id: 'A-A',
-      categoryId: 'A',
-      proLabel: 'Sous catégorie online de A',
-      isEvent: false,
-      conditionalFields: [],
-      canBeDuo: false,
-      canBeEducational: false,
-      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.BOOK,
-      isSelectable: true,
-    }
-    renderUsefulInformations({
-      initialValues,
-      onSubmit,
-      props,
+      expect(
+        screen.queryByText(
+          'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
+        )
+      ).not.toBeInTheDocument()
     })
 
-    await screen.findByRole('heading', { name: 'Informations pratiques' })
+    it('should display withdrawal banner when subcategory is on physical thing (not event, not virtual)', async () => {
+      initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+      props.offerSubCategory = {
+        id: 'A-A',
+        categoryId: 'A',
+        proLabel: 'Sous catégorie online de A',
+        isEvent: false,
+        conditionalFields: [],
+        canBeDuo: false,
+        canBeEducational: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+        isSelectable: true,
+      }
+      props.isVenueVirtual = false
+      renderUsefulInformations({
+        initialValues,
+        onSubmit,
+        props,
+      })
 
-    expect(
-      screen.queryByText(
-        'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
-      )
-    ).not.toBeInTheDocument()
-  })
+      await screen.findByRole('heading', { name: 'Informations pratiques' })
 
-  it('should display withdrawal banner when subcategory is on physical thing (not event, not virtual)', async () => {
-    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-    props.offerSubCategory = {
-      id: 'A-A',
-      categoryId: 'A',
-      proLabel: 'Sous catégorie online de A',
-      isEvent: false,
-      conditionalFields: [],
-      canBeDuo: false,
-      canBeEducational: false,
-      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-      isSelectable: true,
-    }
-    props.isVenueVirtual = false
-    renderUsefulInformations({
-      initialValues,
-      onSubmit,
-      props,
+      expect(
+        screen.queryByText(
+          'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
+        )
+      ).toBeInTheDocument()
     })
 
-    await screen.findByRole('heading', { name: 'Informations pratiques' })
+    it('should not display withdrawal banner when subcategory is an event', async () => {
+      initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+      props.offerSubCategory = {
+        id: 'A-A',
+        categoryId: 'A',
+        proLabel: 'Sous catégorie online de A',
+        isEvent: true,
+        conditionalFields: [],
+        canBeDuo: false,
+        canBeEducational: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+        isSelectable: true,
+      }
+      props.isVenueVirtual = false
+      renderUsefulInformations({
+        initialValues,
+        onSubmit,
+        props,
+      })
 
-    expect(
-      screen.queryByText(
-        'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
-      )
-    ).toBeInTheDocument()
-  })
+      await screen.findByRole('heading', { name: 'Informations pratiques' })
 
-  it('should not display withdrawal banner when subcategory is an event', async () => {
-    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-    props.offerSubCategory = {
-      id: 'A-A',
-      categoryId: 'A',
-      proLabel: 'Sous catégorie online de A',
-      isEvent: true,
-      conditionalFields: [],
-      canBeDuo: false,
-      canBeEducational: false,
-      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-      isSelectable: true,
-    }
-    props.isVenueVirtual = false
-    renderUsefulInformations({
-      initialValues,
-      onSubmit,
-      props,
+      expect(
+        screen.queryByText(
+          'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
+        )
+      ).not.toBeInTheDocument()
     })
-
-    await screen.findByRole('heading', { name: 'Informations pratiques' })
-
-    expect(
-      screen.queryByText(
-        'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
-      )
-    ).not.toBeInTheDocument()
   })
 })

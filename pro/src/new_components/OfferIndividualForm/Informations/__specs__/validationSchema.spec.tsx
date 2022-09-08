@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
@@ -27,12 +27,10 @@ const renderInformations = async ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      {({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
-          <Informations {...props} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
-        </form>
-      )}
+      <Form>
+        <Informations {...props} />
+        <SubmitButton isLoading={false}>Submit</SubmitButton>
+      </Form>
     </Formik>
   )
 
@@ -74,6 +72,44 @@ describe('OfferIndividual section: UsefulInformations', () => {
     props = {
       readOnlyFields: [],
     }
+  })
+
+  it('should submit valid form', async () => {
+    const { buttonSubmit } = await renderInformations({
+      props,
+      initialValues,
+      onSubmit,
+    })
+    const nameInput = screen.getByLabelText("Titre de l'offre", {
+      exact: false,
+    })
+    await userEvent.type(nameInput, 'Mon super titre')
+
+    await userEvent.click(buttonSubmit)
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        author: '',
+        description: '',
+        durationMinutes: '',
+        isbn: '',
+        name: 'Mon super titre',
+        performer: '',
+        speaker: '',
+        stageDirector: '',
+        subCategoryFields: [
+          'author',
+          'isbn',
+          'performer',
+          'speaker',
+          'stageDirector',
+          'visa',
+          'durationMinutes',
+        ],
+        visa: '',
+      },
+      expect.anything()
+    )
   })
 
   it('should display errors for mandatory fields', async () => {
