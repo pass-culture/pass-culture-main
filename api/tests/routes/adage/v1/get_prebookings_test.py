@@ -130,12 +130,6 @@ class Returns200Test:
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         CollectiveBookingFactory(
-            educationalRedactor=redactor,
-            educationalYear=educationalYear,
-            educationalInstitution=educationalInstitution,
-            status="CONFIRMED",
-        )
-        CollectiveBookingFactory(
             educationalRedactor=another_redactor,
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
@@ -150,7 +144,7 @@ class Returns200Test:
         )
 
         response = client.with_eac_token().get(
-            f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings?status=PENDING&redactorEmail={redactor.email}"
+            f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings?redactorEmail={redactor.email}"
         )
 
         assert response.status_code == 200
