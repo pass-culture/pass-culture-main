@@ -37,6 +37,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
     @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
@@ -68,6 +69,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
     @override_features(
@@ -75,6 +77,7 @@ class NextStepTest:
         ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
     )
+    @freeze_time("2022-09-08 11:54:22")
     def test_next_subscription_maintenance_page_test(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -97,11 +100,20 @@ class NextStepTest:
             "maintenancePageType": "with-dms",
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": {
+                "callToAction": None,
+                "popOverIcon": "CLOCK",
+                "updatedAt": "2022-09-08T11:54:22",
+                "userMessage": "La vérification d'identité est "
+                "momentanément indisponible. L'équipe "
+                "du pass Culture met tout en oeuvre "
+                "pour la rétablir au plus vite.",
+            },
         }
 
     @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
     @pytest.mark.parametrize(
-        "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck",
+        "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck,subscription_message",
         [
             (
                 fraud_models.FraudCheckStatus.STARTED,
@@ -109,6 +121,7 @@ class NextStepTest:
                 ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
                 "identity-check",
                 False,
+                None,
             ),
             (
                 fraud_models.FraudCheckStatus.PENDING,
@@ -116,6 +129,7 @@ class NextStepTest:
                 ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
                 "honor-statement",
                 True,
+                None,
             ),
             (
                 fraud_models.FraudCheckStatus.OK,
@@ -123,6 +137,7 @@ class NextStepTest:
                 ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
+                None,
             ),
             (
                 fraud_models.FraudCheckStatus.KO,
@@ -130,6 +145,7 @@ class NextStepTest:
                 ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
+                None,
             ),
             (
                 fraud_models.FraudCheckStatus.CANCELED,
@@ -137,6 +153,7 @@ class NextStepTest:
                 ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
                 "identity-check",
                 False,
+                None,
             ),
             (
                 fraud_models.FraudCheckStatus.SUSPICIOUS,
@@ -144,12 +161,27 @@ class NextStepTest:
                 ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 "identity-check",  # User can retry
                 False,
+                {
+                    "callToAction": {
+                        "callToActionIcon": "RETRY",
+                        "callToActionLink": "passculture://verification-identite/identification",
+                        "callToActionTitle": "Réessayer la vérification " "de mon identité",
+                    },
+                    "popOverIcon": None,
+                    "updatedAt": "2022-09-08T12:01:12.343025",
+                    "userMessage": "Ton document d'identité ne te permet "
+                    "pas de bénéficier du pass Culture. "
+                    "Réessaye avec un passeport ou une "
+                    "carte d'identité française en cours "
+                    "de validité.",
+                },
             ),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
+    @freeze_time("2022-09-08 12:01:12.343025")
     def test_next_subscription_test_ubble(
-        self, client, fraud_check_status, reason_code, ubble_status, next_step, pending_idcheck
+        self, client, fraud_check_status, reason_code, ubble_status, next_step, pending_idcheck, subscription_message
     ):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -168,6 +200,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         # Perform phone validation and user profiling
@@ -191,6 +224,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         # Perform profile completion
@@ -204,6 +238,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         # Perform first id check with Ubble
@@ -225,6 +260,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": pending_idcheck,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": subscription_message,
         }
 
     @override_features(
@@ -233,17 +269,8 @@ class NextStepTest:
         ENABLE_PHONE_VALIDATION_IN_STEPPER=False,
         ENABLE_USER_PROFILING=True,
     )
-    @pytest.mark.parametrize(
-        "underage_fraud_check_status",
-        [
-            fraud_models.FraudCheckStatus.PENDING,
-            fraud_models.FraudCheckStatus.KO,
-            fraud_models.FraudCheckStatus.SUSPICIOUS,
-            fraud_models.FraudCheckStatus.CANCELED,
-            None,
-        ],
-    )
-    def test_underage_not_ok_turned_18(self, client, underage_fraud_check_status):
+    @freeze_time("2022-09-08 12:39:04.289878")
+    def test_underage_not_ok_turned_18(self, client):
         # User has already performed id check with Ubble for underage credit (successfully or not), 2 years ago
         with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
             user = users_factories.UserFactory(
@@ -263,7 +290,7 @@ class NextStepTest:
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user,
                 type=fraud_models.FraudCheckType.UBBLE,
-                status=underage_fraud_check_status,
+                status=fraud_models.FraudCheckStatus.KO,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
 
@@ -287,6 +314,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         # Perform phone validation
@@ -301,6 +329,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         # Perform user profiling
@@ -323,6 +352,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         # Perform profile completion
@@ -337,6 +367,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         # Perform id check with Ubble
@@ -359,6 +390,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": True,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -377,6 +409,12 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": True,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": {
+                "callToAction": None,
+                "popOverIcon": "CLOCK",
+                "updatedAt": "2022-09-08T12:39:04.289878",
+                "userMessage": "Ton document d'identité est en cours de vérification.",
+            },
         }
 
         # ubble now confirms the status
@@ -394,6 +432,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
     @override_features(
@@ -455,6 +494,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
     @override_features(
@@ -467,6 +507,7 @@ class NextStepTest:
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
     )
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    @freeze_time("2022-09-08T12:45:13.534068")
     def test_ubble_subcription_limited(self, client, age):
         birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
@@ -510,6 +551,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
         user_not_eligible_for_ubble = users_factories.UserFactory(
@@ -543,6 +585,12 @@ class NextStepTest:
             "maintenancePageType": "without-dms",
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": {
+                "callToAction": None,
+                "popOverIcon": "CLOCK",
+                "updatedAt": "2022-09-08T12:45:13.534068",
+                "userMessage": "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
+            },
         }
 
     @override_features(ENABLE_UBBLE=True)
@@ -592,6 +640,7 @@ class NextStepTest:
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
             "stepperIncludesPhoneValidation": False,
+            "subscriptionMessage": None,
         }
 
 

@@ -1,3 +1,6 @@
+import datetime
+
+from pydantic import fields
 from pydantic import validator
 
 from pcapi.core.fraud.utils import has_latin_or_numeric_chars
@@ -6,6 +9,38 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
+
+
+class CallToActionMessage(BaseModel):
+    title: str | None = fields.Field(None, alias="callToActionTitle")
+    link: str | None = fields.Field(None, alias="callToActionLink")
+    icon: subscription_models.CallToActionIcon | None = fields.Field(None, alias="callToActionIcon")
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        use_enum_values = True
+
+
+class SubscriptionMessage(BaseModel):
+    user_message: str
+    call_to_action: CallToActionMessage | None
+    pop_over_icon: subscription_models.PopOverIcon | None
+    updated_at: datetime.datetime
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
+
+    @classmethod
+    def from_orm(cls, subscription_message: subscription_models.SubscriptionMessage):  # type: ignore [no-untyped-def]
+        subscription_message.updated_at = datetime.datetime.utcnow()
+        return super().from_orm(subscription_message)
 
 
 class NextSubscriptionStepResponse(BaseModel):
@@ -14,6 +49,7 @@ class NextSubscriptionStepResponse(BaseModel):
     maintenance_page_type: subscription_models.MaintenancePageType | None
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
     has_identity_check_pending: bool
+    subscription_message: SubscriptionMessage | None
 
     class Config:
         alias_generator = to_camel
