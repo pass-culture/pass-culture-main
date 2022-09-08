@@ -28,7 +28,7 @@ const renderOptionDuo = ({
   )
 }
 
-describe('OfferIndividual section: UsefulInformations', () => {
+describe('OfferIndividual section: OptionDuo', () => {
   const onSubmit = jest.fn()
 
   it('should render the component when "isDuo" option is available', async () => {
@@ -40,11 +40,11 @@ describe('OfferIndividual section: UsefulInformations', () => {
       onSubmit,
     })
     expect(
-      screen.getByRole('heading', { name: 'Réservations "Duo"' })
+      screen.getByRole('heading', { name: 'Réservations “Duo“' })
     ).toBeInTheDocument()
 
     expect(
-      screen.getByLabelText('Accepter les réservations "duo"', {
+      screen.getByLabelText('Accepter les réservations “duo“', {
         exact: false,
       })
     ).toBeInTheDocument()
@@ -59,7 +59,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       onSubmit,
     })
     expect(
-      screen.queryByRole('heading', { name: 'Réservations "Duo"' })
+      screen.queryByRole('heading', { name: 'Réservations “Duo“' })
     ).not.toBeInTheDocument()
     expect(
       screen.queryByLabelText('Accepter les réservations "duo"', {
