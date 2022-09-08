@@ -211,15 +211,6 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         self.status = BookingStatus.USED
         self.dateUsed = datetime.utcnow()
 
-    def mark_as_confirmed(self) -> None:
-        if self.educationalBooking is None:
-            raise exceptions.CannotMarkAsConfirmedIndividualBooking()
-        if self.educationalBooking.has_confirmation_limit_date_passed():
-            raise exceptions.ConfirmationLimitDateHasPassed()
-
-        self.status = BookingStatus.CONFIRMED
-        self.educationalBooking.confirmationDate = datetime.utcnow()
-
     @property
     def expirationDate(self) -> datetime | None:
         if self.status == BookingStatus.CANCELLED or self.is_used_or_reimbursed:
@@ -279,40 +270,28 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         if self.individualBooking is not None:
             return self.individualBooking.user.firstName
 
-        if self.educationalBooking is not None:
-            return self.educationalBooking.educationalRedactor.firstName
-
-        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
+        raise ValueError(f"Booking {self.id} has no individual booking.")
 
     @property
     def lastName(self) -> str | None:
         if self.individualBooking is not None:
             return self.individualBooking.user.lastName
 
-        if self.educationalBooking is not None:
-            return self.educationalBooking.educationalRedactor.lastName
-
-        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
+        raise ValueError(f"Booking {self.id} has no individual booking.")
 
     @property
     def userName(self) -> str:
         if self.individualBooking is not None:
             return f"{self.individualBooking.user.firstName} {self.individualBooking.user.lastName}"
 
-        if self.educationalBooking is not None:
-            return f"{self.educationalBooking.educationalRedactor.firstName} {self.educationalBooking.educationalRedactor.lastName}"
-
-        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
+        raise ValueError(f"Booking {self.id} has no individual booking.")
 
     @property
     def email(self) -> str:
         if self.individualBooking is not None:
             return self.individualBooking.user.email
 
-        if self.educationalBooking is not None:
-            return self.educationalBooking.educationalRedactor.email
-
-        raise ValueError(f"Booking {self.id} has no individual nor educational booking.")
+        raise ValueError(f"Booking {self.id} has no individual booking.")
 
     @hybrid_property
     def isExternal(self) -> bool:

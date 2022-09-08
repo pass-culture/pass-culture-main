@@ -1,11 +1,9 @@
 import datetime
 import logging
-from operator import or_
 import typing
 
 import pytz
 import sentry_sdk
-from sqlalchemy import and_
 from sqlalchemy.orm import Query
 
 from pcapi.core import search
@@ -25,8 +23,6 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.repository import get_and_lock_collective_stock
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
@@ -539,7 +535,7 @@ def auto_mark_as_used_after_event() -> None:
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
     # fmt: off
     bookings_subquery = (
-        Booking.query.join(offers_models.Stock).outerjoin(EducationalBooking)
+        Booking.query.join(offers_models.Stock)
             .filter(Booking.status.in_((BookingStatus.CONFIRMED, BookingStatus.PENDING)))
             .filter(offers_models.Stock.beginningDatetime < threshold)
             .with_entities(Booking.id)
@@ -547,14 +543,9 @@ def auto_mark_as_used_after_event() -> None:
     )
 
     individual_bookings = (
-        Booking.query.filter(and_(Booking.id.in_(bookings_subquery), Booking.educationalBookingId.is_(None)))
+        Booking.query.filter(Booking.id.in_(bookings_subquery))
     )
 
-    educational_bookings = (
-        Booking.query.filter(Booking.id.in_(bookings_subquery))
-            .filter(
-            or_(EducationalBooking.status != EducationalBookingStatus.REFUSED, EducationalBooking.status.is_(None)))
-    )
 
     collective_bookings_subquery = (
         CollectiveBooking.query.join(CollectiveStock)
@@ -573,11 +564,6 @@ def auto_mark_as_used_after_event() -> None:
     )
     db.session.commit()
 
-    n_educational_updated = educational_bookings.update(
-        {"status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
-    )
-    db.session.commit()
-
     n_collective_bookings_updated = collective_bookings.update(
         {"status": CollectiveBookingStatus.USED, "dateUsed": now}, synchronize_session=False
     )
@@ -587,7 +573,6 @@ def auto_mark_as_used_after_event() -> None:
         "Automatically marked bookings as used after event",
         extra={
             "individualBookingsUpdatedCount": n_individual_updated,
-            "educationalBookingsUpdatedCount": n_educational_updated,
             "collectiveBookingsUpdatedCount": n_collective_bookings_updated,
         },
     )
