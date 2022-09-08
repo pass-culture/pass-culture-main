@@ -11,7 +11,7 @@ export interface IVenueProviderApi {
   venueId: string
   venueIdAtOfferProvider: string
   provider: any
-  quantity: number
+  quantity?: number
   isDuo: boolean | null
   price: number
 }

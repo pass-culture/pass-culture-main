@@ -18,6 +18,7 @@ const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
     id: venue.id,
     isAccessibilityAppliedOnAllOffers: false,
     isPermanent: venue.isPermanent,
+    departmentCode: venue.departmentCode,
     isVenueVirtual: venue.isVenueVirtual,
     latitude: venue.latitude,
     longitude: venue.longitude,

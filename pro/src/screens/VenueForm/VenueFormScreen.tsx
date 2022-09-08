@@ -10,6 +10,8 @@ import {
 import { generateSiretValidationSchema } from 'new_components/VenueForm/Informations/SiretOrCommentFields'
 import { Title } from 'ui-kit'
 
+import { IProviders, IVenue, IVenueProviderApi } from '../../core/Venue/types'
+
 import style from './VenueFormScreen.module.scss'
 
 interface IVenueEditionProps {
@@ -18,6 +20,9 @@ interface IVenueEditionProps {
   offerer: IOfferer
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
+  providers?: IProviders[]
+  venueProviders?: IVenueProviderApi[]
+  venue?: IVenue
 }
 
 const VenueFormScreen = ({
@@ -26,6 +31,9 @@ const VenueFormScreen = ({
   offerer,
   venueTypes,
   venueLabels,
+  venueProviders,
+  venue,
+  providers,
 }: IVenueEditionProps): JSX.Element => {
   const onSubmit = () => {
     alert('todo submit form !')
@@ -66,6 +74,9 @@ const VenueFormScreen = ({
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
+            venueProvider={venueProviders}
+            provider={providers}
+            venue={venue}
           />
         </form>
       </FormikProvider>

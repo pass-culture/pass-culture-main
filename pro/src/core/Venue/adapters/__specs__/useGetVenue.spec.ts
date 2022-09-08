@@ -99,6 +99,7 @@ describe('useGetVenue', () => {
       longitude: 14.2,
       postalCode: '75000',
       publicName: 'Cinéma des iles',
+      departmentCode: '',
       description: 'description du lieu',
       isVenueVirtual: false,
       mail: 'test@example.com',

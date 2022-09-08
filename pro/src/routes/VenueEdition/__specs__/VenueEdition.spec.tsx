@@ -12,6 +12,8 @@ import {
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
+import { IProviders, IVenueProviderApi } from 'core/Venue/types'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueEdition from '../VenueEdition'
@@ -46,10 +48,17 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
+jest.mock('repository/pcapi/pcapi', () => ({
+  loadProviders: jest.fn(),
+  loadVenueProviders: jest.fn(),
+}))
+
 describe('route VenueEdition', () => {
   let currentUser: SharedCurrentUserResponseModel
   let store: Store
   let venue: GetVenueResponseModel
+  let venueProviders: IVenueProviderApi[]
+  let providers: IProviders[]
   let offerer: GetOffererResponseModel
 
   beforeEach(() => {
@@ -63,6 +72,42 @@ describe('route VenueEdition', () => {
       id: 'AE',
       publicName: 'Cinéma des iles',
     } as GetVenueResponseModel
+
+    venueProviders = [
+      {
+        id: 'BY',
+        idAtProviders: null,
+        dateModifiedAtLastProvider: '2022-09-19T12:01:18.708794Z',
+        isActive: true,
+        isFromAllocineProvider: false,
+        lastProviderId: null,
+        lastSyncDate: null,
+        nOffers: 0,
+        providerId: 'BY',
+        venueId: 'DE',
+        venueIdAtOfferProvider: 'cdsdemorc1',
+        provider: {
+          name: 'Ciné Office',
+          enabledForPro: true,
+          id: 'BY',
+          isActive: true,
+          localClass: 'CDSStocks',
+        },
+        quantity: 0,
+        isDuo: true,
+        price: 0,
+      },
+    ]
+
+    providers = [
+      {
+        enabledForPro: true,
+        id: 'AB',
+        isActive: true,
+        name: 'name',
+      },
+    ] as IProviders[]
+
     offerer = {
       id: 'ABCD',
     } as GetOffererResponseModel
@@ -74,11 +119,13 @@ describe('route VenueEdition', () => {
     })
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(venue)
+    jest.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
+    jest.spyOn(pcapi, 'loadVenueProviders').mockResolvedValue(venueProviders)
     jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     jest.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
-  it('should call getVenue and display Venue Form screen on success', async () => {
+  it.only('should call getVenue and display Venue Form screen on success', async () => {
     // When
     await renderVenueEdition(venue.id, offerer.id, store)
 

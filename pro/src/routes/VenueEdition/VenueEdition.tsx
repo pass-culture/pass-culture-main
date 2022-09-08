@@ -11,6 +11,9 @@ import { useHomePath } from 'hooks'
 import { setInitialFormValues } from 'new_components/VenueForm'
 import { VenueFormScreen } from 'screens/VenueForm'
 
+import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
+import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
+
 const VenueEdition = (): JSX.Element | null => {
   const homePath = useHomePath()
   const { offererId } = useParams<{ offererId: string }>()
@@ -37,17 +40,35 @@ const VenueEdition = (): JSX.Element | null => {
     error: errorOfferer,
     data: offerer,
   } = useGetOfferer(offererId)
-
+  const {
+    isLoading: isLoadingProviders,
+    error: errorProviders,
+    data: providers,
+  } = useGetProviders(venueId)
+  const {
+    isLoading: isLoadingVenueProviders,
+    error: errorVenueProviders,
+    data: venueProviders,
+  } = useGetVenueProviders(venueId)
   if (
     isLoadingVenue ||
     isLoadingVenueTypes ||
     isLoadingVenueLabels ||
+    isLoadingProviders ||
+    isLoadingVenueProviders ||
     isLoadingOfferer
   ) {
     return <Spinner />
   }
 
-  if (errorOfferer || errorVenue || errorVenueTypes || errorVenueLabels) {
+  if (
+    errorOfferer ||
+    errorVenue ||
+    errorVenueTypes ||
+    errorVenueLabels ||
+    errorVenueProviders ||
+    errorProviders
+  ) {
     const loadingError = [
       errorOfferer,
       errorVenue,
@@ -69,6 +90,9 @@ const VenueEdition = (): JSX.Element | null => {
       offerer={offerer}
       venueTypes={venueTypes}
       venueLabels={venueLabels}
+      providers={providers}
+      venue={venue}
+      venueProviders={venueProviders}
     />
   )
 }
