@@ -60,6 +60,7 @@ const searchFakeResult: Hit<ResultType> = {
   },
   isTemplate: false,
   _highlightResult: {},
+  __queryID: 'queryId',
 }
 
 const renderOffers = (props: OffersComponentProps) =>
