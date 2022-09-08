@@ -11,4 +11,5 @@ export interface ResultType {
     publicName: string
   }
   isTemplate: boolean
+  __queryID: string
 }
