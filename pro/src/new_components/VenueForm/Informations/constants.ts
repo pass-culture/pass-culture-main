@@ -8,4 +8,5 @@ export const DEFAULT_INFORMATIONS_FORM_VALUES = {
   siret: '',
   venueType: '',
   venueLabel: '',
+  departmentCode: '',
 }

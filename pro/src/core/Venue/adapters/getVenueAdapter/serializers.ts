@@ -19,7 +19,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     address: venue.address || '',
     bannerMeta: venue.bannerMeta
       ? serializeBannerMetaApi(venue.bannerMeta)
-      : undefined,
+      : null,
     bannerUrl: venue.bannerUrl || '',
     city: venue.city || '',
     comment: venue.comment || '',
@@ -28,6 +28,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
       email: venue.contact?.email || '',
       webSite: venue.contact?.website || '',
     },
+    departmentCode: venue.departementCode || '',
     description: venue.description || '',
     id: venue.id,
     isPermanent: venue.isPermanent || false,
