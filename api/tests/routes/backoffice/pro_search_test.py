@@ -21,7 +21,14 @@ def assert_user_equals(found_user, expected_user):
     assert found_user["payload"]["phoneNumber"] == expected_user.phoneNumber
 
 
-class ProSearchTest:
+def assert_offerer_equals(found_offerer, expected_offerer):
+    assert found_offerer["resourceType"] == "offerer"
+    assert found_offerer["id"] == expected_offerer.id
+    assert found_offerer["payload"]["siren"] == expected_offerer.siren
+    assert found_offerer["payload"]["name"] == expected_offerer.name
+
+
+class ProSearchUserTest:
     def _create_accounts(
         self,
         number: int = 12,
@@ -49,7 +56,7 @@ class ProSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q=self.pro_accounts[5].id),
+            url_for("backoffice_blueprint.search_pro", q=self.pro_accounts[5].id, type="proUser"),
         )
 
         # then
@@ -67,7 +74,7 @@ class ProSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q=self.pro_accounts[2].email),
+            url_for("backoffice_blueprint.search_pro", q=self.pro_accounts[2].email, type="proUser"),
         )
 
         # then
@@ -85,7 +92,7 @@ class ProSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q="Dubois"),
+            url_for("backoffice_blueprint.search_pro", q="Dubois", type="proUser"),
         )
 
         # then
@@ -104,7 +111,7 @@ class ProSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q="Alice Dubois"),
+            url_for("backoffice_blueprint.search_pro", q="Alice Dubois", type="proUser"),
         )
 
         # then
@@ -122,7 +129,7 @@ class ProSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q=""),
+            url_for("backoffice_blueprint.search_pro", q="", type="proUser"),
         )
 
         # then
@@ -139,7 +146,7 @@ class ProSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q=query),
+            url_for("backoffice_blueprint.search_pro", q=query, type="proUser"),
         )
 
         # then
@@ -162,7 +169,7 @@ class ProSearchTest:
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q=pro_beneficiary.id),
+            url_for("backoffice_blueprint.search_pro", q=pro_beneficiary.id, type="proUser"),
         )
 
         # then
@@ -171,28 +178,160 @@ class ProSearchTest:
         assert len(response_list) == 1
         assert_user_equals(response_list[0], pro_beneficiary)
 
+
+class ProSearchOffererTest:
+    def _create_offerers(
+        self,
+        number: int = 12,
+        name_part1: list[str] = ("Librairie", "Cinéma", "Théâtre"),
+        name_part2: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
+    ) -> None:
+        self.offerers = []
+        for i in range(number):
+            offerer = offerers_factories.OffererFactory(
+                name=f"{name_part1[i % len(name_part1)]} {name_part2[i % len(name_part2)]}",
+                siren=str(123456000 + i),
+            )
+            self.offerers.append(offerer)
+
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_search_public_account_without_permission(self, client):
+    def test_can_search_offerer_by_id(self, client):
+        # given
+        self._create_offerers()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_pro", q=self.offerers[2].id, type="offerer"),
+        )
+
+        # then
+        assert response.status_code == 200
+        response_list = response.json["data"]
+        assert len(response_list) == 1
+        assert_offerer_equals(response_list[0], self.offerers[2])
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_offerer_by_siren(self, client):
+        # given
+        self._create_offerers()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_pro", q=self.offerers[3].siren, type="offerer"),
+        )
+
+        # then
+        assert response.status_code == 200
+        response_list = response.json["data"]
+        assert len(response_list) == 1
+        assert_offerer_equals(response_list[0], self.offerers[3])
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_offerer_by_name(self, client):
+        # given
+        self._create_offerers()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_pro", q="Théâtre du Centre", type="offerer"),
+        )
+
+        # then
+        assert response.status_code == 200
+        response_list = response.json["data"]
+        assert len(response_list) >= 2  # Results may contain all "Théâtre", "Centre", "Centaure"
+        assert len(response_list) <= 8  # Results should not contain Libraire/Cinéma + Gare/Plage
+        assert_offerer_equals(response_list[0], self.offerers[2])  # Théâtre du Centre (most relevant)
+        assert_offerer_equals(response_list[1], self.offerers[11])  # Théâtre du Centaure (very close to the first one)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_pro_by_two_consistent_criteria(self, client):
+        # given
+        self._create_offerers()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for(
+                "backoffice_blueprint.search_pro", q=f"{self.offerers[2].siren} {self.offerers[2].name}", type="offerer"
+            ),
+        )
+
+        # then
+        assert response.status_code == 200
+        response_list = response.json["data"]
+        assert len(response_list) == 1  # Single result because only one is matching SIREN even if name is close
+        assert_offerer_equals(response_list[0], self.offerers[2])
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_pro_by_two_unconsistent_criteria(self, client):
+        # given
+        self._create_offerers()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for(
+                "backoffice_blueprint.search_pro", q=f"{self.offerers[0].siren} {self.offerers[1].name}", type="offerer"
+            ),
+        )
+
+        # then
+        assert response.status_code == 200
+        response_list = response.json["data"]
+        assert len(response_list) == 0
+
+    @pytest.mark.parametrize("query", ["987654321", "festival@example.com", "Festival de la Montagne", ""])
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_offerer_no_result(self, client, query):
+        # given
+        self._create_offerers()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PRO_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_pro", q=query, type="offerer"),
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == 0
+
+
+class ProSearchReturns403Test:
+    @pytest.mark.parametrize("res_type", ["proUser", "offerer"])
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_search_public_account_without_permission(self, client, res_type):
         # given
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [])
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q="anything"),
+            url_for("backoffice_blueprint.search_pro", q="anything", type=res_type),
         )
 
         # then
         assert response.status_code == 403
 
+    @pytest.mark.parametrize("res_type", ["proUser", "offerer"])
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_search_public_account_as_anonymous(self, client):
+    def test_cannot_search_public_account_as_anonymous(self, client, res_type):
         # given
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PRO_ACCOUNT])
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_pro", q="anything"),
+            url_for("backoffice_blueprint.search_pro", q="anything", type=res_type),
         )
 
         # then

@@ -204,6 +204,11 @@ class PublicHistoryResponseModel(BaseModel):
     history: list[PublicHistoryItem]
 
 
+class ProSearchQuery(PaginableQuery):
+    q: str
+    type: str  # "proUser" or "venue" or "offerer"
+
+
 class ProUserPayload(BaseModel):
     class Config:
         orm_mode = True
@@ -215,10 +220,19 @@ class ProUserPayload(BaseModel):
     phoneNumber: str | None
 
 
+class OffererPayload(BaseModel):
+    class Config:
+        orm_mode = True
+        use_enum_values = True
+
+    name: str | None
+    siren: str | None
+
+
 class ProResult(BaseModel):
     resourceType: str  # "proUser" or "venue" or "offerer"
     id: int
-    payload: ProUserPayload
+    payload: ProUserPayload | OffererPayload
 
 
 class SearchProResponseModel(PaginatedResponse):
