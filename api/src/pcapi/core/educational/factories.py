@@ -197,25 +197,6 @@ class EducationalRedactorFactory(BaseFactory):
     civility = "M."
 
 
-class EducationalBookingFactory(BaseFactory):
-    class Meta:
-        model = models.EducationalBooking
-
-    confirmationLimitDate = datetime.datetime.utcnow()
-    educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
-    educationalYear = factory.SubFactory(EducationalYearFactory)
-    educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
-
-
-class PendingEducationalBookingFactory(EducationalBookingFactory):
-    status = None
-    confirmationLimitDate = datetime.datetime.utcnow() + datetime.timedelta(days=15)
-
-
-class RefusedEducationalBookingFactory(EducationalBookingFactory):
-    status = models.EducationalBookingStatus.REFUSED
-
-
 class CollectiveBookingFactory(BaseFactory):
     class Meta:
         model = models.CollectiveBooking

@@ -5,7 +5,6 @@ from decimal import Decimal
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
@@ -134,16 +133,3 @@ class BookingExpirationDateTest:
         assert book_booking.expirationDate == datetime(2021, 8, 15, 15, 0, 0)
         assert dvd_booking.expirationDate == datetime(2021, 9, 4, 15, 0, 0)
         assert not digital_book_booking.expirationDate
-
-
-class BookingMarkAsConfirmedTest:
-    @freeze_time("2021-08-05 15:00:00")
-    def test_when_booking_is_not_educational(self) -> None:
-        booking: Booking = factories.IndividualBookingFactory(
-            status=models.BookingStatus.PENDING,
-        )
-
-        with pytest.raises(exceptions.CannotMarkAsConfirmedIndividualBooking):
-            booking.mark_as_confirmed()
-
-        assert booking.status == BookingStatus.PENDING

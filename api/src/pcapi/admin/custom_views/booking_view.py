@@ -13,7 +13,6 @@ from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.bookings import models as booking_models
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
-from pcapi.core.educational.models import EducationalBooking
 import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers.models import Stock
 
@@ -66,11 +65,6 @@ class BookingView(BaseCustomAdminView):
                             booking_models.IndividualBooking.user
                         )
                     )
-                    .options(
-                        joinedload(booking_models.Booking.educationalBooking).joinedload(
-                            EducationalBooking.educationalRedactor
-                        )
-                    )
                     .options(joinedload(booking_models.Booking.stock).joinedload(Stock.offer))
                     .one_or_none()
                 )
@@ -78,11 +72,6 @@ class BookingView(BaseCustomAdminView):
                     flash("Aucune réservation n'existe avec ce code de contremarque.", "error")
                 elif booking.status == booking_models.BookingStatus.CANCELLED:
                     mark_as_used_form = MarkAsUsedForm(booking_id=booking.id)
-                elif (
-                    booking.educationalBookingId is not None
-                    and booking.status != booking_models.BookingStatus.CANCELLED
-                ):
-                    flash("Vous ne pouvez pas annuler une réservation associée à une offre collective")
                 elif not finance_repository.has_reimbursement(booking):
                     cancel_form = CancelForm(booking_id=booking.id)
         elif "id" in request.args:

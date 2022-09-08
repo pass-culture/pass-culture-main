@@ -17,7 +17,6 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
-from ..educational.models import EducationalBookingStatus
 from .exceptions import NoActivationCodeAvailable
 from .exceptions import OfferCategoryNotBookableByUser
 
@@ -120,10 +119,6 @@ def check_is_usable(booking: Booking) -> None:
 
     if booking.status is BookingStatus.CANCELLED:
         raise exceptions.BookingIsAlreadyCancelled()
-
-    if booking.educationalBookingId is not None:
-        if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:
-            raise exceptions.BookingRefused()
 
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:

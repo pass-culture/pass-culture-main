@@ -404,7 +404,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
 
 
 def _update_educational_booking_educational_year_id(
-    booking: bookings_models.Booking | educational_models.CollectiveBooking,
+    booking: educational_models.CollectiveBooking,
     new_beginning_datetime: datetime.datetime,
 ) -> None:
     educational_year = educational_repository.find_educational_year_by_date(new_beginning_datetime)
@@ -412,13 +412,7 @@ def _update_educational_booking_educational_year_id(
     if educational_year is None:
         raise exceptions.EducationalYearNotFound()
 
-    if isinstance(booking, educational_models.CollectiveBooking):
-        booking.educationalYear = educational_year
-    else:
-        educational_booking = booking.educationalBooking
-        if educational_booking is None:
-            return
-        educational_booking.educationalYear = educational_year
+    booking.educationalYear = educational_year
 
 
 def _update_educational_booking_cancellation_limit_date(
@@ -830,10 +824,7 @@ def find_collective_bookings_for_adage(
     uai_code: str,
     year_id: str,
     redactor_email: str | None = None,
-    status: educational_models.CollectiveBookingStatus
-    | educational_models.EducationalBookingStatus
-    | bookings_models.BookingStatus
-    | None = None,
+    status: educational_models.CollectiveBookingStatus | None = None,
 ) -> list[educational_models.CollectiveBooking]:
     return educational_repository.find_collective_bookings_for_adage(
         uai_code=uai_code, year_id=year_id, redactor_email=redactor_email, status=status

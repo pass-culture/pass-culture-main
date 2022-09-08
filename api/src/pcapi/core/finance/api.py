@@ -289,7 +289,6 @@ def _get_bookings_to_price(
         query = (
             query.filter(
                 bookings_models.Booking.status == bookings_models.BookingStatus.USED,
-                bookings_models.Booking.educationalBookingId.is_(None),
             )
             .join(bookings_models.Booking.stock)
             .outerjoin(
@@ -704,7 +703,7 @@ def _delete_dependent_pricings(
 
     assert booking.dateUsed is not None  # helps mypy for `_get_revenue_period()`
     revenue_period_start, revenue_period_end = _get_revenue_period(booking.dateUsed)
-    pricings = models.Pricing.query.filter(bookings_models.Booking.educationalBookingId.is_(None))
+    pricings = models.Pricing.query
     if use_pricing_point:
         pricing_point_id = _get_pricing_point_link(booking).pricingPointId
         pricings = pricings.filter_by(pricingPointId=pricing_point_id)

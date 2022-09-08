@@ -191,10 +191,7 @@ def find_collective_bookings_for_adage(
     uai_code: str,
     year_id: str,
     redactor_email: str | None = None,
-    status: educational_models.CollectiveBookingStatus
-    | educational_models.EducationalBookingStatus
-    | bookings_models.BookingStatus
-    | None = None,
+    status: educational_models.CollectiveBookingStatus | None = None,
 ) -> list[educational_models.CollectiveBooking]:
 
     query = educational_models.CollectiveBooking.query
