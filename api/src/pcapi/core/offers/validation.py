@@ -19,6 +19,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.providers.models import CinemaProviderPivot
 from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
@@ -395,3 +396,8 @@ def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data:
         raise api_errors
 
     return extra_data
+
+
+def check_offer_is_from_current_cinema_provider(offer: Offer) -> bool:
+    venue_cinema_pivot = CinemaProviderPivot.query.filter(CinemaProviderPivot.venueId == offer.venueId).one_or_none()
+    return venue_cinema_pivot and offer.lastProviderId == venue_cinema_pivot.providerId

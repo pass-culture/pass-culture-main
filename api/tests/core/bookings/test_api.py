@@ -33,6 +33,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
@@ -395,8 +396,12 @@ class BookOfferTest:
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             venue_provider = VenueBookingProviderFactory()
+            cinema_provider_pivot = CinemaProviderPivotFactory(venue=venue_provider.venue)
             offer_solo = offers_factories.EventOfferFactory(
-                name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
+                name="Séance ciné solo",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
             )
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
 
@@ -418,10 +423,12 @@ class BookOfferTest:
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             venue_provider = VenueBookingProviderFactory()
+            cinema_provider_pivot = CinemaProviderPivotFactory(venue=venue_provider.venue)
             offer_duo = offers_factories.EventOfferFactory(
                 name="Séance ciné duo",
                 venue=venue_provider.venue,
                 subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
             )
             stock_duo = offers_factories.EventStockFactory(offer=offer_duo, idAtProviders="1111%4444#111/datetime")
 

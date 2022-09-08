@@ -35,6 +35,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
@@ -166,6 +167,7 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
         and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
         and is_active_venue_booking_provider
+        and check_offer_is_from_current_cinema_provider(stock.offer)
     ):
         venue_booking_provider_name = _get_venue_booking_provider(stock.offer.venueId).bookingProvider.name.value
         sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider_name)

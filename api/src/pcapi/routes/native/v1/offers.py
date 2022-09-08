@@ -12,7 +12,7 @@ from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
-import pcapi.core.providers.models as providers_models
+from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
 from pcapi.core.users.models import User
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
@@ -54,12 +54,11 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
             .options(joinedload(VenueBookingProvider.bookingProvider, innerjoin=True))
             .one_or_none()
         )
-        venue_cinema_pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=offer.venueId).one_or_none()
+
         if (
             venue_booking_provider
             and venue_booking_provider.bookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE
-            and venue_cinema_pivot
-            and offer.lastProviderId == venue_cinema_pivot.providerId
+            and check_offer_is_from_current_cinema_provider(offer)
         ):
             api.update_stock_quantity_to_match_booking_provider_remaining_place(offer, venue_booking_provider)
 
