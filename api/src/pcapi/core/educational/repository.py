@@ -191,7 +191,6 @@ def find_collective_bookings_for_adage(
     uai_code: str,
     year_id: str,
     redactor_email: str | None = None,
-    status: educational_models.CollectiveBookingStatus | None = None,
 ) -> list[educational_models.CollectiveBooking]:
 
     query = educational_models.CollectiveBooking.query
@@ -214,8 +213,6 @@ def find_collective_bookings_for_adage(
     if redactor_email is not None:
         query = query.filter(educational_models.EducationalRedactor.email == redactor_email)
 
-    if status is not None:
-        query = query.filter(educational_models.CollectiveBooking.status == status)
     return query.all()
 
 

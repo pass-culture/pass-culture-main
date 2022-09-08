@@ -20,9 +20,6 @@ from pcapi.serialization.utils import to_camel
 
 class GetEducationalBookingsRequest(BaseModel):
     redactorEmail: str | None = Field(description="Email of querying redactor")
-    status: CollectiveBookingStatus | None = Field(
-        description="Status of retrieved preboookings"
-    )
 
     class Config:
         title = "Prebookings query filters"

@@ -3,7 +3,6 @@ import logging
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
-from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.repository import find_collective_bookings_for_adage
 from pcapi.core.educational.repository import get_paginated_collective_bookings_for_educational_year
 from pcapi.models.api_errors import ApiErrors
@@ -32,7 +31,6 @@ def get_educational_bookings(
         uai_code=uai_code,
         year_id=year_id,
         redactor_email=query.redactorEmail,
-        status=getattr(CollectiveBookingStatus, query.status.name, None) if query.status else None,
     )
 
     return prebooking_serialization.EducationalBookingsResponse(
