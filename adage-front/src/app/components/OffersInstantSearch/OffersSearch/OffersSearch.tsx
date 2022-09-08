@@ -11,6 +11,7 @@ import { AuthenticatedResponse } from 'apiClient'
 import { api } from 'apiClient/api'
 import { INITIAL_QUERY } from 'app/constants'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
+import { AnalyticsContext } from 'app/providers/AnalyticsContextProvider'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters } from 'app/types'
 import Tabs from 'app/ui-kit/Tabs'
@@ -49,6 +50,8 @@ export const OffersSearchComponent = ({
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
+  const { filtersKeys, hasClickedSearch, setFiltersKeys, setHasClickedSearch } =
+    useContext(AnalyticsContext)
 
   const userUAICode = user.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
@@ -95,14 +98,23 @@ export const OffersSearchComponent = ({
     })
     setFacetFilters(updatedFilters.queryFilters)
     if (LOGS_DATA) {
-      api.logSearchButtonClick({
-        filters: updatedFilters.filtersKeys,
-        resultsCount: nbHits,
-      })
+      setFiltersKeys(updatedFilters.filtersKeys)
+      setHasClickedSearch(true)
     }
     setQueryTag(query)
     refine(query)
   }
+
+  useEffect(() => {
+    if (LOGS_DATA && hasClickedSearch) {
+      api.logSearchButtonClick({
+        filters: filtersKeys,
+        resultsCount: nbHits,
+      })
+      setHasClickedSearch(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nbHits])
 
   const handleResetFiltersAndLaunchSearch = () => {
     setIsLoading(true)
