@@ -32,6 +32,7 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
+from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.sqltypes import CHAR
 from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
@@ -354,7 +355,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
         return get_department_timezone(self.departementCode)
 
     @timezone.expression  # type: ignore [no-redef]
-    def timezone(cls):  # pylint: disable=no-self-argument
+    def timezone(cls) -> Case:  # pylint: disable=no-self-argument
         offerer_alias = aliased(Offerer)
         return case(
             [
@@ -597,11 +598,11 @@ class Offerer(
         return self.bankInformation.applicationId
 
     @hybrid_property
-    def departementCode(self):
+    def departementCode(self) -> str:
         return PostalCode(self.postalCode).get_departement_code()
 
     @departementCode.expression  # type: ignore [no-redef]
-    def departementCode(cls):  # pylint: disable=no-self-argument
+    def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
         return case(
             [
                 (
