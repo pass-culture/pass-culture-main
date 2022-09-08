@@ -1629,6 +1629,11 @@ def test_public_api(client):
                             "title": "Stepperincludesphonevalidation",
                             "type": "boolean",
                         },
+                        "subscriptionMessage": {
+                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessage"}],
+                            "nullable": True,
+                            "title": "SubscriptionMessage",
+                        },
                     },
                     "required": [
                         "stepperIncludesPhoneValidation",
