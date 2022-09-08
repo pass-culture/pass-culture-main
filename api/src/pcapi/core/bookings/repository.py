@@ -307,8 +307,6 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
         ),
     )
 
-    active_bookings_query = active_bookings_query.filter(Booking.educationalBookingId.is_(None))
-
     n_active_bookings = active_bookings_query.with_entities(coalesce(func.sum(Booking.quantity), 0)).one()[0]
 
     n_active_collective_bookings = (
@@ -342,8 +340,6 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
         Booking.status != BookingStatus.PENDING,
         or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
     )
-
-    validated_bookings_quantity_query = validated_bookings_quantity_query.filter(Booking.educationalBookingId.is_(None))
 
     n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
         coalesce(func.sum(Booking.quantity), 0)
@@ -455,7 +451,7 @@ def _get_filtered_bookings_query(
     if not pro_user.has_admin_role:
         bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
 
-    bookings_query = bookings_query.filter(UserOfferer.isValidated, Booking.educationalBookingId.is_(None))
+    bookings_query = bookings_query.filter(UserOfferer.isValidated)
 
     if period:
         period_attribut_filter = (
@@ -473,12 +469,6 @@ def _get_filtered_bookings_query(
 
     if event_date:
         bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
-
-    if offer_type is not None:
-        if offer_type == OfferType.INDIVIDUAL_OR_DUO:
-            bookings_query = bookings_query.filter(Booking.individualBookingId != None)
-        else:
-            bookings_query = bookings_query.filter(Booking.educationalBookingId != None)
 
     return bookings_query
 
@@ -574,8 +564,6 @@ def _get_filtered_booking_pro(
                 Stock.offer,
                 Booking.individualBooking,
                 IndividualBooking.user,
-                Booking.educationalBooking,
-                educational_models.EducationalBooking.educationalRedactor,
             ),
         )
         .with_entities(
@@ -588,13 +576,8 @@ def _get_filtered_booking_pro(
             Booking.cancellationLimitDate,
             Booking.status,
             Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.educationalBookingId,
             Booking.isExternal.label("isExternal"),  # type: ignore [attr-defined]
             Booking.isConfirmed,
-            educational_models.EducationalBooking.confirmationDate,
-            educational_models.EducationalRedactor.firstName.label("redactorFirstname"),
-            educational_models.EducationalRedactor.lastName.label("redactorLastname"),
-            educational_models.EducationalRedactor.email.label("redactorEmail"),
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
             Offer.extraData["isbn"].label("offerIsbn"),
@@ -635,10 +618,10 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         booking_is_duo=booking.quantity == DUO_QUANTITY,  # type: ignore [attr-defined]
         booking_is_external=booking.isExternal,  # type: ignore [attr-defined]
         booking_raw_status=booking.status,  # type: ignore [attr-defined]
-        booking_confirmation_date=booking.confirmationDate,  # type: ignore [attr-defined]
-        redactor_email=booking.redactorEmail,  # type: ignore [attr-defined]
-        redactor_firstname=booking.redactorFirstname,  # type: ignore [attr-defined]
-        redactor_lastname=booking.redactorLastname,  # type: ignore [attr-defined]
+        booking_confirmation_date=None,
+        redactor_email=None,
+        redactor_firstname=None,
+        redactor_lastname=None,
         date_used=convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),  # type: ignore [attr-defined]
         payment_date=convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),  # type: ignore [attr-defined]
         cancellation_date=convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking),  # type: ignore [attr-defined]
