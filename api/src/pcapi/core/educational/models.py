@@ -13,8 +13,11 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.relationships import RelationshipProperty
+from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import False_
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import Index
+from sqlalchemy.sql.selectable import Exists
 from sqlalchemy.sql.sqltypes import Boolean
 from sqlalchemy.sql.sqltypes import Numeric
 
@@ -166,13 +169,13 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         return is_editable
 
     @sa.ext.hybrid.hybrid_property
-    def isSoldOut(self):
+    def isSoldOut(self) -> bool:
         if self.collectiveStock:
             return self.collectiveStock.isSoldOut
         return True
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls):  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> Exists:  # pylint: disable=no-self-argument
         return (
             sa.exists()
             .where(CollectiveStock.collectiveOfferId == cls.id)
@@ -211,7 +214,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimesPassed(cls) -> Exists:  # pylint: disable=no-self-argument
         return (
             sa.exists()
             .where(CollectiveStock.collectiveOfferId == cls.id)
@@ -351,17 +354,17 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
         return False
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimesPassed(cls) -> False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
     @sa.ext.hybrid.hybrid_property
-    def isSoldOut(self):
+    def isSoldOut(self) -> bool:
         # this property is here for compatibility reasons
         return False
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls):  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -502,15 +505,15 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         return self.collectiveOffer.isEditable
 
     @sa.ext.hybrid.hybrid_property
-    def hasBookingLimitDatetimePassed(self):
+    def hasBookingLimitDatetimePassed(self) -> bool:
         return self.bookingLimitDatetime <= datetime.utcnow()
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.bookingLimitDatetime <= sa.func.now()
 
     @sa.ext.hybrid.hybrid_property
-    def isEventExpired(self):  # todo rewrite
+    def isEventExpired(self) -> bool:  # todo rewrite
         return self.beginningDatetime <= datetime.utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
@@ -810,11 +813,11 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
         self.confirmationDate = datetime.utcnow()
 
     @hybrid_property
-    def isConfirmed(self):
+    def isConfirmed(self) -> BinaryExpression:
         return self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls):  # pylint: disable=no-self-argument
+    def isConfirmed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.cancellationLimitDate <= datetime.utcnow()
 
     @hybrid_property

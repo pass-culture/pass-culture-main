@@ -3,6 +3,7 @@ import enum
 import sqlalchemy as sa
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import declarative_mixin
+from sqlalchemy.sql.elements import Case
 
 
 class OfferStatus(enum.Enum):
@@ -58,7 +59,7 @@ class StatusMixin:
         return OfferStatus.ACTIVE
 
     @status.expression  # type: ignore [no-redef]
-    def status(cls):  # pylint: disable=no-self-argument
+    def status(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case(
             [
                 (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),

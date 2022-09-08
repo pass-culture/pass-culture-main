@@ -15,6 +15,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
+from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
@@ -454,7 +456,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         return self.has_beneficiary_role or self.has_underage_beneficiary_role
 
     @is_beneficiary.expression  # type: ignore [no-redef]
-    def is_beneficiary(cls):  # pylint: disable=no-self-argument
+    def is_beneficiary(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
         )
@@ -488,11 +490,11 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     @is_phone_validated.expression  # type: ignore [no-redef]
-    def is_phone_validated(cls):  # pylint: disable=no-self-argument
+    def is_phone_validated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     @hybrid_property
-    def is_phone_validation_skipped(self):
+    def is_phone_validation_skipped(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
     @is_phone_validation_skipped.expression  # type: ignore [no-redef]
