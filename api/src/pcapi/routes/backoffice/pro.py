@@ -1,8 +1,10 @@
 import typing
 
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.core.users import api as users_api
+from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -18,15 +20,29 @@ from . import utils
 )
 @perm_utils.permission_required(perm_models.Permissions.SEARCH_PRO_ACCOUNT)
 def search_pro(
-    query: serialization.SearchQuery,
+    query: serialization.ProSearchQuery,
 ) -> serialization.SearchProResponseModel:
     terms = query.q.split()
     sorts = query.sort.split(",") if query.sort else None
 
-    paginated = users_api.search_pro_account(terms, order_by=sorts).paginate(
-        page=query.page,
-        per_page=query.perPage,
-    )
+    # First version of pro search: no aggregration, a single type is requested.
+    match query.type:
+        case "proUser":
+            paginated = users_api.search_pro_account(terms, order_by=sorts).paginate(
+                page=query.page,
+                per_page=query.perPage,
+            )
+            response_payload_type: typing.Type = serialization.ProUserPayload
+        case "offerer":
+            paginated = offerers_api.search_offerer(terms, order_by=sorts).paginate(
+                page=query.page,
+                per_page=query.perPage,
+            )
+            response_payload_type = serialization.OffererPayload
+        case "venue":
+            raise ApiErrors(errors={"type": ["La recherche par lieu n'est pas encore implémentée."]})
+        case _:
+            raise ApiErrors(errors={"type": ["Le type de ressource est invalide."]})
 
     response = typing.cast(
         serialization.SearchProResponseModel,
@@ -38,7 +54,7 @@ def search_pro(
             sort=query.sort,
             data=[
                 serialization.ProResult(
-                    resourceType="proUser", id=account.id, payload=serialization.ProUserPayload.from_orm(account)
+                    resourceType=query.type, id=account.id, payload=response_payload_type.from_orm(account)
                 )
                 for account in paginated.items
             ],
