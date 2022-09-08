@@ -8,6 +8,7 @@ import {
   updateIndividualOffer,
 } from 'core/Offers/adapters'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import FormLayout from 'new_components/FormLayout'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import {
   IOfferIndividualFormValues,
@@ -79,19 +80,20 @@ const Informations = ({
 
   return (
     <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit}>
-        <OfferIndividualForm
-          offererNames={offererNames}
-          venueList={venueList}
-          categories={filteredCategories}
-          subCategories={filteredSubCategories}
-          readOnlyFields={readOnlyFields}
-        />
-
-        <OfferFormLayout.ActionBar>
-          <ActionBar onClickNext={handleNextStep} />
-        </OfferFormLayout.ActionBar>
-      </form>
+      <FormLayout small>
+        <form onSubmit={formik.handleSubmit}>
+          <OfferIndividualForm
+            offererNames={offererNames}
+            venueList={venueList}
+            categories={filteredCategories}
+            subCategories={filteredSubCategories}
+            readOnlyFields={readOnlyFields}
+          />
+          <OfferFormLayout.ActionBar>
+            <ActionBar onClickNext={handleNextStep} />
+          </OfferFormLayout.ActionBar>
+        </form>
+      </FormLayout>
     </FormikProvider>
   )
 }
