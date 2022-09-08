@@ -39,8 +39,8 @@
     "new:component": "hygen new component"
   },
   "dependencies": {
-    "@firebase/analytics": "^0.7.11",
-    "@firebase/app": "^0.7.20",
+    "@firebase/analytics": "^0.8.0",
+    "@firebase/app": "^0.7.32",
     "@reach/dialog": "^0.16.2",
     "@reach/menu-button": "^0.15.1",
     "@sentry/browser": "^7.1.1",
