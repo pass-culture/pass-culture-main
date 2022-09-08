@@ -3,12 +3,8 @@ import React, { useRef, useState } from 'react'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { BannerRGS } from 'new_components/Banner'
-import { BannerHeritageDay } from 'new_components/BannerHeritageDay'
-import { BannerOneYear } from 'new_components/BannerOneYear'
 import { Newsletter } from 'new_components/Newsletter'
 import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
-
-import useActiveFeature from '../../hooks/useActiveFeature'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
@@ -28,20 +24,10 @@ const Homepage = (): JSX.Element => {
     })
   }
 
-  const IsBannerOneYearActive = useActiveFeature('ENABLE_BANNER_ONE_YEAR')
-
-  const [isBannerHeritageDayVisible, setIsBannerHeritageDayVisible] =
-    useState(false)
-
   return (
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
-      {IsBannerOneYearActive && <BannerOneYear />}
-      <BannerHeritageDay
-        setIsBannerHeritageDayVisible={setIsBannerHeritageDayVisible}
-        isBannerHeritageDayVisible={isBannerHeritageDayVisible}
-      />
       {!hasClosedRGSBanner && (
         <BannerRGS closable onClose={handleCloseRGSBanner} />
       )}
@@ -51,9 +37,7 @@ const Homepage = (): JSX.Element => {
       />
 
       <section className="h-section">
-        <Offerers
-          setIsBannerHeritageDayVisible={setIsBannerHeritageDayVisible}
-        />
+        <Offerers />
       </section>
 
       <section className="h-section" ref={profileRef}>
