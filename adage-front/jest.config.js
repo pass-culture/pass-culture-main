@@ -17,6 +17,7 @@ module.exports = {
     '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
+  testPathIgnorePatterns: ['<rootDir>/dist/'],
   verbose: false,
   resetMocks: false,
   clearMocks: true,
