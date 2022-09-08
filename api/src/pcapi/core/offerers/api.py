@@ -3,6 +3,7 @@ import logging
 import secrets
 import typing
 
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -21,6 +22,7 @@ import pcapi.core.users.repository as users_repository
 from pcapi.domain import admin_emails
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -629,3 +631,50 @@ def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalSt
 
 def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
     return offerers_repository.get_venue_by_id(venue_id)
+
+
+def search_offerer(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+    offerers = models.Offerer.query
+
+    filters: list[sa.sql.ColumnElement] = []
+    name_terms: list[str] = []
+
+    if not terms:
+        return offerers.filter(False)
+
+    for term in terms:
+        if not term:
+            continue
+
+        if term.isnumeric():
+            if len(term) == 9:
+                filters.append(sa.or_(models.Offerer.id == int(term), models.Offerer.siren == term))
+            else:
+                filters.append(models.Offerer.id == int(term))
+        else:
+            # non-numeric terms are searched by trigram distance in the name
+            name_terms.append(term)
+
+    name_search = " ".join(name_terms)
+    if name_search:
+        filters.append(
+            sa.func.similarity(models.Offerer.name, name_search) > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE
+        )
+
+    # each result must match all terms in any column
+    offerers = offerers.filter(*filters)
+
+    if order_by:
+        try:
+            offerers = offerers.order_by(*db_utils.get_ordering_clauses(models.Offerer, order_by))
+        except db_utils.BadSortError as err:
+            raise ApiErrors({"sorting": str(err)})
+
+    if name_search:
+        offerers = offerers.order_by(sa.desc(sa.func.similarity(models.Offerer.name, name_search)))
+
+    # At the end, search by id, in case there is no order requested or equal similarity score
+    if not order_by:
+        offerers = offerers.order_by(models.Offerer.id)
+
+    return offerers
