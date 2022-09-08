@@ -13,6 +13,7 @@ import {
 } from 'apiClient'
 import { api } from 'apiClient/api'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
+import { initAlgoliaAnalytics } from 'libs/initAlgoliaAnalytics'
 import { LOGS_DATA } from 'utils/config'
 
 import { AppLayout } from './AppLayout'
@@ -76,6 +77,10 @@ export const App = (): JSX.Element => {
   }, [])
 
   const removeVenueFilter = useCallback(() => setVenueFilter(null), [])
+
+  useEffect(() => {
+    initAlgoliaAnalytics()
+  }, [])
 
   if (isLoading) {
     return <LoaderPage />

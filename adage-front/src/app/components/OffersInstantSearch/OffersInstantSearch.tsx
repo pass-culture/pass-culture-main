@@ -43,6 +43,7 @@ export const OffersInstantSearch = ({
       <Configure
         attributesToHighlight={[]}
         attributesToRetrieve={attributesToRetrieve}
+        clickAnalytics
         facetFilters={facetFilters}
         hitsPerPage={8}
       />
