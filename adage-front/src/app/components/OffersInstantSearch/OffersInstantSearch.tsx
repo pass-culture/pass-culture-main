@@ -4,6 +4,7 @@ import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'apiClient'
 import { FacetFiltersContext } from 'app/providers'
+import { AnalyticsContextProvider } from 'app/providers/AnalyticsContextProvider'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -47,11 +48,13 @@ export const OffersInstantSearch = ({
         facetFilters={facetFilters}
         hitsPerPage={8}
       />
-      <OffersSearch
-        removeVenueFilter={removeVenueFilter}
-        user={user}
-        venueFilter={venueFilter}
-      />
+      <AnalyticsContextProvider>
+        <OffersSearch
+          removeVenueFilter={removeVenueFilter}
+          user={user}
+          venueFilter={venueFilter}
+        />
+      </AnalyticsContextProvider>
     </InstantSearch>
   )
 }
