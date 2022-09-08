@@ -17,39 +17,11 @@ describe('setDefaultInitialFormValues', () => {
 
   beforeEach(() => {
     expectedInitialValues = {
-      accessibility: {
-        audio: false,
-        mental: false,
-        motor: false,
-        none: true,
-        visual: false,
-      },
-      author: '',
-      bookingEmail: '',
-      categoryId: '',
-      description: '',
-      durationMinutes: '',
-      isEvent: false,
-      isNational: false,
-      isbn: '',
-      musicSubType: '',
-      musicType: '',
-      name: '',
+      ...FORM_DEFAULT_VALUES,
       offererId: 'A',
-      performer: '',
-      receiveNotificationEmails: false,
-      showSubType: '',
-      showType: '',
-      speaker: '',
-      stageDirector: '',
-      subCategoryFields: [],
-      subcategoryId: '',
       venueId: 'C',
-      visa: '',
-      withdrawalDelay: undefined,
       withdrawalDetails: 'détails de retrait',
-      withdrawalType: undefined,
-      isDuo: true,
+      accessibility: { ...FORM_DEFAULT_VALUES.accessibility, none: true },
     }
 
     offererNames = [

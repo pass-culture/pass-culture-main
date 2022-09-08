@@ -29,4 +29,5 @@ export interface IOfferIndividualFormValues {
   receiveNotificationEmails: boolean
   bookingEmail: string
   isDuo: boolean
+  externalTicketOfficeUrl?: string
 }
