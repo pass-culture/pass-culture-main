@@ -44,7 +44,7 @@ describe('OfferIndividual section: OptionDuo', () => {
       onSubmit,
     })
     await userEvent.click(
-      screen.getByLabelText('Accepter les réservations "duo"', {
+      screen.getByLabelText('Accepter les réservations “duo“', {
         exact: false,
       })
     )
