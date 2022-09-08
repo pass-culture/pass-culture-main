@@ -7,7 +7,6 @@ import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
-import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import { Accessibility } from './Accessibility'
@@ -64,7 +63,7 @@ const OfferIndividualForm = ({
     areAllVenuesVirtual
 
   return (
-    <FormLayout>
+    <>
       <Categories
         categories={categories}
         subCategories={subCategories}
@@ -89,7 +88,7 @@ const OfferIndividualForm = ({
           <Notifications />
         </>
       )}
-    </FormLayout>
+    </>
   )
 }
 
