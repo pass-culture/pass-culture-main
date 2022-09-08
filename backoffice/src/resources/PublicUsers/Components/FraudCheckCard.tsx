@@ -41,6 +41,17 @@ export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
   }
 
   const fraudCheckItem = eligibilityFraudCheck.items[0]
+
+  let fraudCheckCreationDate = ''
+  try {
+    fraudCheckCreationDate = format(
+      fraudCheckItem.dateCreated,
+      'dd/MM/yyyy à HH:mm:s'
+    )
+  } catch (RangeError) {
+    console.log(`unable to format date ${fraudCheckItem.dateCreated} as string`)
+  }
+
   return (
     <Card style={cardStyle}>
       <Grid container spacing={1}>
@@ -57,13 +68,8 @@ export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
               <p>Date de création</p>
             </Grid>
             <Grid item xs={6}>
-              <p>
-                {fraudCheckItem &&
-                  fraudCheckItem.dateCreated &&
-                  format(
-                    parseISO(fraudCheckItem.dateCreated.toString()),
-                    'dd/MM/yyyy à HH:mm:s'
-                  )}
+              <p data-testid="fraudCheckCreationDate">
+                {fraudCheckCreationDate}
               </p>
             </Grid>
           </Stack>
