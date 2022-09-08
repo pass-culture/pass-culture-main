@@ -58,6 +58,23 @@ describe('OfferIndividual section: Notifications', () => {
     }
   })
 
+  it('should submit valid form', async () => {
+    await renderNotifications({
+      initialValues,
+      onSubmit,
+    })
+    await userEvent.click(
+      screen.getByText('Être notifié par email des réservations')
+    )
+
+    await userEvent.click(screen.getByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      { bookingEmail: 'email@example.com', receiveNotificationEmails: true },
+      expect.anything()
+    )
+  })
+
   it('should display bookingEmail field with default value depending of receiveNotificationEmails.', async () => {
     await renderNotifications({
       initialValues,

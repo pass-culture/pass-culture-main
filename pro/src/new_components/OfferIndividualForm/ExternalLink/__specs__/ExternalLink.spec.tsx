@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
@@ -29,12 +29,10 @@ const renderExternalLink = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      {({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
-          <ExternalLink />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
-        </form>
-      )}
+      <Form>
+        <ExternalLink />
+        <SubmitButton isLoading={false}>Submit</SubmitButton>
+      </Form>
     </Formik>
   )
 }
@@ -79,21 +77,7 @@ describe('OfferIndividual section: ExternalLink', () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       { externalTicketOfficeUrl: 'https://example.com' },
-      {
-        resetForm: expect.any(Function),
-        setErrors: expect.any(Function),
-        setFieldError: expect.any(Function),
-        setFieldTouched: expect.any(Function),
-        setFieldValue: expect.any(Function),
-        setFormikState: expect.any(Function),
-        setStatus: expect.any(Function),
-        setSubmitting: expect.any(Function),
-        setTouched: expect.any(Function),
-        setValues: expect.any(Function),
-        submitForm: expect.any(Function),
-        validateField: expect.any(Function),
-        validateForm: expect.any(Function),
-      }
+      expect.anything()
     )
   })
 

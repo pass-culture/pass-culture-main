@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
@@ -34,10 +34,10 @@ const renderAccessibility = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <>
+      <Form>
         <Accessibility />
         <SubmitButton isLoading={false}>Submit</SubmitButton>
-      </>
+      </Form>
     </Formik>
   )
 }
@@ -95,6 +95,33 @@ describe('Accessibility', () => {
     expect(
       screen.getByLabelText('Non accessible', { exact: false })
     ).not.toBeChecked()
+  })
+
+  it('should submit valid form', async () => {
+    await renderAccessibility({ initialValues, onSubmit })
+
+    const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
+    await userEvent.click(checkboxVisuel)
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        accessibility: {
+          audio: false,
+          mental: false,
+          motor: false,
+          none: false,
+          visual: true,
+        },
+        offererId: '',
+        subcategoryId: '',
+        venueId: '',
+        withdrawalDelay: '',
+        withdrawalDetails: '',
+        withdrawalType: '',
+      },
+      expect.anything()
+    )
   })
 
   it('should check accessibilities on click', async () => {

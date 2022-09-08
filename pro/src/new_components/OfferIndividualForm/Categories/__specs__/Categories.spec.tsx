@@ -2,13 +2,14 @@ import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { SubmitButton } from 'ui-kit'
 
 import Categories, { ICategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
@@ -26,7 +27,7 @@ interface IInitialValues {
 
 const renderCategories = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit,
   props,
 }: {
   initialValues: IInitialValues
@@ -39,7 +40,10 @@ const renderCategories = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <Categories {...props} />
+      <Form>
+        <Categories {...props} />
+        <SubmitButton isLoading={false}>Submit</SubmitButton>
+      </Form>
     </Formik>
   )
 }
@@ -120,6 +124,48 @@ describe('OfferIndividual section: Categories', () => {
     expect(
       await screen.findByLabelText('Choisir une catégorie')
     ).toBeInTheDocument()
+  })
+  it('should submit valid form', async () => {
+    renderCategories({
+      initialValues,
+      onSubmit,
+      props,
+    })
+    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    await userEvent.selectOptions(categorySelect, 'C')
+    const subCategorySelect = screen.getByLabelText(
+      'Choisir une sous-catégorie'
+    )
+    await userEvent.selectOptions(subCategorySelect, 'C-A')
+    const showSelect = screen.getByLabelText('Choisir un type de spectacle')
+    await userEvent.selectOptions(showSelect, '100')
+    const subShowSelect = screen.getByLabelText('Choisir un sous type')
+    await userEvent.selectOptions(subShowSelect, '101')
+
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        author: '',
+        categoryId: 'C',
+        durationMinutes: '',
+        isEvent: false,
+        isbn: '',
+        musicSubType: '',
+        musicType: '',
+        performer: '',
+        showSubType: '101',
+        showType: '100',
+        speaker: '',
+        stageDirector: '',
+        subCategoryFields: ['showType', 'showSubType'],
+        subcategoryId: 'C-A',
+        visa: '',
+        withdrawalDelay: undefined,
+        withdrawalType: undefined,
+      },
+      expect.anything()
+    )
   })
 
   it('should display subCategories select when a category is choosed', async () => {
