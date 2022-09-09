@@ -67,7 +67,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "precommit": "yarn lint:fix && yarn format && yarn test:lint",
+    "precommit": "yarn lint:fix && yarn format && yarn test:lint && yarn test:unit --watchAll=false",
     "deploy": "yarn build:testing && firebase deploy --only hosting -P pc-backoffice-testing",
     "deploy:testing": "yarn build:testing && firebase deploy --only hosting -P pc-backoffice-testing",
     "deploy:staging": "yarn build:staging && firebase deploy --only hosting -P pc-backoffice-staging",
