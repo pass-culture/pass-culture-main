@@ -2,7 +2,7 @@ import React, { createContext, useState } from 'react'
 
 export type logEventType = (
   event: string,
-  params: { [key: string]: string | string[] | boolean }
+  params?: { [key: string]: string | string[] | boolean }
 ) => void
 
 export const AnalyticsContext = createContext<{
