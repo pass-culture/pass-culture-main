@@ -6,6 +6,7 @@ import type { CollectiveOffersListDomainsResponseModel } from '../models/Collect
 import type { CollectiveOffersListEducationalInstitutionResponseModel } from '../models/CollectiveOffersListEducationalInstitutionResponseModel';
 import type { CollectiveOffersListResponseModel } from '../models/CollectiveOffersListResponseModel';
 import type { CollectiveOffersListStudentLevelsResponseModel } from '../models/CollectiveOffersListStudentLevelsResponseModel';
+import type { CollectiveOffersListSubCategoriesResponseModel } from '../models/CollectiveOffersListSubCategoriesResponseModel';
 import type { CollectiveOffersListVenuesResponseModel } from '../models/CollectiveOffersListVenuesResponseModel';
 import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
@@ -208,6 +209,22 @@ export class ApiOffresCollectivesService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/student-levels',
+      errors: {
+        401: `Authentification nécessaire`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * Récupération de la liste des sous-catégories d'offres proposées a un public collectif.
+   * @returns CollectiveOffersListSubCategoriesResponseModel La liste des sous-catégories éligibles existantes.
+   * @throws ApiError
+   */
+  public listSubcategories(): CancelablePromise<CollectiveOffersListSubCategoriesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/collective/subcategories',
       errors: {
         401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,

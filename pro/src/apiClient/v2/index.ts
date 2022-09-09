@@ -20,9 +20,11 @@ export type { CollectiveOffersListDomainsResponseModel } from './models/Collecti
 export type { CollectiveOffersListEducationalInstitutionResponseModel } from './models/CollectiveOffersListEducationalInstitutionResponseModel';
 export type { CollectiveOffersListResponseModel } from './models/CollectiveOffersListResponseModel';
 export type { CollectiveOffersListStudentLevelsResponseModel } from './models/CollectiveOffersListStudentLevelsResponseModel';
+export type { CollectiveOffersListSubCategoriesResponseModel } from './models/CollectiveOffersListSubCategoriesResponseModel';
 export type { CollectiveOffersListVenuesResponseModel } from './models/CollectiveOffersListVenuesResponseModel';
 export type { CollectiveOffersResponseModel } from './models/CollectiveOffersResponseModel';
 export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
+export type { CollectiveOffersSubCategoryResponseModel } from './models/CollectiveOffersSubCategoryResponseModel';
 export type { CollectiveOffersVenueResponseModel } from './models/CollectiveOffersVenueResponseModel';
 export type { ErrorResponseModel } from './models/ErrorResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
