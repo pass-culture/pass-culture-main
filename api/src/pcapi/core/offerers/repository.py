@@ -437,3 +437,14 @@ def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
         )
         .all()
     )
+
+
+def get_emails_by_venue(venue: models.Venue) -> set[str]:
+    """
+    Get all emails for which pro attributes may be modified when the venue is updated or deleted.
+    Be careful: venue attributes are no longer available after venue object is deleted, call this function before.
+    """
+    users_offerer = find_all_user_offerers_by_offerer_id(venue.managingOffererId)
+    emails = {user_offerer.user.email for user_offerer in users_offerer}
+    emails.add(venue.bookingEmail)
+    return emails
