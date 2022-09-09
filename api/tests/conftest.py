@@ -348,29 +348,60 @@ class TestClient:
         form: dict = None,
         files: dict = None,
         headers: dict = None,
+        follow_redirects: bool = False,
     ):
         headers = headers or {}
         if raw_json:
             result = self.client.post(
-                route, data=raw_json, content_type="application/json", headers={**self.auth_header, **headers}
+                route,
+                data=raw_json,
+                content_type="application/json",
+                headers={**self.auth_header, **headers},
+                follow_redirects=follow_redirects,
             )
         elif form or files:
-            result = self.client.post(route, data=form if form else files, headers={**self.auth_header, **headers})
+            result = self.client.post(
+                route,
+                data=form if form else files,
+                headers={**self.auth_header, **headers},
+                follow_redirects=follow_redirects,
+            )
         else:
-            result = self.client.post(route, json=json, headers={**self.auth_header, **headers})
+            result = self.client.post(
+                route, json=json, headers={**self.auth_header, **headers}, follow_redirects=follow_redirects
+            )
 
         self._print_spec("POST", route, json, result)
         return result
 
-    def patch(self, route: str, json: dict = None, headers: dict = None):
+    def patch(
+        self,
+        route: str,
+        json: dict = None,
+        headers: dict = None,
+        follow_redirects: bool = False,
+    ):
         headers = headers or {}
-        result = self.client.patch(route, json=json, headers={**self.auth_header, **headers})
+        result = self.client.patch(
+            route,
+            json=json,
+            headers={**self.auth_header, **headers},
+            follow_redirects=follow_redirects,
+        )
         self._print_spec("PATCH", route, json, result)
         return result
 
-    def put(self, route: str, json: dict = None, headers: dict = None):
+    def put(
+        self,
+        route: str,
+        json: dict = None,
+        headers: dict = None,
+        follow_redirects: bool = False,
+    ):
         headers = headers or {}
-        result = self.client.put(route, json=json, headers={**self.auth_header, **headers})
+        result = self.client.put(
+            route, json=json, headers={**self.auth_header, **headers}, follow_redirects=follow_redirects
+        )
         self._print_spec("PUT", route, json, result)
         return result
 
