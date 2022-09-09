@@ -153,7 +153,7 @@ describe('offerLayout', () => {
 
       // When
       await userEvent.click(
-        await screen.findByRole('button', { name: 'Activer' })
+        await screen.findByRole('button', { name: 'Publier' })
       )
 
       // Then
@@ -163,10 +163,10 @@ describe('offerLayout', () => {
         true
       )
       expect(
-        screen.queryByRole('button', { name: 'Activer' })
+        screen.queryByRole('button', { name: 'Publier' })
       ).not.toBeInTheDocument()
       expect(
-        screen.getByText('L’offre a bien été activée.')
+        screen.getByText('L’offre a bien été publiée.')
       ).toBeInTheDocument()
       expect(
         screen.getByRole('button', { name: 'Désactiver' })
@@ -211,7 +211,7 @@ describe('offerLayout', () => {
         screen.getByText('L’offre a bien été désactivée.')
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: 'Activer' })
+        screen.getByRole('button', { name: 'Publier' })
       ).toBeInTheDocument()
     })
 
@@ -273,7 +273,7 @@ describe('offerLayout', () => {
         screen.getByRole('button', { name: 'Désactiver' })
       ).toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: 'Activer' })
+        screen.queryByRole('button', { name: 'Publier' })
       ).not.toBeInTheDocument()
     })
   })

@@ -1,65 +1,50 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
-import type { History } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
-import type { Store } from 'redux'
+import { MemoryRouter } from 'react-router-dom'
 
-import { configureTestStore } from 'store/testUtils'
+import OfferBreadcrumb, {
+  OfferBreadcrumbStep,
+  IOfferBreadcrumb,
+} from '../OfferBreadcrumb'
 
-import OfferBreadcrumb, { OfferBreadcrumbStep } from '../OfferBreadcrumb'
+const renderOfferBreadcrumb = (props: IOfferBreadcrumb) => {
+  return render(
+    <MemoryRouter>
+      <OfferBreadcrumb {...props} />
+    </MemoryRouter>
+  )
+}
 
-describe('src | new_components | OfferBreadcrumb', () => {
-  let store: Store
-  let history: History
+describe('src | new_components | OfferBreadcrumb', () => {
+  let props: IOfferBreadcrumb
 
   beforeEach(() => {
-    history = createBrowserHistory()
+    props = {
+      activeStep: OfferBreadcrumbStep.DETAILS,
+      isCreatingOffer: true,
+      offerId: 'A1',
+      isOfferEducational: false,
+    }
   })
 
   describe('Individual offer', () => {
-    beforeEach(() => {
-      store = configureTestStore({})
-    })
-
     it('should display breadcrumb for individual offer in creation', async () => {
-      render(
-        <Router history={history}>
-          <Provider store={store}>
-            <OfferBreadcrumb
-              activeStep={OfferBreadcrumbStep.DETAILS}
-              isCreatingOffer={true}
-              offerId="A1"
-              isOfferEducational={false}
-            />
-          </Provider>
-        </Router>
-      )
+      renderOfferBreadcrumb(props)
 
       const listItems = await screen.findAllByRole('listitem')
 
-      expect(listItems).toHaveLength(3)
+      expect(listItems).toHaveLength(4)
       expect(listItems[0]).toHaveTextContent("Détails de l'offre")
       expect(listItems[1]).toHaveTextContent('Stocks et prix')
-      expect(listItems[2]).toHaveTextContent('Confirmation')
+      expect(listItems[2]).toHaveTextContent('Récapitulatif')
+      expect(listItems[3]).toHaveTextContent('Confirmation')
     })
 
     it('should display breadcrumb for individual offer in edition', async () => {
-      render(
-        <Router history={history}>
-          <Provider store={store}>
-            <OfferBreadcrumb
-              activeStep={OfferBreadcrumbStep.DETAILS}
-              isCreatingOffer={false}
-              offerId="A1"
-              isOfferEducational={false}
-            />
-          </Provider>
-        </Router>
-      )
+      props.isCreatingOffer = false
+      renderOfferBreadcrumb(props)
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -69,18 +54,8 @@ describe('src | new_components | OfferBreadcrumb', () => {
     })
 
     it('should generate link with offerId when user is editing an offer', async () => {
-      render(
-        <Router history={history}>
-          <Provider store={store}>
-            <OfferBreadcrumb
-              activeStep={OfferBreadcrumbStep.DETAILS}
-              isCreatingOffer={false}
-              offerId="A1"
-              isOfferEducational={false}
-            />
-          </Provider>
-        </Router>
-      )
+      props.isCreatingOffer = false
+      renderOfferBreadcrumb(props)
 
       const linkItems = await screen.findAllByRole('link')
 
@@ -96,22 +71,12 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
   describe('Collective offer - with domain association', () => {
     beforeEach(() => {
-      store = configureTestStore({})
+      props.isOfferEducational = true
     })
 
     it('should display breadcrumb for collective offer - with visibility step', async () => {
-      render(
-        <Router history={history}>
-          <Provider store={store}>
-            <OfferBreadcrumb
-              activeStep={OfferBreadcrumbStep.DETAILS}
-              isCreatingOffer={true}
-              offerId="A1"
-              isOfferEducational={true}
-            />
-          </Provider>
-        </Router>
-      )
+      props.isCreatingOffer = true
+      renderOfferBreadcrumb(props)
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -123,18 +88,8 @@ describe('src | new_components | OfferBreadcrumb', () => {
     })
 
     it('should generate link with offerId when user is editing an offer', async () => {
-      render(
-        <Router history={history}>
-          <Provider store={store}>
-            <OfferBreadcrumb
-              activeStep={OfferBreadcrumbStep.DETAILS}
-              isCreatingOffer={false}
-              offerId="A1"
-              isOfferEducational={true}
-            />
-          </Provider>
-        </Router>
-      )
+      props.isCreatingOffer = false
+      renderOfferBreadcrumb(props)
 
       const linkItems = await screen.findAllByRole('link')
 
@@ -151,18 +106,9 @@ describe('src | new_components | OfferBreadcrumb', () => {
     })
 
     it('should not display visibility step if offer is showcase', async () => {
-      render(
-        <Router history={history}>
-          <Provider store={store}>
-            <OfferBreadcrumb
-              activeStep={OfferBreadcrumbStep.DETAILS}
-              isCreatingOffer={false}
-              offerId="T-A1"
-              isOfferEducational={true}
-            />
-          </Provider>
-        </Router>
-      )
+      props.isCreatingOffer = false
+      props.offerId = 'T-A1'
+      renderOfferBreadcrumb(props)
 
       const linkItems = await screen.findAllByRole('link')
       expect(linkItems).toHaveLength(2)

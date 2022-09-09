@@ -88,16 +88,6 @@ describe('offerDetails - Edition', () => {
         },
         initialized: true,
       },
-      features: {
-        list: [
-          {
-            name: 'OFFER_FORM_SUMMARY_PAGE',
-            nameKey: 'OFFER_FORM_SUMMARY_PAGE',
-            isActive: true,
-          },
-        ],
-        initialized: true,
-      },
     })
 
     venueManagingOfferer = {

@@ -8,13 +8,11 @@ import {
 } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import { OfferV2Summary as OfferV2SummaryRoute } from 'routes/OfferV2Summary'
 import { Title } from 'ui-kit'
@@ -53,7 +51,6 @@ const OfferLayout = () => {
   const match = useRouteMatch()
   const isCreatingOffer = location.pathname.includes('creation')
   const [offer, setOffer] = useState(null)
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
   const loadOffer = async offerId => {
     try {
@@ -172,11 +169,7 @@ const OfferLayout = () => {
           ></Route>
         </Switch>
       </div>
-      {useSummaryPage ? (
-        <RouteLeavingGuardOfferIndividual when={isCreatingOffer} />
-      ) : (
-        <RouteLeavingGuardOfferCreation when={isCreatingOffer} />
-      )}
+      <RouteLeavingGuardOfferIndividual when={isCreatingOffer} />
     </div>
   )
 }
