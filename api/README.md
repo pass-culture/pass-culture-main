@@ -107,6 +107,14 @@ Les variables d'environnement nécessaires au bon fonctionnement mais qui porte 
 ne sont pas enregistrés dans les fichiers d'environnement du dépôt.
 Il faut les ajouter dans le fichier `api/.env.local.secret` .
 
+
+### Scan du repo par GitGuardian
+
+Une Github Action est lancée à chaque push sur le repo, lançant un scan de fuites de secrets GitGuardian.
+Pour ignorer un faux positif, il convient d'ajouter un commentaire _inline_ dans le code: `# gg ignore`, car les 
+directives de `.gitguardian.yaml` permettent seulement d'ignorer lors des scans de la CLI `ggshield` 
+cf https://github.com/GitGuardian/ggshield#in-code
+
 ## Démarrage du serveur back api
 
 ### Option 1 : Lancement via le script `pc` présent dans pass-culture-main
