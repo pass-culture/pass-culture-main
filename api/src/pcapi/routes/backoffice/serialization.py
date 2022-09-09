@@ -78,13 +78,16 @@ class SearchQuery(PaginableQuery):
     q: str
 
 
-class PaginatedResponse(BaseModel):
+class Response(BaseModel):
+    data: typing.Any
+
+
+class PaginatedResponse(Response):
     pages: int
     total: int
     page: int
     size: int
     sort: str | None
-    data: typing.Any
 
 
 class ListPublicAccountsResponseModel(PaginatedResponse):
@@ -266,3 +269,35 @@ class OffererAttachedUser(BaseModel):
 
 class OffererAttachedUsersResponseModel(BaseModel):
     data: list[OffererAttachedUser]
+
+
+class OffererBankInformationStatus(BaseModel):
+    ko: int
+    ok: int
+
+
+class OffererBaseOffersStats(BaseModel):
+    individual: int
+    collective: int
+
+
+class OffererOffersStats(BaseModel):
+    active: OffererBaseOffersStats
+    inactive: OffererBaseOffersStats
+
+
+class OffererReimbursementsStats(BaseModel):
+    done: int
+    pending: int
+    upcoming: int
+
+
+class OffererBasicInfo(BaseModel):
+    id: int
+    name: str
+    isActive: bool
+    siren: str
+    region: str
+    bankInformationStatus: OffererBankInformationStatus
+    isCollectiveEligible: bool
+    dmsUrl: str | None
