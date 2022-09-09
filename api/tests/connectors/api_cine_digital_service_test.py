@@ -1,10 +1,13 @@
 from unittest import mock
 
+import pytest
+
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import _build_url
 from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import put_resource
 from pcapi.connectors.serialization.cine_digital_service_serializers import CancelBookingCDS
+import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.testing import override_settings
 
 
@@ -71,6 +74,26 @@ class CineDigitalServiceGetResourceTest:
 
     @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
     @override_settings(IS_DEV=False)
+    def test_should_raise_if_error(self, request_get):
+        # Given
+        cinema_id = "test_id"
+        api_url = "test_url/"
+        token = "test_token"
+        resource = ResourceCDS.TARIFFS
+
+        request_get.return_value = mock.MagicMock(status_code=400, reason="the test token test_token is wrong")
+
+        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exc_info:
+            get_resource(api_url, cinema_id, token, resource)
+
+        request_get.assert_called_once_with("https://test_id.test_url/tariffs?api_token=test_token")
+
+        assert isinstance(exc_info.value, cds_exceptions.CineDigitalServiceAPIException)
+        assert token not in str(exc_info.value)
+        assert "Error on CDS API on GET ResourceCDS.TARIFFS" in str(exc_info.value)
+
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
+    @override_settings(IS_DEV=False)
     def should_call_url_with_path_params_if_present(self, request_get):
         # Given
         cinema_id = "test_id"
@@ -78,6 +101,7 @@ class CineDigitalServiceGetResourceTest:
         token = "test_token"
         resource = ResourceCDS.SEATMAP
         path_params = {"show_id": 1}
+        request_get.return_value = mock.MagicMock(status_code=200)
 
         # When
         get_resource(api_url, cinema_id, token, resource, path_params)
@@ -112,3 +136,22 @@ class CineDigitalServicePutResourceTest:
             data='{"barcodes": [111111111111], "paiementtypeid": 5}',
         )
         assert json_data == response_json
+
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.put")
+    @override_settings(IS_DEV=False)
+    def test_should_raise_if_error(self, request_get):
+        # Given
+        cinema_id = "test_id"
+        api_url = "test_url/"
+        token = "test_token"
+        resource = ResourceCDS.TARIFFS
+        body = CancelBookingCDS(barcodes=[111111111111], paiementtypeid=5)
+
+        request_get.return_value = mock.MagicMock(status_code=400, reason="the test token test_token is wrong")
+
+        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exc_info:
+            put_resource(api_url, cinema_id, token, resource, body)
+
+        assert isinstance(exc_info.value, cds_exceptions.CineDigitalServiceAPIException)
+        assert token not in str(exc_info.value)
+        assert "Error on CDS API on PUT ResourceCDS.TARIFFS" in str(exc_info.value)

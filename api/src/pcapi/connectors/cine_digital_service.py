@@ -40,6 +40,25 @@ MOCKS: dict[ResourceCDS, dict | list[dict] | list] = {
 }
 
 
+def _extract_reason_from_response(response: requests.Response) -> str:
+    # from requests.Response.raise_for_status()
+    if isinstance(response.reason, bytes):
+        try:
+            reason = response.reason.decode("utf-8")
+        except UnicodeDecodeError:
+            reason = response.reason.decode("iso-8859-1")
+    else:
+        reason = response.reason
+    return reason
+
+
+def _check_response_is_ok(response: requests.Response, cinema_api_token: str | None, request_detail: str) -> None:
+    if response.status_code >= 400:
+        reason = _extract_reason_from_response(response)
+        error_message = _filter_token(reason, cinema_api_token)
+        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {error_message}")
+
+
 def get_resource(
     api_url: str,
     account_id: str,
@@ -51,16 +70,10 @@ def get_resource(
     if settings.IS_DEV:
         return MOCKS[resource]
 
-    try:
-        url = _build_url(api_url, account_id, cinema_api_token, resource, path_params)
-        response = requests.get(url)
-        response.raise_for_status()
+    url = _build_url(api_url, account_id, cinema_api_token, resource, path_params)
+    response = requests.get(url)
 
-    except requests.exceptions.RequestException as e:
-        error_message = _filter_token(str(e), cinema_api_token)
-        raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Error on CDS API on GET {resource} : {error_message}"
-        ) from None
+    _check_response_is_ok(response, cinema_api_token, f"GET {resource}")
 
     return response.json()
 
@@ -71,17 +84,11 @@ def put_resource(
     if settings.IS_DEV:
         return MOCKS[resource]
 
-    try:
-        url = _build_url(api_url, account_id, cinema_api_token, resource)
-        headers = {"Content-Type": "application/json"}
-        response = requests.put(url, headers=headers, data=body.json(by_alias=True))
-        response.raise_for_status()
+    url = _build_url(api_url, account_id, cinema_api_token, resource)
+    headers = {"Content-Type": "application/json"}
+    response = requests.put(url, headers=headers, data=body.json(by_alias=True))
 
-    except requests.exceptions.RequestException as e:
-        error_message = _filter_token(str(e), cinema_api_token)
-        raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Error on CDS API on PUT {resource} : {error_message}"
-        ) from None
+    _check_response_is_ok(response, cinema_api_token, f"PUT {resource}")
 
     response_headers = response.headers.get("Content-Type")
     if response_headers and "application/json" in response_headers:
@@ -92,17 +99,11 @@ def put_resource(
 def post_resource(
     api_url: str, account_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
 ) -> dict:
-    try:
-        url = _build_url(api_url, account_id, cinema_api_token, resource)
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(url, headers=headers, data=body.json(by_alias=True))
-        response.raise_for_status()
+    url = _build_url(api_url, account_id, cinema_api_token, resource)
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(url, headers=headers, data=body.json(by_alias=True))
 
-    except requests.exceptions.RequestException as e:
-        error_message = _filter_token(str(e), cinema_api_token)
-        raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Error on CDS API on POST {resource} : {error_message}"
-        ) from None
+    _check_response_is_ok(response, cinema_api_token, f"POST {resource}")
 
     return response.json()
 
