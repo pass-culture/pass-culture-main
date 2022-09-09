@@ -139,8 +139,6 @@ class DepositType(enum.Enum):
 
 
 class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     amount: Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)

@@ -63,8 +63,6 @@ class TokenExtraData:
 class Token(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "token"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
     user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True))  # type: ignore [misc]
@@ -604,8 +602,6 @@ class EmailHistoryEventTypeEnum(enum.Enum):
 class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_email_history"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
     user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True))  # type: ignore [misc]
 
@@ -668,8 +664,6 @@ class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc
 
 class UserSuspension(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_suspension"
-
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
     user = orm.relationship(  # type: ignore [misc]

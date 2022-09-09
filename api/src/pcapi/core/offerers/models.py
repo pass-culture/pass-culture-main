@@ -420,8 +420,6 @@ class VenueType(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_contact"
 
-    id: int = Column(BigInteger, primary_key=True)
-
     venueId: int = Column(
         BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
     )
