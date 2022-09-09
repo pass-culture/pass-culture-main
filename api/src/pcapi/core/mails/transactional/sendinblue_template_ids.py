@@ -74,6 +74,12 @@ class TransactionalEmail(Enum):
         tags=["jeunes_document_invalide"],
         use_priority_queue=True,
     )
+    SUBSCRIPTION_NOT_AUTHENTIC_DOCUMENT_ERROR = models.Template(
+        id_prod=760,
+        id_not_prod=101,
+        tags=["jeunes_document_non_authentique"],
+        use_priority_queue=False,
+    )
     SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY = models.Template(
         id_prod=80, id_not_prod=77, tags=["jeunes_compte_refuse_doublon"], use_priority_queue=False
     )
