@@ -29,20 +29,15 @@ def synchronize_venue_providers_for_provider(provider_id: int, limit: int | None
         try:
             with transaction():
                 synchronize_venue_provider(venue_provider, limit)
-        except Exception as exc:  # pylint: disable=broad-except
-            notion_connector.add_to_synchronization_error_database(
-                exception=exc,
-                provider_name=venue_provider.provider.name,
-                venue_id=venue_provider.venueId,
-                venue_id_at_offer_provider=venue_provider.venueIdAtOfferProvider,
-            )
+        except Exception as exception:  # pylint: disable=broad-except
+            notion_connector.add_to_synchronization_error_database(exception, venue_provider)
             logger.exception(
                 "Could not synchronize venue provider",
                 extra={
                     "venue_provider": venue_provider.id,
                     "venue": venue_provider.venueId,
                     "provider": venue_provider.providerId,
-                    "exc": exc,
+                    "exc": exception,
                 },
             )
 
