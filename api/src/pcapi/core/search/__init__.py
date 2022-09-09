@@ -393,7 +393,7 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
     backend = _get_backend()
 
     to_add = []
-    to_delete = []
+    to_delete_ids = []
     offers = (
         Offer.query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
         .options(joinedload(Offer.criteria))
@@ -407,7 +407,7 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
         if offer and offer.is_eligible_for_search:
             to_add.append(offer)
         elif backend.check_offer_is_indexed(offer):
-            to_delete.append(offer)
+            to_delete_ids.append(offer.id)
         else:
             # FIXME (dbaty, 2021-06-24). I think we could safely do
             # without the hashmap in Redis. Check the logs and see if
@@ -432,16 +432,16 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
     # Handle unavailable offers (deleted, expired, sold out, etc.)
     try:
-        backend.unindex_offer_ids([offer.id for offer in to_delete])
+        backend.unindex_offer_ids(to_delete_ids)
     except Exception as exc:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
             raise
         logger.warning(
             "Could not unindex offers, will automatically retry",
-            extra={"exc": str(exc), "offers": [offer.id for offer in to_delete]},
+            extra={"exc": str(exc), "offers": to_delete_ids},
             exc_info=True,
         )
-        backend.enqueue_offer_ids_in_error([offer.id for offer in to_delete])
+        backend.enqueue_offer_ids_in_error(to_delete_ids)
 
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
