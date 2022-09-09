@@ -32,9 +32,11 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
+from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
@@ -1073,6 +1075,13 @@ def synchronize_adage_ids_on_venues() -> None:
     ).all()
 
     for venue in venues:
+        if not venue.adageId:
+            # Update the users in SiB in case of previous adageId being none
+            # This is because we track if the user has an adageId, not the value of the adageId
+            emails = get_emails_by_venue(venue)
+            for email in emails:
+                update_external_pro(email)
+
         venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
 
     db.session.commit()
