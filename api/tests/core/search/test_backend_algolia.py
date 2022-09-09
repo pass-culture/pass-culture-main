@@ -26,7 +26,7 @@ def test_enqueue_offer_ids(app):
     backend.enqueue_offer_ids([1])
     backend.enqueue_offer_ids({2, 3})
     backend.enqueue_offer_ids([])
-    assert set(app.redis_client.lrange("offer_ids", 0, 5)) == {"1", "2", "3"}
+    assert app.redis_client.smembers("search:algolia:offer_ids") == {"1", "2", "3"}
 
 
 def test_enqueue_offer_ids_in_error(app):
@@ -34,7 +34,7 @@ def test_enqueue_offer_ids_in_error(app):
     backend.enqueue_offer_ids_in_error([1])
     backend.enqueue_offer_ids_in_error({2, 3})
     backend.enqueue_offer_ids_in_error([])
-    assert set(app.redis_client.lrange("offer_ids_in_error", 0, 5)) == {"1", "2", "3"}
+    assert app.redis_client.smembers("search:algolia:offer_ids_in_error") == {"1", "2", "3"}
 
 
 def test_enqueue_collective_offer_ids(app):
@@ -86,12 +86,12 @@ def test_enqueue_venue_ids_for_offers(app):
     backend.enqueue_venue_ids_for_offers([1])
     backend.enqueue_venue_ids_for_offers({2, 3})
     backend.enqueue_venue_ids_for_offers([])
-    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {"1", "2", "3"}
+    assert app.redis_client.smembers("search:algolia:venue_ids_for_offers") == {"1", "2", "3"}
 
 
 def test_pop_offer_ids_from_queue(app):
     backend = get_backend()
-    app.redis_client.lpush("offer_ids", 1, 2, 3)
+    app.redis_client.sadd("search:algolia:offer_ids", 1, 2, 3)
 
     popped = set()
     offer_ids = backend.pop_offer_ids_from_queue(count=2)
@@ -110,46 +110,54 @@ def test_pop_offer_ids_from_queue(app):
 
 
 def test_pop_offer_ids_from_error_queue(app):
+    base_ids = {1, 2, 3}
+
     backend = get_backend()
-    app.redis_client.lpush("offer_ids_in_error", 1, 2, 3)
+    app.redis_client.sadd("search:algolia:offer_ids_in_error", *base_ids)
 
     offer_ids = backend.pop_offer_ids_from_queue(count=2, from_error_queue=True)
-    assert offer_ids == {3, 2}
+    assert len(offer_ids) == 2
+    assert offer_ids <= base_ids
 
     offer_ids = backend.pop_offer_ids_from_queue(count=2, from_error_queue=True)
-    assert offer_ids == {1}
+    assert len(offer_ids) == 1
+    assert offer_ids <= base_ids
 
     offer_ids = backend.pop_offer_ids_from_queue(count=2, from_error_queue=True)
-    assert offer_ids == set()
+    assert not offer_ids
 
 
 def test_get_venue_ids_for_offers_from_queue(app):
+    base_ids = {1, 2, 3}
+
     backend = get_backend()
-    # The following pushes 1 to head, then 2 to head, etc. In the end,
-    # we'll get `[3, 2, 1]` in that order.
-    app.redis_client.lpush("venue_ids_for_offers", 1, 2, 3)
+    app.redis_client.sadd("search:algolia:venue_ids_for_offers", *base_ids)
 
     venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=2)
-    assert venue_ids == {3, 2}
+    assert len(venue_ids) == 2
+    assert venue_ids <= base_ids
 
     venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=1)
-    assert venue_ids == {1}
+    assert len(venue_ids) == 1
+    assert venue_ids <= base_ids
 
     # Make sure we did pop values off the list.
-    assert not set(app.redis_client.lrange("venue_ids_for_offers", 0, 5))
+    assert not app.redis_client.smembers("search:algolia:venue_ids_for_offers")
 
 
 def test_count_offers_to_index_from_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue() == 0
-    app.redis_client.lpush("offer_ids", 1, 2, 3)
+
+    app.redis_client.sadd("search:algolia:offer_ids", 1, 2, 3)
     assert backend.count_offers_to_index_from_queue() == 3
 
 
 def test_count_offers_to_index_from_error_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue(from_error_queue=True) == 0
-    app.redis_client.lpush("offer_ids_in_error", 1, 2, 3)
+
+    app.redis_client.sadd("search:algolia:offer_ids_in_error", 1, 2, 3)
     assert backend.count_offers_to_index_from_queue(from_error_queue=True) == 3
 
 
