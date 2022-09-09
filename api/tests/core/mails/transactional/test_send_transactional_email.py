@@ -27,7 +27,7 @@ class TransactionalEmailWithTemplateTest:
         with pytest.raises(requests.ExternalAPIException) as exception_info:
             send_transactional_email(payload)
 
-        assert exception_info.value.is_retryable is False
+        assert exception_info.value.is_external_error is False
         assert caplog.records[0].levelname == "ERROR"
         assert (
             caplog.records[0].message
@@ -47,7 +47,7 @@ class TransactionalEmailWithTemplateTest:
         with pytest.raises(requests.ExternalAPIException) as exception_info:
             send_transactional_email(payload)
 
-        assert exception_info.value.is_retryable is True
+        assert exception_info.value.is_external_error is True
         assert isinstance(exception_info.value.__cause__, ApiException)
 
         assert len(caplog.records) == 0

@@ -124,7 +124,7 @@ def _send_sms_with_retry(phone_number: str, message: str, max_attempt: int = 3) 
             sms_notifications.send_transactional_sms(phone_number, message)
             return
         except requests.ExternalAPIException as exception:
-            if exception.is_retryable:
+            if exception.is_external_error:
                 if i_retry < max_attempt - 1:
                     time.sleep(base_backoff * i_retry)
                     continue

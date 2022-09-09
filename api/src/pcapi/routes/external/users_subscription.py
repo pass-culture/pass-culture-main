@@ -75,7 +75,7 @@ def ubble_webhook_store_id_pictures(
     try:
         ubble_subscription_api.archive_ubble_user_id_pictures(body.identification_id)
     except requests_utils.ExternalAPIException as err:
-        raise ApiErrors({"err": str(err)}, status_code=503 if err.is_retryable else 500)
+        raise ApiErrors({"err": str(err)}, status_code=503 if err.is_external_error else 500)
     except ubble_exceptions.UbbleDownloadedFileEmpty as err:
         raise ApiErrors({"err": str(err)}, status_code=500)
     except BeneficiaryFraudCheckMissingException as err:

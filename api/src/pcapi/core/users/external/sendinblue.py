@@ -220,7 +220,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
 
     except SendinblueApiException as exception:
         if exception.status >= 500:
-            raise ExternalAPIException(is_retryable=True) from exception
+            raise ExternalAPIException(is_external_error=True) from exception
 
         logger.exception(
             "Exception when calling Sendinblue create_contact API",
@@ -229,10 +229,10 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
                 "attributes": payload.attributes,
             },
         )
-        raise ExternalAPIException(is_retryable=False) from exception
+        raise ExternalAPIException(is_external_error=False) from exception
 
     except Exception as exception:
-        raise ExternalAPIException(is_retryable=True) from exception
+        raise ExternalAPIException(is_external_error=True) from exception
 
 
 def send_import_contacts_request(

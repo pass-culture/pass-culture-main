@@ -114,7 +114,7 @@ class GetContentTest:
         assert record.extra["identification_id"] == identification_id
         assert record.extra["request_type"] == "get-content"
         assert record.extra["error_type"] == "http"
-        assert exc_info.value.is_retryable == False
+        assert exc_info.value.is_external_error == False
 
     def test_get_content_network_error(self, requests_mock, caplog):
         identification_id = "some-id"
@@ -131,4 +131,4 @@ class GetContentTest:
         assert record.extra["identification_id"] == identification_id
         assert record.extra["request_type"] == "get-content"
         assert record.extra["error_type"] == "http"
-        assert exc_info.value.is_retryable == True
+        assert exc_info.value.is_external_error == True

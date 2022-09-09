@@ -129,7 +129,7 @@ class PostHandlerTest:
     @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     def test_max_attempt_reached(self, client: TestClient, caplog):
         endpoint_method.reset_mock()
-        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=True)
+        endpoint_method.side_effect = requests.ExternalAPIException(is_external_error=True)
 
         response = client.post(
             "/cloud-tasks/endpoint_test",
@@ -144,7 +144,7 @@ class PostHandlerTest:
     @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     def test_max_attempt_not_reached(self, client: TestClient, caplog):
         endpoint_method.reset_mock()
-        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=True)
+        endpoint_method.side_effect = requests.ExternalAPIException(is_external_error=True)
 
         response = client.post(
             "/cloud-tasks/endpoint_test",
@@ -161,7 +161,7 @@ class PostHandlerTest:
     @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     def test_not_retryable(self, client: TestClient):
         endpoint_method.reset_mock()
-        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=False)
+        endpoint_method.side_effect = requests.ExternalAPIException(is_external_error=False)
 
         response = client.post(
             "/cloud-tasks/endpoint_test",

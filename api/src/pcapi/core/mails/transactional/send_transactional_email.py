@@ -56,7 +56,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
 
     except ApiException as exception:
         if exception.status and int(exception.status) >= 500:
-            raise requests.ExternalAPIException(is_retryable=True) from exception
+            raise requests.ExternalAPIException(is_external_error=True) from exception
 
         code = "unknown"
         if exception.body and not isinstance(exception.body, str) and exception.body.get("code"):
@@ -65,9 +65,9 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
             f"Exception when calling Sendinblue send_transac_email with status={exception.status} and code={code}",
             extra=extra,
         )
-        raise requests.ExternalAPIException(is_retryable=False) from exception
+        raise requests.ExternalAPIException(is_external_error=False) from exception
 
     except Exception as exception:
-        raise requests.ExternalAPIException(is_retryable=True) from exception
+        raise requests.ExternalAPIException(is_external_error=True) from exception
 
     return True

@@ -36,14 +36,14 @@ class SendinblueBackend:
                     exception.status,
                     extra={"recipient": recipient, "content": content},
                 )
-                raise requests.ExternalAPIException(is_retryable=True) from exception
+                raise requests.ExternalAPIException(is_external_error=True) from exception
 
             logger.exception("Error while sending SMS", extra={"recipient": recipient, "content": content})
-            raise requests.ExternalAPIException(is_retryable=False) from exception
+            raise requests.ExternalAPIException(is_external_error=False) from exception
 
         except Exception as exception:
             logger.warning("Exception caught while sending SMS", extra={"recipient": recipient, "content": content})
-            raise requests.ExternalAPIException(is_retryable=True) from exception
+            raise requests.ExternalAPIException(is_external_error=True) from exception
 
         return True
 

@@ -72,7 +72,7 @@ def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
             f(body)
 
         except requests.ExternalAPIException as exception:
-            if not exception.is_retryable:
+            if not exception.is_external_error:
                 # The task should not be retried as it would result with the same error again.
                 # A log with a higher level should happen before.
                 logger.warning("Task %s failed and should not be retried", path, extra=job_details)

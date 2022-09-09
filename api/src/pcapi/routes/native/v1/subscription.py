@@ -118,7 +118,7 @@ def start_identification_session(
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
 
     except requests_utils.ExternalAPIException as exception:
-        if exception.is_retryable:
+        if exception.is_external_error:
             code = "IDCHECK_SERVICE_UNAVAILABLE"
             message = "Le service d'identification n'est pas joignable"
             return_status = 503

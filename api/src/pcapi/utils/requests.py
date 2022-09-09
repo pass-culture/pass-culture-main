@@ -26,10 +26,14 @@ REQUEST_TIMEOUT_IN_SECOND = 10
 
 
 class ExternalAPIException(Exception):
-    is_retryable: bool
+    is_external_error: bool
 
-    def __init__(self, is_retryable: bool, *args: object) -> None:
-        self.is_retryable = is_retryable
+    def __init__(
+        self,
+        *args: object,
+        is_external_error: bool = False,
+    ) -> None:
+        self.is_external_error = is_external_error
         super().__init__(*args)
 
 

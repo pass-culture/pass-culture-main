@@ -53,23 +53,23 @@ class BatchBackend:
             logger_method(  # pylint: disable=logging-fstring-interpolation
                 f"Exception with Batch {api_name} API", extra={"payload": payload}
             )
-            raise requests.ExternalAPIException(is_retryable=True) from exc
+            raise requests.ExternalAPIException(is_external_error=True) from exc
 
         if response.ok:
             return
 
         if response.status_code >= 500 and can_be_asynchronously_retried:
             logger_method = logger.warning
-            is_retryable = True
+            is_external_error = True
         else:
             logger_method = logger.error
-            is_retryable = False
+            is_external_error = False
 
         logger_method(  # pylint: disable=logging-fstring-interpolation
             f"Error with Batch {api_name} API: {response.status_code}",
             extra={"response_content": response.content, "payload": payload},
         )
-        raise requests.ExternalAPIException(is_retryable=is_retryable)
+        raise requests.ExternalAPIException(is_external_error=is_external_error)
 
     def update_user_attributes(
         self, batch_api: BatchAPI, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
