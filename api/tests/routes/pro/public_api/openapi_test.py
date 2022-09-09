@@ -77,6 +77,11 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersListStudentLevelsResponseModel",
                     "type": "array",
                 },
+                "CollectiveOffersListSubCategoriesResponseModel": {
+                    "items": {"$ref": "#/components/schemas/CollectiveOffersSubCategoryResponseModel"},
+                    "title": "CollectiveOffersListSubCategoriesResponseModel",
+                    "type": "array",
+                },
                 "CollectiveOffersListVenuesResponseModel": {
                     "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
                     "title": "CollectiveOffersListVenuesResponseModel",
@@ -100,6 +105,16 @@ def test_public_api(client, app):
                     },
                     "required": ["id", "name"],
                     "title": "CollectiveOffersStudentLevelResponseModel",
+                    "type": "object",
+                },
+                "CollectiveOffersSubCategoryResponseModel": {
+                    "properties": {
+                        "category": {"title": "Category", "type": "string"},
+                        "id": {"title": "Id", "type": "string"},
+                        "label": {"title": "Label", "type": "string"},
+                    },
+                    "required": ["id", "label", "category"],
+                    "title": "CollectiveOffersSubCategoryResponseModel",
                     "type": "object",
                 },
                 "CollectiveOffersVenueResponseModel": {
@@ -1037,6 +1052,39 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
+                    "tags": ["API offres collectives"],
+                }
+            },
+            "/v2/collective/subcategories": {
+                "get": {
+                    "description": "",
+                    "operationId": "ListSubcategories",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CollectiveOffersListSubCategoriesResponseModel"
+                                    }
+                                }
+                            },
+                            "description": "La liste des sous-catégories éligibles existantes.",
+                        },
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "Récupération de la liste des sous-catégories d'offres proposées a un public collectif.",
                     "tags": ["API offres collectives"],
                 }
             },

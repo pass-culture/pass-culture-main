@@ -5,6 +5,7 @@ from typing import Any
 from pydantic import Field
 from pydantic import validator
 
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import OfferStatus
@@ -174,6 +175,27 @@ class CollectiveOffersVenueResponseModel(BaseModel):
 
 class CollectiveOffersListVenuesResponseModel(BaseModel):
     __root__: list[CollectiveOffersVenueResponseModel]
+
+
+class CollectiveOffersSubCategoryResponseModel(BaseModel):
+    id: str
+    label: str
+    category: str
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, subcategory: subcategories_v2.Subcategory) -> "CollectiveOffersSubCategoryResponseModel":
+        return cls(
+            id=subcategory.id,
+            label=subcategory.pro_label,
+            category=subcategory.category.pro_label,
+        )
+
+
+class CollectiveOffersListSubCategoriesResponseModel(BaseModel):
+    __root__: list[CollectiveOffersSubCategoryResponseModel]
 
 
 class CollectiveOffersCategoryResponseModel(BaseModel):
