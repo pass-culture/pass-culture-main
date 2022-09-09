@@ -32,7 +32,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
@@ -345,7 +344,7 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     repository.save(user)
     repository.save(user_suspension)
 
-    sessions = UserSession.query.filter_by(userId=user.id)
+    sessions = models.UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
 
     n_bookings = 0
@@ -450,7 +449,7 @@ def change_email(
             raise exceptions.EmailExistsError() from error
         raise
 
-    sessions = UserSession.query.filter_by(userId=current_user.id)
+    sessions = models.UserSession.query.filter_by(userId=current_user.id)
     repository.delete(*sessions)
 
     logger.info("User has changed their email", extra={"user": current_user.id})

@@ -106,7 +106,7 @@ def already_activated_exception(error: DepositTypeAlreadyGrantedException) -> Ap
 
 @app.errorhandler(429)
 def ratelimit_handler(error: Exception) -> ApiErrorResponse:
-    # `pcapi.utis.login_manager` cannot be imported at module-scope,
+    # `pcapi.utils.login_manager` cannot be imported at module-scope,
     # because the application context may not be available and that
     # module needs it.
     from pcapi.utils.login_manager import get_request_authorization

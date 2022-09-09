@@ -30,7 +30,6 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.user_session import UserSession
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
@@ -219,7 +218,7 @@ class SuspendAccountTest:
         assert not user.isActive
         assert not user.has_admin_role
         assert not user.has_admin_role
-        assert not UserSession.query.filter_by(userId=user.id).first()
+        assert not users_models.UserSession.query.filter_by(userId=user.id).first()
         assert actor.isActive
 
         _assert_user_suspension_history(user, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
@@ -338,7 +337,7 @@ class ChangeUserEmailTest:
         reloaded_user = users_models.User.query.get(user.id)
         assert reloaded_user.email == new_email
         assert users_models.User.query.filter_by(email=old_email).first() is None
-        assert UserSession.query.filter_by(userId=reloaded_user.id).first() is None
+        assert users_models.UserSession.query.filter_by(userId=reloaded_user.id).first() is None
 
         assert len(reloaded_user.email_history) == 1
 
