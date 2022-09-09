@@ -287,7 +287,10 @@ class VenueView(BaseAdminView):
                 new_adage_id,
             )
 
-        result = super().update_model(new_venue_form, venue)
+        # A failed update (invalid DB constraint for example) does not raise but returns False
+        update_success = super().update_model(new_venue_form, venue)
+        if not update_success:
+            return False
 
         # Immediately index venue if tags (criteria) are involved:
         # tags are used by other tools (eg. building playlists for the
@@ -314,8 +317,7 @@ class VenueView(BaseAdminView):
         for email in offerers_repository.get_emails_by_venue(venue):
             update_external_pro(email)
 
-        if result:
-            zendesk_sell.update_venue(venue)
+        zendesk_sell.update_venue(venue)
 
         return True
 
