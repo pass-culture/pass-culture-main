@@ -78,17 +78,6 @@ def _format_offerer_name(view: BaseAdminView, context: Context, model: Venue, na
     return Markup('<a href="{url}">{name}</a>').format(url=url, name=model.managingOfferer.name)
 
 
-def _get_emails_by_venue(venue: Venue) -> set[str]:
-    """
-    Get all emails for which pro attributes may be modified when the venue is updated or deleted.
-    Be careful: venue attributes are no longer available after venue object is deleted, call this function before.
-    """
-    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(venue.managingOffererId)
-    emails = {user_offerer.user.email for user_offerer in users_offerer}
-    emails.add(venue.bookingEmail)
-    return emails
-
-
 class VenueChangeForm(Form):
     ids = HiddenField()
     is_permanent = BooleanField(
@@ -236,7 +225,7 @@ class VenueView(BaseAdminView):
         return formatters
 
     def delete_model(self, venue: Venue) -> bool:
-        emails = _get_emails_by_venue(venue)
+        emails = offerers_repository.get_emails_by_venue(venue)
         try:
             delete_cascade_venue_by_id(venue.id)
             for email in emails:
@@ -283,7 +272,7 @@ class VenueView(BaseAdminView):
         }
 
         if str(new_venue_form.adageId.data) != venue.adageId:
-            emails = _get_emails_by_venue(venue)
+            emails = offerers_repository.get_emails_by_venue(venue)
             for email in emails:
                 update_external_pro(email)
 
@@ -322,7 +311,7 @@ class VenueView(BaseAdminView):
 
         # Update pro attributes for all related emails: bookingEmail (no distinct former and new because bookingEmail
         # cannot be changed from backoffice) and pro users
-        for email in _get_emails_by_venue(venue):
+        for email in offerers_repository.get_emails_by_venue(venue):
             update_external_pro(email)
 
         if result:
