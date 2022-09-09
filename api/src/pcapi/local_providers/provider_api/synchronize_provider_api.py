@@ -5,8 +5,6 @@ import time
 from typing import Counter
 from typing import Generator
 
-from sqlalchemy.sql.sqltypes import DateTime
-
 from pcapi.core.providers.api import synchronize_stocks
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import StockDetail
@@ -28,9 +26,9 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
     logger.info("Starting synchronization of venue=%s provider=%s", venue.id, provider.name)
     provider_api = provider.getProviderAPI()
 
-    stats = Counter()  # type: ignore [var-annotated]
+    stats: Counter = Counter()
     for raw_stocks in _get_stocks_by_batch(
-        venue_provider.venueIdAtOfferProvider, provider_api, venue_provider.lastSyncDate  # type: ignore [arg-type]
+        venue_provider.venueIdAtOfferProvider, provider_api, venue_provider.lastSyncDate
     ):
         stock_details = _build_stock_details_from_raw_stocks(
             raw_stocks, venue_provider.venueIdAtOfferProvider, provider, venue.id
@@ -53,14 +51,14 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
     )
 
 
-def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: DateTime) -> Generator:
+def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: datetime | None) -> Generator:
     last_processed_provider_reference = ""
 
     while True:
         response = provider_api.validated_stocks(
             siret=siret,
             last_processed_reference=last_processed_provider_reference,
-            modified_since=modified_since.strftime("%Y-%m-%dT%H:%M:%SZ") if modified_since else "",  # type: ignore [attr-defined]
+            modified_since=modified_since.strftime("%Y-%m-%dT%H:%M:%SZ") if modified_since else "",
         )
         raw_stocks = response.get("stocks", [])
 
