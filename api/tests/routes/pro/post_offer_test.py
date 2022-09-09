@@ -4,8 +4,8 @@ from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -29,7 +29,6 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.isActive == False
 
-    @override_features(OFFER_FORM_SUMMARY_PAGE=False)
     def test_create_event_offer(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -68,7 +67,8 @@ class Returns200Test:
         assert offer.visualDisabilityCompliant == False
         assert offer.audioDisabilityCompliant == False
         assert offer.mentalDisabilityCompliant == True
-        assert offer.isActive == True
+        assert offer.validation == OfferValidationStatus.DRAFT
+        assert offer.isActive == False
 
     def when_creating_new_thing_offer(self, client):
         # Given
