@@ -464,7 +464,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
     @property
     def applicable_eligibilities(self) -> list[users_models.EligibilityType]:
         if (
-            self.type == FraudCheckType.UBBLE
+            self.type in (FraudCheckType.UBBLE, FraudCheckType.DMS)
             and self.status == FraudCheckStatus.OK
             and self.eligibilityType == users_models.EligibilityType.UNDERAGE
         ):

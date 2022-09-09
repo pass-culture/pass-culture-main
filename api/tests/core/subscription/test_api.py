@@ -318,7 +318,7 @@ class NextSubscriptionStepTest:
 
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
-    def test_underage_dms_alread_performed_needs_identity(self):
+    def test_underage_dms_alread_performed(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -340,7 +340,7 @@ class NextSubscriptionStepTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
     def test_next_subscription_step_honor_statement(self):
         user = users_factories.UserFactory(
@@ -937,7 +937,7 @@ class IdentityCheckSubscriptionStatusTest:
 
         assert age18_status == subscription_models.SubscriptionItemStatus.OK
 
-    def test_dms_underage_not_valid_for_18(self):
+    def test_dms_underage_valid_for_18(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -949,7 +949,7 @@ class IdentityCheckSubscriptionStatusTest:
 
         age18_status = subscription_api.get_identity_check_subscription_status(user, users_models.EligibilityType.AGE18)
 
-        assert age18_status == subscription_models.SubscriptionItemStatus.TODO
+        assert age18_status == subscription_models.SubscriptionItemStatus.OK
 
     def test_educonnect_underage_not_valid_for_18(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
@@ -1522,6 +1522,57 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=fraud_factories.UbbleContentFactory(
+                first_name=identity_firstname,
+                last_name=identity_lastname,
+                birth_date=identity_birth_date.isoformat(),
+            ),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        is_success = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_success
+        assert user.is_beneficiary
+        assert user.firstName == identity_firstname
+        assert user.lastName == identity_lastname
+        assert user.dateOfBirth.date() == identity_birth_date
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        )
+
+    def test_underage_dms_valid_for_18(self):
+        identity_firstname = "Yolan"
+        identity_lastname = "Mac Doumy"
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName=identity_firstname,
+            lastName=identity_lastname,
+        )
+        identity_birth_date = date.today() - relativedelta(years=18, months=3, days=1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.DMSContentFactory(
                 first_name=identity_firstname,
                 last_name=identity_lastname,
                 birth_date=identity_birth_date.isoformat(),
