@@ -83,13 +83,13 @@ describe('StatusToggleButton', () => {
     })
 
     // then
-    fireEvent.click(screen.getByText(/Activer/))
+    fireEvent.click(screen.getByText(/Publier/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
     expect(toggleFunction).toHaveBeenNthCalledWith(1, ['AG3A'], true)
     await waitFor(() =>
       expect(notifySuccess).toHaveBeenNthCalledWith(
         1,
-        'L’offre a bien été activée.'
+        'L’offre a bien été publiée.'
       )
     )
   })

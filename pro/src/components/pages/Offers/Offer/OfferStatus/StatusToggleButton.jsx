@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
 import {
@@ -13,17 +12,13 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 const StatusToggleButton = ({ offer, reloadOffer }) => {
   const notification = useNotification()
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const activatedState = useSummaryPage ? 'publiée' : 'activée'
   const toggleOfferActiveStatus = useCallback(() => {
     pcapi
       .updateOffersActiveStatus([offer.id], !offer.isActive)
       .then(() => {
         reloadOffer()
         notification.success(
-          `L’offre a bien été ${
-            offer.isActive ? 'désactivée' : activatedState
-          }.`
+          `L’offre a bien été ${offer.isActive ? 'désactivée' : 'publiée'}.`
         )
       })
       .catch(() => {
@@ -33,7 +28,6 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
       })
   }, [offer, reloadOffer])
 
-  const activateAction = useSummaryPage ? 'Publier' : 'Activer'
   return (
     <button
       className="tertiary-button with-icon"
@@ -51,7 +45,7 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
       ) : (
         <>
           <Icon svg="ico-status-validated" />
-          {activateAction}
+          Publier
         </>
       )}
     </button>

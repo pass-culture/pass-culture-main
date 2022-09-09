@@ -46,11 +46,6 @@ const renderOfferCreation = async (
           name: 'OFFER_FORM_V3',
           nameKey: 'OFFER_FORM_V3',
         },
-        {
-          isActive: true,
-          name: 'OFFER_FORM_SUMMARY_PAGE',
-          nameKey: 'OFFER_FORM_SUMMARY_PAGE',
-        },
       ],
     },
     user: {

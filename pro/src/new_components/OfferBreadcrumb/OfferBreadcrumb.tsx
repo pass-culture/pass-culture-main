@@ -1,6 +1,5 @@
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import {
   useOfferEditionURL,
@@ -23,7 +22,7 @@ export enum OfferBreadcrumbStep {
   CONFIRMATION = 'confirmation',
 }
 
-interface IOfferBreadcrumb {
+export interface IOfferBreadcrumb {
   activeStep: OfferBreadcrumbStep
   isCreatingOffer: boolean
   offerId?: string
@@ -40,7 +39,6 @@ const OfferBreadcrumb = ({
   className,
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const { logEvent } = useAnalytics()
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId, false)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
@@ -51,7 +49,6 @@ const OfferBreadcrumb = ({
   if (activeStep == OfferBreadcrumbStep.CONFIRMATION && !isOfferEducational)
     return <></>
   if (
-    useSummaryPage &&
     !isCreatingOffer &&
     activeStep == OfferBreadcrumbStep.SUMMARY &&
     !isOfferEducational
@@ -97,22 +94,19 @@ const OfferBreadcrumb = ({
               label: 'Visibilité',
             },
           }
-        : {}),
-      ...(!isOfferEducational && useSummaryPage
-        ? {
+        : {
             [OfferBreadcrumbStep.SUMMARY]: {
               id: OfferBreadcrumbStep.SUMMARY,
               label: 'Récapitulatif',
             },
-          }
-        : {}),
+          }),
       [OfferBreadcrumbStep.CONFIRMATION]: {
         id: OfferBreadcrumbStep.CONFIRMATION,
         label: 'Confirmation',
       },
     }
 
-    if (useSummaryPage && offerId) {
+    if (offerId) {
       stepList[
         OfferBreadcrumbStep.DETAILS
       ].url = `/offre/${offerId}/individuel/creation`

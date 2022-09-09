@@ -17,7 +17,6 @@ import {
   loadFakeApiStocks,
   loadFakeApiVenue,
 } from 'utils/fakeApi'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 describe('offer step', () => {
   describe('in creation mode', () => {
@@ -74,7 +73,7 @@ describe('offer step', () => {
 
 describe('stocks step', () => {
   describe('in creation mode', () => {
-    it('should display breadcrumb without link', async () => {
+    it('should display breadcrumb with link', async () => {
       // Given
       const offer = offerFactory({
         status: 'DRAFT',
@@ -91,14 +90,15 @@ describe('stocks step', () => {
       // Then
       const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
-      expect(detailTab).not.toHaveAttribute('href')
-      const stockTab = queryByTextTrimHtml(screen, 'Stocks et prix', {
-        selector: 'li',
-        leafOnly: false,
+      expect(detailTab).toHaveAttribute('href')
+      const stockTab = await screen.findByText('Stocks et prix', {
+        selector: 'a',
       })
       expect(stockTab).toBeInTheDocument()
-      expect(stockTab).not.toHaveAttribute('href')
-      expect(stockTab).toHaveClass('active')
+      expect(stockTab).toHaveAttribute('href')
+      expect(await screen.getByTestId('breadcrumb-step-stocks')).toHaveClass(
+        'active'
+      )
       const confirmationTab = screen.getByText('Confirmation')
       expect(confirmationTab).toBeInTheDocument()
       expect(confirmationTab).not.toHaveAttribute('href')

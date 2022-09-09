@@ -6,6 +6,7 @@ import {
   IOfferIndividual,
   IOfferSubCategory,
 } from 'core/Offers/types'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useGetOfferIndividualVenues } from 'core/Venue'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
@@ -92,9 +93,7 @@ const useGetData = (
 
     return {
       isLoading: false,
-      loadingError:
-        loadingError?.message ||
-        'Une erreur est survenu lors de la récupération des données',
+      loadingError: loadingError?.message || GET_DATA_ERROR_MESSAGE,
     }
   }
 
