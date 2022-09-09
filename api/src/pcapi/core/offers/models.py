@@ -106,8 +106,6 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "mediation"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     credit = sa.Column(sa.String(255), nullable=True)
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
@@ -624,8 +622,6 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 class ActivationCode(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "activation_code"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     code: str = sa.Column(sa.Text, nullable=False)
 
     expirationDate = sa.Column(sa.DateTime, nullable=True, default=None)
@@ -649,8 +645,6 @@ class ActivationCode(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
 class OfferValidationConfig(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offer_validation_config"
-
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -727,8 +721,6 @@ class OfferReport(PcObject, Base, Model):  # type: ignore [valid-type, misc]
             name="custom_reason_null_only_if_reason_is_other",
         ),
     )
-
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 

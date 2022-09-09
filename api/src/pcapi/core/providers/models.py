@@ -36,8 +36,6 @@ from pcapi.models.providable_mixin import ProvidableMixin
 
 
 class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
-    id: int = Column(BigInteger, primary_key=True)
-
     name: str = Column(String(90), index=True, nullable=False)
 
     localClass = Column(

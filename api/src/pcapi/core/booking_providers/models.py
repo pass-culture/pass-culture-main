@@ -20,16 +20,12 @@ class BookingProviderName(enum.Enum):
 
 
 class BookingProvider(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id: int = Column(BigInteger, primary_key=True)
-
     name: BookingProviderName = Column(Enum(BookingProviderName), nullable=False)
 
     apiUrl: str = Column(String, nullable=False)
 
 
 class VenueBookingProvider(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id: int = Column(BigInteger, primary_key=True)
-
     isActive: bool = Column(Boolean, nullable=False, default=True)
 
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)

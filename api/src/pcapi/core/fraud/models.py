@@ -404,8 +404,6 @@ class FraudCheckStatus(enum.Enum):
 class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_check"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow
     )
