@@ -9,7 +9,9 @@ import sqlalchemy as sa
 from pcapi import settings
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -751,3 +753,137 @@ def search_venue(terms: typing.Iterable[str], order_by: list[str] | None = None)
         venues = venues.order_by(models.Venue.id)
 
     return venues
+
+
+def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
+    bank_informations_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+        sa.select(
+            sa.case(
+                (
+                    sa.or_(  # type: ignore[type-var]
+                        offerers_models.VenueReimbursementPointLink.id == None,
+                        sa.not_(offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow())),
+                    ),
+                    "ko",
+                ),
+                else_="ok",
+            ).label("status"),
+            sa.func.count(offerers_models.Venue.id).label("number"),
+        )
+        .select_from(offerers_models.Venue)
+        .outerjoin(
+            offerers_models.VenueReimbursementPointLink,
+            offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
+        )
+        .filter(
+            offerers_models.Venue.managingOffererId == offerer_id,
+        )
+        .group_by(sa.text("status"))
+        .subquery()
+    )
+    is_collective_eligible_query = (
+        sa.select(offerers_models.Venue)
+        .filter(
+            offerers_models.Venue.managingOffererId == offerer_id,
+            sa.not_(offerers_models.Venue.venueEducationalStatusId.is_(None)),
+        )
+        .exists()
+    )
+    offerer_query = sa.select(
+        offerers_models.Offerer.id,
+        offerers_models.Offerer.name,
+        offerers_models.Offerer.isActive,
+        offerers_models.Offerer.siren,
+        offerers_models.Offerer.postalCode,
+        bank_informations_query.scalar_subquery().label("bank_informations"),
+        is_collective_eligible_query.label("is_collective_eligible"),
+    ).filter(offerers_models.Offerer.id == offerer_id)
+
+    offerer = db.session.execute(offerer_query).one_or_none()
+
+    return offerer
+
+
+def get_offerer_total_revenue(offerer_id: int) -> float:
+    individual_revenue_query = sa.select(
+        sa.func.coalesce(
+            sa.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity),
+            0.0,
+        )
+    ).filter(
+        bookings_models.Booking.offererId == offerer_id,
+        bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED.value,
+    )
+    collective_revenue_query = (
+        sa.select(
+            sa.func.coalesce(
+                sa.func.sum(educational_models.CollectiveStock.price),
+                0.0,
+            )
+        )
+        .select_from(
+            educational_models.CollectiveBooking,
+        )
+        .join(
+            educational_models.CollectiveStock,
+            onclause=educational_models.CollectiveStock.id == educational_models.CollectiveBooking.collectiveStockId,
+        )
+        .filter(
+            educational_models.CollectiveBooking.offererId == offerer_id,
+            educational_models.CollectiveBooking.status != bookings_models.BookingStatus.CANCELLED.value,
+        )
+    )
+
+    total_revenue_query = sa.select(
+        individual_revenue_query.scalar_subquery() + collective_revenue_query.scalar_subquery()
+    )
+
+    return db.session.execute(total_revenue_query).scalar() or 0.0
+
+
+def get_offerer_offers_stats(offerer_id: int) -> sa.engine.Row:
+    individual_offers_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+        sa.select(
+            sa.case(
+                [
+                    (offers_models.Offer.isActive.is_(True), "active"),
+                    (offers_models.Offer.isActive.is_(False), "inactive"),
+                ]
+            ).label("status"),
+            sa.func.count(offers_models.Offer.id).label("number"),
+        )
+        .select_from(offerers_models.Venue)
+        .outerjoin(offers_models.Offer)
+        .filter(
+            offerers_models.Venue.managingOffererId == offerer_id,
+            offers_models.Offer.validation == offers_models.OfferValidationStatus.APPROVED.value,
+        )
+        .group_by(offers_models.Offer.isActive)
+        .subquery()
+    )
+    collective_offers_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+        sa.select(
+            sa.case(
+                [
+                    (educational_models.CollectiveOffer.isActive.is_(True), "active"),
+                    (educational_models.CollectiveOffer.isActive.is_(False), "inactive"),
+                ]
+            ).label("status"),
+            sa.func.count(educational_models.CollectiveOffer.id).label("number"),
+        )
+        .select_from(offerers_models.Venue)
+        .outerjoin(educational_models.CollectiveOffer)
+        .filter(
+            offerers_models.Venue.managingOffererId == offerer_id,
+            educational_models.CollectiveOffer.validation == offers_models.OfferValidationStatus.APPROVED.value,
+        )
+        .group_by(educational_models.CollectiveOffer.isActive)
+        .subquery()
+    )
+
+    offers_stats_query = sa.select(
+        individual_offers_query.scalar_subquery().label("individual_offers"),
+        collective_offers_query.label("collective_offers"),
+    )
+
+    return db.session.execute(offers_stats_query).one_or_none()
