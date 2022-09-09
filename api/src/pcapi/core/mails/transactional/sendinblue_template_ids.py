@@ -60,19 +60,19 @@ class TransactionalEmail(Enum):
         id_prod=385,
         id_not_prod=40,
         tags=["jeunes_document_etranger"],
-        use_priority_queue=True,
+        use_priority_queue=False,
     )
     SUBSCRIPTION_INFORMATION_ERROR = models.Template(
         id_prod=410,
         id_not_prod=43,
         tags=["jeunes_infos_erronees"],
-        use_priority_queue=True,
+        use_priority_queue=False,
     )
     SUBSCRIPTION_INVALID_DOCUMENT_ERROR = models.Template(
         id_prod=384,
         id_not_prod=39,
         tags=["jeunes_document_invalide"],
-        use_priority_queue=True,
+        use_priority_queue=False,
     )
     SUBSCRIPTION_NOT_AUTHENTIC_DOCUMENT_ERROR = models.Template(
         id_prod=760,
@@ -87,7 +87,7 @@ class TransactionalEmail(Enum):
         id_prod=304,
         id_not_prod=38,
         tags=["jeunes_document_illisible"],
-        use_priority_queue=True,
+        use_priority_queue=False,
     )
     USER_REQUEST_DELETE_ACCOUNT_RECEPTION = models.Template(
         id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
