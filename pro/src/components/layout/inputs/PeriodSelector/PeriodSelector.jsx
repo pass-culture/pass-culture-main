@@ -52,6 +52,13 @@ const PeriodSelector = ({
               openToDate={periodBeginningDate ? periodBeginningDate : todayDate}
               placeholderText="JJ/MM/AAAA"
               selected={periodBeginningDate}
+              popperPlacement="bottom-start"
+              popperModifiers={[
+                {
+                  name: 'flip',
+                  enabled: false,
+                },
+              ]}
             />
           </div>
           <span className="vertical-bar" />
@@ -80,6 +87,13 @@ const PeriodSelector = ({
               placeholderText="JJ/MM/AAAA"
               ref={endDateInput}
               selected={periodEndingDate}
+              popperPlacement="bottom-start"
+              popperModifiers={[
+                {
+                  name: 'flip',
+                  enabled: false,
+                },
+              ]}
             />
           </div>
         </div>
