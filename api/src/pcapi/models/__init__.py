@@ -29,7 +29,6 @@ def install_models() -> None:
     import pcapi.models.beneficiary_import
     import pcapi.models.beneficiary_import_status
     import pcapi.models.feature
-    import pcapi.models.user_session
 
 
 _engine_options = {

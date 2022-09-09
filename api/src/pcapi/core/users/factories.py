@@ -18,7 +18,6 @@ from pcapi.core.testing import BaseFactory
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
-from pcapi.models import user_session
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -291,7 +290,7 @@ class EmailValidationTokenFactory(TokenFactory):
 
 class UserSessionFactory(BaseFactory):
     class Meta:
-        model = user_session.UserSession
+        model = models.UserSession
 
     uuid = factory.LazyFunction(uuid.uuid4)
 

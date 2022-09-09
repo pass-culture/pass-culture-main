@@ -1,25 +1,18 @@
 import pytest
 
-from pcapi.core.users import factories as users_factories
-from pcapi.models.user_session import UserSession
-
-from tests.conftest import TestClient
+import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 
 
-class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
-    def expect_the_existing_user_session_to_be_deleted_deleted(self, app):
-        # given
-        user = users_factories.ProFactory(email="test@mail.com")
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+@pytest.mark.usefixtures("db_session")
+def test_existing_user_session_to_be_deleted(client):
+    user = users_factories.ProFactory()
 
-        assert auth_request.get("/venues").status_code == 200
+    client = client.with_session_auth(email=user.email)
+    assert users_models.UserSession.query.filter_by(userId=user.id).count() == 1
 
-        # when
-        response = auth_request.get("/users/signout")
+    response = client.get("/users/signout")
 
-        # then
-        assert response.status_code == 200
-        assert response.json == {"global": "Déconnecté"}
-        session = UserSession.query.filter_by(userId=user.id).first()
-        assert session is None
+    assert response.status_code == 200
+    assert response.json == {"global": "Déconnecté"}
+    assert users_models.UserSession.query.filter_by(userId=user.id).count() == 0

@@ -7,6 +7,7 @@ from decimal import Decimal
 import enum
 from operator import attrgetter
 import typing
+from uuid import UUID
 
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -686,3 +687,8 @@ class UserSuspension(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     # Reason is filled in only when suspended but could be useful also when unsuspended for support traceability
     reasonCode = sa.Column(sa.Enum(SuspensionReason), nullable=True)
+
+
+class UserSession(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+    userId: int = sa.Column(sa.BigInteger, nullable=False)
+    uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)

@@ -18,7 +18,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
-from pcapi.models.user_session import UserSession
 
 
 def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
@@ -91,7 +90,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     offers_models.OfferValidationConfig.query.delete()
     users_models.UserSuspension.query.delete()
     users_models.User.query.delete()
-    UserSession.query.delete()
+    users_models.UserSession.query.delete()
     providers_models.Provider.query.delete()
     offerers_models.VenueType.query.delete()
     offerers_models.VenueLabel.query.delete()
