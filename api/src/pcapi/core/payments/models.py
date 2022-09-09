@@ -193,6 +193,7 @@ class GrantedDeposit:
 class RecreditType(enum.Enum):
     RECREDIT_16 = "Recredit16"
     RECREDIT_17 = "Recredit17"
+    MANUAL_MODIFICATION = "ManualModification"
 
 
 class Recredit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
@@ -208,3 +209,5 @@ class Recredit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         sa.Enum(RecreditType, native_enum=False, create_constraint=False),
         nullable=False,
     )
+
+    comment = sa.Column(sa.Text, nullable=True)
