@@ -1,6 +1,5 @@
 import logging
 
-from flask import abort
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -15,7 +14,6 @@ from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -88,8 +86,7 @@ def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     try:
         check_offer_withdrawal(body.withdrawal_type, body.withdrawal_delay, body.subcategory_id)
-        save_as_active = not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active()
-        offer = offers_api.create_offer(offer_data=body, user=current_user, save_as_active=save_as_active)
+        offer = offers_api.create_offer(offer_data=body, user=current_user)
 
     except exceptions.OfferCreationBaseException as error:
         raise ApiErrors(
@@ -108,9 +105,6 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
     api=blueprint.pro_private_schema,
 )
 def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> None:
-    if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active():
-        abort(404, "Cette fonctionnalité est en cours de développement")
-
     try:
         offerer = offerers_repository.get_by_offer_id(body.id)
     except offerers_exceptions.CannotFindOffererForOfferId:

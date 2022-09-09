@@ -104,7 +104,6 @@ class FeatureToggle(enum.Enum):
     # old webapp.
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
     OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
-    OFFER_FORM_SUMMARY_PAGE = "Afficher la page de récapitulatif de l'offre dans le formulaire V2"
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )

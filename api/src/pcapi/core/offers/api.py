@@ -124,7 +124,6 @@ def list_offers_for_pro_user(
 def create_offer(
     offer_data: PostOfferBodyModel,
     user: User,
-    save_as_active: bool = True,
 ) -> Offer:
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [attr-defined]
@@ -136,7 +135,6 @@ def create_offer(
         offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)
 
     _complete_common_offer_fields(offer, offer_data, venue)
-    offer.isActive = save_as_active
 
     repository.save(offer)
 
@@ -207,6 +205,7 @@ def _complete_common_offer_fields(
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
     offer.validation = OfferValidationStatus.DRAFT
+    offer.isActive = False
 
 
 def _check_offer_data_is_valid(
@@ -603,10 +602,6 @@ def upsert_stocks(
 
     repository.save(*stocks, *activation_codes)
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
-    if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active():
-        if offer.validation == OfferValidationStatus.DRAFT:
-            update_offer_fraud_information(offer, user)
-
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
         if stock.beginningDatetime != previous_beginning:
@@ -614,7 +609,7 @@ def upsert_stocks(
             _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
 
-    if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active() or edited_stocks:
+    if edited_stocks:
         search.async_index_offer_ids([offer.id])
 
     return stocks
