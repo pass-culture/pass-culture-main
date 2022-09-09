@@ -761,11 +761,12 @@ def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
         stock.idAtProviders = new_id_at_providers
         stocks_to_update.append(stock)
 
-    logger.warning(
-        "The following stocks are already migrated from old siret to new siret: [%s]",
-        stock_ids_already_migrated,
-        extra={"venueId": venue.id, "current_siret": venue.siret, "old_siret": old_siret},
-    )
+    if stock_ids_already_migrated:
+        logger.warning(
+            "The following stocks are already migrated from old siret to new siret: [%s]",
+            stock_ids_already_migrated,
+            extra={"venueId": venue.id, "current_siret": venue.siret, "old_siret": old_siret},
+        )
 
     repository.save(*stocks_to_update)
 
