@@ -19,20 +19,20 @@ from pcapi.utils.stopwords import STOPWORDS
 
 logger = logging.getLogger(__name__)
 
-# FIXME (dbaty, 2021-10-15): these are all lists, which are less
-# usable for us than sets. See also `redis_lpop()` below, which we
-# would not have to implement if we were using sets (because `SPOP`
-# does allow to pop multiple items at once with our Redis version).
-REDIS_LIST_OFFER_IDS_NAME = "offer_ids"
-REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = "offer_ids_in_error"
-REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME = "venue_ids_for_offers"
+
+REDIS_OFFER_IDS_NAME = "search:algolia:offer_ids"
+REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer_ids_in_error"
+REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue_ids_for_offers"
+
 REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index"
+REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index"
+
 REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX = "search:algolia:collective-offer-ids-to-index"
 REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX = "search:algolia:collective-offer-template-ids-to-index"
 REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-ids-in-error-to-index"
 REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-template-ids-in-error-to-index"
-REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index"
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
+
 
 DEFAULT_LONGITUDE = 2.409289
 DEFAULT_LATITUDE = 47.158459
@@ -88,33 +88,19 @@ class AlgoliaBackend(base.SearchBackend):
         self.redis_client = current_app.redis_client  # type: ignore[attr-defined]
 
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
-        if not offer_ids:
-            return
-        try:
-            self.redis_client.rpush(REDIS_LIST_OFFER_IDS_NAME, *offer_ids)
-        except redis.exceptions.RedisError:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception("Could not add offers to indexation queue", extra={"offers": offer_ids})
+        self._enqueue_ids(offer_ids, REDIS_OFFER_IDS_NAME)
 
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
-        if not offer_ids:
-            return
-        try:
-            self.redis_client.rpush(REDIS_LIST_OFFER_IDS_IN_ERROR_NAME, *offer_ids)
-        except redis.exceptions.RedisError:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
+        self._enqueue_ids(offer_ids, REDIS_OFFER_IDS_IN_ERROR_NAME)
 
     def enqueue_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
-        self._enqueue_collective_offer_ids(
+        self._enqueue_ids(
             collective_offer_ids,
             REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX,
         )
 
     def enqueue_collective_offer_ids_in_error(self, collective_offer_ids: Iterable[int]) -> None:
-        self._enqueue_collective_offer_ids(
+        self._enqueue_ids(
             collective_offer_ids,
             REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
         )
@@ -123,7 +109,7 @@ class AlgoliaBackend(base.SearchBackend):
         self,
         collective_offer_template_ids: Iterable[int],
     ) -> None:
-        self._enqueue_collective_offer_template_ids(
+        self._enqueue_ids(
             collective_offer_template_ids,
             REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
         )
@@ -132,132 +118,80 @@ class AlgoliaBackend(base.SearchBackend):
         self,
         collective_offer_template_ids: Iterable[int],
     ) -> None:
-        self._enqueue_collective_offer_template_ids(
+        self._enqueue_ids(
             collective_offer_template_ids,
             REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
         )
 
-    def _enqueue_collective_offer_ids(self, collective_offer_ids: Iterable[int], queue_name: str) -> None:
-        if not collective_offer_ids:
-            return
-        try:
-            self.redis_client.sadd(queue_name, *collective_offer_ids)
-        except redis.exceptions.RedisError:
-            logger.exception(
-                "Could not add collective offers to indexation queue",
-                extra={
-                    "collective_offers": collective_offer_ids,
-                    "queue": queue_name,
-                },
-            )
-
-    def _enqueue_collective_offer_template_ids(
-        self, collective_offer_template_ids: Iterable[int], queue_name: str
-    ) -> None:
-        if not collective_offer_template_ids:
-            return
-        try:
-            self.redis_client.sadd(queue_name, *collective_offer_template_ids)
-        except redis.exceptions.RedisError:
-            logger.exception(
-                "Could not add collective offer templates to indexation queue",
-                extra={
-                    "collective_offer_templates": collective_offer_template_ids,
-                    "queue": queue_name,
-                },
-            )
-
     def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
-        return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
+        return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
 
     def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
-        return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
+        return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
 
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
-        return self._enqueue_venue_ids_legacy_for_list(venue_ids, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
+        return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_FOR_OFFERS_NAME)
 
-    def _enqueue_venue_ids(self, venue_ids: Iterable[int], queue_name: str) -> None:
-        if not venue_ids:
+    def _enqueue_ids(self, ids: Iterable[int], queue_name: str) -> None:
+        if not ids:
             return
-        try:
-            self.redis_client.sadd(queue_name, *venue_ids)
-        except redis.exceptions.RedisError:
-            logger.exception(
-                "Could not add venues to indexation queue", extra={"venues": venue_ids, "queue": queue_name}
-            )
 
-    def _enqueue_venue_ids_legacy_for_list(self, venue_ids: Iterable[int], queue_name: str) -> None:
-        if not venue_ids:
-            return
         try:
-            self.redis_client.rpush(queue_name, *venue_ids)
+            self.redis_client.sadd(queue_name, *ids)
         except redis.exceptions.RedisError:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception(
-                "Could not add venues to indexation queue", extra={"venues": venue_ids, "queue": queue_name}
-            )
+            logger.exception("Could not add ids to indexation queue", extra={"ids": ids, "queue": queue_name})
 
     def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         if from_error_queue:
-            redis_list_name = REDIS_LIST_OFFER_IDS_IN_ERROR_NAME
+            redis_set_name = REDIS_OFFER_IDS_IN_ERROR_NAME
         else:
-            redis_list_name = REDIS_LIST_OFFER_IDS_NAME
+            redis_set_name = REDIS_OFFER_IDS_NAME
 
-        return self.redis_lpop(redis_list_name, count)
+        return self._pop_ids_from_queue(count, redis_set_name)
 
     def pop_venue_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         if from_error_queue:
             redis_set_name = REDIS_VENUE_IDS_IN_ERROR_TO_INDEX
         else:
             redis_set_name = REDIS_VENUE_IDS_TO_INDEX
-        try:
-            offer_ids = self.redis_client.spop(redis_set_name, count)
-            return {int(offer_id) for offer_id in offer_ids}  # str -> int
-        except redis.exceptions.RedisError:
-            logger.exception("Could not pop offer ids to index from queue", extra={"queue": redis_set_name})
-            return set()
+
+        return self._pop_ids_from_queue(count, redis_set_name)
 
     def pop_collective_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         if from_error_queue:
             redis_set_name = REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX
         else:
             redis_set_name = REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX
-        try:
-            collective_offer_ids = self.redis_client.spop(redis_set_name, count)
-            return {int(collective_offer_id) for collective_offer_id in collective_offer_ids}  # str -> int
-        except redis.exceptions.RedisError:
-            logger.exception(
-                "Could not pop collective offer ids to index from queue",
-                extra={"queue": redis_set_name},
-            )
-            return set()
+
+        return self._pop_ids_from_queue(count, redis_set_name)
 
     def pop_collective_offer_template_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         if from_error_queue:
             redis_set_name = REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX
         else:
             redis_set_name = REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX
-        try:
-            collective_offer_template_ids = self.redis_client.spop(redis_set_name, count)
-            return {int(template_id) for template_id in collective_offer_template_ids}  # str -> int
-        except redis.exceptions.RedisError:
-            logger.exception(
-                "Could not pop collective offer template ids to index from queue",
-                extra={"queue": redis_set_name},
-            )
-            return set()
+
+        return self._pop_ids_from_queue(count, redis_set_name)
 
     def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
-        return self.redis_lpop(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, count)
+        return self._pop_ids_from_queue(count, REDIS_VENUE_IDS_FOR_OFFERS_NAME)
+
+    def _pop_ids_from_queue(self, count: int, queue_name: str) -> set[int]:
+        try:
+            ids = self.redis_client.spop(queue_name, count)
+            return {int(object_id) for object_id in ids}  # str -> int
+        except redis.exceptions.RedisError:
+            logger.exception("Could not pop object ids to index from queue", extra={"queue": queue_name})
+            return set()
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         if from_error_queue:
-            redis_list_name = REDIS_LIST_OFFER_IDS_IN_ERROR_NAME
+            redis_set_name = REDIS_OFFER_IDS_IN_ERROR_NAME
         else:
-            redis_list_name = REDIS_LIST_OFFER_IDS_NAME
+            redis_set_name = REDIS_OFFER_IDS_NAME
+
         try:
-            return self.redis_client.llen(redis_list_name)
+            return self.redis_client.scard(redis_set_name)
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
@@ -282,6 +216,7 @@ class AlgoliaBackend(base.SearchBackend):
             return
         objects = [self.serialize_offer(offer) for offer in offers]
         self.algolia_offers_client.save_objects(objects)
+
         try:
             # We used to store a summary of each offer, which is why
             # we used hashmap and not a set. But since we don't need
@@ -542,39 +477,6 @@ class AlgoliaBackend(base.SearchBackend):
             },
             "isTemplate": True,
         }
-
-    def redis_lpop(self, queue_name: str, count: int) -> set[int]:
-        """
-        Here we can't use `LPOP` because its `count` argument has been
-        added in Redis 6.2. GCP currently has an earlier version of
-        Redis (5.0), where we can pop only one item at once. As a
-        work around, we get and delete items within a pipeline,
-        which should be atomic.
-
-        The error handling is minimal:
-        - if the get fails, the function returns an empty list. It's
-          fine, the next run may have more chance and may work;
-        - if the delete fails, we'll process the same batch
-          twice. It's not optimal, but it's ok.
-        """
-        obj_ids = set()
-
-        try:
-            pipeline = self.redis_client.pipeline(transaction=True)
-
-            pipeline.lrange(queue_name, 0, count - 1)
-            pipeline.ltrim(queue_name, count, -1)
-
-            results = pipeline.execute()
-            obj_ids = {int(obj_id) for obj_id in results[0]}
-        except redis.exceptions.RedisError:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception("Could not pop obj ids to index from queue")
-        finally:
-            pipeline.reset()
-
-        return obj_ids
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:
