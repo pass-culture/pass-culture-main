@@ -14,6 +14,7 @@ def get_subscription_document_error_email_data(code: str) -> models.Transactiona
         "unread-document": TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR,
         "invalid-document": TransactionalEmail.SUBSCRIPTION_INVALID_DOCUMENT_ERROR,
         "unread-mrz-document": TransactionalEmail.SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR,
+        "not-authentic-document": TransactionalEmail.SUBSCRIPTION_NOT_AUTHENTIC_DOCUMENT_ERROR,
     }
     template = error_codes_switch.get(code, TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR)
     return models.TransactionalEmailData(template=template.value)
