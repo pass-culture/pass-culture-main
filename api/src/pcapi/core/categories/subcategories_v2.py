@@ -1047,7 +1047,7 @@ PLATEFORME_PRATIQUE_ARTISTIQUE = Subcategory(
     online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
     is_digital_deposit=True,
     is_physical_deposit=False,
-    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_bookable_by_underage_when_not_free=False,
 )
 LIVESTREAM_PRATIQUE_ARTISTIQUE = Subcategory(
