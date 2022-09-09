@@ -130,6 +130,7 @@ export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
+export type { ProUserCreationBodyModel } from './models/ProUserCreationBodyModel';
 export type { ProviderResponse } from './models/ProviderResponse';
 export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryModel';
 export type { ReimbursementPointListResponseModel } from './models/ReimbursementPointListResponseModel';
