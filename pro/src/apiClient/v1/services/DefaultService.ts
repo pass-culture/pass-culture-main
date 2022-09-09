@@ -60,6 +60,7 @@ import type { PatchProUserResponseModel } from '../models/PatchProUserResponseMo
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
+import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
@@ -1476,6 +1477,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/users/signin',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * signup_pro <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public signupPro(
+    requestBody?: ProUserCreationBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/signup/pro',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
