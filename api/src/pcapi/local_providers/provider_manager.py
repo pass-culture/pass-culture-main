@@ -6,6 +6,7 @@ from urllib3 import exceptions as urllib3_exceptions
 import pcapi.connectors.notion as notion_connector
 from pcapi.core.providers.models import VenueProvider
 import pcapi.core.providers.repository as providers_repository
+from pcapi.infrastructure.repository.stock_provider import provider_api
 import pcapi.local_providers
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.repository import transaction
@@ -40,6 +41,12 @@ def synchronize_venue_providers_for_provider(provider_id: int, limit: int | None
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
             notion_connector.add_to_synchronization_error_database(exception, venue_provider)
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
+        except provider_api.ProviderAPIException as exception:
+            notion_connector.add_to_synchronization_error_database(exception, venue_provider)
+            logger.error(  # pylint: disable=logging-fstring-interpolation
+                f"ProviderAPIException with code {exception.status_code} while synchronizing venue_provider",
+                extra=log_data | {"exc": exception},
+            )
         except Exception as exception:  # pylint: disable=broad-except
             notion_connector.add_to_synchronization_error_database(exception, venue_provider)
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)

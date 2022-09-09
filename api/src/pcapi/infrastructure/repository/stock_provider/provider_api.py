@@ -11,7 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class ProviderAPIException(Exception):
-    pass
+    status_code: int
+
+    def __init__(self, message: str, status_code: int):
+        super().__init__(message)
+        self.status_code = status_code
 
 
 REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND = 60
@@ -39,7 +43,7 @@ class ProviderAPI:
 
         if response.status_code != 200:
             raise ProviderAPIException(
-                f"Error {response.status_code} when getting {self.name} stocks for SIRET: {siret}"
+                f"Error {response.status_code} when getting {self.name} stocks for SIRET: {siret}", response.status_code
             )
 
         if not response.content:
