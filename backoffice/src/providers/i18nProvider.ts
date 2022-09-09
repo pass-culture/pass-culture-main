@@ -9,10 +9,16 @@ export enum LOCALES {
 
 export const initialLocale = LOCALES.FR
 
-export const i18nProvider = polyglotI18nProvider(locale => {
-  if (locale === LOCALES.EN) {
-    return import('../i18n/en').then(messages => messages.default) // for later
+export const i18nProvider = polyglotI18nProvider(
+  locale => {
+    if (locale === LOCALES.EN) {
+      return import('../i18n/en').then(messages => messages.default) // for later
+    }
+    // initial call, must return synchronously
+    return frenchMessages
+  },
+  initialLocale,
+  {
+    allowMissing: true,
   }
-  // initial call, must return synchronously
-  return frenchMessages
-}, initialLocale)
+)
