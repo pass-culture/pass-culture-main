@@ -10,11 +10,15 @@ import { useContext, useEffect, useState } from 'react'
 
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContext } from 'context/analyticsContext'
+import { Events } from 'core/FirebaseEvents/constants'
+
+import useUtmQueryParams from './useUtmQueryParams'
 
 export const useConfigureAnalytics = (currentUserId: string | undefined) => {
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
-  const { setLogEvent } = useAnalytics()
+  const { logEvent, setLogEvent } = useAnalytics()
+  const utmParameters = useUtmQueryParams()
 
   useEffect(() => {
     async function initializeIfNeeded() {
@@ -43,7 +47,10 @@ export const useConfigureAnalytics = (currentUserId: string | undefined) => {
                 | { [key: string]: string | boolean | string[] }
                 | Record<string, never> = {}
             ) => {
-              analyticsLogEvent(getAnalytics(app), event, params)
+              analyticsLogEvent(getAnalytics(app), event, {
+                ...params,
+                ...utmParameters,
+              })
             }
         )
     }
@@ -54,6 +61,11 @@ export const useConfigureAnalytics = (currentUserId: string | undefined) => {
       setUserId(getAnalytics(app), currentUserId)
     }
   }, [app, currentUserId])
+
+  useEffect(() => {
+    if (logEvent && Object.keys(utmParameters).length)
+      logEvent(Events.UTM_TRACKING_CAMPAIGN)
+  }, [logEvent, utmParameters])
 }
 
 function useAnalytics() {
