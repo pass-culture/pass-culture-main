@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import { ALL_STATUS } from 'core/Offers/constants'
 
@@ -13,8 +12,6 @@ export const OffersStatusFiltersModal = ({
   updateStatusFilter,
 }) => {
   const modalRef = useRef(null)
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const publishedLabel = useSummaryPage ? 'Publiée' : 'Active'
 
   const handleStatusFilterChange = useCallback(
     event => {
@@ -65,7 +62,7 @@ export const OffersStatusFiltersModal = ({
       />
       <RadioInput
         checked={status === 'ACTIVE'}
-        label={publishedLabel}
+        label="Publiée"
         name="status"
         onChange={handleStatusFilterChange}
         value="ACTIVE"

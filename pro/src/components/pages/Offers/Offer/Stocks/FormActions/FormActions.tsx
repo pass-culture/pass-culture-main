@@ -1,6 +1,5 @@
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import { SubmitButton } from 'ui-kit'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -22,8 +21,6 @@ const FormActions = ({
   onSubmit,
   onCancelClick,
 }: IFormActionsProps): JSX.Element => {
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-
   return (
     <>
       {cancelUrl && (
@@ -41,11 +38,7 @@ const FormActions = ({
         isLoading={isSubmiting}
         onClick={onSubmit}
       >
-        {isDraft
-          ? useSummaryPage
-            ? 'Étape suivante'
-            : 'Valider et créer l’offre'
-          : 'Enregistrer les modifications'}
+        {isDraft ? 'Étape suivante' : 'Enregistrer les modifications'}
       </SubmitButton>
     </>
   )

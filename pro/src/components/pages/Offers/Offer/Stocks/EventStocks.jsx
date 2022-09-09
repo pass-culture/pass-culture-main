@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -54,7 +53,6 @@ const EventStocks = ({
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
   const { logEvent } = useAnalytics()
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const history = useHistory()
   const location = useLocation()
   const summaryStepUrl = isOfferDraft
@@ -171,7 +169,7 @@ const EventStocks = ({
   }
 
   const onCancelClick = () => {
-    if (isOfferDraft && !useSummaryPage) return
+    if (isOfferDraft) return
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.STOCKS,
       to: OfferBreadcrumbStep.DETAILS,
@@ -216,11 +214,6 @@ const EventStocks = ({
             }
             if (isOfferDraft) {
               await reloadOffer(true)
-              if (!useSummaryPage) {
-                await showSuccessNotification(
-                  'Votre offre a bien été créée et vos stocks sauvegardés.'
-                )
-              }
 
               logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OfferBreadcrumbStep.STOCKS,
@@ -228,11 +221,6 @@ const EventStocks = ({
                 used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
                 isEdition: !isOfferDraft,
               })
-              history.push(
-                useSummaryPage
-                  ? `${summaryStepUrl}${queryString}`
-                  : `/offre/${offer.id}/individuel/creation/confirmation${queryString}`
-              )
             } else {
               await loadStocks()
               await reloadOffer()
@@ -240,10 +228,8 @@ const EventStocks = ({
                 'Vos modifications ont bien été enregistrées'
               )
               setIsSendingStocksOfferCreation(false)
-              if (useSummaryPage) {
-                history.push(`${summaryStepUrl}${queryString}`)
-              }
             }
+            history.push(`${summaryStepUrl}${queryString}`)
           })
           .catch(() => {
             showErrorNotification()
@@ -276,9 +262,7 @@ const EventStocks = ({
   const hasNoStock = stocks.length === 0
   const hasAtLeastOneStock = stocks.length > 0
   const cancelUrl = isOfferDraft
-    ? useSummaryPage
-      ? `/offre/${offerId}/individuel/creation`
-      : undefined
+    ? `/offre/${offerId}/individuel/creation`
     : computeOffersUrl(offersSearchFilters, offersPageNumber)
   let providerName = offer.lastProvider?.name || null
 

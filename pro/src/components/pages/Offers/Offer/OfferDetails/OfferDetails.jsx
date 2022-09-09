@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -48,7 +47,6 @@ const OfferDetails = ({
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
   const [thumbnailMsgError, setThumbnailMsgError] = useState('')
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const { logEvent } = useAnalytics()
 
   const {
@@ -164,14 +162,12 @@ const OfferDetails = ({
           setFormErrors({})
           setThumbnailError(false)
           setThumbnailMsgError('')
-          if (useSummaryPage) {
-            if (isCreatingOffer) {
-              return Promise.resolve(() => goToStockAndPrice(offer.id))
-            } else {
-              return Promise.resolve(() =>
-                history.push(`/offre/${offer.id}/individuel/recapitulatif`)
-              )
-            }
+          if (isCreatingOffer) {
+            return Promise.resolve(() => goToStockAndPrice(offer.id))
+          } else {
+            return Promise.resolve(() =>
+              history.push(`/offre/${offer.id}/individuel/recapitulatif`)
+            )
           }
         } else {
           const response = await pcapi.createOffer(offerValues)

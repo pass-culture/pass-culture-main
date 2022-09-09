@@ -1,6 +1,5 @@
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_ACTIVE,
@@ -28,7 +27,7 @@ export const OFFER_STATUS_PROPERTIES: Record<
   [OFFER_STATUS_ACTIVE]: {
     className: 'status-active',
     icon: 'ico-status-validated',
-    label: 'active',
+    label: 'publiée',
   },
   [OFFER_STATUS_REJECTED]: {
     className: 'status-rejected',
@@ -51,9 +50,6 @@ type StatusLabelProps = {
   status: string
 }
 const StatusLabel = ({ status }: StatusLabelProps) => {
-  if (useActiveFeature('OFFER_FORM_SUMMARY_PAGE')) {
-    OFFER_STATUS_PROPERTIES[OFFER_STATUS_ACTIVE].label = 'publiée'
-  }
   return (
     <span
       className={`op-offer-status ${OFFER_STATUS_PROPERTIES[status]?.className}`}

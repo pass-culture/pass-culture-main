@@ -40,6 +40,7 @@ const Breadcrumb = ({
           <li
             className={`bc-step ${isActive ? 'active' : ''}`}
             key={`breadcrumb-step-${step.id}`}
+            data-testid={`breadcrumb-step-${step.id}`}
           >
             <span className="bcs-label" key={`breadcrumb-step-${step.id}`}>
               {step.url ? (
