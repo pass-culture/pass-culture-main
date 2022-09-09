@@ -64,11 +64,11 @@ class Subcategory(subcategories_v2.Subcategory):
         if self.search_group_name not in [s.name for s in SearchGroups]:
             raise ValueError("search_group_name can only be one of SearchGroups")
         if self.homepage_label_name not in [h.name for h in HomepageLabels]:
-            raise ValueError("search_group_name can only be one of HomepageLabels")
+            raise ValueError("homepage_label_name can only be one of HomepageLabels")
         if self.online_offline_platform not in [o.value for o in OnlineOfflinePlatformChoices]:
             raise ValueError("online_offline_platform can only be one of OnlineOfflinePlatformChoices")
         if self.reimbursement_rule not in [r.value for r in ReimbursementRuleChoices]:
-            raise ValueError("online_offline_platform can only be one of ReimbursementRuleChoices")
+            raise ValueError("reimbursement_rule can only be one of ReimbursementRuleChoices")
 
     @classmethod
     def from_new(cls, base: subcategories_v2.Subcategory, updated_fields: dict) -> "Subcategory":
