@@ -116,6 +116,9 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
         transactional_mails.send_subscription_document_error_email(user.email, "invalid-document")
 
+    elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
+        transactional_mails.send_subscription_document_error_email(user.email, "not-authentic-document")
+
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
         transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 

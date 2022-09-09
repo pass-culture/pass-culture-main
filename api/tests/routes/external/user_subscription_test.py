@@ -2040,7 +2040,8 @@ class UbbleWebhookTest:
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
-        assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
 
     def test_decision_document_not_authentic_no_retry_left(self, client, ubble_mocker):
         user, ubble_fraud_check, request_data = self._init_decision_test()
@@ -2114,7 +2115,8 @@ class UbbleWebhookTest:
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
 
-        assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
 
     @pytest.mark.parametrize(
         "expiry_score", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
