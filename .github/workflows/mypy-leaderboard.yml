@@ -1,0 +1,62 @@
+name: Mypy leaderboard
+
+on:
+  pull_request:
+    branches:
+      - master
+      - not-master-for-tests
+    types: [closed]
+    paths:
+      - "api/src/**"
+
+jobs:
+  get_mypy_score_on_merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    outputs:
+      mypy_score: ${{ steps.mypy-score-calculator.outputs.mypy_score }}
+      author: ${{ steps.mypy-score-calculator.outputs.author }}
+      hash: ${{ steps.mypy-score-calculator.outputs.hash }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+      - name: Calculate mypy diff
+        id: mypy-score-calculator
+        run: |
+          cd api
+          head_before_merge="${{ github.event.pull_request.base.sha}}"
+          head_after_merge="${{ github.event.pull_request.merge_commit_sha}}"
+          head_after_merge_ignore_count="$(grep "type: ignore" -r src | wc -l)"
+          author_line="$(git log -n 1 --pretty=short | grep Author)"
+          author="$(echo "$author_line" | cut -d ':' -f 2 | xargs)"
+          hash="$(git log -n 1 --pretty=format:'%H')"
+          git checkout $head_before_merge --quiet
+          head_before_merge_ignore_count="$(grep "type: ignore" -r src | wc -l)"
+          git checkout - --quiet
+          diff=$(($head_before_merge_ignore_count - $head_after_merge_ignore_count))
+          echo "::set-output name=mypy_score::$diff"
+          echo "::set-output name=author::$author"
+          echo "::set-output name=hash::$hash"
+
+  send_info:
+    runs-on: ubuntu-latest
+    needs: get_mypy_score_on_merge
+    steps:
+      - name: Call cloud function
+        id: call-cloud-function
+        run: |
+          curl --location --request POST 'https://us-central1-maposaic-99785.cloudfunctions.net/mypy-leaderboard' \
+          --header 'Authorization: ${{ secrets.MYPY_LEADERBOARD_FUNCTION_AUTHORIZATION }}' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "commitHash": "${{ needs.get_mypy_score_on_merge.outputs.hash }}",
+              "author": "${{ needs.get_mypy_score_on_merge.outputs.author }}",
+              "mypyDiff": ${{ needs.get_mypy_score_on_merge.outputs.mypy_score }}
+          }'
+          res=$?
+          if test "$res" != "0"; then
+            echo "the curl command failed with: $res"
+            exit "$res"
+          fi
