@@ -3,6 +3,7 @@ import decimal
 import json
 import logging
 from operator import or_
+import typing
 from typing import Iterable
 from typing import cast
 
@@ -274,15 +275,10 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
 
 def create_educational_institution(
     institution_id: str,
-    institution_data: dict[str, str],
+    institution_data: dict[str, typing.Any],
 ) -> educational_models.EducationalInstitution:
     educational_institution = educational_models.EducationalInstitution(
-        institutionId=institution_id,
-        name=institution_data["name"],
-        city=institution_data["city"],
-        postalCode=institution_data["postalCode"],
-        email=institution_data["email"],
-        phoneNumber=institution_data["phoneNumber"],
+        institutionId=institution_id, **institution_data
     )
     repository.save(educational_institution)
 
@@ -290,17 +286,13 @@ def create_educational_institution(
 
 
 def update_educational_institution_data(
-    institution_id: str, institution_data: dict[str, str]
+    institution_id: str, institution_data: dict[str, typing.Any]
 ) -> educational_models.EducationalInstitution:
     educational_institution = educational_models.EducationalInstitution.query.filter_by(
         institutionId=institution_id
     ).one()
-    educational_institution.name = institution_data["name"]
-    educational_institution.city = institution_data["city"]
-    educational_institution.postalCode = institution_data["postalCode"]
-    educational_institution.email = institution_data["email"]
-    educational_institution.phoneNumber = institution_data["phoneNumber"]
-
+    for key, value in institution_data.items():
+        setattr(educational_institution, key, value)
     return educational_institution
 
 
