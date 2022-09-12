@@ -4,7 +4,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import sanitize_email
+from pcapi.utils.email import sanitize_email
 
 
 def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]

@@ -11,7 +11,6 @@ from pydantic.class_validators import validator
 
 from pcapi.core.users import models as user_models
 from pcapi.core.users.utils import decode_jwt_token
-from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.password import check_password_strength
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
@@ -20,6 +19,7 @@ from pcapi.serialization.utils import validate_not_empty_string_when_provided
 from pcapi.serialization.utils import validate_phone_number_format
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.email import sanitize_email
 
 
 class PatchProUserBodyModel(BaseModel):

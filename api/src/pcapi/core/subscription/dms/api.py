@@ -17,11 +17,11 @@ from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import messages
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
-from pcapi.core.users import utils as users_utils
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
 import pcapi.repository as pcapi_repository
 from pcapi.repository import repository
+import pcapi.utils.email as email_utils
 
 from . import repository as dms_repository
 
@@ -114,7 +114,7 @@ def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse,
 ) -> fraud_models.BeneficiaryFraudCheck | None:
     application_number = dms_application.number
-    user_email = users_utils.sanitize_email(dms_application.profile.email)
+    user_email = email_utils.sanitize_email(dms_application.profile.email)
     application_scalar_id = dms_application.id
     state = dms_application.state
     procedure_number = dms_application.procedure.number
