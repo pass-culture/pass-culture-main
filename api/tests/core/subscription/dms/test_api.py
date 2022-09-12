@@ -17,6 +17,7 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.repository import repository
 
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 from tests.scripts.beneficiary.fixture import make_single_application
@@ -464,6 +465,7 @@ class HandleDmsApplicationTest:
         assert fraud_check.reason is None
 
 
+@pytest.mark.usefixtures("db_session")
 class HandleDmsAnnotationsTest:
     @pytest.mark.parametrize(
         "field_errors,birth_date_error,expected_annotation",
@@ -501,6 +503,7 @@ class HandleDmsAnnotationsTest:
 
     @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
     def test_update_application_annotations(self, mock_update_annotations):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.DMS)
         dms_subscription_api._update_application_annotations(
             "St1l3s",
             fraud_factories.DMSContentFactory(
@@ -511,10 +514,17 @@ class HandleDmsAnnotationsTest:
                 )
             ),
             birth_date_error=None,
+            fraud_check=fraud_check,
         )
+        repository.save(fraud_check)
 
         mock_update_annotations.assert_called_once_with(
             "St1l3s", "AnnotationId", "Aucune erreur détectée. Le dossier peut être passé en instruction."
+        )
+        assert fraud_check.resultContent["annotation"]["label"] == "AN_001: Some label"
+        assert (
+            fraud_check.resultContent["annotation"]["text"]
+            == "Aucune erreur détectée. Le dossier peut être passé en instruction."
         )
 
     @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
@@ -529,6 +539,7 @@ class HandleDmsAnnotationsTest:
                 )
             ),
             birth_date_error=None,
+            fraud_check=fraud_factories.BeneficiaryFraudCheckFactory(),
         )
 
         mock_update_annotations.assert_not_called()
@@ -540,6 +551,7 @@ class HandleDmsAnnotationsTest:
             "St1l3s",
             dms_content,
             birth_date_error=None,
+            fraud_check=fraud_factories.BeneficiaryFraudCheckFactory(),
         )
 
         mock_update_annotations.assert_not_called()
