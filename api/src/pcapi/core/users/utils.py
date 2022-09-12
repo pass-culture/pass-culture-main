@@ -38,10 +38,6 @@ def decode_jwt_token_rs256(jwt_token: str) -> dict:
     return payload
 
 
-def sanitize_email(email: str) -> str:
-    return email.strip().lower()
-
-
 def get_age_at_date(birth_date: date | datetime, specified_datetime: datetime) -> int:
     return max(0, relativedelta(specified_datetime, birth_date).years)
 

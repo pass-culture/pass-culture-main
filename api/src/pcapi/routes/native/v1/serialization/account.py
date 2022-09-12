@@ -31,13 +31,13 @@ from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.utils import decode_jwt_token
-from pcapi.core.users.utils import sanitize_email
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.email import sanitize_email
 
 
 class AccountRequest(BaseModel):

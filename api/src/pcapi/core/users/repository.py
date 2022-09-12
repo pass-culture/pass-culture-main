@@ -9,11 +9,11 @@ from sqlalchemy.sql.functions import func
 import pcapi.core.offerers.models as offerers_models
 from pcapi.repository import repository
 from pcapi.utils import crypto
+import pcapi.utils.email as email_utils
 
 from . import constants
 from . import exceptions
 from . import models
-from . import utils
 
 
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def get_user_by_id(user_id: int) -> models.User:
 def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]
     # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
     # all emails have been sanitized in the database.
-    return models.User.query.filter(func.lower(models.User.email) == utils.sanitize_email(email))
+    return models.User.query.filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
 
 
 def find_user_by_email(email: str) -> models.User | None:

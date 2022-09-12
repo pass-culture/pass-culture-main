@@ -44,13 +44,13 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
+from pcapi.utils.email import sanitize_email
 from pcapi.utils.token import random_token
 
 

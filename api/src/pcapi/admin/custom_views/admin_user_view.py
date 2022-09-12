@@ -14,7 +14,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users import api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import sanitize_email
+from pcapi.utils.email import sanitize_email
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
