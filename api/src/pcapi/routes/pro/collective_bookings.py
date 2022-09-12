@@ -9,6 +9,7 @@ from flask_login import login_required
 
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.educational import api as collective_api
+from pcapi.core.educational import exceptions as collective_exceptions
 from pcapi.core.educational import repository as collective_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -65,6 +66,22 @@ def get_collective_bookings_pro(
         pages=int(math.ceil(total_collective_bookings / per_page_limit)),  # type: ignore [operator]
         total=total_collective_bookings,
     )
+
+
+@private_api.route("/collective/bookings/<booking_id>", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=collective_bookings_serialize.CollectiveBookingByIdResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_collective_booking_by_id(booking_id: str) -> collective_bookings_serialize.CollectiveBookingByIdResponseModel:
+    dehumanized_id = dehumanize_or_raise(booking_id)
+    try:
+        booking = collective_api.get_collective_booking_by_id(dehumanized_id)
+    except collective_exceptions.EducationalBookingNotFound:
+        ApiErrors({"offerer": ["Réservation collective non trouvée."]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, booking.offererId)
+    return collective_bookings_serialize.CollectiveBookingByIdResponseModel.from_orm(booking)
 
 
 @blueprint.pro_private_api.route("/collective/bookings/csv", methods=["GET"])

@@ -9,12 +9,13 @@ from pydantic import root_validator
 import xlsxwriter
 
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveBookingStatusFilter
+from pcapi.core.educational import models
 from pcapi.core.educational.repository import COLLECTIVE_BOOKING_STATUS_LABELS
 from pcapi.core.educational.repository import CollectiveBookingNamedTuple
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
+from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_timezoned_date
@@ -35,7 +36,7 @@ class ListCollectiveBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: int | None
     event_date: str | None
-    booking_status_filter: CollectiveBookingStatusFilter | None
+    booking_status_filter: models.CollectiveBookingStatusFilter | None
     booking_period_beginning_date: str | None
     booking_period_ending_date: str | None
 
@@ -104,15 +105,15 @@ class ListCollectiveBookingsResponseModel(BaseModel):
         alias_generator = to_camel
 
 
-def _get_booking_status(status: CollectiveBookingStatus, is_confirmed: bool) -> str:
+def _get_booking_status(status: models.CollectiveBookingStatus, is_confirmed: bool) -> str:
     cancellation_limit_date_exists_and_past = is_confirmed
-    if cancellation_limit_date_exists_and_past and status == CollectiveBookingStatus.CONFIRMED:
+    if cancellation_limit_date_exists_and_past and status == models.CollectiveBookingStatus.CONFIRMED:
         return COLLECTIVE_BOOKING_STATUS_LABELS["confirmed"]
     return COLLECTIVE_BOOKING_STATUS_LABELS[status]
 
 
 def build_status_history(
-    booking_status: CollectiveBookingStatus,
+    booking_status: models.CollectiveBookingStatus,
     booking_date: datetime,
     cancellation_date: datetime | None,
     cancellation_limit_date: datetime | None,
@@ -122,13 +123,13 @@ def build_status_history(
     is_confirmed: bool | None,
 ) -> list[BookingStatusHistoryResponseModel]:
 
-    if booking_status == CollectiveBookingStatus.PENDING:
+    if booking_status == models.CollectiveBookingStatus.PENDING:
         serialized_booking_status_history = [
             _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.pending, booking_date)
         ]
         return serialized_booking_status_history
 
-    if booking_status == CollectiveBookingStatus.CANCELLED and not (confirmation_date or booking_date):
+    if booking_status == models.CollectiveBookingStatus.CANCELLED and not (confirmation_date or booking_date):
         serialized_booking_status_history = [
             _serialize_collective_booking_status_info(CollectiveBookingRecapStatus.cancelled, cancellation_date)
         ]
@@ -198,13 +199,13 @@ def serialize_collective_booking_redactor(
 def _serialize_collective_booking_recap_status(
     collective_booking: CollectiveBookingNamedTuple,
 ) -> CollectiveBookingRecapStatus:
-    if collective_booking.status == CollectiveBookingStatus.PENDING:
+    if collective_booking.status == models.CollectiveBookingStatus.PENDING:
         return CollectiveBookingRecapStatus.pending
-    if collective_booking.status == CollectiveBookingStatus.REIMBURSED:
+    if collective_booking.status == models.CollectiveBookingStatus.REIMBURSED:
         return CollectiveBookingRecapStatus.reimbursed
-    if collective_booking.status == CollectiveBookingStatus.CANCELLED:
+    if collective_booking.status == models.CollectiveBookingStatus.CANCELLED:
         return CollectiveBookingRecapStatus.cancelled
-    if collective_booking.status == CollectiveBookingStatus.USED:
+    if collective_booking.status == models.CollectiveBookingStatus.USED:
         return CollectiveBookingRecapStatus.validated
     if collective_booking.isConfirmed:
         return CollectiveBookingRecapStatus.confirmed
@@ -316,3 +317,39 @@ def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
 
     workbook.close()
     return output.getvalue()
+
+
+class CollectiveBookingEducationalRedactorResponseModel(BaseModel):
+    id: int
+    email: str
+    civility: str | None
+    firstName: str | None
+    lastName: str | None
+
+    class Config:
+        orm_mode = True
+
+
+class CollectiveBookingByIdResponseModel(BaseModel):
+    id: int
+    offerVenue: CollectiveOfferOfferVenueResponseModel
+    beginningDatetime: datetime
+    students: list[models.StudentLevels]
+    price: int
+    educationalInstitution: EducationalInstitutionResponseModel
+    educationalRedactor: CollectiveBookingEducationalRedactorResponseModel
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, booking: models.CollectiveBooking) -> "CollectiveBookingByIdResponseModel":
+        return cls(
+            id=booking.id,
+            offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,
+            beginningDatetime=booking.collectiveStock.beginningDatetime,
+            students=booking.collectiveStock.collectiveOffer.students,
+            price=booking.collectiveStock.price,
+            educationalInstitution=booking.educationalInstitution,
+            educationalRedactor=booking.educationalRedactor,
+        )

@@ -1075,3 +1075,18 @@ def synchronize_adage_ids_on_venues() -> None:
         venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
 
     db.session.commit()
+
+
+def get_collective_booking_by_id(booking_id: int) -> educational_models.CollectiveBooking:
+    query = educational_models.CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).joinedload(
+            educational_models.CollectiveStock.collectiveOffer
+        ),
+        sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor),
+        sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
+    )
+    collective_booking = query.one_or_none()
+    if not collective_booking:
+        raise exceptions.EducationalBookingNotFound()
+    return collective_booking
