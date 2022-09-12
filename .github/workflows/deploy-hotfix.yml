@@ -15,6 +15,7 @@ on:
 jobs:
   tag-version:
     uses: ./.github/workflows/tag.yml
+    secrets: inherit
     with:
       base_ref: ${{ github.event.inputs.hotfixBranch }}
       tag_number: ${{ github.event.inputs.releaseVersion }}

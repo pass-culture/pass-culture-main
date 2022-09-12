@@ -66,3 +66,11 @@ jobs:
         # In case the base ref is a branch (hotfix workflow for example)
         run: |
           git push origin "${{ inputs.base_ref }}"
+
+  build-and-push-docker-images:
+    uses: ./.github/workflows/build-and-push-docker-images.yml
+    needs: tag-version
+    secrets: inherit
+    with:
+      ref: v${{ inputs.tag_number }}
+      tag: v${{ inputs.tag_number }}

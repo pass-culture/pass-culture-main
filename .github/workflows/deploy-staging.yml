@@ -16,6 +16,7 @@ on:
 jobs:
   tag-version:
     uses: ./.github/workflows/tag.yml
+    secrets: inherit
     with:
       base_ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
       tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
