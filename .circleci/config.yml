@@ -280,7 +280,7 @@ commands:
           name: Setup sentry credentials for Backoffice
           command: |
             echo "[defaults]" >> ~/.sentryclirc
-            echo "url=https://sentry.internal-passculture.app/" >> ~/.sentryclirc
+            echo "url=https://sentry.passculture.team/" >> ~/.sentryclirc
             echo "org=sentry" >> ~/.sentryclirc
             echo "project=backoffice" >> ~/.sentryclirc
             echo "" >> ~/.sentryclirc
