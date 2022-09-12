@@ -479,7 +479,7 @@ class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type
 
     institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
-    institutionType = sa.Column(sa.String(80), nullable=True)
+    institutionType = sa.Column(sa.String(80), nullable=False)
 
     name: str = sa.Column(sa.Text(), nullable=False)
 
