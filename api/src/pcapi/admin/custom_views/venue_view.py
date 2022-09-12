@@ -271,7 +271,9 @@ class VenueView(BaseAdminView):
             if hasattr(new_venue_form, field) and getattr(new_venue_form, field).data != getattr(venue, field)
         }
 
-        if str(new_venue_form.adageId.data) != venue.adageId:
+        if (new_venue_form.adageId.data and str(new_venue_form.adageId.data) != venue.adageId) or (
+            new_venue_form.adageId.data is None and venue.adageId
+        ):
             emails = offerers_repository.get_emails_by_venue(venue)
             for email in emails:
                 update_external_pro(email)
