@@ -196,7 +196,7 @@ def handle_dms_application(
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
 
-    _update_application_annotations(application_scalar_id, application_content, birth_date_error)
+    _update_application_annotations(application_scalar_id, application_content, birth_date_error, fraud_check)
 
     pcapi_repository.repository.save(fraud_check)
     return fraud_check
@@ -206,6 +206,7 @@ def _update_application_annotations(
     application_scalar_id: str,
     application_content: fraud_models.DMSContent,
     birth_date_error: fraud_models.DmsFieldErrorDetails | None,
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> None:
     annotation = application_content.annotation
     if not annotation:
@@ -224,6 +225,11 @@ def _update_application_annotations(
             application_content.application_number,
             extra={"error": str(exc), "application_scalar_id": application_scalar_id},
         )
+        return
+    new_annotation = fraud_models.DmsAnnotation(id=annotation.id, label=annotation.label, text=new_annotation_value)
+    fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
+    fraud_check_content.annotation = new_annotation
+    fraud_check.resultContent = fraud_check_content.dict()
 
 
 def _compute_new_annotation(
