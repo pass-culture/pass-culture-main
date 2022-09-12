@@ -247,7 +247,8 @@ def _send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
 @log_cron_with_transaction
 def clean_past_draft_offers() -> None:
     """Deletes past offers and past collective offers that are in draft status"""
-    delete_past_draft_offers()
+    if not FeatureToggle.OFFER_DRAFT_ENABLED.is_active():
+        delete_past_draft_offers()
     delete_past_draft_collective_offers()
 
 
