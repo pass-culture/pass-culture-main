@@ -40,7 +40,7 @@ describe('OfferIndividual section: OptionDuo', () => {
       onSubmit,
     })
     expect(
-      screen.getByRole('heading', { name: 'Réservations “Duo“' })
+      screen.getByRole('heading', { name: 'Réservations “duo“' })
     ).toBeInTheDocument()
 
     expect(
@@ -59,7 +59,7 @@ describe('OfferIndividual section: OptionDuo', () => {
       onSubmit,
     })
     expect(
-      screen.queryByRole('heading', { name: 'Réservations “Duo“' })
+      screen.queryByRole('heading', { name: 'Réservations “duo“' })
     ).not.toBeInTheDocument()
     expect(
       screen.queryByLabelText('Accepter les réservations "duo"', {
