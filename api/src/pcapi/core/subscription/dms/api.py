@@ -232,12 +232,13 @@ def _compute_new_annotation(
 ) -> str:
     annotation = ""
     if birth_date_error:
-        annotation += f"{FIELD_ERROR_LABELS.get(birth_date_error.key)} ({birth_date_error.value}) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n"
+        annotation += f"{FIELD_ERROR_LABELS.get(birth_date_error.key)} ({birth_date_error.value}) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans). "
 
     if field_errors:
-        annotation += "Champs invalides :\n"
-        for field_error in field_errors:
-            annotation += f"- {FIELD_ERROR_LABELS.get(field_error.key)}: {field_error.value}\n"
+        annotation += "Champs invalides: "
+        annotation += ", ".join(
+            f"{FIELD_ERROR_LABELS.get(field_error.key)} ({field_error.value})" for field_error in field_errors
+        )
 
     if not annotation:
         annotation = "Aucune erreur détectée. Le dossier peut être passé en instruction."

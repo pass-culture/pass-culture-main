@@ -472,14 +472,14 @@ class HandleDmsAnnotationsTest:
             (
                 [],
                 fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
-                "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n",
+                "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans). ",
             ),
             (
                 [fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.first_name, value="/taylor")],
                 fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
                 (
-                    "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans)\n"
-                    "Champs invalides :\n- Le prénom: /taylor\n"
+                    "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans). "
+                    "Champs invalides: Le prénom (/taylor)"
                 ),
             ),
             (
@@ -492,9 +492,7 @@ class HandleDmsAnnotationsTest:
                     ),
                 ],
                 None,
-                (
-                    "Champs invalides :\n- Le prénom: /taylor\n- La date de naissance: trente juillet deux mille quatre\n"
-                ),
+                ("Champs invalides: Le prénom (/taylor), La date de naissance (trente juillet deux mille quatre)"),
             ),
         ],
     )
