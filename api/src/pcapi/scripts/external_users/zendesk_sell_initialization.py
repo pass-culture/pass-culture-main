@@ -1,17 +1,21 @@
 import argparse
+import gc
 import time
 
 import requests
-
-from pcapi.core.offerers import models as offerers_models
-from pcapi.core.users.external import zendesk_sell
-from pcapi.models.feature import FeatureToggle
 
 
 ##
 # The DRY option is in order to test the script before making irreversible action to the CRM
 # #
 def run_initialization(dry: bool = True) -> None:  # By default it's just printing and logging
+    from pcapi.core.offerers import models as offerers_models
+    from pcapi.core.users.external import zendesk_sell
+    from pcapi.models.feature import FeatureToggle
+
+    session = zendesk_sell.configure_session()
+
+    CHUNK_SIZE = 50
 
     server_errors = 0
     offerer_more_than_one = 0
@@ -29,12 +33,15 @@ def run_initialization(dry: bool = True) -> None:  # By default it's just printi
 
     offerers = offerers_models.Offerer.query.all()
 
-    for offerer in offerers:
-        parent_organization_id = None
+    for index_offerer, offerer in enumerate(offerers):
+        if index_offerer % CHUNK_SIZE == 0:
+            collected = gc.collect()
+            print(f" => Offerers collected {collected}")
+        parent_organization_id = zendesk_sell.SEARCH_PARENT
         if zendesk_sell.is_offerer_only_virtual(offerer):
             continue
         try:
-            zendesk_offerer_data = zendesk_sell.get_offerer_by_id(offerer)
+            zendesk_offerer_data = zendesk_sell.get_offerer_by_id(offerer, session=session)
             time.sleep(0.1)
         except zendesk_sell.ContactFoundMoreThanOneError as e:
             offerer_more_than_one += 1
@@ -50,7 +57,7 @@ def run_initialization(dry: bool = True) -> None:  # By default it's just printi
             if not dry:
                 if FeatureToggle.ENABLE_ZENDESK_SELL_CREATION.is_active():
                     try:
-                        zendesk_offerer_data = zendesk_sell.zendesk_create_offerer(offerer)
+                        zendesk_offerer_data = zendesk_sell.zendesk_create_offerer(offerer, session=session)
                         time.sleep(0.1)
                     except requests.exceptions.HTTPError as http_error:
                         print("--Server Error creating Offerer--", str(http_error), str(http_error.response))
@@ -71,13 +78,16 @@ def run_initialization(dry: bool = True) -> None:  # By default it's just printi
             if not dry:
                 offerer_zendesk_id = zendesk_offerer_data["id"]
                 try:
-                    zendesk_offerer_data = zendesk_sell.zendesk_update_offerer(offerer_zendesk_id, offerer)
+                    zendesk_offerer_data = zendesk_sell.zendesk_update_offerer(
+                        offerer_zendesk_id, offerer, session=session
+                    )
                     time.sleep(0.1)
                 except requests.exceptions.HTTPError as http_error:
                     print("--Server Error updating Offerer--", str(http_error), str(http_error.response))
                     server_errors += 1
                 else:
-                    parent_organization_id = zendesk_offerer_data["id"]
+                    print(f"{offerer} updated")
+                    parent_organization_id = offerer_zendesk_id
                     updated_offerer_ids.append(parent_organization_id)
             else:
                 updated_offerer_ids.append(offerer.id)
@@ -88,7 +98,7 @@ def run_initialization(dry: bool = True) -> None:  # By default it's just printi
             if venue.isVirtual or not venue.isPermanent:
                 continue
             try:
-                zendesk_venue_data = zendesk_sell.get_venue_by_id(venue)
+                zendesk_venue_data = zendesk_sell.get_venue_by_id(venue, session=session)
                 time.sleep(0.1)
             except zendesk_sell.ContactFoundMoreThanOneError as e:
                 venue_more_than_one += 1
@@ -104,7 +114,9 @@ def run_initialization(dry: bool = True) -> None:  # By default it's just printi
                 if not dry:
                     if FeatureToggle.ENABLE_ZENDESK_SELL_CREATION.is_active():
                         try:
-                            zendesk_venue_data = zendesk_sell.zendesk_create_venue(venue, parent_organization_id)
+                            zendesk_venue_data = zendesk_sell.zendesk_create_venue(
+                                venue, parent_organization_id, session=session
+                            )
                             time.sleep(0.1)
                         except requests.exceptions.HTTPError as http_error:
                             print("--Server Error creating Venue--", str(http_error), str(http_error.response))
@@ -121,16 +133,17 @@ def run_initialization(dry: bool = True) -> None:  # By default it's just printi
             else:
                 venue_found += 1
                 if not dry:
+                    zendesk_venue_id = zendesk_venue_data["id"]
                     try:
                         zendesk_venue_data = zendesk_sell.zendesk_update_venue(
-                            zendesk_venue_data["id"], venue, parent_organization_id
+                            zendesk_venue_id, venue, parent_organization_id, session=session
                         )
                         time.sleep(0.1)
                     except requests.exceptions.HTTPError as http_error:
                         print("--Server Error updating Venue--", str(http_error), str(http_error.response))
                         server_errors += 1
                     else:
-                        updated_venue_ids.append(zendesk_venue_data["id"])
+                        updated_venue_ids.append(zendesk_venue_id)
                         print(f"    {venue} updated")
                 else:
                     updated_venue_ids.append(venue.id)
@@ -168,6 +181,5 @@ if __name__ == "__main__":
         "--no-dry-run", "-n", help="deactivate the dry run mode", dest="dry_run", action="store_false", default=True
     )
     args = parser.parse_args()
-
     with app.app_context():
         run_initialization(args.dry_run)
