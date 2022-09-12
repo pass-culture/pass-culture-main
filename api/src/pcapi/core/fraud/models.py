@@ -36,15 +36,15 @@ IDENTITY_CHECK_TYPES = [FraudCheckType.JOUVE, FraudCheckType.DMS, FraudCheckType
 
 
 class FraudStatus(enum.Enum):
-    OK = "OK"
     KO = "KO"
-    SUSPICIOUS = "SUSPICIOUS"
+    OK = "OK"
     SUBSCRIPTION_ON_HOLD = "SUBSCRIPTION_ON_HOLD"  # todo : find a name
+    SUSPICIOUS = "SUSPICIOUS"
 
 
 class FraudReviewStatus(enum.Enum):
-    OK = "OK"
     KO = "KO"
+    OK = "OK"
     REDIRECTED_TO_DMS = "REDIRECTED_TO_DMS"
 
 
@@ -98,32 +98,32 @@ def _parse_jouve_datetime(date: str | None) -> datetime.datetime | None:
 
 class EduconnectContent(common_models.IdentityCheckContent):
     birth_date: datetime.date
+    civility: users_models.GenderEnum | None
     educonnect_id: str
     first_name: str
-    civility: users_models.GenderEnum | None
     ine_hash: str
     last_name: str
     registration_datetime: datetime.datetime
     school_uai: str | None
     student_level: str | None
 
-    def get_registration_datetime(self) -> datetime.datetime:
-        return self.registration_datetime
-
-    def get_first_name(self) -> str:
-        return self.first_name
+    def get_birth_date(self) -> datetime.date:
+        return self.birth_date
 
     def get_civility(self) -> str | None:
         return self.civility.value if self.civility else None
 
-    def get_last_name(self) -> str:
-        return self.last_name
-
-    def get_birth_date(self) -> datetime.date:
-        return self.birth_date
+    def get_first_name(self) -> str:
+        return self.first_name
 
     def get_ine_hash(self) -> str | None:
         return self.ine_hash
+
+    def get_last_name(self) -> str:
+        return self.last_name
+
+    def get_registration_datetime(self) -> datetime.datetime:
+        return self.registration_datetime
 
 
 class JouveContent(common_models.IdentityCheckContent):
@@ -135,17 +135,17 @@ class JouveContent(common_models.IdentityCheckContent):
     bodyBirthDateLevel: int | None
     bodyFirstnameCtrl: str | None
     bodyFirstnameLevel: int | None
-    bodyNameLevel: int | None
     bodyNameCtrl: str | None
+    bodyNameLevel: int | None
     bodyPieceNumber: str | None
     bodyPieceNumberCtrl: str | None
     bodyPieceNumberLevel: int | None
     city: str | None
     creatorCtrl: str | None
-    id: int
     email: str | None
     firstName: str | None
     gender: str | None
+    id: int
     initialNumberCtrl: str | None
     initialSizeCtrl: str | None
     lastName: str | None
@@ -155,18 +155,21 @@ class JouveContent(common_models.IdentityCheckContent):
     registrationDate: datetime.datetime | None
     serviceCodeCtrl: str | None
 
+    _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_jouve_date)
     _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_first_name_level = validator("bodyFirstnameLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_jouve_date)
     _parse_registration_date = validator("registrationDate", pre=True, allow_reuse=True)(_parse_jouve_datetime)
 
-    def get_registration_datetime(self) -> datetime.datetime | None:
-        return self.registrationDate
+    def get_birth_date(self) -> datetime.date | None:
+        return self.birthDateTxt.date() if self.birthDateTxt else None
 
     def get_first_name(self) -> str | None:
         return self.firstName
+
+    def get_id_piece_number(self) -> str | None:
+        return self.bodyPieceNumber
 
     def get_last_name(self) -> str | None:
         return self.lastName
@@ -174,11 +177,8 @@ class JouveContent(common_models.IdentityCheckContent):
     def get_married_name(self) -> None:
         return None
 
-    def get_birth_date(self) -> datetime.date | None:
-        return self.birthDateTxt.date() if self.birthDateTxt else None
-
-    def get_id_piece_number(self) -> str | None:
-        return self.bodyPieceNumber
+    def get_registration_datetime(self) -> datetime.datetime | None:
+        return self.registrationDate
 
 
 class DmsAnnotation(pydantic.BaseModel):
@@ -203,6 +203,7 @@ class DmsFieldErrorDetails(pydantic.BaseModel):
 class DMSContent(common_models.IdentityCheckContent):
     activity: str | None
     address: str | None
+    annotation: DmsAnnotation | None
     application_number: int = pydantic.Field(..., alias="application_id")  # keep alias for old data
     birth_date: datetime.date | None
     city: str | None
@@ -221,19 +222,9 @@ class DMSContent(common_models.IdentityCheckContent):
     processed_datetime: datetime.datetime | None
     registration_datetime: datetime.datetime | None
     state: str | None
-    annotation: DmsAnnotation | None
 
     class Config:
         allow_population_by_field_name = True
-
-    def get_birth_date(self) -> datetime.date | None:
-        return self.birth_date
-
-    def get_first_name(self) -> str:
-        return self.first_name
-
-    def get_last_name(self) -> str:
-        return self.last_name
 
     def get_activity(self) -> str | None:
         return self.activity
@@ -241,14 +232,26 @@ class DMSContent(common_models.IdentityCheckContent):
     def get_address(self) -> str | None:
         return self.address
 
+    def get_birth_date(self) -> datetime.date | None:
+        return self.birth_date
+
     def get_civility(self) -> str | None:
         return self.civility.value if self.civility else None
 
     def get_city(self) -> str | None:
         return self.city
 
+    def get_first_name(self) -> str:
+        return self.first_name
+
     def get_id_piece_number(self) -> str | None:
         return self.id_piece_number
+
+    def get_last_name(self) -> str:
+        return self.last_name
+
+    def get_latest_modification_datetime(self) -> datetime.datetime | None:
+        return self.latest_modification_datetime
 
     def get_phone_number(self) -> str | None:
         return self.phone
@@ -259,48 +262,45 @@ class DMSContent(common_models.IdentityCheckContent):
     def get_registration_datetime(self) -> datetime.datetime | None:
         return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
 
-    def get_latest_modification_datetime(self) -> datetime.datetime | None:
-        return self.latest_modification_datetime
-
 
 class UserProfilingRiskRating(enum.Enum):
-    TRUSTED = "trusted"
-    NEUTRAL = "neutral"
+    HIGH = "high"
     LOW = "low"
     MEDIUM = "medium"
-    HIGH = "high"
+    NEUTRAL = "neutral"
+    TRUSTED = "trusted"
 
 
 class UserProfilingFraudData(pydantic.BaseModel):
-    account_email: str
     account_email_first_seen: datetime.date | None
     account_email_result: str
     account_email_score: int | None
-    account_telephone_result: str | None  # Optional because Phone Validation may be disabled by FF
+    account_email: str
     account_telephone_first_seen: datetime.date | None
-    account_telephone_score: int | None
     account_telephone_is_valid: str | None  # Optional because Phone Validation may be disabled by FF
+    account_telephone_result: str | None  # Optional because Phone Validation may be disabled by FF
+    account_telephone_score: int | None
     bb_bot_rating: str
     bb_bot_score: float
     bb_fraud_rating: str
     bb_fraud_score: float
     device_id: str | None
-    digital_id: str
-    digital_id_result: str
-    digital_id_trust_score: float
-    digital_id_trust_score_rating: str
-    digital_id_trust_score_reason_code: typing.List[str]
     digital_id_confidence: int
     digital_id_confidence_rating: str
+    digital_id_result: str
+    digital_id_trust_score_rating: str
+    digital_id_trust_score_reason_code: typing.List[str]
+    digital_id_trust_score: float
+    digital_id: str
     event_datetime: datetime.datetime
     policy_score: int
     reason_code: typing.List[str]
     request_id: str
     risk_rating: UserProfilingRiskRating
     session_id: str
+    summary_risk_score: int
     tmx_risk_rating: str
     tmx_summary_reason_code: typing.List[str] | None
-    summary_risk_score: int
     unknown_session: str | None
 
 
@@ -315,17 +315,17 @@ IdCheckContent = typing.TypeVar(
 
 
 class InternalReviewSource(enum.Enum):
-    SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
-    PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
-    PHONE_ALREADY_EXISTS = "phone_already_exists"
     BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
     DOCUMENT_VALIDATION_ERROR = "document_validation_error"
+    PHONE_ALREADY_EXISTS = "phone_already_exists"
+    PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
+    SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
 
 
 class PhoneValidationFraudData(pydantic.BaseModel):
-    source: InternalReviewSource | None  # legacy field, still present in database
     message: str | None  # legacy field, still present in database
     phone_number: str | None
+    source: InternalReviewSource | None  # legacy field, still present in database
 
 
 class ProfileCompletionContent(pydantic.BaseModel):
@@ -353,29 +353,29 @@ FRAUD_CONTENT_MAPPING = {type: cls for cls, type in FRAUD_CHECK_MAPPING.items()}
 
 
 class FraudReasonCode(enum.Enum):
-    ALREADY_BENEFICIARY = "already_beneficiary"
-    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
     AGE_NOT_VALID = "age_is_not_valid"
     AGE_TOO_OLD = "age_too_old"
     AGE_TOO_YOUNG = "age_too_young"
+    ALREADY_BENEFICIARY = "already_beneficiary"
+    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
     BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
     DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
     DUPLICATE_INE = "duplicate_ine"
     DUPLICATE_USER = "duplicate_user"
-    EMAIL_NOT_VALIDATED = "email_not_validated"
     ELIGIBILITY_CHANGED = "eligibility_changed"
+    EMAIL_NOT_VALIDATED = "email_not_validated"
     EMPTY_ID_PIECE_NUMBER = "empty_id_piece_number"
     ERROR_IN_DATA = "error_in_data"
+    ID_CHECK_BLOCKED_OTHER = "id_check_bocked_other"
     ID_CHECK_DATA_MATCH = "id_check_data_match"
     ID_CHECK_EXPIRED = "id_check_expired"
     ID_CHECK_INVALID = "id_check_invalid"
-    ID_CHECK_BLOCKED_OTHER = "id_check_bocked_other"
     ID_CHECK_NOT_AUTHENTIC = "id_check_not_authentic"
     ID_CHECK_NOT_SUPPORTED = "id_check_not_supported"
     ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
+    INE_NOT_WHITELISTED = "ine_not_whitelisted"  # the value is kept because it still exists in the database
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
     INVALID_PHONE_COUNTRY_CODE = "invalid_phone_country_code"
-    INE_NOT_WHITELISTED = "ine_not_whitelisted"  # the value is kept because it still exists in the database
     MISSING_REQUIRED_DATA = "missing_required_data"
     NAME_INCORRECT = "name_incorrect"
     NOT_ELIGIBLE = "not_eligible"
@@ -392,13 +392,13 @@ class FraudReasonCode(enum.Enum):
 #  il faudra probablement en supprimer un quand le refacto du parcours
 #  d'inscription sera terminé
 class FraudCheckStatus(enum.Enum):
-    KO = "ko"
-    OK = "ok"
-    STARTED = "started"
-    SUSPICIOUS = "suspiscious"
-    PENDING = "pending"
     CANCELED = "canceled"
     ERROR = "error"
+    KO = "ko"
+    OK = "ok"
+    PENDING = "pending"
+    STARTED = "started"
+    SUSPICIOUS = "suspiscious"
 
 
 class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type, misc]
@@ -407,43 +407,26 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow
     )
-
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")  # type: ignore [misc]
-
-    type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
-
-    thirdPartyId: str = sa.Column(sa.TEXT(), nullable=False)
-
-    resultContent = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
-
-    status = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
-
-    reason = sa.Column(sa.Text, nullable=True)
-
-    reasonCodes = sa.Column(
-        postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
-        nullable=True,
-    )
-
     # The eligibility is null when the user is not eligible
     eligibilityType = sa.Column(
         sa.Enum(users_models.EligibilityType, create_constraint=False),
         nullable=True,
     )
-
     idPicturesStored = sa.Column(
         sa.Boolean(),
         nullable=True,
     )
-
-    def source_data(self) -> common_models.IdentityCheckContent | UserProfilingFraudData:
-        if self.type not in FRAUD_CHECK_MAPPING:
-            raise NotImplementedError(f"Cannot unserialize type {self.type}")
-        if self.resultContent is None:
-            raise ValueError("No source data associated with this fraud check")
-        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type]
+    reason = sa.Column(sa.Text, nullable=True)
+    reasonCodes = sa.Column(
+        postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
+        nullable=True,
+    )
+    resultContent = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
+    status = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
+    thirdPartyId: str = sa.Column(sa.TEXT(), nullable=False)
+    type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")  # type: ignore [misc]
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
@@ -461,6 +444,13 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
             return min(self.dateCreated, registration_datetime)
         return self.dateCreated
 
+    def source_data(self) -> common_models.IdentityCheckContent | UserProfilingFraudData:
+        if self.type not in FRAUD_CHECK_MAPPING:
+            raise NotImplementedError(f"Cannot unserialize type {self.type}")
+        if self.resultContent is None:
+            raise ValueError("No source data associated with this fraud check")
+        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type]
+
     @property
     def applicable_eligibilities(self) -> list[users_models.EligibilityType]:
         if (
@@ -469,46 +459,38 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
             and self.eligibilityType == users_models.EligibilityType.UNDERAGE
         ):
             return [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]
-
         return [self.eligibilityType] if self.eligibilityType else []
 
 
 class OrphanDmsApplication(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
+    application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
     dateCreated = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow
     )  # no sql default because the column was added after table creation
+    email = sa.Column(sa.Text, nullable=True, index=True)
     latest_modification_datetime = sa.Column(
         sa.DateTime, nullable=True
     )  # This field copies the value provided in the DMS application
-    email = sa.Column(sa.Text, nullable=True, index=True)
-    application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
     process_id = sa.Column(sa.BigInteger)
 
 
 class BeneficiaryFraudReview(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_review"
-
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews"))  # type: ignore [misc]
-
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-
     author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")  # type: ignore [misc]
-
-    review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
-
     dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-
     reason = sa.Column(sa.Text)
+    review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews"))  # type: ignore [misc]
 
 
 @dataclasses.dataclass
 class FraudItem:
-    status: FraudStatus
     detail: str
+    status: FraudStatus
     reason_code: FraudReasonCode | None = None
 
     def __bool__(self) -> bool:

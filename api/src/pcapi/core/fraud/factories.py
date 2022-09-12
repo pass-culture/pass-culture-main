@@ -59,20 +59,20 @@ class DMSContentFactory(factory.Factory):
     class Meta:
         model = models.DMSContent
 
-    last_name = factory.Faker("last_name")
-    first_name = factory.Faker("first_name")
-    civility = users_models.GenderEnum.F
-    annotation = None
-    email = factory.Faker("ascii_safe_email")
-    application_number = factory.Faker("pyint")
-    procedure_number = factory.Faker("pyint")
-    departement = factory.Sequence("{}".format)
-    birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())
-    phone = factory.Sequence("+33612{:06}".format)
-    postal_code = "75008"
     activity = "Étudiant"
     address = factory.Faker("address")
+    annotation = None
+    application_number = factory.Faker("pyint")
+    birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())
+    civility = users_models.GenderEnum.F
+    departement = factory.Sequence("{}".format)
+    email = factory.Faker("ascii_safe_email")
+    first_name = factory.Faker("first_name")
     id_piece_number = factory.Sequence(lambda _: "".join(random.choices(string.digits, k=12)))
+    last_name = factory.Faker("last_name")
+    phone = factory.Sequence("+33612{:06}".format)
+    postal_code = "75008"
+    procedure_number = factory.Faker("pyint")
     registration_datetime = LazyAttribute(
         lambda _: datetime.utcnow().replace(tzinfo=pytz.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
     )
