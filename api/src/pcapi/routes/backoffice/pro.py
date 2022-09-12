@@ -40,7 +40,11 @@ def search_pro(
             )
             response_payload_type = serialization.OffererPayload
         case "venue":
-            raise ApiErrors(errors={"type": ["La recherche par lieu n'est pas encore implémentée."]})
+            paginated = offerers_api.search_venue(terms, order_by=sorts).paginate(
+                page=query.page,
+                per_page=query.perPage,
+            )
+            response_payload_type = serialization.VenuePayload
         case _:
             raise ApiErrors(errors={"type": ["Le type de ressource est invalide."]})
 
@@ -54,9 +58,9 @@ def search_pro(
             sort=query.sort,
             data=[
                 serialization.ProResult(
-                    resourceType=query.type, id=account.id, payload=response_payload_type.from_orm(account)
+                    resourceType=query.type, id=item.id, payload=response_payload_type.from_orm(item)
                 )
-                for account in paginated.items
+                for item in paginated.items
             ],
         ),
     )
