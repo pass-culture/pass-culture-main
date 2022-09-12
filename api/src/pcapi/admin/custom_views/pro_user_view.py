@@ -24,7 +24,7 @@ import pcapi.core.users.api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import sanitize_email
+from pcapi.utils.email import sanitize_email
 from pcapi.utils.mailing import build_pc_pro_create_password_link
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 

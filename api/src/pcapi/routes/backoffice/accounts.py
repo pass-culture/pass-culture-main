@@ -16,9 +16,9 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email.update import request_email_update_from_admin
-from pcapi.core.users.utils import sanitize_email
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.email import sanitize_email
 
 from . import blueprint
 from . import serialization

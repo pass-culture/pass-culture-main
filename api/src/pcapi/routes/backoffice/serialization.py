@@ -8,9 +8,9 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models
-from pcapi.core.users.utils import sanitize_email
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils.email import sanitize_email
 
 
 class Permission(BaseModel):

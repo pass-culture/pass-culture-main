@@ -3,7 +3,6 @@ import logging
 import secrets
 import typing
 
-import email_validator
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
@@ -16,7 +15,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
-from pcapi.core.users import utils as users_utils
 import pcapi.core.users.external as users_external
 from pcapi.core.users.external import zendesk_sell
 import pcapi.core.users.models as users_models
@@ -33,6 +31,7 @@ from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 import pcapi.utils.db as db_utils
+import pcapi.utils.email as email_utils
 
 from . import exceptions
 from . import models
@@ -704,17 +703,12 @@ def search_venue(terms: typing.Iterable[str], order_by: list[str] | None = None)
                 term_filters.append(models.Venue.siret == term)
 
         # email
-        sanitized_term = users_utils.sanitize_email(term)
-        try:
-            email_validator.validate_email(sanitized_term, check_deliverability=False)
-        except email_validator.EmailNotValidError:
-            pass  # term can't be an email address
-        else:
+        sanitized_term = email_utils.sanitize_email(term)
+        if email_utils.is_valid_email(sanitized_term):
             term_filters.append(models.Venue.bookingEmail == sanitized_term)
             term_filters.append(models.VenueContact.email == sanitized_term)
-
-        # search for all emails @domain.ext
-        if sanitized_term.startswith("@"):
+        elif email_utils.is_valid_email_domain(sanitized_term):
+            # search for all emails @domain.ext
             term_filters.append(models.Venue.bookingEmail.like(f"%{sanitized_term}"))
             term_filters.append(models.VenueContact.email.like(f"%{sanitized_term}"))
 

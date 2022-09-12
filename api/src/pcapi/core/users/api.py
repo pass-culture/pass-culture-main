@@ -7,7 +7,6 @@ import secrets
 import typing
 
 from dateutil.relativedelta import relativedelta
-import email_validator
 from flask_jwt_extended import create_access_token
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -37,6 +36,7 @@ from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
 from pcapi.utils import db as db_utils
 from pcapi.utils import phone_number as phone_number_utils
+import pcapi.utils.email as email_utils
 
 from . import constants
 from . import exceptions
@@ -130,7 +130,7 @@ def create_account(
     apps_flyer_user_id: str = None,
     apps_flyer_platform: str = None,
 ) -> models.User:
-    email = users_utils.sanitize_email(email)
+    email = email_utils.sanitize_email(email)
     if users_repository.find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
@@ -510,7 +510,7 @@ def update_user_info(  # type: ignore [no-untyped-def]
         user.culturalSurveyId = cultural_survey_id
     if email is not UNCHANGED:
         old_email = user.email
-        user.email = users_utils.sanitize_email(email)
+        user.email = email_utils.sanitize_email(email)
     if first_name is not UNCHANGED:
         user.firstName = first_name
     if last_name is not UNCHANGED:
@@ -626,7 +626,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
 
 def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
     new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))  # type: ignore [call-arg]
-    new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)
+    new_pro_user.email = email_utils.sanitize_email(new_pro_user.email)
     new_pro_user.notificationSubscriptions = asdict(
         models.NotificationSubscriptions(marketing_email=pro_user.contact_ok)
     )
@@ -818,16 +818,11 @@ def _filter_user_accounts(
             term_filters.append(models.User.id == int(term))
 
         # email
-        sanitized_term = users_utils.sanitize_email(term)
-        try:
-            email_validator.validate_email(sanitized_term, check_deliverability=False)
-        except email_validator.EmailNotValidError:
-            pass  # term can't be an email address
-        else:
+        sanitized_term = email_utils.sanitize_email(term)
+        if email_utils.is_valid_email(sanitized_term):
             term_filters.append(models.User.email == sanitized_term)
-
-        # search for all emails @domain.ext
-        if sanitized_term.startswith("@"):
+        elif email_utils.is_valid_email_domain(sanitized_term):
+            # search for all emails @domain.ext
             term_filters.append(models.User.email.like(f"%{sanitized_term}"))
 
         if not term_filters:

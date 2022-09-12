@@ -23,7 +23,7 @@ import pcapi.core.users.api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import sanitize_email
+from pcapi.utils.email import sanitize_email
 
 
 def filter_email(value: str | None) -> str | None:
