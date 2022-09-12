@@ -33,7 +33,8 @@
   }
 
   .with-euro-icon {
-    background: url(/icons/ico-euro.svg) no-repeat 85% center;
+    background: url(/icons/ico-euro-grey.svg) no-repeat 85% center;
+    background-size: rem.torem(16px);
   }
 
   .action-column .tertiary-button {
@@ -47,6 +48,7 @@
   .field-date {
     align-items: center;
     background: url(/icons/ico-calendar.svg) no-repeat 90% center;
+    background-size: rem.torem(16px);
     border-width: rem.torem(1px);
     box-shadow: none;
     display: flex;
@@ -63,6 +65,7 @@
     &.disabled {
       background-color: colors.$grey-light;
       background-image: url(/icons/ico-calendar-disabled.svg);
+      background-size: rem.torem(16px);
       border-color: transparent;
     }
   }
