@@ -14,7 +14,6 @@ from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
@@ -180,7 +179,15 @@ def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> of
     api=blueprint.pro_private_schema,
 )
 def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
-    offer = get_offer_by_id(form.offer_id)
+    try:
+        offer = offers_repository.get_offer_by_id(form.offer_id)
+    except exceptions.OfferNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)

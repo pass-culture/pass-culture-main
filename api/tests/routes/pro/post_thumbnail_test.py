@@ -138,3 +138,17 @@ class CreateThumbnailFromFileTest:
         assert response.status_code == 400
         assert response.json["code"] == "BAD_IMAGE_RATIO"
         assert response.json["extra"] == "Bad image ratio: expected 0.6666666666666666, found 1.4989293361884368"
+
+    def test_wrong_offer_id(self, client, offer, offerer):
+        client = client.with_session_auth(email="user@example.com")
+        thumb = (IMAGES_DIR / "mouette_landscape_bigger.jpg").read_bytes()
+        data = {
+            "offerId": humanize(offer.id + 1),
+            "thumb": (BytesIO(thumb), "image.jpg"),
+        }
+
+        response = client.post("/offers/thumbnails", form=data)
+
+        # then
+        assert response.status_code == 404
+        assert response.json["global"] == ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
