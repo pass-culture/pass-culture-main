@@ -69,13 +69,13 @@ const AutocompleteTextInput = ({
       setIsOpen(false)
     }
   }
-
-  useEffect(() => {
-    updateSuggestions(searchField.value)
-    if (!searchField.value) {
+  const handleSearchChange = (search: string) => {
+    updateSuggestions(search)
+    if (!search) {
       setIsOpen(false)
     }
-  }, [searchField.value])
+    setFieldValue(`search-${fieldName}`, search, false)
+  }
 
   const updateFieldWithSelectedItem = (
     selectedItem?: IAutocompleteItemProps
@@ -85,12 +85,11 @@ const AutocompleteTextInput = ({
     }
     helpers.setValue(selectedItem?.label || '')
     setFieldValue(`search-${fieldName}`, selectedItem?.label || '', false)
-    //We need a timeout here cause setFieldValue seems to take some time until it triggers the useEffect on searchField.value
-    setTimeout(() => setIsOpen(false), 100)
   }
   const handleSelect = (selectedItem: IAutocompleteItemProps) => {
     setLastSelectedValue(selectedItem)
     updateFieldWithSelectedItem(selectedItem)
+    setIsOpen(false)
   }
 
   const renderSuggestion = (item: SelectOption, disabled?: boolean) => (
@@ -151,6 +150,7 @@ const AutocompleteTextInput = ({
           className={styles['select-autocomplete-input']}
           autoComplete="off"
           {...searchField}
+          onChange={e => handleSearchChange(e.target.value)}
         />
         <AutocompleteList
           className={styles['menu']}
