@@ -228,6 +228,24 @@ class PriceBookingTest:
         assert len(booking.pricings) == 2
         assert pricing.status == models.PricingStatus.VALIDATED
 
+    def test_price_booking_that_has_been_unused_and_then_used_again_workaround(self):
+        if not self.use_pricing_point:  # don't bother testing with legacy business units
+            return
+        # This is a temporary test that checks that we force the
+        # pricing of bookings that have been unused and then used
+        # again. See implementation for further details. Can be
+        # removed once we have processed these bookings.
+        booking = create_booking_with_undeletable_dependent(stock__offer__venue__pricing_point="self")
+        factories.PricingFactory(
+            booking=booking,
+            status=models.PricingStatus.CANCELLED,
+        )
+
+        # Don't raise and don't delete the dependent pricing nor the cancelled pricing.
+        new_pricing = api.price_booking(booking, self.use_pricing_point)
+        assert models.Pricing.query.count() == 3
+        assert new_pricing.status == models.PricingStatus.VALIDATED
+
     def test_price_booking_that_is_not_used(self):
         booking = bookings_factories.BookingFactory()
         pricing = api.price_booking(booking, self.use_pricing_point)
