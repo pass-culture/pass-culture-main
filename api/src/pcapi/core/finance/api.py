@@ -820,6 +820,24 @@ def _delete_dependent_pricings(
                         "siret": pricing.siret,
                     },
                 )
+            # FIXME (dbaty, 2022-09-12): some bookings were marked as
+            # used (hence priced) and then mark as unused (so that
+            # their pricing was cancelled), and then mark as used
+            # again. A bug caused these bookings not to be priced
+            # again (see PC-16479). The bug has been fixed but now
+            # these bookings must be priced out of order.
+            # This block can be removed once we have processed these bookings.
+            elif {_p.status for _p in booking.pricings} == {models.PricingStatus.CANCELLED}:
+                pricing_ids.remove(pricing.id)
+                bookings_already_priced.remove(pricing.bookingId)
+                logger.info(
+                    "Found non-deletable pricing for a pricing point that has an older booking to price or cancel (special case for used-then-unused-then-used bookings)",
+                    extra={
+                        "booking_being_priced_or_cancelled": booking.id,
+                        "older_pricing": pricing.id,
+                        "pricing_point": pricing_point_id,
+                    },
+                )
             else:
                 logger.error(
                     "Found non-deletable pricing for a SIRET that has an older booking to price or cancel",
@@ -830,6 +848,9 @@ def _delete_dependent_pricings(
                     },
                 )
                 raise exceptions.NonCancellablePricingError()
+
+    if not pricing_ids:
+        return
 
     # Do not reuse the `pricings` query. It should not have changed
     # since the beginning of the function (since we should have an
