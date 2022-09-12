@@ -175,5 +175,64 @@ cd ../
 ##########
 
 
+################
+## BACKOFFICE ##
+################
+cd $DIR/backoffice
+#
+# To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
+# environment variable. For example:
+#
+#     export DISABLED_BO_PRE_COMMIT_CHECKS="lint:js,test"
+#
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^backoffice/src/*' | sed 's|^backoffice\/||g')
+
+
+if [[ ! -z "$STAGED_FILES" ]]
+then
+  # run linter on staged files
+  if [[ ! ",${DISABLED_BO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]
+  then
+    echo "Running Linter..."
+    yarn lint:fix && yarn format && yarn test:lint $STAGED_FILES
+    LINTER_EXIT_CODE=$?
+
+    # check linter exit code
+    if [ $LINTER_EXIT_CODE -ne 0 ]; then
+        echo "❌ Please fix lint errors first "
+        exit 1
+    else
+        echo "✅ lint all good"
+    fi
+
+    # add files auto-fixed by the linter
+    git add -f $STAGED_FILES
+  fi
+
+
+  # run tests related to staged files
+  if [[ ! ",${DISABLED_BO_PRE_COMMIT_CHECKS}," =~ ",test," ]]
+  then
+    echo "Running Tests"
+    yarn test:unit:ci --findRelatedTests $STAGED_FILES
+    JEST_EXIT_CODE=$?
+
+    # check jest exit code
+    if [ $JEST_EXIT_CODE -ne 0 ]; then
+        echo "❌ Please fix unit tests first"
+        exit 1
+    else
+        echo "✅ tests passing"
+    fi
+  fi
+fi
+
+cd ../
+####################
+## END BACKOFFICE ##
+####################
+
+
 # return 0-exit code
 exit 0
