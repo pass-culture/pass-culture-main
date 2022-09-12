@@ -3,6 +3,7 @@ import logging
 import secrets
 import typing
 
+import email_validator
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
@@ -15,6 +16,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
+from pcapi.core.users import utils as users_utils
 import pcapi.core.users.external as users_external
 from pcapi.core.users.external import zendesk_sell
 import pcapi.core.users.models as users_models
@@ -678,3 +680,80 @@ def search_offerer(terms: typing.Iterable[str], order_by: list[str] | None = Non
         offerers = offerers.order_by(models.Offerer.id)
 
     return offerers
+
+
+def search_venue(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+    venues = models.Venue.query.outerjoin(offerers_models.VenueContact)
+
+    filters: list[sa.sql.ColumnElement] = []
+    name_terms: list[str] = []
+
+    if not terms:
+        return venues.filter(False)
+
+    for term in terms:
+        if not term:
+            continue
+
+        term_filters: list[sa.sql.ColumnElement] = []
+
+        # numeric
+        if term.isnumeric():
+            term_filters.append(models.Venue.id == int(term))
+            if len(term) == 14:
+                term_filters.append(models.Venue.siret == term)
+
+        # email
+        sanitized_term = users_utils.sanitize_email(term)
+        try:
+            email_validator.validate_email(sanitized_term, check_deliverability=False)
+        except email_validator.EmailNotValidError:
+            pass  # term can't be an email address
+        else:
+            term_filters.append(models.Venue.bookingEmail == sanitized_term)
+            term_filters.append(models.VenueContact.email == sanitized_term)
+
+        # search for all emails @domain.ext
+        if sanitized_term.startswith("@"):
+            term_filters.append(models.Venue.bookingEmail.like(f"%{sanitized_term}"))
+            term_filters.append(models.VenueContact.email.like(f"%{sanitized_term}"))
+
+        if term_filters:
+            filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
+        else:
+            # non-numeric terms are searched by trigram distance in the name
+            name_terms.append(term)
+
+    name_search = " ".join(name_terms)
+    if name_search:
+        filters.append(
+            sa.or_(
+                sa.func.similarity(models.Venue.name, name_search)
+                > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
+                sa.func.similarity(models.Venue.publicName, name_search)
+                > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
+            )
+        )
+
+    # each result must match all terms in any column
+    venues = venues.filter(*filters)
+
+    if order_by:
+        try:
+            venues = venues.order_by(*db_utils.get_ordering_clauses(models.Venue, order_by))
+        except db_utils.BadSortError as err:
+            raise ApiErrors({"sorting": str(err)})
+
+    if name_search:
+        venues = venues.order_by(
+            sa.desc(
+                sa.func.similarity(models.Venue.name, name_search)
+                + sa.func.similarity(models.Venue.publicName, name_search)
+            )
+        )
+
+    # At the end, search by id, in case there is no order requested or equal similarity score
+    if not order_by:
+        venues = venues.order_by(models.Venue.id)
+
+    return venues

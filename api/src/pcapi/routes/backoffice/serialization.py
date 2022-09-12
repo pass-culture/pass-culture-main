@@ -4,6 +4,7 @@ import typing
 import pydantic
 
 from pcapi.core.fraud import models as fraud_models
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models
@@ -209,30 +210,44 @@ class ProSearchQuery(PaginableQuery):
     type: str  # "proUser" or "venue" or "offerer"
 
 
-class ProUserPayload(BaseModel):
+class ProResultPayload(BaseModel):
     class Config:
         orm_mode = True
         use_enum_values = True
 
+
+class ProUserPayload(ProResultPayload):
     firstName: str | None
     lastName: str | None
     email: str
     phoneNumber: str | None
 
 
-class OffererPayload(BaseModel):
-    class Config:
-        orm_mode = True
-        use_enum_values = True
-
+class OffererPayload(ProResultPayload):
     name: str | None
     siren: str | None
+
+
+class VenuePayload(ProResultPayload):
+    name: str | None
+    email: str | None
+    siret: str | None
+    permanent: bool
+
+    @classmethod
+    def from_orm(cls: typing.Type["VenuePayload"], venue: offerers_models.Venue) -> "VenuePayload":
+        if venue.contact and venue.contact.email:
+            venue.email = venue.contact.email
+        else:
+            venue.email = venue.bookingEmail
+        venue.permanent = venue.isPermanent
+        return super().from_orm(venue)
 
 
 class ProResult(BaseModel):
     resourceType: str  # "proUser" or "venue" or "offerer"
     id: int
-    payload: ProUserPayload | OffererPayload
+    payload: ProResultPayload
 
 
 class SearchProResponseModel(PaginatedResponse):
