@@ -22,6 +22,7 @@
   .period-filter-inputs .field-date {
     align-items: center;
     background: url(/icons/ico-calendar.svg) no-repeat 93% center;
+    background-size: rem.torem(16px);
     box-shadow: none;
     display: flex;
     height: rem.torem(40px);
