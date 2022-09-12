@@ -16,7 +16,7 @@ const OptionDuo = (): JSX.Element | null => {
   }
 
   return (
-    <FormLayout.Section title="Réservations “Duo“">
+    <FormLayout.Section title="Réservations “duo“">
       <FormLayout.Row>
         <Checkbox
           label="Accepter les réservations “duo“"
