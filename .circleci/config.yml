@@ -843,9 +843,6 @@ jobs:
       tests:
         type: boolean
         default: false
-      app_version:
-        type: string
-        default: ${APP_VERSION}
     steps:
       - checkout
       - setup_remote_docker:
@@ -863,9 +860,7 @@ jobs:
               docker build ./api \
                 -f ./api/Dockerfile \
                 --target pcapi \
-                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>> \
                 -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
-              docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
               docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
       - when:
           condition:
@@ -878,8 +873,8 @@ jobs:
                   docker build ./api \
                     -f ./api/Dockerfile \
                     --target pcapi-console \
-                    -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
-                  docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
+                    -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:${CIRCLE_SHA1}
+                  docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:${CIRCLE_SHA1}
       - when:
           condition:
             equal: [ true , << parameters.tests >> ]
@@ -1149,7 +1144,6 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-          app_version: ${CIRCLE_SHA1}
           tests: true
           filters:
             branches:
@@ -1370,15 +1364,6 @@ workflows:
            - CI_MEASURE
   gcp-ehp:
     jobs:
-      - build-and-push-image:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          context:
-            - GCP
-            - GCP_EHP
       - generate-pcapi-helm-values-files:
           filters:
             branches:
