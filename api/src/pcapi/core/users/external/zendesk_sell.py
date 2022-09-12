@@ -129,8 +129,10 @@ def _build_url(path: str) -> str:
     return urllib.parse.urljoin(ZENDESK_SELL_API_URL, path)
 
 
-def _query_api(method: str, path: str, body: str | dict | None) -> dict:
-    session = configure_session()
+def _query_api(method: str, path: str, body: str | dict | None, session: requests.Session | None) -> dict:
+    if not session:
+        session = configure_session()
+
     match method.upper():
         case "PUT":
             response = session.put(_build_url(path), json=body)
@@ -233,8 +235,8 @@ def _get_offerer_data(offerer: offerers_models.Offerer, created: bool = False) -
     return params
 
 
-def _search_contact(params: dict) -> dict:
-    body = _query_api("POST", "/v3/contacts/search", body=params)
+def _search_contact(params: dict, session: requests.Session | None = None) -> dict:
+    body = _query_api("POST", "/v3/contacts/search", body=params, session=session)
 
     # Response format:
     # https://developer.zendesk.com/api-reference/sales-crm/search/response/
@@ -253,7 +255,7 @@ def is_offerer_only_virtual(offerer: offerers_models.Offerer) -> bool:
     return offerer.managedVenues and all(venue.isVirtual for venue in offerer.managedVenues)
 
 
-def get_offerer_by_id(offerer: offerers_models.Offerer) -> dict:
+def get_offerer_by_id(offerer: offerers_models.Offerer, session: requests.Session | None = None) -> dict:
     # (offerer id OR siren) AND NO venue id AND NO siret
     offerer_filter: dict = {
         "filter": {
@@ -331,7 +333,7 @@ def get_offerer_by_id(offerer: offerers_models.Offerer) -> dict:
     }
 
     try:
-        return _search_contact(params)
+        return _search_contact(params, session=session)
     except ContactFoundMoreThanOneError as e:
         contacts = e.items
 
@@ -348,7 +350,7 @@ def get_offerer_by_id(offerer: offerers_models.Offerer) -> dict:
         raise
 
 
-def get_venue_by_id(venue: offerers_models.Venue) -> dict:
+def get_venue_by_id(venue: offerers_models.Venue, session: requests.Session | None = None) -> dict:
     venue_filter: dict = {
         "filter": {
             "attribute": {"name": f"custom_fields.{ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value}"},
@@ -397,7 +399,7 @@ def get_venue_by_id(venue: offerers_models.Venue) -> dict:
     }
 
     try:
-        return _search_contact(params)
+        return _search_contact(params, session=session)
     except ContactFoundMoreThanOneError as e:
         contacts = e.items
 
@@ -446,30 +448,39 @@ def _get_venue_status(venue: offerers_models.Venue) -> str:
     return "Acteur en cours d'inscription"
 
 
-def zendesk_create_offerer(offerer: offerers_models.Offerer) -> dict:
+def zendesk_create_offerer(offerer: offerers_models.Offerer, session: requests.Session | None = None) -> dict:
     data = _get_offerer_data(offerer, created=True)
-    return _query_api("POST", "/v2/contacts", body=data)
+    return _query_api("POST", "/v2/contacts", body=data, session=session)
 
 
-def zendesk_update_offerer(zendesk_id: int, offerer: offerers_models.Offerer) -> dict:
+def zendesk_update_offerer(
+    zendesk_id: int, offerer: offerers_models.Offerer, session: requests.Session | None = None
+) -> dict:
     data = _get_offerer_data(offerer)
-    return _query_api("PUT", f"/v2/contacts/{zendesk_id}", body=data)
+    return _query_api("PUT", f"/v2/contacts/{zendesk_id}", body=data, session=session)
 
 
-def zendesk_create_venue(venue: offerers_models.Venue, parent_organization_id: int | None) -> dict:
+def zendesk_create_venue(
+    venue: offerers_models.Venue, parent_organization_id: int | None, session: requests.Session | None = None
+) -> dict:
     if parent_organization_id == SEARCH_PARENT:
         parent_organization_id = _get_parent_organization_id(venue)
 
     data = _get_venue_data(venue, parent_organization_id, created=True)
-    return _query_api("POST", "/v2/contacts", body=data)
+    return _query_api("POST", "/v2/contacts", body=data, session=session)
 
 
-def zendesk_update_venue(zendesk_id: int, venue: offerers_models.Venue, parent_organization_id: int | None) -> dict:
+def zendesk_update_venue(
+    zendesk_id: int,
+    venue: offerers_models.Venue,
+    parent_organization_id: int | None,
+    session: requests.Session | None = None,
+) -> dict:
     if parent_organization_id == SEARCH_PARENT:
         parent_organization_id = _get_parent_organization_id(venue)
 
     data = _get_venue_data(venue, parent_organization_id)
-    return _query_api("PUT", f"/v2/contacts/{zendesk_id}", body=data)
+    return _query_api("PUT", f"/v2/contacts/{zendesk_id}", body=data, session=session)
 
 
 def _stub_in_test_env(action: str, data: offerers_models.Offerer | offerers_models.Venue) -> bool:
