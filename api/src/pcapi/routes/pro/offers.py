@@ -196,6 +196,27 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     return CreateThumbnailResponseModel(id=thumbnail.id)
 
 
+@private_api.route("/offers/thumbnails/<offer_id>", methods=["DELETE"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def delete_thumbnail(offer_id: int) -> None:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id)
+    except exceptions.OfferNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    offers_api.delete_mediation(offer=offer)
+
+
 @private_api.route("/offers/categories", methods=["GET"])
 @login_required
 @spectree_serialize(
