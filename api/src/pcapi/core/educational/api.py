@@ -4,8 +4,6 @@ import json
 import logging
 from operator import or_
 import typing
-from typing import Iterable
-from typing import cast
 
 from flask import current_app
 from flask_sqlalchemy import BaseQuery
@@ -806,11 +804,11 @@ def transform_collective_offer_template_into_collective_offer(
     return collective_offer
 
 
-def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
     return educational_repository.get_query_for_collective_offers_by_ids_for_user(user=user, ids=ids)
 
 
-def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
     return educational_repository.get_query_for_collective_offers_template_by_ids_for_user(user=user, ids=ids)
 
 
@@ -924,7 +922,7 @@ def create_collective_offer_public(
     venue = offerers_models.Venue.query.filter_by(id=body.venue_id).one_or_none()
     if venue is None or venue.managingOffererId != offerer_id:
         raise offerers_exceptions.VenueNotFoundException()
-    cast(offerers_models.Venue, venue)
+    typing.cast(offerers_models.Venue, venue)
 
     offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
