@@ -25,12 +25,14 @@ from wtforms.fields import HiddenField
 from wtforms.fields import IntegerField
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.connectors import sirene
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 import pcapi.core.criteria.api as criteria_api
 import pcapi.core.criteria.models as criteria_models
-from pcapi.core.finance import repository as finance_repository
-from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
+import pcapi.core.finance.exceptions as finance_exceptions
+import pcapi.core.finance.validation as finance_validation
+import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
@@ -38,6 +40,7 @@ from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import zendesk_sell
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 from pcapi.utils.mailing import build_pc_pro_offerer_link
 from pcapi.utils.mailing import build_pc_pro_venue_bookings_link
@@ -235,51 +238,73 @@ class VenueView(BaseAdminView):
             flash("Impossible d'effacer un lieu pour lequel il existe des réservations.", "error")
         return False
 
-    def update_model(self, new_venue_form: Form, venue: Venue) -> bool:
-        has_siret_changed = new_venue_form.siret.data != venue.siret
-        if has_siret_changed:
-            bu_with_same_target_siret = finance_repository.find_business_unit_by_siret(new_venue_form.siret.data)
-            if bu_with_same_target_siret:
+    def update_model(self, edit_venue_form: Form, venue: Venue) -> bool:
+        update_siret = False
+        current_siret = venue.siret
+        new_siret = edit_venue_form.siret.data.strip() if edit_venue_form.siret.data else None
+        existing_pricing_point_id = None
+        unavailable_sirene = False
+        if current_siret and not new_siret:
+            flash("Le champ SIRET ne peut pas être vide si ce lieu avait déjà un SIRET.")
+            return False
+
+        if new_siret and new_siret != current_siret:
+            try:
+                finance_validation.validate_siret_format(new_siret)
+            except finance_exceptions.InvalidSiret:
+                flash("Le SIRET doit être une série d'exactement 14 chiffres.")
+                return False
+            existing_pricing_point_id = venue.current_pricing_point_id
+            if existing_pricing_point_id and venue.id != existing_pricing_point_id:
                 flash(
-                    f"Ce SIRET a déjà été attribué au point de remboursement {bu_with_same_target_siret.name},"
-                    f" il ne peut pas être attribué à ce lieu.",
+                    f"Ce lieu a déjà un SIRET et un point de valorisation (Venue.id={existing_pricing_point_id}). "
+                    f"Définir un SIRET impliquerait qu'il soit son propre point de valorisation, "
+                    f"mais le changement de point de valorisation n'est pas autorisé"
+                )
+                return False
+
+            # The built-in unique form validation should catch duplicates, unless the other model is created between
+            # form validation and model saving
+            venue_with_new_siret = offerers_repository.find_venue_by_siret(new_siret)
+            if venue_with_new_siret:
+                flash(
+                    f"Ce SIRET est déjà attribué au lieu #{venue_with_new_siret.id}: {venue_with_new_siret.name}"
                     "error",
                 )
                 return False
 
-            related_bu = finance_repository.find_business_unit_by_siret(venue.siret)  # type: ignore [arg-type]
-            if related_bu:
-                flash(
-                    f"Le SIRET de ce lieu est le SIRET de référence du point de remboursement {related_bu.name},"
-                    f" il ne peut pas être modifié.",
-                    "error",
-                )
-                return False
+            if FeatureToggle.USE_INSEE_SIRENE_API.is_active():
+                try:
+                    if not sirene.siret_is_active(new_siret):
+                        flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "error")
+                        return False
+                except sirene.SireneException:
+                    unavailable_sirene = True
+
+            update_siret = True
 
         # adageId validation and cleanning
-        if new_venue_form.adageId.data == "":
-            new_venue_form.adageId.data = None
-        if new_venue_form.adageId.data is not None and new_venue_form.adageId.data < 1:
+        if edit_venue_form.adageId.data == "":
+            edit_venue_form.adageId.data = None
+        if edit_venue_form.adageId.data is not None and edit_venue_form.adageId.data < 1:
             flash("L'adageId doit être un nombre entier supérieur ou égal à 1")
             return False
 
-        old_siret = venue.siret
-
         changed_attributes = {
             field
-            for field in VENUE_ALGOLIA_INDEXED_FIELDS
-            if hasattr(new_venue_form, field) and getattr(new_venue_form, field).data != getattr(venue, field)
+            for field in offerers_api.VENUE_ALGOLIA_INDEXED_FIELDS
+            if hasattr(edit_venue_form, field) and getattr(edit_venue_form, field).data != getattr(venue, field)
         }
 
-        if (new_venue_form.adageId.data and str(new_venue_form.adageId.data) != venue.adageId) or (
-            new_venue_form.adageId.data is None and venue.adageId
+        if (edit_venue_form.adageId.data and str(edit_venue_form.adageId.data) != venue.adageId) or (
+            edit_venue_form.adageId.data is None and venue.adageId
         ):
             emails = offerers_repository.get_emails_by_venue(venue)
             for email in emails:
                 update_external_pro(email)
 
             old_adage_id = venue.adageId or ""
-            new_adage_id = new_venue_form.adageId.data or ""
+            new_adage_id = edit_venue_form.adageId.data or ""
             logger.info(
                 '[ADMIN] User with email "%s" changed the adageId for venue "%s" (id: %s) from "%s" to "%s"',
                 current_user.email,
@@ -290,9 +315,24 @@ class VenueView(BaseAdminView):
             )
 
         # A failed update (invalid DB constraint for example) does not raise but returns False
-        update_success = super().update_model(new_venue_form, venue)
+        update_success = super().update_model(edit_venue_form, venue)
         if not update_success:
             return False
+
+        if update_siret:
+            logger.info(
+                "[ADMIN] The SIRET of a Venue has been modified",
+                extra={
+                    "venue_id": venue.id,
+                    "previous_siret": current_siret,
+                    "new_siret": new_siret,
+                    "user_email": current_user.email,
+                },
+            )
+            if unavailable_sirene:
+                flash("Ce SIRET n'a pas pu être vérifié, mais la modification a néanmoins été effectuée", "warning")
+            if not existing_pricing_point_id:
+                offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
         # Immediately index venue if tags (criteria) are involved:
         # tags are used by other tools (eg. building playlists for the
@@ -308,8 +348,8 @@ class VenueView(BaseAdminView):
         else:
             search.async_index_venue_ids([venue.id])
 
-        if has_siret_changed and old_siret:
-            update_stock_id_at_providers(venue, old_siret)
+        if current_siret and update_siret:
+            update_stock_id_at_providers(venue, current_siret)
 
         if changed_attributes:
             search.async_index_offers_of_venue_ids([venue.id])
