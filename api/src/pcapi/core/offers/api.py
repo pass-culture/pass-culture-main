@@ -743,6 +743,24 @@ def create_mediation(
         return mediation
 
 
+def delete_mediation(offer: Offer) -> None:
+    mediations = Mediation.query.filter(Mediation.offerId == offer.id).all()
+    for mediation in mediations:
+        try:
+            for thumb_index in range(0, mediation.thumbCount):
+                remove_thumb(mediation, image_index=thumb_index)
+        except Exception as exception:  # pylint: disable=broad-except
+            logger.exception(
+                "An unexpected error was encountered during the thumbnails deletion for %s: %s",
+                mediation,
+                exception,
+            )
+        else:
+            repository.delete(mediation)
+
+    search.async_index_offer_ids([offer.id])
+
+
 def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
     current_siret = venue.siret
 

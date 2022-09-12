@@ -1127,6 +1127,28 @@ export class DefaultService {
   }
 
   /**
+   * delete_thumbnail <DELETE>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteThumbnail(
+    offerId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/offers/thumbnails/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_offer <GET>
    * @param offerId
    * @returns GetIndividualOfferResponseModel OK
