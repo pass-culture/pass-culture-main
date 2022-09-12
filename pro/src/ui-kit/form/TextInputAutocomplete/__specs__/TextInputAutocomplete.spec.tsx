@@ -12,9 +12,12 @@ const renderTextInputAutocomplete = async (
   props: ITextInputAutocompleteProps
 ) => {
   await render(
-    <Formik initialValues={initialValues} onSubmit={() => {}}>
-      <TextInputAutocomplete {...props} />
-    </Formik>
+    <>
+      <Formik initialValues={initialValues} onSubmit={() => {}}>
+        <TextInputAutocomplete {...props} />
+      </Formik>
+      <button type="button">Click outside ref</button>
+    </>
   )
 }
 
@@ -114,7 +117,10 @@ describe('src | ui-kit | form | TextInputAutocomplete', () => {
       expect(searchField).toHaveValue('test - 1')
       await userEvent.type(searchField, ' - not selected')
       expect(searchField).toHaveValue('test - 1 - not selected')
-      await userEvent.click(document.body)
+      const outsideSuggestionsMenuButton = await screen.findByRole('button', {
+        name: 'Click outside ref',
+      })
+      await userEvent.click(outsideSuggestionsMenuButton)
       expect(searchField).toHaveValue('test - 1')
       expect(onSelectCustom).toHaveBeenCalledWith({
         value: '1',
