@@ -29,7 +29,7 @@ parameters:
     default: 'node_modules-14.18-{{ checksum "adage-front/yarn.lock" }}'
   backoffice-front_cache_key:
     type: string
-    default: 'node_modules-14.13-{{ checksum "backoffice/yarn.lock" }}'
+    default: 'node_modules-16.13-{{ checksum "backoffice/yarn.lock" }}'
   run_measurement_workflow:
     type: boolean
     default: false
