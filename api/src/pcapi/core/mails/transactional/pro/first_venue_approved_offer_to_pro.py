@@ -4,7 +4,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
-from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.urls import build_pc_pro_offer_link
 
 
 def get_first_venue_approved_offer_email_data(offer: Offer) -> models.TransactionalEmailData:

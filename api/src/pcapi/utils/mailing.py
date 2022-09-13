@@ -19,35 +19,12 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import urls
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
 logger = logging.getLogger(__name__)
-
-
-def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
-    if isinstance(offer, CollectiveOffer):
-        return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
-
-    if isinstance(offer, CollectiveOfferTemplate):
-        return f"{settings.PRO_URL}/offre/T-{humanize(offer.id)}/collectif/edition"
-
-    return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/individuel/edition"
-
-
-def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
-    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"
-
-
-def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
-    if venue.isVirtual:
-        return build_pc_pro_offerer_link(venue.managingOfferer)
-    return f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
-
-
-def build_pc_pro_venue_bookings_link(venue: offerers_models.Venue) -> str:
-    return f"{settings.PRO_URL}/reservations?offerVenueId={humanize(venue.id)}"
 
 
 def build_pc_pro_create_password_link(token_value: str) -> str:
@@ -107,7 +84,7 @@ def make_offerer_internal_validation_email(
         "mails/internal_validation_email.html",
         user_offerer=user_offerer,
         offerer=offerer,
-        offerer_pro_link=build_pc_pro_offerer_link(offerer),
+        offerer_pro_link=urls.build_pc_pro_offerer_link(offerer),
         offerer_summary=pformat(_summarize_offerer_vars(offerer, siren_info)),
         user_summary=pformat(_summarize_user_vars(user_offerer)),
         api_entreprise=pformat(siren_info_as_dict),
@@ -126,7 +103,7 @@ def make_offer_creation_notification_email(
 ) -> mails_models.TransactionalWithoutTemplateEmailData:
     author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
-    pro_link_to_offer = build_pc_pro_offer_link(offer)
+    pro_link_to_offer = urls.build_pc_pro_offer_link(offer)
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
     webapp_link_to_offer = offer_app_link(offer)
     html = render_template(
@@ -152,7 +129,7 @@ def make_offer_rejection_notification_email(
     offer: Offer | CollectiveOfferTemplate | CollectiveOffer,
 ) -> mails_models.TransactionalWithoutTemplateEmailData:
     author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
-    pro_link_to_offer = build_pc_pro_offer_link(offer)
+    pro_link_to_offer = urls.build_pc_pro_offer_link(offer)
     venue = offer.venue
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
     html = render_template(

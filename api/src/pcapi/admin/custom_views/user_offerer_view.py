@@ -5,7 +5,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.external import update_external_pro
-from pcapi.utils.mailing import build_pc_pro_offerer_link
+from pcapi.utils.urls import build_pc_pro_offerer_link
 
 
 def _format_offerer_name(view: BaseAdminView, context: Context, model: UserOfferer, name: str) -> markupsafe.Markup:
