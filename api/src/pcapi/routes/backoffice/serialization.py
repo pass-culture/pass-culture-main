@@ -237,3 +237,17 @@ class ProResult(BaseModel):
 
 class SearchProResponseModel(PaginatedResponse):
     data: list[ProResult]
+
+
+class OffererAttachedUser(BaseModel):
+    class Config:
+        orm_mode = True
+
+    id: int
+    firstName: str | None
+    lastName: str | None
+    email: str
+
+
+class OffererAttachedUsersResponseModel(BaseModel):
+    data: list[OffererAttachedUser]
