@@ -84,7 +84,9 @@ class GraphqlResponseTest:
             "dossierModifierAnnotationText": {"annotation": {"id": "XXXXXXXXX"}, "errors": None}
         }
         client = api_dms.DMSGraphQLClient()
-        client.update_text_annotation("dossier_id", "instructeur_id", "annotation_id", "Il y a une grosse erreur ici")
+        client.update_text_annotation(
+            "dossier_id", "instructeur_id", "error_annotation_id", "Il y a une grosse erreur ici"
+        )
 
         assert client.execute_query.call_count == 1
 

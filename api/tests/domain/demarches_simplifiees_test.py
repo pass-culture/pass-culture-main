@@ -77,7 +77,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         assert application_details.siret == "12345678900014"
         assert application_details.dossier_id == "Q2zzbXAtNzgyODAw"
         assert application_details.modification_date == updated_at
-        assert application_details.annotation_id == (
+        assert application_details.error_annotation_id == (
             annotation["id"] if annotation["label"] == "Erreur traitement pass Culture" else None
         )
 
@@ -232,8 +232,9 @@ EXPECTED_RESULT_WITH_SIRET_V3 = {
     "siren": "438391195",
     "iban": "FR7630001007941234567890185",
     "bic": "QSDFGH8Z",
-    "annotation_id": "InterestingId",
+    "error_annotation_id": "InterestingId",
     "dossier_id": "Q2zzbXAtNzgyODAw",
+    "venue_url_annotation_id": None,
 }
 EXPECTED_RESULT_V4 = {
     "status": "en_construction",
@@ -244,7 +245,8 @@ EXPECTED_RESULT_V4 = {
     "phone_number": "0102030405",
     "iban": "FR7630001007941234567890185",
     "bic": "QSDFGH8Z",
-    "annotation_id": "InterestingId",
+    "error_annotation_id": "InterestingId",
+    "venue_url_annotation_id": "AnotherInterestingId",
     "dossier_id": "Q2zzbXAtNzgyODAw",
 }
 
@@ -349,6 +351,8 @@ class ParseRawBicDataTest:
                 ],
             }
         }
+        if procedure_version == 4:
+            input_data["dossier"]["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId"})
 
         result = parse_raw_bic_data(input_data, procedure_version)
 

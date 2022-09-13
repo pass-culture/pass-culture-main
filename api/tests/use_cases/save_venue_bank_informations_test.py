@@ -1240,7 +1240,7 @@ class SaveVenueBankInformationsTest:
                 "bic": "SOGEFRPP",
                 "modification_date": datetime.utcnow(),
                 "venue_name": "venuedemo",
-                "annotation_id": self.annotation_id,
+                "error_annotation_id": self.annotation_id,
                 "dossier_id": self.dossier_id,
             }
             if updated_field:
@@ -1429,7 +1429,7 @@ class SaveVenueBankInformationsTest:
                 "bic": "SOGEFRPP",
                 "modification_date": datetime.utcnow(),
                 "venue_name": "venuedemo",
-                "annotation_id": "ANNOTATION_ID",
+                "error_annotation_id": "ANNOTATION_ID",
                 "dossier_id": "DOSSIER_ID",
             }
             if updated_field:
