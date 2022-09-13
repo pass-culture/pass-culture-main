@@ -737,3 +737,127 @@ class DmsSubscriptionMessageTest:
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
         )
+
+
+@pytest.mark.usefixtures("db_session")
+class IsFraudCheckUpdToDateUnitTest:
+    def test_is_fraud_check_up_to_date_empty(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            resultContent=None,
+            status=fraud_models.FraudCheckStatus.KO,
+            reasonCodes=None,
+        )
+        assert not dms_subscription_api._is_fraud_check_up_to_date(
+            fraud_check, new_content=fraud_factories.DMSContentFactory()
+        )
+
+    def test_is_fraud_check_up_to_date_same_content(self):
+        fields = {
+            "activity": "Étudiant",
+            "address": "21B Baker Street",
+            "birth_date": (datetime.datetime.today() - relativedelta(years=18)).date(),
+            "city": "Londres",
+            "civility": users_models.GenderEnum.F,
+            "department": "92",
+            "email": "cher.locked@example.com",
+            "first_name": "Cher",
+            "id_piece_number": "ABC123",
+            "last_name": "Homie",
+            "phone": "+33665432198",
+            "postal_code": "92200",
+            "state": "accepte",
+        }
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            resultContent=fraud_factories.DMSContentFactory(**fields),
+            status=fraud_models.FraudCheckStatus.OK,
+            reasonCodes=None,
+        )
+        assert dms_subscription_api._is_fraud_check_up_to_date(
+            fraud_check,
+            new_content=fraud_factories.DMSContentFactory(**fields),
+        )
+
+    def test_is_fraud_check_up_to_date_different_content(self):
+        content = fraud_factories.DMSContentFactory(first_name="Jean-Michel")
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            resultContent=content,
+            status=fraud_models.FraudCheckStatus.OK,
+            reasonCodes=None,
+        )
+        assert not dms_subscription_api._is_fraud_check_up_to_date(
+            fraud_check, new_content=fraud_factories.DMSContentFactory(first_name="John-Michael")
+        )
+
+
+@pytest.mark.usefixtures("db_session")
+class ShouldImportDmsApplicationTest:
+    def setup(self):
+        self.user_email = "john.stiles@example.com"
+
+    def start_id_check(self, fields):
+        user = users_factories.UserFactory(email=self.user_email)
+        application = make_parsed_graphql_application(
+            application_number=1, state=dms_models.GraphQLApplicationStates.draft, email=self.user_email, **fields
+        )
+
+        dms_subscription_api.handle_dms_application(application)
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=user.id, type=fraud_models.FraudCheckType.DMS
+        ).first()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+
+        return user, fraud_check
+
+    @patch("pcapi.core.subscription.dms.api._process_dms_application")
+    def test_should_import_dms_application_when_status_changed(self, _process_dms_application_mock):
+        user, fraud_check = self.start_id_check(fields={})
+        updated_application = make_parsed_graphql_application(
+            application_number=1,
+            application_techid="TECH_ID",
+            state=dms_models.GraphQLApplicationStates.refused,
+            email=self.user_email,
+        )
+        _process_dms_application_mock.reset_mock()
+
+        dms_subscription_api.handle_dms_application(updated_application)
+
+        _process_dms_application_mock.assert_called_once_with(
+            mock.ANY, "TECH_ID", fraud_check, dms_models.GraphQLApplicationStates.refused, user
+        )
+
+    @patch("pcapi.core.subscription.dms.api._process_dms_application")
+    def test_should_import_dms_application_when_user_field_updated(self, _process_dms_application_mock):
+        user, fraud_check = self.start_id_check(fields={"first_name": "Lucy"})
+        updated_application = make_parsed_graphql_application(
+            application_number=1,
+            application_techid="TECH_ID",
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=self.user_email,
+            first_name="Lucille",
+        )
+        _process_dms_application_mock.reset_mock()
+
+        dms_subscription_api.handle_dms_application(updated_application)
+
+        _process_dms_application_mock.assert_called_once_with(
+            mock.ANY, "TECH_ID", fraud_check, dms_models.GraphQLApplicationStates.draft, user
+        )
+
+    @patch("pcapi.core.subscription.dms.api._process_dms_application")
+    def should_not_update_on_last_modification_date_update(self, _process_dms_application_mock):
+        self.start_id_check(fields={})
+        updated_application = make_parsed_graphql_application(
+            application_number=1,
+            application_techid="TECH_ID",
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=self.user_email,
+            last_modification_date=datetime.datetime.utcnow(),
+        )
+        _process_dms_application_mock.reset_mock()
+
+        dms_subscription_api.handle_dms_application(updated_application)
+
+        _process_dms_application_mock.assert_not_called()
