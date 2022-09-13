@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -33,7 +33,7 @@ const renderOffers = async (props, store, queryParams = null) => {
           <Route path="/offre/">
             <>
               <OfferLayout {...props} />
-              <NotificationContainer />
+              <Notification />
             </>
           </Route>
         </MemoryRouter>

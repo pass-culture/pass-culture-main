@@ -7,10 +7,11 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import * as useAnalytics from 'components/hooks/useAnalytics'
-import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+
+import TutorialDialog from '../TutorialDialog'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   setHasSeenTutos: jest.fn().mockResolvedValue({}),
@@ -23,11 +24,11 @@ const stepTitles = [
   'Suivre et gérer vos réservations',
 ]
 
-const renderTutorialDialog = async (store, props = {}) => {
+const renderTutorialDialog = async store => {
   return render(
     <Provider store={store}>
       <MemoryRouter>
-        <TutorialDialogContainer {...props} />
+        <TutorialDialog />
       </MemoryRouter>
     </Provider>
   )
@@ -74,8 +75,7 @@ describe('tutorial modal', () => {
       },
     })
 
-    const props = {}
-    await renderTutorialDialog(store, props)
+    await renderTutorialDialog(store)
 
     expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
   })
@@ -89,9 +89,8 @@ describe('tutorial modal', () => {
         },
       },
     })
-    const props = {}
 
-    await renderTutorialDialog(store, props)
+    await renderTutorialDialog(store)
 
     expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
   })

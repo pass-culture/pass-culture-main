@@ -2,13 +2,15 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import VenueItem from './VenueItem/VenueItem'
 
-const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
+const Venues = ({ venues, offererId }) => {
+  const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
@@ -39,7 +41,6 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
   )
 }
 Venues.propTypes = {
-  isVenueCreationAvailable: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }

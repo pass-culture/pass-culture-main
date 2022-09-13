@@ -5,6 +5,7 @@ import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -15,14 +16,14 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import { mapApiToBrowser } from 'utils/translate'
 
-import OffererItemContainer from './OffererItem/OffererItemContainer'
+import OffererItem from './OffererItem/OffererItem'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 /* eslint-disable */
-function withRouter(Component) {
+function withRouterAndApiSiren(Component) {
   return props => (
-    <Component {...props} history={useHistory()} location={useLocation()} />
+    <Component {...props} history={useHistory()} location={useLocation()} isOffererCreationAvailable={useActiveFeature('API_SIRENE_AVAILABLE')}/>
   )
 }
 /* eslint-enable */
@@ -222,7 +223,7 @@ class Offerers extends PureComponent {
         >
           {offerers.map(offerer => {
             return offerer.isValidated && offerer.userHasAccess ? (
-              <OffererItemContainer key={offerer.id} offerer={offerer} />
+              <OffererItem key={offerer.id} offerer={offerer} />
             ) : (
               <PendingOffererItem key={offerer.siren} offerer={offerer} />
             )
@@ -240,4 +241,4 @@ Offerers.propTypes = {
   location: PropTypes.shape().isRequired,
 }
 
-export default withRouter(Offerers)
+export default withRouterAndApiSiren(Offerers)

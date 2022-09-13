@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
@@ -10,7 +10,6 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { isAPISireneAvailable } from 'store/features/selectors'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
@@ -20,7 +19,7 @@ const VenueCreationLinks = ({
   hasVirtualOffers,
   offererId,
 }) => {
-  const isVenueCreationAvailable = useSelector(isAPISireneAvailable)
+  const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const { logEvent } = useAnalytics()
   const location = useLocation()
 

@@ -1,1 +1,1 @@
-export { default as Reimbursements } from './Reimbursements'
+export { default } from './Reimbursements'

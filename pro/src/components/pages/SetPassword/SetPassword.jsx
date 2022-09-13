@@ -1,8 +1,9 @@
-import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useState } from 'react'
 import { Field, Form } from 'react-final-form'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import Logo from 'components/layout/Logo'
@@ -10,15 +11,17 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { setPassword } from 'repository/pcapi/pcapi'
 
-export const INVALID_FORM_MESSAGE =
+const INVALID_FORM_MESSAGE =
   "Une erreur s'est produite, veuillez corriger le formulaire."
-export const UNKNOWN_ERROR_MESSAGE =
+const UNKNOWN_ERROR_MESSAGE =
   "Une erreur s'est produite, veuillez contacter le support."
-export const DIFFERENT_PASSWORDS_ERROR_MESSAGE =
+const DIFFERENT_PASSWORDS_ERROR_MESSAGE =
   'Les deux mots de passe ne sont pas identiques'
 
-export const SetPassword = props => {
-  const { currentUser, showNotification } = props
+const SetPassword = () => {
+  const { currentUser } = useCurrentUser()
+  const notification = useNotification()
+
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch()
@@ -45,7 +48,7 @@ export const SetPassword = props => {
         })
         .catch(error => {
           if (error.errors.newPassword) {
-            showNotification('error', INVALID_FORM_MESSAGE)
+            notification.error(INVALID_FORM_MESSAGE)
             setBackendErrors(error.errors)
             return
           }
@@ -53,9 +56,9 @@ export const SetPassword = props => {
             redirectOnTokenError()
             return
           }
-          showNotification('error', UNKNOWN_ERROR_MESSAGE)
+          notification.error(UNKNOWN_ERROR_MESSAGE)
         }),
-    [showNotification, history, token, redirectOnTokenError]
+    [history, token, redirectOnTokenError]
   )
 
   const getPasswordErrors = useCallback(
@@ -149,11 +152,4 @@ export const SetPassword = props => {
   )
 }
 
-SetPassword.defaultProps = {
-  currentUser: null,
-}
-
-SetPassword.propTypes = {
-  currentUser: PropTypes.shape(),
-  showNotification: PropTypes.func.isRequired,
-}
+export default SetPassword

@@ -11,13 +11,13 @@ import { api } from 'apiClient/api'
 import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
-import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import { OfferV2Summary as OfferV2SummaryRoute } from 'routes/OfferV2Summary'
 import { Title } from 'ui-kit'
 
 import OfferDetails from './OfferDetails'
+import Stocks from './Stocks/Stocks'
 
 const mapPathToStep = {
   creation: OfferBreadcrumbStep.DETAILS,
@@ -141,7 +141,7 @@ const OfferLayout = () => {
             exact
             path={[`${match.url}/stocks`, `${match.url}/creation/stocks`]}
           >
-            <StocksContainer
+            <Stocks
               location={location}
               offer={offer}
               reloadOffer={reloadOffer}

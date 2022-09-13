@@ -10,13 +10,13 @@ import OffererItem from '../OffererItem'
 
 describe('src | components | pages | Offerers | OffererItem | OffererItem', () => {
   let props
-  let store
 
   const dispatchMock = jest.fn()
   const parseMock = () => ({ 'mots-cles': null })
   const queryChangeMock = jest.fn()
 
-  const renderOfferItem = () => {
+  const renderOfferItem = (overrideStore = {}) => {
+    const store = configureTestStore(overrideStore)
     return render(
       <Provider store={store}>
         <MemoryRouter>
@@ -27,7 +27,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
   }
 
   beforeEach(() => {
-    store = configureTestStore({})
     props = {
       currentUser: {},
       isVenueCreationAvailable: true,
@@ -225,7 +224,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         }
 
         // when
-        renderOfferItem()
+        renderOfferItem({
+          features: {
+            list: [{ isActive: true, nameKey: 'API_SIRENE_AVAILABLE' }],
+          },
+        })
         const navLink = screen.getByText('Nouveau lieu')
 
         // then
@@ -234,7 +237,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
       it('should redirect to unavailable page when venue creation is not available', () => {
         // given
-        props.isVenueCreationAvailable = false
         props.offerer = {
           id: 'AE',
           name: 'Fake Name',

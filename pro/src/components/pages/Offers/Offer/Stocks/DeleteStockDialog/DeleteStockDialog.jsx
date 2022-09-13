@@ -1,29 +1,28 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
+import useNotification from 'components/hooks/useNotification'
 import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-const DeleteStockDialog = ({
-  isEvent,
-  notifyDeletionError,
-  notifyDeletionSuccess,
-  onDelete,
-  setIsDeleting,
-  stockId,
-}) => {
+const DeleteStockDialog = ({ isEvent, onDelete, setIsDeleting, stockId }) => {
   const DIALOG_LABEL_ID = 'DIALOG_LABEL_ID'
+  const notification = useNotification()
 
   const confirmStockDeletion = useCallback(() => {
     pcapi
       .deleteStock(stockId)
       .then(() => {
-        notifyDeletionSuccess()
+        notification.success('Le stock a été supprimé.')
         onDelete()
       })
-      .catch(() => notifyDeletionError())
-  }, [notifyDeletionError, notifyDeletionSuccess, onDelete, stockId])
+      .catch(() =>
+        notification.error(
+          'Une erreur est survenue lors de la suppression du stock.'
+        )
+      )
+  }, [onDelete, stockId])
 
   const abortStockDeletion = useCallback(
     () => setIsDeleting(false),

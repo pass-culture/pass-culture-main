@@ -4,7 +4,6 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
-import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 import {
   getMaximumBookingLimitDatetime as getMaximumBookingLimitDatetimeFromExpirationDatetime,
   hasStockBeenUpdated,
@@ -14,6 +13,7 @@ import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import ActivationCodesUploadDialog from '../ActivationCodesUploadDialog/ActivationCodesUploadDialog'
+import DeleteStockDialog from '../DeleteStockDialog/DeleteStockDialog'
 import StockItemOptionsMenu from '../StockItemOptionsMenu/StockItemOptionsMenu'
 
 const noOperation = () => {}
@@ -327,7 +327,7 @@ const StockItem = ({
           setIsActivationCodesDialogOpen={setIsActivationCodesDialogOpen}
         />
         {isDeleting && (
-          <DeleteStockDialogContainer
+          <DeleteStockDialog
             isEvent={isEvent}
             onDelete={onDelete}
             setIsDeleting={setIsDeleting}

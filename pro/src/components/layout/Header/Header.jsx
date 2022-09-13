@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import { Events } from 'core/FirebaseEvents/constants'
 
 import Logo from '../Logo'
@@ -15,7 +15,8 @@ import { ReactComponent as OffersSvg } from './assets/offers.svg'
 import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 import { ReactComponent as SignoutSvg } from './assets/signout.svg'
 
-const Header = ({ isUserAdmin }) => {
+const Header = () => {
+  const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
   const history = useHistory()
   const { logEvent } = useAnalytics()
@@ -25,14 +26,13 @@ const Header = ({ isUserAdmin }) => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
     history.push('/logout')
   }, [dispatch, history, logEvent, location.pathname])
-
   return (
     <header className="menu-v2">
       <nav>
         <div className="nav-brand">
           <Logo
             className="nav-item"
-            isUserAdmin={isUserAdmin}
+            isUserAdmin={currentUser.isAdmin}
             onClick={() => {
               logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
             }}
@@ -46,7 +46,7 @@ const Header = ({ isUserAdmin }) => {
               logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
             }}
             role="menuitem"
-            to={isUserAdmin ? '/structures' : '/accueil'}
+            to={currentUser.isAdmin ? '/structures' : '/accueil'}
           >
             <HomeSvg aria-hidden />
             Accueil
@@ -116,10 +116,6 @@ const Header = ({ isUserAdmin }) => {
       </nav>
     </header>
   )
-}
-
-Header.propTypes = {
-  isUserAdmin: PropTypes.bool.isRequired,
 }
 
 export default Header

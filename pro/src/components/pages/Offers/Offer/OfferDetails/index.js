@@ -1,1 +1,1 @@
-export { default } from './OfferDetailsContainer'
+export { default } from './OfferDetails'

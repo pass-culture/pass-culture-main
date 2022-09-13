@@ -5,6 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import useAnalytics from 'components/hooks/useAnalytics'
+import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
@@ -28,6 +29,10 @@ import { computeOffersUrl } from 'core/Offers/utils'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
+import {
+  searchFiltersSelector,
+  searchPageNumberSelector,
+} from 'store/offers/selectors'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -36,13 +41,7 @@ import PriceErrorHTMLNotification from './PriceErrorHTMLNotification'
 
 const EMPTY_STRING_VALUE = ''
 
-const ThingStocks = ({
-  offer,
-  showErrorNotification,
-  showSuccessNotification,
-  showHtmlErrorNotification,
-  reloadOffer,
-}) => {
+const ThingStocks = ({ offer, reloadOffer }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [enableSubmitButtonSpinner, setEnableSubmitButtonSpinner] =
@@ -54,11 +53,12 @@ const ThingStocks = ({
     stock && stock.activationCodesExpirationDatetime !== null
   const history = useHistory()
   const location = useLocation()
+  const notification = useNotification()
   const summaryStepUrl = isOfferDraft
     ? `/offre/${offer.id}/individuel/creation/recapitulatif`
     : `/offre/${offer.id}/individuel/recapitulatif`
-  const offersSearchFilters = useSelector(state => state.offers.searchFilters)
-  const offersPageNumber = useSelector(state => state.offers.pageNumber)
+  const offersSearchFilters = useSelector(searchFiltersSelector)
+  const offersPageNumber = useSelector(searchPageNumberSelector)
   const loadStocks = useCallback(() => {
     return pcapi.loadStocks(offerId).then(receivedStocks => {
       if (!receivedStocks.stocks.length) {
@@ -84,12 +84,14 @@ const ThingStocks = ({
   useEffect(() => {
     if (Object.values(formErrors).length > 0) {
       if (formErrors.price300) {
-        showHtmlErrorNotification(PriceErrorHTMLNotification())
+        notification.error(PriceErrorHTMLNotification())
       } else {
-        showErrorNotification()
+        notification.error(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+        )
       }
     }
-  }, [formErrors, showErrorNotification, showHtmlErrorNotification])
+  }, [formErrors])
 
   const addNewStock = useCallback(() => {
     const newStock = {
@@ -169,7 +171,7 @@ const ThingStocks = ({
           if (isOfferDraft) {
             reloadOffer(true)
             if (quantityOfActivationCodes) {
-              showSuccessNotification(
+              notification.success(
                 `${quantityOfActivationCodes} ${
                   quantityOfActivationCodes > 1
                     ? ' Codes d’activation ont été ajoutés'
@@ -187,7 +189,7 @@ const ThingStocks = ({
             loadStocks()
             reloadOffer()
             if (quantityOfActivationCodes) {
-              showSuccessNotification(
+              notification.success(
                 `${quantityOfActivationCodes} ${
                   quantityOfActivationCodes > 1
                     ? ' Codes d’activation ont été ajoutés'
@@ -195,14 +197,18 @@ const ThingStocks = ({
                 }`
               )
             } else {
-              showSuccessNotification(
+              notification.success(
                 'Vos modifications ont bien été enregistrées'
               )
             }
           }
           history.push(`${summaryStepUrl}${queryString}`)
         })
-        .catch(() => showErrorNotification())
+        .catch(() =>
+          notification.error(
+            'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+          )
+        )
         .finally(() => setEnableSubmitButtonSpinner(false))
     }
   }, [
@@ -216,8 +222,6 @@ const ThingStocks = ({
     offer.venue.departementCode,
     loadStocks,
     reloadOffer,
-    showSuccessNotification,
-    showErrorNotification,
   ])
 
   if (isLoading) {
@@ -349,9 +353,6 @@ const ThingStocks = ({
 ThingStocks.propTypes = {
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
-  showErrorNotification: PropTypes.func.isRequired,
-  showHtmlErrorNotification: PropTypes.func.isRequired,
-  showSuccessNotification: PropTypes.func.isRequired,
 }
 
 export default ThingStocks
