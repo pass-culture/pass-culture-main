@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import logging
 import typing
 
@@ -79,7 +80,7 @@ def _is_fraud_check_up_to_date(
         return False
 
     fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
-    return new_content.latest_modification_datetime == fraud_check_content.get_latest_modification_datetime()
+    return compute_dms_checksum(new_content) == compute_dms_checksum(fraud_check_content)
 
 
 def _update_fraud_check_with_new_content(
@@ -108,6 +109,50 @@ def _compute_birth_date_error_details(
         key=fraud_models.DmsFieldErrorKeyEnum.birth_date,
         value=birth_date.isoformat() if birth_date else None,
     )
+
+
+def _process_dms_application(
+    application_content: fraud_models.DMSContent,
+    application_scalar_id: str,
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    state: dms_models.GraphQLApplicationStates,
+    user: users_models.User,
+) -> None:
+    birth_date_error = _compute_birth_date_error_details(fraud_check, application_content)
+
+    if state == dms_models.GraphQLApplicationStates.draft:
+        _process_in_progress_application(
+            fraud_check,
+            application_content,
+            fraud_models.FraudCheckStatus.STARTED,
+            application_scalar_id,
+            birth_date_error,
+            is_application_updatable=True,
+        )
+
+    elif state == dms_models.GraphQLApplicationStates.on_going:
+        _process_in_progress_application(
+            fraud_check,
+            application_content,
+            fraud_models.FraudCheckStatus.PENDING,
+            application_scalar_id,
+            birth_date_error,
+            is_application_updatable=False,
+        )
+
+    elif state == dms_models.GraphQLApplicationStates.accepted:
+        _process_accepted_application(user, fraud_check, application_content.field_errors)
+
+    elif state == dms_models.GraphQLApplicationStates.refused:
+        fraud_check.status = fraud_models.FraudCheckStatus.KO
+        fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
+
+    elif state == dms_models.GraphQLApplicationStates.without_continuation:
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+
+    _update_application_annotations(application_scalar_id, application_content, birth_date_error, fraud_check)
+
+    pcapi_repository.repository.save(fraud_check)
 
 
 def handle_dms_application(
@@ -164,41 +209,8 @@ def handle_dms_application(
 
         _update_fraud_check_with_new_content(fraud_check, application_content)
 
-    birth_date_error = _compute_birth_date_error_details(fraud_check, application_content)
+    _process_dms_application(application_content, application_scalar_id, fraud_check, state, user)
 
-    if state == dms_models.GraphQLApplicationStates.draft:
-        _process_in_progress_application(
-            fraud_check,
-            application_content,
-            fraud_models.FraudCheckStatus.STARTED,
-            application_scalar_id,
-            birth_date_error,
-            is_application_updatable=True,
-        )
-
-    elif state == dms_models.GraphQLApplicationStates.on_going:
-        _process_in_progress_application(
-            fraud_check,
-            application_content,
-            fraud_models.FraudCheckStatus.PENDING,
-            application_scalar_id,
-            birth_date_error,
-            is_application_updatable=False,
-        )
-
-    elif state == dms_models.GraphQLApplicationStates.accepted:
-        _process_accepted_application(user, fraud_check, application_content.field_errors)
-
-    elif state == dms_models.GraphQLApplicationStates.refused:
-        fraud_check.status = fraud_models.FraudCheckStatus.KO
-        fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
-
-    elif state == dms_models.GraphQLApplicationStates.without_continuation:
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
-
-    _update_application_annotations(application_scalar_id, application_content, birth_date_error, fraud_check)
-
-    pcapi_repository.repository.save(fraud_check)
     return fraud_check
 
 
@@ -520,3 +532,28 @@ def get_dms_subscription_message(
         return None
 
     return None
+
+
+def compute_dms_checksum(content: fraud_models.DMSContent) -> str:
+    """
+    Compute the checksum for a DMS fraud check.
+    """
+    fields = [
+        content.activity,
+        content.address,
+        content.birth_date.isoformat() if content.birth_date else None,
+        content.city,
+        content.civility.value if content.civility else None,
+        content.department,
+        content.email,
+        content.first_name,
+        content.id_piece_number,
+        content.last_name,
+        content.phone,
+        content.postal_code,
+        content.state,
+    ]
+    sorted_fields = sorted([field.encode("utf-8") for field in fields if field is not None])
+    checksum = hashlib.sha256(b"".join(sorted_fields)).hexdigest()
+
+    return checksum
