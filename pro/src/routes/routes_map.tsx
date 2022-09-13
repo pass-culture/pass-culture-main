@@ -367,7 +367,7 @@ const routes: IRoute[] = [
   },
   {
     component: UserProfile,
-    path: '/profile',
+    path: '/profil',
     title: 'Profil',
     featureName: 'ENABLE_IN_PAGE_PROFILE_FORM',
   },
