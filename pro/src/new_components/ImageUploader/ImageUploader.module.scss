@@ -1,0 +1,17 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
+.explanatory-text {
+  margin-bottom: rem.torem(24px);
+}
+
+.image-uploader-image-container {
+  display: flex;
+}
+
+.image-uploader-actions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  margin-left: rem.torem(32px);
+}

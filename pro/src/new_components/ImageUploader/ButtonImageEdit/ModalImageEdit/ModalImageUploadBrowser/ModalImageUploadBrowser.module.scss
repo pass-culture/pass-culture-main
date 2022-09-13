@@ -1,0 +1,16 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+
+.modal-upload-browser {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .header {
+    @include fonts.title3;
+  }
+
+  .horizontal-rule {
+    width: 100%;
+  }
+}
