@@ -11,10 +11,11 @@ import configureStore from 'store'
 import { RootState } from 'store/reducers'
 
 interface IStoreProvider {
+  isDev?: boolean
   children: JSX.Element | JSX.Element[]
 }
 
-const StoreProvider = ({ children }: IStoreProvider) => {
+const StoreProvider = ({ children, isDev = false }: IStoreProvider) => {
   const [currentUser, setCurrentUser] =
     useState<SharedCurrentUserResponseModel | null>()
   const [features, setFeatures] = useState<FeatureResponseModel[]>()
@@ -22,6 +23,11 @@ const StoreProvider = ({ children }: IStoreProvider) => {
     useState<Partial<RootState | null>>(null)
 
   useEffect(() => {
+    function setEmptyInitialData() {
+      setCurrentUser(null)
+      setFeatures([])
+    }
+
     async function getStoreInitialData() {
       api
         .getProfile()
@@ -32,7 +38,7 @@ const StoreProvider = ({ children }: IStoreProvider) => {
         .then(response => setFeatures(response))
         .catch(() => setFeatures([]))
     }
-    getStoreInitialData()
+    isDev ? setEmptyInitialData() : getStoreInitialData()
   }, [])
 
   useEffect(() => {
