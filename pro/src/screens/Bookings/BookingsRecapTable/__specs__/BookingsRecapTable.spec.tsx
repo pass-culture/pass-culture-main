@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import type { Store } from 'redux'
 
 import { BookingRecapStatus } from 'apiClient/v1'
+import { Audience } from 'core/shared'
 import { EMPTY_FILTER_VALUE } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
 import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
@@ -95,6 +96,7 @@ describe('components | BookingsRecapTable', () => {
     const props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
+      audience: Audience.INDIVIDUAL,
     }
     render(
       <Provider store={store}>
@@ -138,6 +140,7 @@ describe('components | BookingsRecapTable', () => {
       locationState: {
         statuses: ['booked', 'cancelled'],
       },
+      audience: Audience.INDIVIDUAL,
     }
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
 
@@ -171,6 +174,7 @@ describe('components | BookingsRecapTable', () => {
     const props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
+      audience: Audience.INDIVIDUAL,
     }
 
     // When

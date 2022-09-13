@@ -269,6 +269,7 @@ const Bookings = <
             bookingsRecap={bookings}
             isLoading={isTableLoading}
             locationState={locationState}
+            audience={audience}
           />
         ) : isTableLoading ? (
           <Spinner />

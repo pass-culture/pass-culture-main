@@ -5,6 +5,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { Audience } from 'core/shared'
 
 import {
   BeneficiaryCell,
@@ -22,6 +23,8 @@ import {
   EMPTY_FILTER_VALUE,
   TableWrapper,
 } from './components'
+import DetailsButtonCell from './components/CellsFormatter/DetailsButtonCell'
+import NumberOfTicketsAndPriceCell from './components/CellsFormatter/NumberOfTicketsAndPriceCell'
 import { NB_BOOKINGS_PER_PAGE } from './constants'
 import { BookingsFilters } from './types'
 import {
@@ -41,6 +44,7 @@ interface IBookingsRecapTableProps<
   locationState?: {
     statuses: string[]
   }
+  audience: Audience
 }
 
 // TODO: return columns depending on audience
@@ -49,74 +53,119 @@ const getColumnsByAudience = <
 >(
   bookingStatus: string[],
   bookingsRecap: T[],
-  updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
+  updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void,
+  audience: Audience
 ): (Column<T> & {
   className?: string
 })[] => {
-  const columns: (Column<BookingRecapResponseModel> & {
+  type IndividualColumnType = Column<BookingRecapResponseModel> & {
     className?: string
-  })[] = [
-    {
-      id: 'stock',
-      accessor: 'stock',
-      Header: "Nom de l'offre",
-      Cell: ({ value }) => <BookingOfferCell offer={value} />,
-      defaultCanSort: true,
-      sortType: sortByOfferName,
-      className: 'column-offer-name',
+  }
+  type CollectiveColumnType = Column<CollectiveBookingResponseModel> & {
+    className?: string
+  }
+
+  const offerColumn: IndividualColumnType = {
+    id: 'stock',
+    accessor: 'stock',
+    Header: "Nom de l'offre",
+    Cell: ({ value }) => <BookingOfferCell offer={value} />,
+    defaultCanSort: true,
+    sortType: sortByOfferName,
+    className: 'column-offer-name',
+  }
+
+  const beneficiaryColumn: IndividualColumnType = {
+    Header: audience === Audience.INDIVIDUAL ? 'Bénéficiaire' : 'Établissement',
+    id: 'beneficiary',
+    accessor: 'beneficiary',
+    Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
+    defaultCanSort: true,
+    sortType: sortByBeneficiaryName,
+    className: 'column-beneficiary',
+  }
+
+  const isDuoColumn: IndividualColumnType = {
+    id: 'booking_is_duo',
+    accessor: 'booking_is_duo',
+    Header: '',
+    Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
+    disableSortBy: true,
+    className: 'column-booking-duo',
+  }
+
+  const bookingDateColumn: IndividualColumnType = {
+    Header: 'Réservation',
+    id: 'booking_date',
+    accessor: 'booking_date',
+    Cell: ({ value }) => <BookingDateCell bookingDateTimeIsoString={value} />,
+    defaultCanSort: true,
+    sortType: sortByBookingDate,
+    className: 'column-booking-date',
+  }
+
+  const bookingTokenColumn: IndividualColumnType = {
+    Header: 'Contremarque',
+    id: 'booking_token',
+    accessor: 'booking_token',
+    Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
+    disableSortBy: true,
+    className: 'column-booking-token',
+  }
+  const bookingStatusColumn: IndividualColumnType = {
+    id: 'booking_status',
+    accessor: 'booking_status',
+    Cell: ({ row }) => {
+      return <BookingStatusCell bookingRecapInfo={row} />
     },
-    {
-      id: 'booking_is_duo',
-      accessor: 'booking_is_duo',
-      Header: '',
-      Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
-      disableSortBy: true,
-      className: 'column-booking-duo',
-    },
-    {
-      Header: 'Bénéficiaire',
-      id: 'beneficiary',
-      accessor: 'beneficiary',
-      Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
-      defaultCanSort: true,
-      sortType: sortByBeneficiaryName,
-      className: 'column-beneficiary',
-    },
-    {
-      Header: 'Réservation',
-      id: 'booking_date',
-      accessor: 'booking_date',
-      Cell: ({ value }) => <BookingDateCell bookingDateTimeIsoString={value} />,
-      defaultCanSort: true,
-      sortType: sortByBookingDate,
-      className: 'column-booking-date',
-    },
-    {
-      Header: 'Contremarque',
-      id: 'booking_token',
-      accessor: 'booking_token',
-      Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
-      disableSortBy: true,
-      className: 'column-booking-token',
-    },
-    {
-      id: 'booking_status',
-      accessor: 'booking_status',
-      Cell: ({ row }) => {
-        return <BookingStatusCell bookingRecapInfo={row} />
-      },
-      disableSortBy: true,
-      Header: () => (
-        <FilterByBookingStatus
-          bookingStatuses={bookingStatus}
-          bookingsRecap={bookingsRecap}
-          updateGlobalFilters={updateGlobalFilters}
-        />
-      ),
-      className: 'column-booking-status',
-    },
+    disableSortBy: true,
+    Header: () => (
+      <FilterByBookingStatus
+        bookingStatuses={bookingStatus}
+        bookingsRecap={bookingsRecap}
+        updateGlobalFilters={updateGlobalFilters}
+      />
+    ),
+    className: 'column-booking-status',
+  }
+
+  const numberOfTicketsAndPriceColumn: CollectiveColumnType = {
+    id: 'booking_amount',
+    accessor: 'booking_amount',
+    Cell: ({ row }) => <NumberOfTicketsAndPriceCell bookingRecapInfo={row} />,
+    Header: 'Places et prix',
+    disableSortBy: true,
+  }
+
+  const detailsColumn: CollectiveColumnType = {
+    id: 'booking_details',
+    accessor: 'booking_amount',
+    Cell: ({ row }) => <DetailsButtonCell bookingRow={row} />,
+    Header: '',
+    disableSortBy: true,
+  }
+
+  const individualBookingsColumns = [
+    offerColumn,
+    isDuoColumn,
+    beneficiaryColumn,
+    bookingDateColumn,
+    bookingTokenColumn,
+    bookingStatusColumn,
   ]
-  return columns as (Column<T> & {
+
+  const collectiveBookingsColumns = [
+    offerColumn,
+    beneficiaryColumn,
+    numberOfTicketsAndPriceColumn,
+    bookingStatusColumn,
+    detailsColumn,
+  ]
+  return (
+    audience === Audience.INDIVIDUAL
+      ? individualBookingsColumns
+      : collectiveBookingsColumns
+  ) as (Column<T> & {
     className?: string
   })[]
 }
@@ -127,6 +176,7 @@ const BookingsRecapTable = <
   bookingsRecap,
   isLoading,
   locationState,
+  audience,
 }: IBookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
@@ -212,7 +262,8 @@ const BookingsRecapTable = <
       getColumnsByAudience(
         filters.bookingStatus,
         bookingsRecap,
-        updateGlobalFilters
+        updateGlobalFilters,
+        audience
       ),
     []
   )

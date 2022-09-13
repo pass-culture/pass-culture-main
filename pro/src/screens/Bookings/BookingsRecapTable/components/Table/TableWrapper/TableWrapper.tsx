@@ -1,5 +1,11 @@
 import React from 'react'
-import { Column, usePagination, useSortBy, useTable } from 'react-table'
+import {
+  Column,
+  useExpanded,
+  usePagination,
+  useSortBy,
+  useTable,
+} from 'react-table'
 
 import {
   BookingRecapResponseModel,
@@ -52,6 +58,7 @@ const TableWrapper = <
       },
     },
     useSortBy,
+    useExpanded,
     usePagination
   )
 
