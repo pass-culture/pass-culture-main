@@ -1,7 +1,7 @@
 import { DEFAULT_ACCESSIBILITY_FORM_VALUES } from './Accessibility'
 import { DEFAULT_ADDRESS_FORM_VALUES } from './Address'
 import { DEFAULT_CONTACT_FORM_VALUES } from './Contact'
-import { DEFAULT_IMAGE_UPLOADER_FORM_VALUES } from './ImageUploader/'
+import { DEFAULT_IMAGE_UPLOADER_FORM_VALUES } from './ImageUploaderVenue/'
 import { DEFAULT_INFORMATIONS_FORM_VALUES } from './Informations'
 
 export const DEFAULT_FORM_VALUES = {

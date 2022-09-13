@@ -11,7 +11,7 @@ import { IProviders, IVenue } from '../../core/Venue/types'
 import { Accessibility } from './Accessibility'
 import { Address } from './Address'
 import { Contact } from './Contact'
-import ImageUploader from './ImageUploader/ImageUploader'
+import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { OffersSynchronization } from './OffersSynchronization'
 import styles from './VenueForm.module.scss'
@@ -37,8 +37,11 @@ const VenueForm = ({
   venueProvider,
   venue,
 }: IVenueForm) => {
-  const { isSubmitting, initialValues } = useFormikContext<IVenueFormValues>()
-  const shouldDisplayImageVenueUploaderSection = initialValues?.isPermanent
+  const {
+    isSubmitting,
+    values: { isPermanent },
+  } = useFormikContext<IVenueFormValues>()
+  const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
 
   return (
@@ -62,9 +65,7 @@ const VenueForm = ({
           venueTypes={venueTypes}
           venueLabels={venueLabels}
         />
-        {!!shouldDisplayImageVenueUploaderSection && (
-          <ImageUploader {...initialValues} />
-        )}
+        {!!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />}
         <Address />
         <Accessibility isCreatingVenue={isCreatingVenue} />
         <Contact />
