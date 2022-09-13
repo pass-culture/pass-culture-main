@@ -4,22 +4,8 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_settings
-from pcapi.utils.human_ids import humanize
-from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
-
-
-@override_settings(PRO_URL="http://pcpro.com")
-def test_build_pc_pro_offer_link():
-    offer = offers_factories.OfferFactory.build(id=123)
-    human_id = humanize(offer.id)
-
-    url = build_pc_pro_offer_link(offer)
-
-    assert url == f"http://pcpro.com/offre/{human_id}/individuel/edition"
 
 
 @pytest.mark.usefixtures("db_session")

@@ -9,7 +9,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.urls import build_pc_pro_offer_link
 
 
 def get_bookings_expiration_to_pro_email_data(

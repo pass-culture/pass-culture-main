@@ -60,9 +60,9 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
-from pcapi.utils.mailing import build_pc_pro_offer_link
-from pcapi.utils.mailing import build_pc_pro_offerer_link
-from pcapi.utils.mailing import build_pc_pro_venue_link
+from pcapi.utils.urls import build_pc_pro_offer_link
+from pcapi.utils.urls import build_pc_pro_offerer_link
+from pcapi.utils.urls import build_pc_pro_venue_link
 from pcapi.workers import push_notification_job
 
 

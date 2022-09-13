@@ -42,9 +42,9 @@ from pcapi.core.users.external import zendesk_sell
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
-from pcapi.utils.mailing import build_pc_pro_offerer_link
-from pcapi.utils.mailing import build_pc_pro_venue_bookings_link
-from pcapi.utils.mailing import build_pc_pro_venue_link
+from pcapi.utils.urls import build_pc_pro_offerer_link
+from pcapi.utils.urls import build_pc_pro_venue_bookings_link
+from pcapi.utils.urls import build_pc_pro_venue_link
 
 
 logger = logging.getLogger(__name__)
