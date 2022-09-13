@@ -57,13 +57,23 @@ class EnsurePhoneNumberUnicityTest:
         )
 
         unvalidated_for_peer_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=in_validation_user.id
+            userId=in_validation_user.id,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
         ).one()
+
         assert unvalidated_for_peer_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER]
         assert (
             unvalidated_for_peer_check.reason
             == f"The phone number validation had the following side effect: phone number +33607080900 was unvalidated for user {already_validated_user.id}"
         )
+
+        success_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=in_validation_user.id,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+        ).one()
+        assert success_check.reasonCodes is None
 
 
 @pytest.mark.usefixtures("db_session")

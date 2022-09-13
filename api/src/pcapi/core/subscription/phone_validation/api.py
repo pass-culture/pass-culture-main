@@ -195,4 +195,14 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     user.phoneNumber = phone_number  # type: ignore [assignment]
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-    repository.save(user)
+
+    fraud_check = fraud_models.BeneficiaryFraudCheck(
+        user=user,
+        type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        status=fraud_models.FraudCheckStatus.OK,
+        eligibilityType=user.eligibility,
+        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number),  # type: ignore [arg-type]
+        thirdPartyId=f"PC-{user.id}",
+    )
+
+    repository.save(user, fraud_check)
