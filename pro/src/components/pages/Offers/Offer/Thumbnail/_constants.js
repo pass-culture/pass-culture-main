@@ -1,4 +1,3 @@
-export const NBSP = '\u00a0'
 export const IMPORT_TAB_ID = 'import'
 export const IMAGE_TYPE = ['image/png', 'image/jpeg']
 export const MAX_IMAGE_SIZE = 10_000_000
