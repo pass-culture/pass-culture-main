@@ -14,7 +14,7 @@ import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -71,7 +71,7 @@ const renderBookingsRecap = async (
         initialEntries={[{ pathname: '/reservations', state: routerState }]}
       >
         <BookingsRecapContainer />
-        <NotificationContainer />
+        <Notification />
       </MemoryRouter>
     </Provider>
   )

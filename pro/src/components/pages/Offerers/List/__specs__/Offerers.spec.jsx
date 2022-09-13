@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -10,11 +10,12 @@ import { configureTestStore } from 'store/testUtils'
 
 import Offerers from '../Offerers'
 
-const renderOfferers = async (props, store) => {
+const renderOfferers = async (storeOverride = {}) => {
+  const store = configureTestStore(storeOverride)
   render(
     <Provider store={store}>
       <MemoryRouter>
-        <Offerers {...props} />
+        <Offerers />
       </MemoryRouter>
     </Provider>
   )
@@ -25,27 +26,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 describe('src | components | Offerers', () => {
-  let props
   let offerer
-  let store
 
   beforeEach(() => {
     offerer = { id: 'AE', siren: '1234567' }
-    props = {
-      closeNotification: jest.fn(),
-      currentUser: {},
-      isOffererCreationAvailable: true,
-      location: {
-        search: '',
-      },
-      query: {
-        parse: () => ({ 'mots-cles': null }),
-      },
-      showNotification: jest.fn(),
-    }
-    store = configureTestStore({
-      user: { currentUser: { publicName: 'François', isAdmin: false } },
-    })
     pcapi.getOfferers.mockResolvedValue({
       offerers: [offerer],
       nbTotalResults: 1,
@@ -55,9 +39,13 @@ describe('src | components | Offerers', () => {
   describe('render', () => {
     describe('subtitle message', () => {
       describe('when the isOffererCreationAvailable feature is activated', () => {
-        it('should display a link to create an offer', async () => {
+        it('should display a link to create an venue', async () => {
           // when
-          renderOfferers(props, store)
+          renderOfferers({
+            features: {
+              list: [{ isActive: true, nameKey: 'API_SIRENE_AVAILABLE' }],
+            },
+          })
 
           // then
           await waitFor(() =>
@@ -70,12 +58,9 @@ describe('src | components | Offerers', () => {
       })
 
       describe('when the isOffererCreationAvailable feature is disabled', () => {
-        it('should display a link to create an offer', async () => {
-          // given
-          props.isOffererCreationAvailable = false
-
+        it('should display a link to indisponible page', async () => {
           // when
-          renderOfferers(props, store)
+          renderOfferers()
 
           // then
           await waitFor(() =>
@@ -91,7 +76,7 @@ describe('src | components | Offerers', () => {
     describe('should pluralize offerers menu link', () => {
       it('should display Structure juridique when one offerer', async () => {
         // when
-        renderOfferers(props, store)
+        renderOfferers()
 
         // then
         await waitFor(() =>
@@ -107,49 +92,11 @@ describe('src | components | Offerers', () => {
         })
 
         // when
-        renderOfferers(props, store)
+        renderOfferers()
 
         // then
         await waitFor(() =>
           expect(screen.getByText('Structures juridiques')).toBeInTheDocument()
-        )
-      })
-    })
-
-    describe('when leaving page', () => {
-      it('should not close notifcation', async () => {
-        // given
-        props = { ...props, closeNotification: jest.fn() }
-        renderOfferers(props, store)
-
-        // when
-        fireEvent.click(
-          screen.getByText('créer un nouveau lieu', { selector: 'a' })
-        )
-
-        // then
-        await waitFor(() =>
-          expect(props.closeNotification).not.toHaveBeenCalled()
-        )
-      })
-
-      it('should not fail on null notifcation', async () => {
-        // given
-        props = {
-          ...props,
-          closeNotification: jest.fn(),
-          notification: null,
-        }
-        renderOfferers(props, store)
-
-        // when
-        fireEvent.click(
-          screen.getByText('créer un nouveau lieu', { selector: 'a' })
-        )
-
-        // then
-        await waitFor(() =>
-          expect(props.closeNotification).not.toHaveBeenCalled()
         )
       })
     })
@@ -171,7 +118,7 @@ describe('src | components | Offerers', () => {
           })
 
           // when
-          renderOfferers(props, store)
+          renderOfferers()
 
           // then
           await waitFor(() =>
@@ -196,7 +143,7 @@ describe('src | components | Offerers', () => {
             })
 
             // when
-            renderOfferers(props, store)
+            renderOfferers()
 
             // then
             await waitFor(() =>
@@ -222,7 +169,7 @@ describe('src | components | Offerers', () => {
             })
 
             // when
-            renderOfferers(props, store)
+            renderOfferers()
 
             // then
             await waitFor(() =>
@@ -239,7 +186,11 @@ describe('src | components | Offerers', () => {
       describe('when api sirene feature is available', () => {
         it('should display a link to create an offer', async () => {
           // when
-          renderOfferers(props, store)
+          renderOfferers({
+            features: {
+              list: [{ isActive: true, nameKey: 'API_SIRENE_AVAILABLE' }],
+            },
+          })
 
           // then
           await waitFor(() =>
@@ -254,10 +205,9 @@ describe('src | components | Offerers', () => {
       describe('when api sirene feature is not available', () => {
         it('should display a link to unavailable page', async () => {
           // given
-          props.isOffererCreationAvailable = false
 
           // when
-          renderOfferers(props, store)
+          renderOfferers()
 
           // then
           await waitFor(() =>

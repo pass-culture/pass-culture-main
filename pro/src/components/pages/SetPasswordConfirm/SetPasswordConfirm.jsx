@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { parse } from 'utils/query-string'
 
-export const SetPasswordConfirm = props => {
-  const { currentUser } = props
+const SetPasswordConfirm = () => {
+  const { currentUser } = useCurrentUser()
   const history = useHistory()
   const location = useLocation()
   const { error } = parse(location.search)
@@ -63,10 +63,4 @@ export const SetPasswordConfirm = props => {
   )
 }
 
-SetPasswordConfirm.defaultProps = {
-  currentUser: null,
-}
-
-SetPasswordConfirm.propTypes = {
-  currentUser: PropTypes.shape(),
-}
+export default SetPasswordConfirm

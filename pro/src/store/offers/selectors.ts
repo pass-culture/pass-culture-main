@@ -8,3 +8,6 @@ export const categoriesAndSubCategoriesSelector = (
 
 export const searchFiltersSelector = (state: any): TSearchFilters =>
   state.offers.searchFilters
+
+export const searchPageNumberSelector = (state: any): number =>
+  state.offers.pageNumber

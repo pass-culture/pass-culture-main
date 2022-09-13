@@ -18,13 +18,24 @@ jest.mock('repository/pcapi/pcapi', () => ({
   signout: jest.fn(),
 }))
 
-const renderHeader = props => {
-  const stubStore = configureTestStore({})
+const defaultStore = {
+  user: {
+    currentUser: {
+      publicName: 'François',
+      isAdmin: false,
+      email: 'test@toto.com',
+    },
+    initialized: true,
+  },
+}
+
+const renderHeader = (overrideStore = defaultStore) => {
+  const stubStore = configureTestStore(overrideStore)
 
   return render(
     <Provider store={stubStore}>
       <MemoryRouter initialEntries={['/accueil']}>
-        <Header {...props} />
+        <Header />
       </MemoryRouter>
     </Provider>
   )
@@ -38,7 +49,7 @@ describe('navigation menu', () => {
   describe('when clicking on Home icon', () => {
     it('should redirect to /accueil when user is not admin', () => {
       // When
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
 
       // Then
       expect(screen.getByText('Accueil').closest('a')).toHaveAttribute(
@@ -49,7 +60,16 @@ describe('navigation menu', () => {
 
     it('should redirect to /structures when user is admin', () => {
       // When
-      renderHeader({ isUserAdmin: true })
+      renderHeader({
+        user: {
+          currentUser: {
+            publicName: 'François',
+            isAdmin: true,
+            email: 'test@toto.com',
+          },
+          initialized: true,
+        },
+      })
 
       // Then
       expect(screen.getByText('Accueil').closest('a')).toHaveAttribute(
@@ -68,7 +88,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Pro', async () => {
       // given
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
 
       // When
       await userEvent.click(
@@ -86,7 +106,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Home', async () => {
       // given
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
 
       // When
       await userEvent.click(screen.getByText('Accueil'))
@@ -100,7 +120,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Ticket', async () => {
       // given
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
 
       // When
       await userEvent.click(screen.getByText('Guichet'))
@@ -114,7 +134,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Offers', async () => {
       // given
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
 
       // When
       await userEvent.click(screen.getByText('Offres'))
@@ -128,7 +148,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Bookings', async () => {
       // given
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
 
       // When
       await userEvent.click(screen.getByText('Réservations'))
@@ -142,7 +162,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Reimbursement', async () => {
       // given
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
 
       // When
       await userEvent.click(screen.getByText('Remboursements'))
@@ -158,7 +178,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Logout', async () => {
       // given
-      renderHeader({ isUserAdmin: false })
+      renderHeader()
       pcapi.signout.mockResolvedValue({})
 
       // When

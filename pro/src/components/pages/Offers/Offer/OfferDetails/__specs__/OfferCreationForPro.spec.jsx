@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -78,7 +78,7 @@ const renderOffers = async (props, queryParams = null) => {
         >
           <>
             <OfferLayout {...props} />
-            <NotificationContainer />
+            <Notification />
           </>
         </Route>
       </MemoryRouter>

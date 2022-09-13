@@ -15,11 +15,10 @@ describe('src | components | pages | OffererCreation | Venues', () => {
     props = {
       offererId: '5767Fdtre',
       venues: [],
-      isVenueCreationAvailable: true,
     }
   })
-  const renderReturnVenues = props => {
-    const store = configureTestStore()
+  const renderReturnVenues = (overrideStore = {}) => {
+    const store = configureTestStore(overrideStore)
     return render(
       <Provider store={store}>
         <MemoryRouter>
@@ -32,7 +31,7 @@ describe('src | components | pages | OffererCreation | Venues', () => {
   describe('render', () => {
     it('should render a title', () => {
       // given
-      renderReturnVenues(props)
+      renderReturnVenues()
       // when
       const title = screen.getByRole('heading', { level: 2 })
 
@@ -44,8 +43,11 @@ describe('src | components | pages | OffererCreation | Venues', () => {
       describe('when the venue creation is available', () => {
         it('should render a create venue link', () => {
           // given
-          renderReturnVenues(props)
-
+          renderReturnVenues({
+            features: {
+              list: [{ isActive: true, nameKey: 'API_SIRENE_AVAILABLE' }],
+            },
+          })
           // when
           const link = screen.getAllByRole('link')[0]
 
@@ -59,8 +61,7 @@ describe('src | components | pages | OffererCreation | Venues', () => {
       describe('when the venue creation is disabled', () => {
         it('should render a create venue link', () => {
           // given
-          props.isVenueCreationAvailable = false
-          renderReturnVenues(props)
+          renderReturnVenues()
 
           // when
           const link = screen.getAllByRole('link')[0]

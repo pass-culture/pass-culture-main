@@ -2,12 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { pluralize } from 'utils/pluralize'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-const OffererItem = ({ offerer, isVenueCreationAvailable }) => {
+const OffererItem = ({ offerer }) => {
+  const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const { id: offererId, managedVenues: venues, name, nOffers } = offerer || {}
 
   const physicalVenues = venues.filter(venue => !venue.isVirtual)
@@ -89,7 +91,6 @@ OffererItem.defaultProps = {
 }
 
 OffererItem.propTypes = {
-  isVenueCreationAvailable: PropTypes.bool.isRequired,
   offerer: PropTypes.shape(),
 }
 

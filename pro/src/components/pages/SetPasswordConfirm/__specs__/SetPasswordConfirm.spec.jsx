@@ -9,14 +9,14 @@ import { Route, Router } from 'react-router'
 
 import { configureTestStore } from 'store/testUtils'
 
-import SetPasswordConfirmContainer from '../SetPasswordConfirmContainer'
+import SetPasswordConfirm from '../SetPasswordConfirm'
 
 const renderSetPassword = (store, history) =>
   render(
     <Provider store={store}>
       <Router history={history}>
         <Route path="/creation-de-mot-de-passe-confirmation">
-          <SetPasswordConfirmContainer />
+          <SetPasswordConfirm />
         </Route>
       </Router>
     </Provider>

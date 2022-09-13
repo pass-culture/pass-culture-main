@@ -3,16 +3,16 @@ import { Redirect, useLocation } from 'react-router-dom'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPassword from 'components/pages/LostPassword/LostPassword'
-import OfferersContainer from 'components/pages/Offerers/List/OfferersContainer'
+import Offerers from 'components/pages/Offerers/List/Offerers'
 import OffererDetails from 'components/pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import VenueV1Creation from 'components/pages/Offerers/Offerer/VenueV1/VenueCreation/VenueCreation'
 import CollectiveDataEdition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import VenueV1Edition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdition'
 import OffererCreation from 'components/pages/Offerers/OffererCreation'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import { Reimbursements } from 'components/pages/Reimbursements'
-import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
-import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
+import Reimbursements from 'components/pages/Reimbursements'
+import SetPassword from 'components/pages/SetPassword/SetPassword'
+import SetPasswordConfirm from 'components/pages/SetPasswordConfirm/SetPasswordConfirm'
 import SignIn from 'components/pages/SignIn/SignIn'
 import Signup from 'components/pages/Signup/Signup'
 import Bookings from 'routes/Bookings'
@@ -23,7 +23,7 @@ import CollectiveOffers from 'routes/CollectiveOffers'
 import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
-import CsvDetailViewContainer from 'routes/CsvTable'
+import CsvTable from 'routes/CsvTable'
 import Desk from 'routes/Desk'
 import { EmailChangeValidation } from 'routes/EmailChangeValidation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
@@ -88,13 +88,13 @@ export const routesWithoutLayout: IRoute[] = [
     },
   },
   {
-    component: CsvDetailViewContainer,
+    component: CsvTable,
     exact: true,
     path: '/reservations/detail',
     title: 'Réservations',
   },
   {
-    component: CsvDetailViewContainer,
+    component: CsvTable,
     exact: true,
     path: '/remboursements-details',
     title: 'Remboursements',
@@ -137,7 +137,7 @@ const routes: IRoute[] = [
     title: 'Réservations',
   },
   {
-    component: SetPasswordContainer,
+    component: SetPassword,
     exact: true,
     path: ['/creation-de-mot-de-passe/:token?'],
     title: 'Création de mot de passe',
@@ -150,7 +150,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: SetPasswordConfirmContainer,
+    component: SetPasswordConfirm,
     exact: true,
     path: ['/creation-de-mot-de-passe-confirmation'],
     title: 'Confirmation création de mot de passe',
@@ -188,7 +188,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: OfferersContainer,
+    component: Offerers,
     exact: true,
     path: '/structures',
     title: 'Structures',

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
+import Header from 'components/layout/Header/Header'
+import Notification from 'components/layout/Notification/Notification'
+import TutorialDialog from 'components/layout/Tutorial/TutorialDialog'
 import DomainNameBanner from 'new_components/DomainNameBanner'
 import GoBackLink from 'new_components/GoBackLink'
 
@@ -25,7 +25,7 @@ const AppLayout = props => {
 
   return (
     <>
-      {!fullscreen && <HeaderContainer />}
+      {!fullscreen && <Header />}
       <ReactTooltip
         className="flex-center items-center"
         delayHide={500}
@@ -56,8 +56,8 @@ const AppLayout = props => {
             </div>
           </div>
         )}
-        <TutorialDialogContainer />
-        <NotificationContainer />
+        <TutorialDialog />
+        <Notification />
       </main>
     </>
   )
