@@ -79,7 +79,7 @@ const OfferItem = ({
     return totalRemainingStock
   }
 
-  const stockSize = stocks ? stocks.length : null
+  const stockSize = stocks ? stocks.length : 0
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
     !offer.isActive ||
