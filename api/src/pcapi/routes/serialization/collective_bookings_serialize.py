@@ -74,6 +74,7 @@ class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     event_beginning_datetime: str
     offer_isbn: str | None
     offer_is_educational: bool
+    number_of_tickets: int
 
 
 class EducationalRedactorResponseModel(BaseModel):
@@ -182,6 +183,7 @@ def serialize_collective_booking_stock(
         offer_identifier=humanize(collective_booking.offerId),
         event_beginning_datetime=collective_booking.stockBeginningDatetime.isoformat(),
         offer_is_educational=True,
+        number_of_tickets=collective_booking.numberOfTickets,
     )
 
 

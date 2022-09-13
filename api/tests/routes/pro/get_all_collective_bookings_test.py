@@ -72,6 +72,7 @@ class Returns200Test:
                     "offer_is_educational": True,
                     "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
                     "offer_isbn": None,
+                    "number_of_tickets": collective_stock.numberOfTickets,
                 },
                 "beneficiary": {
                     "email": redactor.email,
@@ -451,6 +452,7 @@ class Returns200Test:
                     "offer_is_educational": True,
                     "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
                     "offer_isbn": None,
+                    "number_of_tickets": collective_stock.numberOfTickets,
                 },
                 "beneficiary": {
                     "email": redactor.email,
@@ -526,6 +528,7 @@ class Returns200Test:
                     "offer_is_educational": True,
                     "event_beginning_datetime": "2022-05-15T12:15:00+02:00",
                     "offer_isbn": None,
+                    "number_of_tickets": collective_stock.numberOfTickets,
                 },
                 "beneficiary": {
                     "email": redactor.email,
@@ -603,6 +606,7 @@ class Returns200Test:
                     "offer_is_educational": True,
                     "event_beginning_datetime": "2022-03-10T11:15:00+01:00",
                     "offer_isbn": None,
+                    "number_of_tickets": collective_stock.numberOfTickets,
                 },
                 "beneficiary": {
                     "email": redactor.email,
