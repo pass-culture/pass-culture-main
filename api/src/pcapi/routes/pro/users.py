@@ -1,5 +1,4 @@
 import flask
-from flask import abort
 from flask import jsonify
 from flask_login import current_user
 from flask_login import login_required
@@ -52,20 +51,6 @@ def get_profile() -> users_serializers.SharedCurrentUserResponseModel:
     return users_serializers.SharedCurrentUserResponseModel.from_orm(user)
 
 
-@blueprint.pro_private_api.route("/users/current", methods=["PATCH"])
-@login_required
-@spectree_serialize(response_model=users_serializers.PatchProUserResponseModel, api=blueprint.pro_private_schema)
-def patch_profile(body: users_serializers.PatchProUserBodyModel) -> users_serializers.PatchProUserResponseModel:
-    user = current_user._get_current_object()  # get underlying User object from proxy
-    # This route should ony be used by "pro" users because it allows
-    # to update different infos from `/beneficiaries/current`.
-    if not user.has_pro_role and not user.has_admin_role:
-        abort(400)
-    attributes = body.dict()
-    users_api.update_user_info(user, **attributes)
-    return users_serializers.PatchProUserResponseModel.from_orm(user)
-
-
 @blueprint.pro_private_api.route("/users/identity", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=users_serializers.UserIdentityResponseModel, api=blueprint.pro_private_schema)
@@ -88,7 +73,6 @@ def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_
 @spectree_serialize(response_model=users_serializers.UserPhoneResponseModel, api=blueprint.pro_private_schema)
 def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serializers.UserPhoneResponseModel:
     user = current_user._get_current_object()
-    print(user.has_pro_role)
     if not user.has_pro_role and not user.has_admin_role:
         errors = ApiErrors()
         errors.status_code = 400
