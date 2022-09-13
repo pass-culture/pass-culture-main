@@ -94,7 +94,7 @@ const ProfileAndSupport = () => {
               {enableInPageProfileForm && (
                 <ButtonLink
                   variant={ButtonVariant.TERNARY}
-                  link={{ to: '/profile', isExternal: false }}
+                  link={{ to: '/profil', isExternal: false }}
                   type="button"
                   Icon={EditIcon}
                 >
