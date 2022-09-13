@@ -126,8 +126,6 @@ export type { PatchCollectiveOfferTemplateBodyModel } from './models/PatchCollec
 export type { PatchOfferActiveStatusBodyModel } from './models/PatchOfferActiveStatusBodyModel';
 export type { PatchOfferBodyModel } from './models/PatchOfferBodyModel';
 export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyModel';
-export type { PatchProUserBodyModel } from './models/PatchProUserBodyModel';
-export type { PatchProUserResponseModel } from './models/PatchProUserResponseModel';
 export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';

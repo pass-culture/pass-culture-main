@@ -56,8 +56,6 @@ import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchColle
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
-import type { PatchProUserBodyModel } from '../models/PatchProUserBodyModel';
-import type { PatchProUserResponseModel } from '../models/PatchProUserResponseModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
@@ -1365,27 +1363,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/users/current',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * patch_profile <PATCH>
-   * @param requestBody
-   * @returns PatchProUserResponseModel OK
-   * @throws ApiError
-   */
-  public patchProfile(
-    requestBody?: PatchProUserBodyModel,
-  ): CancelablePromise<PatchProUserResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/users/current',
-      body: requestBody,
-      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
