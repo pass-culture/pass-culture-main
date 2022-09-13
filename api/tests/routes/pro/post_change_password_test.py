@@ -13,7 +13,8 @@ class Returns200Test:
     @freeze_time("2020-11-17 15:00:00", tz_offset=-2)
     def when_current_user_changes_password(self, client):
         # given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.ProFactory(email="user@example.com")
+
         data = {
             "oldPassword": user.clearTextPassword,
             "newPassword": "N3W_p4ssw0rd",
@@ -36,7 +37,7 @@ class Returns200Test:
     @freeze_time("2020-11-17 15:00:00")
     def when_current_user_who_lives_at_wallis_changes_password(self, client):
         # given
-        user = users_factories.UserFactory(email="user@example.com", departementCode="986")
+        user = users_factories.ProFactory(email="user@example.com", departementCode="986")
         data = {
             "oldPassword": user.clearTextPassword,
             "newPassword": "N3W_p4ssw0rd",
@@ -52,7 +53,7 @@ class Returns200Test:
 class Returns400Test:
     def when_data_is_empty_in_the_request_body(self, client):
         # given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.ProFactory(email="user@example.com")
         data = {
             "oldPassword": "",
             "newPassword": "",
@@ -69,7 +70,7 @@ class Returns400Test:
 
     def when_data_password_don_t_match_in_the_request_body(self, client):
         # given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.ProFactory(email="user@example.com")
         data = {
             "oldPassword": user.clearTextPassword,
             "newPassword": "N3W_Valid_p4ssw0rd",
@@ -85,7 +86,7 @@ class Returns400Test:
 
     def when_data_is_missing_in_the_request_body(self, client):
         # given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.ProFactory(email="user@example.com")
         data = {}
 
         # when
