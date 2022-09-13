@@ -15,47 +15,10 @@ from pcapi.domain.password import check_password_strength
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
-from pcapi.serialization.utils import validate_not_empty_string_when_provided
 from pcapi.serialization.utils import validate_phone_number_format
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email
-
-
-class PatchProUserBodyModel(BaseModel):
-    first_name: str | None
-    last_name: str | None
-    email: pydantic.EmailStr | None
-    phone_number: str | None
-
-    _validate_first_name = validate_not_empty_string_when_provided("first_name")
-    _validate_last_name = validate_not_empty_string_when_provided("last_name")
-    _validate_email = validate_not_empty_string_when_provided("email")
-
-    @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
-        if phone_number is None:
-            return phone_number
-
-        try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
-        except Exception:
-            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PatchProUserResponseModel(BaseModel):
-    firstName: str | None
-    lastName: str | None
-    email: pydantic.EmailStr
-    phoneNumber: str | None
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
 
 
 class UserIdentityResponseModel(BaseModel):
