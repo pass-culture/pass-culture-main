@@ -1,5 +1,8 @@
 import type { ComponentStory } from '@storybook/react'
 import React from 'react'
+import { Provider } from 'react-redux'
+
+import { configureTestStore } from 'store/testUtils'
 
 import Notification from './Notification'
 
@@ -7,8 +10,10 @@ export default {
   title: 'ui-kit/Notification',
 }
 
-const Template: ComponentStory<typeof Notification> = args => (
-  <Notification {...args} />
+const Template: ComponentStory<typeof Notification> = store => (
+  <Provider store={configureTestStore({ store })}>
+    <Notification />
+  </Provider>
 )
 
 export const Error = Template.bind({})

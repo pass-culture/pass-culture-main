@@ -1,6 +1,6 @@
 import React from 'react'
 
-import HeaderContainer from 'components/layout/Header/HeaderContainer'
+import Header from 'components/layout/Header/Header'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { CsvTableScreen } from 'screens/CsvTable'
 
@@ -9,7 +9,7 @@ import { getCsvData } from './adapters/getCsvData'
 const CsvTable = (): JSX.Element => (
   <>
     <PageTitle title="Liste de vos remboursements" />
-    <HeaderContainer />
+    <Header />
     <CsvTableScreen getCsvData={getCsvData} />
   </>
 )

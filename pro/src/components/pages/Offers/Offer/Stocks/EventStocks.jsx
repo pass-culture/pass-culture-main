@@ -11,6 +11,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import useAnalytics from 'components/hooks/useAnalytics'
+import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
@@ -31,6 +32,10 @@ import { computeOffersUrl } from 'core/Offers/utils'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
+import {
+  searchFiltersSelector,
+  searchPageNumberSelector,
+} from 'store/offers/selectors'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -38,12 +43,7 @@ import { FormActions } from './FormActions'
 
 const EMPTY_STRING_VALUE = ''
 
-const EventStocks = ({
-  offer,
-  showErrorNotification,
-  showSuccessNotification,
-  reloadOffer,
-}) => {
+const EventStocks = ({ offer, reloadOffer }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [isSendingStocksOfferCreation, setIsSendingStocksOfferCreation] =
@@ -55,11 +55,12 @@ const EventStocks = ({
   const { logEvent } = useAnalytics()
   const history = useHistory()
   const location = useLocation()
+  const notification = useNotification()
   const summaryStepUrl = isOfferDraft
     ? `/offre/${offer.id}/individuel/creation/recapitulatif`
     : `/offre/${offer.id}/individuel/recapitulatif`
-  const offersSearchFilters = useSelector(state => state.offers.searchFilters)
-  const offersPageNumber = useSelector(state => state.offers.pageNumber)
+  const offersSearchFilters = useSelector(searchFiltersSelector)
+  const offersPageNumber = useSelector(searchPageNumberSelector)
   const loadStocks = useCallback(
     (keepCreationStocks = false) => {
       return pcapi.loadStocks(offerId).then(receivedStocks => {
@@ -92,9 +93,11 @@ const EventStocks = ({
 
   useEffect(() => {
     if (Object.values(formErrors).length > 0) {
-      showErrorNotification()
+      notification.error(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+      )
     }
-  }, [formErrors, showErrorNotification])
+  }, [formErrors])
 
   const addNewStock = useCallback(() => {
     const newStock = {
@@ -224,7 +227,7 @@ const EventStocks = ({
             } else {
               await loadStocks()
               await reloadOffer()
-              await showSuccessNotification(
+              notification.success(
                 'Vos modifications ont bien été enregistrées'
               )
               setIsSendingStocksOfferCreation(false)
@@ -232,7 +235,9 @@ const EventStocks = ({
             history.push(`${summaryStepUrl}${queryString}`)
           })
           .catch(() => {
-            showErrorNotification()
+            notification.error(
+              'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+            )
             setIsSendingStocksOfferCreation(false)
           })
       }
@@ -249,8 +254,6 @@ const EventStocks = ({
       offer.venue.departementCode,
       loadStocks,
       reloadOffer,
-      showSuccessNotification,
-      showErrorNotification,
     ]
   )
 
@@ -388,8 +391,6 @@ const EventStocks = ({
 EventStocks.propTypes = {
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
-  showErrorNotification: PropTypes.func.isRequired,
-  showSuccessNotification: PropTypes.func.isRequired,
 }
 
 export default EventStocks

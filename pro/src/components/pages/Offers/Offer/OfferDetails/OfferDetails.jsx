@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -28,15 +29,10 @@ import OfferStatusBanner from './OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail'
 import { computeInitialValuesFromOffer } from './utils'
 
-const OfferDetails = ({
-  isCreatingOffer,
-  isUserAdmin,
-  offer,
-  reloadOffer,
-  userEmail,
-}) => {
+const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
   const history = useHistory()
   const location = useLocation()
+  const { currentUser } = useCurrentUser()
 
   const [formInitialValues, setFormInitialValues] = useState({})
   const [isReady, setIsReady] = useState(false)
@@ -240,7 +236,7 @@ const OfferDetails = ({
                 categories={categoriesData.categories}
                 initialValues={formInitialValues}
                 isDisabled={isDisabled}
-                isUserAdmin={isUserAdmin}
+                isUserAdmin={currentUser.isAdmin}
                 offer={offer}
                 isCreatingOffer={isCreatingOffer}
                 onSubmit={handleSubmitOffer}
@@ -248,20 +244,20 @@ const OfferDetails = ({
                 showErrorNotification={showErrorNotification}
                 subCategories={categoriesData.subCategories}
                 submitErrors={formErrors}
-                userEmail={userEmail}
+                userEmail={currentUser.email}
               />
             </>
           ) : (
             <OfferCreation
               categories={categoriesData.categories}
               initialValues={formInitialValues}
-              isUserAdmin={isUserAdmin}
+              isUserAdmin={currentUser.isAdmin}
               onSubmit={handleSubmitOffer}
               setOfferPreviewData={setOfferPreviewData}
               showErrorNotification={showErrorNotification}
               subCategories={categoriesData.subCategories}
               submitErrors={formErrors}
-              userEmail={userEmail}
+              userEmail={currentUser.email}
             />
           )}
         </div>
@@ -314,10 +310,8 @@ OfferDetails.defaultProps = {
 }
 
 OfferDetails.propTypes = {
-  isUserAdmin: PropTypes.bool.isRequired,
   offer: PropTypes.shape(),
   reloadOffer: PropTypes.func,
-  userEmail: PropTypes.string.isRequired,
   isCreatingOffer: PropTypes.bool,
 }
 

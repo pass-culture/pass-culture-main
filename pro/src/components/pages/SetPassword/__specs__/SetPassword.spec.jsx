@@ -8,16 +8,11 @@ import { act } from 'react-dom/test-utils'
 import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router'
 
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import {
-  DIFFERENT_PASSWORDS_ERROR_MESSAGE,
-  INVALID_FORM_MESSAGE,
-  UNKNOWN_ERROR_MESSAGE,
-} from '../SetPassword'
-import SetPasswordContainer from '../SetPasswordContainer'
+import SetPassword from '../SetPassword'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   setPassword: jest.fn(),
@@ -29,8 +24,8 @@ const renderSetPassword = (store, history) =>
       <Router history={history}>
         <Route path="/creation-de-mot-de-passe/:token?">
           <>
-            <SetPasswordContainer />
-            <NotificationContainer />
+            <SetPassword />
+            <Notification />
           </>
         </Route>
       </Router>
@@ -82,7 +77,9 @@ describe('src | components | pages | SetPassword', () => {
     await userEvent.click(submitButton)
 
     // Then
-    expect(screen.getByText(DIFFERENT_PASSWORDS_ERROR_MESSAGE)).toBeVisible()
+    expect(
+      screen.getByText('Les deux mots de passe ne sont pas identiques')
+    ).toBeVisible()
   })
 
   it('should send the right data', async () => {
@@ -152,7 +149,11 @@ describe('src | components | pages | SetPassword', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.getByText(INVALID_FORM_MESSAGE)).toBeVisible()
+      expect(
+        screen.getByText(
+          "Une erreur s'est produite, veuillez corriger le formulaire."
+        )
+      ).toBeVisible()
       expect(
         screen.getByText(
           'Votre mot de passe doit contenir au moins : - 12 caractères - Un chiffre - Une majuscule et une minuscule - Un caractère spécial'
@@ -205,7 +206,11 @@ describe('src | components | pages | SetPassword', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.getByText(UNKNOWN_ERROR_MESSAGE)).toBeVisible()
+      expect(
+        screen.getByText(
+          "Une erreur s'est produite, veuillez contacter le support."
+        )
+      ).toBeVisible()
     })
   })
 

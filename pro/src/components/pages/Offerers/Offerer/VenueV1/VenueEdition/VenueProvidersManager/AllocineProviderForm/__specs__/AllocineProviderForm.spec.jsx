@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import ReactTooltip from 'react-tooltip'
 
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -25,7 +25,7 @@ const renderVenueProvidersManager = async props => {
       <Provider store={configureTestStore()}>
         <MemoryRouter>
           <VenueProvidersManager {...props} />
-          <NotificationContainer />
+          <Notification />
           <ReactTooltip html />
         </MemoryRouter>
       </Provider>

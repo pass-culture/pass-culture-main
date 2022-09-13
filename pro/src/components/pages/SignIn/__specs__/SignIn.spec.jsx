@@ -10,7 +10,7 @@ import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { ApiError } from 'apiClient/v1'
 import * as useAnalytics from 'components/hooks/useAnalytics'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { configureTestStore } from 'store/testUtils'
 
@@ -38,7 +38,7 @@ const renderSignIn = storeOveride => {
         <Route path="/inscription">
           <span>I'm the inscription page</span>
         </Route>
-        <NotificationContainer />
+        <Notification />
       </MemoryRouter>
     </Provider>
   )

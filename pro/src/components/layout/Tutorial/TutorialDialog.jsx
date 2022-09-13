@@ -2,14 +2,17 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import useAnalytics from 'components/hooks/useAnalytics'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import { Events } from 'core/FirebaseEvents/constants'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID, Tutorial } from 'new_components/Tutorial'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { setCurrentUser } from 'store/user/actions'
 
 import styles from './TutorialDialog.module.scss'
 
-const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
+const TutorialDialog = () => {
+  const { currentUser } = useCurrentUser()
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
     currentUser && !currentUser.hasSeenProTutorials
   )
@@ -20,10 +23,10 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
     pcapi
       .setHasSeenTutos()
       .then(() => {
-        setUserHasSeenTuto(currentUser)
+        setCurrentUser({ ...currentUser, hasSeenProTutorials: true })
       })
       .finally(() => setAreTutoDisplayed(false))
-  }, [currentUser, setUserHasSeenTuto, logEvent])
+  }, [currentUser, logEvent])
 
   return areTutoDisplayed ? (
     <DialogBox

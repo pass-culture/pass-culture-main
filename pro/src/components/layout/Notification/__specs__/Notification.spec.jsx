@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 jest.mock('../_constants', () => ({
@@ -13,24 +13,14 @@ jest.mock('../_constants', () => ({
 }))
 
 describe('src | components | layout | Notification', () => {
-  let props
-  let hideNotification
   let store
 
-  beforeEach(() => {
-    hideNotification = jest.fn()
-    props = {
-      hideNotification,
-      notification: {},
-    }
-  })
-
-  const renderNotification = (props, sentNotification) => {
+  const renderNotification = sentNotification => {
     store = configureTestStore({ notification: sentNotification })
 
     return render(
       <Provider store={store}>
-        <NotificationContainer {...props} />
+        <Notification />
       </Provider>
     )
   }
@@ -44,7 +34,7 @@ describe('src | components | layout | Notification', () => {
     }
 
     // when
-    renderNotification(props, sentNotification)
+    renderNotification(sentNotification)
 
     // then
     const notification = screen.getByText(sentNotification.text)
@@ -61,7 +51,7 @@ describe('src | components | layout | Notification', () => {
     }
 
     // when
-    renderNotification(props, sentNotification)
+    renderNotification(sentNotification)
 
     // then
     await waitFor(() => {
@@ -78,7 +68,7 @@ describe('src | components | layout | Notification', () => {
     }
 
     // when
-    renderNotification(props, sentNotification)
+    renderNotification(sentNotification)
 
     // then
     await waitFor(() => {

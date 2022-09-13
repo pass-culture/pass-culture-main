@@ -1,1 +1,1 @@
-export { default } from './OfferEditionContainer'
+export { default } from './OfferEdition'

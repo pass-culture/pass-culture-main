@@ -10,7 +10,7 @@ import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import ApiKey from './ApiKey/ApiKey'
 import { Offerer } from './Offerer'
-import VenuesContainer from './Venues/VenuesContainer'
+import Venues from './Venues/Venues'
 
 const OffererDetails = () => {
   const { offererId } = useParams()
@@ -101,7 +101,7 @@ const OffererDetails = () => {
         reloadOfferer={loadOfferer}
         savedApiKeys={offerer.apiKey.savedApiKeys}
       />
-      <VenuesContainer offererId={offerer.id} venues={physicalVenues} />
+      <Venues offererId={offerer.id} venues={physicalVenues} />
     </div>
   )
 }

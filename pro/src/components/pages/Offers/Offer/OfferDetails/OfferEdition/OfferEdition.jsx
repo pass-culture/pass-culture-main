@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import Spinner from 'components/layout/Spinner'
 import {
@@ -8,6 +9,10 @@ import {
 } from 'components/pages/Offers/domain/localProvider'
 import { EDITED_OFFER_READ_ONLY_FIELDS } from 'core/Offers'
 import { computeOffersUrl } from 'core/Offers/utils'
+import {
+  searchFiltersSelector,
+  searchPageNumberSelector,
+} from 'store/offers/selectors'
 
 import { DEFAULT_FORM_VALUES } from '../_constants'
 import OfferForm from '../OfferForm'
@@ -19,8 +24,6 @@ const OfferEdition = ({
   isDisabled,
   isUserAdmin,
   offer,
-  offersPageNumber,
-  offersSearchFilters,
   onSubmit,
   setOfferPreviewData,
   showErrorNotification,
@@ -30,6 +33,8 @@ const OfferEdition = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [readOnlyFields, setReadOnlyFields] = useState([])
+  const offersSearchFilters = useSelector(searchFiltersSelector)
+  const offersPageNumber = useSelector(searchPageNumberSelector)
 
   useEffect(() => {
     const computeReadOnlyFields = offer => {
@@ -115,18 +120,6 @@ OfferEdition.propTypes = {
   isDisabled: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
-  offersPageNumber: PropTypes.number.isRequired,
-  offersSearchFilters: PropTypes.shape({
-    name: PropTypes.string,
-    offererId: PropTypes.string,
-    venueId: PropTypes.string,
-    typeId: PropTypes.string,
-    status: PropTypes.string,
-    creationMode: PropTypes.string,
-    periodBeginningDate: PropTypes.string,
-    periodEndingDate: PropTypes.string,
-    page: PropTypes.number,
-  }).isRequired,
   onSubmit: PropTypes.func.isRequired,
   setOfferPreviewData: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,

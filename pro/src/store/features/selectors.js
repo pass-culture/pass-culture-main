@@ -17,9 +17,6 @@ export const isFeatureActive = (state, featureName) => {
 
 export const selectFeaturesInitialized = state => state.features.initialized
 
-export const isAPISireneAvailable = state =>
-  isFeatureActive(state, 'API_SIRENE_AVAILABLE')
-
 export const selectActiveFeatures = state =>
   state.features.list
     .filter(feature => feature.isActive)

@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
@@ -23,7 +23,7 @@ const renderVenueProvidersManager = props =>
     <Provider store={configureTestStore()}>
       <MemoryRouter>
         <VenueProvidersManager {...props} />
-        <NotificationContainer />
+        <Notification />
       </MemoryRouter>
     </Provider>
   )

@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+
+import useNotification from 'components/hooks/useNotification'
+import { notificationSelector } from 'store/selectors/notificationSelector'
 
 import {
   NOTIFICATION_SHOW_DURATION,
@@ -9,23 +13,11 @@ import { ReactComponent as InfoIcon } from './assets/notification-information.sv
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
 import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 
-interface INotification {
-  text: React.ReactNode
-  type: 'error' | 'success' | 'pending' | 'information'
-}
-
-type INotificationProps = {
-  hideNotification: () => void
-  notification?: INotification | null
-  children?: never
-}
-
-const Notification = ({
-  hideNotification,
-  notification,
-}: INotificationProps): JSX.Element | null => {
+const Notification = (): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
   const [isInDom, setIsInDom] = useState(false)
+  const notification = useSelector(notificationSelector)
+  const notificationHook = useNotification()
 
   useEffect(() => {
     if (notification && notification.text) {
@@ -44,12 +36,12 @@ const Notification = ({
     if (!isVisible && notification && notification.text) {
       const timer = setTimeout(() => {
         setIsInDom(false)
-        hideNotification()
+        notificationHook.close()
       }, NOTIFICATION_TRANSITION_DURATION)
       return () => clearTimeout(timer)
     }
     return () => undefined
-  }, [hideNotification, isVisible, notification])
+  }, [isVisible, notification])
 
   if (!notification) {
     return null
