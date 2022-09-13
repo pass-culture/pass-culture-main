@@ -1,9 +1,9 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react'
 
-import { NBSP } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import { ReactComponent as ArrowDown } from 'components/pages/Offers/Offer/Thumbnail/assets/arrow-down.svg'
 import { ReactComponent as ArrowUp } from 'components/pages/Offers/Offer/Thumbnail/assets/arrow-up.svg'
 import { ReactComponent as ExternalSite } from 'components/pages/Offers/Offer/Thumbnail/assets/external-site.svg'
+import { NBSP } from 'core/shared'
 
 interface Props {
   hidden: boolean

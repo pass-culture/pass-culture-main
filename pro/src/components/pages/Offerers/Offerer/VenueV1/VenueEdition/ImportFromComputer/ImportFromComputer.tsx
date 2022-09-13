@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react'
 
-import { NBSP } from 'components/pages/Offers/Offer/Thumbnail/_constants'
+import { NBSP } from 'core/shared'
 import Advices from 'new_components/Advices/Advices'
 import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
 import { Constraint } from 'new_components/ConstraintCheck/imageConstraints'
