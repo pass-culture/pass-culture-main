@@ -68,6 +68,11 @@ module.exports = {
       ],
       include: path.resolve(__dirname, '../src'),
     })
+
+    // modify storybook's file-loader rule to avoid conflicts with svgr
+    const fileLoaderRule = config.module.rules.find(rule => rule.test.test('.svg'));
+    fileLoaderRule.exclude = /\.svg$/;
+
     config.module.rules.push({
       test: /\.svg$/,
       include: path.resolve(__dirname, '../src'),
@@ -76,8 +81,9 @@ module.exports = {
           loader: '@svgr/webpack',
           options: {
             icon: true,
+            svgo: false,
           },
-        },
+        }, "url-loader"
       ],
     })
     return {
