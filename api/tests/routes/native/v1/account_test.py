@@ -1162,7 +1162,9 @@ class SendPhoneValidationCodeTest:
 
 class ValidatePhoneNumberTest:
     def test_validate_phone_number(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33607080900")
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900", dateOfBirth=datetime.utcnow() - relativedelta(years=18)
+        )
         client.with_token(email=user.email)
         token = create_phone_validation_token(
             user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
@@ -1176,6 +1178,12 @@ class ValidatePhoneNumberTest:
         user = users_models.User.query.get(user.id)
         assert user.is_phone_validated
         assert not user.has_beneficiary_role
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.PHONE_VALIDATION
+        ).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
         token = users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
 
