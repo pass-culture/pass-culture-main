@@ -14,13 +14,16 @@ import { useEffectUnmount } from 'hooks'
 import CanvasTools from './canvas'
 import style from './ImageEditor.module.scss'
 
-export interface IImageEditorProps {
-  image: string | File
+export interface IImageEditorConfig {
   canvasHeight: number
   canvasWidth: number
   cropBorderColor: string
   cropBorderHeight: number
   cropBorderWidth: number
+}
+
+export interface IImageEditorProps extends IImageEditorConfig {
+  image: string | File
   saveInitialScale?: (scale: number) => void
   initialPosition?: Position
   initialScale?: number
