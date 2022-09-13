@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -262,100 +262,9 @@ describe('homepage', () => {
         expect(screen.getByText('Aide et support')).toBeInTheDocument()
       })
 
-      describe('update profile informations modal', () => {
-        it('should display profile modifications modal when clicking on modify button', async () => {
-          // when
-          userEvent.click(screen.getByText('Modifier', { selector: 'button' }))
-
-          // then
-          await expect(
-            screen.findByLabelText('Nom')
-          ).resolves.toBeInTheDocument()
-          await expect(
-            screen.findByLabelText('Prénom')
-          ).resolves.toBeInTheDocument()
-          await expect(
-            screen.findByLabelText('Email')
-          ).resolves.toBeInTheDocument()
-          await expect(
-            screen.findByLabelText('Téléphone')
-          ).resolves.toBeInTheDocument()
-        })
-
-        it('should close the modal when clicking on cancel button', async () => {
-          // given
-          await userEvent.click(
-            screen.getByText('Modifier', { selector: 'button' })
-          )
-
-          // when
-          await userEvent.click(
-            screen.getByText('Annuler', { selector: 'button' })
-          )
-
-          // then
-          await waitFor(() =>
-            expect(screen.queryByLabelText('Nom')).not.toBeInTheDocument()
-          )
-        })
-
-        it('should update user info on submit', async () => {
-          // given
-          await userEvent.click(
-            screen.getByText('Modifier', { selector: 'button' })
-          )
-          fireEvent.change(screen.getByLabelText('Prénom'), {
-            target: { value: 'Johnny' },
-          })
-          fireEvent.change(screen.getByLabelText('Nom'), {
-            target: { value: 'Doe' },
-          })
-          fireEvent.change(screen.getByLabelText('Email'), {
-            target: { value: 'johnny.doe@dummy.xyz' },
-          })
-          fireEvent.change(screen.getByLabelText('Téléphone'), {
-            target: { value: '01 01 00 00 00' },
-          })
-
-          // when
-          fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
-
-          // then
-          expect(pcapi.updateUserInformations).toHaveBeenCalledWith({
-            firstName: 'Johnny',
-            lastName: 'Doe',
-            email: 'johnny.doe@dummy.xyz',
-            phoneNumber: '+33101000000',
-          })
-        })
-
-        it('should show errors on submit', async () => {
-          // given
-          pcapi.updateUserInformations.mockRejectedValue({
-            errors: {
-              firstName: ['Prénom en erreur'],
-              email: ['Email en erreur'],
-            },
-          })
-          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
-          fireEvent.change(screen.getByLabelText('Prénom'), {
-            target: { value: 'Johnny' },
-          })
-          fireEvent.change(screen.getByLabelText('Email'), {
-            target: { value: 'johnny.doe@dummy.xyz' },
-          })
-
-          // when
-          await act(async () => {
-            await fireEvent.click(
-              screen.getByRole('button', { name: 'Enregistrer' })
-            )
-          })
-
-          // then
-          expect(screen.getByText('Prénom en erreur')).toBeInTheDocument()
-          expect(screen.getByText('Email en erreur')).toBeInTheDocument()
-        })
+      it('should contains a link to access profile form', async () => {
+        // when
+        expect(screen.getAllByRole('link')[10]).toBeInTheDocument()
       })
     })
 

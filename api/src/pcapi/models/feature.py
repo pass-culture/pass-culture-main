@@ -108,7 +108,6 @@ class FeatureToggle(enum.Enum):
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
     OFFER_DRAFT_ENABLED = "Active la fonctionnalités de création d'offre en brouillon"
-    ENABLE_IN_PAGE_PROFILE_FORM = "Active le formulaire d'édition de profile dans une page séparée"
     ENABLE_ADAGE_VENUE_INFORMATION = "Active la page acteur culturel"
     USE_PRICING_POINT_FOR_PRICING = "Utilise le modèle VenuePricingPointLink pour la valorisation"
     USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS = "Utilise le modèle VenueReimbursementPointLink pour les cashflows"
@@ -161,7 +160,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
-    FeatureToggle.ENABLE_IN_PAGE_PROFILE_FORM,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
