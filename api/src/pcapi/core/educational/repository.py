@@ -60,6 +60,7 @@ CollectiveBookingNamedTuple = namedtuple(
         "stockBeginningDatetime",
         "venueDepartmentCode",
         "offererPostalCode",
+        "numberOfTickets",
     ],
 )
 
@@ -610,6 +611,7 @@ def _get_filtered_collective_bookings_pro(
             educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
             offerers_models.Venue.departementCode.label("venueDepartmentCode"),
             offerers_models.Offerer.postalCode.label("offererPostalCode"),
+            educational_models.CollectiveStock.numberOfTickets.label("stockNumberOfTickets"),
         )
         .distinct(educational_models.CollectiveBooking.id)
     )
@@ -673,6 +675,7 @@ def find_collective_bookings_by_pro_user(
             stockBeginningDatetime=convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
             venueDepartmentCode=booking.venueDepartmentCode,
             offererPostalCode=booking.offererPostalCode,
+            numberOfTickets=booking.stockNumberOfTickets,
         )
         collective_bookings_page_with_converted_dates.append(booking_with_converted_dates)
 
