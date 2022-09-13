@@ -10,6 +10,7 @@ import type { BusinessUnitListResponseModel } from '../models/BusinessUnitListRe
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
+import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
 import type { CollectiveOfferFromTemplateResponseModel } from '../models/CollectiveOfferFromTemplateResponseModel';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
@@ -167,6 +168,28 @@ export class DefaultService {
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'extra': extra,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_collective_booking_by_id <GET>
+   * @param bookingId
+   * @returns CollectiveBookingByIdResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveBookingById(
+    bookingId: string,
+  ): CancelablePromise<CollectiveBookingByIdResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/bookings/{booking_id}',
+      path: {
+        'booking_id': bookingId,
       },
       errors: {
         403: `Forbidden`,
