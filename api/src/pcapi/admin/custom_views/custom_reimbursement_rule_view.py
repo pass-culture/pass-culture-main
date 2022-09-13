@@ -28,9 +28,9 @@ import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.exceptions as payments_exceptions
 import pcapi.core.payments.models as payment_models
 import pcapi.utils.date as date_utils
-from pcapi.utils.mailing import build_pc_pro_offer_link
-from pcapi.utils.mailing import build_pc_pro_offerer_link
-from pcapi.utils.mailing import build_pc_pro_venue_link
+from pcapi.utils.urls import build_pc_pro_offer_link
+from pcapi.utils.urls import build_pc_pro_offerer_link
+from pcapi.utils.urls import build_pc_pro_venue_link
 
 
 def _get_subcategory_choices() -> list[tuple[str, list[tuple[str, str]]]]:

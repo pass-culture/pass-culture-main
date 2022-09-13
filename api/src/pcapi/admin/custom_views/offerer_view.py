@@ -18,7 +18,7 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import zendesk_sell
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
-from pcapi.utils.mailing import build_pc_pro_offerer_link
+from pcapi.utils.urls import build_pc_pro_offerer_link
 
 
 def _get_emails_by_offerer(offerer: Offerer) -> set[str]:

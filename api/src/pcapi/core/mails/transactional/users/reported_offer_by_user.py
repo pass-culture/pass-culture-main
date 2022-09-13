@@ -5,7 +5,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.users.models import User
-from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.urls import build_pc_pro_offer_link
 
 
 def send_email_reported_offer_by_user(user: User, offer: Offer, reason: str, custom_reason: str | None) -> bool:

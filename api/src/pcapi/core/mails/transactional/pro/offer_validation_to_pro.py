@@ -3,7 +3,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.urls import build_pc_pro_offer_link
 
 
 def retrieve_data_for_offer_approval_email(offer: Offer) -> models.TransactionalEmailData:
