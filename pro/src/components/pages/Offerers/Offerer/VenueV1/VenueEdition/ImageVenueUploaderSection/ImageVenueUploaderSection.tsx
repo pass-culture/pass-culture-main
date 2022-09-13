@@ -1,16 +1,16 @@
 import React from 'react'
 
-import ButtonEditImage from '../ButtonEditImage'
-import { ButtonImageDelete } from '../ButtonImageDelete'
-import ButtonPreviewImage from '../ButtonPreviewImage'
-import { VenueImage } from '../VenueImage/VenueImage'
+import { ImageUploader } from 'new_components/ImageUploader'
+import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { UploaderModeEnum } from 'new_components/ImageUploader/types'
+import { postImageToVenue, deleteVenueImage } from 'repository/pcapi/pcapi'
 
 import styles from './ImageVenueUploaderSection.module.scss'
 
 type ImageVenueUploaderSectionProps = {
   venueId: string
   venueImage: string | null
-  venueBanner: IVenueBannerMetaProps | null
+  venueBanner?: IVenueBannerMetaProps | null
   onImageUpload: ({
     bannerUrl,
     bannerMeta,
@@ -41,6 +41,54 @@ export const ImageVenueUploaderSection = ({
   onImageUpload,
   onDeleteImage,
 }: ImageVenueUploaderSectionProps): JSX.Element => {
+  let cropParams
+  if (venueBanner !== undefined && venueBanner !== null) {
+    cropParams = {
+      xCropPercent: venueBanner.crop_params.x_crop_percent,
+      yCropPercent: venueBanner.crop_params.y_crop_percent,
+      heightCropPercent: venueBanner.crop_params.height_crop_percent,
+      widthCropPercent: venueBanner.crop_params.width_crop_percent,
+    }
+  }
+
+  const initialValues = {
+    imageUrl: venueImage || undefined,
+    originalImageUrl: venueBanner?.original_image_url || undefined,
+    cropParams,
+  }
+
+  const handleOnImageUpload = async ({
+    imageData,
+    credit,
+    cropParams,
+  }: IOnImageUploadArgs) => {
+    try {
+      const { bannerUrl, bannerMeta } = await postImageToVenue({
+        venueId,
+        banner: imageData,
+        xCropPercent: cropParams?.x,
+        yCropPercent: cropParams?.y,
+        heightCropPercent: cropParams?.height,
+        widthCropPercent: cropParams?.width,
+        imageCredit: credit,
+      })
+      onImageUpload({ bannerUrl, bannerMeta })
+      return Promise.resolve()
+    } catch {
+      return Promise.reject()
+    }
+  }
+
+  const handleOnImageDelete = async () => {
+    try {
+      await deleteVenueImage({ venueId })
+      onDeleteImage()
+      return Promise.resolve()
+    } catch {
+      return Promise.reject()
+    }
+  }
+
   return (
     <section
       className={
@@ -57,28 +105,12 @@ export const ImageVenueUploaderSection = ({
         <br />
         Elle permettra au public de mieux identifier votre lieu.
       </p>
-      {venueImage && venueBanner?.original_image_url ? (
-        <div className={styles['image-venue-uploader-section-image-container']}>
-          <VenueImage url={venueImage} />
-          <div
-            className={styles['image-venue-uploader-section-icon-container']}
-          >
-            <ButtonEditImage
-              onImageUpload={onImageUpload}
-              venueBanner={venueBanner}
-              venueId={venueId}
-              venueImage={venueImage}
-            />
-            <ButtonPreviewImage venueImage={venueImage} />
-            <ButtonImageDelete
-              onDeleteImage={onDeleteImage}
-              venueId={venueId}
-            />
-          </div>
-        </div>
-      ) : (
-        <ButtonEditImage onImageUpload={onImageUpload} venueId={venueId} />
-      )}
+      <ImageUploader
+        onImageUpload={handleOnImageUpload}
+        onImageDelete={handleOnImageDelete}
+        initialValues={initialValues}
+        mode={UploaderModeEnum.VENUE}
+      />
     </section>
   )
 }
