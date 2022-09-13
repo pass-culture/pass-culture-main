@@ -72,7 +72,12 @@ def patch_profile(body: users_serializers.PatchProUserBodyModel) -> users_serial
 def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_serializers.UserIdentityResponseModel:
     user = current_user._get_current_object()
     if not user.has_pro_role and not user.has_admin_role:
-        abort(400)
+        errors = ApiErrors()
+        errors.status_code = 400
+        errors.add_error(
+            "firstName", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
+        )
+        raise errors
     attributes = body.dict()
     users_api.update_user_info(user, **attributes)
     return users_serializers.UserIdentityResponseModel.from_orm(user)
@@ -83,8 +88,14 @@ def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_
 @spectree_serialize(response_model=users_serializers.UserPhoneResponseModel, api=blueprint.pro_private_schema)
 def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serializers.UserPhoneResponseModel:
     user = current_user._get_current_object()
+    print(user.has_pro_role)
     if not user.has_pro_role and not user.has_admin_role:
-        abort(400)
+        errors = ApiErrors()
+        errors.status_code = 400
+        errors.add_error(
+            "phoneNumber", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
+        )
+        raise errors
     attributes = body.dict()
     users_api.update_user_info(user, **attributes)
     return users_serializers.UserPhoneResponseModel.from_orm(user)
@@ -124,7 +135,10 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     errors.status_code = 400
     user = current_user._get_current_object()
     if not user.has_pro_role and not user.has_admin_role:
-        abort(400)
+        errors.add_error(
+            "email", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé "
+        )
+        raise errors
     try:
         email_api.request_email_update_from_pro(user, body.email, body.password)
     except users_exceptions.EmailUpdateTokenExists as exc:
@@ -166,7 +180,14 @@ def check_activation_token_exists(token: str) -> None:
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> None:
+    errors = ApiErrors()
+    errors.status_code = 400
     user = current_user._get_current_object()
+    if not user.has_pro_role and not user.has_admin_role:
+        errors.add_error(
+            "oldPassword", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
+        )
+        raise errors
     new_password = body.newPassword
     new_confirmation_password = body.newConfirmationPassword
     old_password = body.oldPassword
