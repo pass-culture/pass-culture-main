@@ -49,7 +49,8 @@ class ApplicationDetail:
         siret: str | None = None,
         venue_name: str | None = None,
         dms_token: str | None = None,
-        annotation_id: str | None = None,
+        error_annotation_id: str | None = None,
+        venue_url_annotation_id: str | None = None,
         dossier_id: str = None,
     ):
         self.siren = siren
@@ -61,7 +62,8 @@ class ApplicationDetail:
         self.venue_name = venue_name
         self.dms_token = dms_token
         self.modification_date = modification_date
-        self.annotation_id = annotation_id
+        self.error_annotation_id = error_annotation_id
+        self.venue_url_annotation_id = venue_url_annotation_id
         self.dossier_id = dossier_id
 
 
@@ -78,11 +80,14 @@ def parse_raw_bic_data(data: dict, procedure_version: int) -> dict:
             result["siret"] = field["etablissement"]["siret"]
             result["siren"] = field["etablissement"]["siret"][:9]
 
-    result["annotation_id"] = None
+    result["error_annotation_id"] = None
+    result["venue_url_annotation_id"] = None
     for annotation in data["dossier"]["annotations"]:
-        if annotation["label"] == "Erreur traitement pass Culture":
-            result["annotation_id"] = annotation["id"]
-            break
+        match annotation["label"]:
+            case "Erreur traitement pass Culture":
+                result["error_annotation_id"] = annotation["id"]
+            case "URL du lieu":
+                result["venue_url_annotation_id"] = annotation["id"]
     return result
 
 
@@ -132,8 +137,9 @@ def get_venue_bank_information_application_details_by_application_id(
             siret=data.get("siret", None),
             dms_token=data["dms_token"] if procedure_version == 4 else None,
             modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
-            annotation_id=data["annotation_id"],
+            error_annotation_id=data["error_annotation_id"],
             dossier_id=data["dossier_id"],
+            venue_url_annotation_id=data["venue_url_annotation_id"],
         )
     raise ValueError("Unknown dms_api_version %s" % dms_api_version)
 

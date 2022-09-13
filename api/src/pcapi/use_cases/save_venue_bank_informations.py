@@ -27,6 +27,7 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
+from pcapi.utils import urls
 
 
 logger = logging.getLogger(__name__)
@@ -75,11 +76,11 @@ class SaveVenueBankInformations:
         venue = self.get_referent_venue(application_details, offerer, api_errors)
 
         if api_errors.errors:
-            if application_details.annotation_id is not None:
+            if application_details.error_annotation_id is not None:
                 if application_details.status != BankInformationStatus.REJECTED:
                     update_demarches_simplifiees_text_annotations(
                         application_details.dossier_id,  # type: ignore [arg-type]
-                        application_details.annotation_id,
+                        application_details.error_annotation_id,
                         format_error_to_demarches_simplifiees_text(api_errors),
                     )
                 return None
@@ -88,6 +89,15 @@ class SaveVenueBankInformations:
             return None
 
         assert venue  # for typing purposes
+        venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
+
+        if application_details.venue_url_annotation_id is not None:
+            update_demarches_simplifiees_text_annotations(
+                application_details.dossier_id,  # type: ignore [arg-type]
+                application_details.venue_url_annotation_id,
+                urls.build_pc_pro_venue_link(venue_sql_entity),
+            )
+
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
         if not bank_information:
             bank_information = self.bank_informations_repository.find_by_venue(venue.identifier)
@@ -109,10 +119,10 @@ class SaveVenueBankInformations:
         check_new_bank_information_valid(new_bank_informations, api_errors)
 
         if api_errors.errors:
-            if application_details.annotation_id is not None:
+            if application_details.error_annotation_id is not None:
                 update_demarches_simplifiees_text_annotations(
                     application_details.dossier_id,  # type: ignore [arg-type]
-                    application_details.annotation_id,
+                    application_details.error_annotation_id,
                     format_error_to_demarches_simplifiees_text(api_errors),
                 )
                 return None
@@ -146,7 +156,6 @@ class SaveVenueBankInformations:
                 repository.save(business_unit)
                 offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
                 if application_details.status == BankInformationStatus.ACCEPTED:
-                    venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
                     try:
                         offerers_api.link_venue_to_reimbursement_point(venue_sql_entity, venue.identifier)
                     except ApiErrors as exc:
@@ -160,21 +169,20 @@ class SaveVenueBankInformations:
                         )
         else:
             if application_details.status == BankInformationStatus.ACCEPTED:
-                venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
                 offerers_api.link_venue_to_reimbursement_point(venue_sql_entity, venue.identifier)
 
         update_external_pro(venue.bookingEmail)
-        if application_details.annotation_id is not None:
+        if application_details.error_annotation_id is not None:
             if application_details.status == BankInformationStatus.ACCEPTED:
                 update_demarches_simplifiees_text_annotations(
                     application_details.dossier_id,  # type: ignore [arg-type]
-                    application_details.annotation_id,
+                    application_details.error_annotation_id,
                     "Dossier successfully imported",
                 )
             if application_details.status == BankInformationStatus.DRAFT:
                 update_demarches_simplifiees_text_annotations(
                     application_details.dossier_id,  # type: ignore [arg-type]
-                    application_details.annotation_id,
+                    application_details.error_annotation_id,
                     "Valid dossier",
                 )
         if application_details.status != BankInformationStatus.DRAFT:
