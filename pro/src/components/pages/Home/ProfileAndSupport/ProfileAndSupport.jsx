@@ -1,16 +1,14 @@
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
-import { Button, ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
 
-import ProfileInformationsModal from './ProfileInformationsModal'
 import Support from './Support'
 
 /**
@@ -51,21 +49,9 @@ export const formatPhoneNumber = phoneNumber => {
 }
 
 const ProfileAndSupport = () => {
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
   const { logEvent } = useAnalytics()
 
   const { currentUser: user } = useCurrentUser()
-
-  const showProfileInfoModal = useCallback(() => {
-    logEvent?.(Events.CLICKED_EDIT_PROFILE)
-    setIsEditingProfile(true)
-  }, [logEvent])
-
-  const hideProfileInfoModal = useCallback(() => setIsEditingProfile(false), [])
-  const enableInPageProfileForm = useActiveFeature(
-    'ENABLE_IN_PAGE_PROFILE_FORM'
-  )
-
   return (
     <>
       <h2 className="h-section-title" id={STEP_PROFILE_HASH}>
@@ -80,27 +66,15 @@ const ProfileAndSupport = () => {
           <div className="h-card-inner">
             <div className="h-card-header-row">
               <h3 className="h-card-title">Profil</h3>
-
-              {!enableInPageProfileForm && (
-                <Button
-                  variant={ButtonVariant.TERNARY}
-                  onClick={showProfileInfoModal}
-                  type="button"
-                  Icon={EditIcon}
-                >
-                  Modifier
-                </Button>
-              )}
-              {enableInPageProfileForm && (
-                <ButtonLink
-                  variant={ButtonVariant.TERNARY}
-                  link={{ to: '/profil', isExternal: false }}
-                  type="button"
-                  Icon={EditIcon}
-                >
-                  Modifier
-                </ButtonLink>
-              )}
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                link={{ to: '/profil', isExternal: false }}
+                type="button"
+                Icon={EditIcon}
+                onClick={() => logEvent?.(Events.CLICKED_EDIT_PROFILE)}
+              >
+                Modifier
+              </ButtonLink>
             </div>
             <div className="h-card-content">
               <ul className="h-description-list">
@@ -132,12 +106,6 @@ const ProfileAndSupport = () => {
         </div>
         <Support />
       </div>
-      {isEditingProfile && (
-        <ProfileInformationsModal
-          hideProfileInfoModal={hideProfileInfoModal}
-          user={user}
-        />
-      )}
     </>
   )
 }

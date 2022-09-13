@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -26,8 +26,13 @@ const renderProfileAndSupport = () => {
   })
   return render(
     <Provider store={store}>
-      <MemoryRouter>
-        <ProfileAndSupport />
+      <MemoryRouter initialEntries={['/accueil']}>
+        <Route path="/profil">
+          <h1>Page profil</h1>
+        </Route>
+        <Route path="/accueil">
+          <ProfileAndSupport />
+        </Route>
       </MemoryRouter>
     </Provider>
   )
@@ -35,19 +40,21 @@ const renderProfileAndSupport = () => {
 
 describe('ProfileAndSupport', () => {
   describe('when the user click on Modifier', () => {
-    it('should open a modal with text fields', async () => {
+    it('should redirect to /profil page', async () => {
       // When
       jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
         setLogEvent: null,
       }))
       renderProfileAndSupport()
-      const editButton = screen.getByRole('button', { name: 'Modifier' })
-      userEvent.click(editButton)
-      await waitFor(() => expect(mockLogEvent).toHaveBeenCalledTimes(1))
+      const editButton = screen.getByRole('link', { name: 'Modifier' })
+      expect(editButton).toHaveAttribute('href', '/profil')
+      await userEvent.click(editButton)
+
       // Then
-      expect(screen.getAllByRole('textbox')).toHaveLength(4)
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EDIT_PROFILE)
+      expect(screen.getByText('Page profil')).toBeInTheDocument()
     })
   })
 })
