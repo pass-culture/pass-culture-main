@@ -204,6 +204,8 @@ def price_bookings(
                 _get_loop_query(collective_booking_query, last_collective_booking, use_pricing_point),
             )
         )
+        with log_elapsed(logger, "Fetched batch of bookings to price"):
+            bookings = list(bookings)  # type: ignore [assignment]
         for booking in bookings:
             if isinstance(booking, bookings_models.Booking):
                 last_booking = booking
@@ -251,9 +253,10 @@ def price_bookings(
         loops -= 1
         # Keep last booking in the session, we'll need it when calling
         # `_get_loop_query()` for the next loop.
-        for booking in bookings:
-            if booking not in (last_booking, last_collective_booking):
-                db.session.expunge(booking)
+        with log_elapsed(logger, "Expunged priced bookings from session"):
+            for booking in bookings:
+                if booking not in (last_booking, last_collective_booking):
+                    db.session.expunge(booking)
 
 
 def _get_pricing_point_link(
