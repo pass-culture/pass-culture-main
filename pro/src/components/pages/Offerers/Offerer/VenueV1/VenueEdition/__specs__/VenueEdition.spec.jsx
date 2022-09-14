@@ -50,6 +50,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     getVenue: jest.fn().mockResolvedValue({}),
+    getAvailableReimbursementPoints: jest.fn(),
   },
 }))
 
@@ -390,6 +391,44 @@ describe('test page : VenueEdition', () => {
       await waitFor(() => {
         expect(window.location.href).not.toContain('modification')
       })
+    })
+
+    it('should be able to edit when venue does not have reimbursement point', async () => {
+      const storeOverrides = {
+        features: {
+          list: [
+            {
+              nameKey: 'ENABLE_NEW_BANK_INFORMATIONS_CREATION',
+              isActive: true,
+            },
+          ],
+        },
+      }
+      jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([
+        {
+          iban: 'FR0000000000000001',
+          name: 'Business unit #1',
+          venueName: 'Reimbursement point #1',
+        },
+      ])
+
+      await renderVenueEdition({ props, storeOverrides })
+
+      const publicNameInput = await screen.findByLabelText(
+        'Nom d’usage du lieu :'
+      )
+      await userEvent.clear(publicNameInput)
+      await userEvent.type(publicNameInput, 'Mon lieu')
+
+      await userEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+
+      expect(pcapi.editVenue).toHaveBeenCalledWith(
+        'AQ',
+        expect.objectContaining({
+          reimbursementPointId: null,
+          publicName: 'Mon lieu',
+        })
+      )
     })
 
     describe('bank information', () => {
