@@ -33,7 +33,7 @@
   height: rem.torem(32px);
   position: relative;
   border-radius: 100vw;
-  background-color: #90949d;
+  background-color: colors.$grey-semi-dark;
   transform: inherit;
 }
 
@@ -47,7 +47,7 @@
   width: var(--diameter);
   height: var(--diameter);
   border-radius: 50%;
-  background-color: white;
+  background-color: colors.$white;
   transform: translate(0, -50%);
   will-change: transform;
   transition: inherit;
