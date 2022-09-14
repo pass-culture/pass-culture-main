@@ -4,6 +4,7 @@ $grey-very-light: #ecf0f1;
 $grey-light: #f5f5f5;
 $grey-medium: #c7c7cc;
 $grey-dark: #696a6f;
+$grey-semi-dark: #90949d;
 $black: #151515;
 $black-with-transparency: rgba($black, 0.8);
 $black-shadow: rgba($black, 0.2);
@@ -14,7 +15,8 @@ $primary-dark: #c10046;
 $secondary: #320096;
 $tertiary: #6123df;
 $light-purple: #c1a3ff;
-$accent: #06f;
+$light-purple-with-transparency: rgba($light-purple, 0.3);
+$accent: $blue;
 $primary-disabled: #ff99be;
 $green-valid: #15884f;
 $red-error: #e60039;
@@ -25,7 +27,11 @@ $notification-info: #b3e7ff;
 $notification-success: #b8e986;
 $notification-warning: #ffd580;
 
-$linear-gradient-to-bottom-right: linear-gradient(to bottom right, $primary, $secondary);
+$linear-gradient-to-bottom-right: linear-gradient(
+  to bottom right,
+  $primary,
+  $secondary
+);
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
 
 $booking-pending-status: #f9c030;

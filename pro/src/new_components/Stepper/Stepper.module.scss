@@ -1,0 +1,142 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+$step_label_height: rem.torem(12px);
+$number-size: rem.torem(30px);
+
+.stepper {
+  @include fonts.caption();
+
+  color: colors.$grey-semi-dark;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: $step_label_height;
+
+  li:last-child {
+    flex: 0;
+  }
+
+  .step-container {
+    display: flex;
+    flex: 1;
+
+    .step {
+      display: flex;
+      position: relative;
+      color: colors.$grey-semi-dark;
+
+      .label {
+        margin-left: 50%;
+        position: absolute;
+        white-space: nowrap;
+        line-height: $step_label_height;
+        bottom: rem.torem(-17.274px);
+        text-decoration: underline transparent;
+        transition: text-decoration 250ms;
+
+        .inner {
+          margin-left: -50%;
+        }
+      }
+    }
+
+    .separator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+
+      &::after {
+        border-radius: rem.torem(2px);
+        background-color: colors.$grey-semi-dark;
+        content: '';
+        width: 100%;
+        height: rem.torem(2px);
+      }
+
+      &.active {
+        &::after {
+          background-color: colors.$tertiary;
+        }
+      }
+    }
+
+    .number {
+      padding: 0 rem.torem(16px);
+
+      .inner {
+        @include fonts.button();
+
+        border: solid 1px colors.$grey-semi-dark;
+        border-radius: 50%;
+        width: $number-size;
+        height: $number-size;
+        text-align: center;
+        line-height: $number-size;
+        margin: auto;
+        transition: box-shadow 250ms ease-in-out;
+      }
+    }
+
+    &.selectionnable {
+      .step {
+        color: colors.$black;
+
+        .number {
+          .inner {
+            border-color: colors.$tertiary;
+            color: colors.$tertiary;
+          }
+        }
+      }
+
+      :hover {
+        .label {
+          text-decoration: underline colors.$black;
+        }
+
+        .number {
+          .inner {
+            box-shadow: inset $number-size $number-size $number-size
+                colors.$light-purple-with-transparency,
+              0 0 0 rem.torem(4px) colors.$light-purple-with-transparency;
+          }
+        }
+      }
+    }
+
+    &.active {
+      .step {
+        color: colors.$tertiary;
+
+        .label {
+          text-decoration: none;
+        }
+
+        .number {
+          .inner {
+            border-color: colors.$tertiary;
+            background-color: colors.$tertiary;
+            color: colors.$white;
+            box-shadow: none;
+          }
+        }
+      }
+    }
+
+    :focus-visible {
+      outline: 0;
+
+      .label {
+        .inner {
+          span {
+            border: solid rem.torem(1px) colors.$accent;
+            border-radius: rem.torem(6px);
+            padding: 0 rem.torem(6px);
+          }
+        }
+      }
+    }
+  }
+}
