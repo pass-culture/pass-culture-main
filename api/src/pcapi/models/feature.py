@@ -109,6 +109,7 @@ class FeatureToggle(enum.Enum):
     )
     OFFER_DRAFT_ENABLED = "Active la fonctionnalités de création d'offre en brouillon"
     ENABLE_ADAGE_VENUE_INFORMATION = "Active la page acteur culturel"
+    # FIXME (dbaty, 2022-09-14): remove USE_PRICING_POINT_FOR_PRICING flag after v207 is deployed.
     USE_PRICING_POINT_FOR_PRICING = "Utilise le modèle VenuePricingPointLink pour la valorisation"
     USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS = "Utilise le modèle VenueReimbursementPointLink pour les cashflows"
     ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER = "Ajoute la gestion des zones de mobilité/intervention pour les AC."
