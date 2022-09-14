@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum
 import uuid
 
 import pytest
@@ -11,16 +10,13 @@ from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy.dialects.postgresql import UUID
 
-from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_stock
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError
 from pcapi.models.pc_object import PcObject
-from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import NonDehumanizableId
 from pcapi.utils.human_ids import dehumanize
 
@@ -43,43 +39,6 @@ time_interval = TimeInterval()
 time_interval.start = datetime(2018, 1, 1, 10, 20, 30, 111000)
 time_interval.end = datetime(2018, 2, 2, 5, 15, 25, 222000)
 now = datetime.utcnow()
-
-
-class SerializeTest:
-    def test_on_datetime_list_returns_string_with_date_in_ISO_8601_list(self):
-        # Given
-        offer = Offer()
-        offer.subcategoryId = "LIVRE_PAPIER"
-        offer.stocks = [create_stock(beginning_datetime=now, offer=offer)]
-
-        # When
-        serialized_list = serialize(offer.dateRange)
-
-        # Then
-        for dt in serialized_list:
-            self._assert_is_in_ISO_8601_format(dt)
-
-    def test_on_enum_returns_dict_with_enum_value(self):
-        # Given
-        class EnumTest(Enum):
-            TEST = {"toto": "tata", "is_toto": False, "toto_list": ["toto", "tata"]}
-
-        enum = EnumTest.TEST
-
-        # When
-        serialized_enum = serialize(enum)
-
-        # Then
-        assert serialized_enum == {"toto": "tata", "is_toto": False, "toto_list": ["toto", "tata"]}
-
-    def _assert_is_in_ISO_8601_format(self, date_text):
-        try:
-            format_string = "%Y-%m-%dT%H:%M:%S.%fZ"
-            datetime.strptime(date_text, format_string)
-        except TypeError:
-            assert False, "La date doit être un str"
-        except ValueError:
-            assert False, "La date doit être au format ISO 8601 %Y-%m-%dT%H:%M:%S.%fZ"
 
 
 class PopulateFromDictTest:
