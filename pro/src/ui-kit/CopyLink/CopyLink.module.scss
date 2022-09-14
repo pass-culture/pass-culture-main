@@ -8,7 +8,7 @@
   align-items: center;
   padding: rem.torem(4px);
   width: rem.torem(300px);
-  border: rem.torem(1px) solid #90949d;
+  border: rem.torem(1px) solid colors.$grey-semi-dark;
   border-radius: rem.torem(30px);
 
   .code {
@@ -31,13 +31,13 @@
 
     @keyframes toGreen {
       0% {
-        background-color: green;
-        border-color: green;
+        background-color: colors.$green-valid;
+        border-color: colors.$green-valid;
       }
 
       80% {
-        background-color: green;
-        border-color: green;
+        background-color: colors.$green-valid;
+        border-color: colors.$green-valid;
       }
     }
   }
