@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v2
         if: steps.changes.outputs.src == 'true'
         with:
-          node-version: "14"
+          node-version: "16"
       - name: Install and Build 🔧
         if: steps.changes.outputs.src == 'true'
         run: |
