@@ -580,7 +580,7 @@ jobs:
 
   type-checking-pro:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.17
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -619,7 +619,7 @@ jobs:
 
   quality-pro:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.17
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -658,7 +658,7 @@ jobs:
 
   tests-pro-unit-tests:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.17
     working_directory: ~/pass-culture
     steps:
       - checkout
