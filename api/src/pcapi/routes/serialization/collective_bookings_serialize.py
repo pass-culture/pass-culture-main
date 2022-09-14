@@ -338,6 +338,8 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     price: int
     educationalInstitution: EducationalInstitutionResponseModel
     educationalRedactor: CollectiveBookingEducationalRedactorResponseModel
+    numberOfTickets: int
+    venuePostalCode: str | None
 
     class Config:
         orm_mode = True
@@ -352,4 +354,6 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             price=booking.collectiveStock.price,
             educationalInstitution=booking.educationalInstitution,
             educationalRedactor=booking.educationalRedactor,
+            numberOfTickets=booking.collectiveStock.numberOfTickets,
+            venuePostalCode=booking.venue.postalCode,
         )
