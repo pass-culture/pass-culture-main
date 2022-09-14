@@ -70,7 +70,6 @@ import pcapi.core.reference.models as reference_models
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.utils import human_ids
 import pcapi.utils.date as date_utils
@@ -770,7 +769,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
     a new cashflow for each reimbursement point for which there is
     money to transfer.
 
-    This is a private function that you should never called directly,
+    This is a private function that you should never call directly,
     unless the cashflow generation stopped before its end and you want
     to proceed with an **existing** CashflowBatch.
     """
@@ -813,98 +812,56 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             synchronize_session=False,
         )
 
-    use_reimbursement_point = FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active()
-    if use_reimbursement_point:
-        reimbursement_point_infos = (
-            models.Pricing.query.filter(*filters)
-            .outerjoin(models.Pricing.booking)
-            .outerjoin(models.Pricing.collectiveBooking)
-            .outerjoin(bookings_models.Booking.stock)
-            .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-            .join(
-                offerers_models.VenueReimbursementPointLink,
-                offerers_models.VenueReimbursementPointLink.venueId == models.Pricing.venueId,
-            )
-            .filter(offerers_models.VenueReimbursementPointLink.timespan.contains(batch.cutoff))
-            .join(
-                models.BankInformation,
-                models.BankInformation.venueId == offerers_models.VenueReimbursementPointLink.reimbursementPointId,
-            )
-            .outerjoin(models.CashflowPricing)
-            .with_entities(
-                offerers_models.VenueReimbursementPointLink.reimbursementPointId,
-                models.BankInformation.id,
-                sqla_func.array_agg(models.Pricing.venueId.distinct()),
-            )
-            .group_by(
-                offerers_models.VenueReimbursementPointLink.reimbursementPointId,
-                models.BankInformation.id,
-            )
+    reimbursement_point_infos = (
+        models.Pricing.query.filter(*filters)
+        .outerjoin(models.Pricing.booking)
+        .outerjoin(models.Pricing.collectiveBooking)
+        .outerjoin(bookings_models.Booking.stock)
+        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+        .join(
+            offerers_models.VenueReimbursementPointLink,
+            offerers_models.VenueReimbursementPointLink.venueId == models.Pricing.venueId,
         )
-        business_unit_infos = ()
-    else:
-        reimbursement_point_infos = ()
-        business_unit_infos = (
-            models.Pricing.query.filter(
-                models.BusinessUnit.bankAccountId.isnot(None),
-                *filters,
-            )
-            .outerjoin(models.Pricing.booking)
-            .outerjoin(models.Pricing.collectiveBooking)
-            .outerjoin(bookings_models.Booking.stock)
-            .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-            .join(models.Pricing.businessUnit)
-            .join(models.BusinessUnit.bankAccount)
-            .outerjoin(models.CashflowPricing)
-            .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
-            .distinct()
+        .filter(offerers_models.VenueReimbursementPointLink.timespan.contains(batch.cutoff))
+        .join(
+            models.BankInformation,
+            models.BankInformation.venueId == offerers_models.VenueReimbursementPointLink.reimbursementPointId,
         )
+        .outerjoin(models.CashflowPricing)
+        .with_entities(
+            offerers_models.VenueReimbursementPointLink.reimbursementPointId,
+            models.BankInformation.id,
+            sqla_func.array_agg(models.Pricing.venueId.distinct()),
+        )
+        .group_by(
+            offerers_models.VenueReimbursementPointLink.reimbursementPointId,
+            models.BankInformation.id,
+        )
+    )
 
-    for info in reimbursement_point_infos or business_unit_infos:
-        if use_reimbursement_point:
-            reimbursement_point_id, bank_account_id, venue_ids = info
-            business_unit_id = None
-        else:
-            business_unit_id, bank_account_id = info
-            reimbursement_point_id = None
+    for reimbursement_point_id, bank_account_id, venue_ids in reimbursement_point_infos:
         log_extra = {
             "batch": batch_id,
             "reimbursement_point": reimbursement_point_id,
-            "business_unit": business_unit_id,
         }
         logger.info("Generating cashflow", extra=log_extra)
         try:
             with transaction():
-                if use_reimbursement_point:
-                    pricings = (
-                        models.Pricing.query.outerjoin(models.Pricing.booking)
-                        .outerjoin(bookings_models.Booking.stock)
-                        .outerjoin(models.Pricing.collectiveBooking)
-                        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-                        .join(
-                            models.BankInformation,
-                            models.BankInformation.venueId == reimbursement_point_id,
-                        )
-                        .outerjoin(models.CashflowPricing)
-                        .filter(
-                            models.Pricing.venueId.in_(venue_ids),
-                            *filters,
-                        )
+                pricings = (
+                    models.Pricing.query.outerjoin(models.Pricing.booking)
+                    .outerjoin(bookings_models.Booking.stock)
+                    .outerjoin(models.Pricing.collectiveBooking)
+                    .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+                    .join(
+                        models.BankInformation,
+                        models.BankInformation.venueId == reimbursement_point_id,
                     )
-                else:
-                    pricings = (
-                        models.Pricing.query.outerjoin(models.Pricing.booking)
-                        .outerjoin(bookings_models.Booking.stock)
-                        .outerjoin(models.Pricing.collectiveBooking)
-                        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-                        .join(models.BusinessUnit)
-                        .join(models.BusinessUnit.bankAccount)
-                        .outerjoin(models.CashflowPricing)
-                        .filter(
-                            models.Pricing.businessUnitId == business_unit_id,
-                            *filters,
-                        )
+                    .outerjoin(models.CashflowPricing)
+                    .filter(
+                        models.Pricing.venueId.in_(venue_ids),
+                        *filters,
                     )
+                )
                 total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
                 if not total:
                     # Mark as `PROCESSED` even if there is no cashflow, so
@@ -913,7 +870,6 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     continue
                 cashflow = models.Cashflow(
                     batchId=batch_id,
-                    businessUnitId=business_unit_id,
                     reimbursementPointId=reimbursement_point_id,
                     bankAccountId=bank_account_id,
                     status=models.CashflowStatus.PENDING,
@@ -938,7 +894,8 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception(
-                "Could not generate cashflows for a business unit",
+                "Could not generate cashflows for reimbursement point %d",
+                reimbursement_point_id,
                 extra=log_extra,
             )
 
@@ -959,12 +916,8 @@ def generate_payment_files(batch_id: int) -> None:
         )
 
     file_paths = {}
-    if FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active():
-        logger.info("Generating reimbursement points file")
-        file_paths["reimbursement_points"] = _generate_reimbursement_points_file()
-    else:
-        logger.info("Generating business units file")
-        file_paths["business_units"] = _generate_business_units_file()
+    logger.info("Generating reimbursement points file")
+    file_paths["reimbursement_points"] = _generate_reimbursement_points_file()
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch_id)
     logger.info("Generating wallets file")
@@ -1111,47 +1064,6 @@ def _generate_reimbursement_points_file() -> pathlib.Path:
     return _write_csv("reimbursement_points", header, rows=query, row_formatter=row_formatter)
 
 
-def _generate_business_units_file() -> pathlib.Path:
-    header = (
-        "Identifiant de la BU",
-        "SIRET",
-        "Raison sociale de la BU",
-        "Libellé de la BU",  # actually, the commercial name of the related venue
-        "IBAN",
-        "BIC",
-    )
-    query = (
-        models.BusinessUnit.query.join(models.BusinessUnit.bankAccount)
-        # See `_generate_payments_file()` as for why we do an _outer_
-        # join and not an _inner_ join here.
-        .outerjoin(
-            offerers_models.Venue,
-            offerers_models.Venue.siret == models.BusinessUnit.siret,
-        )
-        .order_by(models.BusinessUnit.id)
-        .with_entities(
-            offerers_models.Venue.id.label("venue_id"),
-            models.BusinessUnit.siret.label("business_unit_siret"),
-            models.BusinessUnit.name.label("business_unit_name"),
-            sqla_func.coalesce(
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.name,
-            ).label("venue_name"),
-            models.BankInformation.iban.label("iban"),
-            models.BankInformation.bic.label("bic"),
-        )
-    )
-    row_formatter = lambda row: (
-        human_ids.humanize(row.venue_id),
-        _clean_for_accounting(row.business_unit_siret),
-        _clean_for_accounting(row.business_unit_name),
-        _clean_for_accounting(row.venue_name),
-        _clean_for_accounting(row.iban),
-        _clean_for_accounting(row.bic),
-    )
-    return _write_csv("business_units", header, rows=query, row_formatter=row_formatter)
-
-
 def _clean_for_accounting(value: str) -> str:
     if not isinstance(value, str):
         return value
@@ -1160,64 +1072,33 @@ def _clean_for_accounting(value: str) -> str:
 
 
 def _generate_payments_file(batch_id: int) -> pathlib.Path:
-    use_reimbursement_point = FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active()
-    if use_reimbursement_point:
-        header = [
-            "Identifiant du point de remboursement",
-            "SIRET du point de remboursement",
-            "Libellé du point de remboursement",  # commercial name
-            "Type de réservation",
-            "Ministère",
-            "Prix de la réservation",
-            "Montant remboursé à l'offreur",
-        ]
-    else:
-        header = [
-            "Identifiant de la BU",
-            "SIRET de la BU",
-            "Libellé de la BU",  # actually, the commercial name of the related venue
-            "Type de réservation",
-            "Ministère",
-            "Prix de la réservation",
-            "Montant remboursé à l'offreur",
-        ]
+    header = [
+        "Identifiant du point de remboursement",
+        "SIRET du point de remboursement",
+        "Libellé du point de remboursement",  # commercial name
+        "Type de réservation",
+        "Ministère",
+        "Prix de la réservation",
+        "Montant remboursé à l'offreur",
+    ]
     bookings_query = (
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.booking)
         .filter(bookings_models.Booking.amount != 0)
-    )
-    if use_reimbursement_point:
-        bookings_query = bookings_query.join(
+        .join(
             offerers_models.Venue,
             offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
         )
-    else:
-        bookings_query = (
-            bookings_query.join(models.Pricing.businessUnit)
-            # There should be a Venue with the same SIRET as the business
-            # unit... but edition has been sloppy and there are
-            # inconsistencies. To avoid excluding business unit, we do an
-            # _outer_ join and not an _inner_ join here. Obviously, the
-            # corresponding columns will be empty in the CSV file.
-            # See also `_generate_business_units_file()` and `generate_invoice_file()`.
-            .outerjoin(
-                offerers_models.Venue,
-                models.BusinessUnit.siret == offerers_models.Venue.siret,
-            )
-        )
-    bookings_query = (
-        bookings_query.join(bookings_models.Booking.individualBooking)
+        .join(bookings_models.Booking.individualBooking)
         .join(bookings_models.IndividualBooking.deposit)
         .filter(models.Cashflow.batchId == batch_id)
         .group_by(
             offerers_models.Venue.id,
-            offerers_models.Venue.siret if use_reimbursement_point else models.BusinessUnit.siret,
+            offerers_models.Venue.siret,
             payments_models.Deposit.type,
         )
-    )
-    if use_reimbursement_point:
-        bookings_query = bookings_query.with_entities(
+        .with_entities(
             offerers_models.Venue.id.label("reimbursement_point_id"),
             offerers_models.Venue.siret.label("reimbursement_point_siret"),
             sqla_func.coalesce(
@@ -1228,46 +1109,18 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             payments_models.Deposit.type.label("deposit_type"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
-    else:
-        bookings_query = bookings_query.with_entities(
-            offerers_models.Venue.id.label("business_unit_venue_id"),
-            models.BusinessUnit.siret.label("business_unit_siret"),
-            sqla_func.coalesce(
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.name,
-            ).label("business_unit_venue_name"),
-            sqla_func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity).label("booking_amount"),
-            payments_models.Deposit.type.label("deposit_type"),
-            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
-        )
+    )
 
     collective_bookings_query = (
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.collectiveBooking)
         .join(CollectiveBooking.collectiveStock)
-    )
-    if use_reimbursement_point:
-        collective_bookings_query = collective_bookings_query.join(
+        .join(
             offerers_models.Venue,
             offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
         )
-    else:
-        collective_bookings_query = (
-            collective_bookings_query.join(models.Pricing.businessUnit)
-            # There should be a Venue with the same SIRET as the business
-            # unit... but edition has been sloppy and there are
-            # inconsistencies. To avoid excluding business unit, we do an
-            # _outer_ join and not an _inner_ join here. Obviously, the
-            # corresponding columns will be empty in the CSV file.
-            # See also `_generate_business_units_file()` and `generate_invoice_file()`.
-            .outerjoin(
-                offerers_models.Venue,
-                models.BusinessUnit.siret == offerers_models.Venue.siret,
-            )
-        )
-    collective_bookings_query = (
-        collective_bookings_query.join(CollectiveBooking.educationalInstitution)
+        .join(CollectiveBooking.educationalInstitution)
         .join(
             educational_models.EducationalDeposit,
             and_(
@@ -1279,12 +1132,10 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .filter(models.Cashflow.batchId == batch_id)
         .group_by(
             offerers_models.Venue.id,
-            offerers_models.Venue.siret if use_reimbursement_point else models.BusinessUnit.siret,
+            offerers_models.Venue.siret,
             educational_models.EducationalDeposit.ministry,
         )
-    )
-    if use_reimbursement_point:
-        collective_bookings_query = collective_bookings_query.with_entities(
+        .with_entities(
             offerers_models.Venue.id.label("reimbursement_point_id"),
             offerers_models.Venue.siret.label("reimbursement_point_siret"),
             sqla_func.coalesce(
@@ -1295,18 +1146,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             educational_models.EducationalDeposit.ministry.label("ministry"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
-    else:
-        collective_bookings_query = collective_bookings_query.with_entities(
-            offerers_models.Venue.id.label("business_unit_venue_id"),
-            models.BusinessUnit.siret.label("business_unit_siret"),
-            sqla_func.coalesce(
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.name,
-            ).label("business_unit_venue_name"),
-            sqla_func.sum(CollectiveStock.price).label("booking_amount"),
-            educational_models.EducationalDeposit.ministry.label("ministry"),
-            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
-        )
+    )
 
     return _write_csv(
         "payment_details",
@@ -1330,12 +1170,10 @@ def _payment_details_row_formatter(sql_row) -> tuple:  # type: ignore [no-untype
     reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
     ministry = sql_row.ministry.name if hasattr(sql_row, "ministry") else ""
 
-    # "legacy" means: use business unit. Otherwise, use reimbursement point.
-    legacy = hasattr(sql_row, "business_unit_venue_id")
     return (
-        human_ids.humanize(sql_row.business_unit_venue_id if legacy else sql_row.reimbursement_point_id),
-        _clean_for_accounting(sql_row.business_unit_siret if legacy else sql_row.reimbursement_point_siret),
-        _clean_for_accounting(sql_row.business_unit_venue_name if legacy else sql_row.reimbursement_point_name),
+        human_ids.humanize(sql_row.reimbursement_point_id),
+        _clean_for_accounting(sql_row.reimbursement_point_siret),
+        _clean_for_accounting(sql_row.reimbursement_point_name),
         booking_type,
         ministry,
         booking_total_amount,
@@ -1427,15 +1265,9 @@ def _make_invoice_line(
 
 def generate_invoices() -> None:
     """Generate (and store) all invoices."""
-    use_reimbursement_point = FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active()
     rows = (
         db.session.query(
-            sqla.literal(None).label("business_unit_id")
-            if use_reimbursement_point
-            else models.Cashflow.businessUnitId.label("business_unit_id"),
-            models.Cashflow.reimbursementPointId.label("reimbursement_point_id")
-            if use_reimbursement_point
-            else sqla.literal(None).label("reimbursement_point_id"),
+            models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
             sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
         )
         .filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW)
@@ -1446,25 +1278,17 @@ def generate_invoices() -> None:
         # There should not be any invoice linked to a cashflow that is
         # UNDER_REVIEW, but having a safety belt here is almost free.
         .filter(models.InvoiceCashflow.invoiceId.is_(None))
+        .group_by(models.Cashflow.reimbursementPointId)
     )
-    if use_reimbursement_point:
-        rows = rows.group_by(models.Cashflow.reimbursementPointId)
-    else:
-        rows = rows.group_by(models.Cashflow.businessUnitId)
 
     for row in rows:
         try:
             with transaction():
-                extra = {
-                    "business_unit_id": row.business_unit_id,
-                    "reimbursement_point_id": row.reimbursement_point_id,
-                }
+                extra = {"reimbursement_point_id": row.reimbursement_point_id}
                 with log_elapsed(logger, "Generated and sent invoice", extra):
                     generate_and_store_invoice(
-                        business_unit_id=row.business_unit_id,
                         reimbursement_point_id=row.reimbursement_point_id,
                         cashflow_ids=row.cashflow_ids,
-                        use_reimbursement_point=use_reimbursement_point,
                     )
         except Exception as exc:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
@@ -1472,23 +1296,22 @@ def generate_invoices() -> None:
             logger.exception(
                 "Could not generate invoice",
                 extra={
-                    "business_unit": row.business_unit_id,
                     "reimbursement_point_id": row.reimbursement_point_id,
                     "cashflow_ids": row.cashflow_ids,
                     "exc": str(exc),
                 },
             )
     with log_elapsed(logger, "Generated CSV invoices file"):
-        path = generate_invoice_file(datetime.date.today(), use_reimbursement_point)
+        path = generate_invoice_file(datetime.date.today())
     batch_id = models.CashflowBatch.query.order_by(models.CashflowBatch.cutoff.desc()).first().id
     drive_folder_name = _get_drive_folder_name(batch_id)
     with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
         _upload_files_to_google_drive(drive_folder_name, [path])
 
 
-def generate_invoice_file(invoice_date: datetime.date, use_reimbursement_point: bool) -> pathlib.Path:
+def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
     header = [
-        "Identifiant du point de remboursement" if use_reimbursement_point else "Identifiant de la BU",
+        "Identifiant du point de remboursement",
         "Date du justificatif",
         "Référence du justificatif",
         "Identifiant valorisation",
@@ -1496,16 +1319,10 @@ def generate_invoice_file(invoice_date: datetime.date, use_reimbursement_point: 
         "type de ticket de facturation",
         "montant du ticket de facturation",
     ]
-    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
     query = (
         db.session.query(
             models.Invoice,
-            sqla.literal(None).label("business_unit_venue_id")
-            if use_reimbursement_point
-            else BusinessUnitVenue.id.label("business_unit_venue_id"),
-            models.Invoice.reimbursementPointId.label("reimbursement_point_id")
-            if use_reimbursement_point
-            else sqla.literal(None).label("reimbursement_point_id"),
+            models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
             models.Pricing.id.label("pricing_id"),
             models.PricingLine.id.label("pricing_line_id"),
             models.PricingLine.category.label("pricing_line_category"),
@@ -1514,23 +1331,11 @@ def generate_invoice_file(invoice_date: datetime.date, use_reimbursement_point: 
         .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
+        .filter(cast(models.Invoice.date, Date) == invoice_date)
+        .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
     )
-    if not use_reimbursement_point:
-        query = (
-            query.join(models.Invoice.businessUnit)
-            # See `_generate_payments_file()` as for why we do an _outer_
-            # join and not an _inner_ join here.
-            .outerjoin(
-                BusinessUnitVenue,
-                models.BusinessUnit.siret == BusinessUnitVenue.siret,
-            )
-        )
-    query = query.filter(cast(models.Invoice.date, Date) == invoice_date).order_by(
-        models.Invoice.id, models.Pricing.id, models.PricingLine.id
-    )
-
     row_formatter = lambda row: (
-        human_ids.humanize(row.reimbursement_point_id if use_reimbursement_point else row.business_unit_venue_id),
+        human_ids.humanize(row.reimbursement_point_id),
         row.Invoice.date.date().isoformat(),
         row.Invoice.reference,
         row.pricing_id,
@@ -1548,33 +1353,28 @@ def generate_invoice_file(invoice_date: datetime.date, use_reimbursement_point: 
 
 
 def generate_and_store_invoice(
-    business_unit_id: int | None,
     reimbursement_point_id: int | None,
     cashflow_ids: list[int],
-    use_reimbursement_point: bool,
 ) -> None:
-    log_extra = {"business_unit": business_unit_id, "reimbursement_point": reimbursement_point_id}
+    log_extra = {"reimbursement_point": reimbursement_point_id}
     with log_elapsed(logger, "Generated invoice model instance", log_extra):
         invoice = _generate_invoice(
-            business_unit_id=business_unit_id,
             reimbursement_point_id=reimbursement_point_id,
             cashflow_ids=cashflow_ids,
         )
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
-        invoice_html = _generate_invoice_html(invoice, use_reimbursement_point)
+        invoice_html = _generate_invoice_html(invoice)
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
-        transactional_mails.send_invoice_available_to_pro_email(invoice, use_reimbursement_point)
+        transactional_mails.send_invoice_available_to_pro_email(invoice)
 
 
 def _generate_invoice(
-    business_unit_id: int | None,
     reimbursement_point_id: int | None,
     cashflow_ids: list[int],
 ) -> models.Invoice:
     invoice = models.Invoice(
-        businessUnitId=business_unit_id,
         reimbursementPointId=reimbursement_point_id,
     )
     total_reimbursed_amount = 0
@@ -1709,7 +1509,7 @@ def get_invoice_period(invoice_date: datetime.datetime) -> typing.Tuple[datetime
     return start_date, end_date
 
 
-def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: bool) -> dict:
+def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     # Easier to sort here and not in PostgreSQL, and not much slower
     # because there are very few cashflows (and usually only 1).
     cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
@@ -1746,27 +1546,20 @@ def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: b
     reimbursement_point_name = None
     reimbursement_point_iban = None
 
-    # FIXME (dbaty, 2022-07-18): once business units are not used
-    # anymore, stop using `venue` in the template.
-    if use_reimbursement_point:
-        reimbursement_point = invoice.reimbursementPoint
-        if reimbursement_point is None:
-            raise ValueError("Could not generate invoice without reimbursement point")
-        reimbursement_point_name = reimbursement_point.publicName or reimbursement_point.name
-        bank_information = offerers_repository.BankInformation.query.filter(
-            offerers_repository.BankInformation.venueId == reimbursement_point.id
-        ).one()
-        reimbursement_point_iban = bank_information.iban if bank_information else None
-        venue = None
-    else:
-        venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
+    reimbursement_point = invoice.reimbursementPoint
+    if reimbursement_point is None:
+        raise ValueError("Could not generate invoice without reimbursement point")
+    reimbursement_point_name = reimbursement_point.publicName or reimbursement_point.name
+    bank_information = offerers_repository.BankInformation.query.filter(
+        offerers_repository.BankInformation.venueId == reimbursement_point.id
+    ).one()
+    reimbursement_point_iban = bank_information.iban if bank_information else None
     period_start, period_end = get_invoice_period(invoice.date)
 
     return dict(
         invoice=invoice,
         cashflows=cashflows,
         groups=groups,
-        venue=venue,
         reimbursement_point=reimbursement_point,
         reimbursement_point_name=reimbursement_point_name,
         reimbursement_point_iban=reimbursement_point_iban,
@@ -1863,8 +1656,8 @@ def get_reimbursements_by_venue(
     return reimbursements_by_venue.values()
 
 
-def _generate_invoice_html(invoice: models.Invoice, use_reimbursement_point: bool) -> str:
-    context = _prepare_invoice_context(invoice, use_reimbursement_point)
+def _generate_invoice_html(invoice: models.Invoice) -> str:
+    context = _prepare_invoice_context(invoice)
     return render_template("invoices/invoice.html", **context)
 
 
