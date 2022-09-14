@@ -613,7 +613,6 @@ class FindAllOffererPaymentsTest:
     # pre-2022 payments, we can rename and update this test. Some
     # tests above could be updated, some could be removed if they
     # don't make sense.
-    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_with_new_models(self):
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",

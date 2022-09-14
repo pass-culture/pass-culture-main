@@ -4,7 +4,6 @@ import logging
 import click
 
 import pcapi.core.finance.api as finance_api
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -26,5 +25,4 @@ def generate_invoices():  # type: ignore [no-untyped-def]
 @click.option("-d", "--date", type=click.DateTime(formats=["%Y-%m-%d"]), default=str(datetime.date.today()))
 def generate_invoice_file(date):  # type: ignore [no-untyped-def]
     """Generate a csv file containing all invoices data for a given date"""
-    use_reimbursement_point = FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active()
-    finance_api.generate_invoice_file(date.date(), use_reimbursement_point)
+    finance_api.generate_invoice_file(date.date())

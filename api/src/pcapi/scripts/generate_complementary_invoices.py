@@ -87,10 +87,7 @@ def generate_complementary_invoices(after_id: int, only_id: int) -> None:
             )
             # Again, call our custom function that uses a custom
             # template.
-            html = _custom_generate_invoice_html(
-                complementary_invoice,
-                use_reimbursement_point=True,
-            )
+            html = _custom_generate_invoice_html(complementary_invoice)
             finance_api._store_invoice_pdf(complementary_invoice.storage_object_id, html)
         done += 1
         elapsed = time.perf_counter() - start
@@ -100,8 +97,8 @@ def generate_complementary_invoices(after_id: int, only_id: int) -> None:
             print(f"  => {done} done, ETA = {eta}")
 
 
-def _custom_generate_invoice_html(invoice: finance_models.Invoice, use_reimbursement_point: bool) -> str:
-    context = finance_api._prepare_invoice_context(invoice, use_reimbursement_point)
+def _custom_generate_invoice_html(invoice: finance_models.Invoice) -> str:
+    context = finance_api._prepare_invoice_context(invoice)
     context["original_reference_number"] = invoice.reference.replace(".2", "")
     return render_template("invoices/complementary_invoice.html", **context)
 

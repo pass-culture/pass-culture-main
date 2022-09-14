@@ -12,7 +12,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import override_features
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period
 from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_validation_period
@@ -29,7 +28,6 @@ reimbursement_period = (today, in_two_days)
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class ReimbursementDetailsTest:
-    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_reimbursement_details_as_csv_individual_booking(self) -> None:
         reimbursement_point = offerers_factories.VenueFactory(
             siret="siret-rp",
@@ -132,7 +130,6 @@ class ReimbursementDetailsTest:
         assert row[20] == "21,00"
         assert row[21] == "offre grand public"
 
-    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
         custom_reimbursement_rule = finance_factories.CustomReimbursementRuleFactory(
@@ -179,7 +176,6 @@ class ReimbursementDetailsTest:
 
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
-@override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
 def test_generate_reimbursement_details_csv() -> None:
     # given
     payment = finance_factories.PaymentFactory(
@@ -240,9 +236,6 @@ def test_generate_reimbursement_details_csv() -> None:
 
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
-@override_features(
-    USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True,
-)
 def test_find_all_offerer_reimbursement_details() -> None:
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(
@@ -288,7 +281,6 @@ def test_find_all_offerer_reimbursement_details() -> None:
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class CollectiveReimbursementDetailsTest:
-    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_find_all_offerer_reimbursement_details_on_collective(self) -> None:
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(
@@ -365,7 +357,6 @@ class CollectiveReimbursementDetailsTest:
             "offre collective",
         ]
 
-    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_reimbursement_details_as_csv_collective_booking(self) -> None:
         reimbursement_point = offerers_factories.VenueFactory(
             siret="siret-rp",

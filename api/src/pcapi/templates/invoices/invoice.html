@@ -192,16 +192,8 @@
 </svg>
 <h1>Justificatif de remboursement</h1>
 <div class="custumerInfo">
-{%- if reimbursement_point %}
     <p><b>Structure :</b> {{ reimbursement_point.managingOfferer.name }} - {{ reimbursement_point.managingOfferer.siren }}</p>
     <p><b>Point de remboursement :</b> {{ reimbursement_point_name }} - {{ reimbursement_point_iban }}</p>
-{%- else %}
-    <p><b>Nom :</b> {{ invoice.businessUnit.name }}</p>
-{%- if venue is not none %}
-    <p><b>Adresse :</b> {{ venue.address }} - {{ venue.postalCode}} {{ venue.city }}</p>
-{%- endif %}
-    <p><b>SIRET :</b> {{ invoice.businessUnit.siret }}</p>
-{%- endif %}
 </div>
 <h3 class="coloredTitle">
     Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels
