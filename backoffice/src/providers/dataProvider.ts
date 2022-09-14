@@ -11,11 +11,14 @@ import { safeFetch } from './apiHelpers'
 
 export const dataProvider: DataProvider = {
   async searchList(resource: string, params: GetListParams) {
-    const response = await safeFetch(
-      `${env.API_URL}/${resource}/search?q=${encodeURIComponent(
-        params.meta.search
-      )}&page=${params.pagination.page}&perPage=${params.pagination.perPage}`
-    )
+    let url = `${env.API_URL}/${resource}/search?q=${encodeURIComponent(
+      params.meta.search
+    )}&page=${params.pagination.page}&perPage=${params.pagination.perPage}`
+
+    if (params.meta.type) {
+      url += `&type=${params.meta.type}`
+    }
+    const response = await safeFetch(url)
 
     return {
       data: response.json.data,
