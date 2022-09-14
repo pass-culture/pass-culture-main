@@ -1,3 +1,4 @@
+import { ProSearch } from './resources/Pro/ProSearch'
 import { UserSearch } from './resources/PublicUsers/UserSearch'
 import { RolesList } from './resources/Roles/RolesList'
 
@@ -13,6 +14,10 @@ export const resources: ResourceType[] = [
   {
     name: '/public_users/search',
     list: UserSearch,
+  },
+  {
+    name: '/pro/search',
+    list: ProSearch,
   },
   {
     name: '/roles',

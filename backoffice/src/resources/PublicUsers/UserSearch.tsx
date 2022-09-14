@@ -101,7 +101,7 @@ export const UserSearch = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [userDataState, setUserDataState] = useState({
     userData: [],
-    userTotal: 0,
+    total: 0,
     totalPages: 0,
   })
   const [searchParameter, setSearchParameter] = useState('')
@@ -123,7 +123,7 @@ export const UserSearch = () => {
       if (response && response.data && response.data.length > 0) {
         setUserDataState({
           userData: response.data,
-          userTotal: response.total,
+          total: response.total,
           totalPages: response.totalPages,
         })
         setEmptyResults(false)
@@ -150,7 +150,7 @@ export const UserSearch = () => {
       setSearchParameter(params.search)
       setUserDataState({
         userData: [],
-        userTotal: 0,
+        total: 0,
         totalPages: 0,
       })
       setEmptyResults(true)
@@ -162,7 +162,7 @@ export const UserSearch = () => {
   const clearSearch = () => {
     setUserDataState({
       userData: [],
-      userTotal: 0,
+      total: 0,
       totalPages: 0,
     })
     setEmptyResults(true)
@@ -277,7 +277,7 @@ export const UserSearch = () => {
                 </Form>
               </Box>
             </Grid>
-            {!emptyResults && <div>{userDataState.userTotal} résultat(s)</div>}
+            {!emptyResults && <div>{userDataState.total} résultat(s)</div>}
             {!emptyResults && (
               <Pagination
                 count={userDataState.totalPages}
