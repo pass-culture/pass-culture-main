@@ -4,7 +4,6 @@ from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
@@ -29,11 +28,11 @@ def save_allocine_sandbox() -> None:
         email="pro.exploitant-cinema@example.net",
     )
 
-    offerer = create_offerer(
+    offerer = offerers_factories.OffererFactory(
         address="145, rue Chaplin",
         city="Paris 17",
         name="Le Royal - Cinéma d'essai",
-        postal_code="75017",
+        postalCode="75017",
         siren=sirene.siren,
     )
 

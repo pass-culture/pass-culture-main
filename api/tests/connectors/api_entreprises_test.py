@@ -10,7 +10,6 @@ from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
-from pcapi.model_creators.generic_creators import create_offerer
 
 
 class GetByOffererTest:
@@ -19,7 +18,7 @@ class GetByOffererTest:
         # Given
         requests_get.return_value = MagicMock(status_code=400)
 
-        offerer = create_offerer(siren="732075312")
+        offerer = offerers_factories.OffererFactory.build(siren="732075312")
 
         # When
         with pytest.raises(ApiEntrepriseException) as error:
@@ -31,7 +30,7 @@ class GetByOffererTest:
     @patch("pcapi.connectors.api_entreprises.requests.get")
     def test_call_sirene_with_offerer_siren(self, requests_get):
         # Given
-        offerer = create_offerer(siren="732075312")
+        offerer = offerers_factories.OffererFactory.build(siren="732075312")
         json_response = {
             "unite_legale": {
                 "siren": "395251440",
@@ -56,7 +55,7 @@ class GetByOffererTest:
     @patch("pcapi.connectors.api_entreprises.requests.get")
     def test_returns_unite_legale_informations_with_etablissement_siege(self, requests_get):
         # Given
-        offerer = create_offerer(siren="732075312")
+        offerer = offerers_factories.OffererFactory.build(siren="732075312")
 
         mocked_api_response = MagicMock(status_code=200)
         requests_get.return_value = mocked_api_response
@@ -85,7 +84,7 @@ class GetByOffererTest:
     @patch("pcapi.connectors.api_entreprises.requests.get")
     def test_returns_unite_legale_informations_without_etablissements_list(self, requests_get):
         # Given
-        offerer = create_offerer(siren="732075312")
+        offerer = offerers_factories.OffererFactory.build(siren="732075312")
 
         mocked_api_response = MagicMock(status_code=200)
         requests_get.return_value = mocked_api_response
@@ -122,7 +121,7 @@ class GetByOffererTest:
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
     @patch.dict(CODE_TO_CATEGORY_MAPPING, {5202: "Société en nom collectif"})
     def test_returns_legal_category_code_and_label(self, get_by_offerer_mock):
-        offerer = create_offerer(siren="395251440")
+        offerer = offerers_factories.OffererFactory.build(siren="395251440")
 
         get_by_offerer_mock.return_value = {
             "unite_legale": {
@@ -144,7 +143,7 @@ class GetByOffererTest:
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
     @patch.dict(CODE_TO_CATEGORY_MAPPING, {5202: "Société en nom collectif"})
     def test_returns_legal_category_code_and_label_when_no_label_matches_to_code(self, get_by_offerer_mock):
-        offerer = create_offerer(siren="395251440")
+        offerer = offerers_factories.OffererFactory.build(siren="395251440")
 
         get_by_offerer_mock.return_value = {
             "unite_legale": {
@@ -166,7 +165,7 @@ class GetByOffererTest:
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
     @patch.dict(CODE_TO_CATEGORY_MAPPING, {5202: "Société en nom collectif"})
     def test_returns_legal_category_code_and_label_when_code_is_none(self, get_by_offerer_mock):
-        offerer = create_offerer(siren="395251440")
+        offerer = offerers_factories.OffererFactory.build(siren="395251440")
 
         get_by_offerer_mock.return_value = {
             "unite_legale": {

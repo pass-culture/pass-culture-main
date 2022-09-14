@@ -8,7 +8,6 @@ from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.repository import check_if_siren_already_exists
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
@@ -78,11 +77,11 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
     real_siren = "784340093"
     if not check_if_siren_already_exists(real_siren):
         offerer_name = "784340093 lat:48.8 lon:1.48"
-        offerer = create_offerer(
+        offerer = offerers_factories.OffererFactory(
             address="LIEU DIT CARTOUCHERIE",
             city="Paris 12",
             name="THEATRE DU SOLEIL",
-            postal_code="75012",
+            postalCode="75012",
             siren=real_siren,
         )
         offerers_by_name[offerer_name] = offerer
@@ -130,11 +129,11 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
 
         offerer_name = "{} lat:{} lon:{}".format(incremented_siren, location.latitude, location.longitude)
 
-        offerer = create_offerer(
+        offerer = offerers_factories.OffererFactory(
             address=location.address.upper(),
             city=location.city,
             name=MOCK_NAMES[mock_index],
-            postal_code=location.postalCode,
+            postalCode=location.postalCode,
             siren=str(incremented_siren),
         )
 
