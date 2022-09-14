@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -6,11 +7,11 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import { ReactComponent as ArrowIcon } from 'icons/ico-arrow-up-b.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { ROOT_PATH } from 'utils/config'
 
 import type { IStockEventItemProps } from './StockEventItem'
 import { StockEventItem } from './StockEventItem'
@@ -41,7 +42,6 @@ const StockEventSection = ({
     )
   }, [showAllStocks])
 
-  const iconName = showAllStocks ? 'ico-arrow-up-b' : 'ico-arrow-down-b'
   const stocksUrls = isOfferFormV3
     ? {
         creation: `/offre/:${offerId}/v3/creation/individuelle/stocks`,
@@ -82,7 +82,14 @@ const StockEventSection = ({
       {stocks.length > NB_UNFOLDED_STOCK && (
         <Button
           className={styles['stock-event-item-display-more']}
-          Icon={() => <img src={`${ROOT_PATH}/icons/${iconName}.svg`} />}
+          Icon={() => (
+            <ArrowIcon
+              className={cn(styles['stock-event-item-display-more-icon'], {
+                [styles['stock-event-item-display-more-icon-down']]:
+                  !showAllStocks,
+              })}
+            />
+          )}
           variant={ButtonVariant.TERNARY}
           onClick={() => setShowAllStocks(!showAllStocks)}
         >

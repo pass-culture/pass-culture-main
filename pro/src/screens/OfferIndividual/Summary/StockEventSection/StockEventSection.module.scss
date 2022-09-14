@@ -7,8 +7,13 @@
     padding: rem.torem(0);
     margin-left: rem.torem(-8px);
 
-    img {
+    &-icon {
       width: rem.torem(32px);
+      height: rem.torem(32px);
+
+      &-down {
+        transform: rotate(180deg);
+      }
     }
   }
 }
