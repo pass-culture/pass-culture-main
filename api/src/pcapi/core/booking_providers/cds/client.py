@@ -25,7 +25,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         super().__init__(cinema_id, account_id, api_url, cinema_api_token)
 
     def get_internet_sale_gauge_active(self) -> bool:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.CINEMAS)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
         cinemas = parse_obj_as(list[cds_serializers.CinemasCDS], data)
         for cinema in cinemas:
             if cinema.id == self.cinema_id:
