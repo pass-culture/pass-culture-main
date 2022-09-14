@@ -4,6 +4,7 @@ import { IVenueFormValues } from '../types'
 
 const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
   return {
+    accessibility: venue.accessibility,
     address: venue.address,
     addressAutocomplete: `${venue.address} ${venue.postalCode} ${venue.city}`,
     'search-addressAutocomplete': `${venue.address} ${venue.postalCode} ${venue.city}`,
@@ -15,6 +16,7 @@ const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
     description: venue.description,
     email: venue.contact.email,
     id: venue.id,
+    isAccessibilityAppliedOnAllOffers: false,
     isPermanent: venue.isPermanent,
     isVenueVirtual: venue.isVenueVirtual,
     latitude: venue.latitude,

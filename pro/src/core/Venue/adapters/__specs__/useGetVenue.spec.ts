@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, VenueTypeCode } from 'apiClient/v1'
+import { AccessiblityEnum } from 'core/shared'
 
 import { useGetVenue } from '../getVenueAdapter'
 
@@ -66,6 +67,13 @@ describe('useGetVenue', () => {
     expect(loadingState.error).toBeUndefined()
 
     const venue = {
+      accessibility: {
+        [AccessiblityEnum.AUDIO]: false,
+        [AccessiblityEnum.MENTAL]: false,
+        [AccessiblityEnum.MOTOR]: false,
+        [AccessiblityEnum.VISUAL]: false,
+        [AccessiblityEnum.NONE]: true,
+      },
       address: '12 rue du pilas',
       bannerMeta: {
         image_credit: '',
