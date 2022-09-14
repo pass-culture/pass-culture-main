@@ -51,7 +51,7 @@ class Returns200Test:
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
             price=1200,
         )
-        educational_factories.CollectiveBookingFactory(
+        booking = educational_factories.CollectiveBookingFactory(
             educationalRedactor=redactor,
             collectiveStock=collective_stock,
             dateCreated=booking_date,
@@ -80,6 +80,7 @@ class Returns200Test:
                     "lastname": redactor.lastName,
                     "phonenumber": None,
                 },
+                "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
@@ -423,7 +424,7 @@ class Returns200Test:
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
             price=1200,
         )
-        educational_factories.CollectiveBookingFactory(
+        booking = educational_factories.CollectiveBookingFactory(
             educationalRedactor=redactor,
             collectiveStock=collective_stock,
             dateCreated=booking_date,
@@ -460,6 +461,7 @@ class Returns200Test:
                     "lastname": redactor.lastName,
                     "phonenumber": None,
                 },
+                "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
@@ -499,7 +501,7 @@ class Returns200Test:
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
             price=1200,
         )
-        educational_factories.CollectiveBookingFactory(
+        booking = educational_factories.CollectiveBookingFactory(
             educationalRedactor=redactor,
             collectiveStock=collective_stock,
             dateCreated=booking_date,
@@ -536,6 +538,7 @@ class Returns200Test:
                     "lastname": redactor.lastName,
                     "phonenumber": None,
                 },
+                "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
@@ -576,7 +579,7 @@ class Returns200Test:
             beginningDatetime=event_date,
             price=1200,
         )
-        educational_factories.UsedCollectiveBookingFactory(
+        booking = educational_factories.UsedCollectiveBookingFactory(
             educationalRedactor=redactor,
             collectiveStock=collective_stock,
             dateCreated=booking_date,
@@ -614,6 +617,7 @@ class Returns200Test:
                     "lastname": redactor.lastName,
                     "phonenumber": None,
                 },
+                "booking_identifier": humanize(booking.id),
                 "booking_date": "2022-02-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
