@@ -1,0 +1,27 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+.table {
+  tr > td {
+    vertical-align: middle;
+    text-align: center;
+    padding: rem.torem(8px);
+    font-size: rem.torem(12px);
+
+    & > * {
+      width: rem.torem(50px);
+      height: rem.torem(50px);
+      fill: black;
+    }
+
+  }
+}
+
+.table, .table tr, .table td {
+    border: 1px solid black;
+    border-collapse: collapse
+}
+
+.with-background {
+    background-color: colors.$grey-medium;
+}
