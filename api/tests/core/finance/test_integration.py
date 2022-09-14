@@ -16,14 +16,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @override_features(
-    USE_PRICING_POINT_FOR_PRICING=False,
     USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=False,
 )
 def test_integration_legacy_with_business_unit():
     booking = bookings_factories.IndividualBookingFactory()
     bookings_api.mark_as_used(booking)
 
-    pricing = api.price_booking(booking, use_pricing_point=False)
+    pricing = api.price_booking(booking)
     assert pricing.status == models.PricingStatus.VALIDATED
 
     cutoff = datetime.datetime.utcnow()
@@ -42,7 +41,6 @@ def test_integration_legacy_with_business_unit():
 
 
 @override_features(
-    USE_PRICING_POINT_FOR_PRICING=True,
     USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True,
 )
 def test_integration():
@@ -51,7 +49,7 @@ def test_integration():
     booking = bookings_factories.IndividualBookingFactory(stock__offer__venue=venue)
 
     bookings_api.mark_as_used(booking)
-    pricing = api.price_booking(booking, use_pricing_point=True)
+    pricing = api.price_booking(booking)
     assert pricing.status == models.PricingStatus.VALIDATED
 
     cutoff = datetime.datetime.utcnow()

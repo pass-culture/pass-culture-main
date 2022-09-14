@@ -241,7 +241,6 @@ def test_generate_reimbursement_details_csv() -> None:
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 @override_features(
-    USE_PRICING_POINT_FOR_PRICING=True,
     USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True,
 )
 def test_find_all_offerer_reimbursement_details() -> None:
