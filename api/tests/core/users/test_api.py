@@ -26,7 +26,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
-from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -501,21 +500,21 @@ class FulfillAccountPasswordTest:
 
 
 class SetOffererDepartementCodeTest:
-    def should_set_user_department_to_undefined_department_code_when_offerer_has_none(self):
+    def test_with_empty_postal_code(self):
         # Given
         new_user = users_factories.ProFactory.build()
-        offerer = create_offerer(postal_code=None)
+        offerer = offerers_factories.OffererFactory.build(postalCode=None)
 
         # When
         updated_user = users_api._set_offerer_departement_code(new_user, offerer)
 
         # Then
-        assert updated_user.departementCode == None
+        assert updated_user.departementCode is None
 
-    def should_set_user_department_code_based_on_offerer(self):
+    def test_with_set_postal_code(self):
         # Given
         new_user = users_factories.ProFactory.build()
-        offerer = create_offerer(postal_code="75019")
+        offerer = offerers_factories.OffererFactory.build(postalCode="75019")
 
         # When
         updated_user = users_api._set_offerer_departement_code(new_user, offerer)
