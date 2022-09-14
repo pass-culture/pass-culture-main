@@ -1293,101 +1293,101 @@ workflows:
                - integration
                - docs
          context: Slack
-      - generate-pcapi-helm-values-files:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - build-and-push-image
-          context:
-            - GCP
-            - GCP_EHP
-      - deploy-pcapi:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - generate-pcapi-helm-values-files
-         context:
-           - GCP
-           - GCP_EHP
-         helm_environment: testing
-         app_version: ${CIRCLE_SHA1}
-      - restart-pcapi:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - deploy-pcapi
-         context:
-           - GCP
-           - GCP_EHP
-         helm_environment: testing
-      - deploy-pro:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - quality-pro
-           - tests-pro-unit-tests
-           - tests-pro-e2e-tests
-           - restart-pcapi
-         context:
-           - GCP
-           - GCP_EHP
-         app_environment: testing
-      - deploy-adage-front:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - quality-adage-front
-           - tests-adage-front
-           - restart-pcapi
-         context:
-           - GCP
-           - GCP_EHP
-         app_environment: testing
-      - deploy-backoffice-front:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - tests-backoffice-front-unit-tests
-           - restart-pcapi
-         context:
-           - GCP
-           - GCP_EHP
-         app_environment: testing
-         service_account_backoffice_key: GCP_BACKOFFICE_TESTING_KEY
-      - trigger_measure_workflow_execution_time:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-               - master
-               - docs
-         requires:
-           - type-checking-pro
-           - quality-pro
-           - type-checking-adage-front
-           - quality-adage-front
-           - quality-api
-           - tests-api
-           - tests-adage-front
-           - tests-pro-unit-tests
-           - tests-pro-e2e-tests
-           - tests-backoffice-front-unit-tests
-         context:
-           - CI_MEASURE
+#      - generate-pcapi-helm-values-files:
+#          filters:
+#            branches:
+#              only:
+#                - master
+#          requires:
+#            - build-and-push-image
+#          context:
+#            - GCP
+#            - GCP_EHP
+#      - deploy-pcapi:
+#         filters:
+#           branches:
+#             only:
+#               - master
+#         requires:
+#           - generate-pcapi-helm-values-files
+#         context:
+#           - GCP
+#           - GCP_EHP
+#         helm_environment: testing
+#         app_version: ${CIRCLE_SHA1}
+#      - restart-pcapi:
+#         filters:
+#           branches:
+#             only:
+#               - master
+#         requires:
+#           - deploy-pcapi
+#         context:
+#           - GCP
+#           - GCP_EHP
+#         helm_environment: testing
+#      - deploy-pro:
+#         filters:
+#           branches:
+#             only:
+#               - master
+#         requires:
+#           - quality-pro
+#           - tests-pro-unit-tests
+#           - tests-pro-e2e-tests
+#           - restart-pcapi
+#         context:
+#           - GCP
+#           - GCP_EHP
+#         app_environment: testing
+#      - deploy-adage-front:
+#         filters:
+#           branches:
+#             only:
+#               - master
+#         requires:
+#           - quality-adage-front
+#           - tests-adage-front
+#           - restart-pcapi
+#         context:
+#           - GCP
+#           - GCP_EHP
+#         app_environment: testing
+#      - deploy-backoffice-front:
+#         filters:
+#           branches:
+#             only:
+#               - master
+#         requires:
+#           - tests-backoffice-front-unit-tests
+#           - restart-pcapi
+#         context:
+#           - GCP
+#           - GCP_EHP
+#         app_environment: testing
+#         service_account_backoffice_key: GCP_BACKOFFICE_TESTING_KEY
+#      - trigger_measure_workflow_execution_time:
+#         filters:
+#           branches:
+#             ignore:
+#               - production
+#               - staging
+#               - integration
+#               - master
+#               - docs
+#         requires:
+#           - type-checking-pro
+#           - quality-pro
+#           - type-checking-adage-front
+#           - quality-adage-front
+#           - quality-api
+#           - tests-api
+#           - tests-adage-front
+#           - tests-pro-unit-tests
+#           - tests-pro-e2e-tests
+#           - tests-backoffice-front-unit-tests
+#         context:
+#           - CI_MEASURE
   gcp-ehp:
     jobs:
       - generate-pcapi-helm-values-files:
