@@ -11,6 +11,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { Audience } from 'core/shared'
 
 import TableBody from '../Body'
 import TableHead from '../Head'
@@ -25,6 +26,7 @@ interface TableWrapperProps<
   nbBookings: number
   nbBookingsPerPage: number
   updateCurrentPage: (pageNumber: number) => void
+  audience: Audience
 }
 
 const TableWrapper = <
@@ -36,6 +38,7 @@ const TableWrapper = <
   nbBookings,
   nbBookingsPerPage,
   updateCurrentPage,
+  audience,
 }: TableWrapperProps<T>): JSX.Element => {
   const {
     canPreviousPage,
@@ -82,6 +85,7 @@ const TableWrapper = <
           page={page}
           prepareRow={prepareRow}
           tableBodyProps={getTableBodyProps()}
+          audience={audience}
         />
       </table>
       <TablePagination

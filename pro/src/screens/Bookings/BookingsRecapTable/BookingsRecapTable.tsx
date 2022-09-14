@@ -291,6 +291,7 @@ const BookingsRecapTable = <
             nbBookings={nbBookings}
             nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
             updateCurrentPage={updateCurrentPage}
+            audience={audience}
           />
         </Fragment>
       ) : (
