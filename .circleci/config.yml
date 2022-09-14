@@ -20,13 +20,13 @@ parameters:
     default: 'python-deps-v1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "api/requirements.txt" }}'
   pro_cache_key:
     type: string
-    default: 'node_modules-14.18-{{ checksum "pro/yarn.lock" }}'
+    default: 'node_modules-16.17-{{ checksum "pro/yarn.lock" }}'
   pro_jest_cache_key:
     type: string
-    default: 'node-14.18-jest-cache-{{ epoch }}' # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
+    default: 'node-16.17-jest-cache-{{ epoch }}' # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
   adage-front_cache_key:
     type: string
-    default: 'node_modules-14.18-{{ checksum "adage-front/yarn.lock" }}'
+    default: 'node_modules-16.17-{{ checksum "adage-front/yarn.lock" }}'
   backoffice-front_cache_key:
     type: string
     default: 'node_modules-14.13-{{ checksum "backoffice/yarn.lock" }}'
@@ -461,7 +461,7 @@ jobs:
 
   type-checking-adage-front:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.17
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -500,7 +500,7 @@ jobs:
 
   quality-adage-front:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.17
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -541,7 +541,7 @@ jobs:
 
   tests-adage-front:
     docker:
-      - image: cimg/node:14.18
+      - image: cimg/node:16.17
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -757,6 +757,7 @@ jobs:
           name: Running functional tests PRO
           command: |
             cd pro
+            nvm use
             dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - run:
@@ -989,7 +990,7 @@ jobs:
                 name: Send failure notification
                 command: |
                   VERSION_TO_DEPLOY=$(git describe --contains | sed 's/..$//')
-                  BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* may have *FAILED* (an 
+                  BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* may have *FAILED* (an
                   old cache could still be valid) :collision:'"
                   curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
                 when: on_fail
