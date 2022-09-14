@@ -2,6 +2,9 @@ on:
   push:
     branches-ignore:
       - docs
+      - integration
+      - production
+      - staging
 
 jobs:
   check-pro-folder-changes:
@@ -46,3 +49,11 @@ jobs:
     uses: ./.github/workflows/check-folder-changes.yml
     with:
       folder: backoffice
+
+  deploy-testing:
+    if: github.ref == 'master'
+    uses: ./.github/workflows/deploy-pcapi.yml
+    with:
+      environment: testing
+      app_version: ${{ github.sha }}
+    secrets: inherit

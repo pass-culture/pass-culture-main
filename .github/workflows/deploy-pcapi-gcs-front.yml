@@ -1,0 +1,62 @@
+on:
+  workflow_call:
+    inputs:
+      app_name:
+        type: string
+        required: true
+      app_directory:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: true
+      node_version:
+        type: string
+        required: true
+    secrets:
+      gcp_project:
+        required: true
+      service_account:
+        required: true
+      workload_identity_provider:
+        required: true
+
+jobs:
+  deploy-app:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ inputs.workload_identity_provider }}
+          service_account: ${{ inputs.service_account }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
+      - uses: actions/checkout@v3
+      - run: yarn install
+        working-directory: ${{ inputs.app_directory }}
+      - run: |
+          set -a; source ../config/run_envs/${{ inputs.environment }};
+          yarn build:${{ inputs.environment }}
+        working-directory: ${{ inputs.app_directory }}
+      - if: ${{ inputs.environment != 'testing' }}
+        run: >
+          cat ${{ inputs.app_directory }}/package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > ${{ inputs.app_directory }}/build/version.txt
+      - uses: 'google-github-actions/upload-cloud-storage@v0'
+        with:
+          path: ${{ inputs.app_directory }}/build
+          destination: ${{ inputs.gcp_project }}-${{ inputs.environment }}-${{ inputs.app_name }}
+      - if: ${{ inputs.environment == 'production' }}
+        run: |
+          gcloud compute url-maps invalidate-cdn-cache ${{ inputs.environment }}-${{ inputs.app_name }}-url-map --path "/*"  --async
+          echo "An invalidateCache operation has been requested. You can follow its progress on https://console.cloud.google.com/compute/operations"
+        

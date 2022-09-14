@@ -5,7 +5,7 @@ repositories:
   - name: passCulture
     url: europe-west1-docker.pkg.dev/passculture-infra-prod
     oci: true
-    username: _json_key
+    username: oauth2accesstoken
 
 releases:
   - name: {{ .Environment.Name }}

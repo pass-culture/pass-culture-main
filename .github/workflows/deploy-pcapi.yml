@@ -1,0 +1,129 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      app_version:
+        type: string
+        required: true
+
+env:
+  REGION: europe-west1
+
+jobs:
+  generate-pcapi-helm-secrets-file:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      pcapi_helm_secrets_file_base64: ${{ steps.generate-secrets-file.outputs.secrets_file_base64 }}
+    steps:
+      - name: Output variables
+        id: vars
+        run: echo "DOCKER_REPO=${REGION}-docker.pkg.dev/${{ secrets.INFRA_PROD_GCP_PROJECT }}/${{ secrets.PCAPI_ARTIFACT_REGISTRY_REPOSITORY }}" >> $GITHUB_ENV
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Generate pcapi helm values file"
+        id: generate-secrets-file
+        uses: addnab/docker-run-action@v3
+        with:
+          registry: '${{ env.REGION }}-docker.pkg.dev'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.openid-auth.outputs.access_token }}'
+          image: '${{ env.DOCKER_REPO }}/pcapi:${{ github.sha }}'
+          run: echo "::set-output name=secrets_file_base64::$(flask print_secret_keys | base64)"
+
+  deploy-helm-release:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    needs: generate-pcapi-helm-secrets-file
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          repository: pass-culture/pass-culture-deployment
+          path: ./pass-culture-deployment
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+      - name: Get GKE cluster credentials
+        run: gcloud container clusters get-credentials --region ${REGION} ${{ secrets.METIER_GKE_CLUSTER_NAME }}
+      - name: Setup helmfile
+        uses: mamezou-tech/setup-helmfile@v1.0.0
+        with:
+          helmfile-version: "v0.135.0"
+      - name: Deploy pcapi
+        run: |
+          PASSCULTURE_PASSWORD=${{ steps.openid-auth.outputs.access_token }} \
+          PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
+          PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
+          helmfile -e ${{ inputs.environment }} diff --set image.tag=${{ inputs.app_version }}
+
+  deploy-pro:
+    needs: deploy-helm-release
+    uses: ./.github/workflows/deploy-pcapi-gcs-front.yml
+    with:
+      app_name: pro
+      app_directory: pro
+      environment: ${{ inputs.environment }}
+      node_version: 14.18
+    secrets:
+      gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
+      service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
+      workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+  deploy-adage-front:
+    needs: deploy-helm-release
+    uses: ./.github/workflows/deploy-pcapi-gcs-front.yml
+    with:
+      app_name: adage
+      app_directory: adage-front
+      environment: ${{ inputs.environment }}
+      node_version: 14.18
+    secrets:
+      gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
+      service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
+      workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+  deploy-backoffice-front:
+    if: inputs.environment != 'integration'
+    runs-on: ubuntu-latest
+    needs: deploy-helm-release
+    steps:
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.METIER_BACKOFFICE_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - uses: actions/checkout@v3
+      - run: |
+          set -a; source ../config/run_envs/${{ inputs.environment }};
+          yarn build:${{ inputs.environment }}
+        working-directory: backoffice
+      - run: yarn deploy:${{ inputs.environment }}
+        working-directory: backoffice
