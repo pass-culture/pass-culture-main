@@ -17,6 +17,7 @@ describe('extractInitialVisibilityValues', () => {
       name: 'Collège Bellevue',
       city: 'Alès',
       postalCode: '30100',
+      phoneNumber: '',
     }
     expect(extractInitialVisibilityValues(institution)).toStrictEqual({
       institution: '1',

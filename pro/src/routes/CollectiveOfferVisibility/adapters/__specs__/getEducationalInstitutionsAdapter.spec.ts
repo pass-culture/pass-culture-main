@@ -16,18 +16,21 @@ describe('getEducationalInstitutionsAdapter', () => {
           name: 'Institution 1',
           postalCode: '91190',
           city: 'Gif-sur-Yvette',
+          phoneNumber: '',
         },
         {
           id: 24,
           name: 'Institution 2',
           postalCode: '75005',
           city: 'Paris',
+          phoneNumber: '',
         },
         {
           id: 42,
           name: 'Institution 3',
           postalCode: '33000',
           city: 'Bordeaux',
+          phoneNumber: '',
         },
       ],
     }

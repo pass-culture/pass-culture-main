@@ -37,6 +37,7 @@ class Returns200Test:
                 "name": booking.educationalInstitution.name,
                 "city": booking.educationalInstitution.city,
                 "postalCode": booking.educationalInstitution.postalCode,
+                "phoneNumber": booking.educationalInstitution.phoneNumber,
             },
             "educationalRedactor": {
                 "id": booking.educationalRedactor.id,
@@ -45,6 +46,8 @@ class Returns200Test:
                 "firstName": booking.educationalRedactor.firstName,
                 "lastName": booking.educationalRedactor.lastName,
             },
+            "numberOfTickets": booking.collectiveStock.numberOfTickets,
+            "venuePostalCode": booking.venue.postalCode,
         }
 
 

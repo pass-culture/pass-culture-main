@@ -871,6 +871,7 @@ def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[t
         educational_models.EducationalInstitution.postalCode,
         educational_models.EducationalInstitution.city,
         educational_models.EducationalInstitution.institutionType,
+        educational_models.EducationalInstitution.phoneNumber,
     )
 
     if offset != 0:

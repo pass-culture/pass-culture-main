@@ -7,6 +7,7 @@ export type EducationalInstitutionResponseModel = {
   id: number;
   institutionType?: string | null;
   name: string;
+  phoneNumber: string;
   postalCode: string;
 };
 

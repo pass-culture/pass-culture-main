@@ -266,6 +266,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           name: 'Collège Bellevue',
           city: 'Alès',
           postalCode: '30100',
+          phoneNumber: '',
         }
 
         // when
