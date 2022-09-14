@@ -1,9 +1,21 @@
 import { BannerMetaModel, GetVenueResponseModel } from 'apiClient/v1'
 import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
+import { AccessiblityEnum } from 'core/shared'
 import { IVenue } from 'core/Venue'
 
 export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
+  const venueAccessibility = {
+    [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
+    [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
+    [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
+    [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+  }
   return {
+    accessibility: {
+      ...venueAccessibility,
+      [AccessiblityEnum.NONE]:
+        !Object.values(venueAccessibility).includes(true),
+    },
     address: venue.address || '',
     bannerMeta: venue.bannerMeta
       ? serializeBannerMetaApi(venue.bannerMeta)

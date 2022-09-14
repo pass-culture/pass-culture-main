@@ -28,19 +28,6 @@ const renderVenueCreation = async (offererId: string, store: Store) => {
   )
 }
 
-jest.mock('new_components/VenueForm', () => {
-  return {
-    ...jest.requireActual('new_components/VenueForm'),
-    setDefaultInitialFormValues: jest.fn().mockImplementation(() => {
-      return {
-        publicName: 'Cinéma des iles',
-        description: '',
-        additionalAddress: '',
-      }
-    }),
-  }
-})
-
 jest.mock('apiClient/api', () => ({
   api: {
     fetchVenueLabels: jest.fn(),

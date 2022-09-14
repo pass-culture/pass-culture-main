@@ -70,6 +70,7 @@ export type VenueCollectiveInformation = Pick<
 >
 
 export interface IVenue {
+  accessibility: IAccessibiltyFormValues
   address: string
   bannerMeta: IVenueBannerMetaProps | null | undefined
   bannerUrl: string

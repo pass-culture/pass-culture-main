@@ -4,6 +4,7 @@ import React from 'react'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
+import { Accessibility } from './Accessibility'
 import { Address } from './Address'
 import { Contact } from './Contact'
 import ImageUploader from './ImageUploader/ImageUploader'
@@ -42,10 +43,11 @@ const VenueForm = ({
           venueTypes={venueTypes}
           venueLabels={venueLabels}
         />
-        <Address />
         {!!shouldDisplayImageVenueUploaderSection && (
           <ImageUploader {...initialValues} />
         )}
+        <Address />
+        <Accessibility isCreatingVenue={isCreatingVenue} />
         <Contact />
         <SubmitButton isLoading={isSubmitting}>Valider</SubmitButton>
       </FormLayout>
