@@ -93,6 +93,7 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_is_duo = False
     booking_amount: float
     booking_status_history: list[BookingStatusHistoryResponseModel]
+    booking_identifier: str
 
 
 class ListCollectiveBookingsResponseModel(BaseModel):
@@ -231,6 +232,7 @@ def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple
             confirmation_date=collective_booking.confirmationDate,
             is_confirmed=collective_booking.isConfirmed,
         ),
+        booking_identifier=humanize(collective_booking.collectiveBookingId),
     )
 
 

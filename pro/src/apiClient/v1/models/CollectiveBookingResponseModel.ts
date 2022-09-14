@@ -10,6 +10,7 @@ export type CollectiveBookingResponseModel = {
   beneficiary: EducationalRedactorResponseModel;
   booking_amount: number;
   booking_date: string;
+  booking_identifier: string;
   booking_is_duo?: boolean;
   booking_status: string;
   booking_status_history: Array<BookingStatusHistoryResponseModel>;
