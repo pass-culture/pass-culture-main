@@ -1,9 +1,6 @@
 from datetime import datetime
-import decimal
 
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 
 
 def create_offerer(
@@ -39,35 +36,3 @@ def create_offerer(
     offerer.dateValidated = date_validated
 
     return offerer
-
-
-def create_stock(
-    beginning_datetime: datetime | None = None,
-    booking_limit_datetime: datetime | None = None,
-    date_created: datetime = datetime.utcnow(),
-    date_modified: datetime = datetime.utcnow(),
-    date_modified_at_last_provider: datetime | None = None,
-    idx: int | None = None,
-    id_at_providers: str | None = None,
-    is_soft_deleted: bool = False,
-    last_provider_id: int | None = None,
-    offer: Offer | None = None,
-    price: decimal.Decimal = decimal.Decimal(10),
-    quantity: int | None = None,
-) -> Stock:
-    stock = Stock()
-    stock.quantity = quantity
-    stock.beginningDatetime = beginning_datetime
-    stock.bookingLimitDatetime = booking_limit_datetime
-    stock.dateCreated = date_created
-    stock.dateModified = date_modified
-    stock.dateModifiedAtLastProvider = date_modified_at_last_provider
-    if idx:
-        stock.id = idx
-    stock.idAtProviders = id_at_providers
-    stock.isSoftDeleted = is_soft_deleted
-    stock.lastProviderId = last_provider_id
-    stock.offer = offer  # type: ignore [assignment]
-    stock.price = price
-
-    return stock
