@@ -1085,6 +1085,7 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
         ),
         sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor),
         sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
+        sa.orm.joinedload(educational_models.CollectiveBooking.venue),
     )
     collective_booking = query.one_or_none()
     if not collective_booking:

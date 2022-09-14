@@ -12,8 +12,10 @@ export type CollectiveBookingByIdResponseModel = {
   educationalInstitution: EducationalInstitutionResponseModel;
   educationalRedactor: CollectiveBookingEducationalRedactorResponseModel;
   id: number;
+  numberOfTickets: number;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   price: number;
   students: Array<StudentLevels>;
+  venuePostalCode?: string | null;
 };
 
