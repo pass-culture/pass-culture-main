@@ -175,7 +175,7 @@ const ReimbursementPoint = ({
                   initialValue={
                     venueReimbursementPoint
                       ? venueReimbursementPoint.venueId
-                      : ''
+                      : null
                   }
                 >
                   <option disabled value="">
