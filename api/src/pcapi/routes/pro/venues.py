@@ -73,11 +73,12 @@ def get_venue_collective_data(venue_id: str) -> venues_serialize.GetCollectiveVe
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueListResponseModel, api=blueprint.pro_private_schema)
 def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.GetVenueListResponseModel:
+    offerer_id = dehumanize(query.offerer_id) if query.offerer_id else None
     venue_list = offerers_repository.get_filtered_venues(
         pro_user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
         active_offerers_only=query.active_offerers_only,
-        offerer_id=query.offerer_id,
+        offerer_id=offerer_id,
         validated_offerer=query.validated,
     )
 
