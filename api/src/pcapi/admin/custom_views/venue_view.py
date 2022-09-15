@@ -257,8 +257,8 @@ class VenueView(BaseAdminView):
             existing_pricing_point_id = venue.current_pricing_point_id
             if existing_pricing_point_id and venue.id != existing_pricing_point_id:
                 flash(
-                    f"Ce lieu a déjà un SIRET et un point de valorisation (Venue.id={existing_pricing_point_id}). "
-                    f"Définir un SIRET impliquerait qu'il soit son propre point de valorisation, "
+                    f"Ce lieu a déjà un point de valorisation (Venue.id={existing_pricing_point_id}). "
+                    f"Définir un SIRET impliquerait qu'il devienne son propre point de valorisation, "
                     f"mais le changement de point de valorisation n'est pas autorisé"
                 )
                 return False
