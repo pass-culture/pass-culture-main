@@ -5,6 +5,7 @@ from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -25,23 +26,25 @@ def _ubble_readable_score(score: float | None) -> str:
     return ubble_fraud_models.UbbleScore(score).name if score is not None else "AUCUN"
 
 
-def _ubble_result_fraud_item(content: ubble_fraud_models.UbbleContent) -> fraud_models.FraudItem:
+def _ubble_result_fraud_item(
+    user: users_models.User, content: ubble_fraud_models.UbbleContent
+) -> fraud_models.FraudItem:
     status = None
     reason_code = None
     detail = f"Ubble score {_ubble_readable_score(content.score)}: {content.comment}"
 
     # Decision from identification/score
     if content.score == ubble_fraud_models.UbbleScore.VALID.value:
-        # Decision from age
-        age = users_utils.get_age_at_date(content.get_birth_date(), content.get_registration_datetime())  # type: ignore [arg-type]
-        if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
+        id_provider_detected_eligibility = subscription_api.get_id_provider_detected_eligibility(user, content)
+        if id_provider_detected_eligibility is None:
             status = fraud_models.FraudStatus.KO
-            reason_code = fraud_models.FraudReasonCode.AGE_TOO_YOUNG
-            detail = f"L'utilisateur n'a pas encore l'âge requis ({age} ans)"
-        elif age > users_constants.ELIGIBILITY_AGE_18:
-            status = fraud_models.FraudStatus.KO
-            reason_code = fraud_models.FraudReasonCode.AGE_TOO_OLD
-            detail = f"L'utilisateur a dépassé l'âge maximum ({age} ans)"
+            age = users_utils.get_age_at_date(content.get_birth_date(), content.get_registration_datetime())  # type: ignore [arg-type]
+            if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
+                reason_code = fraud_models.FraudReasonCode.AGE_TOO_YOUNG
+                detail = f"L'utilisateur n'a pas encore l'âge requis ({age} ans)"
+            elif age > users_constants.ELIGIBILITY_AGE_18:
+                reason_code = fraud_models.FraudReasonCode.AGE_TOO_OLD
+                detail = f"L'utilisateur a dépassé l'âge maximum ({age} ans)"
         else:
             status = fraud_models.FraudStatus.OK
     elif content.score == ubble_fraud_models.UbbleScore.INVALID.value:
@@ -91,7 +94,7 @@ def _ubble_result_fraud_item(content: ubble_fraud_models.UbbleContent) -> fraud_
 def ubble_fraud_checks(
     user: users_models.User, content: ubble_fraud_models.UbbleContent
 ) -> list[fraud_models.FraudItem]:
-    ubble_fraud_models_item = _ubble_result_fraud_item(content)
+    ubble_fraud_models_item = _ubble_result_fraud_item(user, content)
     fraud_items = [ubble_fraud_models_item]
 
     id_piece_number = content.get_id_piece_number()

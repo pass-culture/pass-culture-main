@@ -291,6 +291,98 @@ class UbbleWorkflowTest:
         db.session.refresh(user)
         assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=6)
 
+    @freezegun.freeze_time("2019-05-05")
+    def test_ubble_workflow_started_at_19_with_previous_attempt_at_18(self, ubble_mocker, db_session):
+        # Given
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))
+        # User started a ubble workflow at 18 years old and was rejected
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.KO,
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            dateCreated=datetime.datetime(year=2018, month=5, day=4),
+        )
+        # User started a new ubble workflow at 19 years old
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            dateCreated=datetime.datetime(year=2019, month=5, day=4),
+        )
+
+        # When
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=datetime.datetime(year=2000, month=5, day=1).date().isoformat()
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        db_session.refresh(fraud_check)
+
+        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.thirdPartyId == fraud_check.thirdPartyId
+
+    @freezegun.freeze_time("2020-05-05")
+    def test_ubble_workflow_started_at_20_with_previous_attempt_at_18(self, ubble_mocker, db_session):
+        # Given
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))
+        # User started a ubble workflow at 18 years old and was rejected
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.KO,
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            dateCreated=datetime.datetime(year=2018, month=5, day=4),
+        )
+        # User started a new ubble workflow at 19 years old
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            dateCreated=datetime.datetime(year=2020, month=5, day=4),
+        )
+
+        # When
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=datetime.datetime(year=2000, month=5, day=1).date().isoformat()
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        db_session.refresh(fraud_check)
+
+        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_check.thirdPartyId == fraud_check.thirdPartyId
+        assert fraud_check.reason == "L'utilisateur a dépassé l'âge maximum (20 ans)"
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_TOO_OLD]
+
 
 @pytest.mark.usefixtures("db_session")
 @freezegun.freeze_time("2022-11-02")
