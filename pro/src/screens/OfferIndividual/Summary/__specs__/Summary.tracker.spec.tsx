@@ -115,6 +115,7 @@ describe('Summary trackers', () => {
       isbn: '0123',
       durationMinutes: '01:00',
       url: '',
+      externalTicketOfficeUrl: '',
       venueName: venue.name,
       venuePublicName: venue.publicName,
       isVenueVirtual: venue.isVirtual,

@@ -41,6 +41,7 @@ export interface IOfferSectionProps {
   isbn: string
   durationMinutes: string
   url: string
+  externalTicketOfficeUrl: string
 
   venueName: string
   venuePublicName: string
@@ -193,6 +194,13 @@ const OfferSummary = ({
           title="Informations de retrait"
           description={offer.withdrawalDetails || ' - '}
         />
+
+        {conditionalFields.includes('url') && (
+          <SummaryLayout.Row
+            title="URL d’accès à l’offre"
+            description={offer.url || ' - '}
+          />
+        )}
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Accessibilité">
@@ -237,18 +245,18 @@ const OfferSummary = ({
         </SummaryLayout.SubSection>
       )}
 
-      {conditionalFields.includes('url') && (
-        <SummaryLayout.SubSection title="Lien pour grand public">
-          <SummaryLayout.Row description={offer.url} />
-        </SummaryLayout.SubSection>
-      )}
+      <SummaryLayout.SubSection title="Lien pour le grand public">
+        <SummaryLayout.Row
+          title="URL de votre site ou billeterie"
+          description={offer.externalTicketOfficeUrl || ' - '}
+        />
+      </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Notifications des réservations">
-        {offer.bookingEmail ? (
-          <SummaryLayout.Row description={offer.bookingEmail} />
-        ) : (
-          ' - '
-        )}
+        <SummaryLayout.Row
+          title="E-mail auquel envoyer les notifications"
+          description={offer.bookingEmail || ' - '}
+        />
       </SummaryLayout.SubSection>
     </SummaryLayout.Section>
   )
