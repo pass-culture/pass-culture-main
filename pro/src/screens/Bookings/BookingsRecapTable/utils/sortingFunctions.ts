@@ -16,11 +16,9 @@ export const sortByOfferName = <
   return offerNameOne.localeCompare(offerNameTwo, 'fr', { sensitivity: 'base' })
 }
 
-export const sortByBeneficiaryName = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
->(
-  firstRow: Row<T>,
-  secondRow: Row<T>
+export const sortByBeneficiaryName = (
+  firstRow: Row<BookingRecapResponseModel>,
+  secondRow: Row<BookingRecapResponseModel>
 ) => {
   let beneficiaryOne = firstRow.original.beneficiary.lastname
   let beneficiaryTwo = secondRow.original.beneficiary.lastname
@@ -35,6 +33,22 @@ export const sortByBeneficiaryName = <
     beneficiaryTwo = secondRow.original.beneficiary.firstname
   }
   return (beneficiaryOne ?? '').localeCompare(beneficiaryTwo ?? '', 'fr', {
+    sensitivity: 'base',
+  })
+}
+
+export const sortByInstitutionName = (
+  firstRow: Row<CollectiveBookingResponseModel>,
+  secondRow: Row<CollectiveBookingResponseModel>
+) => {
+  const institutionOne = firstRow.original.institution
+  const institutionTwo = secondRow.original.institution
+  const institutionOneName =
+    `${institutionOne.institutionType} ${institutionOne.name}`.trim()
+  const institutionTwoName =
+    `${institutionTwo.institutionType} ${institutionTwo.name}`.trim()
+
+  return institutionOneName.localeCompare(institutionTwoName, 'fr', {
     sensitivity: 'base',
   })
 }

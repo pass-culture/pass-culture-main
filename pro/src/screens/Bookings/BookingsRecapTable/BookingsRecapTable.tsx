@@ -24,6 +24,7 @@ import {
   TableWrapper,
 } from './components'
 import DetailsButtonCell from './components/CellsFormatter/DetailsButtonCell'
+import InstitutionCell from './components/CellsFormatter/InstitutionCell'
 import NumberOfTicketsAndPriceCell from './components/CellsFormatter/NumberOfTicketsAndPriceCell'
 import { NB_BOOKINGS_PER_PAGE } from './constants'
 import { BookingsFilters } from './types'
@@ -31,6 +32,7 @@ import {
   filterBookingsRecap,
   sortByBeneficiaryName,
   sortByBookingDate,
+  sortByInstitutionName,
   sortByOfferName,
 } from './utils'
 
@@ -76,13 +78,25 @@ const getColumnsByAudience = <
   }
 
   const beneficiaryColumn: IndividualColumnType = {
-    Header: audience === Audience.INDIVIDUAL ? 'Bénéficiaire' : 'Établissement',
+    Header: 'Bénéficiaire',
     id: 'beneficiary',
     accessor: 'beneficiary',
     Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
     defaultCanSort: true,
     sortType: sortByBeneficiaryName,
     className: 'column-beneficiary',
+  }
+
+  const institutionColumn: Column<CollectiveBookingResponseModel> & {
+    className?: string
+  } = {
+    Header: 'Établissement',
+    id: 'institution',
+    accessor: 'institution',
+    Cell: ({ value }) => <InstitutionCell institution={value} />,
+    defaultCanSort: true,
+    sortType: sortByInstitutionName,
+    className: 'column-institution',
   }
 
   const isDuoColumn: IndividualColumnType = {
@@ -156,7 +170,7 @@ const getColumnsByAudience = <
 
   const collectiveBookingsColumns = [
     offerColumn,
-    beneficiaryColumn,
+    institutionColumn,
     numberOfTicketsAndPriceColumn,
     bookingStatusColumn,
     detailsColumn,
@@ -191,6 +205,7 @@ const BookingsRecapTable = <
       : [...ALL_BOOKING_STATUS],
     selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
     keywords: '',
+    bookingInstitution: EMPTY_FILTER_VALUE,
   })
 
   useEffect(() => {
@@ -225,6 +240,7 @@ const BookingsRecapTable = <
       bookingToken: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
+      bookingInstitution: EMPTY_FILTER_VALUE,
       bookingStatus: [...ALL_BOOKING_STATUS],
       keywords: '',
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
@@ -276,6 +292,7 @@ const BookingsRecapTable = <
           keywords={filters.keywords}
           selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
           updateFilters={updateFilters}
+          audience={audience}
         />
       </div>
       {nbBookings > 0 ? (

@@ -1,16 +1,11 @@
 import React from 'react'
 
-import {
-  BookingRecapResponseBeneficiaryModel,
-  EducationalRedactorResponseModel,
-} from 'apiClient/v1'
+import { BookingRecapResponseBeneficiaryModel } from 'apiClient/v1'
 
 const BeneficiaryCell = ({
   beneficiaryInfos,
 }: {
-  beneficiaryInfos:
-    | BookingRecapResponseBeneficiaryModel
-    | EducationalRedactorResponseModel
+  beneficiaryInfos: BookingRecapResponseBeneficiaryModel
 }) => {
   const beneficiaryName = [
     beneficiaryInfos.lastname,
