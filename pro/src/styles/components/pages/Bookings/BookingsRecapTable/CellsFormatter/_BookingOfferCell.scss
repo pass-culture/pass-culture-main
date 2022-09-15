@@ -5,14 +5,15 @@
 .booking-offer-name {
   @include fonts.button();
 
-  max-width: rem.torem(130px);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
   &:hover,
   &:focus {
     text-decoration: underline;
+  }
+
+  &-individual{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

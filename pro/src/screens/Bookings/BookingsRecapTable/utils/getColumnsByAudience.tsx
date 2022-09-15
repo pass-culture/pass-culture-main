@@ -1,3 +1,4 @@
+import React from 'react'
 import { Column } from 'react-table'
 
 import {
@@ -51,7 +52,10 @@ export const getColumnsByAudience = <
     Cell: ({ value }) => <BookingOfferCell offer={value} />,
     defaultCanSort: true,
     sortType: sortByOfferName,
-    className: 'column-offer-name',
+    className:
+      audience === Audience.INDIVIDUAL
+        ? 'column-offer-name'
+        : 'column-collective-offer-name',
   }
 
   const beneficiaryColumn: IndividualColumnType = {
@@ -126,6 +130,7 @@ export const getColumnsByAudience = <
     Cell: ({ row }) => <NumberOfTicketsAndPriceCell bookingRecapInfo={row} />,
     Header: 'Places et prix',
     disableSortBy: true,
+    className: 'column-price-and-price',
   }
 
   const detailsColumn: CollectiveColumnType = {

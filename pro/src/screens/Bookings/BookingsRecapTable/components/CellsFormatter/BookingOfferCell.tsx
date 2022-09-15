@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { format } from 'date-fns-tz'
 import React from 'react'
 
@@ -55,7 +56,13 @@ const BookingOfferCell = ({ offer }: IBookingOfferCellProps) => {
       }
       title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
     >
-      <div className="booking-offer-name">{offer.offer_name}</div>
+      <div
+        className={cn('booking-offer-name', {
+          'booking-offer-name-individual': !offer.offer_is_educational,
+        })}
+      >
+        {offer.offer_name}
+      </div>
       {isbn ||
         (eventBeginningDatetime && (
           <div className="booking-offer-additional-info">
