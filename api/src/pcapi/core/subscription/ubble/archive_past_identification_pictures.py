@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import api as subscription_api
 import pcapi.core.subscription.ubble.api as ubble_api
 from pcapi.core.subscription.ubble.exceptions import UbbleDownloadedFileEmpty
 from pcapi.utils.requests import ExternalAPIException
@@ -82,6 +83,7 @@ def get_fraud_check_to_archive(
             fraud_models.BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
             fraud_models.BeneficiaryFraudCheck.idPicturesStored.is_(status),
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
+            fraud_models.BeneficiaryFraudCheck.thirdPartyId.notlike(f"{subscription_api.DEPRECATED_UBBLE_PREFIX}%"),
         )
         .order_by(fraud_models.BeneficiaryFraudCheck.dateCreated.asc())
         .limit(limit)
