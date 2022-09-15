@@ -1,4 +1,3 @@
-import { useGetOffererNames } from 'core/Offerers/adapters'
 import { TOffererName } from 'core/Offerers/types'
 import { useGetCategories } from 'core/Offers/adapters'
 import {
@@ -12,7 +11,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { useGetOffer } from '../useGetOffer'
 
-interface IUseGetDataSuccessPayload {
+interface IuseGetDataAdminSuccessPayload {
   offer: IOfferIndividual | undefined
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
@@ -22,7 +21,7 @@ interface IUseGetDataSuccessPayload {
   }
 }
 
-interface IUseGetDataLoading {
+interface IuseGetDataAdminLoading {
   data?: undefined
   isLoading: true
   loadingError?: undefined
@@ -30,7 +29,7 @@ interface IUseGetDataLoading {
 }
 
 interface IUseAdapterSuccess {
-  data: IUseGetDataSuccessPayload
+  data: IuseGetDataAdminSuccessPayload
   isLoading: false
   loadingError?: undefined
   reloadOffer: () => void
@@ -43,25 +42,10 @@ interface IUseAdapterFailure {
   reloadOffer?: undefined
 }
 
-const useGetData = (
-  offerId?: string
-): IUseGetDataLoading | IUseAdapterSuccess | IUseAdapterFailure => {
-  const {
-    data: offererNames,
-    isLoading: offererNamesIsLoading,
-    error: offererNamesError,
-  } = useGetOffererNames()
-  const {
-    data: venueList,
-    isLoading: venueListIsLoading,
-    error: venueListError,
-  } = useGetOfferIndividualVenues({ isAdmin: false })
-  const {
-    data: categoriesData,
-    isLoading: categoriesIsLoading,
-    error: categoriesError,
-  } = useGetCategories()
-
+const useGetDataAdmin = (
+  offerId?: string,
+  offererId?: string
+): IuseGetDataAdminLoading | IUseAdapterSuccess | IUseAdapterFailure => {
   const {
     data: offer,
     isLoading: offerIsLoading,
@@ -69,8 +53,21 @@ const useGetData = (
     reloadOffer,
   } = useGetOffer(offerId)
 
+  const {
+    data: venueList,
+    isLoading: venueListIsLoading,
+    error: venueListError,
+  } = useGetOfferIndividualVenues({
+    isAdmin: false,
+    offererId: offer ? offer.offererId : offererId,
+  })
+  const {
+    data: categoriesData,
+    isLoading: categoriesIsLoading,
+    error: categoriesError,
+  } = useGetCategories()
+
   if (
-    offererNamesIsLoading === true ||
     venueListIsLoading === true ||
     categoriesIsLoading === true ||
     offerIsLoading === true
@@ -79,22 +76,26 @@ const useGetData = (
   }
 
   if (
-    offererNamesError !== undefined ||
     venueListError !== undefined ||
     categoriesError !== undefined ||
     offerError !== undefined
   ) {
-    const loadingError = [
-      offererNamesError,
-      venueListError,
-      categoriesError,
-      offerError,
-    ].find(error => error !== undefined)
+    const loadingError = [venueListError, categoriesError, offerError].find(
+      error => error !== undefined
+    )
 
     return {
       isLoading: false,
       loadingError: loadingError?.message || GET_DATA_ERROR_MESSAGE,
     }
+  }
+
+  const offererNames: TOffererName[] = []
+  if (offer) {
+    offererNames.push({
+      id: offer.offererId,
+      name: offer.offererName,
+    })
   }
 
   return {
@@ -109,4 +110,4 @@ const useGetData = (
   }
 }
 
-export default useGetData
+export default useGetDataAdmin

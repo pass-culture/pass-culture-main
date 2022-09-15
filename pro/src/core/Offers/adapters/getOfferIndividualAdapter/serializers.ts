@@ -122,6 +122,7 @@ export const serializeOfferApi = (
     isNational: apiOffer.isNational,
     name: apiOffer.name,
     offererId: apiOffer.venue.managingOffererId,
+    offererName: apiOffer.venue.managingOfferer.name,
     subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
