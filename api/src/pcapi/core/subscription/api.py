@@ -517,6 +517,9 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     return True
 
 
+DEPRECATED_UBBLE_PREFIX = "deprecated-"
+
+
 def _update_fraud_check_eligibility_with_history(
     fraud_check: fraud_models.BeneficiaryFraudCheck, eligibility: users_models.EligibilityType
 ) -> fraud_models.BeneficiaryFraudCheck:
@@ -542,7 +545,7 @@ def _update_fraud_check_eligibility_with_history(
     if fraud_check.reasonCodes is None:
         fraud_check.reasonCodes = []
     fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)
-    fraud_check.thirdPartyId = f"deprecated-{fraud_check.thirdPartyId}"
+    fraud_check.thirdPartyId = f"{DEPRECATED_UBBLE_PREFIX}{fraud_check.thirdPartyId}"
 
     pcapi_repository.repository.save(fraud_check, new_fraud_check)
 
