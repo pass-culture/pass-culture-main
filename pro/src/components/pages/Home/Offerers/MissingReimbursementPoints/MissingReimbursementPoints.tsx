@@ -16,7 +16,7 @@ const MissingReimbursementPoints = () => {
       </h3>
 
       <div className="h-card-content">
-        <Banner>
+        <Banner minimalStyle={true}>
           Certains de vos lieux ne sont pas rattachés à des coordonnées
           bancaires. Pour percevoir les remboursements liés aux offres de ces
           lieux, veuillez renseigner des coordonnées bancaires.
