@@ -358,5 +358,31 @@ describe('homepage', () => {
         })
       })
     })
+
+    describe('offererStats', () => {
+      beforeEach(() => {
+        store = configureTestStore({
+          user: {
+            currentUser: {
+              id: 'fake_id',
+              firstName: 'John',
+              lastName: 'Do',
+              email: 'john.do@dummy.xyz',
+              phoneNumber: '01 00 00 00 00',
+            },
+            initialized: true,
+          },
+          features: {
+            list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
+          },
+        })
+      })
+      it('should display section when ff is active', async () => {
+        await renderHomePage(store)
+        expect(
+          screen.getByText('Statistiques', { selector: 'h2' })
+        ).toBeInTheDocument()
+      })
+    })
   })
 })
