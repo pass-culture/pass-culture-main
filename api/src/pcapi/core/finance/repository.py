@@ -225,18 +225,18 @@ def _get_sent_pricings_for_collective_bookings(
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
 ) -> list[tuple]:
-    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
+    ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
         models.Pricing.query.join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
         .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
         .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        .join(offerers_models.Venue.businessUnit)
         .join(models.Pricing.cashflows)
         .join(models.Cashflow.bankAccount)
         .join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
+        .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
         .outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
@@ -255,12 +255,6 @@ def _get_sent_pricings_for_collective_bookings(
             educational_models.EducationalInstitution,
             educational_models.CollectiveBooking.educationalInstitution,
         )
-        # There should be a Venue with the same SIRET as the business
-        # unit... but edition has been sloppy and there are
-        # inconsistencies. See also similar outer joins in `finance/api.py`.
-        # FIXME (dbaty, 2022-05-18): if the BusinessUnit model stays,
-        # revisit this issue. This is barely acceptable.
-        .outerjoin(BusinessUnitVenue, BusinessUnitVenue.siret == models.BusinessUnit.siret)
         .order_by(
             educational_models.CollectiveBooking.dateUsed.desc(),
             educational_models.CollectiveBooking.id.desc(),
@@ -289,20 +283,20 @@ def _get_sent_pricings_for_collective_bookings(
             ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
             offerers_models.Venue.departementCode.label("venue_departement_code"),
-            BusinessUnitVenue.name.label("business_unit_name"),
+            ReimbursementPoint.name.label("reimbursement_point_name"),
             sqla_func.coalesce(
-                BusinessUnitVenue.address,
+                ReimbursementPoint.address,
                 offerers_models.Offerer.address,
-            ).label("business_unit_address"),
+            ).label("reimbursement_point_address"),
             sqla_func.coalesce(
-                BusinessUnitVenue.postalCode,
+                ReimbursementPoint.postalCode,
                 offerers_models.Offerer.postalCode,
-            ).label("business_unit_postal_code"),
+            ).label("reimbursement_point_postal_code"),
             sqla_func.coalesce(
-                BusinessUnitVenue.city,
+                ReimbursementPoint.city,
                 offerers_models.Offerer.city,
-            ).label("business_unit_city"),
-            BusinessUnitVenue.siret.label("business_unit_siret"),
+            ).label("reimbursement_point_city"),
+            ReimbursementPoint.siret.label("reimbursement_point_siret"),
             # See note about `amount` in `core/finance/models.py`.
             (-models.Pricing.amount).label("amount"),
             models.Pricing.standardRule.label("rule_name"),
@@ -322,13 +316,14 @@ def _get_sent_pricings_for_individual_bookings(
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
 ) -> list[tuple]:
-    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
+    ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
         models.Pricing.query.join(models.Pricing.booking)
         .join(models.Pricing.cashflows)
         .join(models.Cashflow.bankAccount)
         .join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
+        .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
         .outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
@@ -343,13 +338,6 @@ def _get_sent_pricings_for_individual_bookings(
         .join(bookings_models.Booking.stock)
         .join(offers_models.Stock.offer)
         .join(bookings_models.Booking.venue)
-        .join(offerers_models.Venue.businessUnit)
-        # There should be a Venue with the same SIRET as the business
-        # unit... but edition has been sloppy and there are
-        # inconsistencies. See also similar outer joins in `finance/api.py`.
-        # FIXME (dbaty, 2022-05-18): if the BusinessUnit model stays,
-        # revisit this issue. This is barely acceptable.
-        .outerjoin(BusinessUnitVenue, BusinessUnitVenue.siret == models.BusinessUnit.siret)
         .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
         .with_entities(
             bookings_models.Booking.token.label("booking_token"),
@@ -371,20 +359,20 @@ def _get_sent_pricings_for_individual_bookings(
                 offerers_models.Offerer.city,
             ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
-            BusinessUnitVenue.name.label("business_unit_name"),
+            ReimbursementPoint.name.label("reimbursement_point_name"),
             sqla_func.coalesce(
-                BusinessUnitVenue.address,
+                ReimbursementPoint.address,
                 offerers_models.Offerer.address,
-            ).label("business_unit_address"),
+            ).label("reimbursement_point_address"),
             sqla_func.coalesce(
-                BusinessUnitVenue.postalCode,
+                ReimbursementPoint.postalCode,
                 offerers_models.Offerer.postalCode,
-            ).label("business_unit_postal_code"),
+            ).label("reimbursement_point_postal_code"),
             sqla_func.coalesce(
-                BusinessUnitVenue.city,
+                ReimbursementPoint.city,
                 offerers_models.Offerer.city,
-            ).label("business_unit_city"),
-            BusinessUnitVenue.siret.label("business_unit_siret"),
+            ).label("reimbursement_point_city"),
+            ReimbursementPoint.siret.label("reimbursement_point_siret"),
             # See note about `amount` in `core/finance/models.py`.
             (-models.Pricing.amount).label("amount"),
             models.Pricing.standardRule.label("rule_name"),

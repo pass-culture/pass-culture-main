@@ -614,6 +614,7 @@ class FindAllOffererPaymentsTest:
     # pre-2022 payments, we can rename and update this test. Some
     # tests above could be updated, some could be removed if they
     # don't make sense.
+    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_with_new_models(self):
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
@@ -623,9 +624,13 @@ class FindAllOffererPaymentsTest:
             offer__venue__postalCode="75000",
             offer__venue__city="Paris",
             offer__venue__siret=12345678912345,
-            offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
+            offer__venue__reimbursement_point="self",
             price=10,
         )
+        # FIXME (dbaty, 2022-09-14): the BankInformation object should
+        # automatically be created by the Venue factory when linking a
+        # reimbursement point.
+        factories.BankInformationFactory(venue=stock.offer.venue, iban="CF13QSDFGH456789")
         booking = bookings_factories.UsedIndividualBookingFactory(
             stock=stock,
             token="ABCDEF",
@@ -685,11 +690,11 @@ class FindAllOffererPaymentsTest:
             "amount": decimal.Decimal("9500"),
             "rule_name": "Remboursement à 95% au dessus de 20 000 € pour les livres",
             "rule_id": None,
-            "business_unit_name": "La petite librairie",
-            "business_unit_address": "123 rue de Paris",
-            "business_unit_postal_code": "75000",
-            "business_unit_city": "Paris",
-            "business_unit_siret": "12345678912345",
+            "reimbursement_point_name": "La petite librairie",
+            "reimbursement_point_address": "123 rue de Paris",
+            "reimbursement_point_postal_code": "75000",
+            "reimbursement_point_city": "Paris",
+            "reimbursement_point_siret": "12345678912345",
             "cashflow_batch_cutoff": cashflow.batch.cutoff,
             "cashflow_batch_label": cashflow.batch.label,
             "invoice_date": invoice.date,
