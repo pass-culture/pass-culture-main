@@ -1,18 +1,18 @@
 import { Chip } from '@mui/material'
 
-import { PublicUserRolesEnum } from '../types'
+import { UserRole } from '../../../TypesFromApi'
 
 type Props = {
-  role: PublicUserRolesEnum
+  role: UserRole
 }
 
 export const BeneficiaryBadge = ({ role }: Props) => {
   let label
   switch (role) {
-    case PublicUserRolesEnum.beneficiary:
+    case UserRole.BENEFICIARY:
       label = 'Pass 18'
       break
-    case PublicUserRolesEnum.underageBeneficiary:
+    case UserRole.UNDERAGEBENEFICIARY:
       label = 'Pass 15-17'
       break
     default:

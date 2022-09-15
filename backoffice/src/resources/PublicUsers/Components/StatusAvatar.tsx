@@ -1,13 +1,19 @@
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { Avatar, Tooltip } from '@mui/material'
 import { green, red, yellow } from '@mui/material/colors'
 import React from 'react'
 
-import { FraudCheck, SubscriptionItem, SubscriptionItemStatus } from '../types'
+import {
+  FraudCheckStatus,
+  IdCheckItemModel,
+  SubscriptionItemModel,
+} from '../../../TypesFromApi'
 
 type Props = {
-  item: SubscriptionItem | FraudCheck | undefined
+  item: SubscriptionItemModel | IdCheckItemModel | undefined
 }
 
 export const StatusAvatar = ({ item }: Props) => {
@@ -18,11 +24,17 @@ export const StatusAvatar = ({ item }: Props) => {
   const itemLabel = item?.status?.toUpperCase()
 
   switch (item?.status) {
-    case SubscriptionItemStatus.OK:
+    case FraudCheckStatus.Ok:
       color = green['700']
       icon = <CheckCircleOutlineIcon />
       break
-    case SubscriptionItemStatus.KO:
+    case FraudCheckStatus.Ko:
+      break
+    case FraudCheckStatus.Error:
+      icon = <HighlightOffIcon />
+      break
+    case FraudCheckStatus.Canceled:
+      icon = <DeleteForeverIcon />
       break
     default:
       color = yellow['700']

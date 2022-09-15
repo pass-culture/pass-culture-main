@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 
 import { FraudCheckStatusBadge } from '../Components/FraudCheckStatusBadge'
-import { FraudCheckStatus } from '../types'
+import { FraudCheckStatus } from '../../../TypesFromApi'
 
 const renderFraudCheckStatusBadge = props =>
   render(<FraudCheckStatusBadge {...props} />)
@@ -11,7 +11,7 @@ const renderFraudCheckStatusBadge = props =>
 describe('fraud check status badge', () => {
   it('should display success chip when status is OK', () => {
     // Given
-    const props = { active: true, fraudCheckStatus: FraudCheckStatus.OK }
+    const props = { active: true, fraudCheckStatus: FraudCheckStatus.Ok }
 
     // When
     renderFraudCheckStatusBadge(props)
@@ -23,7 +23,7 @@ describe('fraud check status badge', () => {
 
   it('should display error chip when status is KO', () => {
     // Given
-    const props = { active: false, fraudCheckStatus: FraudCheckStatus.KO }
+    const props = { active: false, fraudCheckStatus: FraudCheckStatus.Ko }
 
     // When
     renderFraudCheckStatusBadge(props)
@@ -35,7 +35,7 @@ describe('fraud check status badge', () => {
 
   it('should display warning chip when status is other than OK or KO', () => {
     // Given
-    const props = { status: false, fraudCheckStatus: FraudCheckStatus.STARTED }
+    const props = { status: false, fraudCheckStatus: FraudCheckStatus.Started }
 
     // When
     renderFraudCheckStatusBadge(props)

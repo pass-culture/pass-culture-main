@@ -27,7 +27,8 @@ import {
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
-import { dataProvider } from '../../providers/dataProvider'
+import { apiProvider } from '../../providers/apiProvider'
+import { ProResult, SearchProRequest } from '../../TypesFromApi'
 import { CustomSearchIcon } from '../Icons/CustomSearchIcon'
 
 import { ProTypeBadge } from './Components/ProTypeBadge'
@@ -36,7 +37,7 @@ import {
   isProUser,
   isVenue,
   Offerer,
-  ProResourceAPI,
+  ProTypeEnum,
   ProUser,
   Venue,
 } from './types'
@@ -69,58 +70,58 @@ const proResources = [
   },
 ]
 
-const ProCard = ({ record }: { record: ProResourceAPI }) => {
-  const { id, resourceType, payload }: ProResourceAPI = record //TODO: implémenter le badge de status quand la valeur sera renvoyée depuis l'API
+const ProCard = ({ record }: { record: ProResult }) => {
+  const { id, resourceType, payload }: ProResult = record //TODO: implémenter le badge de status quand la valeur sera renvoyée depuis l'API
 
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Stack direction={'row'} spacing={2} sx={{ mb: 2 }}>
-          <ProTypeBadge type={resourceType} resource={record} />
+          <ProTypeBadge type={resourceType as ProTypeEnum} resource={record} />
         </Stack>
-        {payload && isProUser(payload) && (payload as ProUser) && (
+        {payload && isProUser(payload as ProUser) && (
           <>
             <Typography variant="subtitle1" component="h4" align="left">
-              {payload.firstName}{' '}
-              <UpperCaseText>{payload.lastName}</UpperCaseText>
+              {(payload as ProUser).firstName}{' '}
+              <UpperCaseText>{(payload as ProUser).lastName}</UpperCaseText>
             </Typography>
             <Typography variant="subtitle2" component="h5" align="left">
               <Typography color={Colors.GREY}> ID : {record.id}</Typography>
             </Typography>
             <Typography variant="body2" align="left">
-              <strong>E-mail</strong>: {payload.email}
+              <strong>E-mail</strong>: {(payload as ProUser).email}
             </Typography>
             <Typography variant="body2" align="left">
-              <strong>Tél</strong>: {payload.phoneNumber}
+              <strong>Tél</strong>: {(payload as ProUser).phoneNumber}
             </Typography>
           </>
         )}
-        {payload && isOfferer(payload) && (payload as Offerer) && (
+        {payload && isOfferer(payload as Offerer) && (
           <>
             <Typography variant="subtitle1" component="h4" align="left">
-              <UpperCaseText>{payload.name}</UpperCaseText>
+              <UpperCaseText>{(payload as Offerer).name}</UpperCaseText>
             </Typography>
             <Typography variant="subtitle2" component="h5" align="left">
               <Typography color={Colors.GREY}> ID : {record.id}</Typography>
             </Typography>
             <Typography variant="body2" align="left">
-              <strong>SIREN</strong>: {payload.siren}
+              <strong>SIREN</strong>: {(payload as Offerer).siren}
             </Typography>
           </>
         )}
-        {payload && isVenue(payload) && (payload as Venue) && (
+        {payload && isVenue(payload as Venue) && (
           <>
             <Typography variant="subtitle1" component="h4" align="left">
-              <UpperCaseText>{payload.name}</UpperCaseText>
+              <UpperCaseText>{(payload as Venue).name}</UpperCaseText>
             </Typography>
             <Typography variant="subtitle2" component="h5" align="left">
               <Typography color={Colors.GREY}> ID : {record.id}</Typography>
             </Typography>
             <Typography variant="body2" align="left">
-              <strong>E-mail</strong>: {payload.email}
+              <strong>E-mail</strong>: {(payload as Venue).email}
             </Typography>
             <Typography variant="body2" align="left">
-              <strong>SIRET</strong>: {payload.siret}
+              <strong>SIRET</strong>: {(payload as Venue).siret}
             </Typography>
           </>
         )}
@@ -151,7 +152,7 @@ function stopTypingOnSearch(event: {
 export const ProSearch = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [proDataState, setProDataState] = useState({
-    proData: [],
+    proData: [] as ProResult[],
     total: 0,
     totalPages: 0,
   })
@@ -164,21 +165,20 @@ export const ProSearch = () => {
 
   async function searchProList(searchParameter: string, page: number) {
     try {
-      const response = await dataProvider.searchList('pro', {
-        pagination: {
-          page: page,
-          perPage: 20,
-        },
-        meta: {
-          search: searchParameter,
-          type: proResource,
-        },
-      })
+      const searchProRequest = {
+        q: searchParameter,
+        type: proResource,
+        page: page,
+        perPage: 20,
+      } as SearchProRequest
+
+      const response = await apiProvider().searchPro(searchProRequest)
+
       if (response && response.data && response.data.length > 0) {
         setProDataState({
           proData: response.data,
           total: response.total,
-          totalPages: response.totalPages,
+          totalPages: response.pages,
         })
         setEmptyResults(false)
       }

@@ -46,38 +46,8 @@ export interface UserManualReview {
   review: 'OK' | 'KO' | 'REDIRECTED_TO_DMS'
 }
 
-export enum SubscriptionItemStatus {
-  KO = 'ko',
-  OK = 'ok',
-  NOT_APPLICABLE = 'not-applicable',
-  NOT_ENABLED = 'not-enabled',
-  VOID = 'void',
-}
-export enum SubscriptionItemType {
-  EMAIL_VALIDATION = 'email-validation',
-  PHONE_VALIDATION = 'phone-validation',
-  USER_PROFILING = 'user-profiling',
-  PROFILE_COMPLETION = 'profile-completion',
-  IDENTITY_CHECK = 'identity-check',
-  HONOR_STATEMENT = 'honor-statement',
-}
-
-export interface EligibilitySubscriptionItem {
-  role: PublicUserRolesEnum
-  items: SubscriptionItem[]
-}
-
-export interface SubscriptionItem {
-  type: SubscriptionItemType
-  status: SubscriptionItemStatus
-}
-
-export interface EligibilityFraudCheck {
-  role: PublicUserRolesEnum
-  items: FraudCheck[]
-}
-
 export interface FraudCheckTechnicalDetails {
+  // a garder en attendant la specification API
   score?: string
   gender?: string
   status?: string
@@ -93,25 +63,4 @@ export interface FraudCheckTechnicalDetails {
   idDocumentNumber?: string
   identificationUrl?: string
   registrationDateTime: Date
-}
-
-export enum FraudCheckStatus {
-  OK = 'ok',
-  KO = 'ko',
-  STARTED = 'started',
-  SUSPISCIOUS = 'suspiscious',
-  PENDING = 'pending',
-  CANCELED = 'canceled',
-  ERROR = 'error',
-}
-
-export interface FraudCheck {
-  type: string
-  thirdPartyId: string
-  dateCreated: Date
-  status: FraudCheckStatus
-  reason?: string
-  reasonCodes?: string
-  technicalDetails?: FraudCheckTechnicalDetails
-  sourceId?: string
 }

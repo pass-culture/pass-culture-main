@@ -1,13 +1,19 @@
 import { CreateParams, DataProvider, GetListParams } from 'react-admin'
 
 import { env } from '../libs/environment/env'
-import { eventMonitoring } from '../libs/monitoring/sentry'
 import {
   UserApiResponse,
   UserManualReview,
 } from '../resources/PublicUsers/types'
+import {
+  GetBeneficiaryCreditRequest,
+  GetPublicAccountRequest,
+  GetUserSubscriptionHistoryRequest,
+  PublicAccount,
+} from '../TypesFromApi'
 
 import { safeFetch } from './apiHelpers'
+import { apiProvider } from './apiProvider'
 
 export const dataProvider: DataProvider = {
   async searchList(resource: string, params: GetListParams) {
@@ -56,27 +62,21 @@ export const dataProvider: DataProvider = {
   async getOne(resource, params) {
     switch (resource) {
       case 'public_accounts': {
-        const response = await safeFetch(
-          `${env.API_URL}/${resource}/${params.id}`
-        )
-        const user: UserApiResponse = response.json
+        const response = await apiProvider().getPublicAccount({
+          userId: params.id,
+        } as GetPublicAccountRequest)
+        const userBaseInfo: PublicAccount = response
 
         const creditInfo = async () => {
-          try {
-            return safeFetch(`${env.API_URL}/${resource}/${params.id}/credit`)
-          } catch (error) {
-            eventMonitoring.captureException(error)
-            throw error
-          }
+          return await apiProvider().getBeneficiaryCredit({
+            userId: params.id,
+          } as GetBeneficiaryCreditRequest)
         }
 
         const historyInfo = async () => {
-          try {
-            return safeFetch(`${env.API_URL}/${resource}/${params.id}/history`)
-          } catch (error) {
-            eventMonitoring.captureException(error)
-            throw error
-          }
+          return await apiProvider().getUserSubscriptionHistory({
+            userId: params.id,
+          } as GetUserSubscriptionHistoryRequest)
         }
 
         const [userCreditResponse, userHistoryResponse] = await Promise.all([
@@ -85,9 +85,9 @@ export const dataProvider: DataProvider = {
         ])
 
         const dataUser = {
-          ...user,
-          userCredit: userCreditResponse.json,
-          userHistory: userHistoryResponse.json,
+          ...userBaseInfo,
+          userCredit: userCreditResponse,
+          userHistory: userHistoryResponse,
         }
         return { data: dataUser }
       }

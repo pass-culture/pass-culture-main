@@ -16,8 +16,6 @@ import {
   SaveButton,
   useRefresh,
   SelectArrayInput,
-  CreateResult,
-  CreateParams,
   useNotify,
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
@@ -28,8 +26,8 @@ import {
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
-import { dataProvider } from '../../../providers/dataProvider'
-import { Permission, Role, RoleRequest } from '../types'
+import { apiProvider } from '../../../providers/apiProvider'
+import { CreateRoleRequest, Permission } from '../../../TypesFromApi'
 
 export const AddRoleModal = ({
   permissions,
@@ -58,18 +56,16 @@ export const AddRoleModal = ({
   const formSubmit = async (params: FieldValues) => {
     if (params && permissions) {
       try {
-        const formData: CreateParams<RoleRequest> = {
-          data: {
+        const formData: CreateRoleRequest = {
+          roleRequestModel: {
             name: params.name,
             permissionIds: params.permissions,
           },
         }
 
-        const response: CreateResult<Role> = await dataProvider.create(
-          'roles',
-          formData
-        )
-        if (response.data) {
+        const response = await apiProvider().createRole(formData)
+
+        if (response) {
           notify('Le rôle a été créé avec succès', {
             type: 'success',
           })
