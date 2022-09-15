@@ -1,9 +1,6 @@
 from datetime import datetime
 
-from pcapi.core.fraud import models
-from pcapi.core.fraud.models import BeneficiaryFraudCheck
-from pcapi.core.fraud.models import FraudCheckStatus
-from pcapi.core.fraud.models import FraudCheckType
+from pcapi.core.fraud import models as fraud_models
 import pcapi.core.subscription.ubble.api as ubble_api
 from pcapi.core.subscription.ubble.exceptions import UbbleDownloadedFileEmpty
 from pcapi.utils.requests import ExternalAPIException
@@ -78,15 +75,15 @@ def archive_past_identification_pictures(
 
 def get_fraud_check_to_archive(
     start_date: datetime, end_date: datetime, status: bool | None, limit: int = DEFAULT_LIMIT, offset: int = 0
-) -> list[BeneficiaryFraudCheck]:
+) -> list[fraud_models.BeneficiaryFraudCheck]:
     query = (
-        models.BeneficiaryFraudCheck.query.filter(
-            BeneficiaryFraudCheck.status == FraudCheckStatus.OK,
-            BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
-            BeneficiaryFraudCheck.idPicturesStored.is_(status),
-            BeneficiaryFraudCheck.type == FraudCheckType.UBBLE,
+        fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.OK,
+            fraud_models.BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
+            fraud_models.BeneficiaryFraudCheck.idPicturesStored.is_(status),
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
         )
-        .order_by(BeneficiaryFraudCheck.dateCreated.asc())
+        .order_by(fraud_models.BeneficiaryFraudCheck.dateCreated.asc())
         .limit(limit)
         .offset(offset)
     )
