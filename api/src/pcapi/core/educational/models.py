@@ -12,7 +12,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import False_
 from sqlalchemy.sql.functions import func
@@ -34,7 +33,6 @@ from pcapi.models.pc_object import PcObject
 if typing.TYPE_CHECKING:
     from sqlalchemy.orm import Mapped
 
-    from pcapi.core.bookings.models import Booking
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
 
@@ -102,9 +100,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue: RelationshipProperty["Venue"] = sa.orm.relationship(
-        "Venue", foreign_keys=[venueId], back_populates="collectiveOffers"
-    )
+    venue: Mapped["Venue"] = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="collectiveOffers")
 
     name: str = sa.Column(sa.String(140), nullable=False)
 
@@ -269,7 +265,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue: RelationshipProperty["Venue"] = sa.orm.relationship(
+    venue: Mapped["Venue"] = sa.orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates"
     )
 
@@ -408,13 +404,11 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
     )
 
-    collectiveOffer: RelationshipProperty["CollectiveOffer"] = sa.orm.relationship(
+    collectiveOffer: Mapped["CollectiveOffer"] = sa.orm.relationship(
         "CollectiveOffer", foreign_keys=[collectiveOfferId], uselist=False, back_populates="collectiveStock"
     )
 
-    collectiveBookings: RelationshipProperty[list["CollectiveBooking"]] = relationship(
-        "CollectiveBooking", back_populates="collectiveStock"
-    )
+    collectiveBookings: list["CollectiveBooking"] = relationship("CollectiveBooking", back_populates="collectiveStock")
 
     price: float = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
@@ -437,7 +431,7 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         and its offer is editable.
         """
         bookable = (CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CANCELLED)
-        for booking in self.collectiveBookings:  # type: ignore [attr-defined]
+        for booking in self.collectiveBookings:
             if booking.status not in bookable:
                 return False
         return self.collectiveOffer.isEditable
@@ -468,7 +462,7 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     @property
     def isSoldOut(self) -> bool:
-        for booking in self.collectiveBookings:  # type: ignore [attr-defined]
+        for booking in self.collectiveBookings:
             if booking.status != CollectiveBookingStatus.CANCELLED:
                 return True
         return False
@@ -491,9 +485,7 @@ class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type
 
     phoneNumber: str = sa.Column(sa.String(30), nullable=False)
 
-    collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
-        "CollectiveOffer", back_populates="institution"
-    )
+    collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="institution")
 
 
 class EducationalYear(PcObject, Base, Model):  # type: ignore [valid-type, misc]
@@ -523,7 +515,7 @@ class EducationalDeposit(PcObject, Base, Model):  # type: ignore [valid-type, mi
         sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False
     )
 
-    educationalYear: RelationshipProperty["EducationalYear"] = relationship(  # type: ignore [misc]
+    educationalYear: Mapped["EducationalYear"] = relationship(
         EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
     )
 
@@ -563,7 +555,7 @@ class EducationalRedactor(PcObject, Base, Model):  # type: ignore [valid-type, m
 
     civility: str = sa.Column(sa.String(20), nullable=True)
 
-    collectiveBookings: RelationshipProperty[list["CollectiveBooking"]] = relationship(
+    collectiveBookings: list["CollectiveBooking"] = relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
     )
 
@@ -580,19 +572,17 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
     collectiveStockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
 
-    collectiveStock: RelationshipProperty["CollectiveStock"] = relationship(
+    collectiveStock: Mapped["CollectiveStock"] = relationship(
         "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
     )
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue: RelationshipProperty["Venue"] = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
+    venue: Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
 
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer: RelationshipProperty["Offerer"] = relationship(
-        "Offerer", foreign_keys=[offererId], backref="collectiveBookings"
-    )
+    offerer: Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
@@ -636,7 +626,7 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
         nullable=False,
         index=True,
     )
-    educationalRedactor: RelationshipProperty["EducationalRedactor"] = relationship(  # type: ignore [misc]
+    educationalRedactor: Mapped["EducationalRedactor"] = relationship(
         EducationalRedactor,
         back_populates="collectiveBookings",
         uselist=False,
@@ -774,11 +764,11 @@ class EducationalDomain(PcObject, Base, Model):  # type: ignore [valid-type, mis
     venues: "Mapped[list[Venue]]" = sa.orm.relationship(
         "Venue", back_populates="collectiveDomains", secondary="educational_domain_venue"
     )
-    collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
+    collectiveOffers: list["CollectiveOffer"] = relationship(
         "CollectiveOffer", secondary="collective_offer_domain", back_populates="domains"
     )
 
-    collectiveOfferTemplates: RelationshipProperty[list["CollectiveOfferTemplate"]] = relationship(
+    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = relationship(
         "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
     )
 

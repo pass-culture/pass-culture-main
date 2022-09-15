@@ -37,7 +37,7 @@ class EducationalOffersReimbursement(payments_models.ReimbursementRule):
         return isinstance(booking, CollectiveBooking)
 
     def apply(self, booking: CollectiveBooking) -> Decimal:
-        return Decimal(booking.collectiveStock.price * self.rate)
+        return Decimal(booking.collectiveStock.price) * self.rate
 
 
 class PhysicalOffersReimbursement(payments_models.ReimbursementRule):

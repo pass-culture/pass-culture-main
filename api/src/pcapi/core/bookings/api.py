@@ -303,7 +303,7 @@ def _cancel_collective_booking_from_stock(
     booking_to_cancel: CollectiveBooking | None = next(
         (
             collective_booking
-            for collective_booking in collective_stock.collectiveBookings  # type: ignore [attr-defined]
+            for collective_booking in collective_stock.collectiveBookings
             if collective_booking.status not in [CollectiveBookingStatus.CANCELLED, CollectiveBookingStatus.REIMBURSED]
         ),
         None,

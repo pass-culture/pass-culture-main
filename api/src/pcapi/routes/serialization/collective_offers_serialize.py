@@ -105,7 +105,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         stocks=serialized_stocks,
         thumbUrl=None,
         subcategoryId=offer.subcategoryId,
-        venue=_serialize_venue(offer.venue),  # type: ignore [arg-type]
+        venue=_serialize_venue(offer.venue),
         venueId=humanize(offer.venue.id),
         status=offer.status.name,  # type: ignore [attr-defined]
         isShowcase=is_offer_template,
@@ -264,8 +264,9 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     _humanize_venue_id = humanize_field("venueId")
 
     @classmethod
-    def from_orm(cls, offer):  # type: ignore
+    def from_orm(cls, offer, offer_has_pricing=False):  # type: ignore
         offer.nonHumanizedId = offer.id
+
         return super().from_orm(offer)
 
     class Config:
