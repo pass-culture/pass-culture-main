@@ -222,6 +222,10 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
+    @property
+    def is_cancellable_from_offerer(self) -> bool:
+        return self.collectiveStock.is_cancellable_from_offerer
+
     @classmethod
     def create_from_collective_offer_template(
         cls, collective_offer_template: CollectiveOfferTemplate
@@ -352,6 +356,10 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer template {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
+    @property
+    def is_cancellable_from_offerer(self) -> bool:
+        return False
+
     @classmethod
     def create_from_collective_offer(
         cls, collective_offer: CollectiveOffer, price_detail: str = None
@@ -466,6 +474,13 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
             if booking.status != CollectiveBookingStatus.CANCELLED:
                 return True
         return False
+
+    @property
+    def is_cancellable_from_offerer(self) -> bool:
+        if any(not booking.is_cancellable_from_offerer for booking in self.collectiveBookings):
+            return False
+
+        return True
 
 
 class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type, misc]
@@ -708,6 +723,10 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
             raise exceptions.EducationalBookingAlreadyCancelled()
 
         self.status = CollectiveBookingStatus.CANCELLED
+
+    @property
+    def is_cancellable_from_offerer(self) -> bool:
+        return self.status not in (CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED)
 
 
 class CollectiveOfferTemplateDomain(Base, Model):  # type: ignore [valid-type, misc]
