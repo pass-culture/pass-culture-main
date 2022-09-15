@@ -249,7 +249,7 @@ class EditVenueTest:
 
         assert response.status_code == 200
         content = response.data.decode(response.charset)
-        assert "Ce lieu a déjà un SIRET et un point de valorisation" in content
+        assert "Ce lieu a déjà un point de valorisation" in content
         refreshed_venue = Venue.query.get(venue.id)
         assert refreshed_venue.siret == None
         mocked_async_index_offers_of_venue_ids.assert_not_called()
