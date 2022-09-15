@@ -34,7 +34,7 @@ def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_
             if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application):
                 continue
             _mark_without_continuation_a_draft_application(draft_application)
-            _mark_cancel_dms_fraud_check(draft_application.number)
+            _mark_cancel_dms_fraud_check(draft_application.number, draft_application.profile.email)
             marked_applications_count += 1
         except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
             logger.exception(
@@ -89,10 +89,13 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
     logger.info("[DMS] Marked application %s without continuation", dms_application.number)
 
 
-def _mark_cancel_dms_fraud_check(application_number: int) -> None:
+def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
     try:
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            type=fraud_models.FraudCheckType.DMS, thirdPartyId=str(application_number)
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            fraud_models.BeneficiaryFraudCheck.thirdPartyId == str(application_number),
+            fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
+            fraud_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
         ).one_or_none()
     except sqla_exc.MultipleResultsFound:
         logger.exception("[DMS] Multiple fraud checks found for application %s", application_number)
