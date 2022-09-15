@@ -1,4 +1,5 @@
 import ipaddress
+import logging
 
 from flask import request
 
@@ -14,6 +15,7 @@ from pcapi.serialization.decorator import spectree_serialize
 # and https://developers.sendinblue.com/docs/additional-ips-to-be-whitelisted
 SENDINBLUE_IP_RANGE = [
     *ipaddress.IPv4Network("185.107.232.0/24"),
+    *ipaddress.IPv4Network("1.179.112.0/20"),
     ipaddress.IPv4Address("195.154.30.169"),
     ipaddress.IPv4Address("195.154.31.153"),
     ipaddress.IPv4Address("195.154.31.142"),
@@ -46,9 +48,10 @@ SENDINBLUE_IP_RANGE = [
 ]
 
 
-@public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
-@spectree_serialize(on_success_status=204)
-def unsubscribe_user():  # type: ignore [no-untyped-def]
+logger = logging.getLogger(__name__)
+
+
+def _check_sendinblue_source_ip() -> None:
     source_ip = ipaddress.IPv4Address(request.headers.get("X-Forwarded-For", "0.0.0.0"))
     if source_ip not in SENDINBLUE_IP_RANGE and settings.IS_DEV is False:
         raise ApiErrors(
@@ -56,7 +59,13 @@ def unsubscribe_user():  # type: ignore [no-untyped-def]
             status_code=401,
         )
 
-    user_email = request.json.get("email")
+
+@public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
+@spectree_serialize(on_success_status=204)
+def sendinblue_unsubscribe_user() -> None:
+    _check_sendinblue_source_ip()
+
+    user_email = request.json.get("email")  # type: ignore [union-attr]
     if not user_email:
         raise ApiErrors(
             {"email": "Email missing in request payload"},
@@ -73,3 +82,19 @@ def unsubscribe_user():  # type: ignore [no-untyped-def]
         else {"marketing_email": False}
     )
     repository.save(user_to_unsubscribe)
+
+
+@public_api.route("/webhooks/sendinblue/importcontacts/<int:list_id>/<int:iteration>", methods=["POST"])
+@spectree_serialize(on_success_status=204)
+def sendinblue_notify_importcontacts(list_id: int, iteration: int) -> None:
+    """
+    Called by Sendinblue once an import process is finished.
+    https://developers.sendinblue.com/reference/importcontacts-1
+
+    Unfortunately there is no information in query string and the body is empty, so we can't check a process id.
+    The id of the list in Sendinblue is added to the URL when set in notifyUrl so we can at least print the list id.
+    This webhook is for investigation purpose only.
+    """
+    _check_sendinblue_source_ip()
+
+    logger.info("ContactsApi->import_contacts finished", extra={"list_id": list_id, "iteration": iteration})

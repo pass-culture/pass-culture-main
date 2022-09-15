@@ -2,12 +2,13 @@ from copy import deepcopy
 from datetime import datetime
 from unittest.mock import call
 from unittest.mock import patch
+import warnings
 
 import pytest
-from sib_api_v3_sdk.models.remove_contact_from_list import RemoveContactFromList
 from sib_api_v3_sdk.models.request_contact_import import RequestContactImport
 
 from pcapi import settings
+from pcapi.core.testing import override_settings
 from pcapi.core.users.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.users.external.sendinblue import add_contacts_to_list
 from pcapi.core.users.external.sendinblue import build_file_body
@@ -203,18 +204,11 @@ class BulkImportUsersDataTest:
 
         mock_import_contacts.assert_has_calls([call(expected_pro_call), call(expected_young_call)], any_order=True)
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
-    def test_add_contacts_to_list(self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process):
+    def test_add_contacts_to_list(self, mock_import_contacts):
         result = add_contacts_to_list(
             ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
             SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
-            clear_list_first=True,
-        )
-
-        mock_remove_contact_from_list.assert_called_once_with(
-            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID, RemoveContactFromList(emails=None, ids=None, all=True)
         )
 
         mock_import_contacts.assert_called_once_with(
@@ -222,7 +216,7 @@ class BulkImportUsersDataTest:
                 file_url=None,
                 file_body="EMAIL\neren.yeager@shinganshina.paradis\narmin.arlert@shinganshina.paradis",
                 list_ids=[SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID],
-                notify_url=None,
+                notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID}/1",
                 new_list=None,
                 email_blacklist=False,
                 sms_blacklist=False,
@@ -231,21 +225,25 @@ class BulkImportUsersDataTest:
             )
         )
 
-        mock_get_process.assert_called()
-
         assert result is True
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    # @override_settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_contacts_to_list_without_mock(self):
+        # Avoid pytest.PytestUnraisableExceptionWarning: Exception ignored in: <ssl.SSLSocket ...>
+        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
+
         result = add_contacts_to_list(
             ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
             SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
-            clear_list_first=True,
         )
 
         assert result is True
 
     def _test_add_many_contacts_to_list_without_mock(self, count: int, prefix: str):
+        # Avoid pytest.PytestUnraisableExceptionWarning: Exception ignored in: <ssl.SSLSocket ...>
+        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
+
         # 40 characters per email address
         test_time = datetime.utcnow().strftime("%y%m%d.%H%M")
         thousands_emails = (f"test.{prefix}.{test_time}.{i:06d}@example.net" for i in range(1, count + 1))
@@ -253,28 +251,32 @@ class BulkImportUsersDataTest:
         result = add_contacts_to_list(
             thousands_emails,
             SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
-            clear_list_first=True,
         )
 
         assert result is True
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    # @override_settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_200k_contacts_to_list_without_mock(self):
         # 200k contacts: a single 8MB import request
         self._test_add_many_contacts_to_list_without_mock(200000, "200k")
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    # @override_settings(API_URL="http://dev.external.ip:5001", SENDINBLUE_API_KEY="...")
     def test_add_500k_contacts_to_list_without_mock(self):
         # 500k contacts: several import requests
-        # Use with caution, test may take 10, 20, 25 minutes...
+        # Use with caution, ingestion may take 10, 20, 25 minutes... before calling webhook
         self._test_add_many_contacts_to_list_without_mock(500000, "500k")
 
     @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    @override_settings(IS_RUNNING_TESTS=False, IS_DEV=False, IS_TESTING=True)
     def test_update_pro_contact_without_mock(self):
+        # Avoid pytest.PytestUnraisableExceptionWarning: Exception ignored in: <ssl.SSLSocket ...>
+        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
+
         # This test helps to check data received in Sendinblue dashboard manually.
-        # Note that SENDINBLUE_API_KEY must be filled in settings and code under IS_RUNNING_TESTS and IS_DEV must be
-        # temporarily disabled in make_update_request to really send data to Sendinblue test account.
-        assert make_update_request(
+        # Note that SENDINBLUE_API_KEY must be filled in settings.
+        make_update_request(
             UpdateSendinblueContactRequest(
                 email=f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net",
                 attributes=format_user_attributes(common_pro_attributes),

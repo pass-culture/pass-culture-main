@@ -2,21 +2,17 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from itertools import islice
-import json
 import logging
-from time import sleep
 from typing import Any
 from typing import Callable
 from typing import Iterable
+import urllib.parse
 
+from flask import url_for
 import sib_api_v3_sdk
 from sib_api_v3_sdk.api.contacts_api import ContactsApi
-from sib_api_v3_sdk.api.process_api import ProcessApi
 from sib_api_v3_sdk.models.created_process_id import CreatedProcessId
-from sib_api_v3_sdk.models.get_process import GetProcess
-from sib_api_v3_sdk.models.post_contact_info import PostContactInfo
 from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
-import urllib3.exceptions
 
 from pcapi import settings
 from pcapi.core.users import testing
@@ -317,35 +313,18 @@ def import_contacts_in_sendinblue(
         )
 
 
-def _wait_for_process(api_instance: ProcessApi, process_id: int) -> bool:
-    seconds = 0
-    # Last status should be 'completed' (exhaustive list of statuses not given in sendinblue API documentation)
-    status = "queued"
-    while status in ("queued", "in_process") and seconds < 3600:
-        if not settings.IS_RUNNING_TESTS:
-            sleep(1)
-        try:
-            api_response: GetProcess = api_instance.get_process(process_id)
-        except urllib3.exceptions.HTTPError:
-            pass
-        else:
-            logger.info(
-                "ProcessApi->get_process returned: %s",
-                api_response,
-                extra={"process_id": process_id, "status": api_response.status},
-            )
-            status = api_response.status
-        seconds += 1
-
-    return status == "completed"
-
-
-def _send_import_request(api_instance: ContactsApi, sib_list_id: int, count: int, file_body: str) -> int:
+def _send_import_request(
+    api_instance: ContactsApi, sib_list_id: int, iteration: int, count: int, file_body: str
+) -> int:
     request_contact_import = sib_api_v3_sdk.RequestContactImport()
     request_contact_import.file_body = file_body
     request_contact_import.list_ids = [sib_list_id]
-
-    logger.info("ContactsApi->import_contacts: %d emails, size: %d KB", count, len(file_body) / 1024)
+    request_contact_import.notify_url = urllib.parse.urljoin(
+        settings.API_URL,
+        url_for(
+            "Public API.sendinblue_notify_importcontacts", list_id=sib_list_id, iteration=iteration, _external=False
+        ),
+    )
 
     import_response: CreatedProcessId = api_instance.import_contacts(request_contact_import)
     logger.info(
@@ -353,6 +332,9 @@ def _send_import_request(api_instance: ContactsApi, sib_list_id: int, count: int
         import_response,
         extra={
             "list_id": sib_list_id,
+            "iteration": iteration,
+            "email_count": count,
+            "request_body_size": len(file_body),
             "process_id": import_response.process_id,
         },
     )
@@ -360,15 +342,16 @@ def _send_import_request(api_instance: ContactsApi, sib_list_id: int, count: int
     return import_response.process_id
 
 
-def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_list_first: bool = False) -> bool:
+def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int) -> bool:
     """
     Fills in a list of contacts using Sendinblue API.
     This function is intended to be used for automation and returns synchronously (waits for completion).
 
+    Webhook is called when the process is finished on Sendinblue side: see sendinblue_notify_importcontacts()
+
     Args:
         user_emails (Iterable[str]): list or generator of matching user email addresses
         sib_list_id (int): Sendinblue list identifier
-        clear_list_first (bool): clear all contacts from the list before adding emails
 
     Returns:
         bool: True when successful, False otherwise
@@ -377,52 +360,8 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
     configuration = sib_api_v3_sdk.Configuration()
     configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
     contacts_api_instance: ContactsApi = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
-    process_api_instance: ProcessApi = sib_api_v3_sdk.ProcessApi(sib_api_v3_sdk.ApiClient(configuration))
 
-    if clear_list_first:
-        # https://developers.sendinblue.com/reference/removecontactfromlist
-        remove_contact = sib_api_v3_sdk.RemoveContactFromList(all=True)
-
-        try:
-            remove_response: PostContactInfo = contacts_api_instance.remove_contact_from_list(
-                sib_list_id, remove_contact
-            )
-            logger.info(
-                "ContactsApi->remove_contact_from_list returned: %s",
-                remove_response,
-                extra={"list_id": sib_list_id, "process_id": remove_response.contacts.process_id},
-            )
-
-            # While developing, this process takes up to 25 seconds to remove 2 contacts from the list!
-            # We must wait until process LIST_USERS_DELETE is completed, otherwise it may remove a contact which was
-            # re-added in next process IMPORTUSER
-            if remove_response.contacts.process_id:
-                _wait_for_process(process_api_instance, remove_response.contacts.process_id)
-
-        except SendinblueApiException as exception:
-            if exception.status == 524:
-                # Handled first because response is a generic html page, not the expected json body
-                logger.exception(
-                    "Timeout when calling ContactsApi->remove_contact_from_list",
-                    extra={"list_id": sib_list_id},
-                )
-                return False
-            try:
-                message = json.loads(exception.body).get("message")
-            except json.JSONDecodeError:
-                message = exception.body
-            if exception.status == 400 and message == "Contacts already removed from list and/or does not exist":
-                logger.info(
-                    "ContactsApi->remove_contact_from_list: list was already empty",
-                    extra={"list_id": sib_list_id},
-                )
-            else:
-                logger.exception(
-                    "Exception when calling ContactsApi->remove_contact_from_list: %s",
-                    exception,
-                    extra={"list_id": sib_list_id},
-                )
-                return False
+    iteration = 1
 
     # Add contacts API is limited to 150 email addresses:
     # https://developers.sendinblue.com/reference/addcontacttolist-1
@@ -440,7 +379,8 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
 
         for emails in chunk(user_emails, max_emails_per_import):
             file_body = "EMAIL\n" + "\n".join(emails)
-            _send_import_request(contacts_api_instance, sib_list_id, len(emails), file_body)
+            _send_import_request(contacts_api_instance, sib_list_id, iteration, len(emails), file_body)
+            iteration += 1
 
         # Don't wait for processes completed, it would take too much time in the cron process
 
@@ -448,7 +388,7 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
         logger.exception(
             "Exception when calling ContactsApi->import_contacts: %s",
             exception,
-            extra={"list_id": sib_list_id},
+            extra={"list_id": sib_list_id, "iteration": iteration},
         )
         return False
 
