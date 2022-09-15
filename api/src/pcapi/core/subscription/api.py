@@ -549,6 +549,14 @@ def _update_fraud_check_eligibility_with_history(
     return new_fraud_check
 
 
+def get_id_provider_detected_eligibility(
+    user: users_models.User, identity_content: common_fraud_models.IdentityCheckContent
+) -> users_models.EligibilityType | None:
+    return fraud_api.decide_eligibility(
+        user, identity_content.get_birth_date(), identity_content.get_registration_datetime()
+    )
+
+
 # TODO (Lixxday): use a proper BeneficiaryFraudCheck History model to track these kind of updates
 def handle_eligibility_difference_between_declaration_and_identity_provider(
     user: users_models.User,
@@ -557,9 +565,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     identity_content: common_fraud_models.IdentityCheckContent = fraud_check.source_data()  # type: ignore [assignment]
 
     declared_eligibility = fraud_check.eligibilityType
-    id_provider_detected_eligibility = fraud_api.decide_eligibility(
-        user, identity_content.get_birth_date(), identity_content.get_registration_datetime()
-    )
+    id_provider_detected_eligibility = get_id_provider_detected_eligibility(user, identity_content)
 
     if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
         return fraud_check
