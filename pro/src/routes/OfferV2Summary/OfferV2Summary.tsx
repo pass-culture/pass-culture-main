@@ -1,6 +1,7 @@
 import React from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -10,6 +11,7 @@ import {
 import { useHomePath } from 'hooks'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { useGetData } from 'routes/OfferIndividualWizard/hooks'
+import { useGetDataAdmin } from 'routes/OfferIndividualWizard/hooks/useGetDataAdmin'
 import { serializePropsFromOfferIndividual } from 'routes/OfferIndividualWizard/Summary/serializer'
 import { Summary as SummaryScreen } from 'screens/OfferIndividual/Summary'
 
@@ -18,9 +20,15 @@ const OfferV2Summary = (): JSX.Element | null => {
   const homePath = useHomePath()
   const notify = useNotification()
   const history = useHistory()
+  const { currentUser } = useCurrentUser()
 
-  const { offerId } = useParams<{ offerId: string }>()
-  const { data, isLoading, loadingError, reloadOffer } = useGetData(offerId)
+  const { offerId, structure: offererId } = useParams<{
+    offerId: string
+    structure: string
+  }>()
+  const { data, isLoading, loadingError, reloadOffer } = currentUser.isAdmin
+    ? useGetDataAdmin(offerId, offererId)
+    : useGetData(offerId)
 
   if (isLoading === true) return <Spinner />
   if (loadingError !== undefined || data.offer === undefined) {

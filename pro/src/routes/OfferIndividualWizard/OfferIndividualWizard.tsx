@@ -7,6 +7,7 @@ import {
   useRouteMatch,
 } from 'react-router'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -17,6 +18,7 @@ import { useHomePath } from 'hooks'
 
 import { Confirmation } from './Confirmation'
 import { useGetData } from './hooks'
+import { useGetDataAdmin } from './hooks/useGetDataAdmin'
 import { Offer } from './Offer'
 import { Stocks } from './Stocks'
 import { Summary } from './Summary'
@@ -27,8 +29,15 @@ const OfferIndividualWizard = () => {
   const history = useHistory()
   const { path } = useRouteMatch()
 
-  const { offerId } = useParams<{ offerId: string }>()
-  const { data, isLoading, loadingError, reloadOffer } = useGetData(offerId)
+  const { currentUser } = useCurrentUser()
+
+  const { offerId, structure: offererId } = useParams<{
+    offerId: string
+    structure: string
+  }>()
+  const { data, isLoading, loadingError, reloadOffer } = currentUser.isAdmin
+    ? useGetDataAdmin(offerId, offererId)
+    : useGetData(offerId)
 
   if (isLoading === true) return <Spinner />
   if (loadingError !== undefined) {

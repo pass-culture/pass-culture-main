@@ -183,6 +183,7 @@ describe('useGetOfferIndividual', () => {
       musicType: '',
       nonHumanizedId: 192,
       offererId: 'CU',
+      offererName: 'Le Petit Rintintin Management 6',
       performer: '',
       showSubType: '',
       showType: '',

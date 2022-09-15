@@ -156,6 +156,7 @@ export interface IOfferIndividual {
   musicSubType: string
   musicType: string
   offererId: string
+  offererName: string
   performer: string
   showSubType: string
   showType: string
