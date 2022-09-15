@@ -1765,7 +1765,7 @@ export class DefaultService {
     validatedForUser?: boolean | null,
     validated?: boolean | null,
     activeOfferersOnly?: boolean | null,
-    offererId?: number | null,
+    offererId?: string | null,
   ): CancelablePromise<GetVenueListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
