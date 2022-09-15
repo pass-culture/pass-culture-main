@@ -107,7 +107,8 @@ const serializerOfferSectionProps = (
     accessibility: offer.accessibility,
 
     isDuo: offer.isDuo,
-    url: offer.externalTicketOfficeUrl,
+    url: offer.url,
+    externalTicketOfficeUrl: offer.externalTicketOfficeUrl,
   }
   const subCategoryData = serializerOfferSubCategoryFields(
     offer,
