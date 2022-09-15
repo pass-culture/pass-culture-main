@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { BannerRGS } from 'new_components/Banner'
@@ -8,6 +9,7 @@ import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
+import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
 
 const Homepage = (): JSX.Element => {
@@ -18,6 +20,7 @@ const Homepage = (): JSX.Element => {
   const [hasClosedRGSBanner, setHasClosedRGSBanner] = useState<boolean>(
     Boolean(hasSeenProRgs)
   )
+  const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const handleCloseRGSBanner = () => {
     setHasSeenRGSBanner().finally(() => {
       setHasClosedRGSBanner(true)
@@ -39,6 +42,11 @@ const Homepage = (): JSX.Element => {
       <section className="h-section">
         <Offerers />
       </section>
+      {isOffererStatsActive && (
+        <section className="h-section">
+          <OffererStats />
+        </section>
+      )}
 
       <section className="h-section" ref={profileRef}>
         <ProfileAndSupport />
