@@ -1,7 +1,15 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, useMemo } from 'react'
+
+import { Audience } from 'core/shared'
 
 import { BookingsFilters } from '../../../types'
 import { EMPTY_FILTER_VALUE } from '../_constants'
+
+import {
+  COLLECTIVE_OMNISEARCH_FILTERS,
+  INDIVIDUAL_OMNISEARCH_FILTERS,
+} from './constants'
+import { BookingOmniSearchFilters } from './types'
 
 interface FilterByOmniSearchProps {
   isDisabled: boolean
@@ -11,66 +19,37 @@ interface FilterByOmniSearchProps {
     filters: Partial<BookingsFilters>,
     updatedContent: { keywords: string; selectedOmniSearchCriteria: string }
   ) => void
+  audience: Audience
 }
-
-type OmnisearchFilter = {
-  id: string
-  placeholderText: string
-  stateKey: keyof Pick<
-    BookingsFilters,
-    'bookingBeneficiary' | 'bookingToken' | 'offerISBN' | 'offerName'
-  >
-  selectOptionText: string
-}
-
-const OMNISEARCH_FILTERS: OmnisearchFilter[] = [
-  {
-    id: 'offre',
-    placeholderText: "Rechercher par nom d'offre",
-    stateKey: 'offerName',
-    selectOptionText: 'Offre',
-  },
-  {
-    id: 'bénéficiaire',
-    placeholderText: 'Rechercher par nom ou email',
-    stateKey: 'bookingBeneficiary',
-    selectOptionText: 'Bénéficiaire',
-  },
-  {
-    id: 'isbn',
-    placeholderText: 'Rechercher par ISBN',
-    stateKey: 'offerISBN',
-    selectOptionText: 'ISBN',
-  },
-  {
-    id: 'contremarque',
-    placeholderText: 'Rechercher par contremarque',
-    stateKey: 'bookingToken',
-    selectOptionText: 'Contremarque',
-  },
-]
 
 const FilterByOmniSearch = ({
   isDisabled,
   keywords,
   selectedOmniSearchCriteria,
   updateFilters,
+  audience,
 }: FilterByOmniSearchProps) => {
+  const omnisearchFilters = useMemo(
+    () =>
+      audience === Audience.INDIVIDUAL
+        ? INDIVIDUAL_OMNISEARCH_FILTERS
+        : COLLECTIVE_OMNISEARCH_FILTERS,
+    [audience]
+  )
+
   function updateOmniSearchKeywords(
     omniSearchCriteria: string,
     keywords: string
   ) {
-    const cleanedOmnisearchFilters: Pick<
-      BookingsFilters,
-      'bookingBeneficiary' | 'bookingToken' | 'offerISBN' | 'offerName'
-    > = {
+    const cleanedOmnisearchFilters: BookingOmniSearchFilters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
+      bookingInstitution: EMPTY_FILTER_VALUE,
     }
 
-    const omniSearchStateKey = OMNISEARCH_FILTERS.find(
+    const omniSearchStateKey = omnisearchFilters.find(
       criteria => criteria.id === omniSearchCriteria
     )?.stateKey
     if (omniSearchStateKey) {
@@ -95,7 +74,7 @@ const FilterByOmniSearch = ({
     updateOmniSearchKeywords(newOmniSearchCriteria, keywords)
   }
 
-  const placeholderText = OMNISEARCH_FILTERS.find(
+  const placeholderText = omnisearchFilters.find(
     criteria => criteria.id === selectedOmniSearchCriteria
   )?.placeholderText
 
@@ -107,7 +86,7 @@ const FilterByOmniSearch = ({
         onBlur={handleOmniSearchCriteriaChange}
         onChange={handleOmniSearchCriteriaChange}
       >
-        {OMNISEARCH_FILTERS.map(selectOption => (
+        {omnisearchFilters.map(selectOption => (
           <option key={selectOption.id} value={selectOption.id}>
             {selectOption.selectOptionText}
           </option>
