@@ -25,6 +25,7 @@ class FindByProUserTest:
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
+        institution = educational_factories.EducationalInstitutionFactory()
         user_offerer = offerers_factories.UserOffererFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name="Le chant des cigales",
@@ -35,6 +36,7 @@ class FindByProUserTest:
             dateUsed=booking_date + timedelta(days=10),
             collectiveStock=collective_stock,
             dateCreated=booking_date,
+            educationalInstitution=institution,
         )
 
         # When
@@ -49,9 +51,12 @@ class FindByProUserTest:
         expected_booking_recap = collective_bookings[0]
         assert expected_booking_recap.offerId == collective_stock.collectiveOffer.id
         assert expected_booking_recap.offerName == "Le chant des cigales"
-        assert expected_booking_recap.redactorFirstname == "Reda"
-        assert expected_booking_recap.redactorLastname == "Khteur"
-        assert expected_booking_recap.redactorEmail == "reda.ktheur@example.com"
+        assert expected_booking_recap.institutionName == institution.name
+        assert expected_booking_recap.institutionType == institution.institutionType
+        assert expected_booking_recap.institutionCity == institution.city
+        assert expected_booking_recap.institutionPhoneNumber == institution.phoneNumber
+        assert expected_booking_recap.institutionPostalCode == institution.postalCode
+        assert expected_booking_recap.institutionId == institution.id
         assert expected_booking_recap.bookedAt == booking_date.astimezone(tz.gettz("Europe/Paris"))
         assert expected_booking_recap.status is CollectiveBookingStatus.USED
         assert expected_booking_recap.isConfirmed is True
