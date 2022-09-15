@@ -739,6 +739,11 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
                 )
             )
             .options(sa.orm.joinedload(educational_models.CollectiveOffer.domains))
+            .options(
+                sa.orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                    educational_models.CollectiveStock.collectiveBookings
+                )
+            )
             .one()
         )
     except sa.orm.exc.NoResultFound:
