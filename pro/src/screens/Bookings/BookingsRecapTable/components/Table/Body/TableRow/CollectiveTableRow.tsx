@@ -48,7 +48,10 @@ const CollectiveTableRow = ({ row }: ITableBodyProps) => {
               <Spinner className={styles['loader']} />
             ) : (
               bookingDetails && (
-                <CollectiveBookingDetails bookingDetails={bookingDetails} />
+                <CollectiveBookingDetails
+                  bookingDetails={bookingDetails}
+                  offerId={row.original.stock.offer_identifier}
+                />
               )
             )}
           </tr>
