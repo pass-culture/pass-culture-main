@@ -14,52 +14,71 @@ const FAILING_RESPONSE = {
   payload: [],
 }
 
-const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
-  async () => {
-    try {
-      const response = await api.getVenues(
-        ...Object.values({
-          validatedForUser: null,
-          validated: null,
-          activeOfferersOnly: true,
-          offererId: null,
-        })
-      )
-
-      const serializeVenue = (
-        venue: VenueListItemResponseModel
-      ): TOfferIndividualVenue => {
-        const baseAccessibility = {
-          [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
-          [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
-          [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
-          [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
-        }
-        return {
-          id: venue.id,
-          managingOffererId: venue.managingOffererId,
-          name: venue.publicName || venue.name,
-          isVirtual: venue.isVirtual,
-          withdrawalDetails: venue.withdrawalDetails || null,
-          accessibility: {
-            ...baseAccessibility,
-            [AccessiblityEnum.NONE]:
-              !Object.values(baseAccessibility).includes(true),
-          },
-        }
-      }
-
+const getOfferIndividualVenuesAdapter = (
+  isAdmin: boolean,
+  offererId?: string
+) => {
+  const emptyOffererInvidivualVenueAdapter: TGetOfferIndividualVenuesAdapter =
+    async () => {
       return {
         isOk: true,
         message: null,
-        payload: response.venues.map(serializeVenue),
+        payload: [],
       }
-    } catch (e) {
-      return FAILING_RESPONSE
     }
-  }
+  const offererInvidivualVenueAdapter: TGetOfferIndividualVenuesAdapter =
+    async () => {
+      try {
+        const response = await api.getVenues(null, null, true, offererId)
 
-const useGetOfferIndividualVenues = () =>
-  useAdapter<IPayload, IPayload>(getOfferIndividualVenuesAdapter)
+        const serializeVenue = (
+          venue: VenueListItemResponseModel
+        ): TOfferIndividualVenue => {
+          const baseAccessibility = {
+            [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
+            [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
+            [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
+            [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+          }
+          return {
+            id: venue.id,
+            managingOffererId: venue.managingOffererId,
+            name: venue.publicName || venue.name,
+            isVirtual: venue.isVirtual,
+            withdrawalDetails: venue.withdrawalDetails || null,
+            accessibility: {
+              ...baseAccessibility,
+              [AccessiblityEnum.NONE]:
+                !Object.values(baseAccessibility).includes(true),
+            },
+          }
+        }
+
+        return {
+          isOk: true,
+          message: null,
+          payload: response.venues.map(serializeVenue),
+        }
+      } catch (e) {
+        return FAILING_RESPONSE
+      }
+    }
+
+  return isAdmin && !offererId
+    ? emptyOffererInvidivualVenueAdapter
+    : offererInvidivualVenueAdapter
+}
+
+interface UseAdapterArgs {
+  isAdmin: boolean
+  offererId?: string
+}
+const useGetOfferIndividualVenues = ({
+  isAdmin,
+  offererId,
+}: UseAdapterArgs) => {
+  const adapter = getOfferIndividualVenuesAdapter(isAdmin, offererId)
+  return useAdapter<IPayload, IPayload>(adapter)
+}
 
 export default useGetOfferIndividualVenues
