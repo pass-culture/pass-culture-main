@@ -78,7 +78,7 @@ else:
 
 
 # API config
-API_URL = os.environ.get("API_URL")
+API_URL = os.environ.get("API_URL", "")
 
 
 # Applications urls

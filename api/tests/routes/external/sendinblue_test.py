@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from pcapi.core.testing import override_settings
@@ -69,3 +71,22 @@ class UnsubscribeUserTest:
 
         # Then
         assert response.status_code == 400
+
+
+@pytest.mark.usefixtures("db_session")
+class NotifyImportContactsTest:
+    def test_notify_importcontacts(self, app, caplog):
+        # Given
+        headers = {"X-Forwarded-For": "1.179.112.9"}
+
+        # When
+        with caplog.at_level(logging.INFO):
+            response = TestClient(app.test_client()).post("/webhooks/sendinblue/importcontacts/18/1", headers=headers)
+
+        # Then
+        assert response.status_code == 204
+        assert caplog.records[0].message == "ContactsApi->import_contacts finished"
+        assert caplog.records[0].extra == {
+            "list_id": 18,
+            "iteration": 1,
+        }
