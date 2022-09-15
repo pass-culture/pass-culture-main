@@ -22,6 +22,7 @@ const MissingBusinessUnits = ({ hasTitle }) => {
 
       <div className="h-card-content">
         <Banner
+          minimalStyle={true}
           links={[
             {
               href: DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,

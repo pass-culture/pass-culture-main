@@ -24,6 +24,9 @@ Info.args = { type: 'notification-info', closable: true }
 export const Light = Template.bind({})
 Light.args = { type: 'light', closable: true }
 
+export const Minimal = Template.bind({})
+Minimal.args = { minimalStyle: true }
+
 export const WithLink = Template.bind({})
 WithLink.args = {
   links: [
@@ -36,6 +39,7 @@ WithLink.args = {
       linkTitle: 'Un autre lien',
     },
   ],
+  minimalStyle: false,
   closable: false,
   type: 'notification-info',
 }
