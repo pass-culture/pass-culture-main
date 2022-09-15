@@ -1,0 +1,146 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+.bi-banner {
+  &.attention , &.notification-info{
+    position: relative;
+    &:before , &:after, .close-icon-banner {
+      background: colors.$white;
+      font-weight: 700;
+      position: absolute;
+    };
+    &:before {
+      padding-right: rem.torem(8px);
+      top: rem.torem(-10px);
+      left: rem.torem(55px);
+    }
+    &:after {
+      padding: 0 rem.torem(8px);
+      top: rem.torem(-15px);
+    }
+    .close-icon-banner {
+      top: rem.torem(-11px);
+      right: rem.torem(25px);
+      height: rem.torem(20px);
+      width: rem.torem(20px);
+    }
+    .bi-banner-text {
+      color: colors.$black;
+    }
+    &.is-minimal{
+      border: none;
+      border-radius: 0;
+      border-top: 2px solid;
+      > .border-cut:after {
+        display: none;
+      }
+    }
+    > .border-cut:after {
+      content: '';
+      position: absolute;
+      bottom: rem.torem(-2px);
+      right: rem.torem(80px);
+      background: colors.$white;
+      width: rem.torem(24px);
+      height: rem.torem(3px);
+    }
+  }
+
+  &.attention {
+    border: rem.torem(1px) solid colors.$primary;
+    color: colors.$primary;
+
+    &:before {
+      content: 'IMPORTANT';
+    }
+    &:after {
+      content: url(/icons/ico-attention.svg);
+    }
+    path {
+      fill: colors.$primary;
+    }
+    .bi-link {
+      color: colors.$primary;
+    }
+
+  }
+  &.notification-info {
+    border: rem.torem(1px) solid colors.$tertiary;
+    color: colors.$tertiary;
+    &:before {
+      content: 'À SAVOIR';
+    }
+    &:after {
+      content: url(/icons/ico-bulb.svg);
+    }
+    path {
+      fill: colors.$tertiary;
+    }
+  }
+
+  &.light {
+    background: colors.$grey-light;
+    color: colors.$grey-dark;
+  }
+
+  &.new {
+    background: colors.$blue;
+    color: colors.$white;
+
+    .content {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .ico-new {
+      margin-right: rem.torem(16px);
+      margin-top: rem.torem(8px);
+    }
+
+    .bi-link {
+      color: colors.$white;
+    }
+
+    .close-icon, path {
+      fill: colors.$white;
+    }
+  }
+
+  border-radius: rem.torem(6px);
+  margin: rem.torem(16px) 0;
+  padding: rem.torem(20px) rem.torem(16px);
+
+  &-text {
+    line-height: rem.torem(20px);
+    text-align: left;
+
+    &.with-margin {
+      margin-bottom: rem.torem(12px);
+    }
+  }
+
+  button {
+    background: none;
+    border: none;
+    float: right;
+  }
+}
+
+.bi-link {
+  &-item {
+    display: flex;
+    &:not(:last-of-type) {
+      margin-bottom: rem.torem(16px);
+    }
+  }
+
+  &.bi-external-link--mod-topright {
+    position: absolute;
+    right: 0;
+    top: rem.torem(-6px);
+  }
+}
+
+.domain-name-banner {
+  margin: rem.torem(0) 0 rem.torem(32px) 0;
+}

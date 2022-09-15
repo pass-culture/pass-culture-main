@@ -119,7 +119,6 @@ class FeatureToggle(enum.Enum):
     USE_INSEE_SIRENE_API = "Utiliser la nouvelle API Sirene de l'Insee"
     APP_ENABLE_COOKIES_V2 = "Activer la gestion conforme des cookies"
     VENUE_FORM_V2 = "Afficher la version 2 du formulaire de lieu"
-    ENABLE_NEW_BANNERS = "Afficher la nouvelle version des bannieres"
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
     ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
