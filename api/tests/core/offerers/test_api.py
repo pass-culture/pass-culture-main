@@ -343,6 +343,17 @@ class EditVenueTest:
         assert link.businessUnit == business_unit
         assert link.timespan.upper is None
 
+    def test_cannot_update_virtual_venue_name(self):
+        offerer = offerers_factories.OffererFactory(siren="000000000")
+        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        venue_data = {"name": "Toto"}
+        with pytest.raises(api_errors.ApiErrors) as error:
+            offerers_api.update_venue(virtual_venue, **venue_data)
+
+        msg = "Vous ne pouvez modifier que le point de remboursement du lieu Offre Numérique."
+        assert error.value.errors == {"venue": [msg]}
+
     def test_edit_venue_with_pending_bank_info(self):
         venue = offerers_factories.VenueFactory(
             pricing_point="self", reimbursement_point="self", publicName="Nom actuel"

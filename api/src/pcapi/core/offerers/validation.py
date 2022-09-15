@@ -80,6 +80,15 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
         modifications.get("visualDisabilityCompliant"),
     ]
 
+    allowed_virtual_venue_modifications = {
+        "reimbursementPointId",
+        "businessUnitId",  # FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
+    }
+    if venue.isVirtual and modifications.keys() - allowed_virtual_venue_modifications:
+        raise ApiErrors(
+            errors={"venue": ["Vous ne pouvez modifier que le point de remboursement du lieu Offre Numérique."]}
+        )
+
     if managing_offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous ne pouvez pas changer la structure d'un lieu"]})
     if siret and venue.siret and siret != venue.siret:
