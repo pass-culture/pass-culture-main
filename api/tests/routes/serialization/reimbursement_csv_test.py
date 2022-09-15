@@ -379,44 +379,6 @@ class CollectiveReimbursementDetailsTest:
         assert row[20] == "21,00"
         assert row[21] == "offre collective"
 
-    def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
-        # given
-        custom_reimbursement_rule = payments_factories.CustomReimbursementRuleFactory(
-            amount=None,
-            rate=0.1234,
-        )
-        payment = finance_factories.PaymentWithCustomRuleFactory(
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            amount=2.71,
-            customReimbursementRule=custom_reimbursement_rule,
-            booking__amount=10.5,
-            booking__quantity=2,
-            booking__stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
-        )
-        finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
-        finance_factories.PricingFactory(
-            booking=payment.booking,
-            amount=-271,
-            standardRule="",
-            customRule=custom_reimbursement_rule,
-            status=finance_models.PricingStatus.VALIDATED,
-        )
-        finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
-        finance_api.generate_invoices()
-
-        payments_info = finance_repository.find_all_offerer_payments(
-            payment.booking.offererId,
-            reimbursement_period,
-        )
-
-        # legacy payment data
-        row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[19] == ""
-
-        # new pricing+cashflow data
-        row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[19] == "12,34 %"
-
 
 def test_get_validation_period() -> None:
     assert (
