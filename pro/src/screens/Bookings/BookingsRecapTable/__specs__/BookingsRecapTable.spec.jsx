@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 
+import { Audience } from 'core/shared'
 import BookingsRecapTable from 'screens/Bookings/BookingsRecapTable/BookingsRecapTable'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { configureTestStore } from 'store/testUtils'
@@ -29,6 +30,7 @@ describe('components | BookingsRecapTable', () => {
   it('should render the expected table headers', () => {
     // Given
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: [
         {
           stock: {
@@ -82,6 +84,7 @@ describe('components | BookingsRecapTable', () => {
   it('should render a filter icon in "statut" header', () => {
     // Given
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: [
         {
           stock: {
@@ -166,6 +169,7 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue(bookingsRecap)
 
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: bookingsRecap,
       isLoading: false,
     }
@@ -220,6 +224,7 @@ describe('components | BookingsRecapTable', () => {
     ]
     filterBookingsRecap.mockReturnValue(bookingsRecap)
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: bookingsRecap,
       isLoading: false,
     }
@@ -235,6 +240,7 @@ describe('components | BookingsRecapTable', () => {
     // given
     const bookingsRecap = []
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: bookingsRecap,
       isLoading: false,
     }
@@ -314,6 +320,7 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue(bookingsRecap)
 
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: bookingsRecap,
       isLoading: false,
     }
@@ -370,6 +377,7 @@ describe('components | BookingsRecapTable', () => {
       ],
     }
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: [booking],
       isLoading: false,
     }
@@ -389,6 +397,7 @@ describe('components | BookingsRecapTable', () => {
   it('should reset filters when clicking on "afficher toutes les réservations"', async () => {
     // given
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: [
         {
           stock: {
@@ -509,6 +518,7 @@ describe('components | BookingsRecapTable', () => {
       .mockReturnValueOnce(bookingsRecap)
       .mockReturnValue([newBooking])
     const props = {
+      audience: Audience.INDIVIDUAL,
       bookingsRecap: bookingsRecap,
       isLoading: false,
     }

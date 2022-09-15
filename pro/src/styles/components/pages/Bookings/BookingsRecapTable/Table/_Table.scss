@@ -13,6 +13,10 @@
       width: rem.torem(160px);
     }
 
+    .column-collective-offer-name {
+      width: rem.torem(192px);
+    }
+
     .column-booking-duo {
       align-items: center;
       display: flex;
@@ -25,6 +29,15 @@
       word-break: break-word;
     }
 
+    .column-institution {
+      width: rem.torem(264px);
+      word-break: break-word;
+    }
+
+    .column-price-and-price {
+      width: rem.torem(120px);
+    }
+
     .column-booking-date {
       width: rem.torem(135px);
     }
@@ -32,12 +45,6 @@
     .column-booking-token {
       width: rem.torem(120px);
       word-break: break-word;
-    }
-
-    .column-booking-status {
-      padding-left: 0;
-      padding-right: rem.torem(5px);
-      vertical-align: middle;
     }
   }
 }

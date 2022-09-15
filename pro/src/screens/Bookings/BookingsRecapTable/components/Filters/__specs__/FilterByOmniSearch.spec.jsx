@@ -3,12 +3,15 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { Audience } from 'core/shared'
+
 import FilterByOmniSearch from '../FilterByOmniSearch'
 
 describe('components | FilterByOmniSearch', () => {
   let props
   beforeEach(() => {
     props = {
+      audience: Audience.INDIVIDUAL,
       keywords: '',
       selectedOmniSearchCriteria: 'offre',
       updateFilters: jest.fn(),
@@ -60,6 +63,7 @@ describe('components | FilterByOmniSearch', () => {
         bookingToken: '',
         offerISBN: '',
         offerName: '',
+        bookingInstitution: '',
       },
       { keywords: 'Firost', selectedOmniSearchCriteria: 'bénéficiaire' }
     )
@@ -81,6 +85,7 @@ describe('components | FilterByOmniSearch', () => {
         bookingToken: '',
         offerISBN: '12548',
         offerName: '',
+        bookingInstitution: '',
       },
       { keywords: '12548', selectedOmniSearchCriteria: 'isbn' }
     )
