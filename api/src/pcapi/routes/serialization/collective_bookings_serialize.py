@@ -86,7 +86,7 @@ class EducationalRedactorResponseModel(BaseModel):
 
 class CollectiveBookingResponseModel(BaseModel):
     stock: CollectiveBookingCollectiveStockResponseModel
-    beneficiary: EducationalRedactorResponseModel
+    institution: EducationalInstitutionResponseModel
     booking_token: str | None
     booking_date: str
     booking_status: str
@@ -188,14 +188,16 @@ def serialize_collective_booking_stock(
     )
 
 
-def serialize_collective_booking_redactor(
+def serialize_collective_booking_institution(
     collective_booking: CollectiveBookingNamedTuple,
-) -> EducationalRedactorResponseModel:
-    return EducationalRedactorResponseModel(
-        lastname=collective_booking.redactorLastname,
-        firstname=collective_booking.redactorFirstname,
-        email=collective_booking.redactorEmail,
-        phonenumber=None,
+) -> EducationalInstitutionResponseModel:
+    return EducationalInstitutionResponseModel(
+        id=collective_booking.institutionId,
+        institutionType=collective_booking.institutionType,
+        name=collective_booking.institutionName,
+        postalCode=collective_booking.institutionPostalCode,
+        city=collective_booking.institutionCity,
+        phoneNumber=collective_booking.institutionPhoneNumber,
     )
 
 
@@ -218,7 +220,7 @@ def _serialize_collective_booking_recap_status(
 def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple) -> CollectiveBookingResponseModel:
     return CollectiveBookingResponseModel(
         stock=serialize_collective_booking_stock(collective_booking),
-        beneficiary=serialize_collective_booking_redactor(collective_booking),
+        institution=serialize_collective_booking_institution(collective_booking),
         booking_date=collective_booking.bookedAt.isoformat(),
         booking_status=_serialize_collective_booking_recap_status(collective_booking).value,
         booking_amount=collective_booking.bookingAmount,
