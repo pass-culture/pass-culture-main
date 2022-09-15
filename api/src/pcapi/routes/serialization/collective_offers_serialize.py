@@ -227,6 +227,7 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: str
     isSoldOut: bool = Field(alias="isBooked")
+    is_cancellable_from_offerer: bool = Field(alias="isCancellable")
 
     _humanize_id = humanize_field("id")
 
@@ -258,18 +259,20 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     status: OfferStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
+    is_cancellable_from_offerer: bool = Field(alias="isCancellable")
 
     _humanize_id = humanize_field("id")
     _humanize_offerId = humanize_field("offerId")
     _humanize_venue_id = humanize_field("venueId")
 
     @classmethod
-    def from_orm(cls, offer, offer_has_pricing=False):  # type: ignore
+    def from_orm(cls, offer):  # type: ignore
         offer.nonHumanizedId = offer.id
 
         return super().from_orm(offer)
 
     class Config:
+        allow_population_by_field_name = True
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
