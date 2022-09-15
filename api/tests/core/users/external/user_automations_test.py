@@ -5,7 +5,6 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
-from sib_api_v3_sdk import RemoveContactFromList
 from sib_api_v3_sdk import RequestContactImport
 
 from pcapi import settings
@@ -50,20 +49,11 @@ class UserAutomationsTest:
         assert sorted(result) == ["fabien+test@example.net", "gerard+test@example.net"]
         assert len(User.query.all()) == 6
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
-    def test_user_turned_eighteen_automation(
-        self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process
-    ):
+    def test_user_turned_eighteen_automation(self, mock_import_contacts):
         self._create_users_around_18()
 
         result = user_automations.users_turned_eighteen_automation()
-
-        mock_remove_contact_from_list.assert_called_once_with(
-            settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID,
-            RemoveContactFromList(emails=None, ids=None, all=True),
-        )
 
         mock_import_contacts.assert_called_once()
         assert mock_import_contacts.call_args.args[0].file_url == None
@@ -74,14 +64,15 @@ class UserAutomationsTest:
         assert mock_import_contacts.call_args.args[0].list_ids == [
             settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID
         ]
-        assert mock_import_contacts.call_args.args[0].notify_url == None
+        assert (
+            mock_import_contacts.call_args.args[0].notify_url
+            == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID}/1"
+        )
         assert mock_import_contacts.call_args.args[0].new_list == None
         assert mock_import_contacts.call_args.args[0].email_blacklist == False
         assert mock_import_contacts.call_args.args[0].sms_blacklist == False
         assert mock_import_contacts.call_args.args[0].update_existing_contacts == True
         assert mock_import_contacts.call_args.args[0].empty_contacts_attributes == False
-
-        mock_get_process.assert_called()
 
         assert result is True
 
@@ -166,21 +157,12 @@ class UserAutomationsTest:
             results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
             assert sorted([user.email for user in results]) == [user.email for user in users[4:7]]
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
-    def test_users_beneficiary_credit_expiration_within_next_3_months_automation(
-        self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process
-    ):
+    def test_users_beneficiary_credit_expiration_within_next_3_months_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
         with freeze_time("2022-11-01 16:00:00"):
             result = user_automations.users_beneficiary_credit_expiration_within_next_3_months_automation()
-
-        mock_remove_contact_from_list.assert_called_once_with(
-            settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID,
-            RemoveContactFromList(emails=None, ids=None, all=True),
-        )
 
         mock_import_contacts.assert_called_once()
 
@@ -193,14 +175,15 @@ class UserAutomationsTest:
         assert body_lines[0] == "EMAIL"
         assert set(body_lines[1:]) == {users[2].email, users[3].email, users[4].email}
         assert request_contact_import.list_ids == [settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID]
-        assert request_contact_import.notify_url == None
+        assert (
+            request_contact_import.notify_url
+            == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID}/1"
+        )
         assert request_contact_import.new_list == None
         assert request_contact_import.email_blacklist == False
         assert request_contact_import.sms_blacklist == False
         assert request_contact_import.update_existing_contacts == True
         assert request_contact_import.empty_contacts_attributes == False
-
-        mock_get_process.assert_called()
 
         assert result is True
 
@@ -215,18 +198,12 @@ class UserAutomationsTest:
             results = user_automations.get_users_ex_beneficiary()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:4] + [users[6]]]
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
-    def test_user_ex_beneficiary_automation(
-        self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process
-    ):
+    def test_user_ex_beneficiary_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
         with freeze_time("2022-12-01 16:00:00"):
             result = user_automations.users_ex_beneficiary_automation()
-
-        mock_remove_contact_from_list.assert_not_called()
 
         mock_import_contacts.assert_called_once()
         assert mock_import_contacts.call_args.args[0].file_url is None
@@ -239,14 +216,14 @@ class UserAutomationsTest:
         assert mock_import_contacts.call_args.args[0].list_ids == [
             settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID
         ]
-        assert mock_import_contacts.call_args.args[0].notify_url == None
+        assert (
+            mock_import_contacts.call_args.args[0].notify_url
+            == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID}/1"
+        )
         assert mock_import_contacts.call_args.args[0].new_list == None
         assert mock_import_contacts.call_args.args[0].sms_blacklist == False
         assert mock_import_contacts.call_args.args[0].update_existing_contacts == True
         assert mock_import_contacts.call_args.args[0].empty_contacts_attributes == False
-
-        # Not called because we do no longer wait for import completed
-        mock_get_process.assert_not_called()
 
         assert result is True
 
@@ -267,12 +244,8 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_inactive_user_since_thirty_days()
             assert sorted(results) == sorted([beneficiary.email, not_beneficiary.email])
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
-    def test_users_inactive_since_30_days_automation(
-        self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process
-    ):
+    def test_users_inactive_since_30_days_automation(self, mock_import_contacts):
         with freeze_time("2021-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
                 email="fabien+test@example.net", lastConnectionDate=datetime(2021, 8, 1)
@@ -286,17 +259,12 @@ class UserAutomationsTest:
 
             result = user_automations.users_inactive_since_30_days_automation()
 
-            mock_remove_contact_from_list.assert_called_once_with(
-                settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID,
-                RemoveContactFromList(emails=None, ids=None, all=True),
-            )
-
             mock_import_contacts.assert_called_once_with(
                 RequestContactImport(
                     file_url=None,
                     file_body="EMAIL\nfabien+test@example.net",
                     list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID],
-                    notify_url=None,
+                    notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID}/1",
                     new_list=None,
                     email_blacklist=False,
                     sms_blacklist=False,
@@ -305,16 +273,10 @@ class UserAutomationsTest:
                 )
             )
 
-            mock_get_process.assert_called()
-
             assert result is True
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
-    def test_users_inactive_since_30_days_automation_no_result(
-        self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process
-    ):
+    def test_users_inactive_since_30_days_automation_no_result(self, mock_import_contacts):
         with freeze_time("2021-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
                 email="fabien+test@example.net", lastConnectionDate=datetime(2021, 8, 1)
@@ -328,13 +290,7 @@ class UserAutomationsTest:
 
             result = user_automations.users_inactive_since_30_days_automation()
 
-            mock_remove_contact_from_list.assert_called_once_with(
-                settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID,
-                RemoveContactFromList(emails=None, ids=None, all=True),
-            )
-
             mock_import_contacts.assert_not_called()
-            mock_get_process.assert_called()
 
             assert result is True
 
@@ -359,12 +315,8 @@ class UserAutomationsTest:
             results = user_automations.get_email_for_users_created_one_year_ago_per_month()
             assert sorted(results) == sorted([user.email for user in matching_users])
 
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
-    def test_users_nearly_one_year_with_pass_automation(
-        self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process
-    ):
+    def test_users_nearly_one_year_with_pass_automation(self, mock_import_contacts):
         users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2021, 8, 31))
         users_factories.UserFactory(email="pierre+test@example.net", dateCreated=datetime(2021, 9, 1))
         users_factories.UserFactory(email="daniel+test@example.net", dateCreated=datetime(2021, 10, 1))
@@ -374,17 +326,12 @@ class UserAutomationsTest:
         with freeze_time("2022-09-10 15:00:00"):
             result = user_automations.users_one_year_with_pass_automation()
 
-        mock_remove_contact_from_list.assert_called_once_with(
-            settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID,
-            RemoveContactFromList(emails=None, ids=None, all=True),
-        )
-
         mock_import_contacts.assert_called_once_with(
             RequestContactImport(
                 file_url=None,
                 file_body="EMAIL\npierre+test@example.net",
                 list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID],
-                notify_url=None,
+                notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID}/1",
                 new_list=None,
                 email_blacklist=False,
                 sms_blacklist=False,
@@ -392,8 +339,6 @@ class UserAutomationsTest:
                 empty_contacts_attributes=False,
             )
         )
-
-        mock_get_process.assert_called()
 
         assert result is True
 

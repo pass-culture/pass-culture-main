@@ -91,7 +91,7 @@ def enqueue_task(
 
 
 def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delayed_seconds: int = 0):  # type: ignore [no-untyped-def]
-    url = settings.API_URL + CLOUD_TASK_SUBPATH + path  # type: ignore [operator]
+    url = settings.API_URL + CLOUD_TASK_SUBPATH + path
 
     if settings.IS_DEV:
         _call_internal_api_endpoint(queue, url, payload)
