@@ -51,7 +51,7 @@ def _get_model(offer: CollectiveOffer | CollectiveOfferTemplate | Offer, paramet
     elif parameter_model == "CollectiveStock" and isinstance(offer, CollectiveOffer):
         model = offer.collectiveStock
     elif parameter_model == "Venue":
-        model = offer.venue  # type: ignore [assignment]
+        model = offer.venue
     elif parameter_model == "Offerer":
         model = offer.venue.managingOfferer
     else:

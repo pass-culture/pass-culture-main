@@ -149,10 +149,10 @@ def serialize_collective_bookings(educational_bookings: list[CollectiveBooking])
 
 
 def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
-    stock: educational_models.CollectiveStock = collective_booking.collectiveStock  # type: ignore [assignment]
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer  # type: ignore [assignment]
+    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
+    offer: educational_models.CollectiveOffer = stock.collectiveOffer
     domains = offer.domains
-    venue: offerers_models.Venue = offer.venue  # type: ignore [assignment]
+    venue: offerers_models.Venue = offer.venue
     return EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
