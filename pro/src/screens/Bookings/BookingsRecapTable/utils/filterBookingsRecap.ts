@@ -11,7 +11,7 @@ const doesOfferNameMatchFilter = <
 >(
   offerName: string,
   booking: T
-) => {
+): boolean => {
   if (offerName !== EMPTY_FILTER_VALUE) {
     const offerNameFromBooking = _sanitize(booking.stock.offer_name)
     return offerNameFromBooking.includes(_sanitize(offerName))
@@ -19,12 +19,10 @@ const doesOfferNameMatchFilter = <
   return true
 }
 
-const doesBookingBeneficiaryMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
->(
+const doesBookingBeneficiaryMatchFilter = (
   bookingBeneficiary: string,
-  booking: T
-) => {
+  booking: BookingRecapResponseModel
+): boolean => {
   if (bookingBeneficiary !== EMPTY_FILTER_VALUE) {
     const beneficiarySanitarized = _sanitize(bookingBeneficiary)
     const beneficiaryLastNameFromBooking = booking.beneficiary.lastname
@@ -61,19 +59,37 @@ const doesBookingBeneficiaryMatchFilter = <
   return true
 }
 
+const doesBookingInstitutionMatchFilter = (
+  bookingInstitution: string,
+  booking: CollectiveBookingResponseModel
+): boolean => {
+  if (bookingInstitution === EMPTY_FILTER_VALUE) {
+    return true
+  }
+
+  const institutionSanitarized = _sanitize(bookingInstitution)
+  const institutionFromBooking = _sanitize(
+    `${booking.institution.institutionType} ${booking.institution.name}`.trim()
+  )
+
+  return institutionFromBooking.includes(institutionSanitarized)
+}
+
 const doesBookingTokenMatchFilter = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >(
   bookingToken: string,
   booking: T
-) => {
+): boolean => {
   if (bookingToken === EMPTY_FILTER_VALUE) {
     return true
   } else if (booking.booking_token === null) {
     return false
   } else {
     const bookingTokenFromBooking = booking.booking_token?.toLowerCase()
-    return bookingTokenFromBooking?.includes(bookingToken.toLowerCase().trim())
+    return Boolean(
+      bookingTokenFromBooking?.includes(bookingToken.toLowerCase().trim())
+    )
   }
 }
 
@@ -82,9 +98,9 @@ const doesISBNMatchFilter = <
 >(
   isbn: string,
   booking: T
-) => {
+): boolean => {
   if (isbn !== EMPTY_FILTER_VALUE) {
-    return (
+    return Boolean(
       booking.stock.offer_isbn && booking.stock.offer_isbn.includes(isbn.trim())
     )
   }
@@ -96,12 +112,17 @@ const doesBookingStatusMatchFilter = <
 >(
   statuses: string[] | '',
   booking: T
-) => {
+): boolean => {
   if (statuses) {
     return !statuses.includes(booking.booking_status)
   }
   return true
 }
+
+const isBookingCollectiveBooking = (
+  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
+): booking is CollectiveBookingResponseModel =>
+  booking.stock.offer_is_educational === true
 
 const filterBookingsRecap = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
@@ -115,13 +136,24 @@ const filterBookingsRecap = <
     offerISBN,
     offerName,
     bookingStatus,
+    bookingInstitution,
   } = filters
 
   return bookingsRecap.filter(booking => {
-    return (
+    const matchFilters =
       doesOfferNameMatchFilter(offerName, booking) &&
+      doesBookingStatusMatchFilter(bookingStatus, booking)
+
+    if (isBookingCollectiveBooking(booking)) {
+      return (
+        matchFilters &&
+        doesBookingInstitutionMatchFilter(bookingInstitution, booking)
+      )
+    }
+
+    return (
+      matchFilters &&
       doesBookingBeneficiaryMatchFilter(bookingBeneficiary, booking) &&
-      doesBookingStatusMatchFilter(bookingStatus, booking) &&
       doesBookingTokenMatchFilter(bookingToken, booking) &&
       doesISBNMatchFilter(offerISBN, booking)
     )
