@@ -122,6 +122,7 @@ class FeatureToggle(enum.Enum):
     VENUE_FORM_V2 = "Afficher la version 2 du formulaire de lieu"
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
+    ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -183,6 +184,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.VENUE_FORM_V2,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ENABLE_BOOST_API_INTEGRATION,
+    FeatureToggle.ENABLE_OFFERER_STATS,
 )
 
 
