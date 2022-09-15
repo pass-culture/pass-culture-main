@@ -55,7 +55,6 @@ export type { EditVenueCollectiveDataBodyModel } from './models/EditVenueCollect
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionsQueryModel } from './models/EducationalInstitutionsQueryModel';
 export type { EducationalInstitutionsResponseModel } from './models/EducationalInstitutionsResponseModel';
-export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export { GenderEnum } from './models/GenderEnum';
 export type { GenerateOffererApiKeyResponse } from './models/GenerateOffererApiKeyResponse';

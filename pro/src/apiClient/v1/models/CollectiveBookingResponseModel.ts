@@ -4,10 +4,9 @@
 
 import type { BookingStatusHistoryResponseModel } from './BookingStatusHistoryResponseModel';
 import type { CollectiveBookingCollectiveStockResponseModel } from './CollectiveBookingCollectiveStockResponseModel';
-import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
+import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 
 export type CollectiveBookingResponseModel = {
-  beneficiary: EducationalRedactorResponseModel;
   booking_amount: number;
   booking_date: string;
   booking_identifier: string;
@@ -15,6 +14,7 @@ export type CollectiveBookingResponseModel = {
   booking_status: string;
   booking_status_history: Array<BookingStatusHistoryResponseModel>;
   booking_token?: string | null;
+  institution: EducationalInstitutionResponseModel;
   stock: CollectiveBookingCollectiveStockResponseModel;
 };
 
