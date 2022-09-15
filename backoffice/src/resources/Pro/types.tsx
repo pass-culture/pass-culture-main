@@ -1,12 +1,3 @@
-import { RaRecord } from 'react-admin'
-
-export interface ProResourceAPI extends RaRecord {
-  resourceType: ProTypeEnum
-  id: number
-  status: string
-  payload: ProUser | Venue | Offerer
-}
-
 export interface ProUser {
   firstName: string
   lastName: string

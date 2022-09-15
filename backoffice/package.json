@@ -21,7 +21,8 @@
     "jest-watch-typeahead": "0.6.5",
     "prettier": "^2.7.0",
     "ra-data-json-server": "^4.0.2",
-    "react-app-rewired": "^2.2.1"
+    "react-app-rewired": "^2.2.1",
+    "swagger-codegen-openapi": "^1.0.7"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -67,11 +68,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "precommit": "yarn lint:fix && yarn format && yarn test:lint && yarn test:unit --watchAll=false",
+    "precommit": "yarn lint:fix && yarn format && yarn test:lint --fix && yarn test:unit --watchAll=false",
     "deploy": "yarn build:testing && firebase deploy --only hosting -P pc-backoffice-testing",
     "deploy:testing": "yarn build:testing && firebase deploy --only hosting -P pc-backoffice-testing",
     "deploy:staging": "yarn build:staging && firebase deploy --only hosting -P pc-backoffice-staging",
-    "deploy:production": "yarn build:production && firebase deploy --only hosting -P pc-backoffice-production"
+    "deploy:production": "yarn build:production && firebase deploy --only hosting -P pc-backoffice-production",
+    "generate:api": "generate-api -i https://backend.testing.passculture.team/backoffice/openapi.json -g typescript-fetch --openapiTemplate -o ./src/TypesFromApi && yarn lint:fix && yarn format"
   },
   "eslintConfig": {
     "extends": [

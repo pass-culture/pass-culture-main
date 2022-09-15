@@ -13,10 +13,9 @@ import {
   Typography,
 } from '@mui/material'
 import { captureException } from '@sentry/react'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import React, { useState } from 'react'
 import {
-  Identifier,
   useAuthenticated,
   useGetOne,
   useNotify,
@@ -32,7 +31,13 @@ import {
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
-import { dataProvider } from '../../providers/dataProvider'
+import { apiProvider } from '../../providers/apiProvider'
+import {
+  IdCheckItemModel,
+  ResendValidationEmailRequest,
+  SubscriptionItemModel,
+  UserRole,
+} from '../../TypesFromApi'
 
 import { BeneficiaryBadge } from './Components/BeneficiaryBadge'
 import { FraudCheckCard } from './Components/FraudCheckCard'
@@ -40,18 +45,22 @@ import { ManualReviewModal } from './Components/ManualReviewModal'
 import { StatusBadge } from './Components/StatusBadge'
 import { UserDetailsCard } from './Components/UserDetailsCard'
 import { UserHistoryCard } from './Components/UserHistoryCard'
-import {
-  EligibilityFraudCheck,
-  EligibilitySubscriptionItem,
-  PermissionsEnum,
-  PublicUserRolesEnum,
-  UserBaseInfo,
-} from './types'
+import { PermissionsEnum } from './types'
 
 interface TabPanelProps {
   children?: React.ReactNode
   index: number
   value: number
+}
+
+interface IdCheckHistoryByRole {
+  role: UserRole
+  items: IdCheckItemModel[]
+}
+
+interface SubscriptionItemByRole {
+  role: UserRole
+  items: SubscriptionItemModel[]
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -97,16 +106,16 @@ export const UserDetail = () => {
     PermissionsEnum.reviewPublicAccount
   )
   const { id } = useParams() // this component is rendered in the /books/:id path
+  const userId = parseInt(id as string)
   const redirect = useRedirect()
   const [tabValue, setTabValue] = useState(1)
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue)
   }
-
-  const { data: userBaseInfo, isLoading } = useGetOne<UserBaseInfo>(
+  const { data: userBaseInfo, isLoading } = useGetOne(
     'public_accounts',
-    { id: id as Identifier },
+    { id: id },
     // redirect to the list if the book is not found
     { onError: () => redirect('/public_users/search') }
   )
@@ -115,19 +124,15 @@ export const UserDetail = () => {
 
   async function resendValidationEmail() {
     try {
-      const response = await dataProvider.postResendValidationEmail(
-        'public_accounts',
-        userBaseInfo
-      )
-      const responseData = await response.json()
-      if (response.code === 400) {
-        notify(Object.values(responseData)[0] as string, { type: 'error' })
+      const response = await apiProvider().resendValidationEmail({
+        userId: userId,
+      } as ResendValidationEmailRequest)
+      if (response !== undefined) {
+        notify('La confirmation a été envoyée avec succès', { type: 'success' })
       }
     } catch (error) {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
-      } else {
-        notify('La confirmation a été envoyée avec succès', { type: 'success' })
       }
       captureException(error)
     }
@@ -153,34 +158,34 @@ export const UserDetail = () => {
 
   const digitalCreditProgression = (remainingCredit / initialCredit) * 100
 
-  const subscriptionItems: EligibilitySubscriptionItem[] = []
-  const idsCheckHistory: EligibilityFraudCheck[] = []
+  const subscriptionItems: SubscriptionItemByRole[] = []
+  const idsCheckHistory: IdCheckHistoryByRole[] = []
 
   if (AGE18?.idCheckHistory?.length > 0) {
     idsCheckHistory.push({
-      role: PublicUserRolesEnum.beneficiary,
+      role: UserRole.BENEFICIARY,
       items: AGE18.idCheckHistory,
     })
   }
   if (AGE18?.subscriptionItems?.length > 0) {
     subscriptionItems.push({
-      role: PublicUserRolesEnum.beneficiary,
+      role: UserRole.BENEFICIARY,
       items: AGE18.subscriptionItems,
     })
   }
   if (UNDERAGE?.idCheckHistory?.length > 0) {
     idsCheckHistory.push({
-      role: PublicUserRolesEnum.underageBeneficiary,
+      role: UserRole.UNDERAGEBENEFICIARY,
       items: UNDERAGE.idCheckHistory,
     })
   }
   if (UNDERAGE?.subscriptionItems?.length > 0) {
     subscriptionItems.push({
-      role: PublicUserRolesEnum.underageBeneficiary,
+      role: UserRole.UNDERAGEBENEFICIARY,
       items: UNDERAGE.subscriptionItems,
     })
   }
-
+  console.log(typeof idsCheckHistory[0].items[0].dateCreated)
   return (
     <Grid
       container
@@ -231,11 +236,11 @@ export const UserDetail = () => {
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="body1" gutterBottom component="div">
-                  Crédité le :{' '}
+                  Crédité le :
                   {userBaseInfo.userCredit &&
                     userBaseInfo.userCredit.dateCreated &&
                     format(
-                      parseISO(userBaseInfo.userCredit.dateCreated.toString()),
+                      userBaseInfo.userCredit.dateCreated as Date,
                       'dd/MM/yyyy'
                     )}
                 </Typography>
@@ -256,7 +261,11 @@ export const UserDetail = () => {
                 {canReviewPublicUser && (
                   <ManualReviewModal
                     user={userBaseInfo}
-                    eligibilityFraudChecks={idsCheckHistory}
+                    eligibilityFraudChecks={
+                      userBaseInfo.userHistory.subscriptions[
+                        userBaseInfo.roles[0]
+                      ]
+                    }
                   />
                 )}
               </Stack>
@@ -333,18 +342,18 @@ export const UserDetail = () => {
             }}
           >
             <Typography variant={'h5'}>
-              Dossier{' '}
-              <strong>
+              Dossier
+              <strong style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}>
                 {idsCheckHistory.length > 0 &&
                   idsCheckHistory[0].items.length > 0 &&
                   idsCheckHistory[0].items[0].type}
-              </strong>{' '}
-              importé le :{' '}
+              </strong>
+              <span style={{ marginRight: '0.35rem' }}>importé le :</span>
               {idsCheckHistory.length > 0 &&
                 idsCheckHistory[0].items.length > 0 &&
                 idsCheckHistory[0].items[0].dateCreated &&
                 format(
-                  parseISO(idsCheckHistory[0].items[0].dateCreated.toString()),
+                  idsCheckHistory[0].items[0].dateCreated as Date,
                   'dd/MM/yyyy'
                 )}
             </Typography>
@@ -438,7 +447,12 @@ export const UserDetail = () => {
               <div id="parcours-register">
                 {subscriptionItems.map(subscriptionItem => (
                   <div key={subscriptionItem.role}>
-                    <UserHistoryCard subscriptionItem={subscriptionItem} />
+                    <UserHistoryCard
+                      role={subscriptionItem.role}
+                      subscriptionItem={
+                        subscriptionItem.items as Array<SubscriptionItemModel>
+                      }
+                    />
                   </div>
                 ))}
               </div>
@@ -452,10 +466,12 @@ export const UserDetail = () => {
                           key={fraudCheck.thirdPartyId}
                         >
                           <FraudCheckCard
-                            eligibilityFraudCheck={{
-                              role: idCheckHistory.role,
-                              items: [fraudCheck],
-                            }}
+                            role={idCheckHistory.role}
+                            eligibilityFraudCheck={
+                              idCheckHistory.role === UserRole.BENEFICIARY
+                                ? AGE18
+                                : UNDERAGE
+                            }
                           />
                         </div>
                       ))}

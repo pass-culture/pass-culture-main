@@ -30,11 +30,17 @@ import {
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
-import { dataProvider } from '../../providers/dataProvider'
+import { apiProvider } from '../../providers/apiProvider'
+import {
+  Role,
+  Permission,
+  RoleRequestModel,
+  UpdateRoleRequest,
+  DeleteRoleRequest,
+} from '../../TypesFromApi'
 import { PermissionsEnum } from '../PublicUsers/types'
 
 import { AddRoleModal } from './Components/AddRoleModal'
-import { Permission, Role } from './types'
 
 export const RolesList = () => {
   useAuthenticated()
@@ -85,12 +91,11 @@ export const RolesList = () => {
     try {
       const role = rolesList.find(role => (role.id as Identifier) == roleId)
       if (role) {
-        const response = await dataProvider.delete('roles', {
-          id: role.id,
-          previousData: role,
-        })
+        const response = await apiProvider().deleteRole({
+          id: role.id as number,
+        } as DeleteRoleRequest)
 
-        if (response.data) {
+        if (response) {
           refresh()
         }
       }
@@ -104,26 +109,18 @@ export const RolesList = () => {
     }
   }
 
-  const updateRole = async (role: Role, previousRole: Role) => {
+  const updateRole = async (role: Role) => {
     try {
-      const previousRoleData = {
-        name: previousRole.name,
-        permissionIds: previousRole.permissions.map(
-          permission => permission.id
-        ),
-      }
-
-      const newRoleData = {
-        name: role.name,
-        permissionIds: role.permissions.map(permission => permission.id),
-      }
-
-      const response = await dataProvider.update('roles', {
+      const response = await apiProvider().updateRole({
         id: role.id,
-        data: newRoleData,
-        previousData: previousRoleData,
-      })
-      if (response.data) {
+        roleRequestModel: {
+          name: role.name,
+          permissionIds: role.permissions.map(
+            permission => permission.id
+          ) as Array<number>,
+        } as RoleRequestModel,
+      } as UpdateRoleRequest)
+      if (response) {
         notify('La modification du rôle a été effectuée avec succès', {
           type: 'success',
         })
@@ -143,12 +140,11 @@ export const RolesList = () => {
     const _role = rolesList.find(
       role => (role.id as Identifier) == (event.target.value as Identifier)
     )
-    const _previousRole = _role
     const _permission = permissionsList.find(
       permission =>
         (permission.id as Identifier) == (event.target.name as Identifier)
     )
-    if (_permission && _role && _previousRole) {
+    if (_permission && _role) {
       if (event.target.checked) {
         _role.permissions.push(_permission)
       } else if (!event.target.checked) {
@@ -156,7 +152,7 @@ export const RolesList = () => {
           permission => permission.id.toString() != _permission.id.toString()
         )
       }
-      updateRole(_role, _previousRole)
+      updateRole(_role)
     }
   }
 

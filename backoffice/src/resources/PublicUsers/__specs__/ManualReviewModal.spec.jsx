@@ -3,7 +3,11 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 
 import { ManualReviewModal } from '../Components/ManualReviewModal'
-import { PublicUserRolesEnum } from '../types'
+import {
+  FraudCheckStatus,
+  FraudCheckType,
+  UserRole,
+} from '../../../TypesFromApi'
 
 const renderManualReviewModal = props =>
   render(<ManualReviewModal {...props} />)
@@ -11,6 +15,8 @@ const someUser = {
   id: 123,
   lastname: 'Durond',
   firstname: 'Laurent',
+  isActive: true,
+  roles: [UserRole.BENEFICIARY],
   email: 'laurentdurond@example.com',
   dateOfBirth: new Date(2005, 12, 25),
 }
@@ -19,12 +25,12 @@ describe('manual review modal button', () => {
   it('should be disabled when beneficiary has no fraud check', () => {
     // Given
     const eligibilityFraudCheck = {
-      role: PublicUserRolesEnum.beneficiary,
-      items: [],
+      idCheckHistory: [],
+      subscriptionItems: [],
     }
     const props = {
       user: someUser,
-      eligibilityFraudChecks: [eligibilityFraudCheck],
+      eligibilityFraudChecks: eligibilityFraudCheck,
     }
     const expectedLabel =
       'Revue manuelle non disponible (aucun fraud check avec nom, prénom, date de naissance)'
@@ -40,18 +46,18 @@ describe('manual review modal button', () => {
   it('should be active when user has fraud check', () => {
     // Given
     const fraudCheck = {
-      type: 'ubble',
+      type: FraudCheckType.Ubble,
       thirdPartyId: 'some-id',
       dateCreated: new Date(2022, 7, 11),
-      status: 'ok',
+      status: FraudCheckStatus.Ok,
     }
     const eligibilityFraudCheck = {
-      role: PublicUserRolesEnum.beneficiary,
-      items: [fraudCheck],
+      subscriptionItems: [],
+      idCheckHistory: [fraudCheck],
     }
     const props = {
       user: someUser,
-      eligibilityFraudChecks: [eligibilityFraudCheck],
+      eligibilityFraudChecks: eligibilityFraudCheck,
     }
     const expectedLabel = 'Revue manuelle'
 

@@ -11,16 +11,21 @@ import { format } from 'date-fns'
 import React, { useState } from 'react'
 
 import { snakeCaseToTitleCase } from '../../../helpers/textTools'
-import { EligibilityFraudCheck } from '../types'
+import {
+  EligibilitySubscriptionHistoryModel,
+  IdCheckItemModel,
+  UserRole,
+} from '../../../TypesFromApi'
 
 import { BeneficiaryBadge } from './BeneficiaryBadge'
 import { FraudCheckStatusBadge } from './FraudCheckStatusBadge'
 
 type Props = {
-  eligibilityFraudCheck: EligibilityFraudCheck
+  role: UserRole
+  eligibilityFraudCheck: EligibilitySubscriptionHistoryModel
 }
 
-export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
+export const FraudCheckCard = ({ role, eligibilityFraudCheck }: Props) => {
   const cardStyle = {
     maxwidth: '99vw',
     width: '100%',
@@ -40,7 +45,8 @@ export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
     setChecked(event.target.checked)
   }
 
-  const fraudCheckItem = eligibilityFraudCheck.items[0]
+  const fraudCheckItem: IdCheckItemModel =
+    eligibilityFraudCheck.idCheckHistory[0]
 
   let fraudCheckCreationDate = ''
   try {
@@ -59,7 +65,7 @@ export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
           {fraudCheckItem.type &&
             snakeCaseToTitleCase(fraudCheckItem.type as string)}
           <span style={{ marginLeft: '3rem' }}>
-            <BeneficiaryBadge role={eligibilityFraudCheck.role} />
+            <BeneficiaryBadge role={role} />
           </span>
         </Typography>
         <Grid container spacing={1} sx={{ mt: 4 }}>
@@ -86,11 +92,15 @@ export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
               <p>Statut</p>
             </Grid>
             <Grid>
-              <p>
-                <FraudCheckStatusBadge
-                  fraudCheckStatus={fraudCheckItem.status}
-                />
-              </p>
+              <div>
+                {fraudCheckItem && fraudCheckItem.status && (
+                  <>
+                    <FraudCheckStatusBadge
+                      fraudCheckStatus={fraudCheckItem.status}
+                    />
+                  </>
+                )}
+              </div>
             </Grid>
           </Stack>
           <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
