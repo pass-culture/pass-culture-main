@@ -288,6 +288,35 @@ class EduconnectTest:
         assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
         assert caplog.records[0].message == "Wrong user type of educonnect user"
 
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
+    def test_user_type_not_defined(self, mock_get_educonnect_saml_client, client, caplog, app):
+        # set user_id in redis as if /saml/educonnect/login was called
+        user = users_factories.UserFactory(email=self.email)
+        app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
+
+        mock_saml_client = MagicMock()
+        mock_saml_response = MagicMock()
+        mock_get_educonnect_saml_client.return_value = mock_saml_client
+        mock_saml_client.parse_authn_request_response.return_value = mock_saml_response
+        mock_saml_response.get_identity.return_value = {
+            "givenName": ["Sugar"],
+            "sn": ["Daddy"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.5": ["https://educonnect.education.gouv.fr/Logout"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.57": ["educonnect_id"],
+        }
+        mock_saml_response.in_response_to = self.request_id
+
+        with caplog.at_level(logging.INFO):
+            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert (
+            response.location
+            == "https://webapp-v2.example.com/educonnect/erreur?code=UserTypeNotStudent&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
+        assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
+        assert caplog.records[0].message == "Wrong user type of educonnect user"
+
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_duplicate_beneficiary(self, mock_get_educonnect_user, client, app):
         duplicate_user, request_id = self.connect_to_educonnect(client, app)
