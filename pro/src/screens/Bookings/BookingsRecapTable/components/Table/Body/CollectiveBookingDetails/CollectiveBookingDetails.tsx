@@ -2,12 +2,15 @@ import cn from 'classnames'
 import React from 'react'
 
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
+import useNotification from 'components/hooks/useNotification'
+import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
+import { cancelCollectiveBookingAdapter } from 'core/OfferEducational'
 import { ReactComponent as BuildingIcon } from 'icons/building.svg'
 import { ReactComponent as CalendarIcon } from 'icons/ico-calendar.svg'
 import { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
-import { Button } from 'ui-kit'
+import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { pluralizeString } from 'utils/pluralize'
 
@@ -20,11 +23,16 @@ import {
 
 export interface ICollectiveBookingDetailsProps {
   bookingDetails: CollectiveBookingByIdResponseModel
+  offerId: string
 }
 
 const CollectiveBookingDetails = ({
   bookingDetails,
+  offerId,
 }: ICollectiveBookingDetailsProps) => {
+  const notify = useNotification()
+  const offerEditionUrl = useOfferEditionURL(true, offerId, false, false)
+
   const {
     beginningDatetime,
     offerVenue,
@@ -35,6 +43,15 @@ const CollectiveBookingDetails = ({
     educationalInstitution,
     educationalRedactor,
   } = bookingDetails
+
+  const cancelBooking = async () => {
+    const response = await cancelCollectiveBookingAdapter({ offerId })
+    if (response.isOk) {
+      notify.success(response.message)
+    } else {
+      notify.error(response.message)
+    }
+  }
 
   return (
     <div>
@@ -88,10 +105,15 @@ const CollectiveBookingDetails = ({
       </div>
 
       <div className={styles['action-buttons']}>
-        <Button variant={ButtonVariant.SECONDARY}>
+        <Button variant={ButtonVariant.SECONDARY} onClick={cancelBooking}>
           Annuler la réservation
         </Button>
-        <Button>Éditer l’offre</Button>
+        <ButtonLink
+          link={{ isExternal: false, to: offerEditionUrl }}
+          variant={ButtonVariant.PRIMARY}
+        >
+          Éditer l’offre
+        </ButtonLink>
       </div>
     </div>
   )
