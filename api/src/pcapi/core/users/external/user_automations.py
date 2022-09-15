@@ -54,7 +54,6 @@ def users_turned_eighteen_automation() -> bool:
     return add_contacts_to_list(
         get_emails_who_will_turn_eighteen_in_one_month(),
         settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID,
-        clear_list_first=True,
     )
 
 
@@ -78,14 +77,12 @@ def users_beneficiary_credit_expiration_within_next_3_months_automation() -> boo
     This automation is called every day and includes all young user whose pass expires in the next 3 months. They may
     have remaining unspent credit or not.
 
-    User enters in the list on the 90th day before expiration date and leaves the list the day after expiration date.
+    User enters in the list on the 90th day before expiration date.
 
     List: jeunes-expiration-M-3
     """
     user_emails = (email for email, in get_users_beneficiary_credit_expiration_within_next_3_months())
-    return add_contacts_to_list(
-        user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID, clear_list_first=True
-    )
+    return add_contacts_to_list(user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID)
 
 
 def get_users_ex_beneficiary() -> List[User]:
@@ -116,33 +113,33 @@ def users_ex_beneficiary_automation() -> bool:
     List: jeunes-ex-benefs
     """
     user_emails = (email for email, in get_users_ex_beneficiary())
-    return add_contacts_to_list(
-        user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID, clear_list_first=False
-    )
+    return add_contacts_to_list(user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID)
 
 
 def get_email_for_inactive_user_since_thirty_days() -> Iterable[str]:
+    # Keep 15 days range after 30 days so that inactive users may be added the day(s) after in case automation fails
     date_30_days_ago = date.today() - relativedelta(days=30)
+    date_45_days_ago = date.today() - relativedelta(days=45)
 
     return (
         email
-        for email, in get_young_users_emails_query().filter(func.date(User.lastConnectionDate) <= date_30_days_ago)
+        for email, in get_young_users_emails_query().filter(
+            func.date(User.lastConnectionDate).between(date_45_days_ago, date_30_days_ago)
+        )
     )
 
 
 def users_inactive_since_30_days_automation() -> bool:
     """
-    This automation called every day updates the list of users who are inactive since 30 days or more:
-    - adds or keeps any young user who did not connect to the app in the least 30 days (even if the email has been sent;
-      marketing filters will ensure that he or she receives the email only once)
-    - removes any inactive user who connected recently
+    This automation called every day updates the list of users who are inactive since 30 days: adds any young user who
+    did not connect to the app in the last 30 days.
+    List is never cleared because marketing filters will ensure that the user receives the email only once.
 
     List: jeunes-utilisateurs-inactifs
     """
     return add_contacts_to_list(
         get_email_for_inactive_user_since_thirty_days(),
         settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID,
-        clear_list_first=True,
     )
 
 
@@ -173,7 +170,6 @@ def users_one_year_with_pass_automation() -> bool:
     return add_contacts_to_list(
         get_email_for_users_created_one_year_ago_per_month(),
         settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID,
-        clear_list_first=True,
     )
 
 
