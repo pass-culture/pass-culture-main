@@ -10,26 +10,27 @@ import {
 import React from 'react'
 
 import {
-  EligibilitySubscriptionItem,
-  SubscriptionItemStatus,
-  SubscriptionItemType,
-} from '../types'
+  SubscriptionItemModel,
+  SubscriptionStep,
+  UserRole,
+} from '../../../TypesFromApi'
 
 import { BeneficiaryBadge } from './BeneficiaryBadge'
 import { StatusAvatar } from './StatusAvatar'
 
 type Props = {
-  subscriptionItem: EligibilitySubscriptionItem
+  role: UserRole
+  subscriptionItem: Array<SubscriptionItemModel>
 }
 
-export const UserHistoryCard = ({ subscriptionItem }: Props) => {
+export const UserHistoryCard = ({ role, subscriptionItem }: Props) => {
   const cardStyle = {
     width: '100%',
     marginTop: '20px',
     padding: 30,
   }
   const gridStyle = { width: '100%', height: '100%', overflow: 'auto' }
-  const beneficiaryBadge = <BeneficiaryBadge role={subscriptionItem.role} />
+  const beneficiaryBadge = <BeneficiaryBadge role={role} />
 
   return (
     <Card style={cardStyle}>
@@ -37,7 +38,7 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
         Parcours d'inscription
         <span style={{ marginLeft: '3rem' }}>{beneficiaryBadge}</span>
       </Typography>
-      {subscriptionItem.items.length > 0 && (
+      {subscriptionItem.length > 0 && (
         <Grid container spacing={5} sx={{ mt: 4 }} style={gridStyle}>
           <Grid item xs={6}>
             <List sx={{ width: '50%' }}>
@@ -45,10 +46,10 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
                 <ListItemText> Validation email</ListItemText>
                 <ListItemAvatar>
                   <StatusAvatar
-                    item={subscriptionItem.items.find(
+                    item={subscriptionItem.find(
                       subscriptionItem =>
                         subscriptionItem.type ===
-                        SubscriptionItemType.EMAIL_VALIDATION
+                        SubscriptionStep.EmailValidation
                     )}
                   />
                 </ListItemAvatar>
@@ -57,11 +58,8 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
                 <ListItemText>Validation Téléphone</ListItemText>
                 <ListItemAvatar>
                   <StatusAvatar
-                    item={subscriptionItem.items.find(
-                      (item: {
-                        type: string
-                        status: SubscriptionItemStatus
-                      }) => item.type === SubscriptionItemType.PHONE_VALIDATION
+                    item={subscriptionItem.find(
+                      item => item.type === SubscriptionStep.PhoneValidation
                     )}
                   />
                 </ListItemAvatar>
@@ -70,8 +68,8 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
                 <ListItemText>Profil Utilisateur</ListItemText>
                 <ListItemAvatar>
                   <StatusAvatar
-                    item={subscriptionItem.items.find(
-                      item => item.type === SubscriptionItemType.USER_PROFILING
+                    item={subscriptionItem.find(
+                      item => item.type === SubscriptionStep.UserProfiling
                     )}
                   />
                 </ListItemAvatar>
@@ -85,12 +83,8 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
                 <ListItemText>Complétion Profil</ListItemText>
                 <ListItemAvatar>
                   <StatusAvatar
-                    item={subscriptionItem.items.find(
-                      (item: {
-                        type: string
-                        status: SubscriptionItemStatus
-                      }) =>
-                        item.type === SubscriptionItemType.PROFILE_COMPLETION
+                    item={subscriptionItem.find(
+                      item => item.type === SubscriptionStep.ProfileCompletion
                     )}
                   />
                 </ListItemAvatar>
@@ -99,8 +93,8 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
                 <ListItemText>ID Check</ListItemText>
                 <ListItemAvatar>
                   <StatusAvatar
-                    item={subscriptionItem.items.find(
-                      item => item.type === SubscriptionItemType.IDENTITY_CHECK
+                    item={subscriptionItem.find(
+                      item => item.type === SubscriptionStep.IdentityCheck
                     )}
                   />
                 </ListItemAvatar>
@@ -109,11 +103,8 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
                 <ListItemText>Honor Statement</ListItemText>
                 <ListItemAvatar>
                   <StatusAvatar
-                    item={subscriptionItem.items.find(
-                      (item: {
-                        type: string
-                        status: SubscriptionItemStatus
-                      }) => item.type === SubscriptionItemType.HONOR_STATEMENT
+                    item={subscriptionItem.find(
+                      item => item.type === SubscriptionStep.HonorStatement
                     )}
                   />
                 </ListItemAvatar>

@@ -17,22 +17,24 @@ import {
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
-import { dataProvider } from '../../../providers/dataProvider'
+import { apiProvider } from '../../../providers/apiProvider'
+import {
+  EligibilitySubscriptionHistoryModel,
+  PublicAccount,
+  ReviewPublicAccountRequest,
+} from '../../../TypesFromApi'
 import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
-import { UserBaseInfo, UserManualReview, EligibilityFraudCheck } from '../types'
 
 export const ManualReviewModal = ({
   user,
   eligibilityFraudChecks,
 }: {
-  user: UserBaseInfo
-  eligibilityFraudChecks: EligibilityFraudCheck[]
+  user: PublicAccount
+  eligibilityFraudChecks: EligibilitySubscriptionHistoryModel
 }) => {
   const [openModal, setOpenModal] = useState(false)
 
-  const fraudChecks = eligibilityFraudChecks.flatMap(
-    eligibilityFraudCheck => eligibilityFraudCheck.items
-  )
+  const fraudChecks = eligibilityFraudChecks.idCheckHistory
   const noFraudCheck = fraudChecks.length <= 0
 
   const notify = useNotify()
@@ -68,17 +70,17 @@ export const ManualReviewModal = ({
 
   const formSubmit = async (params: FieldValues) => {
     try {
-      const formData: UserManualReview = {
-        id: Number(user.id),
-        review: params.review,
-        reason: params.reason,
-        eligibility: params.eligibility,
+      const formData: ReviewPublicAccountRequest = {
+        userId: user.id,
+        beneficiaryReviewRequestModel: {
+          review: params.review,
+          reason: params.reason,
+          eligibility: params.eligibility,
+        },
       }
-      const response = await dataProvider.postUserManualReview(
-        'public_accounts',
-        formData
-      )
-      if (response && response.status === 200) {
+      const response = await apiProvider().reviewPublicAccount(formData)
+
+      if (response) {
         notify('La revue a été envoyée avec succès !', { type: 'success' })
         handleCloseModal()
       }

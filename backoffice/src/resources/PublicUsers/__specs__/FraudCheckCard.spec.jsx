@@ -3,15 +3,20 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { FraudCheckCard } from '../Components/FraudCheckCard'
-import { PublicUserRolesEnum } from '../types'
+import {
+  FraudCheckStatus,
+  FraudCheckType,
+  UserRole,
+} from '../../../TypesFromApi'
+import { format, parseISO } from 'date-fns'
 
 const renderFraudCheckCard = props => render(<FraudCheckCard {...props} />)
 
 const someFraudCheck = {
-  type: 'UBBLE',
+  type: FraudCheckType.Ubble,
   thirdPartyId: 'some-third-party-id',
   dateCreated: new Date(),
-  status: 'ok',
+  status: FraudCheckStatus.Ok,
 }
 
 const fraudCheckTechnicalDetailsId = 'fraudCheckTechnicalDetails'
@@ -19,19 +24,19 @@ const fraudCheckTechnicalDetailsId = 'fraudCheckTechnicalDetails'
 describe('fraud check card', () => {
   it('should display fraud check information', () => {
     // Given
-    const dateCreated = new Date('2022-08-11T12:10:22Z')
+    const dateCreated = parseISO('2022-08-11T12:10:22Z')
 
     const fraudCheckWithValidDate = {
       ...someFraudCheck,
       dateCreated: dateCreated,
     }
     const props = {
+      role: UserRole.UNDERAGEBENEFICIARY,
       eligibilityFraudCheck: {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: [fraudCheckWithValidDate],
+        idCheckHistory: [fraudCheckWithValidDate],
       },
     }
-    const expectedLabel = 'UBBLE'
+    const expectedLabel = 'Ubble'
     const expectedBadgeText = 'Pass 15-17'
     const statusIconTestId = 'CheckCircleOutlineIcon'
 
@@ -58,9 +63,9 @@ describe('fraud check card', () => {
       dateCreated: dateCreated,
     }
     const props = {
+      role: UserRole.UNDERAGEBENEFICIARY,
       eligibilityFraudCheck: {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: [fraudCheckWithInvalidDate],
+        idCheckHistory: [fraudCheckWithInvalidDate],
       },
     }
 
@@ -77,16 +82,17 @@ describe('fraud check card', () => {
   it('should display fraud check information with bad formated creation date', () => {
     // Given
     const badDateAsString = 'not-a-valid-date'
-    const dateCreated = new Date(badDateAsString)
+    const dateCreated = parseISO(badDateAsString)
 
     const fraudCheckWithInvalidDate = {
       ...someFraudCheck,
       dateCreated: dateCreated,
     }
     const props = {
+      role: UserRole.UNDERAGEBENEFICIARY,
       eligibilityFraudCheck: {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: [fraudCheckWithInvalidDate],
+        idCheckHistory: [fraudCheckWithInvalidDate],
+        subscriptionItems: [],
       },
     }
     const fraudCheckCreationDate = 'fraudCheckCreationDate'
@@ -103,9 +109,9 @@ describe('fraud check card', () => {
     // Given
     const technicalDetails = 'some-technical-detail'
     const props = {
+      role: UserRole.UNDERAGEBENEFICIARY,
       eligibilityFraudCheck: {
-        role: PublicUserRolesEnum.underageBeneficiary,
-        items: [
+        idCheckHistory: [
           {
             ...someFraudCheck,
             technicalDetails: technicalDetails,

@@ -2,13 +2,7 @@ import { Card, Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
 import { format, parseISO } from 'date-fns'
 import React, { useState } from 'react'
-import {
-  Form,
-  useNotify,
-  TextInput,
-  SaveButton,
-  UpdateParams,
-} from 'react-admin'
+import { Form, useNotify, TextInput, SaveButton } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
 import {
@@ -16,12 +10,20 @@ import {
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
-import { dataProvider } from '../../../providers/dataProvider'
-import { FraudCheck, UserBaseInfo } from '../types'
+import { apiProvider } from '../../../providers/apiProvider'
+import {
+  IdCheckItemModel,
+  PublicAccount,
+  PublicAccountUpdateRequest,
+  SendPhoneValidationCodeRequest,
+  SkipPhoneValidationRequest,
+  UpdatePublicAccountRequest,
+} from '../../../TypesFromApi'
+import { FraudCheckTechnicalDetails } from '../types'
 
 type Props = {
-  user: UserBaseInfo
-  firstFraudCheck: FraudCheck
+  user: PublicAccount
+  firstFraudCheck: IdCheckItemModel
 }
 export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
   const notify = useNotify()
@@ -30,11 +32,10 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
 
   async function skipPhoneValidation() {
     try {
-      const response = await dataProvider.postSkipPhoneValidation(
-        'public_accounts',
-        user
-      )
-      if (response.status >= 200 && response.status < 300) {
+      const response = await apiProvider().skipPhoneValidation({
+        userId: user.id,
+      } as SkipPhoneValidationRequest)
+      if (response !== undefined) {
         notify('Le numéro de téléphone a été confirmé avec succès', {
           type: 'success',
         })
@@ -51,11 +52,10 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
 
   async function sendPhoneValidationCode() {
     try {
-      const response = await dataProvider.postPhoneValidationCode(
-        'public_accounts',
-        user
-      )
-      if (response.status >= 200 && response.status < 300) {
+      const response = await apiProvider().sendPhoneValidationCode({
+        userId: user.id,
+      } as SendPhoneValidationCodeRequest)
+      if (response !== undefined) {
         notify('Le code de validation du téléphone a été envoyé avec succès', {
           type: 'success',
         })
@@ -79,33 +79,26 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
   const submitForm = async (params: FieldValues) => {
     if (params && user.id) {
       try {
-        const formData = {
-          address: params.address,
-          city: params.city,
-          dateOfBirth: format(
-            parseISO(params.dateOfBirth.toString()),
-            'yyyy-MM-dd'
-          ),
-          email: params.email,
-          firstName: params.firstName,
-          idPieceNumber:
-            params.idPieceNumber !== '' ? params.idPieceNumber : null,
-          lastName: params.lastName,
-          postalCode: params.postalCode,
-        }
-        const formParams: UpdateParams = {
-          id: user.id,
-          data: formData,
-          previousData: user,
+        console.log(params)
+        const request: UpdatePublicAccountRequest = {
+          userId: user.id,
+          publicAccountUpdateRequest: {
+            address: params.address as string,
+            city: params.city as string,
+            dateOfBirth: parseISO(params.dateOfBirth.toString()) as Date,
+            email: params.email as string,
+            firstName: params.firstName as string,
+            idPieceNumber:
+              params.idPieceNumber !== '' ? params.idPieceNumber : null,
+            lastName: params.lastName,
+            phoneNumber: params.phoneNumber,
+            postalCode: params.postalCode,
+          } as PublicAccountUpdateRequest,
         }
         setEditable(false)
 
-        const response = await dataProvider.update(
-          'public_accounts',
-          formParams
-        )
-
-        if (response.data) {
+        const response = await apiProvider().updatePublicAccount(request)
+        if (response) {
           notify('Les modifications ont été appliquées avec succès', {
             type: 'success',
           })
@@ -234,10 +227,7 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
                   label={'Date de naissance'}
                   defaultValue={
                     user.dateOfBirth
-                      ? format(
-                          parseISO(user.dateOfBirth.toString()),
-                          'yyyy-MM-dd'
-                        )
+                      ? format(user.dateOfBirth as Date, 'yyyy-MM-dd')
                       : ''
                   }
                   disabled={!editable}
@@ -247,15 +237,12 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
               </Grid>
               <Grid item xs={4}>
                 <Typography variant={'body1'}>
-                  Date de création du compte :{' '}
+                  Date de création du compte :
                 </Typography>
 
                 <Typography variant={'body1'}>
                   {firstFraudCheck && firstFraudCheck.dateCreated
-                    ? format(
-                        parseISO(firstFraudCheck.dateCreated.toString()),
-                        'dd/MM/yyyy'
-                      )
+                    ? format(firstFraudCheck.dateCreated as Date, 'dd/MM/yyyy')
                     : 'N/A'}
                 </Typography>
               </Grid>
@@ -275,8 +262,12 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
                   defaultValue={
                     firstFraudCheck &&
                     firstFraudCheck.technicalDetails &&
-                    firstFraudCheck.technicalDetails.identificationId
-                      ? firstFraudCheck.technicalDetails.identificationId
+                    (
+                      firstFraudCheck.technicalDetails as FraudCheckTechnicalDetails
+                    ).identificationId
+                      ? (
+                          firstFraudCheck.technicalDetails as FraudCheckTechnicalDetails
+                        ).identificationId
                       : ''
                   }
                   source={'idPieceNumber'}

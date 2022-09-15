@@ -1900,6 +1900,11 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@openapitools/openapi-generator-cli@^1.0.12-4.3.0":
+  version "1.0.12-4.3.0"
+  resolved "https://registry.yarnpkg.com/@openapitools/openapi-generator-cli/-/openapi-generator-cli-1.0.12-4.3.0.tgz#845f0bfd47a73bdaa188667c3085d721e0d91785"
+  integrity sha512-p6y0ur69/vEslpARrcWg3geujOAjxoQIlIamZGm1cWsu4y4RrEdrolueWA1Lxww2pUzgxvb9PwD6hHFZNNfgrw==
+
 "@opentelemetry/api@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@opentelemetry/api/-/api-1.1.0.tgz#563539048255bbe1a5f4f586a4a10a1bb737f44a"
@@ -4219,6 +4224,11 @@ commander@^4.0.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
   integrity sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
+
+commander@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-5.1.0.tgz#46abbd1652f8e059bddaef99bbdcb2ad9cf179ae"
+  integrity sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
 
 commander@^7.2.0:
   version "7.2.0"
@@ -11874,6 +11884,14 @@ svgo@^2.7.0:
     csso "^4.2.0"
     picocolors "^1.0.0"
     stable "^0.1.8"
+
+swagger-codegen-openapi@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/swagger-codegen-openapi/-/swagger-codegen-openapi-1.0.7.tgz#81d51bf9b61843fdea2a922e0da393e1d03d7370"
+  integrity sha512-NKgdMP2oQUd68gkVdlLhsul5TJCjXkirTwiIn79zU8JlEuNbI8DGn98Sh9f3IJ6/jaJcSKv3ei9AWUS2hdNfHA==
+  dependencies:
+    "@openapitools/openapi-generator-cli" "^1.0.12-4.3.0"
+    commander "^5.0.0"
 
 symbol-tree@^3.2.4:
   version "3.2.4"

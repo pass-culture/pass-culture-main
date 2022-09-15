@@ -1,0 +1,348 @@
+{
+  "getAuthToken": {
+    "200": {
+      "token": "token"
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getOffererUsers": {
+    "200": {
+      "data": [
+        {
+          "email": "email",
+          "firstName": "firstName",
+          "id": 0,
+          "lastName": "lastName"
+        }
+      ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "listPermissions": {
+    "200": {
+      "permissions": [
+        {
+          "category": "category",
+          "id": 0,
+          "name": "name"
+        }
+      ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "searchPro": {
+    "200": {
+      "data": [
+        {
+          "id": 0,
+          "payload": {},
+          "resourceType": "resourceType"
+        }
+      ],
+      "page": 0,
+      "pages": 0,
+      "size": 0,
+      "sort": "sort",
+      "total": 0
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "searchPublicAccount": {
+    "200": {
+      "data": [
+        {
+          "address": "address",
+          "city": "city",
+          "dateOfBirth": "1/1/2020, 12:00:00 AM",
+          "email": "email",
+          "firstName": "firstName",
+          "id": 0,
+          "isActive": true,
+          "lastName": "lastName",
+          "phoneNumber": "phoneNumber",
+          "postalCode": "postalCode",
+          "roles": ["ADMIN"]
+        }
+      ],
+      "page": 0,
+      "pages": 0,
+      "size": 0,
+      "sort": "sort",
+      "total": 0
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getPublicAccount": {
+    "200": {
+      "address": "address",
+      "city": "city",
+      "dateOfBirth": "1/1/2020, 12:00:00 AM",
+      "email": "email",
+      "firstName": "firstName",
+      "id": 0,
+      "isActive": true,
+      "lastName": "lastName",
+      "phoneNumber": "phoneNumber",
+      "postalCode": "postalCode",
+      "roles": ["ADMIN"]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "updatePublicAccount": {
+    "200": {
+      "address": "address",
+      "city": "city",
+      "dateOfBirth": "1/1/2020, 12:00:00 AM",
+      "email": "email",
+      "firstName": "firstName",
+      "id": 0,
+      "isActive": true,
+      "lastName": "lastName",
+      "phoneNumber": "phoneNumber",
+      "postalCode": "postalCode",
+      "roles": ["ADMIN"]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getBeneficiaryCredit": {
+    "200": {
+      "dateCreated": "1/1/2020, 12:00:00 AM",
+      "initialCredit": 0,
+      "remainingCredit": 0,
+      "remainingDigitalCredit": 0
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getUserSubscriptionHistory": {
+    "200": {
+      "subscriptions": {}
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getPublicHistory": {
+    "200": {
+      "history": [
+        {
+          "action": "action",
+          "datetime": "1/1/2020, 12:00:00 AM",
+          "message": "message"
+        }
+      ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "resendValidationEmail": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "reviewPublicAccount": {
+    "200": {
+      "authorId": 0,
+      "eligibility": "eligibility",
+      "reason": "reason",
+      "review": "KO",
+      "userId": 0
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "sendPhoneValidationCode": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "skipPhoneValidation": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "listRoles": {
+    "200": {
+      "roles": [{}]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "createRole": {
+    "200": {
+      "id": 0,
+      "name": "name",
+      "permissions": [
+        {
+          "category": "category",
+          "id": 0,
+          "name": "name"
+        }
+      ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "deleteRole": {
+    "200": {
+      "id": 0,
+      "name": "name",
+      "permissions": [
+        {
+          "category": "category",
+          "id": 0,
+          "name": "name"
+        }
+      ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "updateRole": {
+    "200": {
+      "id": 0,
+      "name": "name",
+      "permissions": [
+        {
+          "category": "category",
+          "id": 0,
+          "name": "name"
+        }
+      ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  }
+}

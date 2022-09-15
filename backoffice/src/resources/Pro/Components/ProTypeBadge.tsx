@@ -1,10 +1,11 @@
 import { Chip } from '@mui/material'
 
-import { ProResourceAPI, ProTypeEnum, Venue } from '../types'
+import { ProResult } from '../../../TypesFromApi'
+import { ProTypeEnum, Venue } from '../types'
 
 type Props = {
   type: ProTypeEnum
-  resource: ProResourceAPI
+  resource: ProResult
 }
 
 export const ProTypeBadge = ({ type, resource }: Props) => {

@@ -25,9 +25,9 @@ import {
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
-import { dataProvider } from '../../providers/dataProvider'
+import { apiProvider } from '../../providers/apiProvider'
+import { PublicAccount, SearchPublicAccountRequest } from '../../TypesFromApi'
 import { CustomSearchIcon } from '../Icons/CustomSearchIcon'
-import { UserApiResponse } from '../PublicUsers/types'
 
 import { BeneficiaryBadge } from './Components/BeneficiaryBadge'
 import { StatusBadge } from './Components/StatusBadge'
@@ -45,7 +45,7 @@ const UpperCaseText = (
   ></span>
 )
 
-const UserCard = ({ record }: { record: UserApiResponse }) => {
+const UserCard = ({ record }: { record: PublicAccount }) => {
   const {
     id,
     email,
@@ -54,7 +54,7 @@ const UserCard = ({ record }: { record: UserApiResponse }) => {
     firstName,
     lastName,
     phoneNumber,
-  }: UserApiResponse = record
+  }: PublicAccount = record
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -100,7 +100,7 @@ function stopTypingOnSearch(event: {
 export const UserSearch = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [userDataState, setUserDataState] = useState({
-    userData: [],
+    userData: [] as PublicAccount[],
     total: 0,
     totalPages: 0,
   })
@@ -111,20 +111,17 @@ export const UserSearch = () => {
 
   async function searchPublicUserList(searchParameter: string, page: number) {
     try {
-      const response = await dataProvider.searchList('public_accounts', {
-        pagination: {
-          page: page,
-          perPage: 20,
-        },
-        meta: {
-          search: searchParameter,
-        },
-      })
+      const request: SearchPublicAccountRequest = {
+        q: searchParameter,
+        page: page,
+        perPage: 20,
+      }
+      const response = await apiProvider().searchPublicAccount(request)
       if (response && response.data && response.data.length > 0) {
         setUserDataState({
           userData: response.data,
           total: response.total,
-          totalPages: response.totalPages,
+          totalPages: response.pages,
         })
         setEmptyResults(false)
       }
