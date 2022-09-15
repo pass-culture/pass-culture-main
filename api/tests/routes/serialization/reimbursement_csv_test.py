@@ -13,6 +13,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.payments.factories as payments_factories
+from pcapi.core.testing import override_features
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period
 from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_validation_period
@@ -29,21 +30,28 @@ reimbursement_period = (today, in_two_days)
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class ReimbursementDetailsTest:
+    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_reimbursement_details_as_csv_individual_booking(self) -> None:
-        business_unit = offerers_factories.VenueFactory(
-            siret="siret bu",
-            name="Ma petite business unit",
-            address="1 rue de la business unit",
+        reimbursement_point = offerers_factories.VenueFactory(
+            siret="siret-rp",
+            name="Mon point de remboursement",
+            address="1 rue du point de remboursement",
             city="Nantes",
             postalCode="44000",
-            businessUnit__bankAccount__iban="CF13QSDFGH456789",
-        ).businessUnit
+        )
+        # FIXME (dbaty, 2022-09-14): the BankInformation object should
+        # automatically be created by the Venue factory when linking a
+        # reimbursement point.
+        finance_factories.BankInformationFactory(
+            venue=reimbursement_point,
+            iban="CF13QSDFGH456789",
+        )
         payment = finance_factories.PaymentFactory(
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
             booking__amount=10.5,
             booking__quantity=2,
             booking__dateUsed=datetime(2022, 6, 18),
-            booking__stock__offer__venue__businessUnit=business_unit,
+            booking__stock__offer__venue__reimbursement_point=reimbursement_point,
         )
         finance_factories.PaymentStatusFactory(
             payment=payment,
@@ -73,11 +81,11 @@ class ReimbursementDetailsTest:
         assert row[1] == invoice.date
         assert row[2] == invoice.reference
         assert row[3] == cashflow.batch.label
-        # business unit
-        assert row[4] == "Ma petite business unit"
-        assert row[5] == "1 rue de la business unit 44000 Nantes"
-        assert row[6] == "siret bu"
-        assert row[7] == business_unit.bankAccount.iban
+        # reimbursement point
+        assert row[4] == "Mon point de remboursement"
+        assert row[5] == "1 rue du point de remboursement 44000 Nantes"
+        assert row[6] == reimbursement_point.siret
+        assert row[7] == reimbursement_point.iban
         # venue
         assert row[8] == booking.venue.name
         assert row[9] == "1 boulevard Poissonnière 75000 Paris"
@@ -125,19 +133,25 @@ class ReimbursementDetailsTest:
         assert row[20] == "21,00"
         assert row[21] == "offre grand public"
 
+    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
         custom_reimbursement_rule = payments_factories.CustomReimbursementRuleFactory(
             amount=None,
             rate=0.1234,
         )
+        reimbursement_point = offerers_factories.VenueFactory()
+        # FIXME (dbaty, 2022-09-14): the BankInformation object should
+        # automatically be created by the Venue factory when linking a
+        # reimbursement point.
+        finance_factories.BankInformationFactory(venue=reimbursement_point)
         payment = finance_factories.PaymentWithCustomRuleFactory(
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
             amount=2.71,
             customReimbursementRule=custom_reimbursement_rule,
             booking__amount=10.5,
             booking__quantity=2,
-            booking__stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
+            booking__stock__offer__venue__reimbursement_point=reimbursement_point,
         )
         finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
         finance_factories.PricingFactory(
@@ -166,19 +180,28 @@ class ReimbursementDetailsTest:
 
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
+@override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
 def test_generate_reimbursement_details_csv() -> None:
     # given
     payment = finance_factories.PaymentFactory(
         booking__stock__offer__name='Mon titre ; un peu "spécial"',
         booking__stock__offer__venue__name='Mon lieu ; un peu "spécial"',
         booking__stock__offer__venue__siret="siret-1234",
-        booking__stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
+        booking__stock__offer__venue__reimbursement_point="self",
         booking__token="0E2722",
         booking__amount=10.5,
         booking__quantity=2,
         booking__dateUsed=datetime(2022, 1, 18, 12, 0),
         iban="CF13QSDFGH456789",
         transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
+    )
+    venue = payment.booking.venue
+    # FIXME (dbaty, 2022-09-14): the BankInformation object should
+    # automatically be created by the Venue factory when linking a
+    # reimbursement point.
+    finance_factories.BankInformationFactory(
+        venue=venue,
+        iban="CF13QSDFGH456789",
     )
     finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
     offerer = payment.booking.offerer
@@ -218,10 +241,27 @@ def test_generate_reimbursement_details_csv() -> None:
 
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
+@override_features(
+    USE_PRICING_POINT_FOR_PRICING=True,
+    USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True,
+)
 def test_find_all_offerer_reimbursement_details() -> None:
     offerer = offerers_factories.OffererFactory()
-    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
-    venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue1 = offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        pricing_point="self",
+        reimbursement_point="self",
+    )
+    venue2 = offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        pricing_point="self",
+        reimbursement_point="self",
+    )
+    # FIXME (dbaty, 2022-09-14): the BankInformation object should
+    # automatically be created by the Venue factory when linking a
+    # reimbursement point.
+    finance_factories.BankInformationFactory(venue=venue1)
+    finance_factories.BankInformationFactory(venue=venue2)
     booking1 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue1)
     booking2 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue2)
     collective_booking3 = educational_factories.UsedCollectiveBookingFactory(
@@ -238,7 +278,7 @@ def test_find_all_offerer_reimbursement_details() -> None:
 
     for booking in (booking1, booking2):
         finance_factories.PricingFactory(booking=booking)
-    finance_factories.PricingFactory(collectiveBooking=collective_booking3)
+    finance_factories.CollectivePricingFactory(collectiveBooking=collective_booking3)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     finance_api.generate_invoices()
 
@@ -250,16 +290,27 @@ def test_find_all_offerer_reimbursement_details() -> None:
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class CollectiveReimbursementDetailsTest:
+    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_find_all_offerer_reimbursement_details_on_collective(self) -> None:
         offerer = offerers_factories.OffererFactory(siren="123456789")
-        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue1 = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            pricing_point="self",
+            reimbursement_point="self",
+        )
         venue2 = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             name="Le lieu unique",
             address="48 boulevard des turlupins",
             siret="12345678912345",
-            businessUnit__bankAccount__iban="CF13QSDFGH456789",
+            pricing_point="self",
+            reimbursement_point="self",
         )
+        # FIXME (dbaty, 2022-09-14): the BankInformation object should
+        # automatically be created by the Venue factory when linking a
+        # reimbursement point.
+        finance_factories.BankInformationFactory(venue=venue1)
+        finance_factories.BankInformationFactory(venue=venue2)
         booking1 = bookings_factories.UsedIndividualBookingFactory(
             dateUsed=datetime(2022, 6, 18), stock__offer__venue=venue1
         )
@@ -280,8 +331,8 @@ class CollectiveReimbursementDetailsTest:
         with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
             finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
             finance_api.generate_invoices()
-        cashflow = finance_models.Cashflow.query.filter_by(businessUnit=venue2.businessUnit).one()
-        invoice = finance_models.Invoice.query.filter_by(businessUnit=venue2.businessUnit).one()
+        cashflow = finance_models.Cashflow.query.filter_by(reimbursementPoint=venue2).one()
+        invoice = finance_models.Invoice.query.filter_by(reimbursementPoint=venue2).one()
 
         reimbursement_details = find_all_offerer_reimbursement_details(offerer.id, reimbursement_period)
 
@@ -297,7 +348,7 @@ class CollectiveReimbursementDetailsTest:
             "Le lieu unique",
             "48 boulevard des turlupins 75000 Paris",
             booking3.venue.siret,
-            venue2.businessUnit.bankAccount.iban,
+            venue2.iban,
             booking3.venue.name,
             "48 boulevard des turlupins 75000 Paris",
             booking3.venue.siret,
@@ -316,16 +367,20 @@ class CollectiveReimbursementDetailsTest:
             "offre collective",
         ]
 
+    @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_reimbursement_details_as_csv_collective_booking(self) -> None:
-        business_unit = offerers_factories.VenueFactory(
-            siret="siret bu",
-            name="Ma petite business unit",
-            address="1 rue de la business unit",
+        reimbursement_point = offerers_factories.VenueFactory(
+            siret="siret-rp",
+            name="Mon point de remboursement",
+            address="1 rue du point de remboursement",
             city="Nantes",
             postalCode="44000",
-            businessUnit__bankAccount__iban="CF13QSDFGH456789",
-        ).businessUnit
-        venue = offerers_factories.VenueFactory(businessUnit=business_unit)
+        )
+        finance_factories.BankInformationFactory(
+            venue=reimbursement_point,
+            iban="CF13QSDFGH456789",
+        )
+        venue = offerers_factories.VenueFactory(reimbursement_point=reimbursement_point)
         booking = educational_factories.UsedCollectiveBookingFactory(
             dateUsed=datetime(2022, 6, 18),
             collectiveStock__price=21,
@@ -354,11 +409,11 @@ class CollectiveReimbursementDetailsTest:
         assert row[1] == invoice.date
         assert row[2] == invoice.reference
         assert row[3] == cashflow.batch.label
-        # business unit
-        assert row[4] == "Ma petite business unit"
-        assert row[5] == "1 rue de la business unit 44000 Nantes"
-        assert row[6] == "siret bu"
-        assert row[7] == business_unit.bankAccount.iban
+        # reimbursement point
+        assert row[4] == "Mon point de remboursement"
+        assert row[5] == "1 rue du point de remboursement 44000 Nantes"
+        assert row[6] == "siret-rp"
+        assert row[7] == reimbursement_point.iban
         # venue
         assert row[8] == booking.venue.name
         assert row[9] == "1 boulevard Poissonnière 75000 Paris"

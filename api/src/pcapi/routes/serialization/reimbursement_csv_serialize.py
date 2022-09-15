@@ -135,18 +135,18 @@ class ReimbursementDetails:
         )
         self.venue_siret = payment_info.venue_siret
 
-        # Business unit info + IBAN
+        # Reimbursement point info + IBAN
         if using_legacy_models:
-            self.business_unit_name = self.venue_name
-            self.business_unit_siret = self.venue_siret
-            self.business_unit_address = self.venue_address
+            self.reimbursement_point_name = self.venue_name
+            self.reimbursement_point_siret = self.venue_siret
+            self.reimbursement_point_address = self.venue_address
         else:
-            self.business_unit_name = payment_info.business_unit_name
-            self.business_unit_siret = payment_info.business_unit_siret
-            self.business_unit_address = _build_full_address(
-                payment_info.business_unit_address,
-                payment_info.business_unit_postal_code,
-                payment_info.business_unit_city,
+            self.reimbursement_point_name = payment_info.reimbursement_point_name
+            self.reimbursement_point_siret = payment_info.reimbursement_point_siret
+            self.reimbursement_point_address = _build_full_address(
+                payment_info.reimbursement_point_address,
+                payment_info.reimbursement_point_postal_code,
+                payment_info.reimbursement_point_city,
             )
         self.iban = payment_info.iban
 
@@ -201,9 +201,9 @@ class ReimbursementDetails:
             self.invoice_date,
             self.invoice_reference,
             self.cashflow_batch_label,
-            self.business_unit_name,
-            self.business_unit_address,
-            self.business_unit_siret,
+            self.reimbursement_point_name,
+            self.reimbursement_point_address,
+            self.reimbursement_point_siret,
             self.iban,
             self.venue_name,
             self.venue_address,
