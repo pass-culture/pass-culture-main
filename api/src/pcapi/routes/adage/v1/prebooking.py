@@ -86,7 +86,7 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
         raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalBookingNotRefusable:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
-    except exceptions.EducationalBookingAlreadyCancelled:
+    except exceptions.CollectiveBookingAlreadyCancelled:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}, status_code=422)
     return prebooking_serialization.serialize_collective_booking(educational_booking)
 
