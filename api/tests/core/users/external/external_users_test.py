@@ -368,7 +368,7 @@ def test_get_user_attributes_not_beneficiary():
         booking_categories=[],
         city="Nice",
         date_created=user.dateCreated,
-        date_of_birth=user.dateOfBirth,
+        date_of_birth=datetime.combine(user.birth_date, datetime.min.time()),
         departement_code=None,
         deposit_expiration_date=None,
         domains_credit=None,
