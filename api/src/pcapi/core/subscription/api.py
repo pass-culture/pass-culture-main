@@ -107,7 +107,7 @@ def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
     return bool(user_pending_dms_fraud_checks)
 
 
-def should_complete_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
+def should_complete_profile(user: users_models.User, eligibility: users_models.EligibilityType) -> bool:
     return not has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user)
 
 
@@ -190,7 +190,7 @@ def get_user_profiling_subscription_item(
 
 
 def get_profile_completion_subscription_item(
-    user: users_models.User, eligibility: users_models.EligibilityType | None
+    user: users_models.User, eligibility: users_models.EligibilityType
 ) -> models.SubscriptionItem:
     if not should_complete_profile(user, eligibility):
         status = models.SubscriptionItemStatus.OK
@@ -278,7 +278,7 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
-    if not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+    if not user.eligibility or not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         return None
 
     if _should_validate_phone(user, user.eligibility):
@@ -306,7 +306,7 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
             return models.SubscriptionStep.MAINTENANCE
         return models.SubscriptionStep.IDENTITY_CHECK
 
-    if not fraud_api.has_performed_honor_statement(user, user.eligibility):  # type: ignore [arg-type]
+    if not fraud_api.has_performed_honor_statement(user, user.eligibility):
         return models.SubscriptionStep.HONOR_STATEMENT
 
     return None
