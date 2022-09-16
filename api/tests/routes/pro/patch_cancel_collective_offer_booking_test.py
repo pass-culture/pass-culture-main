@@ -58,11 +58,7 @@ class Returns204Test:
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
 
 
-@override_settings(ADAGE_API_URL="https://adage_base_url")
-@override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns404Test:
-    @override_settings(ADAGE_API_URL="https://adage_base_url")
-    @override_settings(ADAGE_API_KEY="adage-api-key")
     def test_no_collective_offer_found(self, client):
         user = user_factories.AdminFactory()
         offer_id = humanize(123789654)
@@ -72,14 +68,12 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json == {
-            "code": "NO_EDUCATIONAL_OFFER_FOUND",
-            "message": "No educational offer has been found with this id",
+            "code": "NO_COLLECTIVE_OFFER_FOUND",
+            "message": "No collective offer has been found with this id",
         }
         assert len(adage_api_testing.adage_requests) == 0
 
 
-@override_settings(ADAGE_API_URL="https://adage_base_url")
-@override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns403Test:
     def test_user_does_not_have_access_to_offerer(self, client):
         user = user_factories.UserFactory()
@@ -99,8 +93,6 @@ class Returns403Test:
         assert len(adage_api_testing.adage_requests) == 0
 
 
-@override_settings(ADAGE_API_URL="https://adage_base_url")
-@override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns400Test:
     def test_offer_has_no_booking_to_cancel(self, client):
         user = user_factories.AdminFactory()
@@ -111,5 +103,29 @@ class Returns400Test:
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 400
-        assert response.json == {"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}
+        assert response.json == {"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}
+        assert len(adage_api_testing.adage_requests) == 0
+
+    def test_booking_is_already_used(self, client):
+        user = user_factories.AdminFactory()
+        collective_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.USED)
+        offer_id = humanize(collective_booking.collectiveStock.collectiveOffer.id)
+
+        client = client.with_session_auth(user.email)
+        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+
+        assert response.status_code == 400
+        assert response.json == {"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}
+        assert len(adage_api_testing.adage_requests) == 0
+
+    def test_booking_is_already_reimbursed(self, client):
+        user = user_factories.AdminFactory()
+        collective_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.REIMBURSED)
+        offer_id = humanize(collective_booking.collectiveStock.collectiveOffer.id)
+
+        client = client.with_session_auth(user.email)
+        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+
+        assert response.status_code == 400
+        assert response.json == {"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}
         assert len(adage_api_testing.adage_requests) == 0

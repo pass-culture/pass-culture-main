@@ -53,7 +53,7 @@ class EducationalBookingNotRefusable(Exception):
     pass
 
 
-class EducationalBookingAlreadyCancelled(Exception):
+class CollectiveBookingAlreadyCancelled(Exception):
     pass
 
 
@@ -124,6 +124,10 @@ class AdageException(Exception):
 
 
 class CulturalPartnerNotFoundException(Exception):
+    pass
+
+
+class CollectiveBookingIsAlreadyUsed(Exception):
     pass
 
 
