@@ -101,7 +101,7 @@ def update_public_account(user_id: int, body: serialization.PublicAccountUpdateR
         user,
         first_name=body.firstName,
         last_name=body.lastName,
-        birth_date=body.dateOfBirth,
+        validated_birth_date=body.dateOfBirth.date() if body.dateOfBirth else None,
         id_piece_number=body.idPieceNumber,
         address=body.address,
         postal_code=body.postalCode,

@@ -733,7 +733,7 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.publicName == "Jane Doe"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
-        assert beneficiary.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)
+        assert beneficiary.validatedBirthDate == datetime.date(2000, 5, 1)
         assert not beneficiary.has_beneficiary_role
         assert not beneficiary.has_admin_role
         assert beneficiary.password is not None
@@ -756,7 +756,7 @@ class BeneficiaryInformationUpdateTest:
 
         assert new_user.firstName == "Raoul"
         assert new_user.lastName == "Dufy"
-        assert new_user.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)
+        assert new_user.validatedBirthDate == datetime.date(2000, 5, 1)
         assert new_user.ineHash == "identifiantnati0naleleve"
 
     def test_update_user_information_from_ubble(self):
@@ -772,7 +772,7 @@ class BeneficiaryInformationUpdateTest:
 
         assert new_user.firstName == "Raoul"
         assert new_user.lastName == "Dufy"
-        assert new_user.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)
+        assert new_user.validatedBirthDate == datetime.date(2000, 5, 1)
         assert new_user.idPieceNumber == "123456789"
         assert new_user.civility == "M."
 
