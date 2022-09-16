@@ -15,6 +15,8 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
+from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import adage_backends as adage_client
@@ -25,6 +27,8 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import models as finance_models
 import pcapi.core.mails.models as mails_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -44,6 +48,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.routes.serialization import public_api_collective_offers_serialize
@@ -1091,3 +1096,128 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
     if not collective_booking:
         raise exceptions.EducationalBookingNotFound()
     return collective_booking
+
+
+def _cancel_collective_booking(
+    collective_booking: educational_models.CollectiveBooking,
+    reason: educational_models.CollectiveBookingCancellationReasons,
+) -> bool:
+    with transaction():
+        collective_stock = educational_repository.get_and_lock_collective_stock(
+            stock_id=collective_booking.collectiveStock.id
+        )
+        db.session.refresh(collective_booking)
+        old_status = collective_booking.status
+        try:
+            collective_booking.cancel_booking(cancel_even_if_used=True)
+        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
+            logger.info(
+                "%s: %s",
+                type(e).__name__,
+                str(e),
+                extra={
+                    "collective_booking": collective_booking.id,
+                    "reason": str(reason),
+                },
+            )
+            return False
+
+        if old_status is educational_models.CollectiveBookingStatus.USED:
+            finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
+
+        collective_booking.cancellationReason = reason
+        repository.save(collective_booking, collective_stock)
+    logger.info(
+        "CollectiveBooking has been cancelled",
+        extra={
+            "collective_booking": collective_booking.id,
+            "reason": str(reason),
+        },
+    )
+
+    return True
+
+
+def _cancel_collective_booking_from_stock(
+    collective_stock: educational_models.CollectiveStock,
+    reason: educational_models.CollectiveBookingCancellationReasons,
+) -> educational_models.CollectiveBooking | None:
+    """
+    Cancel booking.
+    Note that this will not reindex the associated offer in Algolia
+    """
+    booking_to_cancel: educational_models.CollectiveBooking | None = next(
+        (
+            collective_booking
+            for collective_booking in collective_stock.collectiveBookings
+            if collective_booking.status
+            not in [
+                educational_models.CollectiveBookingStatus.CANCELLED,
+                educational_models.CollectiveBookingStatus.REIMBURSED,
+            ]
+        ),
+        None,
+    )
+
+    if booking_to_cancel is not None:
+        _cancel_collective_booking(booking_to_cancel, reason)
+
+    return booking_to_cancel
+
+
+def cancel_collective_booking_from_stock_by_offerer(
+    collective_stock: educational_models.CollectiveStock,
+) -> educational_models.CollectiveBooking | None:
+    cancelled_booking = _cancel_collective_booking_from_stock(
+        collective_stock, educational_models.CollectiveBookingCancellationReasons.OFFERER
+    )
+    return cancelled_booking
+
+
+def cancel_collective_offer_booking(offer_id: int) -> None:
+    collective_offer = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id == offer_id
+    ).first()
+
+    if collective_offer.collectiveStock is None:
+        raise exceptions.CollectiveStockNotFound()
+
+    collective_stock = collective_offer.collectiveStock
+
+    # Offer is reindexed in the end of this function
+    cancelled_booking = cancel_collective_booking_from_stock_by_offerer(collective_stock)
+
+    if cancelled_booking is None:
+        raise exceptions.NoCollectiveBookingToCancel()
+
+    search.async_index_collective_offer_ids([offer_id])
+
+    logger.info(
+        "Deleted collective stock and cancelled its collective booking",
+        extra={"stock": collective_stock.id, "collective_booking": cancelled_booking.id},
+    )
+
+    try:
+        adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
+    except exceptions.AdageException as adage_error:
+        logger.error(
+            "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
+            adage_error.message,
+            extra={
+                "collectiveBookingId": cancelled_booking.id,
+                "adage status code": adage_error.status_code,
+                "adage response text": adage_error.response_text,
+            },
+        )
+    except ValidationError:
+        logger.exception(
+            "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
+            extra={
+                "collectiveBookingId": cancelled_booking.id,
+            },
+        )
+    if not transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
+        logger.warning(
+            "Could not notify offerer about deletion of stock",
+            extra={"collectiveStock": collective_stock.id},
+        )
