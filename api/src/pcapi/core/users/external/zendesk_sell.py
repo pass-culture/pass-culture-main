@@ -12,6 +12,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.users import testing
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import zendesk_sell_tasks
+from pcapi.utils.regions import get_region_name_from_department
 
 
 logger = logging.getLogger(__name__)
@@ -21,35 +22,6 @@ ZENDESK_SELL_API_URL = settings.ZENDESK_SELL_API_URL
 BACKOFFICE_URL = settings.BACKOFFICE_URL
 
 SEARCH_PARENT = -1
-
-REGIONS = {
-    "Auvergne-Rhone-Alpes": ["01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"],
-    "Bourgogne-Franche-Comte": ["21", "25", "39", "58", "70", "71", "89", "90"],
-    "Bretagne": ["35", "22", "56", "29"],
-    "Centre-Val de Loire": ["18", "28", "36", "37", "41", "45"],
-    "Corse": ["2A", "2B", "20"],
-    "Grand Est": ["08", "10", "51", "52", "54", "55", "57", "67", "68", "88"],
-    "Guadeloupe": ["971"],
-    "Guyane": ["973"],
-    "Hauts-de-France": ["02", "59", "60", "62", "80"],
-    "Ile-de-France": ["75", "77", "78", "91", "92", "93", "94", "95"],
-    "La Reunion": ["974"],
-    "Martinique": ["972"],
-    "Mayotte": ["976"],
-    "Normandie": ["14", "27", "50", "61", "76"],
-    "Nouvelle-Aquitaine": ["16", "17", "19", "23", "24", "33", "40", "47", "64", "79", "86", "87"],
-    "Occitanie": ["09", "11", "12", "30", "31", "32", "34", "46", "48", "65", "66", "81", "82"],
-    "Pays de la Loire": ["44", "49", "53", "72", "85"],
-    "Provence-Alpes-Cote d'Azur": ["04", "05", "06", "13", "83", "84"],
-}
-
-
-def _get_region_name_from_departement(departement: str | None) -> str:
-    if departement:
-        for region, departements in REGIONS.items():
-            if departement in departements:
-                return region.upper()
-    return "Aucune valeur"
 
 
 def _build_backoffice_offerer_link(offerer: offerers_models.Offerer) -> str:
@@ -189,7 +161,7 @@ def _get_venue_data(venue: offerers_models.Venue, parent_organization_id: int | 
                 ZendeskCustomFieldsNames.PC_PRO_STATUS.value: _get_venue_status(venue),
                 ZendeskCustomFieldsNames.PRODUCT_VENUE_ID.value: venue.id,
                 ZendeskCustomFieldsNames.SIRET.value: venue.siret,
-                ZendeskCustomFieldsNames.REGION.value: _get_region_name_from_departement(venue.departementCode),
+                ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(venue.departementCode).upper(),
                 ZendeskCustomFieldsNames.TYPAGE.value: ["Lieu"],
                 ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: _build_backoffice_venue_link(venue),
                 ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
@@ -220,7 +192,7 @@ def _get_offerer_data(offerer: offerers_models.Offerer, created: bool = False) -
                 % (datetime.date.today().strftime("%d/%m/%Y"),),
                 ZendeskCustomFieldsNames.JURIDIC_NAME.value: offerer.name,
                 ZendeskCustomFieldsNames.PRODUCT_OFFERER_ID.value: offerer.id,
-                ZendeskCustomFieldsNames.REGION.value: _get_region_name_from_departement(offerer.departementCode),  # type: ignore [arg-type]
+                ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(offerer.departementCode).upper(),  # type: ignore [arg-type]
                 ZendeskCustomFieldsNames.SIREN.value: offerer.siren,
                 ZendeskCustomFieldsNames.TYPAGE.value: ["Structure"],
                 ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: _build_backoffice_offerer_link(offerer),

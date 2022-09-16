@@ -4,10 +4,10 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
+import pcapi.utils.regions
 
 from . import blueprint
 from . import serialization
-from . import utils
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/users", methods=["GET"])
@@ -52,7 +52,7 @@ def get_offerer_basic_info(offerer_id: int) -> serialization.Response:
             name=offerer_basic_info.name,
             isActive=offerer_basic_info.isActive,
             siren=offerer_basic_info.siren,
-            region=utils.get_region_name_from_postal_code(offerer_basic_info.postalCode),
+            region=pcapi.utils.regions.get_region_name_from_postal_code(offerer_basic_info.postalCode),
             bankInformationStatus=serialization.OffererBankInformationStatus(
                 **{stat: (offerer_basic_info.bank_informations or {}).get(stat, 0) for stat in ("ko", "ok")}
             ),
