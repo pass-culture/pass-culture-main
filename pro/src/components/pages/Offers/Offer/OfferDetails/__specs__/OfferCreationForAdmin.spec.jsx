@@ -14,11 +14,16 @@ import OfferLayout from '../../OfferLayout'
 import { setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  createOffer: jest.fn(),
   getOfferer: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadCategories: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    postOffer: jest.fn(),
+  },
 }))
 
 const renderOffers = async (props, store, queryParams = null) => {

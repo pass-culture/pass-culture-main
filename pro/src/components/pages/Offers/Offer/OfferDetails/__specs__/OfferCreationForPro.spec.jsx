@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -28,7 +29,6 @@ Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  createOffer: jest.fn(),
   getUserValidatedOfferersNames: jest.fn(),
   getVenue: jest.fn(),
   getVenuesForOfferer: jest.fn(),
@@ -36,6 +36,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadStocks: jest.fn(),
   loadTypes: jest.fn(),
   postThumbnail: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    postOffer: jest.fn(),
+    getOffer: jest.fn(),
+  },
 }))
 
 jest.mock('utils/windowMatchMedia', () => ({
@@ -157,7 +164,7 @@ describe('offerDetails - Creation - pro user', () => {
     pcapi.getUserValidatedOfferersNames.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
-    pcapi.createOffer.mockResolvedValue({})
+    api.postOffer.mockResolvedValue({})
     loadFakeApiCategories()
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
@@ -1899,7 +1906,7 @@ describe('offerDetails - Creation - pro user', () => {
         bookingEmail: null,
       }
 
-      pcapi.createOffer.mockResolvedValue(createdOffer)
+      api.postOffer.mockResolvedValue(createdOffer)
       const submitButton = screen.getByText('Étape suivante')
 
       // When
@@ -1940,7 +1947,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       await waitFor(() => {
-        expect(pcapi.createOffer).toHaveBeenCalledWith(
+        expect(api.postOffer).toHaveBeenCalledWith(
           expect.objectContaining({
             externalTicketOfficeUrl: null,
           })
@@ -1975,7 +1982,7 @@ describe('offerDetails - Creation - pro user', () => {
         venue: venues[0],
         status: 'DRAFT',
       }
-      pcapi.createOffer.mockResolvedValue(createdOffer)
+      api.postOffer.mockResolvedValue(createdOffer)
       await renderOffers(props)
       jest.spyOn(api, 'getOffer').mockResolvedValue(createdOffer)
 
@@ -2016,7 +2023,7 @@ describe('offerDetails - Creation - pro user', () => {
       await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
-      expect(pcapi.createOffer).not.toHaveBeenCalled()
+      expect(api.postOffer).not.toHaveBeenCalled()
 
       // Mandatory fields
       const nameError = await findInputErrorForField('name')
@@ -2050,7 +2057,7 @@ describe('offerDetails - Creation - pro user', () => {
       await renderOffers(props)
 
       await userEvent.click(screen.getByText('Étape suivante'))
-      expect(pcapi.createOffer).not.toHaveBeenCalled()
+      expect(api.postOffer).not.toHaveBeenCalled()
 
       const categoryIdError = await findInputErrorForField('categoryId')
       expect(categoryIdError).toHaveTextContent('Ce champ est obligatoire')
@@ -2061,7 +2068,7 @@ describe('offerDetails - Creation - pro user', () => {
       })
 
       await userEvent.click(screen.getByText('Étape suivante'))
-      expect(pcapi.createOffer).not.toHaveBeenCalled()
+      expect(api.postOffer).not.toHaveBeenCalled()
 
       await waitFor(() =>
         expect(
@@ -2192,9 +2199,9 @@ describe('offerDetails - Creation - pro user', () => {
         mentalDisabilityCompliant: false,
       }
 
-      pcapi.createOffer.mockRejectedValue({
-        errors: { name: "Ce nom n'est pas valide" },
-      })
+      api.postOffer.mockRejectedValue(
+        new ApiError({}, { body: { name: "Ce nom n'est pas valide" } }, '')
+      )
       await renderOffers(props)
 
       await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
@@ -2237,9 +2244,13 @@ describe('offerDetails - Creation - pro user', () => {
         mentalDisabilityCompliant: false,
       }
 
-      pcapi.createOffer.mockRejectedValue({
-        errors: { isbn: 'Ce produit n’est pas éligible au pass Culture.' },
-      })
+      api.postOffer.mockRejectedValue(
+        new ApiError(
+          {},
+          { body: { isbn: 'Ce produit n’est pas éligible au pass Culture.' } },
+          ''
+        )
+      )
       await renderOffers(props)
 
       await setOfferValues({ categoryId: 'LIVRE' })

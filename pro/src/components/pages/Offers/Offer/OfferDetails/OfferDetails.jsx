@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { getError, isErrorAPIError } from 'apiClient/helpers'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
@@ -151,7 +153,7 @@ const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
     async offerValues => {
       try {
         if (offer) {
-          await pcapi.updateOffer(offer.id, offerValues)
+          await api.patchOffer(offer.id, offerValues)
           if (!isCreatingOffer)
             notification.success('Vos modifications ont bien été enregistrées')
           reloadOffer()
@@ -166,27 +168,27 @@ const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
             )
           }
         } else {
-          const response = await pcapi.createOffer(offerValues)
+          const response = await api.postOffer(offerValues)
           const createdOfferId = response.id
           await postThumbnail(createdOfferId, thumbnailInfo)
-
           if (Object.keys(thumbnailInfo).length === 0) {
             return Promise.resolve(() => goToStockAndPrice(createdOfferId))
           }
         }
       } catch (error) {
-        if (error && 'errors' in error) {
+        if (isErrorAPIError(error)) {
+          const errors = getError(error)
           const mapApiErrorsToFormErrors = {
             venue: 'venueId',
           }
           let newFormErrors = {}
           let formFieldName
-          for (let apiFieldName in error.errors) {
+          for (let apiFieldName in errors) {
             formFieldName = apiFieldName
             if (apiFieldName in mapApiErrorsToFormErrors) {
               formFieldName = mapApiErrorsToFormErrors[apiFieldName]
             }
-            newFormErrors[formFieldName] = error.errors[apiFieldName]
+            newFormErrors[formFieldName] = errors[apiFieldName]
           }
           setFormErrors(newFormErrors)
           showErrorNotification()
