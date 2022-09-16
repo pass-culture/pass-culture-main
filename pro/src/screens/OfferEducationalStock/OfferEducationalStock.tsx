@@ -118,6 +118,7 @@ const OfferEducationalStock = ({
           cancelActiveBookings={cancelActiveBookings}
           className={styles.actions}
           isBooked={offer.isBooked}
+          isCancellable={offer.isCancellable}
           isOfferActive={offer.isActive}
           setIsOfferActive={setIsOfferActive}
         />

@@ -32,6 +32,7 @@ export const getStockCollectiveOfferAdapter: GetStockCollectiveOfferAdapter =
           status: offer.status,
           venueDepartmentCode: offer.venue.departementCode ?? '',
           isBooked,
+          isCancellable: offer.isCancellable,
           isEducational: true,
           isShowcase: false,
           offerId: offer.offerId,

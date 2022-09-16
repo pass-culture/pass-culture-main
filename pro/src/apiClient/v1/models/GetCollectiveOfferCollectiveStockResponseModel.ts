@@ -5,5 +5,6 @@
 export type GetCollectiveOfferCollectiveStockResponseModel = {
   id: string;
   isBooked: boolean;
+  isCancellable: boolean;
 };
 

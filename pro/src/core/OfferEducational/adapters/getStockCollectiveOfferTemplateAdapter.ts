@@ -29,6 +29,7 @@ export const getStockCollectiveOfferTemplateAdapter: GetStockCollectiveOfferTemp
           isActive: offer.isActive,
           status: offer.status,
           venueDepartmentCode: offer.venue.departementCode ?? '',
+          isCancellable: false,
           isBooked: false,
           isEducational: true,
           isShowcase: true,

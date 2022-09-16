@@ -36,6 +36,7 @@ export interface IOfferEducationalProps {
   setIsOfferActive?: (isActive: boolean) => void
   isOfferBooked?: boolean
   isOfferActive?: boolean
+  isOfferCancellable?: boolean
   getEducationalDomainsAdapter: GetEducationalDomainsAdapter
 }
 
@@ -51,6 +52,7 @@ const OfferEducational = ({
   cancelActiveBookings,
   setIsOfferActive,
   isOfferBooked = false,
+  isOfferCancellable = false,
   isOfferActive = false,
   getEducationalDomainsAdapter,
 }: IOfferEducationalProps): JSX.Element => {
@@ -122,6 +124,7 @@ const OfferEducational = ({
           cancelActiveBookings={cancelActiveBookings}
           className={styles.actions}
           isBooked={isOfferBooked}
+          isCancellable={isOfferCancellable}
           isOfferActive={isOfferActive}
           setIsOfferActive={setIsOfferActive}
         />
