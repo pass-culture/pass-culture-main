@@ -117,10 +117,14 @@
                 <td>{{ model.phoneNumber }}</td>
             </tr>
             <tr>
-                <th scope="row">Date de naissance</th>
+                <th scope="row">Date de naissance (déclarée lors de l'inscription)</th>
                 <td>{% if model.dateOfBirth %}{{ model.dateOfBirth.strftime('%d/%m/%Y') }}{% else %}Inconnue{% endif
                     %}
                 </td>
+            </tr>
+            <tr>
+                <th scope="row">Date de naissance (validée par la vérification d'identité)</th>
+                <td>{% if model.validatedBirthDate %}{{ model.validatedBirthDate.strftime('%d/%m/%Y') }}{% else %}-{% endif%}</td>
             </tr>
             <tr>
                 <th scope="row">Date de création du compte</th>
