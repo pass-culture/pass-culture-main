@@ -27,6 +27,7 @@ interface TableWrapperProps<
   nbBookingsPerPage: number
   updateCurrentPage: (pageNumber: number) => void
   audience: Audience
+  reloadBookings: () => void
 }
 
 const TableWrapper = <
@@ -39,6 +40,7 @@ const TableWrapper = <
   nbBookingsPerPage,
   updateCurrentPage,
   audience,
+  reloadBookings,
 }: TableWrapperProps<T>): JSX.Element => {
   const {
     canPreviousPage,
@@ -86,6 +88,7 @@ const TableWrapper = <
           prepareRow={prepareRow}
           tableBodyProps={getTableBodyProps()}
           audience={audience}
+          reloadBookings={reloadBookings}
         />
       </table>
       <TablePagination

@@ -89,6 +89,7 @@ const Bookings = <
     setAppliedPreFilters(filters)
     loadBookingsRecap(filters)
   }
+
   const loadBookingsRecap = async (preFilters: TPreFilters) => {
     setIsTableLoading(true)
     setBookings([])
@@ -112,6 +113,10 @@ const Bookings = <
         'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
       )
     }
+  }
+
+  const reloadBookings = () => {
+    loadBookingsRecap(appliedPreFilters)
   }
 
   const checkUserHasBookings = useCallback(async () => {
@@ -270,6 +275,7 @@ const Bookings = <
             isLoading={isTableLoading}
             locationState={locationState}
             audience={audience}
+            reloadBookings={reloadBookings}
           />
         ) : isTableLoading ? (
           <Spinner />

@@ -17,6 +17,7 @@ interface ITableBodyProps<
   prepareRow: TableInstance<T>['prepareRow']
   tableBodyProps: TableBodyProps
   audience: Audience
+  reloadBookings: () => void
 }
 
 const isCollectiveRow = (
@@ -32,13 +33,14 @@ const TableBody = <
   prepareRow,
   tableBodyProps,
   audience,
+  reloadBookings,
 }: ITableBodyProps<T>) => {
   return (
     <tbody className="bookings-body" {...tableBodyProps}>
       {page.map(row => {
         prepareRow(row)
         return isCollectiveRow(row, audience) ? (
-          <CollectiveTableRow row={row} />
+          <CollectiveTableRow row={row} reloadBookings={reloadBookings} />
         ) : (
           <IndividualTableRow row={row} />
         )

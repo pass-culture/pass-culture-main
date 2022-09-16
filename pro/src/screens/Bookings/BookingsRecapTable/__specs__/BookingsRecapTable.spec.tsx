@@ -136,6 +136,7 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: bookingsRecap,
       isLoading: false,
       audience: Audience.INDIVIDUAL,
+      reloadBookings: jest.fn(),
     }
     render(
       <Provider store={store}>
@@ -180,6 +181,7 @@ describe('components | BookingsRecapTable', () => {
         statuses: ['booked', 'cancelled'],
       },
       audience: Audience.INDIVIDUAL,
+      reloadBookings: jest.fn(),
     }
     jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
 
@@ -214,6 +216,7 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: bookingsRecap,
       isLoading: false,
       audience: Audience.INDIVIDUAL,
+      reloadBookings: jest.fn(),
     }
 
     // When
@@ -247,6 +250,7 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: collectiveBookingsRecap,
       isLoading: false,
       audience: Audience.COLLECTIVE,
+      reloadBookings: jest.fn(),
     }
 
     // When
