@@ -58,8 +58,14 @@
     }
   }
 
-  .pc-breadcrumb {
+  .pc-breadcrumb-edition {
     margin-bottom: rem.torem(24px);
+  }
+
+  .pc-breadcrumb-creation {
+    margin-bottom: rem.torem(40px);
+    padding-right: rem.torem(11px);
+    padding-left: rem.torem(17px);
   }
 
   .offer-form {

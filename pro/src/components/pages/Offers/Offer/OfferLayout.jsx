@@ -11,7 +11,9 @@ import { api } from 'apiClient/api'
 import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
-import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import OfferBreadcrumb, {
+  OfferBreadcrumbStep,
+} from 'new_components/OfferBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import { OfferV2Summary as OfferV2SummaryRoute } from 'routes/OfferV2Summary'
 import { Title } from 'ui-kit'
@@ -108,13 +110,15 @@ const OfferLayout = () => {
         )}
       </div>
 
-      <Breadcrumb
+      <OfferBreadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}
         isOfferEducational={false}
         offerId={offer?.id}
         haveStock={offerHaveStock}
-        className="pc-breadcrumb"
+        className={
+          isCreatingOffer ? 'pc-breadcrumb-creation' : 'pc-breadcrumb-edition'
+        }
       />
 
       <div className="offer-content">

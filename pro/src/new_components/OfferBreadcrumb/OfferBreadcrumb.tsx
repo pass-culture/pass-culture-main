@@ -144,7 +144,11 @@ const OfferBreadcrumb = ({
       className={className}
       steps={steps}
       styleType={
-        isCreatingOffer ? BreadcrumbStyle.DEFAULT : BreadcrumbStyle.TAB
+        isCreatingOffer
+          ? isOfferEducational
+            ? BreadcrumbStyle.DEFAULT
+            : BreadcrumbStyle.STEPPER
+          : BreadcrumbStyle.TAB
       }
     />
   )
