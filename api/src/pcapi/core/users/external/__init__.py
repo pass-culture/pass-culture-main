@@ -186,8 +186,9 @@ def get_user_attributes(user: User) -> UserAttributes:
 
     # A user becomes a former beneficiary only after the last credit is expired or spent or can no longer be claimed
     is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
-        user.has_underage_beneficiary_role and get_eligibility_at_date(user.dateOfBirth, datetime.utcnow()) is None
+        user.has_underage_beneficiary_role and get_eligibility_at_date(user.birth_date, datetime.utcnow()) is None
     )
+    user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
 
     return UserAttributes(
         booking_categories=bookings_attributes.booking_categories,
@@ -195,7 +196,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         booking_subcategories=bookings_attributes.booking_subcategories,
         city=user.city,
         date_created=user.dateCreated,
-        date_of_birth=user.dateOfBirth,  # type: ignore [arg-type]
+        date_of_birth=user_birth_date,  # type: ignore [arg-type]
         departement_code=user.departementCode,
         deposit_activation_date=user.deposit_activation_date,
         deposit_expiration_date=user.deposit_expiration_date,

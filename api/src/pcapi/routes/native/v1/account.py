@@ -375,7 +375,7 @@ def profiling_fraud_score(user: users_models.User, body: serializers.UserProfili
             session_id=body.sessionId,  # type: ignore [arg-type]
             user_id=user.id,
             user_email=user.email,
-            birth_date=user.dateOfBirth.date() if user.dateOfBirth else None,
+            birth_date=user.birth_date,
             phone_number=user.phoneNumber,  # type: ignore [arg-type]
             workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,
             # depends on loadbalancer configuration
