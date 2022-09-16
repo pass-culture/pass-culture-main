@@ -33,7 +33,7 @@ def test_create_offerer():
         "postal_code": offerer.postalCode,
     }
     assert posted_json["data"]["custom_fields"]["Département"] == "95"
-    assert posted_json["data"]["custom_fields"]["Région"] == "ILE-DE-FRANCE"
+    assert posted_json["data"]["custom_fields"]["Région"] == "ÎLE-DE-FRANCE"
     assert posted_json["data"]["custom_fields"]["Typage"] == ["Structure"]
     assert posted_json["data"]["custom_fields"]["Produit Offerer ID"] == offerer.id
     assert posted_json["data"]["custom_fields"]["SIREN"] == offerer.siren
@@ -151,7 +151,7 @@ def test_update_venue():
         "postal_code": venue.postalCode,
     }
     assert put_json["data"]["custom_fields"]["Département"] == "986"
-    assert put_json["data"]["custom_fields"]["Région"] == "Aucune valeur"
+    assert put_json["data"]["custom_fields"]["Région"] == "WALLIS ET FUTUNA"
     assert put_json["data"]["custom_fields"]["Typage"] == ["Lieu"]
     assert put_json["data"]["custom_fields"]["Produit Venue ID"] == venue.id
     assert put_json["data"]["custom_fields"]["SIRET"] == venue.siret
