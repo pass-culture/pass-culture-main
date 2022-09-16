@@ -2986,15 +2986,18 @@ class LegacyGenerateAndStoreInvoiceTest(GenerateAndStoreInvoiceTest):
     use_reimbursement_point = False
 
 
+@override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
 def test_merge_cashflow_batches():
+    # FIXME: needed?
     # Set BusinessUnit.siret to avoid clash when PricingFactory
     # creates a Venue with SIRET "000...000" and then tries to create
     # a business unit with the same SIRET again.
-    bu1 = factories.BusinessUnitFactory(siret="1")
-    bu2 = factories.BusinessUnitFactory(siret="2")
-    bu3 = factories.BusinessUnitFactory(siret="3")
-    bu4 = factories.BusinessUnitFactory(siret="4")
-    bu5 = factories.BusinessUnitFactory(siret="5")
+    rp1, rp2, rp3, rp4, rp5 = [
+        factories.BankInformationFactory(
+            venue=offerers_factories.VenueFactory(),
+        ).venue
+        for i in range(5)
+    ]
     batch1 = factories.CashflowBatchFactory(id=1)
     batch2 = factories.CashflowBatchFactory(id=2)
     batch3 = factories.CashflowBatchFactory(id=3)
@@ -3002,33 +3005,33 @@ def test_merge_cashflow_batches():
     batch5 = factories.CashflowBatchFactory(id=5)
 
     # Cashflow of batches 1 and 2: should not be changed.
-    factories.CashflowFactory(batch=batch1, businessUnit=bu1, amount=10)
-    factories.CashflowFactory(batch=batch2, businessUnit=bu1, amount=20)
-    # Business unit 1: batches 3, 4 and 5.
-    factories.CashflowFactory(batch=batch3, businessUnit=bu1, amount=40)
-    factories.CashflowFactory(batch=batch4, businessUnit=bu1, amount=80)
-    factories.CashflowFactory(batch=batch5, businessUnit=bu1, amount=160)
-    # Business unit 2: batches 3 and 4.
-    cf_3_2 = factories.CashflowFactory(batch=batch3, businessUnit=bu2, amount=320)
+    factories.CashflowFactory(batch=batch1, reimbursementPoint=rp1, amount=10)
+    factories.CashflowFactory(batch=batch2, reimbursementPoint=rp1, amount=20)
+    # Reimbursement point 1: batches 3, 4 and 5.
+    factories.CashflowFactory(batch=batch3, reimbursementPoint=rp1, amount=40)
+    factories.CashflowFactory(batch=batch4, reimbursementPoint=rp1, amount=80)
+    factories.CashflowFactory(batch=batch5, reimbursementPoint=rp1, amount=160)
+    # Reimbursement point 2: batches 3 and 4.
+    cf_3_2 = factories.CashflowFactory(batch=batch3, reimbursementPoint=rp2, amount=320)
     factories.PricingFactory(cashflows=[cf_3_2])
-    cf_4_2 = factories.CashflowFactory(batch=batch4, businessUnit=bu2, amount=640)
+    cf_4_2 = factories.CashflowFactory(batch=batch4, reimbursementPoint=rp2, amount=640)
     factories.PricingFactory(cashflows=[cf_4_2])
-    # Business unit 3: batches 3 and 5.
-    cf_3_3 = factories.CashflowFactory(batch=batch3, businessUnit=bu3, amount=1280)
+    # Reimbursement point 3: batches 3 and 5.
+    cf_3_3 = factories.CashflowFactory(batch=batch3, reimbursementPoint=rp3, amount=1280)
     factories.PricingFactory(cashflows=[cf_3_3])
-    cf_5_3 = factories.CashflowFactory(batch=batch5, businessUnit=bu3, amount=2560)
+    cf_5_3 = factories.CashflowFactory(batch=batch5, reimbursementPoint=rp3, amount=2560)
     factories.PricingFactory(cashflows=[cf_5_3])
-    # Business unit 4: batch 3 only
-    cf_3_4 = factories.CashflowFactory(batch=batch3, businessUnit=bu4, amount=5120)
+    # Reimbursement point 4: batch 3 only
+    cf_3_4 = factories.CashflowFactory(batch=batch3, reimbursementPoint=rp4, amount=5120)
     factories.PricingFactory(cashflows=[cf_3_4])
-    # Business unit 5: batch 5 (nothing to do)
-    cf_5_5 = factories.CashflowFactory(batch=batch5, businessUnit=bu5, amount=10240)
+    # Reimbursement point 5: batch 5 (nothing to do)
+    cf_5_5 = factories.CashflowFactory(batch=batch5, reimbursementPoint=rp5, amount=10240)
     factories.PricingFactory(cashflows=[cf_5_5])
 
-    def get_cashflows(batch_id, business_unit=None):
+    def get_cashflows(batch_id, reimbursement_point=None):
         query = models.Cashflow.query.filter_by(batchId=batch_id)
-        if business_unit:
-            query = query.filter_by(businessUnitId=business_unit.id)
+        if reimbursement_point:
+            query = query.filter_by(reimbursementPoint=reimbursement_point)
         return query.all()
 
     api.merge_cashflow_batches(batches_to_remove=[batch3, batch4], target_batch=batch5)
@@ -3036,11 +3039,11 @@ def test_merge_cashflow_batches():
     # No changes on batches 1 and 2.
     cashflows = get_cashflows(batch_id=1)
     assert len(cashflows) == 1
-    assert cashflows[0].businessUnit == bu1
+    assert cashflows[0].reimbursementPoint == rp1
     assert cashflows[0].amount == 10
     cashflows = get_cashflows(batch_id=2)
     assert len(cashflows) == 1
-    assert cashflows[0].businessUnit == bu1
+    assert cashflows[0].reimbursementPoint == rp1
     assert cashflows[0].amount == 20
 
     # Batches 3 and 4 have been deleted.
@@ -3048,11 +3051,11 @@ def test_merge_cashflow_batches():
 
     # Batch 5 now has all cashflows.
     assert len(get_cashflows(batch_id=5)) == 5
-    assert get_cashflows(batch_id=5, business_unit=bu1)[0].amount == 40 + 80 + 160
-    assert get_cashflows(batch_id=5, business_unit=bu2)[0].amount == 320 + 640
-    assert get_cashflows(batch_id=5, business_unit=bu3)[0].amount == 1280 + 2560
-    assert get_cashflows(batch_id=5, business_unit=bu4)[0].amount == 5120
-    assert get_cashflows(batch_id=5, business_unit=bu5)[0].amount == 10240
+    assert get_cashflows(batch_id=5, reimbursement_point=rp1)[0].amount == 40 + 80 + 160
+    assert get_cashflows(batch_id=5, reimbursement_point=rp2)[0].amount == 320 + 640
+    assert get_cashflows(batch_id=5, reimbursement_point=rp3)[0].amount == 1280 + 2560
+    assert get_cashflows(batch_id=5, reimbursement_point=rp4)[0].amount == 5120
+    assert get_cashflows(batch_id=5, reimbursement_point=rp5)[0].amount == 10240
 
 
 def test_get_drive_folder_name():
