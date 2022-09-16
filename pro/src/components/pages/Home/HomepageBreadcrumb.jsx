@@ -43,6 +43,7 @@ const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
       activeStep={activeStep}
       steps={Object.values(steps)}
       styleType={BreadcrumbStyle.TAB}
+      className="pc-breadcrumb"
     />
   )
 }
