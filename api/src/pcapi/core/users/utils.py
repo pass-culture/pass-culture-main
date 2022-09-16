@@ -38,9 +38,9 @@ def decode_jwt_token_rs256(jwt_token: str) -> dict:
     return payload
 
 
-def get_age_at_date(birth_date: date | datetime, specified_datetime: datetime) -> int:
+def get_age_at_date(birth_date: date, specified_datetime: datetime) -> int:
     return max(0, relativedelta(specified_datetime, birth_date).years)
 
 
-def get_age_from_birth_date(birth_date: date | datetime) -> int:
+def get_age_from_birth_date(birth_date: date) -> int:
     return get_age_at_date(birth_date, datetime.utcnow())
