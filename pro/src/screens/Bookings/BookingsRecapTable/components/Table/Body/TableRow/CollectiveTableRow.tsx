@@ -11,11 +11,12 @@ import getCollectiveBookingAdapter from './adapters/getCollectiveBookingAdapter'
 import TableRow from './TableRow'
 import styles from './TableRow.module.scss'
 
-interface ITableBodyProps {
+export interface ITableBodyProps {
   row: Row<CollectiveBookingResponseModel>
+  reloadBookings: () => void
 }
 
-const CollectiveTableRow = ({ row }: ITableBodyProps) => {
+const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
   const [bookingDetails, setBookingDetails] =
     useState<CollectiveBookingByIdResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -51,6 +52,7 @@ const CollectiveTableRow = ({ row }: ITableBodyProps) => {
                 <CollectiveBookingDetails
                   bookingDetails={bookingDetails}
                   offerId={row.original.stock.offer_identifier}
+                  reloadBookings={reloadBookings}
                 />
               )
             )}

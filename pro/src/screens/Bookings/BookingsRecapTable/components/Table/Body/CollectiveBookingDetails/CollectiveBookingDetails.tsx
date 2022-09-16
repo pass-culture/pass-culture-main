@@ -24,11 +24,13 @@ import {
 export interface ICollectiveBookingDetailsProps {
   bookingDetails: CollectiveBookingByIdResponseModel
   offerId: string
+  reloadBookings: () => void
 }
 
 const CollectiveBookingDetails = ({
   bookingDetails,
   offerId,
+  reloadBookings,
 }: ICollectiveBookingDetailsProps) => {
   const notify = useNotification()
   const offerEditionUrl = useOfferEditionURL(true, offerId, false, false)
@@ -48,6 +50,7 @@ const CollectiveBookingDetails = ({
     const response = await cancelCollectiveBookingAdapter({ offerId })
     if (response.isOk) {
       notify.success(response.message)
+      reloadBookings()
     } else {
       notify.error(response.message)
     }

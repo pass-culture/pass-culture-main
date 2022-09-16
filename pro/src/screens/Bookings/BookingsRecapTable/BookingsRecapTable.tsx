@@ -31,6 +31,7 @@ interface IBookingsRecapTableProps<
     statuses: string[]
   }
   audience: Audience
+  reloadBookings: () => void
 }
 
 const BookingsRecapTable = <
@@ -40,6 +41,7 @@ const BookingsRecapTable = <
   isLoading,
   locationState,
   audience,
+  reloadBookings,
 }: IBookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
@@ -158,6 +160,7 @@ const BookingsRecapTable = <
             nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
             updateCurrentPage={updateCurrentPage}
             audience={audience}
+            reloadBookings={reloadBookings}
           />
         </Fragment>
       ) : (

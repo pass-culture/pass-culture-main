@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react'
-import { Row } from 'react-table'
 import '@testing-library/jest-dom'
+import userEvent from '@testing-library/user-event'
+import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
+import type { Row } from 'react-table'
 
 import { api } from 'apiClient/api'
 import {
@@ -11,8 +15,9 @@ import {
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/v1'
+import { configureTestStore } from 'store/testUtils'
 
-import CollectiveTableRow from '../CollectiveTableRow'
+import CollectiveTableRow, { ITableBodyProps } from '../CollectiveTableRow'
 
 jest.mock('apiClient/api')
 jest.mock(
@@ -22,6 +27,15 @@ jest.mock(
     default: jest.fn(() => <tr />),
   })
 )
+
+const renderCollectiveTableRow = (props: ITableBodyProps) =>
+  render(
+    <Router history={createBrowserHistory()}>
+      <Provider store={configureTestStore({})}>
+        <CollectiveTableRow {...props} />
+      </Provider>
+    </Router>
+  )
 
 describe('CollectiveTableRow', () => {
   beforeAll(() => {
@@ -59,11 +73,14 @@ describe('CollectiveTableRow', () => {
     const row = {
       original: {
         booking_identifier: 'A1',
+        stock: {
+          offer_identifier: 'A1',
+        },
       },
       isExpanded: false,
     } as Row<CollectiveBookingResponseModel>
 
-    render(<CollectiveTableRow row={row} />)
+    renderCollectiveTableRow({ row, reloadBookings: jest.fn() })
 
     expect(
       screen.queryByText('Métier Alexandre Bérard')
@@ -74,6 +91,9 @@ describe('CollectiveTableRow', () => {
     const row = {
       original: {
         booking_identifier: 'A1',
+        stock: {
+          offer_identifier: 'A1',
+        },
       },
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>
@@ -89,7 +109,8 @@ describe('CollectiveTableRow', () => {
         )
       )
 
-    render(<CollectiveTableRow row={row} />)
+    renderCollectiveTableRow({ row, reloadBookings: jest.fn() })
+
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
   })
 
@@ -97,11 +118,14 @@ describe('CollectiveTableRow', () => {
     const row = {
       original: {
         booking_identifier: 'A1',
+        stock: {
+          offer_identifier: 'A1',
+        },
       },
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>
 
-    render(<CollectiveTableRow row={row} />)
+    renderCollectiveTableRow({ row, reloadBookings: jest.fn() })
 
     expect(await screen.findByText('10 élèves')).toBeInTheDocument()
     expect(await screen.findByText('0€')).toBeInTheDocument()
@@ -111,5 +135,26 @@ describe('CollectiveTableRow', () => {
         exact: false,
       })
     ).toBeInTheDocument()
+  })
+
+  it('should reload bookings after cancelling one', async () => {
+    const row = {
+      original: {
+        booking_identifier: 'A1',
+        stock: {
+          offer_identifier: 'A1',
+        },
+      },
+      isExpanded: true,
+    } as Row<CollectiveBookingResponseModel>
+    const reloadBookings = jest.fn()
+
+    renderCollectiveTableRow({ row, reloadBookings })
+
+    expect(await screen.findByText('10 élèves')).toBeInTheDocument()
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Annuler la réservation' })
+    )
+    expect(reloadBookings).toHaveBeenCalledTimes(1)
   })
 })
