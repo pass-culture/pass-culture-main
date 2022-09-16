@@ -20,10 +20,8 @@ from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.repository import get_and_lock_collective_stock
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -242,44 +240,6 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         booking_providers_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
-def _cancel_collective_booking(
-    collective_booking: CollectiveBooking,
-    reason: CollectiveBookingCancellationReasons,
-) -> bool:
-    with transaction():
-        collective_stock = get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
-        db.session.refresh(collective_booking)
-        old_status = collective_booking.status
-        try:
-            collective_booking.cancel_booking(cancel_even_if_used=True)
-        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
-            logger.info(
-                "%s: %s",
-                type(e).__name__,
-                str(e),
-                extra={
-                    "collective_booking": collective_booking.id,
-                    "reason": str(reason),
-                },
-            )
-            return False
-
-        if old_status is CollectiveBookingStatus.USED:
-            finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-
-        collective_booking.cancellationReason = reason
-        repository.save(collective_booking, collective_stock)
-    logger.info(
-        "CollectiveBooking has been cancelled",
-        extra={
-            "collective_booking": collective_booking.id,
-            "reason": str(reason),
-        },
-    )
-
-    return True
-
-
 def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
@@ -291,28 +251,6 @@ def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCance
             deleted_bookings.append(booking)
 
     return deleted_bookings
-
-
-def _cancel_collective_booking_from_stock(
-    collective_stock: CollectiveStock, reason: CollectiveBookingCancellationReasons
-) -> CollectiveBooking | None:
-    """
-    Cancel booking.
-    Note that this will not reindex the stock.offer in Algolia
-    """
-    booking_to_cancel: CollectiveBooking | None = next(
-        (
-            collective_booking
-            for collective_booking in collective_stock.collectiveBookings
-            if collective_booking.status not in [CollectiveBookingStatus.CANCELLED, CollectiveBookingStatus.REIMBURSED]
-        ),
-        None,
-    )
-
-    if booking_to_cancel is not None:
-        _cancel_collective_booking(booking_to_cancel, reason)
-
-    return booking_to_cancel
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
@@ -334,15 +272,6 @@ def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Bo
     cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
     search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
-
-
-def cancel_collective_booking_from_stock_by_offerer(
-    collective_stock: CollectiveStock,
-) -> CollectiveBooking | None:
-    cancelled_booking = _cancel_collective_booking_from_stock(
-        collective_stock, CollectiveBookingCancellationReasons.OFFERER
-    )
-    return cancelled_booking
 
 
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:

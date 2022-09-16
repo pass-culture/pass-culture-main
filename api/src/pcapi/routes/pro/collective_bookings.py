@@ -13,8 +13,6 @@ from pcapi.core.educational import exceptions as collective_exceptions
 from pcapi.core.educational import repository as collective_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
-from pcapi.core.offers import api as offers_api
-from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_bookings_serialize
@@ -170,11 +168,11 @@ def cancel_collective_offer_booking(offer_id: str) -> None:
         check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        offers_api.cancel_collective_offer_booking(dehumanized_offer_id)
-    except offers_exceptions.StockNotFound:
+        collective_api.cancel_collective_offer_booking(dehumanized_offer_id)
+    except collective_exceptions.CollectiveStockNotFound:
         raise ApiErrors(
             {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404
         )
-    except offers_exceptions.NoBookingToCancel:
+    except collective_exceptions.NoCollectiveBookingToCancel:
         raise ApiErrors({"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}, 400)
     return
