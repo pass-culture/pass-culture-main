@@ -25,7 +25,7 @@ const institutionOmnisearchFilter: OmnisearchFilter = {
   id: 'établissement',
   placeholderText: 'Rechercher par nom d’établissement',
   stateKey: 'bookingInstitution',
-  selectOptionText: 'Etablissement',
+  selectOptionText: 'Établissement',
 }
 
 const isbnOmnisearchFilter: OmnisearchFilter = {

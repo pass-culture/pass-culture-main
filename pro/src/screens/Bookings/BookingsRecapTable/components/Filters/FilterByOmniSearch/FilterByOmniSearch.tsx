@@ -11,7 +11,7 @@ import {
 } from './constants'
 import { BookingOmniSearchFilters } from './types'
 
-interface FilterByOmniSearchProps {
+export interface FilterByOmniSearchProps {
   isDisabled: boolean
   keywords: string
   selectedOmniSearchCriteria: string

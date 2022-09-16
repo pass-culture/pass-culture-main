@@ -64,7 +64,7 @@ const OffersTableHead = ({
         </th>
         {audience === Audience.INDIVIDUAL && <th />}
         <th>Lieu</th>
-        <th>{audience === Audience.COLLECTIVE ? 'Etablissement' : 'Stocks'}</th>
+        <th>{audience === Audience.COLLECTIVE ? 'Établissement' : 'Stocks'}</th>
         <th className="th-with-filter">
           <StatusFiltersButton
             applyFilters={applyFilters}
