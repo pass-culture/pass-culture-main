@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { render, waitFor } from '@testing-library/react'
+import {
+  render,
+  waitFor,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -199,7 +204,7 @@ describe('test OfferIndividualWisard', () => {
     })
   })
 
-  it.only('should initialize context with api when a offerId is given', async () => {
+  it('should initialize context with api when a offerId is given', async () => {
     const offerId = 'YA'
     await renderOfferIndividualWizardRoute(store, `/offre/${offerId}/v3`)
 
@@ -208,6 +213,129 @@ describe('test OfferIndividualWisard', () => {
       expect(api.getVenues).toHaveBeenCalledTimes(1)
       expect(pcapi.loadCategories).toHaveBeenCalledTimes(1)
       expect(api.getOffer).toHaveBeenCalledWith(offerId)
+    })
+  })
+
+  describe('stepper', () => {
+    it('should not render stepper on information page', async () => {
+      await renderOfferIndividualWizardRoute(
+        store,
+        `/offre/v3/creation/individuelle/informations`
+      )
+
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText('Chargement en cours')
+      )
+
+      const tabInformations = await screen.queryByText('Informations', {
+        selector: 'span',
+      })
+      const tabStocks = await screen.queryByText('Stock & Prix', {
+        selector: 'span',
+      })
+      const tabSummary = await screen.queryByText('Récapitulatif', {
+        selector: 'span',
+      })
+      const tabConfirmation = await screen.queryByText('Confirmation', {
+        selector: 'span',
+      })
+
+      expect(tabInformations).toBeInTheDocument()
+      expect(tabStocks).toBeInTheDocument()
+      expect(tabSummary).toBeInTheDocument()
+      expect(tabConfirmation).toBeInTheDocument()
+    })
+
+    it('should not render stepper on confirmation page', async () => {
+      const offerId = 'YA'
+      await renderOfferIndividualWizardRoute(
+        store,
+        `/offre/${offerId}/v3/creation/individuelle/confirmation`
+      )
+
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText('Chargement en cours')
+      )
+
+      const tabInformations = await screen.queryByText('Informations', {
+        selector: 'span',
+      })
+      const tabStocks = await screen.queryByText('Stock & Prix', {
+        selector: 'span',
+      })
+      const tabSummary = await screen.queryByText('Récapitulatif', {
+        selector: 'span',
+      })
+      const tabConfirmation = await screen.queryByText('Confirmation', {
+        selector: 'span',
+      })
+
+      expect(tabInformations).not.toBeInTheDocument()
+      expect(tabStocks).not.toBeInTheDocument()
+      expect(tabSummary).not.toBeInTheDocument()
+      expect(tabConfirmation).not.toBeInTheDocument()
+    })
+
+    it('should render stepper on summary page in creation', async () => {
+      const offerId = 'YA'
+      await renderOfferIndividualWizardRoute(
+        store,
+        `/offre/${offerId}/v3/creation/individuelle/recapitulatif`
+      )
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText('Chargement en cours')
+      )
+
+      const tabInformations = await screen.queryByText('Informations', {
+        selector: 'span',
+      })
+      const tabStocks = await screen.queryByText('Stock & Prix', {
+        selector: 'span',
+      })
+      const tabSummary = await screen.queryByText('Récapitulatif', {
+        selector: 'span',
+      })
+      const tabConfirmation = await screen.queryByText('Confirmation', {
+        selector: 'span',
+      })
+
+      await waitFor(() => {
+        expect(tabInformations).toBeInTheDocument()
+        expect(tabStocks).toBeInTheDocument()
+        expect(tabSummary).toBeInTheDocument()
+        expect(tabConfirmation).toBeInTheDocument()
+      })
+    })
+
+    it('should not render stepper on summary page in edition', async () => {
+      const offerId = 'YA'
+      await renderOfferIndividualWizardRoute(
+        store,
+        `/offre/${offerId}/v3/individuelle/recapitulatif`
+      )
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText('Chargement en cours')
+      )
+
+      const tabInformations = await screen.queryByText('Informations', {
+        selector: 'span',
+      })
+      const tabStocks = await screen.queryByText('Stock & Prix', {
+        selector: 'span',
+      })
+      const tabSummary = await screen.queryByText('Récapitulatif', {
+        selector: 'span',
+      })
+      const tabConfirmation = await screen.queryByText('Confirmation', {
+        selector: 'span',
+      })
+
+      await waitFor(() => {
+        expect(tabInformations).not.toBeInTheDocument()
+        expect(tabStocks).not.toBeInTheDocument()
+        expect(tabSummary).not.toBeInTheDocument()
+        expect(tabConfirmation).not.toBeInTheDocument()
+      })
     })
   })
 })
