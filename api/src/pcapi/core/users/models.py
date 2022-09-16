@@ -104,12 +104,14 @@ class NotificationSubscriptions:
 
 
 # calculate date of latest birthday
-def _get_latest_birthday(birth_date: date) -> date:
+def _get_latest_birthday(birth_date: date | None) -> date | None:
     """
     Calculates the latest birthday of a given person.
     :param birth_date: The person's birthday.
     :return: The latest birthday's date.
     """
+    if not birth_date:
+        return None
 
     today = date.today()
 
@@ -394,8 +396,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         return self.eligibility is not None
 
     @property
-    def latest_birthday(self) -> date:
-        return _get_latest_birthday(self.dateOfBirth.date())  # type: ignore [union-attr]
+    def latest_birthday(self) -> date | None:
+        return _get_latest_birthday(self.birth_date)
 
     @property
     def real_wallet_balance(self):  # type: ignore [no-untyped-def]
