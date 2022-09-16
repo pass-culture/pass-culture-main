@@ -15,9 +15,9 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useUtmQueryParams from './useUtmQueryParams'
 
 export const useConfigureAnalytics = (currentUserId: string | undefined) => {
-  const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
+  // const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
-  const { logEvent, setLogEvent } = useAnalytics()
+  const { logEvent, setLogEvent, app, setApp } = useAnalytics()
   const utmParameters = useUtmQueryParams()
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export const useConfigureAnalytics = (currentUserId: string | undefined) => {
   useEffect(() => {
     if (!app && isFirebaseSupported) {
       const initializeApp = firebase.initializeApp(firebaseConfig)
-      setApp(initializeApp)
+      setApp && setApp(initializeApp)
       isFirebaseSupported &&
         initializeAnalytics(initializeApp, {
           config: {
@@ -47,7 +47,7 @@ export const useConfigureAnalytics = (currentUserId: string | undefined) => {
                 | { [key: string]: string | boolean | string[] }
                 | Record<string, never> = {}
             ) => {
-              analyticsLogEvent(getAnalytics(app), event, {
+              analyticsLogEvent(getAnalytics(initializeApp), event, {
                 ...params,
                 ...utmParameters,
               })
