@@ -18,7 +18,7 @@ import {
   loadFakeApiVenue,
 } from 'utils/fakeApi'
 
-describe('offer step', () => {
+describe('individual offer step', () => {
   describe('in creation mode', () => {
     it('should display breadcrumb without link', async () => {
       // Given
@@ -32,10 +32,11 @@ describe('offer step', () => {
       await renderOffer({ pathname: '/offre/creation/individuel' })
 
       // Then
+      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
       const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
-      expect(detailTab.closest('.bc-step')).toHaveClass('active')
+      expect(detailTab.closest('li')).toHaveClass('active')
       const stockTab = screen.getByText('Stocks et prix')
       expect(stockTab).toBeInTheDocument()
       expect(stockTab).not.toHaveAttribute('href')
@@ -58,6 +59,7 @@ describe('offer step', () => {
       await renderOffer({ pathname: `/offre/${offer.id}/individuel/edition` })
 
       // Then
+      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
       const detailTab = await screen.findByText("Détails de l'offre", {
         selector: 'a',
       })
@@ -88,17 +90,18 @@ describe('stocks step', () => {
       })
 
       // Then
-      const detailTab = await screen.findByText("Détails de l'offre")
+      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+      const detailTab = await screen
+        .getByText("Détails de l'offre")
+        .closest('a')
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).toHaveAttribute('href')
-      const stockTab = await screen.findByText('Stocks et prix', {
-        selector: 'a',
-      })
+      const stockTab = await screen
+        .getByText('Stocks et prix', { selector: 'span' })
+        .closest('a')
       expect(stockTab).toBeInTheDocument()
       expect(stockTab).toHaveAttribute('href')
-      expect(await screen.getByTestId('breadcrumb-step-stocks')).toHaveClass(
-        'active'
-      )
+      expect(stockTab.closest('li')).toHaveClass('active')
       const confirmationTab = screen.getByText('Confirmation')
       expect(confirmationTab).toBeInTheDocument()
       expect(confirmationTab).not.toHaveAttribute('href')
@@ -120,6 +123,7 @@ describe('stocks step', () => {
       await renderOffer({ pathname: `/offre/${offer.id}/individuel/stocks` })
 
       // Then
+      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
       const detailTab = await screen.findByText("Détails de l'offre", {
         selector: 'a',
       })

@@ -33,6 +33,8 @@ describe('src | new_components | OfferBreadcrumb', () => {
     it('should display breadcrumb for individual offer in creation', async () => {
       renderOfferBreadcrumb(props)
 
+      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+
       const listItems = await screen.findAllByRole('listitem')
 
       expect(listItems).toHaveLength(4)
@@ -45,6 +47,8 @@ describe('src | new_components | OfferBreadcrumb', () => {
     it('should display breadcrumb for individual offer in edition', async () => {
       props.isCreatingOffer = false
       renderOfferBreadcrumb(props)
+
+      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -74,9 +78,11 @@ describe('src | new_components | OfferBreadcrumb', () => {
       props.isOfferEducational = true
     })
 
-    it('should display breadcrumb for collective offer - with visibility step', async () => {
+    it('should display breadcrumb for collective offer - with visibility step in creation', async () => {
       props.isCreatingOffer = true
       renderOfferBreadcrumb(props)
+
+      expect(await screen.getByTestId('bc-default')).toBeInTheDocument()
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -90,6 +96,8 @@ describe('src | new_components | OfferBreadcrumb', () => {
     it('should generate link with offerId when user is editing an offer', async () => {
       props.isCreatingOffer = false
       renderOfferBreadcrumb(props)
+
+      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
 
       const linkItems = await screen.findAllByRole('link')
 
