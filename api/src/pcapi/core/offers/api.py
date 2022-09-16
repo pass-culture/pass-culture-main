@@ -5,7 +5,6 @@ from typing import List
 
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
-from pydantic import ValidationError
 import sentry_sdk
 import sqlalchemy.exc as sqla_exc
 import sqlalchemy.orm as sqla_orm
@@ -19,7 +18,6 @@ from pcapi.core import search
 from pcapi.core.booking_providers.api import get_shows_stock
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
-from pcapi.core.bookings.api import cancel_collective_booking_from_stock_by_offerer
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_cancellation_limit_dates
 from pcapi.core.bookings.models import Booking
@@ -29,9 +27,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import api as educational_api
-from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
-import pcapi.core.educational.adage_backends as adage_client
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -69,7 +65,6 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
@@ -1062,55 +1057,6 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: str | Non
 
     if not transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason):
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
-
-
-def cancel_collective_offer_booking(offer_id: int) -> None:
-    collective_offer = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id == offer_id
-    ).first()
-
-    if collective_offer.collectiveStock is None:
-        raise offers_exceptions.StockNotFound()
-
-    collective_stock = collective_offer.collectiveStock
-
-    # Offer is reindexed in the end of this function
-    cancelled_booking = cancel_collective_booking_from_stock_by_offerer(collective_stock)
-
-    if cancelled_booking is None:
-        raise offers_exceptions.NoBookingToCancel()
-
-    search.async_index_collective_offer_ids([offer_id])
-
-    logger.info(
-        "Deleted collective stock and cancelled its collective booking",
-        extra={"stock": collective_stock.id, "collective_booking": cancelled_booking.id},
-    )
-
-    try:
-        adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
-    except educational_exceptions.AdageException as adage_error:
-        logger.error(
-            "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
-            adage_error.message,
-            extra={
-                "collectiveBookingId": cancelled_booking.id,
-                "adage status code": adage_error.status_code,
-                "adage response text": adage_error.response_text,
-            },
-        )
-    except ValidationError:
-        logger.exception(
-            "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
-            extra={
-                "collectiveBookingId": cancelled_booking.id,
-            },
-        )
-    if not transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
-        logger.warning(
-            "Could not notify offerer about deletion of stock",
-            extra={"collectiveStock": collective_stock.id},
-        )
 
 
 def update_stock_quantity_to_match_booking_provider_remaining_place(
