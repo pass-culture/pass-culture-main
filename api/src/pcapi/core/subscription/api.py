@@ -35,8 +35,8 @@ USER_PROFILING_BLOCKING_STATUS = fraud_models.FraudCheckStatus.KO
 
 
 def _get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
-    first_registration_date = get_first_registration_date(user, user.dateOfBirth, eligibility)
-    if not first_registration_date or not user.dateOfBirth:
+    first_registration_date = get_first_registration_date(user, user.birth_date, eligibility)
+    if not first_registration_date or not user.birth_date:
         return None
     return users_utils.get_age_at_date(user.dateOfBirth, first_registration_date)
 
@@ -636,7 +636,7 @@ def _get_jouve_subscription_item_status(
 
 def get_first_registration_date(
     user: users_models.User,
-    birth_date: datetime.date | datetime.datetime | None,
+    birth_date: datetime.date | None,
     eligibility: users_models.EligibilityType,
 ) -> datetime.datetime | None:
     fraud_checks = user.beneficiaryFraudChecks
