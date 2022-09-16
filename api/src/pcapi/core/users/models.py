@@ -377,7 +377,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     def eligibility(self) -> EligibilityType | None:
         from pcapi.core.fraud import api as fraud_api
 
-        return fraud_api.decide_eligibility(self, self.dateOfBirth, datetime.utcnow())
+        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
 
     @property
     def has_active_deposit(self):  # type: ignore [no-untyped-def]
