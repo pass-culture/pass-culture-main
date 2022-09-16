@@ -324,6 +324,14 @@ def users_whose_credit_expired_today_automation() -> None:
     user_automations.users_whose_credit_expired_today_automation()
 
 
+@blueprint.cli.command("pro_inactive_venues_automation")
+@log_cron_with_transaction
+def pro_inactive_venues_automation() -> None:
+    """Updates the list of venues which are inactive since 90 days or more ("pros-inactivité-90j" list).
+    This command is meant to be called every day."""
+    user_automations.pro_inactive_venues_automation()
+
+
 @blueprint.cli.command("notify_users_bookings_not_retrieved")
 @log_cron_with_transaction
 def notify_users_bookings_not_retrieved_command() -> None:
