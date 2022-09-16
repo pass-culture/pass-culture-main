@@ -69,7 +69,7 @@ class Returns200Test:
             collectiveDescription="collective description maybe",
             collectiveStudents=[StudentLevels.CAP1, StudentLevels.CAP2],
             collectiveDomains=[domain1, domain2],
-            collectiveInterventionArea=["75", "92"],
+            collectiveInterventionArea=["75", "92", "971"],
             collectiveNetwork=["1"],
         )
 
@@ -99,7 +99,7 @@ class Returns200Test:
                     "motorDisabilityCompliant": None,
                     "visualDisabilityCompliant": None,
                     "domains": [{"id": domain1.id, "name": domain1.name}, {"id": domain2.id, "name": domain2.name}],
-                    "interventionArea": ["75", "92"],
+                    "interventionArea": ["075", "092", "971"],
                     "network": ["1"],
                     "statusId": None,
                 }

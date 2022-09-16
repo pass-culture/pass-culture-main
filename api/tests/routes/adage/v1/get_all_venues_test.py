@@ -35,7 +35,7 @@ class Returns200Test:
                     "motorDisabilityCompliant": False,
                     "visualDisabilityCompliant": False,
                     "domains": [],
-                    "interventionArea": ["75", "92"],
+                    "interventionArea": ["075", "092"],
                     "network": None,
                     "statusId": None,
                 }
