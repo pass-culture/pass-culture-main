@@ -1544,7 +1544,7 @@ class UbbleWebhookTest:
     def test_decision_age_cannot_become_beneficiary(
         self, client, ubble_mocker, age, reason_code, reason, in_app_message
     ):
-        document_birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=age)
+        document_birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=age, month=6)
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
         request_data = self._get_request_body(ubble_fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
