@@ -23,6 +23,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   id: string;
   interventionArea: Array<string>;
   isActive: boolean;
+  isCancellable: boolean;
   isEditable: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;

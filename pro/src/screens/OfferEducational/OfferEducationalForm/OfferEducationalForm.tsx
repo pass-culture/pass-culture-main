@@ -23,7 +23,11 @@ import styles from './OfferEducationalForm.module.scss'
 
 type IOfferEducationalFormProps = Omit<
   IOfferEducationalProps,
-  'onSubmit' | 'initialValues' | 'isEdition' | 'getEducationalDomainsAdapter'
+  | 'onSubmit'
+  | 'initialValues'
+  | 'isEdition'
+  | 'getEducationalDomainsAdapter'
+  | 'isOfferCancellable'
 > & {
   mode: Mode
   domainsOptions: SelectOption[]
