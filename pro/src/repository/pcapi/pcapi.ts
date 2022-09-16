@@ -20,10 +20,6 @@ export const loadFeatures = async () => {
 // offers
 //
 
-export const publishOffer = (offerId: string) => {
-  return client.patch(`/offers/publish`, { id: offerId })
-}
-
 export const patchIsCollectiveOfferActive = (
   offerIds: string[],
   isActive: boolean
