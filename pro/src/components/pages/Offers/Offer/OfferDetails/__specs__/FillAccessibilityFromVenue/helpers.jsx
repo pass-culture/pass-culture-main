@@ -30,11 +30,17 @@ import {
 } from './mocks'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  createOffer: jest.fn(),
   getUserValidatedOfferersNames: jest.fn(),
   getVenue: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   loadCategories: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    postOffer: jest.fn(),
+    getOffer: jest.fn(),
+  },
 }))
 
 const renderOffer = async (props, store, pathname, queryParams = null) => {
@@ -142,7 +148,7 @@ export const initialize = async ({
     offerer2VenueVirtual,
     offerer2VenuePhysicalAccessible,
   ])
-  pcapi.createOffer.mockResolvedValue({})
+  api.postOffer.mockResolvedValue({})
   pcapi.loadCategories.mockResolvedValue(categories)
 
   let rtlRenderReturn

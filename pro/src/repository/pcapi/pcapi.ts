@@ -19,20 +19,6 @@ export const loadFeatures = async () => {
 //
 // offers
 //
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
-export const loadOffer = async offerId => {
-  return client.get(`/offers/${offerId}`)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offer' implicitly has an 'any' type.
-export const createOffer = offer => {
-  return client.post(`/offers`, offer)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
-export const updateOffer = (offerId, offer) => {
-  return client.patch(`/offers/${offerId}`, offer)
-}
 
 export const publishOffer = (offerId: string) => {
   return client.patch(`/offers/publish`, { id: offerId })

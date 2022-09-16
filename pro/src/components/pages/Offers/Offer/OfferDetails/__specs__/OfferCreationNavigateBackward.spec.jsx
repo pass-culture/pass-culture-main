@@ -17,7 +17,6 @@ import { getOfferInputForField } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  updateOffer: jest.fn(),
   getUserValidatedOfferersNames: jest.fn(),
   getVenue: jest.fn(),
   getVenuesForOfferer: jest.fn(),
@@ -25,6 +24,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadStocks: jest.fn(),
   loadTypes: jest.fn(),
   postThumbnail: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    patchOffer: jest.fn(),
+    getOffer: jest.fn(),
+  },
 }))
 
 const renderOfferCreation = async (
@@ -296,7 +302,7 @@ describe('offerCreation - navigate backward', () => {
     await getOfferInputForField('categoryId')
 
     // FIXME: should call creation patch route when available.
-    pcapi.updateOffer.mockResolvedValue({})
+    api.patchOffer.mockResolvedValue({})
     pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     await userEvent.click(screen.getByText('Étape suivante'))
 

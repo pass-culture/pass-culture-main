@@ -24,7 +24,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
-  updateOffer: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    patchOffer: jest.fn(),
+    getOffer: jest.fn(),
+  },
 }))
 
 const renderOffers = async (props, store, queryParams = '') => {

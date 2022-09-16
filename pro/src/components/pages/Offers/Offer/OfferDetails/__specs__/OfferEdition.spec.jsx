@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
@@ -31,7 +32,15 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
-  updateOffer: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    patchOffer: jest.fn(),
+    getOffer: jest.fn(),
+    listOfferersNames: jest.fn(),
+    getVenues: jest.fn(),
+  },
 }))
 
 jest.mock('core/Offers/utils/computeOffersUrl', () => ({
@@ -233,7 +242,7 @@ describe('offerDetails - Edition', () => {
             'Veuillez cocher au moins une option ci-dessus'
           )
           expect(accessibilityErrorNotification).toBeInTheDocument()
-          expect(pcapi.updateOffer).not.toHaveBeenCalled()
+          expect(api.patchOffer).not.toHaveBeenCalled()
 
           // When
           const mentalDisabilityCompliantCheckbox = screen.getByLabelText(
@@ -1248,7 +1257,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       await waitFor(() =>
-        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        expect(api.patchOffer).toHaveBeenCalledWith(
           editedOffer.id,
           expect.not.objectContaining({
             venueId: expect.anything(),
@@ -1307,7 +1316,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       await waitFor(() =>
-        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        expect(api.patchOffer).toHaveBeenCalledWith(
           editedOffer.id,
           expect.objectContaining({
             audioDisabilityCompliant: false,
@@ -1356,7 +1365,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       await waitFor(() =>
-        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        expect(api.patchOffer).toHaveBeenCalledWith(
           editedOffer.id,
           expect.not.objectContaining({
             extraData: null,
@@ -1398,7 +1407,7 @@ describe('offerDetails - Edition', () => {
         await screen.findByText('Enregistrer les modifications')
       )
       await waitFor(() =>
-        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        expect(api.patchOffer).toHaveBeenCalledWith(
           editedOffer.id,
           expect.objectContaining({
             extraData: null,
@@ -1454,7 +1463,7 @@ describe('offerDetails - Edition', () => {
       )
 
       await waitFor(() =>
-        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        expect(api.patchOffer).toHaveBeenCalledWith(
           editedOffer.id,
           expect.objectContaining({
             extraData: { isbn: editedOffer.extraData.isbn },
@@ -1497,7 +1506,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       await waitFor(() =>
-        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        expect(api.patchOffer).toHaveBeenCalledWith(
           editedOffer.id,
           expect.objectContaining({
             bookingEmail: null,
@@ -1567,9 +1576,11 @@ describe('offerDetails - Edition', () => {
         status: 'ACTIVE',
       }
       jest.spyOn(api, 'getOffer').mockResolvedValue(editedOffer)
-      jest.spyOn(pcapi, 'updateOffer').mockRejectedValue({
-        errors: { name: "Ce nom n'est pas valide" },
-      })
+      jest
+        .spyOn(api, 'patchOffer')
+        .mockRejectedValue(
+          new ApiError({}, { body: { name: "Ce nom n'est pas valide" } }, '')
+        )
       await renderOffers(props, store)
       //
       await userEvent.type(
