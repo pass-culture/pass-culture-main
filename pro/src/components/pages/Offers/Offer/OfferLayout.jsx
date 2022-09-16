@@ -114,6 +114,7 @@ const OfferLayout = () => {
         isOfferEducational={false}
         offerId={offer?.id}
         haveStock={offerHaveStock}
+        className="pc-breadcrumb"
       />
 
       <div className="offer-content">
