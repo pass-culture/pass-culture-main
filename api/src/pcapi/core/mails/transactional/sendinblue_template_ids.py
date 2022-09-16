@@ -147,3 +147,6 @@ class TransactionalEmail(Enum):
         id_prod=754, id_not_prod=99, tags=["pro_reinit_mdp_when_connected"]
     )
     WELCOME_TO_PRO = models.TemplatePro(id_prod=481, id_not_prod=57, tags=["pro-bienvenue-pass"])
+    # FIXME (dbaty, 2022-09-21): remove this template once
+    # complementary invoices have been generated.
+    COMPLEMENTARY_INVOICES = models.TemplatePro(id_prod=775, id_not_prod=775)
