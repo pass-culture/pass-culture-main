@@ -6,7 +6,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import type { Store } from 'redux'
 
-import { BookingRecapStatus } from 'apiClient/v1'
+import {
+  BookingRecapStatus,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
 import { Audience } from 'core/shared'
 import { EMPTY_FILTER_VALUE } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
 import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
@@ -83,6 +86,42 @@ const otherBooking = {
     },
   ],
 }
+
+const collectiveBookingsRecap: CollectiveBookingResponseModel[] = [
+  {
+    stock: {
+      offer_name: 'Autre nom offre',
+      offer_identifier: '2',
+      offer_is_educational: false,
+      event_beginning_datetime: '2020-04-13T12:00:00Z',
+      number_of_tickets: 10,
+    },
+    institution: {
+      id: 1,
+      institutionType: 'COLLEGE',
+      name: 'BELLEVUE',
+      postalCode: '30100',
+      city: 'Ales',
+      phoneNumber: '',
+    },
+    booking_identifier: 'A1',
+    booking_amount: 10,
+    booking_date: '2020-04-03T12:00:00Z',
+    booking_token: 'ABCDE',
+    booking_status: BookingRecapStatus.VALIDATED,
+    booking_is_duo: true,
+    booking_status_history: [
+      {
+        status: BookingRecapStatus.BOOKED,
+        date: '2020-04-03T12:00:00Z',
+      },
+      {
+        status: BookingRecapStatus.VALIDATED,
+        date: '2020-05-06T12:00:00Z',
+      },
+    ],
+  },
+]
 
 describe('components | BookingsRecapTable', () => {
   let store: Store<Partial<RootState>>
@@ -186,6 +225,45 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     // 1 line = 6 cells
-    expect(screen.getAllByRole('cell')).toHaveLength(6)
+    const cells = screen.getAllByRole('columnheader')
+    expect(cells).toHaveLength(6)
+    expect(cells[0]).toHaveTextContent("Nom de l'offre")
+    expect(cells[1]).toHaveTextContent('')
+    expect(cells[2]).toHaveTextContent('Bénéficiaire')
+    expect(cells[3]).toHaveTextContent('Réservation')
+    expect(cells[4]).toHaveTextContent('Contremarque')
+    expect(cells[5]).toHaveTextContent('Statut')
+  })
+
+  it('should render the expected table for collective audience', () => {
+    // Given
+    // @ts-ignore
+    // eslint-disable-next-line
+    constants.NB_BOOKINGS_PER_PAGE = 1
+    jest
+      .spyOn(filterBookingsRecap, 'default')
+      .mockReturnValue(collectiveBookingsRecap)
+    const props = {
+      bookingsRecap: collectiveBookingsRecap,
+      isLoading: false,
+      audience: Audience.COLLECTIVE,
+    }
+
+    // When
+    render(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
+
+    // Then
+    // 1 line = 6 cells
+    const cells = screen.getAllByRole('columnheader')
+    expect(cells).toHaveLength(5)
+    expect(cells[0]).toHaveTextContent("Nom de l'offre")
+    expect(cells[1]).toHaveTextContent('Établissement')
+    expect(cells[2]).toHaveTextContent('Places et prix')
+    expect(cells[3]).toHaveTextContent('Statut')
+    expect(cells[4]).toHaveTextContent('')
   })
 })
