@@ -7,6 +7,10 @@ export const getErrorCode = (error: ApiError): string => {
 export const isErrorAPIError = (error: any): error is ApiError =>
   'name' in error && error.name === 'ApiError'
 
+export const getError = (error: ApiError): any => {
+  return error.body
+}
+
 export const getDataURLFromImageURL = async (
   imageURL: string
 ): Promise<File> => {
