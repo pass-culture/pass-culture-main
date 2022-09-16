@@ -663,11 +663,11 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
     def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
         if self.status is CollectiveBookingStatus.CANCELLED:
-            raise booking_exceptions.BookingIsAlreadyCancelled()
+            raise exceptions.CollectiveBookingAlreadyCancelled()
         if self.status is CollectiveBookingStatus.REIMBURSED:
-            raise booking_exceptions.BookingIsAlreadyUsed()
+            raise exceptions.CollectiveBookingIsAlreadyUsed
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
-            raise booking_exceptions.BookingIsAlreadyUsed()
+            raise exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
@@ -717,10 +717,8 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
         try:
             self.cancel_booking()
             self.cancellationReason = CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
-        except booking_exceptions.BookingIsAlreadyUsed:
+        except exceptions.CollectiveBookingIsAlreadyUsed:
             raise exceptions.EducationalBookingNotRefusable()
-        except booking_exceptions.BookingIsAlreadyCancelled:
-            raise exceptions.EducationalBookingAlreadyCancelled()
 
         self.status = CollectiveBookingStatus.CANCELLED
 

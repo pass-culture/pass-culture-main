@@ -162,7 +162,7 @@ def cancel_collective_offer_booking(offer_id: str) -> None:
         offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors(
-            {"code": "NO_EDUCATIONAL_OFFER_FOUND", "message": "No educational offer has been found with this id"}, 404
+            {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
         )
     else:
         check_user_has_access_to_offerer(current_user, offerer.id)
@@ -173,6 +173,10 @@ def cancel_collective_offer_booking(offer_id: str) -> None:
         raise ApiErrors(
             {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404
         )
+    except collective_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors(
+            {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
+        )
     except collective_exceptions.NoCollectiveBookingToCancel:
-        raise ApiErrors({"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}, 400)
+        raise ApiErrors({"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}, 400)
     return
