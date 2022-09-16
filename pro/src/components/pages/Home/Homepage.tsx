@@ -4,6 +4,7 @@ import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { BannerRGS } from 'new_components/Banner'
 import { Newsletter } from 'new_components/Newsletter'
+import { StepByStepTutorial } from 'new_components/StepByStepTutorial'
 import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
@@ -26,8 +27,10 @@ const Homepage = (): JSX.Element => {
 
   return (
     <div className="homepage">
+      <StepByStepTutorial />
+
       <PageTitle title="Espace acteurs culturels" />
-      <h1>Bienvenue dans l’espace acteurs culturels</h1>
+      <h1 className="home-title">Bienvenue dans l’espace acteurs culturels</h1>
       {!hasClosedRGSBanner && (
         <BannerRGS closable onClose={handleCloseRGSBanner} />
       )}

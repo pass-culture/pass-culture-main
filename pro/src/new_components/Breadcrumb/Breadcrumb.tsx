@@ -35,12 +35,13 @@ const Breadcrumb = ({
       {steps.map((step, stepIndex) => {
         const isActive = activeStep === step.id
         const isLastStep = lastStepIndex === stepIndex
-
+        // className={(cn('bc-step', { active: isActive }), 'breadcrumb')}
         return (
           <li
-            className={`bc-step ${isActive ? 'active' : ''}`}
+            className={cn`bc-step ${isActive ? 'active' : ''}`}
             key={`breadcrumb-step-${step.id}`}
             data-testid={`breadcrumb-step-${step.id}`}
+            data-tutorialid={`breadcrumb-${step.id}`}
           >
             <span className="bcs-label" key={`breadcrumb-step-${step.id}`}>
               {step.url ? (
