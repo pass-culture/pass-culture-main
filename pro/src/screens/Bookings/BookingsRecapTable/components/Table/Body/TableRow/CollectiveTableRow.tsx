@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import type { Row } from 'react-table'
 
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import {
+  BookingRecapStatus,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import Spinner from 'components/layout/Spinner'
 
@@ -38,6 +41,11 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
     }
   }, [row.isExpanded])
 
+  const cancellableStatuses: string[] = [
+    BookingRecapStatus.BOOKED,
+    BookingRecapStatus.PENDING,
+  ]
+
   return (
     <>
       <TableRow row={row} />
@@ -52,6 +60,9 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
                 <CollectiveBookingDetails
                   bookingDetails={bookingDetails}
                   offerId={row.original.stock.offer_identifier}
+                  canCanelBooking={cancellableStatuses.includes(
+                    row.original.booking_status
+                  )}
                   reloadBookings={reloadBookings}
                 />
               )

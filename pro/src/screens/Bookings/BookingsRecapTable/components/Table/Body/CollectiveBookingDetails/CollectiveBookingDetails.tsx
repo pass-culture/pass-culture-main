@@ -25,12 +25,14 @@ export interface ICollectiveBookingDetailsProps {
   bookingDetails: CollectiveBookingByIdResponseModel
   offerId: string
   reloadBookings: () => void
+  canCanelBooking: boolean
 }
 
 const CollectiveBookingDetails = ({
   bookingDetails,
   offerId,
   reloadBookings,
+  canCanelBooking,
 }: ICollectiveBookingDetailsProps) => {
   const notify = useNotification()
   const offerEditionUrl = useOfferEditionURL(true, offerId, false, false)
@@ -108,7 +110,11 @@ const CollectiveBookingDetails = ({
       </div>
 
       <div className={styles['action-buttons']}>
-        <Button variant={ButtonVariant.SECONDARY} onClick={cancelBooking}>
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          onClick={cancelBooking}
+          disabled={!canCanelBooking}
+        >
           Annuler la réservation
         </Button>
         <ButtonLink

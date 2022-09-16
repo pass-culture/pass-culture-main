@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -76,6 +75,7 @@ describe('CollectiveTableRow', () => {
         stock: {
           offer_identifier: 'A1',
         },
+        booking_status: 'booked',
       },
       isExpanded: false,
     } as Row<CollectiveBookingResponseModel>
@@ -94,6 +94,7 @@ describe('CollectiveTableRow', () => {
         stock: {
           offer_identifier: 'A1',
         },
+        booking_status: 'booked',
       },
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>
@@ -121,6 +122,7 @@ describe('CollectiveTableRow', () => {
         stock: {
           offer_identifier: 'A1',
         },
+        booking_status: 'booked',
       },
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>
@@ -135,26 +137,5 @@ describe('CollectiveTableRow', () => {
         exact: false,
       })
     ).toBeInTheDocument()
-  })
-
-  it('should reload bookings after cancelling one', async () => {
-    const row = {
-      original: {
-        booking_identifier: 'A1',
-        stock: {
-          offer_identifier: 'A1',
-        },
-      },
-      isExpanded: true,
-    } as Row<CollectiveBookingResponseModel>
-    const reloadBookings = jest.fn()
-
-    renderCollectiveTableRow({ row, reloadBookings })
-
-    expect(await screen.findByText('10 élèves')).toBeInTheDocument()
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Annuler la réservation' })
-    )
-    expect(reloadBookings).toHaveBeenCalledTimes(1)
   })
 })
