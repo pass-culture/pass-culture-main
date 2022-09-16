@@ -129,8 +129,13 @@ class CashflowFactory(BaseFactory):
     amount = -1000
     batch = factory.SubFactory(CashflowBatchFactory)
     status = models.CashflowStatus.ACCEPTED
-    # FIXME (dbaty, 2022-07-08): must be adapted for reimbursement points
-    bankAccount = factory.SelfAttribute("businessUnit.bankAccount")
+    businessUnit = None
+    reimbursementPoint = None
+    bankAccount = factory.LazyAttribute(
+        lambda cashflow: cashflow.reimbursementPoint.bankInformation
+        if cashflow.reimbursementPoint
+        else cashflow.businessUnit.bankAccount
+    )
 
 
 # Factories below are deprecated and should probably NOT BE USED in

@@ -2105,11 +2105,11 @@ def merge_cashflow_batches(
     assert target_batch not in batches_to_remove
 
     batch_ids_to_remove = [batch.id for batch in batches_to_remove]
-    business_unit_ids = [
+    reimbursement_point_ids = [
         id_
         for id_, in (
             models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
-            .with_entities(models.Cashflow.businessUnitId)
+            .with_entities(models.Cashflow.reimbursementPointId)
             .distinct()
         )
     ]
@@ -2121,9 +2121,9 @@ def merge_cashflow_batches(
             .with_entities(sqla_func.sum(models.Cashflow.amount))
             .scalar()
         )
-        for business_unit_id in business_unit_ids:
+        for reimbursement_point_id in reimbursement_point_ids:
             cashflows = models.Cashflow.query.filter(
-                models.Cashflow.businessUnitId == business_unit_id,
+                models.Cashflow.reimbursementPointId == reimbursement_point_id,
                 models.Cashflow.batchId.in_(
                     batch_ids_to_remove + [target_batch.id],
                 ),
