@@ -209,7 +209,7 @@ def _add_internal_note(
     else:
         html_body += Markup("Utilisateur identifié : <b>{}</b>, {}").format(name, email)
         if attributes.date_of_birth:
-            html_body += f", {users_utils.get_age_from_birth_date(attributes.date_of_birth)} ans"
+            html_body += f", {users_utils.get_age_from_birth_date(attributes.date_of_birth.date())} ans"
         if attributes.is_beneficiary and attributes.domains_credit:
             html_body += Markup("<br/>Bénéficiaire, crédit restant : {remaining:.2f} € sur {initial:.2f} €").format(
                 remaining=float(attributes.domains_credit.all.remaining) if attributes.domains_credit else 0,

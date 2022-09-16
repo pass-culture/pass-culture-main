@@ -38,7 +38,7 @@ def _get_age_at_first_registration(user: users_models.User, eligibility: users_m
     first_registration_date = get_first_registration_date(user, user.birth_date, eligibility)
     if not first_registration_date or not user.birth_date:
         return None
-    return users_utils.get_age_at_date(user.dateOfBirth, first_registration_date)
+    return users_utils.get_age_at_date(user.birth_date, first_registration_date)
 
 
 def activate_beneficiary_for_eligibility(
@@ -415,8 +415,11 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
     if not FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION.is_active():
         return True
 
+    if not user.birth_date:
+        return False
+
     future_age = users_utils.get_age_at_date(
-        user.dateOfBirth,  # type: ignore [arg-type]
+        user.birth_date,
         datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore [arg-type]
     )
     eligibility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]

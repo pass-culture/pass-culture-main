@@ -753,7 +753,7 @@ def get_eligibility_start_datetime(
 
 
 def get_eligibility_at_date(
-    date_of_birth: datetime.date | datetime.datetime | None,
+    date_of_birth: datetime.date | None,
     specified_datetime: datetime.datetime,
 ) -> models.EligibilityType | None:
     eligibility_start = get_eligibility_start_datetime(date_of_birth)
