@@ -6,19 +6,21 @@ import React from 'react'
 import { Audience } from 'core/shared'
 
 import FilterByOmniSearch from '../FilterByOmniSearch'
+import { FilterByOmniSearchProps } from '../FilterByOmniSearch/FilterByOmniSearch'
 
 describe('components | FilterByOmniSearch', () => {
-  let props
+  let props: FilterByOmniSearchProps
   beforeEach(() => {
     props = {
       audience: Audience.INDIVIDUAL,
       keywords: '',
       selectedOmniSearchCriteria: 'offre',
       updateFilters: jest.fn(),
+      isDisabled: false,
     }
   })
 
-  it('should display a select input with the given options', () => {
+  it('should display a select input with the individual options', () => {
     // When
     render(<FilterByOmniSearch {...props} />)
 
@@ -35,6 +37,21 @@ describe('components | FilterByOmniSearch', () => {
     expect(options[2]).toHaveValue('isbn')
     expect(options[3]).toHaveTextContent('Contremarque')
     expect(options[3]).toHaveValue('contremarque')
+  })
+
+  it('should display a select input with the collective options', () => {
+    // When
+    render(<FilterByOmniSearch {...props} audience={Audience.COLLECTIVE} />)
+
+    const options = screen.getAllByRole('option')
+
+    // Then
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
+    expect(options).toHaveLength(2)
+    expect(options[0]).toHaveTextContent('Offre')
+    expect(options[0]).toHaveValue('offre')
+    expect(options[1]).toHaveTextContent('Établissement')
+    expect(options[1]).toHaveValue('établissement')
   })
 
   it('should display the correct placeholder for current option selected', () => {
