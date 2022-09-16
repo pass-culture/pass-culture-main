@@ -1402,3 +1402,15 @@ class OfferViewTest:
         assert response.status_code == 302
         mocked_reindex_offer_ids.assert_called_once_with([offer.id])
         assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
+
+
+class OfferForVenueSubviewTest:
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_list_venues_for_offerer(self, mocked_validate_csrf_token, client):
+        admin = users_factories.AdminFactory(email="user@example.com")
+        client = client.with_session_auth(admin.email)
+
+        response = client.get(url_for("offer_for_venue.index", id=42))
+
+        assert response.status_code == 404
