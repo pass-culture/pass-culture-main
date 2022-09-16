@@ -68,6 +68,25 @@ class Returns200Test:
         assert response_json["isCancellable"] is True
         assert response_json["isVisibilityEditable"] is False
 
+    def test_cancellable_with_not_cancellable_booking(self, client):
+        # Given
+        stock = educational_factories.CollectiveStockFactory()
+        educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
+        educational_factories.UsedCollectiveBookingFactory(collectiveStock=stock)
+        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        client = client.with_session_auth(email="user@example.com")
+        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert response_json["collectiveStock"]["isBooked"] is True
+        assert response_json["isCancellable"] is True
+        assert response_json["isVisibilityEditable"] is False
+
     def test_performance(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()

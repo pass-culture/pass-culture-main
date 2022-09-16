@@ -224,6 +224,8 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     @property
     def is_cancellable_from_offerer(self) -> bool:
+        if self.collectiveStock is None:
+            return False
         return self.collectiveStock.is_cancellable_from_offerer
 
     @classmethod
@@ -477,10 +479,10 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     @property
     def is_cancellable_from_offerer(self) -> bool:
-        if any(not booking.is_cancellable_from_offerer for booking in self.collectiveBookings):
-            return False
+        if any(booking.is_cancellable_from_offerer for booking in self.collectiveBookings):
+            return True
 
-        return True
+        return False
 
 
 class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type, misc]
@@ -724,7 +726,11 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
     @property
     def is_cancellable_from_offerer(self) -> bool:
-        return self.status not in (CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED)
+        return self.status not in (
+            CollectiveBookingStatus.USED,
+            CollectiveBookingStatus.REIMBURSED,
+            CollectiveBookingStatus.CANCELLED,
+        )
 
 
 class CollectiveOfferTemplateDomain(Base, Model):  # type: ignore [valid-type, misc]
