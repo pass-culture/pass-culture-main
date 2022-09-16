@@ -98,7 +98,8 @@ describe('test OfferIndividualStepper', () => {
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Informations')).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
-    expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+    expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
+    expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
 
     expect(
       screen.getByRole('heading', { name: "Modifier l'offre" })

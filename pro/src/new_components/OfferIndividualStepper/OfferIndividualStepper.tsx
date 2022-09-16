@@ -11,6 +11,7 @@ import Breadcrumb, {
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import { useActiveStep } from './hooks'
 import useIsCreation from './hooks/useIsCreation'
+import styles from './OfferIndividualStepper.module.scss'
 
 const OfferIndividualStepper = () => {
   const { offer } = useOfferIndividualContext()
@@ -36,22 +37,24 @@ const OfferIndividualStepper = () => {
         : '/offre/:offerId/v3/individuelle/stocks',
       isActive: hasOffer,
     },
-    {
-      id: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      label: 'Récapitulatif',
-      path: isCreation
-        ? '/offre/:offerId/v3/creation/individuelle/recapitulatif'
-        : '/offre/:offerId/v3/individuelle/recapitulatif',
-      isActive: hasStock,
-    },
   ]
 
   if (isCreation) {
-    stepPatternList.push({
-      id: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-      label: 'Confirmation',
-      isActive: false,
-    })
+    stepPatternList.push(
+      {
+        id: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        label: 'Récapitulatif',
+        path: isCreation
+          ? '/offre/:offerId/v3/creation/individuelle/recapitulatif'
+          : '/offre/:offerId/v3/individuelle/recapitulatif',
+        isActive: hasStock,
+      },
+      {
+        id: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+        label: 'Confirmation',
+        isActive: false,
+      }
+    )
   }
 
   const stepList = stepPatternList.map((stepPattern: IStepPattern): Step => {
@@ -69,7 +72,8 @@ const OfferIndividualStepper = () => {
     <Breadcrumb
       activeStep={activeStep}
       steps={stepList}
-      styleType={BreadcrumbStyle.TAB}
+      styleType={isCreation ? BreadcrumbStyle.STEPPER : BreadcrumbStyle.DEFAULT}
+      className={isCreation ? styles['stepper-creation'] : ''}
     />
   )
 }

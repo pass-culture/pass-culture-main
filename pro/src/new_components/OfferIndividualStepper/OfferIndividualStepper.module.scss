@@ -1,0 +1,7 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
+.stepper-creation {
+  padding-right: rem.torem(10px);
+  padding-left: rem.torem(10px);
+  margin-bottom: rem.torem(38px);
+}
