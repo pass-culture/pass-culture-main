@@ -174,7 +174,7 @@ def update_user_information(
     user: models.User,
     first_name: str | None = None,
     last_name: str | None = None,
-    birth_date: datetime.datetime | None = None,
+    validated_birth_date: datetime.date | None = None,
     activity: str | None = None,
     address: str | None = None,
     city: str | None = None,
@@ -191,8 +191,11 @@ def update_user_information(
         user.lastName = last_name
     if first_name is not None or last_name is not None:
         user.publicName = "%s %s" % (first_name, last_name)
-    if birth_date is not None:
-        user.dateOfBirth = birth_date
+    if validated_birth_date is not None:
+        user.dateOfBirth = datetime.datetime.combine(
+            validated_birth_date, datetime.time.min
+        )  # TODO (PC-17174) stop overriding this field
+        user.validatedBirthDate = validated_birth_date
     if activity is not None:
         user.activity = activity
     if address is not None:
@@ -236,7 +239,7 @@ def update_user_information_from_external_source(
         user=user,
         first_name=first_name,
         last_name=last_name,
-        birth_date=datetime.datetime.combine(birth_date, datetime.time(0, 0)),
+        validated_birth_date=birth_date,
         activity=data.get_activity(),
         address=data.get_address(),
         city=data.get_city(),

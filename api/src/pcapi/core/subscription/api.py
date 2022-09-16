@@ -602,18 +602,14 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
 
 
 def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_date: datetime.date | None) -> None:
-    """Updates the user birth date based on data received from the identity provider.
-    Indeed, if the user is not beneficiary (or underage), user.dateOfBirth was manually declared during account creation.
-    We'd better trust the identity provider so that the user is correctly redirected for the rest of the process.
-
-    Args:
-        user (users_models.User): The user to update.
-        birth_date (datetime.date | None): The birth date to set.
+    """Updates the user validated birth date based on data received from the identity provider
+    so that the user is correctly redirected for the rest of the process.
     """
     if user.is_beneficiary:
         return
-    if user.dateOfBirth != birth_date and birth_date is not None:
-        user.dateOfBirth = birth_date
+    if user.validatedBirthDate != birth_date and birth_date is not None:
+        user.dateOfBirth = birth_date  # TODO (PC-17174) stop overriding this field
+        user.validatedBirthDate = birth_date
         pcapi_repository.repository.save(user)
 
 
