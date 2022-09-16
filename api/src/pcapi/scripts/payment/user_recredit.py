@@ -1,5 +1,6 @@
-from datetime import datetime
+import datetime
 import logging
+import typing
 
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
@@ -28,7 +29,7 @@ def has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
         logger.error("No registration date for user to be recredited", extra={"user_id": user.id})
         return False
 
-    return first_registration_datetime.date() < user.latest_birthday
+    return first_registration_datetime.date() < typing.cast(datetime.date, user.latest_birthday)
 
 
 def can_be_recredited(user: users_models.User) -> bool:
@@ -50,8 +51,8 @@ def has_been_recredited(user: users_models.User) -> bool:
 
 
 def recredit_underage_users() -> None:
-    sixteen_years_ago = datetime.utcnow() - relativedelta(years=16)
-    eighteen_years_ago = datetime.utcnow() - relativedelta(years=18)
+    sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+    eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
 
     user_ids = [
         result
