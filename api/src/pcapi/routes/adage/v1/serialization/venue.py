@@ -66,7 +66,11 @@ class BaseVenueModel(BaseModel):
             venue.phoneNumber = contact.phone_number
 
         venue.domains = venue.collectiveDomains
-        venue.interventionArea = venue.collectiveInterventionArea
+        venue.interventionArea = (
+            [intervention_area.zfill(3) for intervention_area in venue.collectiveInterventionArea]
+            if venue.collectiveInterventionArea
+            else None
+        )
         venue.network = venue.collectiveNetwork
         venue.statusId = venue.venueEducationalStatusId
 

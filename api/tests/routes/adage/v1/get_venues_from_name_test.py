@@ -48,7 +48,7 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             collectiveDomains=[domain1, domain2],
-            collectiveInterventionArea=["75", "92"],
+            collectiveInterventionArea=["mainland"],
             collectiveNetwork=["1"],
         )
 
@@ -78,7 +78,7 @@ class Returns200Test:
                     "motorDisabilityCompliant": False,
                     "visualDisabilityCompliant": False,
                     "domains": [{"id": domain1.id, "name": domain1.name}, {"id": domain2.id, "name": domain2.name}],
-                    "interventionArea": ["75", "92"],
+                    "interventionArea": ["mainland"],
                     "network": ["1"],
                     "statusId": None,
                 }
