@@ -156,14 +156,14 @@ def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscrip
     eligibility_types = []
 
     # Do not show information about eligibility types which are not possible depending on known user age
-    if user.dateOfBirth:
-        age_at_creation = users_utils.get_age_at_date(user.dateOfBirth, user.dateCreated)
+    if user.birth_date:
+        age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)
         if age_at_creation <= users_constants.ELIGIBILITY_AGE_18:
             if age_at_creation == users_constants.ELIGIBILITY_AGE_18:
                 eligibility_types.append(users_models.EligibilityType.AGE18)
             else:
                 eligibility_types.append(users_models.EligibilityType.UNDERAGE)
-                age_now = users_utils.get_age_from_birth_date(user.dateOfBirth)
+                age_now = users_utils.get_age_from_birth_date(user.birth_date)
                 if age_now >= users_constants.ELIGIBILITY_AGE_18:
                     eligibility_types.append(users_models.EligibilityType.AGE18)
     else:

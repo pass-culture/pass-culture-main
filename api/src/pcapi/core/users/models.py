@@ -337,7 +337,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
 
     @property
     def age(self) -> int | None:
-        return users_utils.get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
+        return users_utils.get_age_from_birth_date(self.birth_date) if self.birth_date else None
 
     @property
     def birth_date(self) -> date | None:
