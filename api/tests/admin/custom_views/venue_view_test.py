@@ -2,6 +2,7 @@ import logging
 import re
 from unittest.mock import patch
 
+from flask import url_for
 import pytest
 
 from pcapi.admin.custom_views.venue_view import _format_venue_provider
@@ -525,7 +526,7 @@ class VenueForOffererSubviewTest:
         offerers_factories.VenueFactory()  # not expected result
 
         api_client = client.with_session_auth(admin.email)
-        response = api_client.get(f"/pc/back-office/venue_for_offerer/?id={offerer.id}")
+        response = api_client.get(url_for("venue_for_offerer.index", id=offerer.id))
 
         assert response.status_code == 200
 
@@ -534,3 +535,13 @@ class VenueForOffererSubviewTest:
         venue_ids = re.findall(regex, response.data.decode("utf8"))
 
         assert sorted(venue_ids) == sorted([str(venue1.id), str(venue2.id)])
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_list_venues_for_offerer_not_found(self, mocked_validate_csrf_token, client):
+        admin = AdminFactory(email="user@example.com")
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.get(url_for("venue_for_offerer.index", id=42))
+
+        assert response.status_code == 404
