@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+import datetime
 import typing
 
 from pcapi.core.users.models import DomainsCredit
@@ -12,11 +12,11 @@ class UserAttributes:
     booking_count: int
     booking_subcategories: list[str]
     city: str | None
-    date_created: datetime
-    date_of_birth: datetime
+    date_created: datetime.datetime
+    date_of_birth: datetime.datetime
     departement_code: str | None
-    deposit_activation_date: datetime | None
-    deposit_expiration_date: datetime | None
+    deposit_activation_date: datetime.datetime | None
+    deposit_expiration_date: datetime.datetime | None
     domains_credit: DomainsCredit | None
     eligibility: EligibilityType | None
     first_name: str | None
@@ -30,10 +30,10 @@ class UserAttributes:
     is_email_validated: bool
     is_phone_validated: bool  # Added for Zendesk
     is_pro: bool
-    last_booking_date: datetime | None
-    last_favorite_creation_date: datetime | None
+    last_booking_date: datetime.datetime | None
+    last_favorite_creation_date: datetime.datetime | None
     last_name: str | None
-    last_visit_date: datetime | None
+    last_visit_date: datetime.datetime | None
     marketing_email_subscription: bool
     marketing_push_subscription: bool
     most_booked_subcategory: str | None  # Single subcategory most frequently booked by the user
@@ -41,7 +41,7 @@ class UserAttributes:
     postal_code: str | None
     products_use_date: dict
     roles: list[str]
-    suspension_date: datetime | None  # Added for Zendesk
+    suspension_date: datetime.datetime | None  # Added for Zendesk
     suspension_reason: str | None  # Added for Zendesk
 
 
