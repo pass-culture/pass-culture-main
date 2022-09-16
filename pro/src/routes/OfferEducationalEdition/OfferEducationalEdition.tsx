@@ -209,6 +209,7 @@ const OfferEducationalEdition = (): JSX.Element => {
               ? offer?.collectiveStock?.isBooked
               : false
           }
+          isOfferCancellable={offer && offer.isCancellable}
           mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
           notify={notify}
           onSubmit={editOffer}

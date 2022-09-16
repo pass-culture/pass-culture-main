@@ -27,6 +27,7 @@ export type GetCollectiveOfferResponseModel = {
   interventionArea: Array<string>;
   isActive: boolean;
   isBookable: boolean;
+  isCancellable: boolean;
   isEditable: boolean;
   isVisibilityEditable: boolean;
   mentalDisabilityCompliant?: boolean | null;

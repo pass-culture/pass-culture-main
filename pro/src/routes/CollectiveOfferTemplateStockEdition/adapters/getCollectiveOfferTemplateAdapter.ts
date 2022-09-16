@@ -30,6 +30,7 @@ export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapte
           status: offer.status,
           venueDepartmentCode: offer.venue.departementCode ?? '',
           isBooked: false,
+          isCancellable: true,
           isEducational: true,
           isShowcase: true,
           offerId: offer.offerId,

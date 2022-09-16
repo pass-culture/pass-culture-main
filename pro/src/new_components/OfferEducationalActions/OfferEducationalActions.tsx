@@ -13,6 +13,7 @@ interface IOfferEducationalActions {
   className?: string
   isOfferActive: boolean
   isBooked: boolean
+  isCancellable: boolean
   setIsOfferActive?(isActive: boolean): void
   cancelActiveBookings?(): void
 }
@@ -21,6 +22,7 @@ const OfferEducationalActions = ({
   className,
   isOfferActive,
   isBooked,
+  isCancellable,
   cancelActiveBookings,
   setIsOfferActive,
 }: IOfferEducationalActions): JSX.Element => {
@@ -46,7 +48,7 @@ const OfferEducationalActions = ({
           </Button>
         )}
 
-        {isBooked && cancelActiveBookings && (
+        {isBooked && isCancellable && cancelActiveBookings && (
           <Button
             className={style['actions-button']}
             onClick={() => setIsModalOpen(true)}
