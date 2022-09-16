@@ -1130,12 +1130,7 @@ def cancel_collective_booking_by_offerer(
         (
             collective_booking
             for collective_booking in collective_stock.collectiveBookings
-            if collective_booking.status
-            not in [
-                educational_models.CollectiveBookingStatus.CANCELLED,
-                educational_models.CollectiveBookingStatus.USED,
-                educational_models.CollectiveBookingStatus.REIMBURSED,
-            ]
+            if collective_booking.is_cancellable_from_offerer
         ),
         None,
     )

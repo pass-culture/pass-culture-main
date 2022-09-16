@@ -7,6 +7,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -294,3 +295,21 @@ class CollectiveOfferTemplateIsEditableTest:
             offer = factories.CollectiveOfferTemplateFactory(validation=getattr(OfferValidationStatus, line.name))
 
             assert offer.isEditable == expected
+
+
+class CollectiveStockIsCancellableFromOfferer:
+    def test_collective_stock_is_cancellable(self):
+        stock: CollectiveStock = factories.CollectiveStockFactory.build()
+        factories.CancelledCollectiveBookingFactory.build(collectiveStock=stock)
+        factories.PendingCollectiveBookingFactory.build(collectiveStock=stock)
+        assert stock.is_cancellable_from_offerer
+
+    def test_collective_stock_has_used_collective_booking(self):
+        stock: CollectiveStock = factories.CollectiveStockFactory.build()
+        factories.UsedCollectiveBookingFactory.build(collectiveStock=stock)
+        assert not stock.is_cancellable_from_offerer
+
+    def test_collective_stock_has_reimbursed_collective_booking(self):
+        stock: CollectiveStock = factories.CollectiveStockFactory.build()
+        factories.ReimbursedCollectiveBookingFactory.build(collectiveStock=stock)
+        assert not stock.is_cancellable_from_offerer
