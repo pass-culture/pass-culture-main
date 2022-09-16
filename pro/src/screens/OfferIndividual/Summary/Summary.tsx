@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -24,7 +25,6 @@ import {
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { RootState } from 'store/reducers'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -70,8 +70,9 @@ const Summary = ({
   const publishOffer = () => {
     setIsDisabled(true)
     const url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
-    pcapi
-      .publishOffer(offerId)
+    api
+      // @ts-expect-error: type string is not assignable to type number
+      .patchPublishOffer({ id: offerId })
       .then(() => {
         setIsDisabled(false)
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {

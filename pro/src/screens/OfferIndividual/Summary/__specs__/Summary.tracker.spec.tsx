@@ -17,8 +17,8 @@ import Summary, { ISummaryProps } from '../Summary'
 const mockLogEvent = jest.fn()
 window.open = jest.fn()
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  publishOffer: jest.fn().mockResolvedValue({}),
+jest.mock('apiClient/api', () => ({
+  api: { patchPublishOffer: jest.fn().mockResolvedValue({}) },
 }))
 
 const renderSummary = (props: ISummaryProps) => {
