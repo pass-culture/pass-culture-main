@@ -359,7 +359,7 @@ class OfferForVenueSubview(OfferView):
         if venue_id is None:
             abort(400, "Venue id required")
 
-        venue = Venue.query.filter(Venue.id == venue_id).one()
+        venue = Venue.query.filter(Venue.id == venue_id).one_or_none()
         if not venue:
             abort(404, "Ce lieu n'existe pas ou plus")
 

@@ -463,7 +463,7 @@ class VenueForOffererSubview(VenueView):
         if offerer_id is None:
             abort(400, "Offerer id required")
 
-        offerer = Offerer.query.filter(Offerer.id == offerer_id).one()
+        offerer = Offerer.query.filter(Offerer.id == offerer_id).one_or_none()
         if not offerer:
             abort(404, "Cette structure n'existe pas ou plus")
 
