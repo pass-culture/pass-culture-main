@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
@@ -7,7 +7,7 @@ import { IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
-import { Checkbox, TextArea } from 'ui-kit'
+import { Checkbox, TextArea, TextInput } from 'ui-kit'
 
 import { IOfferIndividualFormValues } from '../types'
 
@@ -19,7 +19,7 @@ export interface IUsefulInformationsProps {
   venueList: TOfferIndividualVenue[]
   isUserAdmin: boolean
   offerSubCategory?: IOfferSubCategory
-  isVenueVirtual?: boolean
+  isVenueVirtual: boolean
   readOnlyFields?: string[]
 }
 
@@ -33,7 +33,12 @@ const UsefulInformations = ({
 }: IUsefulInformationsProps): JSX.Element => {
   const {
     values: { subCategoryFields },
+    setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
+
+  useEffect(() => {
+    setFieldValue('isVenueVirtual', isVenueVirtual)
+  }, [isVenueVirtual])
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
@@ -77,7 +82,16 @@ const UsefulInformations = ({
           disabled={readOnlyFields.includes('withdrawalDetails')}
         />
       </FormLayout.Row>
-
+      {isVenueVirtual && (
+        <FormLayout.Row>
+          <TextInput
+            label="URL d’accès à l’offre"
+            name="url"
+            type="text"
+            placeholder="https://exemple.com"
+          />
+        </FormLayout.Row>
+      )}
       {isUserAdmin && (
         <FormLayout.Row>
           <Checkbox
