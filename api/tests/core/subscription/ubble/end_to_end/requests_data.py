@@ -530,7 +530,7 @@ PROCESSED_IDENTIFICATION_RESPONSE = {
                 "issue-date": None,
                 "issue-place": None,
                 "issuing-state-code": "FRA",
-                "last-name": "DE TOUL",
+                "last-name": "DE TOULON",
                 "married-name": None,
                 "media-type": "video",
                 "mrz": "IDFRADETOUL<<<<<<<<<<<<<<<<<<<75P001123456P001233RAOUL<<JEAN<<0001010M8",

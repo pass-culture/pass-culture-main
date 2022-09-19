@@ -114,8 +114,16 @@ def start_identification_session(
     if fraud_check:
         return serializers.IdentificationSessionResponse(identificationUrl=fraud_check.source_data().identification_url)  # type: ignore [union-attr]
 
+    declared_names = subscription_api.get_declared_names(user)
+
+    if not declared_names:
+        logger.error("Ubble: no names found to start identification session", extra={"user_id": user.id})
+        raise api_errors.ApiErrors({"code": "NO_FIRST_NAME_AND_LAST_NAME"})
+
     try:
-        identification_url = ubble_subscription_api.start_ubble_workflow(user, body.redirectUrl)
+        identification_url = ubble_subscription_api.start_ubble_workflow(
+            user, declared_names[0], declared_names[1], body.redirectUrl
+        )
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
 
     except requests_utils.ExternalAPIException as exception:
