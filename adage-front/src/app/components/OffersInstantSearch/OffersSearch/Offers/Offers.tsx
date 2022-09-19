@@ -18,20 +18,7 @@ import { ResultType } from 'utils/types'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import { Offer } from './Offer'
-
-const offerIsBookable = (
-  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
-): boolean => !offer.isSoldOut && !offer.isExpired
-
-const extractOfferIdFromObjectId = (offerId: string): number => {
-  const splitResult = offerId.split('T-')
-
-  if (splitResult.length === 2) {
-    return Number(splitResult[1])
-  }
-
-  return Number(offerId)
-}
+import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
 
 export interface OffersComponentProps extends InfiniteHitsProvided<ResultType> {
   userRole: AdageFrontRoles
