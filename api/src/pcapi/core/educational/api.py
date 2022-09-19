@@ -710,7 +710,6 @@ def create_collective_offer(
         venueId=venue.id,
         name=offer_data.name,
         offerId=offer_id,
-        bookingEmail=offer_data.booking_email,
         description=offer_data.description,
         domains=educational_domains,
         durationMinutes=offer_data.duration_minutes,
@@ -726,6 +725,7 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
     )
+    collective_offer.bookingEmail = offer_data.booking_email
     db.session.add(collective_offer)
     db.session.commit()
     logger.info(
@@ -955,7 +955,6 @@ def create_collective_offer_public(
         name=body.name,
         description=body.description,
         subcategoryId=body.subcategory_id,
-        bookingEmail=body.booking_email,
         contactEmail=body.contact_email,
         contactPhone=body.contact_phone,
         domains=educational_domains,
@@ -969,7 +968,7 @@ def create_collective_offer_public(
         interventionArea=body.intervention_area,
         institutionId=body.educational_institution_id,
     )
-
+    collective_offer.bookingEmail = body.booking_email
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=body.beginning_datetime,
