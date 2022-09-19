@@ -26,6 +26,11 @@ export interface OffersComponentProps extends InfiniteHitsProvided<ResultType> {
   handleResetFiltersAndLaunchSearch: () => void
 }
 
+type OfferMap = Map<
+  string,
+  CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+>
+
 export const OffersComponent = ({
   userRole,
   setIsLoading,
@@ -38,32 +43,19 @@ export const OffersComponent = ({
   const [offers, setOffers] = useState<
     (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[]
   >([])
-  const [refinedIds, setRefinedIds] = useState<Set<string>>(new Set())
   const [queryId, setQueryId] = useState('')
+  const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
 
   useEffect(() => {
-    let hasClearedOffers = false
     setQueriesAreLoading(true)
     if (hits.length != 0 && queryId != hits[0].__queryID) {
       setQueryId(hits[0].__queryID)
     }
-    if (
-      !Array.from(refinedIds).every(id =>
-        hits.map(hit => hit.objectID).includes(id)
-      )
-    ) {
-      setRefinedIds(refinedIds => {
-        refinedIds.clear()
-        return refinedIds
-      })
-      refinedIds.clear()
-      hasClearedOffers = true
-    }
 
     Promise.all(
       hits.map(async hit => {
-        if (refinedIds.has(hit.objectID)) {
-          return
+        if (fetchedOffers.has(hit.objectID)) {
+          return Promise.resolve(fetchedOffers.get(hit.objectID))
         }
         try {
           const offerId = extractOfferIdFromObjectId(hit.objectID)
@@ -75,46 +67,31 @@ export const OffersComponent = ({
             return
           }
 
-          if (offer && offerIsBookable(offer)) return offer
+          if (offer && offerIsBookable(offer)) {
+            setFetchedOffers(
+              fetchedOffers => new Map(fetchedOffers.set(hit.objectID, offer))
+            )
+
+            return offer
+          }
         } catch (e) {
           captureException(e)
         }
       })
-    ).then(fetchedOffers => {
-      const bookableOffers = fetchedOffers.filter(
+    ).then(offersFromHits => {
+      const bookableOffers = offersFromHits.filter(
         offer => typeof offer !== 'undefined'
       ) as (
         | CollectiveOfferResponseModel
         | CollectiveOfferTemplateResponseModel
       )[]
 
-      if (hasClearedOffers) {
-        setOffers([...bookableOffers])
-      } else {
-        setOffers(offers => {
-          const offersIdsSet = new Set(offers.map(offer => offer.id))
-          bookableOffers.forEach(offer => {
-            if (!offersIdsSet.has(offer.id)) {
-              offers.push(offer)
-            }
-          })
-          return [...offers]
-        })
-      }
-
-      setRefinedIds(refinedIds => {
-        hits.forEach(hit => {
-          refinedIds.add(hit.objectID)
-        })
-
-        return refinedIds
-      })
-
+      setOffers(bookableOffers)
       setQueriesAreLoading(false)
       setIsLoading(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hits, setIsLoading, refinedIds])
+  }, [hits, setIsLoading])
 
   if (queriesAreLoading && offers.length === 0) {
     return (
