@@ -93,13 +93,16 @@ def has_completed_profile(user: users_models.User, eligibility: users_models.Eli
     ).scalar()
 
 
-def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
+def _has_completed_profile_in_dms_form(
+    user: users_models.User, eligibility: users_models.EligibilityType | None
+) -> bool:
     # If a pending or started DMS fraud check exists, the user has already completed the profile.
     # No need to ask for this information again.
     user_pending_dms_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type == fraud_models.FraudCheckType.DMS
+        and fraud_check.eligibilityType == eligibility
         and fraud_check.status in (fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.STARTED)
         and fraud_check.resultContent
         and fraud_check.source_data().city is not None
@@ -108,7 +111,7 @@ def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
 
 
 def should_complete_profile(user: users_models.User, eligibility: users_models.EligibilityType) -> bool:
-    return not has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user)
+    return not has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user, eligibility)
 
 
 def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
