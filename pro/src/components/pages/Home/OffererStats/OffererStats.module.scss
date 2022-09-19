@@ -5,9 +5,12 @@
   flex-direction: column;
   align-items: center;
   gap: rem.torem(32px);
-  &-description {
+  &-boxes {
     margin-top: rem.torem(16px);
-    align-self: stretch;
+    display: flex;
+    gap: rem.torem(16px);
+  }
+  &-boxes > div {
     flex: 1;
   }
 }
