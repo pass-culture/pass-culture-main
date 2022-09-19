@@ -44,6 +44,7 @@ const bookingDetails = {
     civility: 'M',
     id: 1,
   },
+  isCancellable: true,
 }
 
 describe('CollectiveBookingDetails', () => {
