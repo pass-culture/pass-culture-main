@@ -17,6 +17,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1197,7 +1198,7 @@ class CompleteProfileTest:
 
         subscription_api.complete_profile(user, "address", "city", "12400", "étudiant", "harry", "cover")
 
-        assert subscription_api.has_completed_profile(user, EligibilityType.AGE18)
+        assert subscription_repository.get_completed_profile_check(user, EligibilityType.AGE18)
         assert (
             fraud_models.BeneficiaryFraudCheck.query.filter_by(
                 userId=user.id,

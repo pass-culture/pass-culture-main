@@ -26,6 +26,7 @@ from pcapi.workers import apps_flyer_job
 
 from . import exceptions
 from . import models
+from . import repository
 
 
 logger = logging.getLogger(__name__)
@@ -82,36 +83,31 @@ def activate_beneficiary_for_eligibility(
     return user
 
 
-def has_completed_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
-    return db.session.query(
-        fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.user == user,
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility,
-            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.OK,
-        ).exists()
-    ).scalar()
-
-
-def _has_completed_profile_in_dms_form(
+def _get_filled_dms_fraud_check(
     user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> bool:
+) -> fraud_models.BeneficiaryFraudCheck | None:
     # If a pending or started DMS fraud check exists, the user has already completed the profile.
     # No need to ask for this information again.
-    user_pending_dms_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type == fraud_models.FraudCheckType.DMS
-        and fraud_check.eligibilityType == eligibility
-        and fraud_check.status in (fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.STARTED)
-        and fraud_check.resultContent
-        and fraud_check.source_data().city is not None
-    ]
-    return bool(user_pending_dms_fraud_checks)
+    return next(
+        (
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.DMS
+            and fraud_check.eligibilityType == eligibility
+            and fraud_check.status in (fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.STARTED)
+            and fraud_check.resultContent
+            and fraud_check.source_data().city is not None
+        ),
+        None,
+    )
 
 
 def should_complete_profile(user: users_models.User, eligibility: users_models.EligibilityType) -> bool:
-    return not has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user, eligibility)
+    if repository.get_completed_profile_check(user, eligibility) is not None:
+        return False
+    if _get_filled_dms_fraud_check(user, eligibility) is not None:
+        return False
+    return True
 
 
 def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
