@@ -13,7 +13,7 @@ import ExternalLink from '../ExternalLink'
 import validationSchema from '../validationSchema'
 
 interface IInitialValues {
-  externalTicketOfficeUrl: string
+  externalTicketOfficeUrl?: string
 }
 
 const renderExternalLink = ({
@@ -77,6 +77,20 @@ describe('OfferIndividual section: ExternalLink', () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       { externalTicketOfficeUrl: 'https://example.com' },
+      expect.anything()
+    )
+  })
+
+  it('should submit empty valid form', async () => {
+    renderExternalLink({
+      initialValues,
+      onSubmit,
+    })
+
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      { externalTicketOfficeUrl: '' },
       expect.anything()
     )
   })

@@ -69,6 +69,20 @@ describe('OfferIndividual section: UsefulInformations', () => {
           none: true,
         },
       },
+      {
+        id: 'BBBB',
+        name: 'Venue BBBB',
+        managingOffererId: 'AA',
+        isVirtual: true,
+        withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
+      },
     ]
     initialValues = {
       subCategoryFields: [],
@@ -78,11 +92,13 @@ describe('OfferIndividual section: UsefulInformations', () => {
       withdrawalDetails: '',
       withdrawalType: undefined,
       withdrawalDelay: undefined,
+      url: '',
     }
     props = {
       offererNames,
       venueList,
       isUserAdmin: false,
+      isVenueVirtual: false,
     }
   })
 
@@ -127,8 +143,10 @@ describe('OfferIndividual section: UsefulInformations', () => {
           none: true,
           visual: false,
         },
+        isVenueVirtual: false,
         offererId: 'AA',
         subCategoryFields: ['withdrawalType'],
+        url: '',
         subcategoryId: 'CONCERT',
         venueId: 'AAAA',
         withdrawalDelay: undefined,
@@ -179,6 +197,106 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(
       screen.queryByText('Comment les billets, places seront-ils transmis ?')
     ).not.toBeInTheDocument()
+  })
+
+  describe('When venue is virtual', () => {
+    beforeEach(() => {
+      props.isVenueVirtual = true
+      props.offerSubCategory = {
+        id: 'A-A',
+        categoryId: 'A',
+        proLabel: 'Sous catégorie online de A',
+        isEvent: false,
+        conditionalFields: [],
+        canBeDuo: false,
+        canBeEducational: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+        reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
+        isSelectable: true,
+      }
+      initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+    })
+
+    it('should submit valid form', async () => {
+      renderUsefulInformations({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      const offererSelect = screen.getByLabelText('Structure')
+      await userEvent.selectOptions(offererSelect, 'AA')
+      const venueSelect = screen.getByLabelText('Lieu')
+      await userEvent.selectOptions(venueSelect, 'BBBB')
+
+      const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+
+      // deactivate type interpolation : https://testing-library.com/docs/ecosystem-user-event/#keyboardtext-options
+      await userEvent.type(
+        urlField,
+        'http://example.com/routes?params={{offerId}'
+      )
+      await userEvent.click(await screen.findByText('Submit'))
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        {
+          accessibility: {
+            audio: false,
+            mental: false,
+            motor: false,
+            none: true,
+            visual: false,
+          },
+          isVenueVirtual: true,
+          offererId: 'AA',
+          subCategoryFields: [],
+          subcategoryId: 'ANOTHER_SUB_CATEGORY',
+          url: 'http://example.com/routes?params={offerId}',
+          venueId: 'BBBB',
+          withdrawalDelay: undefined,
+          withdrawalDetails: '',
+          withdrawalType: undefined,
+        },
+        expect.anything()
+      )
+    })
+
+    it('should display url field with errors if needed', async () => {
+      renderUsefulInformations({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      await screen.findByRole('heading', { name: 'Informations pratiques' })
+
+      const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+      await userEvent.click(urlField)
+      await userEvent.tab()
+      expect(
+        await screen.findByText(
+          'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+        )
+      ).toBeInTheDocument()
+
+      await userEvent.type(
+        urlField,
+        'http://example.com/routes?params={offerId}'
+      )
+      expect(
+        screen.queryByText(
+          'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+        )
+      ).not.toBeInTheDocument()
+
+      await userEvent.clear(urlField)
+      await userEvent.type(urlField, 'FAKE_URL')
+      expect(
+        screen.queryByText(
+          'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+        )
+      ).toBeInTheDocument()
+    })
   })
 
   describe('banners', () => {
