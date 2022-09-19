@@ -13,6 +13,7 @@ from pcapi.core.payments import exceptions as payments_exceptions
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
@@ -765,7 +766,7 @@ def create_profile_completion_fraud_check(
     eligibility: users_models.EligibilityType | None,
     fraud_check_content: models.ProfileCompletionContent,
 ) -> None:
-    if subscription_api.has_completed_profile(user, eligibility):
+    if subscription_repository.get_completed_profile_check(user, eligibility) is not None:
         logger.warning(
             "Profile completion fraud check for user already exists.",
             extra={"user_id": user.id},
