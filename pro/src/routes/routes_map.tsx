@@ -39,6 +39,8 @@ import { VenueCreation } from 'routes/VenueCreation'
 import { VenueEdition } from 'routes/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import { OffererStats } from './OffererStats'
+
 interface ILayoutConfig {
   pageName?: string
   fullscreen?: boolean
@@ -368,6 +370,12 @@ const routes: IRoute[] = [
     path: '/profile',
     title: 'Profil',
     featureName: 'ENABLE_IN_PAGE_PROFILE_FORM',
+  },
+  {
+    component: OffererStats,
+    path: '/statistiques',
+    title: 'Statistiques',
+    featureName: 'ENABLE_OFFERER_STATS',
   },
 ]
 

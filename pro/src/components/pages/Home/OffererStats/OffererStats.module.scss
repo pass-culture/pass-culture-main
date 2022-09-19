@@ -1,0 +1,13 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
+.offerer-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem.torem(32px);
+  &-description {
+    margin-top: rem.torem(16px);
+    align-self: stretch;
+    flex: 1;
+  }
+}
