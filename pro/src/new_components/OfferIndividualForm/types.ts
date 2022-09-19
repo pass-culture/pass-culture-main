@@ -30,4 +30,5 @@ export interface IOfferIndividualFormValues {
   bookingEmail: string
   isDuo: boolean
   externalTicketOfficeUrl?: string
+  url?: string
 }
