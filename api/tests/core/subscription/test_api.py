@@ -546,45 +546,6 @@ class NextSubscriptionStepTest:
         with override_features(**feature_flags):
             assert subscription_api.is_phone_validation_in_stepper(user) == expected_result
 
-    def test_should_complete_profile_not_completed(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.eighteen_years_ago,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            address="3 rue du quai",
-            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
-        )
-        assert subscription_api.should_complete_profile(user, user.eligibility)
-
-    def test_should_complete_profile_completed_dms(self):
-        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        assert not subscription_api.should_complete_profile(user, user.eligibility)
-
-    def test_should_complete_profile_completed(self):
-        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        assert subscription_api.should_complete_profile(user, users_models.EligibilityType.UNDERAGE)
-        assert not subscription_api.should_complete_profile(user, user.eligibility)
-
-    def test_should_complete_profile_completed_underage(self):
-        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
-        fraud_factories.ProfileCompletionFraudCheckFactory(
-            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
-        )
-        assert not subscription_api.should_complete_profile(user, users_models.EligibilityType.UNDERAGE)
-        assert subscription_api.should_complete_profile(user, user.eligibility)
-
-    def test_should_complete_profile_completed_both(self):
-        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
-        fraud_factories.ProfileCompletionFraudCheckFactory(
-            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
-        )
-        fraud_factories.ProfileCompletionFraudCheckFactory(
-            user=user, eligibilityType=users_models.EligibilityType.AGE18
-        )
-        assert not subscription_api.should_complete_profile(user, users_models.EligibilityType.UNDERAGE)
-        assert not subscription_api.should_complete_profile(user, user.eligibility)
-
     @pytest.mark.parametrize(
         "feature_flags,user_age,expected_result",
         [
@@ -1810,3 +1771,44 @@ class SubscriptionMessageTest:
 
         mocked_educonnect_message.assert_called_once_with(last_educocheck)
         assert message == educonnect_returned_message
+
+
+@pytest.mark.usefixtures("db_session")
+class ShouldCompleteProfileTest:
+    def test_should_complete(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
+        assert not subscription_api.should_complete_profile(user, users_models.EligibilityType.UNDERAGE)
+        assert subscription_api.should_complete_profile(user, user.eligibility) is True
+
+    def test_should_not_complete_with_profile_completion_ok(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.OK)
+        assert subscription_api.should_complete_profile(user, user.eligibility) is False
+
+    def test_should_complete_with_profile_completion_cancelled(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.CANCELED)
+        assert subscription_api.should_complete_profile(user, user.eligibility) is True
+
+    def test_should_not_complete_with_dms_form_filled(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS, user=user, status=fraud_models.FraudCheckStatus.PENDING
+        )
+        assert subscription_api.should_complete_profile(user, user.eligibility) is False
+
+    def test_should_complete_with_dms_form_filled_for_underage(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            user=user,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        assert subscription_api.should_complete_profile(user, user.eligibility) is True
