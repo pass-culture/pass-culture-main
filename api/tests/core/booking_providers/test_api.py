@@ -1,15 +1,7 @@
-from datetime import datetime
-from typing import Any
-from unittest.mock import patch
-
 import pytest
 
-from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
 from pcapi.core.booking_providers.api import _get_booking_provider_client_api
 from pcapi.core.booking_providers.api import _get_venue_booking_provider
-from pcapi.core.booking_providers.api import get_show_stock
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.factories import BookingProviderFactory
 from pcapi.core.booking_providers.factories import VenueBookingProviderFactory
@@ -81,40 +73,3 @@ class GetBookingProviderClientApiTest:
 
         # Then
         assert str(e.value) == "No row was found when one was required"
-
-
-@pytest.mark.usefixtures("db_session")
-class GetShowStockTest:
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_show")
-    def test_should_return_available_places_for_show_id(
-        self, mocked_show: Any, mocked_internet_sale_gauge_active: Any
-    ) -> None:
-        # Given
-        booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="test_api_url")
-        venue_booking_provider = VenueBookingProviderFactory(idAtProvider="test_id", bookingProvider=booking_provider)
-        cinema_provider_pivot = CinemaProviderPivotFactory(
-            venue=venue_booking_provider.venue, idAtProvider=venue_booking_provider.idAtProvider
-        )
-        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaApiToken="test_token")
-        venue_id = venue_booking_provider.venueId
-        mocked_show.return_value = ShowCDS(
-            id=1,
-            is_cancelled=False,
-            is_deleted=False,
-            is_disabled_seatmap=False,
-            is_empty_seatmap=False,
-            remaining_place=88,
-            internet_remaining_place=15,
-            showtime=datetime.utcnow(),
-            shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-            screen=IdObjectCDS(id=2),
-            media=IdObjectCDS(id=1),
-        )
-
-        mocked_internet_sale_gauge_active.return_value = True
-
-        # When
-        remaining_places = get_show_stock(venue_id, 1)
-        # Then
-        assert remaining_places == 15
