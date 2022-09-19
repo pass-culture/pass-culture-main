@@ -52,13 +52,12 @@ const useGetDataAdmin = (
     error: offerError,
     reloadOffer,
   } = useGetOffer(offerId)
-
   const {
     data: venueList,
     isLoading: venueListIsLoading,
     error: venueListError,
   } = useGetOfferIndividualVenues({
-    isAdmin: false,
+    isAdmin: true,
     offererId: offer ? offer.offererId : offererId,
   })
   const {
