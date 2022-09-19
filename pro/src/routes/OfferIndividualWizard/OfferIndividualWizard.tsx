@@ -3,6 +3,7 @@ import {
   Route,
   Switch,
   useHistory,
+  useLocation,
   useParams,
   useRouteMatch,
 } from 'react-router'
@@ -15,6 +16,7 @@ import {
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { useHomePath } from 'hooks'
+import { parse } from 'utils/query-string'
 
 import { Confirmation } from './Confirmation'
 import { useGetData } from './hooks'
@@ -31,10 +33,10 @@ const OfferIndividualWizard = () => {
 
   const { currentUser } = useCurrentUser()
 
-  const { offerId, structure: offererId } = useParams<{
-    offerId: string
-    structure: string
-  }>()
+  const { offerId } = useParams<{ offerId: string }>()
+  const { search } = useLocation()
+  const { structure: offererId } = parse(search)
+
   const { data, isLoading, loadingError, reloadOffer } = currentUser.isAdmin
     ? useGetDataAdmin(offerId, offererId)
     : useGetData(offerId)
