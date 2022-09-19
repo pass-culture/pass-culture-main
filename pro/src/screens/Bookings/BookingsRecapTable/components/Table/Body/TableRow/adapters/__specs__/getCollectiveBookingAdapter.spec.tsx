@@ -51,6 +51,7 @@ describe('getCollectiveBookingAdapter', () => {
       students: [StudentLevels.CAP_1RE_ANN_E],
       venuePostalCode: '75017',
       numberOfTickets: 10,
+      isCancellable: true,
     }
 
     jest.spyOn(api, 'getCollectiveBookingById').mockResolvedValueOnce(booking)
