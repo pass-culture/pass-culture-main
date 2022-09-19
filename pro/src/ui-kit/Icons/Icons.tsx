@@ -12,6 +12,7 @@ import { ReactComponent as IcoAttentionIcon } from 'icons/ico-attention.svg'
 import { ReactComponent as IcoBreadcrumbArrowRightIcon } from 'icons/ico-breadcrumb-arrow-right.svg'
 import { ReactComponent as IcoBulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as IcoCalendarDisabledIcon } from 'icons/ico-calendar-disabled.svg'
+import { ReactComponent as IcoCalendarV2 } from 'icons/ico-calendar-v2.svg'
 import { ReactComponent as IcoCalendarIcon } from 'icons/ico-calendar.svg'
 import { ReactComponent as IcoCaretDownIcon } from 'icons/ico-caret-down.svg'
 import { ReactComponent as IcoCaretRightIcon } from 'icons/ico-caret-right.svg'
@@ -20,6 +21,7 @@ import { ReactComponent as IcoDownloadFilledIcon } from 'icons/ico-download-fill
 import { ReactComponent as IcoDownloadIcon } from 'icons/ico-download.svg'
 import { ReactComponent as IcoDuoIcon } from 'icons/ico-duo.svg'
 import { ReactComponent as IcoEuroGreyIcon } from 'icons/ico-euro-grey.svg'
+import { ReactComponent as IcoEuroV2 } from 'icons/ico-euro-v2.svg'
 import { ReactComponent as IcoEuroIcon } from 'icons/ico-euro.svg'
 import { ReactComponent as IcoExternalSiteFilledWhiteIcon } from 'icons/ico-external-site-filled-white.svg'
 import { ReactComponent as IcoExternalSiteFilledIcon } from 'icons/ico-external-site-filled.svg'
@@ -40,6 +42,7 @@ import { ReactComponent as IcoSearchGrayIcon } from 'icons/ico-search-gray.svg'
 import { ReactComponent as IcoStructureIcon } from 'icons/ico-structure.svg'
 import { ReactComponent as IcoTagIcon } from 'icons/ico-tag.svg'
 import { ReactComponent as IcoTrashIcon } from 'icons/ico-trash.svg'
+import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import { ReactComponent as IcoUnavailableGradientIcon } from 'icons/ico-unavailable-gradient.svg'
 import { ReactComponent as IcoUnavailablePageIcon } from 'icons/ico-unavailable-page.svg'
 import { ReactComponent as IcoValideCercleIcon } from 'icons/ico-valide-cercle.svg'
@@ -144,6 +147,12 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
+          <IcoCalendarV2 />
+        </td>
+        <td>ico-calendar-v2</td>
+      </tr>
+      <tr>
+        <td>
           <IcoCaretDownIcon />
         </td>
         <td>ico-caret-down</td>
@@ -189,6 +198,12 @@ export const Icons = () => (
           <IcoEuroIcon />
         </td>
         <td>ico-euro</td>
+      </tr>
+      <tr>
+        <td>
+          <IcoEuroV2 />
+        </td>
+        <td>ico-euro-v2</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
@@ -411,6 +426,12 @@ export const Icons = () => (
           <VisualDisabilityIcon />
         </td>
         <td>visual-disability</td>
+      </tr>
+      <tr>
+        <td>
+          <TropheeIcon />
+        </td>
+        <td>ico-trophee</td>
       </tr>
     </body>
   </table>
