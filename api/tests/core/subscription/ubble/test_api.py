@@ -43,7 +43,9 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 class UbbleWorkflowTest:
     def test_start_ubble_workflow(self, ubble_mock):
         user = users_factories.UserFactory()
-        redirect_url = ubble_subscription_api.start_ubble_workflow(user, redirect_url="https://example.com")
+        redirect_url = ubble_subscription_api.start_ubble_workflow(
+            user, "Kid", "Paddle", redirect_url="https://example.com"
+        )
         assert redirect_url == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
 
         fraud_check = user.beneficiaryFraudChecks[0]

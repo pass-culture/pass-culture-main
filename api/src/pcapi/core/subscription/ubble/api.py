@@ -86,11 +86,11 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         pcapi_repository.repository.save(fraud_check)
 
 
-def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
+def start_ubble_workflow(user: users_models.User, first_name: str, last_name: str, redirect_url: str) -> str:
     content = ubble.start_identification(
         user_id=user.id,
-        first_name=user.firstName,  # type: ignore [arg-type]
-        last_name=user.lastName,  # type: ignore [arg-type]
+        first_name=first_name,
+        last_name=last_name,
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
         redirect_url=redirect_url,
     )

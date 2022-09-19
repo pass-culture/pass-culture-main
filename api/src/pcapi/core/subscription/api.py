@@ -110,6 +110,20 @@ def should_complete_profile(user: users_models.User, eligibility: users_models.E
     return True
 
 
+def get_declared_names(user: users_models.User) -> typing.Tuple[str, str] | None:
+    profile_completion_check = repository.get_completed_profile_check(user, user.eligibility)
+    if profile_completion_check and profile_completion_check.resultContent:
+        profile_data = typing.cast(fraud_models.ProfileCompletionContent, profile_completion_check.source_data())
+        return profile_data.first_name, profile_data.last_name
+
+    dms_filled_check = _get_filled_dms_fraud_check(user, user.eligibility)
+    if dms_filled_check:
+        dms_data = typing.cast(fraud_models.DMSContent, dms_filled_check.source_data())
+        return dms_data.first_name, dms_data.last_name
+
+    return None
+
+
 def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     return (
         user.eligibility == eligibility
