@@ -255,7 +255,7 @@ class override_features(TestContextDecorator):
     # seen when in the tests. I should try to fix that.
     CAN_BE_USED_ON_CLASSES = False
 
-    def __init__(self, **overrides: dict[str, typing.Any]) -> None:
+    def __init__(self, **overrides: bool) -> None:
         self.overrides = overrides
 
     def enable(self) -> None:
