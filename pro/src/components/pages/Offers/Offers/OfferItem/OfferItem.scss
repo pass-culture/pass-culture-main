@@ -104,6 +104,8 @@
 
   .venue-column {
     width: rem.torem(135px);
+    max-width: rem.torem(135px);
+    word-break: break-word;
   }
 
   .stock-column {
