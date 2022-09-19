@@ -30,12 +30,12 @@
     }
 
     .column-institution {
-      width: rem.torem(264px);
+      width: rem.torem(260px);
       word-break: break-word;
     }
 
     .column-price-and-price {
-      width: rem.torem(120px);
+      width: rem.torem(112px);
     }
 
     .column-booking-date {
@@ -45,6 +45,10 @@
     .column-booking-token {
       width: rem.torem(120px);
       word-break: break-word;
+    }
+
+    .column-booking-status {
+      width: rem.torem(140px);
     }
   }
 }

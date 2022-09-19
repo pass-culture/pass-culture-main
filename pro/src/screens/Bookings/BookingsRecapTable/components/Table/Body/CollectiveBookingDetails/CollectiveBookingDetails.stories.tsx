@@ -45,5 +45,6 @@ Default.args = {
       civility: 'M',
       id: 1,
     },
+    isCancellable: true,
   },
 }
