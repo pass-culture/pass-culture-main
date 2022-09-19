@@ -48,6 +48,7 @@ class Returns200Test:
             },
             "numberOfTickets": booking.collectiveStock.numberOfTickets,
             "venuePostalCode": booking.venue.postalCode,
+            "isCancellable": booking.is_cancellable_from_offerer,
         }
 
 
