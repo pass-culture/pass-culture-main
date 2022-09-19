@@ -1642,19 +1642,35 @@ class ProfilingSessionIdTest:
 
 
 class IdentificationSessionTest:
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    def test_request(self, client, ubble_mock, age):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5))
+    def test_request(self, client, ubble_mock):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
+        )
 
         client.with_token(user.email)
 
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
-        assert len(user.beneficiaryFraudChecks) == 1
+        assert len(user.beneficiaryFraudChecks) == 2
         assert ubble_mock.call_count == 1
 
-        check = user.beneficiaryFraudChecks[0]
+        assert ubble_mock.request_history[0].json() == {
+            "data": {
+                "type": "identifications",
+                "attributes": {
+                    "identification-form": {"external-user-id": user.id, "phone-number": None},
+                    "reference-data": {"first-name": "Sally", "last-name": "Mara"},
+                    "webhook": "http://localhost/webhooks/ubble/application_status",
+                    "redirect_url": "http://example.com/deeplink",
+                },
+            }
+        }
+
+        check = next(check for check in user.beneficiaryFraudChecks if check.type == fraud_models.FraudCheckType.UBBLE)
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert check.status == fraud_models.FraudCheckStatus.STARTED
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
@@ -1674,6 +1690,7 @@ class IdentificationSessionTest:
 
     def test_request_connection_error(self, client, ubble_mock_connection_error):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(user.email)
 
@@ -1681,11 +1698,17 @@ class IdentificationSessionTest:
 
         assert response.status_code == 503
         assert response.json["code"] == "IDCHECK_SERVICE_UNAVAILABLE"
-        assert len(user.beneficiaryFraudChecks) == 0
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                user=user, type=fraud_models.FraudCheckType.UBBLE
+            ).count()
+            == 0
+        )
         assert ubble_mock_connection_error.call_count == 1
 
     def test_request_ubble_http_error_status(self, client, ubble_mock_http_error_status):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(user.email)
 
@@ -1693,7 +1716,12 @@ class IdentificationSessionTest:
 
         assert response.status_code == 500
         assert response.json["code"] == "IDCHECK_SERVICE_ERROR"
-        assert len(user.beneficiaryFraudChecks) == 0
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                user=user, type=fraud_models.FraudCheckType.UBBLE
+            ).count()
+            == 0
+        )
         assert ubble_mock_http_error_status.call_count == 1
 
     @pytest.mark.parametrize(
@@ -1738,7 +1766,7 @@ class IdentificationSessionTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
         client.with_token(user.email)
 
-        # Perform phone validation and user profiling
+        # Perform phone validation, user profiling and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1747,6 +1775,7 @@ class IdentificationSessionTest:
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         # Perform first id check with Ubble
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1763,11 +1792,11 @@ class IdentificationSessionTest:
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
-        assert len(user.beneficiaryFraudChecks) == 3
+        assert len(user.beneficiaryFraudChecks) == 4
         assert ubble_mock.call_count == 1
 
         sorted_fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda x: x.id)
-        check = sorted_fraud_checks[2]
+        check = sorted_fraud_checks[3]
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
 
@@ -1787,7 +1816,7 @@ class IdentificationSessionTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
         client.with_token(user.email)
 
-        # Perform phone validation and user profiling
+        # Perform phone validation, user profiling and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1796,6 +1825,7 @@ class IdentificationSessionTest:
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         # Perform previous Ubble identifications
         for _ in range(0, retry_number):

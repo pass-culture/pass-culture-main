@@ -49,7 +49,10 @@ class UbbleEndToEndTest:
             schoolType=users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
             phoneNumber="+33612345678",
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Raoul", last_name="de Toulouz"),
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
@@ -76,7 +79,7 @@ class UbbleEndToEndTest:
                 "attributes": {
                     "identification-form": {"external-user-id": user.id, "phone-number": None},
                     "redirect_url": "https://passculture.app/verification-identite/fin",
-                    "reference-data": {"first-name": "Raoul", "last-name": "de Toul"},
+                    "reference-data": {"first-name": "Raoul", "last-name": "de Toulouz"},
                     "webhook": flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
                 },
                 "type": "identifications",
@@ -207,3 +210,5 @@ class UbbleEndToEndTest:
         assert user.is_beneficiary
         assert user.has_active_deposit
         assert user.deposit.amount == 300
+        assert user.firstName == "RAOUL"
+        assert user.lastName == "DE TOULON"
