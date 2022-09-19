@@ -20,11 +20,6 @@ def book_ticket(venue_id: int, show_id: int, quantity: int) -> list[booking_prov
     return client.book_ticket(show_id, quantity)
 
 
-def get_venue_movies(venue_id: int) -> list[booking_providers_models.Movie]:
-    client = _get_booking_provider_client_api(venue_id)
-    return client.get_venue_movies()
-
-
 def _get_booking_provider_client_api(venue_id: int) -> booking_providers_models.BookingProviderClientAPI:
     venue_booking_provider = _get_venue_booking_provider(venue_id)
     cinema_id = venue_booking_provider.idAtProvider
