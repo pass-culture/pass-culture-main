@@ -346,6 +346,7 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     educationalRedactor: CollectiveBookingEducationalRedactorResponseModel
     numberOfTickets: int
     venuePostalCode: str | None
+    isCancellable: bool
 
     class Config:
         orm_mode = True
@@ -362,4 +363,5 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             educationalRedactor=booking.educationalRedactor,
             numberOfTickets=booking.collectiveStock.numberOfTickets,
             venuePostalCode=booking.venue.postalCode,
+            isCancellable=booking.is_cancellable_from_offerer,
         )
