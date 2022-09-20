@@ -8,13 +8,22 @@ import { isAllocineProvider } from 'core/Providers'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 
-const setFormReadOnlyFields = (offer: IOfferIndividual | null): string[] => {
+const setFormReadOnlyFields = (
+  offer: IOfferIndividual | null,
+  isAdmin?: boolean
+): string[] => {
+  let readOnlyField: string[] = []
+
+  if (isAdmin === true) {
+    readOnlyField.push('offererId')
+  }
+
   if (offer === null) {
-    return []
+    return readOnlyField
   }
 
   if ([OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offer.status)) {
-    return Object.keys(FORM_DEFAULT_VALUES)
+    readOnlyField = [...readOnlyField, ...Object.keys(FORM_DEFAULT_VALUES)]
   }
 
   if (isOfferSynchronized(offer)) {
@@ -24,21 +33,29 @@ const setFormReadOnlyFields = (offer: IOfferIndividual | null): string[] => {
     } else {
       editableFields = ['accessibility', 'externalTicketOfficeUrl']
     }
-    return Object.keys(FORM_DEFAULT_VALUES).filter(
-      (field: string) => !editableFields.includes(field)
-    )
+    readOnlyField = [
+      ...readOnlyField,
+      ...Object.keys(FORM_DEFAULT_VALUES).filter(
+        (field: string) => !editableFields.includes(field)
+      ),
+    ]
   } else {
-    return [
-      'categoryId',
-      'subcategoryId',
-      'offererId',
-      'venueId',
-      'showType',
-      'showSubType',
-      'musicType',
-      'musicSubType',
+    readOnlyField = [
+      ...readOnlyField,
+      ...[
+        'categoryId',
+        'subcategoryId',
+        'offererId',
+        'venueId',
+        'showType',
+        'showSubType',
+        'musicType',
+        'musicSubType',
+      ],
     ]
   }
+
+  return [...new Set(readOnlyField)]
 }
 
 export default setFormReadOnlyFields
