@@ -31,6 +31,9 @@ export const computeInitialValuesFromOffer = (
   const eventAddress = offer?.offerVenue
 
   const participants = {
+    all: Object.values(PARTICIPANTS).every(student =>
+      offer.students.includes(student)
+    ),
     quatrieme: offer.students.includes(PARTICIPANTS.quatrieme),
     troisieme: offer.students.includes(PARTICIPANTS.troisieme),
     CAPAnnee1: offer.students.includes(PARTICIPANTS.CAPAnnee1),
