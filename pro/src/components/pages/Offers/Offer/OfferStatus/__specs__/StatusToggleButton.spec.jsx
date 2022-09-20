@@ -5,12 +5,12 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import * as useNotification from 'components/hooks/useNotification'
 import {
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_INACTIVE,
 } from 'core/Offers/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import StatusToggleButton from '../StatusToggleButton'
@@ -44,7 +44,7 @@ describe('StatusToggleButton', () => {
   it('should deactivate an offer and confirm', async () => {
     // given
     const toggle = jest
-      .spyOn(pcapi, 'updateOffersActiveStatus')
+      .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
     const notifySuccess = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
@@ -58,7 +58,10 @@ describe('StatusToggleButton', () => {
     fireEvent.click(screen.getByRole('button', { name: /Désactiver/ }))
 
     expect(toggle).toHaveBeenCalledTimes(1)
-    expect(toggle).toHaveBeenNthCalledWith(1, ['AG3A'], false)
+    expect(toggle).toHaveBeenNthCalledWith(1, {
+      ids: ['AG3A'],
+      isActive: false,
+    })
     await waitFor(() =>
       expect(notifySuccess).toHaveBeenNthCalledWith(
         1,
@@ -69,7 +72,7 @@ describe('StatusToggleButton', () => {
   it('should activate an offer and confirm', async () => {
     // given
     const toggleFunction = jest
-      .spyOn(pcapi, 'updateOffersActiveStatus')
+      .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
     const notifySuccess = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
@@ -85,7 +88,10 @@ describe('StatusToggleButton', () => {
     // then
     fireEvent.click(screen.getByText(/Publier/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
-    expect(toggleFunction).toHaveBeenNthCalledWith(1, ['AG3A'], true)
+    expect(toggleFunction).toHaveBeenNthCalledWith(1, {
+      ids: ['AG3A'],
+      isActive: true,
+    })
     await waitFor(() =>
       expect(notifySuccess).toHaveBeenNthCalledWith(
         1,
@@ -96,7 +102,7 @@ describe('StatusToggleButton', () => {
   it('should display error', async () => {
     // given
     const toggleFunction = jest
-      .spyOn(pcapi, 'updateOffersActiveStatus')
+      .spyOn(api, 'patchOffersActiveStatus')
       .mockRejectedValue()
     const notifyError = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
