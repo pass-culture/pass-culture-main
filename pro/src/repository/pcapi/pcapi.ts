@@ -19,10 +19,6 @@ export const loadFeatures = async () => {
 // offerers
 //
 
-export const getAllOfferersNames = () => {
-  return client.get('/offerers/names').then(response => response.offerersNames)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offererId' implicitly has an 'any' type... Remove this comment to see the full error message
 export const generateOffererApiKey = async offererId => {
   return client

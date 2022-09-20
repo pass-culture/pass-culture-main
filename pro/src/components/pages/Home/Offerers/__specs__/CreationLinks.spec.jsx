@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -12,9 +13,15 @@ import Homepage from '../../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
-  getAllOfferersNames: jest.fn(),
   getVenueStats: jest.fn(),
 }))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: jest.fn(),
+  },
+}))
+
 const renderHomePage = async () => {
   const store = configureTestStore({
     user: {
@@ -134,7 +141,9 @@ describe('creationLinks', () => {
     }))
 
     pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-    pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
+    api.listOfferersNames.mockResolvedValue({
+      offerersNames: baseOfferersNames,
+    })
     pcapi.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
@@ -278,7 +287,7 @@ describe('creationLinks', () => {
 
   describe('when user has no offerer', () => {
     beforeEach(async () => {
-      pcapi.getAllOfferersNames.mockResolvedValue([])
+      api.listOfferersNames.mockResolvedValue({ offerersNames: [] })
 
       await renderHomePage()
     })
