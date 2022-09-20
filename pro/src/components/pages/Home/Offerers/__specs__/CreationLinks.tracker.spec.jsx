@@ -15,12 +15,12 @@ import { configureTestStore } from 'store/testUtils'
 import Homepage from '../../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOfferer: jest.fn(),
   getVenueStats: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
+    getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
   },
 }))
@@ -145,7 +145,7 @@ describe('trackers creationLinks', () => {
       name: offerer.name,
     }))
 
-    pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+    api.getOfferer.mockResolvedValue(baseOfferers[0])
     api.listOfferersNames.mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
@@ -170,7 +170,7 @@ describe('trackers creationLinks', () => {
         managedVenues: [virtualVenue],
       },
     ]
-    pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+    api.getOfferer.mockResolvedValue(baseOfferers[0])
     await renderHomePage()
     const createOfferButton = await screen.queryByText('Créer une offre')
 
@@ -198,7 +198,7 @@ describe('trackers creationLinks', () => {
         hasDigitalVenueAtLeastOneOffer: false,
       },
     ]
-    pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+    api.getOfferer.mockResolvedValue(baseOfferers[0])
     await renderHomePage()
 
     const createVenueButton = await screen.queryByText('Créer un lieu')

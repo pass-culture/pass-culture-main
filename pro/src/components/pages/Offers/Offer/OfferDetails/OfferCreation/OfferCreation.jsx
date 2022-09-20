@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'core/Offers/utils'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
@@ -36,7 +37,7 @@ const OfferCreation = ({
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(async () => {
       if (isUserAdmin) {
-        const offererResponse = await pcapi.getOfferer(initialValues.offererId)
+        const offererResponse = await api.getOfferer(initialValues.offererId)
 
         offerersNames.current = [
           {

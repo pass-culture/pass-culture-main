@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useHistory, useParams } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
@@ -14,7 +15,6 @@ import ConfirmDialog from 'new_components/ConfirmDialog'
 import GoBackLink from 'new_components/GoBackLink'
 import {
   createVenue,
-  getOfferer,
   getVenueLabels,
   getVenueTypes,
 } from 'repository/pcapi/pcapi'
@@ -71,7 +71,7 @@ const VenueCreation = () => {
 
   useEffect(() => {
     const handleInitialRequest = async () => {
-      const offererRequest = getOfferer(offererId)
+      const offererRequest = api.getOfferer(offererId)
       const venueTypesRequest = getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
       })

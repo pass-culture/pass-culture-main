@@ -19,6 +19,7 @@ jest.mock('repository/pcapi/pcapi')
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn(),
+    getOfferer: jest.fn(),
   },
 }))
 
@@ -80,7 +81,7 @@ describe('venue form', () => {
         venueId: 'AQYQ',
       },
     }
-    pcapi.getOfferer.mockResolvedValue({
+    api.getOfferer.mockResolvedValue({
       id: 'BQ',
       name: 'Maison du chocolat',
     })
