@@ -7,7 +7,7 @@ from pcapi.connectors.cine_digital_service import _build_url
 from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import put_resource
 from pcapi.connectors.serialization.cine_digital_service_serializers import CancelBookingCDS
-import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
+import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 from pcapi.core.testing import override_settings
 
 

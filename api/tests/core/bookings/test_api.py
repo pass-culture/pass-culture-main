@@ -385,7 +385,7 @@ class BookOfferTest:
             }
 
     class WhenBookingIsExternalBookingTest:
-        @patch("pcapi.core.bookings.api.booking_providers_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_offer_with_solo_external_booking(
             self,
@@ -413,7 +413,7 @@ class BookOfferTest:
             assert booking.externalBookings[0].barcode == "testbarcode"
             assert booking.externalBookings[0].seat == "A_1"
 
-        @patch("pcapi.core.bookings.api.booking_providers_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_offer_with_duo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [
@@ -442,7 +442,7 @@ class BookOfferTest:
             assert booking.externalBookings[1].barcode == "barcode2"
             assert booking.externalBookings[1].seat == "B_2"
 
-        @patch("pcapi.core.bookings.api.booking_providers_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def should_not_create_external_booking_when_venue_booking_provider_is_not_active(
             self,
@@ -588,7 +588,7 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
 
-    @patch("pcapi.core.bookings.api.booking_providers_api.cancel_booking")
+    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cancel_external_booking(self, mocked_cancel_booking):
         mocked_cancel_booking.return_value = None

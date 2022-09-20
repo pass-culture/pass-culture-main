@@ -7,9 +7,9 @@ from sqlalchemy import Sequence
 
 from pcapi import settings
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.models import Movie
 from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product

@@ -27,7 +27,7 @@ import tests
 @pytest.mark.usefixtures("db_session")
 class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_get_venue_movies(self, mock_get_venue_movies, mock_get_shows):
         # Given
@@ -84,7 +84,7 @@ class CDSStocksTest:
         assert len(cds_movies) == 2
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_return_providable_info_on_next(self, mock_get_venue_movies, mock_get_shows):
         # Given
@@ -168,7 +168,7 @@ class CDSStocksTest:
         assert "/2022-06-20 11:00:00" in stock_providable_info.new_id_at_provider
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_not_return_providable_info_on_next_when_no_stocks_for_movies(
         self, mock_get_venue_movies, mock_get_shows
@@ -240,7 +240,7 @@ class CDSStocksTest:
         return_value=True,
     )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_create_offers_for_each_movie(self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge):
         # Given
@@ -319,7 +319,7 @@ class CDSStocksTest:
         return_value=False,
     )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_fill_offer_and_product_and_stock_informations_for_each_movie(
         self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge
@@ -440,8 +440,8 @@ class CDSStocksTest:
         return_value=True,
     )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_movie_poster")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_create_product_with_correct_thumb(
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, mock_get_internet_sale_gauge
@@ -540,7 +540,7 @@ class CDSStocksQuantityTest:
         return_value=True,
     )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_update_cds_stock_with_correct_stock_quantity(
         self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge
