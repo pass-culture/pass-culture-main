@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
+import type { FormikErrors } from 'formik'
+import React, { useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
@@ -16,6 +17,7 @@ import {
   validationSchema,
 } from 'new_components/OfferIndividualForm'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
+import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import { ActionBar } from '../ActionBar'
 
@@ -41,7 +43,31 @@ const Informations = ({
     reloadOffer,
   } = useOfferIndividualContext()
 
-  const handleNextStep = async () => formik.handleSubmit()
+  const handleNextStep = async () => {
+    formik.handleSubmit()
+    if (formik.errors) redirectToError(formik.errors)
+  }
+
+  const redirectToError = useCallback(
+    (errors: FormikErrors<IOfferIndividualFormValues>) => {
+      if (errors) {
+        const invalidElement = document.querySelector(
+          `#${Object.keys(errors)[0]}`
+        )
+        if (invalidElement) {
+          const scrollBehavior = doesUserPreferReducedMotion()
+            ? 'auto'
+            : 'smooth'
+          invalidElement.scrollIntoView({
+            behavior: scrollBehavior,
+            block: 'center',
+            inline: 'center',
+          })
+        }
+      }
+    },
+    []
+  )
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
     const { isOk, payload } =
@@ -58,6 +84,7 @@ const Informations = ({
       )
     } else {
       formik.setErrors(payload.errors)
+      redirectToError(formik.errors)
     }
     return Promise.resolve()
   }

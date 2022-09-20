@@ -15,7 +15,7 @@ const FieldError = ({
   className,
   name,
 }: IFieldErrorProps): JSX.Element => (
-  <div className={cn(styles['field-error'], className)}>
+  <div className={cn(styles['field-error'], className)} id={name}>
     <ErrorIcon />
     <span
       className={styles['field-error-text']}
