@@ -597,6 +597,37 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatNumber == "E_6"
 
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_not_return_prm_seat(self, mocked_get_resource):
+        seatmap_json = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 3, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 11, 11, 11, 11, 11, 11, 0, 11, 11],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+        ]
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=True,
+            seatmaplefttoright=True,
+            seatmapskipmissingseats=False,
+        )
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+        )
+        best_seat = cine_digital_service.get_available_seat(1, screen)
+        assert len(best_seat) == 1
+        assert best_seat[0].seatRow == 4
+        assert best_seat[0].seatCol == 6
+        assert best_seat[0].seatNumber == "D_6"
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
     def test_should_return_seat_infos_according_to_screen(self, mocked_get_resource):
         seatmap_json = [
             [3, 3, 3, 3, 0, 3],

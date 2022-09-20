@@ -18,6 +18,10 @@ import pcapi.core.booking_providers.models as booking_providers_models
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
+def _is_available_and_normal_seat(seat_value: int) -> bool:
+    return seat_value % 10 == 1 and seat_value // 10 == 0
+
+
 class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
     def __init__(self, cinema_id: str, account_id: str, api_url: str, cinema_api_token: str | None):
         if not cinema_api_token:
@@ -124,7 +128,10 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
     def get_available_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[cds_serializers.SeatCDS]:
         seatmap = self.get_seatmap(show_id)
         available_seats_index = [
-            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] % 10 == 1
+            (i, j)
+            for i in range(0, seatmap.nb_row)
+            for j in range(0, seatmap.nb_col)
+            if _is_available_and_normal_seat(seatmap.map[i][j])
         ]
         if len(available_seats_index) == 0:
             return []
@@ -136,7 +143,10 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         seatmap_center = ((seatmap.nb_row - 1) / 2, (seatmap.nb_col - 1) / 2)
 
         available_seats_index = [
-            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] % 10 == 1
+            (i, j)
+            for i in range(0, seatmap.nb_row)
+            for j in range(0, seatmap.nb_col)
+            if _is_available_and_normal_seat(seatmap.map[i][j])
         ]
         if len(available_seats_index) <= 1:
             return []
