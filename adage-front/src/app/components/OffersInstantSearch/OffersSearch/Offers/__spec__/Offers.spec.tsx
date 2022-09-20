@@ -39,7 +39,6 @@ jest.mock('react-instantsearch-dom', () => {
         processingTimeMS={0}
       />
     )),
-    Stats: jest.fn(() => <div>2 résultats</div>),
   }
 })
 
@@ -239,6 +238,10 @@ describe('offers', () => {
       hasMore: true,
       hasPrevious: false,
       refinePrevious: jest.fn(),
+      nbHits: 2,
+      nbSortedHits: 0,
+      areHitsSorted: true,
+      processingTimeMS: 0,
     }
 
     mockedPcapi.getCollectiveOffer.mockReset()
@@ -257,7 +260,7 @@ describe('offers', () => {
     expect(listItemsInOffer).toHaveLength(2)
     expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-    expect(screen.getAllByText('2 résultats')[0]).toBeInTheDocument()
+    expect(screen.getByText('2 résultats')).toBeInTheDocument()
   })
 
   it('should remove previous rendered offers on results update', async () => {
@@ -292,7 +295,8 @@ describe('offers', () => {
     expect(screen.getAllByTestId('offer-listitem')).toHaveLength(1)
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
-    expect(screen.getAllByText('2 résultats')[0]).toBeInTheDocument()
+    expect(screen.getByText('2 résultats')).toBeInTheDocument()
+    expect(screen.getByText('Vous avez vu 1 offre sur 2')).toBeInTheDocument()
   })
 
   it('should show most recent results and cancel previous request', async () => {
