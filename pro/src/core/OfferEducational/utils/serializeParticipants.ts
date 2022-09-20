@@ -8,6 +8,8 @@ export const serializeParticipants = (
 ): StudentLevels[] =>
   Object.keys(participants)
     .filter((key): boolean => {
-      return participants[key as keyof typeof participants] === true
+      return (
+        key !== 'all' && participants[key as keyof typeof participants] === true
+      )
     })
     .map(key => PARTICIPANTS[key])

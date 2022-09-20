@@ -34,6 +34,7 @@ export type IOfferEducationalFormValues = {
   }
   interventionArea: string[]
   participants: {
+    all: boolean
     quatrieme: boolean
     troisieme: boolean
     CAPAnnee1: boolean

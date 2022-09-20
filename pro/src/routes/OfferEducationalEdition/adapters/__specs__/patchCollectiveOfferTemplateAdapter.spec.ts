@@ -33,6 +33,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         },
         interventionArea: [],
         participants: {
+          all: false,
           quatrieme: false,
           troisieme: false,
           CAPAnnee1: false,
@@ -69,6 +70,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         },
         interventionArea: [],
         participants: {
+          all: false,
           quatrieme: false,
           troisieme: false,
           CAPAnnee1: false,

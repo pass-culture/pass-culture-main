@@ -26,6 +26,7 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   },
   interventionArea: [],
   participants: {
+    all: false,
     quatrieme: false,
     troisieme: false,
     CAPAnnee1: false,
