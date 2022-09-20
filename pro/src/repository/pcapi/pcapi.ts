@@ -19,11 +19,6 @@ export const loadFeatures = async () => {
 // offerers
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'apiKey' implicitly has an 'any' type.
-export const deleteOffererApiKey = async apiKey => {
-  return client.delete(`/offerers/api_keys/${apiKey}`)
-}
-
 export const getUserValidatedOfferersNames = () => {
   return client
     .get('/offerers/names?validated_for_user=true')
