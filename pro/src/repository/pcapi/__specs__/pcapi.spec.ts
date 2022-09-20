@@ -10,7 +10,6 @@ import {
   updateUserInformations,
   buildGetOfferersQuery,
   deleteStock,
-  loadFilteredOffers,
   postThumbnail,
   setHasSeenTutos,
   updateAllOffersActiveStatus,
@@ -39,79 +38,6 @@ jest.mock('utils/date', () => {
 })
 
 describe('pcapi', () => {
-  describe('loadFilteredOffers', () => {
-    const returnedResponse = [
-      {
-        hasBookingLimitDatetimesPassed: false,
-        id: 'AAA',
-        isActive: false,
-        isEditable: true,
-        isEvent: true,
-        isThing: false,
-        name: 'Drunk - VF',
-        stocks: [],
-        thumbUrl: '',
-        type: 'EventType.CINEMA',
-        venue: {
-          id: 'BBB',
-          isVirtual: false,
-          managingOffererId: 'CCC',
-          name: 'Mon petit cinéma',
-          offererName: 'Mon groupe de cinémas',
-        },
-        venueId: 'AAA',
-      },
-    ]
-
-    beforeEach(() => {
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mockResolvedValue' does not exist on typ... Remove this comment to see the full error message
-      client.get.mockResolvedValue(returnedResponse)
-    })
-
-    it('should return api response', async () => {
-      // When
-      const response = await loadFilteredOffers({})
-
-      // Then
-      expect(response).toBe(returnedResponse)
-    })
-
-    it('should call offers route without query params when provided filters are defaults', async () => {
-      // Given
-      const filters = {
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'name' does not exist on type 'TSearchFil... Remove this comment to see the full error message
-        name: DEFAULT_SEARCH_FILTERS.name,
-        venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        status: DEFAULT_SEARCH_FILTERS.status,
-        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-      }
-
-      // When
-      await loadFilteredOffers(filters)
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/offers')
-    })
-
-    it('should call offers route with filters when provided', async () => {
-      // Given
-      const filters = {
-        nameOrIsbn: 'OCS',
-        venueId: 'AA',
-        status: 'expired',
-        creationMode: 'manual',
-      }
-
-      // When
-      await loadFilteredOffers(filters)
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith(
-        '/offers?nameOrIsbn=OCS&venueId=AA&status=expired&creationMode=manual'
-      )
-    })
-  })
-
   describe('updateOffersActiveStatus', () => {
     describe('when updating all offers', () => {
       it('should call offers/all-active-status with proper params when filters are defaults', async () => {
