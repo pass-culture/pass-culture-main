@@ -77,7 +77,7 @@ describe('src | components | pages | LostPassword', () => {
       // user can fill and submit new password
       await userEvent.type(
         screen.getByLabelText(/Nouveau mot de passe/),
-        'newPassword'
+        'MyN3wP4$$w0rd'
       )
       await userEvent.click(screen.getByText(/Envoyer/))
 
