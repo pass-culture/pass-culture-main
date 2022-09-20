@@ -6,21 +6,18 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 import { SubmitButton } from 'ui-kit'
 
 import { EXTERNAL_LINK_DEFAULT_VALUES } from '../constants'
 import ExternalLink from '../ExternalLink'
 import validationSchema from '../validationSchema'
 
-interface IInitialValues {
-  externalTicketOfficeUrl?: string
-}
-
 const renderExternalLink = ({
   initialValues,
   onSubmit,
 }: {
-  initialValues: IInitialValues
+  initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   return render(
@@ -38,7 +35,7 @@ const renderExternalLink = ({
 }
 
 describe('OfferIndividual section: ExternalLink', () => {
-  let initialValues: IInitialValues
+  let initialValues: Partial<IOfferIndividualFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {
