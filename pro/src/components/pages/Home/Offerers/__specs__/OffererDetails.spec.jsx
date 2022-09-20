@@ -226,7 +226,9 @@ describe('offererDetailsLegacy', () => {
 
     // Then
     expect(
-      screen.queryByText('Votre structure est en cours de validation')
+      screen.queryByText(
+        'Le rattachement à votre structure est en cours de validation'
+      )
     ).not.toBeInTheDocument()
   })
 
@@ -678,7 +680,9 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       expect(
-        within(offerer).getByText('Votre structure est en cours de validation')
+        within(offerer).getByText(
+          'Le rattachement à votre structure est en cours de validation'
+        )
       ).toBeInTheDocument()
     })
 
@@ -727,7 +731,9 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       expect(
-        screen.getByText('Votre structure est en cours de validation')
+        screen.getByText(
+          'Le rattachement à votre structure est en cours de validation'
+        )
       ).toBeInTheDocument()
     })
 
