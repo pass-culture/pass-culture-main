@@ -14,11 +14,17 @@ import { configureTestStore } from 'store/testUtils'
 import OfferLayout from '../OfferLayout'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  updateOffersActiveStatus: jest.fn(),
   loadCategories: jest.fn(),
   getUserValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getOfferer: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    patchOffersActiveStatus: jest.fn(),
+    getOffer: jest.fn(),
+  },
 }))
 
 const renderOfferDetails = (store, url) => {
@@ -128,7 +134,7 @@ describe('offerLayout', () => {
 
     it('should allow to activate inactive offer', async () => {
       // Given
-      pcapi.updateOffersActiveStatus.mockResolvedValue()
+      api.patchOffersActiveStatus.mockResolvedValue()
       api.getOffer
         .mockResolvedValueOnce({
           ...editedOffer,
@@ -157,11 +163,10 @@ describe('offerLayout', () => {
       )
 
       // Then
-      expect(pcapi.updateOffersActiveStatus).toHaveBeenNthCalledWith(
-        1,
-        [editedOffer.id],
-        true
-      )
+      expect(api.patchOffersActiveStatus).toHaveBeenNthCalledWith(1, {
+        ids: [editedOffer.id],
+        isActive: true,
+      })
       expect(
         screen.queryByRole('button', { name: 'Publier' })
       ).not.toBeInTheDocument()
@@ -175,7 +180,7 @@ describe('offerLayout', () => {
 
     it('should allow to deactivate active offer', async () => {
       // Given
-      pcapi.updateOffersActiveStatus.mockResolvedValue()
+      api.patchOffersActiveStatus.mockResolvedValue()
       api.getOffer
         .mockResolvedValueOnce({
           ...editedOffer,
@@ -200,10 +205,10 @@ describe('offerLayout', () => {
       )
 
       // Then
-      expect(pcapi.updateOffersActiveStatus).toHaveBeenCalledWith(
-        [editedOffer.id],
-        false
-      )
+      expect(api.patchOffersActiveStatus).toHaveBeenCalledWith({
+        ids: [editedOffer.id],
+        isActive: false,
+      })
       expect(
         screen.queryByRole('button', { name: 'Désactiver' })
       ).not.toBeInTheDocument()
@@ -255,7 +260,7 @@ describe('offerLayout', () => {
         ...editedOffer,
         isActive: true,
       })
-      pcapi.updateOffersActiveStatus.mockRejectedValue()
+      api.patchOffersActiveStatus.mockRejectedValue()
       renderOfferDetails(store, '/offre/AB/individuel/edition')
 
       // When

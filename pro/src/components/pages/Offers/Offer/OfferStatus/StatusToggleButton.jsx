@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
+import { api } from 'apiClient/api'
 import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
 import {
@@ -8,13 +9,12 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const StatusToggleButton = ({ offer, reloadOffer }) => {
   const notification = useNotification()
   const toggleOfferActiveStatus = useCallback(() => {
-    pcapi
-      .updateOffersActiveStatus([offer.id], !offer.isActive)
+    api
+      .patchOffersActiveStatus({ ids: [offer.id], isActive: !offer.isActive })
       .then(() => {
         reloadOffer()
         notification.success(

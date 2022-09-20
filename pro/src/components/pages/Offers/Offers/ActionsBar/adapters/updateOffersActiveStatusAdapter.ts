@@ -1,4 +1,4 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
 
 import {
   computeActivationSuccessMessage,
@@ -23,7 +23,8 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 export const updateOffersActiveStatusAdapter: UpdateOffersActiveStatusAdapter =
   async ({ ids, isActive }) => {
     try {
-      await pcapi.updateOffersActiveStatus(ids, isActive)
+      // @ts-expect-error: type string is not assignable to type number
+      await api.patchOffersActiveStatus({ ids, isActive })
 
       return {
         isOk: true,

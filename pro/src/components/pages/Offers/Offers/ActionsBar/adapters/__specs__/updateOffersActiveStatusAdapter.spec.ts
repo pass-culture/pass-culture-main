@@ -1,12 +1,14 @@
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+
 import { updateOffersActiveStatusAdapter } from '../updateOffersActiveStatusAdapter'
 
 describe('updateOffersActiveStatusAdapter', () => {
   it('should deactivate all offers and confirm', async () => {
     // given
-    // @ts-ignore
-    jest
-      .spyOn(window, 'fetch')
-      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
+    jest.spyOn(api, 'patchOffersActiveStatus').mockResolvedValueOnce()
 
     const response = await updateOffersActiveStatusAdapter({
       ids: ['A1', 'A2', 'A3'],
@@ -20,10 +22,7 @@ describe('updateOffersActiveStatusAdapter', () => {
 
   it('should publish all offers and confirm', async () => {
     // given
-    // @ts-ignore
-    jest
-      .spyOn(window, 'fetch')
-      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
+    jest.spyOn(api, 'patchOffersActiveStatus').mockResolvedValueOnce()
 
     const response = await updateOffersActiveStatusAdapter({
       ids: ['A1', 'A2', 'A3'],
@@ -37,10 +36,11 @@ describe('updateOffersActiveStatusAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 422,
-    })
+    jest
+      .spyOn(api, 'patchOffersActiveStatus')
+      .mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 422 } as ApiResult, '')
+      )
 
     // when
     const response = await updateOffersActiveStatusAdapter({

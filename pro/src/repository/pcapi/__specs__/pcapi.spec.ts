@@ -1,5 +1,5 @@
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { ALL_OFFERERS } from 'core/Offers/constants'
 import {
   generateOffererApiKey,
   getFilteredBookingsCSV,
@@ -12,8 +12,6 @@ import {
   deleteStock,
   postThumbnail,
   setHasSeenTutos,
-  updateAllOffersActiveStatus,
-  updateOffersActiveStatus,
   validateDistantImage,
 } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
@@ -38,64 +36,6 @@ jest.mock('utils/date', () => {
 })
 
 describe('pcapi', () => {
-  describe('updateOffersActiveStatus', () => {
-    describe('when updating all offers', () => {
-      it('should call offers/all-active-status with proper params when filters are defaults', async () => {
-        // given
-        const body = {
-          isActive: true,
-        }
-
-        // when
-        await updateAllOffersActiveStatus(body)
-
-        // then
-        expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
-          isActive: true,
-        })
-      })
-
-      it('should call offers/all-active-status with proper params when filters are set', async () => {
-        // given
-        const body = {
-          isActive: true,
-          offererId: 'IJ',
-          venueId: 'KL',
-          categoryId: 'CINEMA',
-          status: 'expired',
-          creationMode: 'imported',
-        }
-
-        // when
-        // @ts-expect-error Impossible d'assigner le type 'string' au type 'number'
-        await updateAllOffersActiveStatus(body)
-
-        // then
-        expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
-          isActive: true,
-          offererId: 'IJ',
-          venueId: 'KL',
-          categoryId: 'CINEMA',
-          status: 'expired',
-          creationMode: 'imported',
-        })
-      })
-    })
-
-    describe('when updating some offers', () => {
-      it('should call offers/active-status with proper params', async () => {
-        // when
-        await updateOffersActiveStatus(['A3', 'E9'], true)
-
-        // then
-        expect(client.patch).toHaveBeenCalledWith('/offers/active-status', {
-          ids: ['A3', 'E9'],
-          isActive: true,
-        })
-      })
-    })
-  })
-
   describe('getVenueStats', () => {
     it('should get stats for given venue', () => {
       // When

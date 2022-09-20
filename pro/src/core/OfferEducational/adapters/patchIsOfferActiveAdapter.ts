@@ -1,4 +1,4 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
 
 type IPayloadSuccess = null
 type IPayloadFailure = null
@@ -13,7 +13,8 @@ export const patchIsOfferActiveAdapter: PatchIsOfferActiveAdapter = async ({
   isActive,
 }) => {
   try {
-    await pcapi.updateOffersActiveStatus([offerId], isActive)
+    // @ts-expect-error type string is not assignable to type number
+    await api.patchOffersActiveStatus({ ids: [offerId], isActive })
 
     return {
       isOk: true,

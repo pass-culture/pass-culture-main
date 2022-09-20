@@ -6,13 +6,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import * as useNotification from 'components/hooks/useNotification'
 import { Events } from 'core/FirebaseEvents/constants'
-import {
-  updateAllOffersActiveStatus,
-  updateOffersActiveStatus,
-} from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import ActionsBar from '../ActionsBar'
@@ -27,9 +24,11 @@ const renderActionsBar = (props, store) => {
   )
 }
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  updateOffersActiveStatus: jest.fn().mockResolvedValue({}),
-  updateAllOffersActiveStatus: jest.fn().mockResolvedValue({}),
+jest.mock('apiClient/api', () => ({
+  api: {
+    patchOffersActiveStatus: jest.fn().mockResolvedValue({}),
+    patchAllOffersActiveStatus: jest.fn().mockResolvedValue({}),
+  },
 }))
 
 const mockLogEvent = jest.fn()
@@ -123,10 +122,10 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
-          ['testId1', 'testId2'],
-          true
-        )
+        expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+          ids: ['testId1', 'testId2'],
+          isActive: true,
+        })
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalled()
       })
@@ -162,10 +161,10 @@ describe('src | components | pages | Offers | ActionsBar', () => {
             has_selected_all_offers: false,
           }
         )
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
-          ['testId1', 'testId2'],
-          false
-        )
+        expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+          ids: ['testId1', 'testId2'],
+          isActive: false,
+        })
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith()
       })
@@ -204,7 +203,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateAllOffersActiveStatus).toHaveBeenLastCalledWith(
+        expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
           expectedBody
         )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
@@ -239,7 +238,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
             has_selected_all_offers: true,
           }
         )
-        expect(updateAllOffersActiveStatus).toHaveBeenLastCalledWith(
+        expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
           expectedBody
         )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)

@@ -21,11 +21,17 @@ jest.mock('utils/config', () => {
 })
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  updateOffersActiveStatus: jest.fn(),
   loadCategories: jest.fn(),
   getUserValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getOfferer: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    patchOffersActiveStatus: jest.fn(),
+    getOffer: jest.fn(),
+  },
 }))
 
 describe('confirmation page', () => {

@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import { TSearchFilters } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import {
   computeAllActivationSuccessMessage,
@@ -29,7 +29,7 @@ export const updateAllOffersActiveStatusAdapter: UpdateAllOffersActiveStatusAdap
     try {
       const payload = serializeApiFilters(filters)
 
-      await pcapi.updateAllOffersActiveStatus({
+      await api.patchAllOffersActiveStatus({
         ...payload,
         isActive,
       })
