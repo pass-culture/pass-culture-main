@@ -12,6 +12,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -34,9 +35,14 @@ jest.mock('utils/config', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
-  getAllOfferersNames: jest.fn(),
   getVenueStats: jest.fn(),
   getBusinessUnits: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: jest.fn(),
+  },
 }))
 
 const renderHomePage = ({ store }) => {
@@ -191,7 +197,9 @@ describe('offererDetailsLegacy', () => {
     }))
 
     pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
-    pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
+    api.listOfferersNames.mockResolvedValue({
+      offerersNames: baseOfferersNames,
+    })
     pcapi.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
@@ -507,12 +515,14 @@ describe('offererDetailsLegacy', () => {
       }
 
       pcapi.getOfferer.mockResolvedValue(offererWithNoPhysicalVenues)
-      pcapi.getAllOfferersNames.mockResolvedValue([
-        {
-          id: offererWithNoPhysicalVenues.id,
-          name: offererWithNoPhysicalVenues.name,
-        },
-      ])
+      api.listOfferersNames.mockResolvedValue({
+        offerersNames: [
+          {
+            id: offererWithNoPhysicalVenues.id,
+            name: offererWithNoPhysicalVenues.name,
+          },
+        ],
+      })
     })
 
     it('should display offerer informations', async () => {
@@ -597,12 +607,14 @@ describe('offererDetailsLegacy', () => {
       }
 
       pcapi.getOfferer.mockResolvedValue(offererWithPhysicalVenues)
-      pcapi.getAllOfferersNames.mockResolvedValue([
-        {
-          id: offererWithPhysicalVenues.id,
-          name: offererWithPhysicalVenues.name,
-        },
-      ])
+      api.listOfferersNames.mockResolvedValue({
+        offerersNames: [
+          {
+            id: offererWithPhysicalVenues.id,
+            name: offererWithPhysicalVenues.name,
+          },
+        ],
+      })
     })
 
     it('should not display offerer informations', async () => {
@@ -668,9 +680,11 @@ describe('offererDetailsLegacy', () => {
         managedVenues: [virtualVenue],
       }
       pcapi.getOfferer.mockResolvedValue(nonValidatedOfferer)
-      pcapi.getAllOfferersNames.mockResolvedValue([
-        { name: nonValidatedOfferer.name, id: nonValidatedOfferer.id },
-      ])
+      api.listOfferersNames.mockResolvedValue({
+        offerersNames: [
+          { name: nonValidatedOfferer.name, id: nonValidatedOfferer.id },
+        ],
+      })
     })
 
     it('should warn user that offerer is being validated', async () => {
@@ -714,13 +728,15 @@ describe('offererDetailsLegacy', () => {
 
   describe('when user attachment to offerer is not yet validated', () => {
     beforeEach(() => {
-      pcapi.getAllOfferersNames.mockResolvedValue([
-        {
-          name: firstOffererByAlphabeticalOrder.name,
-          id: firstOffererByAlphabeticalOrder.id,
-        },
-        { name: baseOfferers[0].name, id: baseOfferers[0].id },
-      ])
+      api.listOfferersNames.mockResolvedValue({
+        offerersNames: [
+          {
+            name: firstOffererByAlphabeticalOrder.name,
+            id: firstOffererByAlphabeticalOrder.id,
+          },
+          { name: baseOfferers[0].name, id: baseOfferers[0].id },
+        ],
+      })
       pcapi.getOfferer.mockRejectedValue({ status: 403 })
     })
 
@@ -779,13 +795,15 @@ describe('offererDetailsLegacy', () => {
 
     it('should not show venues of previously selected offerer', async () => {
       // Given
-      pcapi.getAllOfferersNames.mockResolvedValue([
-        { name: baseOfferers[0].name, id: baseOfferers[0].id },
-        {
-          name: firstOffererByAlphabeticalOrder.name,
-          id: firstOffererByAlphabeticalOrder.id,
-        },
-      ])
+      api.listOfferersNames.mockResolvedValue({
+        offerersNames: [
+          { name: baseOfferers[0].name, id: baseOfferers[0].id },
+          {
+            name: firstOffererByAlphabeticalOrder.name,
+            id: firstOffererByAlphabeticalOrder.id,
+          },
+        ],
+      })
       pcapi.getOfferer
         .mockResolvedValueOnce({
           ...firstOffererByAlphabeticalOrder,

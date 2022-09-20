@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import useFrenchQuery from 'components/hooks/useFrenchQuery'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -35,9 +36,9 @@ const Offerers = () => {
   useEffect(
     function fetchData() {
       const { offererId } = query
-      pcapi.getAllOfferersNames().then(receivedOffererNames => {
+      api.listOfferersNames().then(receivedOffererNames => {
         const initialOffererOptions = sortByDisplayName(
-          receivedOffererNames.map(item => ({
+          receivedOffererNames.offerersNames.map(item => ({
             id: item['id'].toString(),
             displayName: item['name'],
           }))
