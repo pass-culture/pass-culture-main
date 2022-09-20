@@ -1,6 +1,10 @@
 from pcapi.routes.serialization import BaseModel
 
 
+class CatalogViewBody(BaseModel):
+    source: str
+
+
 class StockIdBody(BaseModel):
     stockId: int
 

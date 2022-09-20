@@ -11,7 +11,7 @@ class PostLogsTests:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/catalog-view", json={})
+            response = client.post("/adage-iframe/logs/catalog-view", json={"source": "partnersMap"})
 
         # then
         assert response.status_code == 204
@@ -19,7 +19,7 @@ class PostLogsTests:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "source": "homepage",
+            "source": "partnersMap",
         }
 
     def test_log_search_button(self, client, caplog):
