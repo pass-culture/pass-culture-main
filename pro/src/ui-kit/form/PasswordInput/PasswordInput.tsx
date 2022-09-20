@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 
-import Icon from 'components/layout/Icon'
 import { ReactComponent as IcoEyeClose } from 'icons/ico-eye-close.svg'
 import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-open.svg'
 
@@ -12,30 +11,18 @@ interface IPasswordInputProps {
   label: string
   name: string
   placeholder: string
-  renderTooltip?: boolean
 }
 
 const PasswordInput = ({
   label,
   name,
   placeholder,
-  renderTooltip = true,
 }: IPasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
 
   const handleToggleHidden = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
     setPasswordHidden(currentSetPasswordHidden => !currentSetPasswordHidden)
-  }
-
-  const renderPasswordTooltip = () => {
-    return `Votre mot de passe doit contenir au moins :
-        <ul>
-          <li>12 caractères</li>
-          <li>une majuscule et une minuscule</li>
-          <li>un chiffre</li>
-          <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-        </ul>`
   }
 
   return (
@@ -56,16 +43,6 @@ const PasswordInput = ({
           </button>
         )}
       />
-      {renderTooltip && (
-        <Icon
-          alt="Caractéristiques obligatoires du mot de passe"
-          className={styles['password-tip-icon']}
-          data-place="bottom"
-          data-tip={renderPasswordTooltip()}
-          data-type="info"
-          svg="picto-info"
-        />
-      )}
     </div>
   )
 }
