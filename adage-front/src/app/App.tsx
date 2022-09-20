@@ -32,13 +32,13 @@ export const App = (): JSX.Element => {
   const [notification, setNotification] = useState<Notification | null>(null)
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const siret = params.get('siret')
+    const venueId = Number(params.get('venue'))
     api
       .authenticate()
       .then(user => setUser(user))
       .then(() => {
-        const params = new URLSearchParams(window.location.search)
-        const siret = params.get('siret')
-        const venueId = Number(params.get('venue'))
         if (siret) {
           return api
             .getVenueBySiret(siret)
@@ -71,7 +71,9 @@ export const App = (): JSX.Element => {
       .finally(() => {
         setIsLoading(false)
         if (LOGS_DATA) {
-          api.logCatalogView()
+          api.logCatalogView({
+            source: siret || venueId ? 'partnersMap' : 'homepage',
+          })
         }
       })
   }, [])
