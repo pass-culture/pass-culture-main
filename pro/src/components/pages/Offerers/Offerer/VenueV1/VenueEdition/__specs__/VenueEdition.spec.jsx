@@ -43,11 +43,11 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenueTypes: jest.fn().mockResolvedValue([]),
   getVenueLabels: jest.fn().mockResolvedValue([]),
   editVenue: jest.fn(),
-  canOffererCreateEducationalOffer: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
+    canOffererCreateEducationalOffer: jest.fn(),
     getOfferer: jest.fn().mockResolvedValue([]),
     getVenue: jest.fn().mockResolvedValue({}),
     getAvailableReimbursementPoints: jest.fn(),
@@ -150,7 +150,7 @@ describe('test page : VenueEdition', () => {
       },
     ])
     pcapi.getBusinessUnits.mockResolvedValue([{}])
-    pcapi.canOffererCreateEducationalOffer.mockResolvedValue()
+    api.canOffererCreateEducationalOffer.mockResolvedValue()
     window.history.pushState(
       {},
       'Test page',
@@ -618,7 +618,7 @@ describe('test page : VenueEdition', () => {
       })
 
       it('should not display EAC Information block when offerer cannot create collective offer', async () => {
-        pcapi.canOffererCreateEducationalOffer.mockRejectedValueOnce()
+        api.canOffererCreateEducationalOffer.mockRejectedValueOnce()
         await renderVenueEdition({ props })
 
         const eacSection = screen.queryByText(

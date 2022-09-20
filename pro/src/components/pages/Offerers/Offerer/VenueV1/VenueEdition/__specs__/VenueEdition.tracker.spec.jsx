@@ -31,11 +31,11 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenueTypes: jest.fn().mockResolvedValue([]),
   getVenueLabels: jest.fn().mockResolvedValue([]),
   editVenue: jest.fn(),
-  canOffererCreateEducationalOffer: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
+    canOffererCreateEducationalOffer: jest.fn(),
     getOfferer: jest.fn().mockResolvedValue({}),
     getVenue: jest.fn(),
   },
