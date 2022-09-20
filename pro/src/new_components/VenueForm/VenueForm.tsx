@@ -43,17 +43,17 @@ const VenueForm = ({
 
   return (
     <div>
+      {!isCreatingVenue && provider && venueProvider && venue && (
+        <OffersSynchronization
+          provider={provider}
+          venueProvider={venueProvider}
+          venue={venue}
+        />
+      )}
       <FormLayout className={styles['venue-form']} small>
         <p className={styles['venue-form-description']}>
           Tous les champs sont obligatoires sauf mention contraire.
         </p>
-        {!isCreatingVenue && provider && venueProvider && venue && (
-          <OffersSynchronization
-            provider={provider}
-            venueProvider={venueProvider}
-            venue={venue}
-          />
-        )}
         <Informations
           isCreatedEntity={isCreatingVenue}
           readOnly={!isCreatingVenue}
