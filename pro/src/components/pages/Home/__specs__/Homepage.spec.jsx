@@ -22,7 +22,6 @@ jest.mock('utils/config', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn(),
-  getOfferer: jest.fn(),
   getVenueStats: jest.fn(),
   setHasSeenRGSBanner: jest.fn(),
   updateUserInformations: jest.fn().mockResolvedValue({}),
@@ -32,6 +31,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn(),
     listOfferersNames: jest.fn(),
+    getOfferer: jest.fn(),
   },
 }))
 
@@ -151,7 +151,7 @@ describe('homepage', () => {
       name: offerer.name,
     }))
     pcapi.getBusinessUnits.mockResolvedValue([])
-    pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+    api.getOfferer.mockResolvedValue(baseOfferers[0])
     api.listOfferersNames.mockResolvedValue({
       offerersNames: baseOfferersNames,
     })

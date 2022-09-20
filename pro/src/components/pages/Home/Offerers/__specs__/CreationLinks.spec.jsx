@@ -12,12 +12,12 @@ import { configureTestStore } from 'store/testUtils'
 import Homepage from '../../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOfferer: jest.fn(),
   getVenueStats: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
+    getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
   },
 }))
@@ -140,7 +140,7 @@ describe('creationLinks', () => {
       name: offerer.name,
     }))
 
-    pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+    api.getOfferer.mockResolvedValue(baseOfferers[0])
     api.listOfferersNames.mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
@@ -162,7 +162,7 @@ describe('creationLinks', () => {
           managedVenues: [virtualVenue],
         },
       ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      api.getOfferer.mockResolvedValue(baseOfferers[0])
       await renderHomePage()
 
       // Then
@@ -196,7 +196,7 @@ describe('creationLinks', () => {
           managedVenues: [physicalVenue, virtualVenue],
         },
       ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      api.getOfferer.mockResolvedValue(baseOfferers[0])
       await renderHomePage()
 
       // Then
@@ -229,7 +229,7 @@ describe('creationLinks', () => {
           managedVenues: [virtualVenue],
         },
       ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      api.getOfferer.mockResolvedValue(baseOfferers[0])
       await renderHomePage()
 
       // Then
@@ -262,7 +262,7 @@ describe('creationLinks', () => {
           managedVenues: [physicalVenue, virtualVenue],
         },
       ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      api.getOfferer.mockResolvedValue(baseOfferers[0])
       await renderHomePage()
 
       // Then

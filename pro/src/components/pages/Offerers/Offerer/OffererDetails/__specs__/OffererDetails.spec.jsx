@@ -5,14 +5,20 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import OffererDetails from '../OffererDetails'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOfferer: jest.fn(),
   getBusinessUnits: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getOfferer: jest.fn(),
+  },
 }))
 
 const renderOffererDetails = async ({ props, store }) => {
@@ -41,7 +47,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
     store = configureTestStore()
   })
 
-  pcapi.getOfferer.mockResolvedValue({
+  api.getOfferer.mockResolvedValue({
     id: 'AA',
     name: 'fake offerer name',
     address: 'fake address',

@@ -34,13 +34,13 @@ jest.mock('utils/config', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOfferer: jest.fn(),
   getVenueStats: jest.fn(),
   getBusinessUnits: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
+    getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
   },
 }))
@@ -196,10 +196,10 @@ describe('offererDetailsLegacy', () => {
       name: offerer.name,
     }))
 
-    pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
     api.listOfferersNames.mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
+    api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
     pcapi.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
@@ -299,7 +299,7 @@ describe('offererDetailsLegacy', () => {
         physicalVenue,
       ],
     }
-    pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+    api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
     // When
     const { waitForElements } = renderHomePage({ store })
@@ -364,7 +364,7 @@ describe('offererDetailsLegacy', () => {
       }
       const { waitForElements } = renderHomePage({ store })
       const { selectOfferer } = await waitForElements()
-      pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
+      api.getOfferer.mockResolvedValue(newSelectedOfferer)
 
       selectOfferer(newSelectedOfferer.name)
       const { offerer: newOfferer } = await waitForElements()
@@ -431,7 +431,7 @@ describe('offererDetailsLegacy', () => {
   describe("when offerer doesn't have bank informations", () => {
     it('should display bank warning if offerer has missing bank information', async () => {
       // Given
-      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
       // When
       const { waitForElements } = renderHomePage({ store })
@@ -455,7 +455,7 @@ describe('offererDetailsLegacy', () => {
     })
 
     it("shouldn't display bank warning offerer has NO missing bank information", async () => {
-      pcapi.getOfferer.mockResolvedValue({
+      api.getOfferer.mockResolvedValue({
         ...firstOffererByAlphabeticalOrder,
         hasMissingBankInformation: false,
       })
@@ -478,7 +478,7 @@ describe('offererDetailsLegacy', () => {
             'demarchesSimplifieesApplication_fake_id',
         },
       ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      api.getOfferer.mockResolvedValue(baseOfferers[0])
       const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
@@ -514,7 +514,6 @@ describe('offererDetailsLegacy', () => {
         managedVenues: [virtualVenue],
       }
 
-      pcapi.getOfferer.mockResolvedValue(offererWithNoPhysicalVenues)
       api.listOfferersNames.mockResolvedValue({
         offerersNames: [
           {
@@ -523,6 +522,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       })
+      api.getOfferer.mockResolvedValue(offererWithNoPhysicalVenues)
     })
 
     it('should display offerer informations', async () => {
@@ -606,7 +606,6 @@ describe('offererDetailsLegacy', () => {
         managedVenues: offererVenues,
       }
 
-      pcapi.getOfferer.mockResolvedValue(offererWithPhysicalVenues)
       api.listOfferersNames.mockResolvedValue({
         offerersNames: [
           {
@@ -615,6 +614,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       })
+      api.getOfferer.mockResolvedValue(offererWithPhysicalVenues)
     })
 
     it('should not display offerer informations', async () => {
@@ -679,12 +679,12 @@ describe('offererDetailsLegacy', () => {
         isValidated: false,
         managedVenues: [virtualVenue],
       }
-      pcapi.getOfferer.mockResolvedValue(nonValidatedOfferer)
       api.listOfferersNames.mockResolvedValue({
         offerersNames: [
           { name: nonValidatedOfferer.name, id: nonValidatedOfferer.id },
         ],
       })
+      api.getOfferer.mockResolvedValue(nonValidatedOfferer)
     })
 
     it('should warn user that offerer is being validated', async () => {
@@ -737,7 +737,7 @@ describe('offererDetailsLegacy', () => {
           { name: baseOfferers[0].name, id: baseOfferers[0].id },
         ],
       })
-      pcapi.getOfferer.mockRejectedValue({ status: 403 })
+      api.getOfferer.mockRejectedValue({ status: 403 })
     })
 
     it('should warn user offerer is being validated', async () => {
@@ -804,7 +804,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       })
-      pcapi.getOfferer
+      api.getOfferer
         .mockResolvedValueOnce({
           ...firstOffererByAlphabeticalOrder,
           managedVenues: [virtualVenue, physicalVenue],
@@ -823,7 +823,7 @@ describe('offererDetailsLegacy', () => {
       )
 
       // Then
-      expect(pcapi.getOfferer).toHaveBeenCalledTimes(2)
+      expect(api.getOfferer).toHaveBeenCalledTimes(2)
 
       await waitForElementToBeRemoved(() =>
         screen.getByRole('heading', { level: 3, name: 'Offres numériques' })
@@ -871,7 +871,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       }
-      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
       pcapi.getBusinessUnits.mockResolvedValue([
         {
           name: 'Business Unit #2',
@@ -905,7 +905,7 @@ describe('offererDetailsLegacy', () => {
         ],
       }
 
-      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
       pcapi.getBusinessUnits.mockResolvedValue([])
 
       const { waitForElements } = renderHomePage({ store })
@@ -936,7 +936,7 @@ describe('offererDetailsLegacy', () => {
         ],
       }
 
-      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
       pcapi.getBusinessUnits.mockResolvedValue([
         {
           name: 'Business Unit #2',
@@ -1020,7 +1020,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       }
-      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
       const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
@@ -1049,7 +1049,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       }
-      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
       const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()

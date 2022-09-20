@@ -142,7 +142,7 @@ const VenueEdition = () => {
 
   useEffect(() => {
     const handleInitialRequest = async () => {
-      const offererRequest = pcapi.getOfferer(offererId)
+      const offererRequest = api.getOfferer(offererId)
       const venueRequest = api.getVenue(venueId)
       const venueTypesRequest = pcapi.getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
