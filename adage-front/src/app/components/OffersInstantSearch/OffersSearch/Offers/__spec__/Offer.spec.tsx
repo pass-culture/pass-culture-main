@@ -180,6 +180,10 @@ describe('offer', () => {
       refinePrevious: jest.fn(),
       hasMore: true,
       hasPrevious: false,
+      nbHits: 2,
+      areHitsSorted: true,
+      nbSortedHits: 2,
+      processingTimeMS: 0,
     }
   })
 
