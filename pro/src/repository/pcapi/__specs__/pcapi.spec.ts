@@ -1,21 +1,17 @@
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { ALL_OFFERERS } from 'core/Offers/constants'
 import {
   generateOffererApiKey,
   getFilteredBookingsCSV,
   getVenueStats,
   getVenuesForOfferer,
-  loadFilteredBookingsRecap,
   signout,
   updateUserInformations,
   buildGetOfferersQuery,
   deleteStock,
   postThumbnail,
   setHasSeenTutos,
-  validateDistantImage,
 } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
-import { bookingRecapFactory } from 'utils/apiFactories'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
   client: {
@@ -73,24 +69,6 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith('/users/signout')
-    })
-  })
-
-  describe('validateDistantImage', () => {
-    it('should call the api correct POST route with url as a body param', () => {
-      // given
-      const url = 'http://ma-mauvaise-url'
-
-      // when
-      validateDistantImage(url)
-
-      // then
-      expect(client.post).toHaveBeenCalledWith(
-        `/offers/thumbnail-url-validation`,
-        {
-          url: url,
-        }
-      )
     })
   })
 
@@ -249,97 +227,6 @@ describe('pcapi', () => {
       // Then
       expect(client.getPlainText).toHaveBeenCalledWith(
         '/bookings/csv?page=2&venueId=AA&eventDate=2020-09-13&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04&bookingStatusFilter=validated'
-      )
-    })
-  })
-
-  describe('loadFilteredBookingsRecap', () => {
-    const returnedResponse = {
-      page: 1,
-      pages: 1,
-      total: 1,
-      bookings_recap: [bookingRecapFactory()],
-    }
-
-    beforeEach(() => {
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mockResolvedValue' does not exist on typ... Remove this comment to see the full error message
-      client.get.mockResolvedValue(returnedResponse)
-    })
-
-    it('should return api response', async () => {
-      // When
-      const response = await loadFilteredBookingsRecap({})
-
-      // Then
-      expect(response).toBe(returnedResponse)
-    })
-
-    it('should call offers route with "page=1" and default period when no other filters are provided', async () => {
-      // Given
-      const filters = {
-        page: 1,
-      }
-
-      // When
-      await loadFilteredBookingsRecap(filters)
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
-      )
-    })
-
-    it('should call offers route with "page=1" and default period when provided filters are defaults', async () => {
-      // Given
-      const filters = {
-        page: 1,
-        venueId: DEFAULT_PRE_FILTERS.offerVenueId,
-        eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-      }
-
-      // When
-      await loadFilteredBookingsRecap(filters)
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
-      )
-    })
-
-    it('should call offers route with filters when provided', async () => {
-      // Given
-      const filters = {
-        venueId: 'AA',
-        eventDate: new Date(2020, 8, 13),
-        page: 2,
-        bookingPeriodBeginningDate: new Date(2020, 6, 8),
-        bookingPeriodEndingDate: new Date(2020, 8, 4),
-        bookingStatusFilter: 'validated',
-      }
-
-      // When
-      await loadFilteredBookingsRecap(filters)
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04&bookingStatusFilter=validated'
-      )
-    })
-
-    it('should call bookings route with default period filter when not provided', async () => {
-      // Given
-      const filters = {
-        venueId: 'AA',
-        eventDate: new Date(2020, 8, 13),
-        page: 2,
-      }
-
-      // When
-      await loadFilteredBookingsRecap(filters)
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
       )
     })
   })
