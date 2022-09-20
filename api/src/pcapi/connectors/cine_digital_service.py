@@ -2,7 +2,6 @@ import enum
 from typing import Any
 
 from pcapi import settings
-import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedCancelBookingSuccess
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedCinemas
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedMovies
@@ -11,6 +10,7 @@ from pcapi.core.booking_providers.cds.mocked_api_calls import MockedScreens
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedSeatMap
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedShows
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedTariffs
+import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests
 

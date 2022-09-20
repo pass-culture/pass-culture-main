@@ -1,11 +1,11 @@
 import pytest
 
-from pcapi.core.booking_providers.api import _get_booking_provider_client_api
-from pcapi.core.booking_providers.api import _get_venue_booking_provider
-from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.factories import BookingProviderFactory
 from pcapi.core.booking_providers.factories import VenueBookingProviderFactory
 from pcapi.core.booking_providers.models import BookingProviderName
+from pcapi.core.external_bookings.api import _get_booking_provider_client_api
+from pcapi.core.external_bookings.api import _get_venue_booking_provider
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.providers.factories import CDSCinemaDetailsFactory
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 

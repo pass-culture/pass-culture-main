@@ -7,8 +7,6 @@ import sentry_sdk
 from sqlalchemy.orm import Query
 
 from pcapi.core import search
-import pcapi.core.booking_providers.api as booking_providers_api
-from pcapi.core.booking_providers.api import _get_venue_booking_provider
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
@@ -22,6 +20,8 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+import pcapi.core.external_bookings.api as external_bookings_api
+from pcapi.core.external_bookings.api import _get_venue_booking_provider
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -174,7 +174,7 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
             )
             raise TypeError("Only digit is allowed for show_id in stock.idAtProviders ")
 
-        tickets = booking_providers_api.book_ticket(
+        tickets = external_bookings_api.book_ticket(
             venue_id=stock.offer.venueId,
             show_id=show_id,
             quantity=booking.quantity,
@@ -237,7 +237,7 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         and booking.isExternal
     ):
         barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-        booking_providers_api.cancel_booking(stock.offer.venueId, barcodes)
+        external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
 def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:

@@ -15,7 +15,6 @@ from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
-from pcapi.core.booking_providers.api import get_shows_stock
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
 from pcapi.core.bookings.api import mark_as_unused
@@ -28,6 +27,7 @@ from pcapi.core.categories.conf import can_create_from_isbn
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import models as educational_models
+from pcapi.core.external_bookings.api import get_shows_stock
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
