@@ -22,7 +22,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),
-  loadTypes: jest.fn(),
   postThumbnail: jest.fn(),
 }))
 

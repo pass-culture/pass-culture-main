@@ -12,7 +12,6 @@ import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDi
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  validateDistantImage: jest.fn(),
 }))
 
 export const createFile = ({
