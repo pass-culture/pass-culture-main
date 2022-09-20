@@ -22,7 +22,6 @@ jest.mock('utils/config', () => {
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadCategories: jest.fn(),
-  getUserValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getOfferer: jest.fn(),
 }))
@@ -31,6 +30,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     patchOffersActiveStatus: jest.fn(),
     getOffer: jest.fn(),
+    listOfferersNames: jest.fn(),
   },
 }))
 
@@ -81,7 +81,7 @@ describe('confirmation page', () => {
     pcapi.getVenuesForOfferer.mockResolvedValue([
       { id: 'AB', publicName: 'venue', name: 'venue' },
     ])
-    pcapi.getUserValidatedOfferersNames.mockResolvedValue([])
+    api.listOfferersNames.mockResolvedValue({ offerersNames: [] })
   })
 
   it('should track when clicking on offer creation button', async () => {

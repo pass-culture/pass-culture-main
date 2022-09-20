@@ -6,8 +6,8 @@ export const bulkFakeApiCreateOrEditStock = ({ ...stockIds }) =>
 
 export const getFakeApiUserValidatedOfferersNames = ({ ...offerers }) =>
   jest
-    .spyOn(pcapi, 'getUserValidatedOfferersNames')
-    .mockResolvedValue([offerers])
+    .spyOn(api, 'listOfferersNames')
+    .mockResolvedValue({ offerersNames: [offerers] })
 
 export const getFakeApiVenuesForOfferer = ({ ...venues }) =>
   jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue([venues])

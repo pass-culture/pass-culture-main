@@ -29,7 +29,6 @@ Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  getUserValidatedOfferersNames: jest.fn(),
   getVenue: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   loadCategories: jest.fn(),
@@ -41,6 +40,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     postOffer: jest.fn(),
     getOffer: jest.fn(),
+    listOfferersNames: jest.fn(),
   },
 }))
 
@@ -160,7 +160,7 @@ describe('offerDetails - Creation - pro user', () => {
       },
     ]
 
-    pcapi.getUserValidatedOfferersNames.mockResolvedValue(offerers)
+    api.listOfferersNames.mockResolvedValue({ offerersNames: offerers })
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     api.postOffer.mockResolvedValue({})
@@ -180,7 +180,7 @@ describe('offerDetails - Creation - pro user', () => {
       await renderOffers(props)
 
       // Then
-      expect(pcapi.getUserValidatedOfferersNames).toHaveBeenCalledTimes(1)
+      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
 
     it("should get user's venues from API", async () => {
@@ -995,7 +995,9 @@ describe('offerDetails - Creation - pro user', () => {
 
         it('should select offerer when there is only one option', async () => {
           // Given
-          pcapi.getUserValidatedOfferersNames.mockResolvedValue([offerers[0]])
+          api.listOfferersNames.mockResolvedValue({
+            offerersNames: [offerers[0]],
+          })
           await renderOffers(props)
 
           // When

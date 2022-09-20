@@ -30,7 +30,6 @@ import {
 } from './mocks'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getUserValidatedOfferersNames: jest.fn(),
   getVenue: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   loadCategories: jest.fn(),
@@ -40,6 +39,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     postOffer: jest.fn(),
     getOffer: jest.fn(),
+    listOfferersNames: jest.fn(),
   },
 }))
 
@@ -140,7 +140,9 @@ export const initialize = async ({
     },
   })
 
-  pcapi.getUserValidatedOfferersNames.mockResolvedValue([offerer1, offerer2])
+  api.listOfferersNames.mockResolvedValue({
+    offerersNames: [offerer1, offerer2],
+  })
   pcapi.getVenuesForOfferer.mockResolvedValue([
     venueVirtual,
     venuePhysicalUndefinedAccessibility,

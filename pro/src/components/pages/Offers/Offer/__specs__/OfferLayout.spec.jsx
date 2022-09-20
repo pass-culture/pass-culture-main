@@ -15,7 +15,6 @@ import OfferLayout from '../OfferLayout'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadCategories: jest.fn(),
-  getUserValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getOfferer: jest.fn(),
 }))
@@ -24,6 +23,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     patchOffersActiveStatus: jest.fn(),
     getOffer: jest.fn(),
+    listOfferersNames: jest.fn(),
   },
 }))
 
@@ -288,7 +288,7 @@ describe('offerLayout', () => {
       pcapi.getVenuesForOfferer.mockResolvedValue([
         { id: 'AB', publicName: 'venue', name: 'venue' },
       ])
-      pcapi.getUserValidatedOfferersNames.mockResolvedValue([])
+      api.listOfferersNames.mockResolvedValue({ offerersNames: [] })
 
       // When
       renderOfferDetails(store, '/offre/creation/individuel')
