@@ -9,11 +9,14 @@ from pcapi.serialization.decorator import spectree_serialize
 @blueprint.adage_iframe.route("/logs/catalog-view", methods=["POST"])
 @adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
-def log_catalog_view(authenticated_information: AuthenticatedInformation) -> None:
+def log_catalog_view(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.CatalogViewBody,
+) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="CatalogView",
         extra_data={
-            "source": "homepage",
+            "source": body.source,
         },
         user_email=authenticated_information.email,
     )
