@@ -4,6 +4,7 @@
 import type { AuthenticatedResponse } from '../models/AuthenticatedResponse';
 import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRequest';
 import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse';
+import type { CatalogViewBody } from '../models/CatalogViewBody';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
@@ -145,13 +146,18 @@ export class DefaultService {
 
   /**
    * log_catalog_view <POST>
+   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logCatalogView(): CancelablePromise<void> {
+  public logCatalogView(
+    requestBody?: CatalogViewBody,
+  ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/catalog-view',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         404: `Not Found`,

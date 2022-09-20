@@ -13,6 +13,7 @@ export { AdageFrontRoles } from './models/AdageFrontRoles';
 export type { AuthenticatedResponse } from './models/AuthenticatedResponse';
 export type { BookCollectiveOfferRequest } from './models/BookCollectiveOfferRequest';
 export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferResponse';
+export type { CatalogViewBody } from './models/CatalogViewBody';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
 export type { CollectiveOfferOfferVenue } from './models/CollectiveOfferOfferVenue';
