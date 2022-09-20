@@ -20,7 +20,9 @@ describe('useOffererNames', () => {
       .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: offererNames })
 
-    const { result, waitForNextUpdate } = renderHook(() => useGetOffererNames())
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useGetOffererNames({})
+    )
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()
@@ -41,7 +43,9 @@ describe('useOffererNames', () => {
       .spyOn(api, 'listOfferersNames')
       .mockRejectedValue(new Error('Api error'))
 
-    const { result, waitForNextUpdate } = renderHook(() => useGetOffererNames())
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useGetOffererNames({})
+    )
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()

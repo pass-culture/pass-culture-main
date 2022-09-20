@@ -7,7 +7,7 @@ import { VenueListItemResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
-import { useGetOfferIndividualVenues } from '..'
+import useGetOfferIndividualVenues from '../useOfferIndividualVenues'
 
 describe('useGetOfferIndividualVenues', () => {
   it("should not call api when no offererId isn't provided or admin users", async () => {

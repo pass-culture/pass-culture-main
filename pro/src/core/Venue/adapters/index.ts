@@ -1,3 +1,6 @@
 export { default as getSiretDataAdapter } from './getSiretDataAdapter'
-export { default as useGetOfferIndividualVenues } from './useOfferIndividualVenues'
+export {
+  getOfferIndividualVenuesAdapter,
+  useOfferIndividualVenues,
+} from './getOfferIndividualVenuesAdapter'
 export { getVenueAdapter, useGetVenue } from './getVenueAdapter'
