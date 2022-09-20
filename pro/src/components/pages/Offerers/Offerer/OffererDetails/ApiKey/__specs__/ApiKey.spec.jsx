@@ -5,7 +5,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import { api } from 'apiClient/api'
-import * as pcapi from 'repository/pcapi/pcapi'
 import * as notificationReducer from 'store/reducers/notificationReducer'
 import { configureTestStore } from 'store/testUtils'
 import {

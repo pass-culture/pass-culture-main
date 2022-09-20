@@ -19,12 +19,6 @@ export const loadFeatures = async () => {
 // offerers
 //
 
-export const getUserValidatedOfferersNames = () => {
-  return client
-    .get('/offerers/names?validated_for_user=true')
-    .then(response => response.offerersNames)
-}
-
 export const buildGetOfferersQuery = ({ keywords = [], page = 1 }) => {
   const apiQueryParams = {}
   if (keywords.length > 0) {
