@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as notificationReducer from 'store/reducers/notificationReducer'
 import { configureTestStore } from 'store/testUtils'
@@ -128,9 +129,7 @@ describe('src | Offerer | ApiKey', () => {
 
   it('should not delete key on modal dismiss', async () => {
     await renderApiKey()
-    const deleteSpy = jest
-      .spyOn(pcapi, 'deleteOffererApiKey')
-      .mockReturnValue(null)
+    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockReturnValue(null)
     fireEvent.click(screen.getByText('supprimer'))
 
     // when
@@ -145,9 +144,7 @@ describe('src | Offerer | ApiKey', () => {
 
   it('should delete a key on modal confirm', async () => {
     await renderApiKey()
-    const deleteSpy = jest
-      .spyOn(pcapi, 'deleteOffererApiKey')
-      .mockReturnValue(null)
+    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockReturnValue(null)
     fireEvent.click(screen.getByText('supprimer'))
 
     // when
