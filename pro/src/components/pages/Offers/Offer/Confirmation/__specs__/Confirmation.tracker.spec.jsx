@@ -23,11 +23,11 @@ jest.mock('utils/config', () => {
 jest.mock('repository/pcapi/pcapi', () => ({
   loadCategories: jest.fn(),
   getVenuesForOfferer: jest.fn(),
-  getOfferer: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
+    getOfferer: jest.fn(),
     patchOffersActiveStatus: jest.fn(),
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),

@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -14,7 +15,6 @@ import OfferLayout from '../../OfferLayout'
 import { setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOfferer: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadCategories: jest.fn(),
@@ -22,6 +22,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
+    getOfferer: jest.fn(),
     postOffer: jest.fn(),
   },
 }))
@@ -117,7 +118,7 @@ describe('offerDetails - Creation - admin user', () => {
     }
 
     pcapi.loadCategories.mockResolvedValue(categories)
-    pcapi.getOfferer.mockResolvedValue(offerer)
+    api.getOfferer.mockResolvedValue(offerer)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
@@ -128,7 +129,7 @@ describe('offerDetails - Creation - admin user', () => {
       await renderOffers(props, store, `?structure=${offerer.id}`)
 
       // Then
-      expect(pcapi.getOfferer).toHaveBeenLastCalledWith(offerer.id)
+      expect(api.getOfferer).toHaveBeenLastCalledWith(offerer.id)
     })
 
     it('should not get venues from API', async () => {

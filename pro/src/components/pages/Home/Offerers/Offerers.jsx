@@ -64,7 +64,7 @@ const Offerers = () => {
   useEffect(() => {
     async function loadOfferer(offererId) {
       try {
-        const receivedOfferer = await pcapi.getOfferer(offererId)
+        const receivedOfferer = await api.getOfferer(offererId)
         setSelectedOfferer(receivedOfferer)
         setPhysicalVenues(
           receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)

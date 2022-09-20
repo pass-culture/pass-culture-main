@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import GoBackLink from 'new_components/GoBackLink'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import ApiKey from './ApiKey/ApiKey'
@@ -26,7 +26,7 @@ const OffererDetails = () => {
   const loadOfferer = useCallback(
     async id => {
       try {
-        const receivedOfferer = await pcapi.getOfferer(id)
+        const receivedOfferer = await api.getOfferer(id)
         setOfferer(new Offerer(receivedOfferer))
         setPhysicalVenues(
           receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
