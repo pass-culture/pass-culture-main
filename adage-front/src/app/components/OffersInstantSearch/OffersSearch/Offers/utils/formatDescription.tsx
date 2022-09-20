@@ -58,21 +58,30 @@ export const formatDescription = (
       // links beginning with www opens with adage base url --> we add https:// before to prevent that
       if (value.startsWith('www')) {
         return (
-          <a href={`https://${value}`} rel="noreferrer" target="_blank">
+          <a
+            href={`https://${value}`}
+            key={value}
+            rel="noreferrer"
+            target="_blank"
+          >
             {value}
           </a>
         )
       }
 
       return (
-        <a href={value} rel="noreferrer" target="_blank">
+        <a href={value} key={value} rel="noreferrer" target="_blank">
           {value}
         </a>
       )
     }
 
     if (type === 'mail') {
-      return <a href={`mailto:${value}`}>{value}</a>
+      return (
+        <a href={`mailto:${value}`} key={value}>
+          {value}
+        </a>
+      )
     }
 
     return value
