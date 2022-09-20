@@ -143,13 +143,7 @@ export const OffersComponent = ({
   return (
     <>
       <div className="offers-stats">
-        <Stats
-          translations={{
-            stats(nbHits: number) {
-              return `${nbHits} résultat${nbHits > 1 ? 's' : ''}`
-            },
-          }}
-        />
+        {`${nbHits} résultat${nbHits > 1 ? 's' : ''}`}
       </div>
       <ul className="offers">
         {offers.map((offer, index) => (
@@ -165,19 +159,11 @@ export const OffersComponent = ({
         ))}
         <div className="offers-load-more">
           <div className="offers-load-more-text">
-            {hasMore ? (
-              <Stats
-                translations={{
-                  stats(nbHits: number) {
-                    return `Vous avez vu ${offers.length} offre${
-                      offers.length > 1 ? 's' : ''
-                    } sur ${nbHits}`
-                  },
-                }}
-              />
-            ) : (
-              'Vous avez vu toutes les offres qui correspondent à votre recherche.'
-            )}
+            {hasMore
+              ? `Vous avez vu ${offers.length} offre${
+                  offers.length > 1 ? 's' : ''
+                } sur ${nbHits}`
+              : 'Vous avez vu toutes les offres qui correspondent à votre recherche.'}
           </div>
           {hasMore &&
             (queriesAreLoading ? (
