@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
@@ -38,6 +39,7 @@ const VenueForm = ({
 }: IVenueForm) => {
   const { isSubmitting, initialValues } = useFormikContext<IVenueFormValues>()
   const shouldDisplayImageVenueUploaderSection = initialValues?.isPermanent
+  useScrollToFirstErrorAfterSubmit()
 
   return (
     <div>
