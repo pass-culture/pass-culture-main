@@ -4,8 +4,8 @@ from typing import Any
 import pytz
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
-from sqlalchemy.orm import Query
 import sqlalchemy.sql.functions as sqla_func
+import sqlalchemy.sql.sqltypes as sqla_sqltypes
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
@@ -220,6 +220,13 @@ def find_all_offerers_payments(
     return results
 
 
+def _truncate_milliseconds(
+    column: sqla_orm.InstrumentedAttribute,
+) -> sqla_func.Function[sqla_sqltypes.NullType]:
+    """Remove milliseconds from the value of a timestamp column."""
+    return sqla.func.date_trunc("second", column)
+
+
 def _get_sent_pricings_for_collective_bookings(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
@@ -263,7 +270,7 @@ def _get_sent_pricings_for_collective_bookings(
             educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
             educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
             educational_models.EducationalInstitution.name.label("institution_name"),
-            educational_models.CollectiveBooking.dateUsed.label("booking_used_date"),
+            _truncate_milliseconds(educational_models.CollectiveBooking.dateUsed).label("booking_used_date"),
             educational_models.CollectiveStock.price.label("booking_amount"),
             educational_models.CollectiveStock.beginningDatetime.label("event_date"),
             educational_models.CollectiveOffer.name.label("offer_name"),
@@ -302,7 +309,7 @@ def _get_sent_pricings_for_collective_bookings(
             models.Pricing.standardRule.label("rule_name"),
             models.Pricing.customRuleId.label("rule_id"),
             models.Pricing.collectiveBookingId.label("collective_booking_id"),
-            models.Invoice.date.label("invoice_date"),
+            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
             models.Invoice.reference.label("invoice_reference"),
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
@@ -341,7 +348,7 @@ def _get_sent_pricings_for_individual_bookings(
         .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
         .with_entities(
             bookings_models.Booking.token.label("booking_token"),
-            bookings_models.Booking.dateUsed.label("booking_used_date"),
+            _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
             bookings_models.Booking.quantity.label("booking_quantity"),
             bookings_models.Booking.amount.label("booking_amount"),
             offers_models.Offer.name.label("offer_name"),
@@ -378,7 +385,7 @@ def _get_sent_pricings_for_individual_bookings(
             models.Pricing.standardRule.label("rule_name"),
             models.Pricing.customRuleId.label("rule_id"),
             models.Pricing.collectiveBookingId.label("collective_booking_id"),
-            models.Invoice.date.label("invoice_date"),
+            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
             models.Invoice.reference.label("invoice_reference"),
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
@@ -392,7 +399,7 @@ def _get_legacy_payments_for_individual_bookings(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
-) -> Query:
+) -> sqla_orm.Query:
     return (
         models.Payment.query.join(models.PaymentStatus)
         .join(bookings_models.Booking)
@@ -412,7 +419,7 @@ def _get_legacy_payments_for_individual_bookings(
         .order_by(models.Payment.id.desc(), models.PaymentStatus.date.desc())
         .with_entities(
             bookings_models.Booking.token.label("booking_token"),
-            bookings_models.Booking.dateUsed.label("booking_used_date"),
+            _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
             bookings_models.Booking.quantity.label("booking_quantity"),
             bookings_models.Booking.amount.label("booking_amount"),
             offers_models.Offer.name.label("offer_name"),
@@ -444,7 +451,7 @@ def _get_legacy_payments_for_collective_bookings(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
-) -> Query:
+) -> sqla_orm.Query:
     return (
         models.Payment.query.join(models.PaymentStatus)
         .join(educational_models.CollectiveBooking)
@@ -466,7 +473,7 @@ def _get_legacy_payments_for_collective_bookings(
         .with_entities(
             educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
             educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
-            educational_models.CollectiveBooking.dateUsed.label("booking_used_date"),
+            _truncate_milliseconds(educational_models.CollectiveBooking.dateUsed).label("booking_used_date"),
             educational_models.CollectiveStock.price.label("booking_amount"),
             educational_models.CollectiveOffer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
