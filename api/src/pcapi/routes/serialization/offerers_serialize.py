@@ -81,7 +81,8 @@ class GetOffererResponseModel(BaseModel):
     isValidated: bool
     isActive: bool
     lastProviderId: str | None
-    managedVenues: list[GetOffererVenueResponseModel] = []  # see end of `from_orm()`
+    # see end of `from_orm()`
+    managedVenues: list[GetOffererVenueResponseModel] = []
     name: str
     nonHumanizedId: int
     postalCode: str
@@ -91,7 +92,12 @@ class GetOffererResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
 
     @classmethod
-    def from_orm(cls, offerer: offerers_models.Offerer, venue_stats_by_ids: dict[int, venues_serialize.VenueStatsResponseModel] | None = None):  # type: ignore
+    # type: ignore
+    def from_orm(
+        cls,
+        offerer: offerers_models.Offerer,
+        venue_stats_by_ids: dict[int, venues_serialize.VenueStatsResponseModel] | None = None,
+    ):
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
@@ -151,6 +157,7 @@ class GetOfferersNamesQueryModel(BaseModel):
     validated: bool | None
     # FIXME (dbaty, 2022-05-04): rename to something clearer, e.g. `include_non_validated_user_offerers`
     validated_for_user: bool | None
+    offerer_id: str | None
 
     class Config:
         extra = "forbid"
