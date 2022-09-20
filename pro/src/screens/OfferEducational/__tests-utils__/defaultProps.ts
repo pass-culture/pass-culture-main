@@ -77,6 +77,7 @@ const editionFormValues = {
   },
   interventionArea: [],
   participants: {
+    all: true,
     quatrieme: true,
     troisieme: true,
     CAPAnnee1: true,
