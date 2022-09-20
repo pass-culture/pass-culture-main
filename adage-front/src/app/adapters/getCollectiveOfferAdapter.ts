@@ -1,12 +1,8 @@
-import { CollectiveOfferResponseModel } from 'apiClient'
 import { api } from 'apiClient/api'
 import { Adapter, AdapterFailure } from 'app/types'
+import { HydratedCollectiveOffer } from 'app/types/offers'
 
-type GetCollectiveOfferAdapter = Adapter<
-  number,
-  CollectiveOfferResponseModel,
-  null
->
+type GetCollectiveOfferAdapter = Adapter<number, HydratedCollectiveOffer, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -22,7 +18,7 @@ export const getCollectiveOfferAdapter: GetCollectiveOfferAdapter =
       return {
         isOk: true,
         message: null,
-        payload: result,
+        payload: { ...result, isTemplate: false },
       }
     } catch (e) {
       return FAILING_RESPONSE

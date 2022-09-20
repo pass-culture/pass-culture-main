@@ -6,11 +6,7 @@ import type {
   InfiniteHitsProvided,
   StatsProvided,
 } from 'react-instantsearch-core'
-import {
-  connectInfiniteHits,
-  connectStats,
-  Stats,
-} from 'react-instantsearch-dom'
+import { connectInfiniteHits, connectStats } from 'react-instantsearch-dom'
 
 import {
   CollectiveOfferResponseModel,
@@ -22,6 +18,10 @@ import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapte
 import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
 import { AnalyticsContext } from 'app/providers/AnalyticsContextProvider'
+import {
+  HydratedCollectiveOffer,
+  HydratedCollectiveOfferTemplate,
+} from 'app/types/offers'
 import { Button } from 'app/ui-kit'
 import { LOGS_DATA } from 'utils/config'
 import { ResultType } from 'utils/types'
@@ -57,7 +57,7 @@ export const OffersComponent = ({
 }: OffersComponentProps): JSX.Element => {
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [offers, setOffers] = useState<
-    (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[]
+    (HydratedCollectiveOffer | HydratedCollectiveOfferTemplate)[]
   >([])
   const [queryId, setQueryId] = useState('')
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
@@ -112,10 +112,7 @@ export const OffersComponent = ({
     ).then(offersFromHits => {
       const bookableOffers = offersFromHits.filter(
         offer => typeof offer !== 'undefined'
-      ) as (
-        | CollectiveOfferResponseModel
-        | CollectiveOfferTemplateResponseModel
-      )[]
+      ) as (HydratedCollectiveOffer | HydratedCollectiveOfferTemplate)[]
 
       setOffers(bookableOffers)
       setQueriesAreLoading(false)
@@ -147,10 +144,9 @@ export const OffersComponent = ({
       </div>
       <ul className="offers">
         {offers.map((offer, index) => (
-          <div key={offer.id}>
+          <div key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}>
             <Offer
               canPrebookOffers={userRole == AdageFrontRoles.REDACTOR}
-              key={offer.id}
               offer={offer}
               position={index}
               queryId={queryId}
