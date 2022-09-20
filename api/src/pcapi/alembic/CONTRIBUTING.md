@@ -6,7 +6,7 @@ Pour effectuer une migration du schéma de la base de données, il est recommand
 
 ### 1. Modifier le modèle applicatif dans les fichiers python
 
-### 2. Identifier s'il s'agit d'un migration `pre` ou `post`
+### 2. Identifier s'il s'agit d'une migration `pre` ou `post`
 
 Lors d'un déploiement, on part d'un état stable (version `N` des migrations / version `N` du code) vers un autre état stable (version `N+1` des migrations / version `N+1` du code) en passant par 3 phases :
 
