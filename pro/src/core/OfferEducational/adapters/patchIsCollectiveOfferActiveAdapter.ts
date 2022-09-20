@@ -1,4 +1,4 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
 
 type IPayloadSuccess = null
 type IPayloadFailure = null
@@ -15,7 +15,8 @@ export const patchIsCollectiveOfferActiveAdapter: PatchIsOfferActiveAdapter =
       if (!offerId || offerId === '')
         throw new Error('L’identifiant de l’offre n’est pas valide.')
 
-      await pcapi.patchIsCollectiveOfferActive([offerId], isActive)
+      // @ts-expect-error type string is not assignable to type number
+      await api.patchCollectiveOffersActiveStatus({ ids: [offerId], isActive })
 
       return {
         isOk: true,
