@@ -10,19 +10,25 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
-import pcapi.core.booking_providers.cds.constants as cds_constants
-import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 import pcapi.core.booking_providers.models as booking_providers_models
+import pcapi.core.external_bookings.cds.constants as cds_constants
+import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+from pcapi.core.external_bookings.models import ExternalBookingsClientAPI
+from pcapi.core.external_bookings.models import Ticket
 
 
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
-class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
+class CineDigitalServiceAPI(ExternalBookingsClientAPI):
     def __init__(self, cinema_id: str, account_id: str, api_url: str, cinema_api_token: str | None):
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
-        super().__init__(cinema_id, account_id, api_url, cinema_api_token)
+        self.token = cinema_api_token
+        self.api_url = api_url
+        self.cinema_id = cinema_id
+        self.account_id = account_id
+        super()
 
     def get_internet_sale_gauge_active(self) -> bool:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
@@ -209,7 +215,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
 
-    def book_ticket(self, show_id: int, quantity: int) -> list[booking_providers_models.Ticket]:
+    def book_ticket(self, show_id: int, quantity: int) -> list[Ticket]:
         if quantity < 0 or quantity > 2:
             raise cds_exceptions.CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
 
@@ -236,7 +242,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         create_transaction_response = parse_obj_as(cds_serializers.CreateTransactionResponseCDS, json_response)
 
         booking_informations = [
-            booking_providers_models.Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
+            Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
             for ticket in create_transaction_response.tickets
         ]
         return booking_informations
@@ -258,6 +264,8 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
 
             if not seats_to_book:
                 raise cds_exceptions.CineDigitalServiceAPIException(f"Unavailable seats to book for show={show.id}")
+
+        assert show_voucher_type.tariff
 
         ticket_sale_list = []
         for i in range(booking_quantity):
@@ -283,6 +291,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
     ) -> list[cds_serializers.TransactionPayementCDS]:
         payment_type = self.get_voucher_payment_type()
 
+        assert show_voucher_type.tariff
         payement_collection = []
         for i in range(booking_quantity):
             payment = cds_serializers.TransactionPayementCDS(
@@ -301,7 +310,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         show_pc_vouchers = []
         for show_tariff in show.shows_tariff_pos_type_collection:
             for voucher in pc_voucher_types:
-                if show_tariff.tariff.id == voucher.tariff.id:
+                if voucher.tariff and show_tariff.tariff.id == voucher.tariff.id:
                     show_pc_vouchers.append(voucher)
 
         if not show_pc_vouchers:

@@ -229,7 +229,7 @@ class Returns201Test:
         lambda *args: True,
     )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, client):
         # Given
