@@ -135,6 +135,7 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
     models.FraudCheckType.UBBLE: UbbleContentFactory,
     models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
     models.FraudCheckType.HONOR_STATEMENT: None,
+    models.FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContentFactory,
 }
 
 
