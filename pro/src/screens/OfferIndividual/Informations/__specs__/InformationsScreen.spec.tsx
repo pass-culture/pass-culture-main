@@ -25,6 +25,8 @@ jest.mock('screens/OfferIndividual/Informations/utils', () => {
   }
 })
 
+window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+
 const renderInformationsScreen = (
   props: IInformationsProps,
   storeOverride: any,
@@ -42,12 +44,15 @@ const renderInformationsScreen = (
   )
 }
 
+const scrollIntoViewMock = jest.fn()
+
 describe('screens:OfferCreation::Informations', () => {
   let props: IInformationsProps
   let store: any
   let contextValue: IOfferIndividualContext
 
   beforeEach(() => {
+    Element.prototype.scrollIntoView = scrollIntoViewMock
     store = {
       user: {
         initialized: true,
@@ -256,6 +261,22 @@ describe('screens:OfferCreation::Informations', () => {
       expect(
         screen.getByRole('heading', { name: 'Notifications' })
       ).toBeInTheDocument()
+    })
+  })
+
+  it('should scroll to error', async () => {
+    renderInformationsScreen(props, store, contextValue)
+
+    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+
+    await userEvent.click(await screen.findByText('Suivant'))
+
+    expect(scrollIntoViewMock).toHaveBeenCalledTimes(1)
+    expect(scrollIntoViewMock).toHaveBeenCalledWith({
+      behavior: 'auto',
+      block: 'center',
+      inline: 'center',
     })
   })
 })
