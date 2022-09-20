@@ -163,13 +163,6 @@ export const deleteVenueImage = async ({ venueId }) => {
 }
 
 //
-// types
-//
-export const loadTypes = () => {
-  return client.get('/types')
-}
-
-//
 // categories
 //
 export const loadCategories = () => {
@@ -205,10 +198,6 @@ export const cancelEducationalBooking = offerId => {
 //
 // thumbnail
 //
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'url' implicitly has an 'any' type.
-export const validateDistantImage = url => {
-  return client.post('/offers/thumbnail-url-validation', { url: url })
-}
 
 export const postThumbnail = (
   // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
@@ -367,12 +356,6 @@ export const buildBookingsRecapQuery = ({
   params.bookingStatusFilter = bookingStatusFilter
 
   return stringify(params)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const loadFilteredBookingsRecap = async filters => {
-  const queryParams = buildBookingsRecapQuery(filters)
-  return client.get(`/bookings/pro?${queryParams}`)
 }
 
 export const getUserHasBookings = async () => {
