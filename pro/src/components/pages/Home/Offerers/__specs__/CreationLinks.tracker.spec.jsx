@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -15,9 +16,15 @@ import Homepage from '../../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
-  getAllOfferersNames: jest.fn(),
   getVenueStats: jest.fn(),
 }))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: jest.fn(),
+  },
+}))
+
 const mockLogEvent = jest.fn()
 const renderHomePage = async () => {
   const store = configureTestStore({
@@ -139,7 +146,9 @@ describe('trackers creationLinks', () => {
     }))
 
     pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-    pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
+    api.listOfferersNames.mockResolvedValue({
+      offerersNames: baseOfferersNames,
+    })
     pcapi.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,

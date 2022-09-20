@@ -129,12 +129,14 @@ describe('stocks page', () => {
     })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
     pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue([
-      {
-        id: 'AB',
-        name: 'offerer name',
-      },
-    ])
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        {
+          id: 'AB',
+          name: 'offerer name',
+        },
+      ],
+    })
     jest.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
         {
