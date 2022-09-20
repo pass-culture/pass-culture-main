@@ -1,3 +1,4 @@
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 export const bulkFakeApiCreateOrEditStock = ({ ...stockIds }) =>
@@ -18,10 +19,10 @@ export const loadFakeApiVenueStats = venue =>
   jest.spyOn(pcapi, 'getVenueStats').mockResolvedValue(venue)
 
 export const generateFakeOffererApiKey = apiKey =>
-  jest.spyOn(pcapi, 'generateOffererApiKey').mockResolvedValue(apiKey)
+  jest.spyOn(api, 'generateApiKeyRoute').mockResolvedValue(apiKey)
 
 export const failToGenerateOffererApiKey = () =>
-  jest.spyOn(pcapi, 'generateOffererApiKey').mockRejectedValue(null)
+  jest.spyOn(api, 'generateApiKeyRoute').mockRejectedValue(null)
 
 export const loadFakeApiVenue = venue => {
   jest.spyOn(pcapi, 'getVenue').mockResolvedValueOnce(venue)
