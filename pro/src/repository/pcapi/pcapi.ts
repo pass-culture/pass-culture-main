@@ -1,4 +1,3 @@
-import { ListOffersQueryModel } from 'apiClient/v1'
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { ReimbursementPointsResponseModel } from 'core/Finances'
@@ -15,17 +14,6 @@ export const loadFeatures = async () => {
   client.get('/features')
   return client.get('/features')
 }
-
-//
-// offers
-//
-
-export const updateOffersActiveStatus = (ids: string[], isActive: boolean) =>
-  client.patch('/offers/active-status', { ids, isActive })
-
-export const updateAllOffersActiveStatus = (
-  body: ListOffersQueryModel & { isActive: boolean }
-) => client.patch('/offers/all-active-status', body)
 
 //
 // offerers
