@@ -18,6 +18,7 @@ type Link = {
   linkTitle: string
   targetLink?: string
   hideLinkIcon?: boolean
+  isExternal?: boolean
 }
 export interface IBannerProps extends IBannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
@@ -34,7 +35,7 @@ const Banner = ({
   const getLinkNode = (link: Link) => (
     <ButtonLink
       link={{
-        isExternal: true,
+        isExternal: link.isExternal === undefined ? true : link.isExternal,
         to: link.href,
         target: link.targetLink || '_blank',
         rel: 'noopener noreferrer',
