@@ -1,3 +1,4 @@
+import { api } from 'apiClient/api'
 import {
   GetEducationalOffererResponseModel,
   GetEducationalOfferersResponseModel,
@@ -42,7 +43,7 @@ export const getOfferersAdapter: GetOfferersAdapter = async (
 ) => {
   try {
     const { educationalOfferers }: GetEducationalOfferersResponseModel =
-      await pcapi.getEducationalOfferers(offererId)
+      await api.listEducationalOfferers(offererId)
 
     return {
       isOk: true,
