@@ -39,7 +39,7 @@ const Offer = (): JSX.Element | null => {
         )
       : setInitialFormValues(offer, subCategories)
 
-  const readOnlyFields = setFormReadOnlyFields(offer)
+  const readOnlyFields = setFormReadOnlyFields(offer, isAdmin)
   const showAdminCreationBanner = isAdmin && isCreation && !offererId
   return (
     <WizardTemplate>
