@@ -11,6 +11,7 @@ const BannerCreateOfferAdmin = (): JSX.Element => (
         href: '/structures',
         linkTitle: 'Aller à la liste des structures',
         Icon: IcoEyeOpen,
+        isExternal: false,
       },
     ]}
   >
