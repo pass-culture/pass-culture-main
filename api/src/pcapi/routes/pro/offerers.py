@@ -114,13 +114,16 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 @login_required
 @spectree_serialize(response_model=GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
 def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
-    offerers = repository.get_all_offerers_for_user(
-        user=current_user,
-        validated=query.validated,
-        include_non_validated_user_offerers=not query.validated_for_user,
-    )
-    offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
-    offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
+    if query.offerer_id is not None:
+        offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id == dehumanize(query.offerer_id))
+    else:
+        offerers = repository.get_all_offerers_for_user(
+            user=current_user,
+            validated=query.validated,
+            include_non_validated_user_offerers=not query.validated_for_user,
+        )
+        offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
+        offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
 
     return GetOfferersNamesResponseModel(
         offerersNames=[GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
@@ -194,7 +197,8 @@ def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
 @private_api.route("/offerers/<humanized_offerer_id>/eac-eligibility", methods=["GET"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def can_offerer_create_educational_offer(humanized_offerer_id: str):  # type: ignore [no-untyped-def]
+# type: ignore [no-untyped-def]
+def can_offerer_create_educational_offer(humanized_offerer_id: str):
     try:
         api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))
     except educational_exceptions.CulturalPartnerNotFoundException:

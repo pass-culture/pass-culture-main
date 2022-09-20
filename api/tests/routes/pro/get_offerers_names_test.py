@@ -57,6 +57,26 @@ class Returns200ForProUserTest:
         assert response.json == {"offerersNames": [{"id": humanize(offerer.id), "name": offerer.name}]}
 
     @pytest.mark.usefixtures("db_session")
+    def test_get_offerers_names_for_id(self, app):
+        # given
+        pro_user = users_factories.ProFactory()
+        offerers = self._setup_offerers_for_pro_user(pro_user)
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_session_auth(pro_user.email)
+            .get(f'/offerers/names?offerer_id={humanize(offerers["owned_offerer_validated"].id)}')
+        )
+
+        # then
+        assert response.status_code == 200
+        assert "offerersNames" in response.json
+        assert len(response.json["offerersNames"]) == 1
+        assert response.json["offerersNames"][0]["id"] == humanize(offerers["owned_offerer_validated"].id)
+        assert response.json["offerersNames"][0]["name"] == offerers["owned_offerer_validated"].name
+
+    @pytest.mark.usefixtures("db_session")
     def test_get_all_offerers_names(self, app):
         # given
         pro_user = users_factories.ProFactory()
