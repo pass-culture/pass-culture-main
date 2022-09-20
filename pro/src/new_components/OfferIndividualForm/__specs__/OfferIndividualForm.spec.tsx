@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-import { Formik } from 'formik'
+import userEvent from '@testing-library/user-event'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -12,6 +13,7 @@ import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { configureTestStore } from 'store/testUtils'
+import { SubmitButton } from 'ui-kit'
 
 import {
   IOfferIndividualFormValues,
@@ -42,7 +44,10 @@ const renderOfferIndividualForm = ({
           onSubmit={onSubmit}
           validationSchema={validationSchema}
         >
-          <OfferIndividualForm {...props} />
+          <Form>
+            <OfferIndividualForm {...props} />
+            <SubmitButton isLoading={false}>Submit</SubmitButton>
+          </Form>
         </Formik>
       </MemoryRouter>
     </Provider>
@@ -83,8 +88,8 @@ describe('OfferIndividualForm', () => {
         categoryId: 'physical',
         proLabel: 'Sous catégorie de C',
         isEvent: false,
-        conditionalFields: ['showType', 'showSubType'],
-        canBeDuo: false,
+        conditionalFields: [],
+        canBeDuo: true,
         canBeEducational: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
@@ -95,7 +100,7 @@ describe('OfferIndividualForm', () => {
         categoryId: 'virtual',
         proLabel: 'Sous catégorie de C',
         isEvent: false,
-        conditionalFields: ['showType', 'showSubType'],
+        conditionalFields: [],
         canBeDuo: false,
         canBeEducational: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
@@ -155,5 +160,130 @@ describe('OfferIndividualForm', () => {
       props,
     })
     expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
+  })
+
+  it('should submit minimal physical offer', async () => {
+    renderOfferIndividualForm({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    await userEvent.selectOptions(categorySelect, 'physical')
+    const subCategorySelect = screen.getByLabelText(
+      'Choisir une sous-catégorie'
+    )
+    await userEvent.selectOptions(subCategorySelect, 'physical')
+    const nameField = screen.getByLabelText("Titre de l'offre")
+    await userEvent.type(nameField, 'Le nom de mon offre')
+
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        accessibility: {
+          audio: false,
+          mental: false,
+          motor: false,
+          none: true,
+          visual: false,
+        },
+        author: '',
+        bookingEmail: '',
+        categoryId: 'physical',
+        description: '',
+        durationMinutes: '',
+        externalTicketOfficeUrl: '',
+        isDuo: true,
+        isEvent: false,
+        isNational: false,
+        isVenueVirtual: false,
+        isbn: '',
+        musicSubType: '',
+        musicType: '',
+        name: 'Le nom de mon offre',
+        offererId: 'virtualAndPhysical',
+        performer: '',
+        receiveNotificationEmails: false,
+        showSubType: '',
+        showType: '',
+        speaker: '',
+        stageDirector: '',
+        subCategoryFields: ['isDuo'],
+        subcategoryId: 'physical',
+        url: '',
+        venueId: 'physical',
+        visa: '',
+        withdrawalDelay: undefined,
+        withdrawalDetails: '',
+        withdrawalType: undefined,
+      },
+      expect.anything()
+    )
+  })
+
+  it('should submit minimal virtual offer', async () => {
+    renderOfferIndividualForm({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    await userEvent.selectOptions(categorySelect, 'virtual')
+    const subCategorySelect = screen.getByLabelText(
+      'Choisir une sous-catégorie'
+    )
+    await userEvent.selectOptions(subCategorySelect, 'virtual')
+    const nameField = screen.getByLabelText("Titre de l'offre")
+    await userEvent.type(nameField, 'Le nom de mon offre')
+    const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+
+    await userEvent.type(urlField, 'http://example.com/')
+
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        accessibility: {
+          audio: false,
+          mental: false,
+          motor: false,
+          none: true,
+          visual: false,
+        },
+        author: '',
+        bookingEmail: '',
+        categoryId: 'virtual',
+        description: '',
+        durationMinutes: '',
+        externalTicketOfficeUrl: '',
+        isDuo: false,
+        isEvent: false,
+        isNational: false,
+        isVenueVirtual: true,
+        isbn: '',
+        musicSubType: '',
+        musicType: '',
+        name: 'Le nom de mon offre',
+        offererId: 'virtualAndPhysical',
+        performer: '',
+        receiveNotificationEmails: false,
+        showSubType: '',
+        showType: '',
+        speaker: '',
+        stageDirector: '',
+        subCategoryFields: [],
+        subcategoryId: 'virtual',
+        url: 'http://example.com/',
+        venueId: 'virtual',
+        visa: '',
+        withdrawalDelay: undefined,
+        withdrawalDetails: '',
+        withdrawalType: undefined,
+      },
+      expect.anything()
+    )
   })
 })

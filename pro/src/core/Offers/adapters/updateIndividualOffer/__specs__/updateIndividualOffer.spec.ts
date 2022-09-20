@@ -43,6 +43,8 @@ describe('updateIndividualOffer', () => {
       durationMinutes: '2:20',
       receiveNotificationEmails: true,
       bookingEmail: 'test@email.com',
+      externalTicketOfficeUrl: 'https://example.com',
+      url: '',
     }
 
     const expectedBody: PatchOfferBodyModel = {
