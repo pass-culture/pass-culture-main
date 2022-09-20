@@ -96,7 +96,7 @@ describe('venue form', () => {
     jest
       .spyOn(api, 'getProfile')
       .mockResolvedValue(storeOverrides.user.currentUser)
-    jest.spyOn(pcapi, 'canOffererCreateEducationalOffer').mockRejectedValue()
+    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue()
   })
 
   describe('when submiting a valide form', () => {
@@ -341,7 +341,7 @@ describe('venue form', () => {
   describe('Collective data', () => {
     it('should render button when offerer can create collective offer and venue is being created with a siret', async () => {
       jest
-        .spyOn(pcapi, 'canOffererCreateEducationalOffer')
+        .spyOn(api, 'canOffererCreateEducationalOffer')
         .mockResolvedValueOnce()
       await renderVenueCreation({
         props,

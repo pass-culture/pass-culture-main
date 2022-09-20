@@ -1,8 +1,8 @@
+import { api } from 'apiClient/api'
 import {
   CanOffererCreateCollectiveOffer,
   hasStatusCode,
 } from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<{
   isOffererEligibleToEducationalOffer: false
@@ -18,7 +18,7 @@ const FAILING_RESPONSE: AdapterFailure<{
 const canOffererCreateCollectiveOfferAdapter: CanOffererCreateCollectiveOffer =
   async (structure: string) => {
     try {
-      await pcapi.canOffererCreateEducationalOffer(structure)
+      await api.canOffererCreateEducationalOffer(structure)
 
       return {
         isOk: true,
