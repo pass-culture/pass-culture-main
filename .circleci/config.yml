@@ -931,6 +931,20 @@ jobs:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run:
+          name: Deploy new ExternalSecret only if needed
+          command: |
+            PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
+            PCAPI_VALUES_FILE=<(helm get values <<parameters.helm_environment>>)
+            PCAPI_SECRETS_FILE=/tmp/workspace/pcapi-secrets.yaml \
+            helmfile -e <<parameters.helm_environment>> apply --detailed-exitcode || HELMFILE_EXIT_CODE=$?
+            if [[ $HELMFILE_EXIT_CODE -eq 2 ]]; then
+              STATUS=$(kubectl get externalsecret.external-secrets.io pcapi-<<parameters.helm_environment>> -o jsonpath={..status..status})
+              if [[ $STATUS == "False" ]]
+                kubectl get events --field-selector involvedObject.name=pcapi-<<parameters.helm_environment>>,involvedObject.kind=ExternalSecret
+                helm rollback <<parameters.helm_environment>>
+                exit 1
+            fi
+      - run:
           name: Deploy pcapi
           command: |
             PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
