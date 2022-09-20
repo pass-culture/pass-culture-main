@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
-import {
-  deleteOffererApiKey,
-  generateOffererApiKey,
-} from 'repository/pcapi/pcapi'
+import { deleteOffererApiKey } from 'repository/pcapi/pcapi'
 import { Banner } from 'ui-kit'
 import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
@@ -30,7 +28,7 @@ const ApiKey = ({
   const generateApiKey = useCallback(async () => {
     try {
       setIsGeneratingKey(true)
-      const generatedApiKey = await generateOffererApiKey(offererId)
+      const generatedApiKey = await api.generateApiKeyRoute(offererId)
       setNewlyGeneratedKeys(previousKeys => [...previousKeys, generatedApiKey])
       notification.success(
         'Votre clé a bien été générée. Attention elle ne sera affichée que quelques instants !'

@@ -19,13 +19,6 @@ export const loadFeatures = async () => {
 // offerers
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offererId' implicitly has an 'any' type... Remove this comment to see the full error message
-export const generateOffererApiKey = async offererId => {
-  return client
-    .post(`/offerers/${offererId}/api_keys`, {})
-    .then(response => response.apiKey)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'apiKey' implicitly has an 'any' type.
 export const deleteOffererApiKey = async apiKey => {
   return client.delete(`/offerers/api_keys/${apiKey}`)

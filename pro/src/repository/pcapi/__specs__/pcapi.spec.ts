@@ -1,6 +1,5 @@
 import { ALL_OFFERERS } from 'core/Offers/constants'
 import {
-  generateOffererApiKey,
   getFilteredBookingsCSV,
   getVenueStats,
   getVenuesForOfferer,
@@ -39,16 +38,6 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith('/venues/3F/stats')
-    })
-  })
-
-  describe('generateOffererApiKey', () => {
-    it('should post an api key', async () => {
-      // When
-      await generateOffererApiKey('3F')
-
-      // Then
-      expect(client.post).toHaveBeenCalledWith('/offerers/3F/api_keys', {})
     })
   })
 
