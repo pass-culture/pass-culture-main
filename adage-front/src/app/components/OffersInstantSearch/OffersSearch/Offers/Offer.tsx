@@ -2,11 +2,11 @@ import './Offer.scss'
 import cn from 'classnames'
 import React, { useState } from 'react'
 
-import {
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
-} from 'apiClient'
 import { api } from 'apiClient/api'
+import {
+  HydratedCollectiveOffer,
+  HydratedCollectiveOfferTemplate,
+} from 'app/types/offers'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
@@ -18,7 +18,6 @@ import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
 import { formatDescription } from './utils/formatDescription'
 import { getOfferVenueAndOffererName } from './utils/getOfferVenueAndOffererName'
-import { isOfferCollectiveOffer } from './utils/offerIsCollectiveOffer'
 
 export const Offer = ({
   offer,
@@ -27,18 +26,17 @@ export const Offer = ({
   position,
 }: {
   canPrebookOffers: boolean
-  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   queryId: string
   position: number
 }): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
-  const offerIsShowcase = !isOfferCollectiveOffer(offer)
 
   const openOfferDetails = (
-    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+    offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   ) => {
     if (LOGS_DATA) {
-      isOfferCollectiveOffer(offer)
+      !offer.isTemplate
         ? api.logOfferDetailsButtonClick({ stockId: offer.stock.id })
         : api.logOfferTemplateDetailsButtonClick({ offerId: offer.id })
     }
@@ -49,14 +47,14 @@ export const Offer = ({
     <li className="offer" data-testid="offer-listitem">
       <div
         className={cn('offer-image-placeholder', {
-          'offer-image-placeholder-showcase': offerIsShowcase,
+          'offer-image-placeholder-showcase': offer.isTemplate,
         })}
         data-testid="thumb-placeholder"
       >
         <Logo />
       </div>
       <div className="offer-container">
-        {offerIsShowcase ? (
+        {offer.isTemplate ? (
           <ContactButton
             className="offer-prebooking-button"
             contactEmail={offer.contactEmail}

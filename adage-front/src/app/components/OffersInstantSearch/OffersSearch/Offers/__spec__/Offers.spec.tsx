@@ -458,7 +458,7 @@ describe('offers', () => {
 
   describe('load more button', () => {
     it('should refine next hits when clicking on load more button', async () => {
-      mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
+      mockedPcapi.getCollectiveOffer.mockResolvedValue(offerInParis)
       renderOffers(offersProps)
       const loadMoreButton = await screen.findByRole('button', {
         name: 'Voir plus d’offres',
@@ -472,7 +472,7 @@ describe('offers', () => {
     })
 
     it('should not show button if there is no more result to refine', async () => {
-      mockedPcapi.getCollectiveOffer.mockResolvedValueOnce(offerInParis)
+      mockedPcapi.getCollectiveOffer.mockResolvedValue(offerInParis)
       offersProps.hasMore = false
       renderOffers(offersProps)
       const loadMoreButton = screen.queryByRole('button', {

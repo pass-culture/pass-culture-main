@@ -126,7 +126,7 @@ describe('offer', () => {
     }
 
     offerInCayenne = {
-      id: 479,
+      id: 480,
       description: 'Une offre vraiment chouette',
       name: 'Une chouette à la mer',
       subcategoryLabel: 'Cinéma',

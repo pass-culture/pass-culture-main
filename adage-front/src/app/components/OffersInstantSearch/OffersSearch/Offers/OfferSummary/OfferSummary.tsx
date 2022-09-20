@@ -2,11 +2,11 @@ import './OfferSummary.scss'
 
 import React from 'react'
 
+import { OfferAddressType } from 'apiClient'
 import {
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
-  OfferAddressType,
-} from 'apiClient'
+  HydratedCollectiveOffer,
+  HydratedCollectiveOfferTemplate,
+} from 'app/types/offers'
 import { ReactComponent as BuildingIcon } from 'assets/building.svg'
 import { ReactComponent as DateIcon } from 'assets/date.svg'
 import { ReactComponent as EuroIcon } from 'assets/euro.svg'
@@ -15,8 +15,6 @@ import { ReactComponent as SubcategoryIcon } from 'assets/subcategory.svg'
 import { ReactComponent as UserIcon } from 'assets/user.svg'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
-
-import { isOfferCollectiveOffer } from '../utils/offerIsCollectiveOffer'
 
 const extractDepartmentCode = (venuePostalCode: string): string => {
   const departmentNumberBase: number = parseInt(venuePostalCode.slice(0, 2))
@@ -49,12 +47,10 @@ const getLocalBeginningDatetime = (
 const OfferSummary = ({
   offer,
 }: {
-  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
 }): JSX.Element => {
   const { subcategoryLabel, venue, offerVenue, students } = offer
-  const { beginningDatetime, numberOfTickets, price } = !isOfferCollectiveOffer(
-    offer
-  )
+  const { beginningDatetime, numberOfTickets, price } = offer.isTemplate
     ? {
         beginningDatetime: undefined,
         numberOfTickets: undefined,
