@@ -1,19 +1,27 @@
 import { api } from 'apiClient/api'
 import { TOffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { useAdapter } from 'hooks'
 
-type TGetOffererNamesAdapter = Adapter<void, TOffererName[], TOffererName[]>
-
+interface IParams {
+  offererId?: string
+}
+type TGetOffererNamesAdapter = Adapter<IParams, TOffererName[], TOffererName[]>
 const FAILING_RESPONSE = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,
   payload: [],
 }
 
-const getOffererNamesAdapter: TGetOffererNamesAdapter = async () => {
+const getOffererNamesAdapter: TGetOffererNamesAdapter = async ({
+  offererId,
+}) => {
   try {
-    const response = await api.listOfferersNames()
+    const response = await api.listOfferersNames(
+      null, // validated
+      null, // validatedForUser
+      offererId
+    )
+
     return {
       isOk: true,
       message: null,
@@ -24,7 +32,4 @@ const getOffererNamesAdapter: TGetOffererNamesAdapter = async () => {
   }
 }
 
-const useGetOffererNames = () =>
-  useAdapter<TOffererName[], TOffererName[]>(getOffererNamesAdapter)
-
-export default useGetOffererNames
+export default getOffererNamesAdapter

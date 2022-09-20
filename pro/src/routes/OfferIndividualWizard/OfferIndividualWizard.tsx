@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   Route,
   Switch,
@@ -15,17 +15,39 @@ import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
+import { getOfferIndividualAdapter } from 'core/Offers/adapters'
+import { IOfferIndividual } from 'core/Offers/types'
 import { useHomePath } from 'hooks'
 import { parse } from 'utils/query-string'
 
+import getWizardData, {
+  IOfferWizardData,
+} from './adapters/getWizardData/getWizardData'
 import { Confirmation } from './Confirmation'
-import { useGetData } from './hooks'
-import { useGetDataAdmin } from './hooks/useGetDataAdmin'
 import { Offer } from './Offer'
 import { Stocks } from './Stocks'
 import { Summary } from './Summary'
 
+export interface IDataLoading {
+  isLoading: true
+  error?: undefined
+  offer?: IOfferIndividual
+}
+export interface IDataSuccess extends IOfferWizardData {
+  isLoading: false
+  error?: undefined
+  offer?: IOfferIndividual
+}
+export interface IDataError {
+  isLoading: false
+  error: string
+  offer?: undefined
+}
+
 const OfferIndividualWizard = () => {
+  const [data, setData] = useState<IDataLoading | IDataSuccess | IDataError>({
+    isLoading: true,
+  })
   const homePath = useHomePath()
   const notify = useNotification()
   const history = useHistory()
@@ -37,32 +59,64 @@ const OfferIndividualWizard = () => {
   const { search } = useLocation()
   const { structure: offererId } = parse(search)
 
-  const { data, isLoading, loadingError, reloadOffer } = currentUser.isAdmin
-    ? useGetDataAdmin(offerId, offererId)
-    : useGetData(offerId)
+  const loadOffer = useCallback(async () => {
+    const response = await getOfferIndividualAdapter(offerId)
+    if (response.isOk) {
+      setData({
+        offererNames: [],
+        venueList: [],
+        categoriesData: {
+          categories: [],
+          subCategories: [],
+        },
+        isLoading: data.isLoading,
+        offer: response.payload,
+        error: undefined,
+      })
+      return Promise.resolve(response.payload)
+    }
+    notify.error(response.message)
+    history.push(homePath)
+    return Promise.resolve()
+  }, [offerId])
+  useEffect(() => {
+    offerId && loadOffer()
+  }, [offerId])
 
-  if (isLoading === true) return <Spinner />
-  if (loadingError !== undefined) {
-    notify.error(loadingError)
+  useEffect(() => {
+    async function loadData() {
+      const response = await getWizardData({
+        offer: data.offer,
+        queryOffererId: offererId,
+        isAdmin: currentUser.isAdmin,
+      })
+      if (response.isOk) {
+        setData({ isLoading: false, offer: data.offer, ...response.payload })
+      } else {
+        setData({
+          isLoading: false,
+          error: response.message,
+        })
+      }
+    }
+    ;(!offerId || data.offer) && loadData()
+  }, [offerId, data.offer])
+
+  if (data.isLoading === true) return <Spinner />
+  if (data.error !== undefined) {
+    notify.error(data.error)
     history.push(homePath)
     return null
   }
 
-  const {
-    offer,
-    venueList,
-    offererNames,
-    categoriesData: { categories, subCategories },
-  } = data
-
   const contextValues: IOfferIndividualContext = {
     offerId: offerId || null,
-    offer: offer || null,
-    venueList,
-    offererNames,
-    categories,
-    subCategories,
-    reloadOffer,
+    offer: data.offer || null,
+    venueList: data.venueList,
+    offererNames: data.offererNames,
+    categories: data.categoriesData.categories,
+    subCategories: data.categoriesData.subCategories,
+    reloadOffer: () => loadOffer(),
   }
 
   return (

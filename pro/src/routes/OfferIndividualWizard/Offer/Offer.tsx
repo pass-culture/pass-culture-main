@@ -1,7 +1,7 @@
 import React from 'react'
+import { useLocation } from 'react-router'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
-import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { BannerCreateOfferAdmin } from 'new_components/Banner'
 import {
@@ -16,7 +16,7 @@ import {
   Informations as InformationsScreen,
   Template as WizardTemplate,
 } from 'screens/OfferIndividual'
-
+import { parse } from 'utils/query-string'
 const Offer = (): JSX.Element | null => {
   const isCreation = useIsCreation()
   const {
@@ -25,8 +25,8 @@ const Offer = (): JSX.Element | null => {
   const { offer, subCategories, offererNames, venueList } =
     useOfferIndividualContext()
 
-  const { structure: offererId, lieu: venueId } =
-    queryParamsFromOfferer(location)
+  const { search } = useLocation()
+  const { structure: offererId, lieu: venueId } = parse(search)
 
   const initialValues: IOfferIndividualFormValues =
     offer === null

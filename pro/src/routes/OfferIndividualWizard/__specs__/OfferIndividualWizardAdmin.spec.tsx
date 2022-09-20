@@ -174,7 +174,7 @@ describe('test OfferIndividualWisard', () => {
         initialized: true,
         currentUser: {
           publicName: 'John Do',
-          isAdmin: false,
+          isAdmin: true,
           email: 'email@example.com',
         },
       },
@@ -189,49 +189,50 @@ describe('test OfferIndividualWisard', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   })
 
-  it('should initialize context with api', async () => {
+  it('should initialize context with api with offererId on query', async () => {
+    await renderOfferIndividualWizardRoute(
+      store,
+      '/offre/v3/creation/individuelle/informations?structure=CU'
+    )
+    expect(
+      await screen.findByRole('heading', { name: 'Créer une offre' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByLabelText('Choisir une catégorie')
+    ).toBeInTheDocument()
+    expect(api.getVenues).toHaveBeenCalledWith(
+      null, // validatedForUser,
+      null, // validated,
+      true, // activeOfferersOnly,
+      'CU' // offererId
+    )
+    expect(api.listOfferersNames).toHaveBeenCalledWith(
+      null, // validated
+      null, // validatedForUser
+      'CU' // offererId
+    )
+
+    expect(pcapi.loadCategories).toHaveBeenCalledWith()
+    expect(api.getOffer).not.toHaveBeenCalled()
+  })
+
+  it('should display admin creation banner when no offererId is given', async () => {
     await renderOfferIndividualWizardRoute(
       store,
       '/offre/v3/creation/individuelle/informations'
     )
     expect(
-      await screen.findByRole('heading', { name: 'Créer une offre' })
+      await screen.findByText(
+        'Afin de créer une offre en tant qu’administrateur veuillez sélectionner une structure.'
+      )
     ).toBeInTheDocument()
-    expect(api.listOfferersNames).toHaveBeenCalledWith(
-      null, // validated
-      null, // validatedForUser
-      undefined // offererId
-    )
-    expect(api.getVenues).toHaveBeenCalledWith(
-      null, // validatedForUser
-      null, // validated
-      true, // activeOfferersOnly,
-      undefined // offererId
-    )
-    expect(pcapi.loadCategories).toHaveBeenCalledWith()
-    expect(api.getOffer).not.toHaveBeenCalled()
-  })
-
-  it('should initialize context with api when offererId is given in query', async () => {
-    await renderOfferIndividualWizardRoute(
-      store,
-      '/offre/v3/creation/individuelle/informations/?structure=CU'
-    )
     expect(
-      await screen.findByRole('heading', { name: 'Créer une offre' })
-    ).toBeInTheDocument()
-    expect(api.listOfferersNames).toHaveBeenCalledWith(
-      null, // validated
-      null, // validatedForUser
-      undefined // offererId
-    )
-    expect(api.getVenues).toHaveBeenCalledWith(
-      null, // validatedForUser
-      null, // validated
-      true, // activeOfferersOnly,
-      'CU' // offererId
-    )
-    expect(pcapi.loadCategories).toHaveBeenCalledWith()
+      screen.queryByRole('heading', { name: 'Type d’offre' })
+    ).not.toBeInTheDocument()
+
+    expect(api.getVenues).not.toHaveBeenCalled()
+    expect(api.listOfferersNames).not.toHaveBeenCalled()
+    expect(pcapi.loadCategories).not.toHaveBeenCalled()
     expect(api.getOffer).not.toHaveBeenCalled()
   })
 
@@ -259,11 +260,6 @@ describe('test OfferIndividualWisard', () => {
     expect(
       await screen.findByRole('heading', { name: "Modifier l'offre" })
     ).toBeInTheDocument()
-    expect(api.listOfferersNames).toHaveBeenCalledWith(
-      null, // validated
-      null, // validatedForUser
-      undefined // offererId
-    )
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validatedForUser
       null, // validated
@@ -271,123 +267,8 @@ describe('test OfferIndividualWisard', () => {
       apiOffer.venue.managingOfferer.id // offererId
     )
     expect(pcapi.loadCategories).toHaveBeenCalledWith()
+
+    expect(api.listOfferersNames).not.toHaveBeenCalled()
     expect(api.getOffer).toHaveBeenCalledWith(offerId)
-  })
-
-  describe('stepper', () => {
-    it('should not render stepper on information page', async () => {
-      await renderOfferIndividualWizardRoute(
-        store,
-        `/offre/v3/creation/individuelle/informations`
-      )
-
-      expect(
-        await screen.findByRole('heading', { name: 'Créer une offre' })
-      ).toBeInTheDocument()
-
-      const tabInformations = screen.getByText('Informations', {
-        selector: 'span',
-      })
-      const tabStocks = screen.getByText('Stock & Prix', {
-        selector: 'span',
-      })
-      const tabSummary = screen.getByText('Récapitulatif', {
-        selector: 'span',
-      })
-      const tabConfirmation = screen.getByText('Confirmation', {
-        selector: 'span',
-      })
-
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
-    })
-
-    it('should not render stepper on confirmation page', async () => {
-      const offerId = 'YA'
-      await renderOfferIndividualWizardRoute(
-        store,
-        `/offre/${offerId}/v3/individuelle/confirmation`
-      )
-
-      expect(
-        await screen.findByRole('heading', { name: 'Confirmation' })
-      ).toBeInTheDocument()
-
-      const tabInformations = screen.queryByText('Informations', {
-        selector: 'span',
-      })
-      const tabStocks = screen.queryByText('Stock & Prix', {
-        selector: 'span',
-      })
-      const tabSummary = screen.queryByText('Récapitulatif', {
-        selector: 'span',
-      })
-      const tabConfirmation = screen.queryByText('Confirmation', {
-        selector: 'span',
-      })
-
-      expect(tabInformations).not.toBeInTheDocument()
-      expect(tabStocks).not.toBeInTheDocument()
-      expect(tabSummary).not.toBeInTheDocument()
-      expect(tabConfirmation).not.toBeInTheDocument()
-    })
-
-    it('should render stepper on summary page in creation', async () => {
-      await renderOfferIndividualWizardRoute(
-        store,
-        `/offre/creation/v3/individuelle/recapitulatif`
-      )
-      expect(
-        await screen.findByRole('heading', { name: 'Récapitulatif' })
-      ).toBeInTheDocument()
-
-      const tabInformations = screen.getByText('Informations', {
-        selector: 'span',
-      })
-      const tabStocks = screen.getByText('Stock & Prix', {
-        selector: 'span',
-      })
-      const tabSummary = screen.getByText('Récapitulatif', {
-        selector: 'span',
-      })
-      const tabConfirmation = screen.getByText('Confirmation', {
-        selector: 'span',
-      })
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
-    })
-
-    it('should not render stepper on summary page in edition', async () => {
-      const offerId = 'YA'
-      await renderOfferIndividualWizardRoute(
-        store,
-        `/offre/${offerId}/v3/individuelle/recapitulatif`
-      )
-      expect(
-        await screen.findByRole('heading', { name: 'Récapitulatif' })
-      ).toBeInTheDocument()
-
-      const tabInformations = screen.queryByText('Informations', {
-        selector: 'span',
-      })
-      const tabStocks = screen.queryByText('Stock & Prix', {
-        selector: 'span',
-      })
-      const tabSummary = screen.queryByText('Récapitulatif', {
-        selector: 'span',
-      })
-      const tabConfirmation = screen.queryByText('Confirmation', {
-        selector: 'span',
-      })
-
-      expect(tabInformations).not.toBeInTheDocument()
-      expect(tabStocks).not.toBeInTheDocument()
-      expect(tabSummary).not.toBeInTheDocument()
-      expect(tabConfirmation).not.toBeInTheDocument()
-    })
   })
 })

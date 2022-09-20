@@ -63,7 +63,6 @@ const getOfferIndividualVenuesAdapter = (
         return FAILING_RESPONSE
       }
     }
-
   return isAdmin && !offererId
     ? emptyOffererInvidivualVenueAdapter
     : offererInvidivualVenueAdapter
