@@ -2,13 +2,10 @@ import './OffersSearch.scss'
 import * as React from 'react'
 import { useEffect, useContext, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
-import type { StatsProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
-import { connectStats } from 'react-instantsearch-dom'
 
 import { VenueResponse } from 'apiClient'
 import { AuthenticatedResponse } from 'apiClient'
-import { api } from 'apiClient/api'
 import { INITIAL_QUERY } from 'app/constants'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
 import { AnalyticsContext } from 'app/providers/AnalyticsContextProvider'
@@ -26,7 +23,7 @@ import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import { SearchBox } from './SearchBox/SearchBox'
 
-export interface SearchProps extends SearchBoxProvided, StatsProvided {
+export interface SearchProps extends SearchBoxProvided {
   user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
@@ -42,7 +39,6 @@ export const OffersSearchComponent = ({
   removeVenueFilter,
   venueFilter,
   refine,
-  nbHits,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
@@ -50,8 +46,7 @@ export const OffersSearchComponent = ({
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
-  const { filtersKeys, hasClickedSearch, setFiltersKeys, setHasClickedSearch } =
-    useContext(AnalyticsContext)
+  const { setFiltersKeys, setHasClickedSearch } = useContext(AnalyticsContext)
 
   const userUAICode = user.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
@@ -105,17 +100,6 @@ export const OffersSearchComponent = ({
     refine(query)
   }
 
-  useEffect(() => {
-    if (LOGS_DATA && hasClickedSearch) {
-      api.logSearchButtonClick({
-        filters: filtersKeys,
-        resultsCount: nbHits,
-      })
-      setHasClickedSearch(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nbHits])
-
   const handleResetFiltersAndLaunchSearch = () => {
     setIsLoading(true)
     removeQuery()
@@ -161,6 +145,4 @@ export const OffersSearchComponent = ({
   )
 }
 
-export const OffersSearch = connectStats(
-  connectSearchBox<SearchProps>(OffersSearchComponent)
-)
+export const OffersSearch = connectSearchBox<SearchProps>(OffersSearchComponent)

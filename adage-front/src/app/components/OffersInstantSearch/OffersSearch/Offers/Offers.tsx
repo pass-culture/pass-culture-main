@@ -1,26 +1,41 @@
 import './Offers.scss'
 import { captureException } from '@sentry/react'
 import isEqual from 'lodash/isEqual'
-import React, { memo, useEffect, useState } from 'react'
-import type { InfiniteHitsProvided } from 'react-instantsearch-core'
-import { connectInfiniteHits, Stats } from 'react-instantsearch-dom'
+import React, { memo, useContext, useEffect, useState } from 'react'
+import type {
+  InfiniteHitsProvided,
+  StatsProvided,
+} from 'react-instantsearch-core'
+import {
+  connectInfiniteHits,
+  connectStats,
+  Stats,
+} from 'react-instantsearch-dom'
 
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient'
 import { AdageFrontRoles } from 'apiClient'
+import { api } from 'apiClient/api'
 import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
+import { AnalyticsContext } from 'app/providers/AnalyticsContextProvider'
 import { Button } from 'app/ui-kit'
+import { LOGS_DATA } from 'utils/config'
 import { ResultType } from 'utils/types'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import { Offer } from './Offer'
 import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
 
-export interface OffersComponentProps extends InfiniteHitsProvided<ResultType> {
+export interface OffersComponentProps
+  extends StatsProvided,
+    OffersComponentPropsWithHits {}
+
+interface OffersComponentPropsWithHits
+  extends InfiniteHitsProvided<ResultType> {
   userRole: AdageFrontRoles
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
@@ -38,6 +53,7 @@ export const OffersComponent = ({
   hits,
   hasMore,
   refineNext,
+  nbHits,
 }: OffersComponentProps): JSX.Element => {
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [offers, setOffers] = useState<
@@ -45,6 +61,21 @@ export const OffersComponent = ({
   >([])
   const [queryId, setQueryId] = useState('')
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
+
+  const { filtersKeys, hasClickedSearch, setHasClickedSearch } =
+    useContext(AnalyticsContext)
+
+  useEffect(() => {
+    // wait for nbHits to update before sending data results
+    if (LOGS_DATA && hasClickedSearch) {
+      api.logSearchButtonClick({
+        filters: filtersKeys,
+        resultsCount: nbHits,
+      })
+      setHasClickedSearch(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nbHits])
 
   useEffect(() => {
     setQueriesAreLoading(true)
@@ -167,21 +198,26 @@ export const OffersComponent = ({
   )
 }
 
-export const Offers = connectInfiniteHits<OffersComponentProps, ResultType>(
-  memo(OffersComponent, (prevProps, nextProps) => {
-    // prevent OffersComponent from rerendering if props are equal by value
-    // and thus trigger fetch multiple times
-    let arePropsEqual = true
-    Object.keys(prevProps).forEach(prop => {
-      if (
-        prop !== 'refineNext' &&
-        prop !== 'refinePrevious' &&
-        !isEqual(prevProps[prop], nextProps[prop])
-      ) {
-        arePropsEqual = false
-      }
-    })
+export const Offers = connectInfiniteHits<
+  OffersComponentPropsWithHits,
+  ResultType
+>(
+  connectStats<OffersComponentProps>(
+    memo(OffersComponent, (prevProps, nextProps) => {
+      // prevent OffersComponent from rerendering if props are equal by value
+      // and thus trigger fetch multiple times
+      let arePropsEqual = true
+      Object.keys(prevProps).forEach(prop => {
+        if (
+          prop !== 'refineNext' &&
+          prop !== 'refinePrevious' &&
+          !isEqual(prevProps[prop], nextProps[prop])
+        ) {
+          arePropsEqual = false
+        }
+      })
 
-    return arePropsEqual
-  })
+      return arePropsEqual
+    })
+  )
 )
