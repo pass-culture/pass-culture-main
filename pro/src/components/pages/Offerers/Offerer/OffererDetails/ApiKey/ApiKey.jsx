@@ -6,7 +6,6 @@ import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
-import { deleteOffererApiKey } from 'repository/pcapi/pcapi'
 import { Banner } from 'ui-kit'
 import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
@@ -28,7 +27,7 @@ const ApiKey = ({
   const generateApiKey = useCallback(async () => {
     try {
       setIsGeneratingKey(true)
-      const generatedApiKey = await api.generateApiKeyRoute(offererId)
+      const generatedApiKey = (await api.generateApiKeyRoute(offererId)).apiKey
       setNewlyGeneratedKeys(previousKeys => [...previousKeys, generatedApiKey])
       notification.success(
         'Votre clé a bien été générée. Attention elle ne sera affichée que quelques instants !'
@@ -48,7 +47,7 @@ const ApiKey = ({
 
   const confirmApiKeyDeletion = useCallback(async () => {
     try {
-      await deleteOffererApiKey(apiKeyToDelete)
+      await api.deleteApiKey(apiKeyToDelete)
       reloadOfferer(offererId)
     } catch (e) {
       notification.error("Une erreur s'est produite, veuillez réessayer")
