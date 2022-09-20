@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
@@ -10,8 +10,12 @@ import {
 } from 'context/OfferIndividualContext'
 import { useHomePath } from 'hooks'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
-import { useGetData } from 'routes/OfferIndividualWizard/hooks'
-import { useGetDataAdmin } from 'routes/OfferIndividualWizard/hooks/useGetDataAdmin'
+import getWizardData from 'routes/OfferIndividualWizard/adapters/getWizardData/getWizardData'
+import {
+  IDataError,
+  IDataLoading,
+  IDataSuccess,
+} from 'routes/OfferIndividualWizard/OfferIndividualWizard'
 import { serializePropsFromOfferIndividual } from 'routes/OfferIndividualWizard/Summary/serializer'
 import { Summary as SummaryScreen } from 'screens/OfferIndividual/Summary'
 
@@ -26,32 +30,44 @@ const OfferV2Summary = (): JSX.Element | null => {
     offerId: string
     structure: string
   }>()
-  const { data, isLoading, loadingError, reloadOffer } = currentUser.isAdmin
-    ? useGetDataAdmin(offerId, offererId)
-    : useGetData(offerId)
+  const [data, setData] = useState<IDataLoading | IDataSuccess | IDataError>({
+    isLoading: true,
+  })
 
-  if (isLoading === true) return <Spinner />
-  if (loadingError !== undefined || data.offer === undefined) {
-    notify.error(loadingError)
+  useEffect(() => {
+    async function loadData() {
+      const response = await getWizardData({
+        offerId,
+        queryOffererId: offererId,
+        isAdmin: currentUser.isAdmin,
+      })
+      if (response.isOk) {
+        setData({ isLoading: false, ...response.payload })
+      } else {
+        setData({
+          isLoading: false,
+          error: response.message,
+        })
+      }
+    }
+    loadData()
+  }, [offerId])
+
+  if (data.isLoading === true) return <Spinner />
+  if (data.error !== undefined || data.offer === undefined) {
+    notify.error(data.error)
     history.push(homePath)
     return null
   }
 
-  const {
-    offer,
-    venueList,
-    offererNames,
-    categoriesData: { categories, subCategories },
-  } = data
-
   const contextValues: IOfferIndividualContext = {
-    offerId: offerId,
-    offer: offer,
-    venueList,
-    offererNames,
-    categories,
-    subCategories,
-    reloadOffer: () => reloadOffer(),
+    offerId: offerId || null,
+    offer: data.offer,
+    venueList: data.venueList,
+    offererNames: data.offererNames,
+    categories: data.categoriesData.categories,
+    subCategories: data.categoriesData.subCategories,
+    reloadOffer: () => {},
   }
 
   const {
@@ -61,12 +77,16 @@ const OfferV2Summary = (): JSX.Element | null => {
     stockThing,
     stockEventList,
     preview,
-  } = serializePropsFromOfferIndividual(offer, categories, subCategories)
+  } = serializePropsFromOfferIndividual(
+    data.offer || null,
+    data.categoriesData.categories,
+    data.categoriesData.subCategories
+  )
 
   return (
     <OfferIndividualContext.Provider value={contextValues}>
       <SummaryScreen
-        offerId={offer.id}
+        offerId={data.offer.id}
         formOfferV2
         providerName={providerName}
         offerStatus={offerStatus}
@@ -74,7 +94,7 @@ const OfferV2Summary = (): JSX.Element | null => {
         offer={offerData}
         stockThing={stockThing}
         stockEventList={stockEventList}
-        subCategories={subCategories}
+        subCategories={data.categoriesData.subCategories}
         preview={preview}
       />
     </OfferIndividualContext.Provider>

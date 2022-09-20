@@ -43,7 +43,7 @@ const serializeSubCategory = (s: SubCategory): IOfferSubCategory => {
   }
 }
 
-const getCategoriesAdapter: GetCategoriesAdapter = async () => {
+export const getCategoriesAdapter: GetCategoriesAdapter = async () => {
   try {
     const result: {
       categories: Category[]
