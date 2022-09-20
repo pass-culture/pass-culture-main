@@ -21,7 +21,7 @@
       border-radius: rem.torem(6px);
       display: flex;
       flex-flow: row wrap;
-      padding: rem.torem(2px) rem.torem(20px);
+      padding: rem.torem(10px) rem.torem(20px);
 
       .provider-name {
         @include fonts.title4();
@@ -72,7 +72,7 @@
       }
 
       div {
-        margin-top: rem.torem(8px);
+        margin: rem.torem(16px) 0;
       }
     }
   }
