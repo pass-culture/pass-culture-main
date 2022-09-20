@@ -669,7 +669,7 @@ class FindAllOffererPaymentsTest:
 
         expected_in_both = {
             "booking_token": "ABCDEF",
-            "booking_used_date": booking.dateUsed,
+            "booking_used_date": booking.dateUsed.replace(microsecond=0),
             "booking_quantity": 1,
             "booking_amount": decimal.Decimal("10.00"),
             "offer_name": "Test Book",
@@ -697,7 +697,7 @@ class FindAllOffererPaymentsTest:
             "reimbursement_point_siret": "12345678912345",
             "cashflow_batch_cutoff": cashflow.batch.cutoff,
             "cashflow_batch_label": cashflow.batch.label,
-            "invoice_date": invoice.date,
+            "invoice_date": invoice.date.date(),
             "invoice_reference": invoice.reference,
         }
 
