@@ -30,57 +30,48 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
 
 ## Installation d'un token pour accéder à l'application en local
 
-1. Générer le token sur [le site de JWT](https://jwt.io) avec la config suivante:
+1. Ouvrir la console bash
 
-- Header:
-
-```
-{
-  "alg": "RS256",
-  "typ": "JWT"
-}
+```bash
+$ pc bash
 ```
 
-- PAYLOAD:
+2. Générer un token via la commande
 
-```
-{
-  "sub": "1234567890",
-  "name": "<your_name>",
-  "admin": true,
-  "exp": 1516239022000
-  "mail": "<your_email>"
-}
+```bash
+flask generate_fake_adage_token
 ```
 
-2. Coller la public key qui se trouve le cadre `Verify signature` dans `api/src/pcapi/routes/adage_iframe/public_key/public_key.development` (remplacer l'existante)
-
-3. Copier le token et le rajouter en query param dans l'url: `http://localhost:3002/?token=<votre_token>`
+3. Copier l'url générée dans le navigateur pour accéder à l'app
 
 ## Affichage d'offres en local
 
 Comme le local est branché sur algolia de testing, les ids qui sont remontés d'algolia sont ceux de testing, et il n'est pas certain qu'on ait les mêmes en local.
 
-Pour récupérer les ids de certaines offres en local, on peut soit
+Pour récupérer les ids de certaines offres en local, on peut utiliser un index local. Pour cela, il faut :
 
-- faire une requête dans la bdd locale de type `select id from offer where "isEducational" = true;`
+- Créer un nouvel index sur la sandbox algolia : `<votre_nom>-collective-offers`
 
-- récupérer les ids humanizés dans l'url des offres depuis PRO et les déshumaniser en utilisant [ce petit helper](https://jyq58.csb.app/)
+- Créer un fichier `.env.development.local` dans le dossier `adage-front` et renseigner le nom de l'index dans la variable `REACT_APP_ALGOLIA_COLLECTIVE_OFFERS_INDEX`
 
-- Editer `adage-front/src/app/components/OffersInstantSearch/OffersSearch/Offers/Offers.tsx` en remplaçant `hits` par un tableau d'identifiants:
-
-```
-const queries = useQueries(
-   hits.map(hit => ({
-   }))
- )
-```
-
-devient
+- Créer un fichier `.env.local.secret`
 
 ```
-const queries = useQueries(
-   [<id1>, <id2>, <id3>].map(hit => ({
-   }))
- )
+ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME=<votre_nom>-collective-offers
+ALGOLIA_TRIGGER_INDEXATION=1
+ALGOLIA_API_KEY=<demander l'api key>
+ALGOLIA_APPLICATION_ID=testingHXXTDUE7H0
+SEARCH_BACKEND=pcapi.core.search.backends.algolia.AlgoliaBackend
+```
+
+- Ouvrir la console bash
+
+```
+$ pc bash
+```
+
+- Réindexer vos offres collectives
+
+```
+flask reindex_all_collective_offers
 ```
