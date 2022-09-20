@@ -315,7 +315,13 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     priceDetail = sa.Column(sa.Text, nullable=True)
 
-    bookingEmail = sa.Column(sa.String(120), nullable=True)
+    _bookingEmail = sa.Column("bookingEmail", sa.String(120), nullable=True)
+
+    bookingEmails: list[str] = sa.Column(
+        MutableList.as_mutable(postgresql.ARRAY(sa.String)),
+        nullable=False,
+        server_default="{}",
+    )
 
     contactEmail: str = sa.Column(sa.String(120), nullable=False)
 
@@ -330,6 +336,20 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
     domains: list["EducationalDomain"] = relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
     )
+
+    @property
+    def bookingEmail(self) -> str | None:
+        if len(self.bookingEmails) != 0:
+            return self.bookingEmails[0]
+        return self._bookingEmail
+
+    @bookingEmail.setter
+    def bookingEmail(self, value: str | None) -> None:
+        if value is not None:
+            self.bookingEmails = [value]
+        else:
+            self.bookingEmails = []
+        self._bookingEmail = value
 
     @property
     def isEducational(self) -> bool:
