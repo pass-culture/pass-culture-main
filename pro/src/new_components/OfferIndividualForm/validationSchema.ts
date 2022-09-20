@@ -9,9 +9,9 @@ import { validationSchema as optionDuoSchema } from './OptionDuo'
 import { validationSchema as usefulInformationsSchema } from './UsefulInformations'
 
 export const validationSchema = yup.object().shape({
+  ...categoriesSchema,
   ...informationsSchema,
   ...usefulInformationsSchema,
-  ...categoriesSchema,
   ...accessibilitySchema,
   ...notificationsSchema,
   ...optionDuoSchema,
