@@ -17,7 +17,6 @@ import ChangePasswordRequestForm from './ChangePasswordRequestForm'
 
 const LostPassword = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState('')
-  const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState('')
   const [passwordSent, setPasswordSent] = useState(false)
   const [passwordChanged, setPasswordChanged] = useState(false)
   const history = useHistory()
@@ -61,15 +60,10 @@ const LostPassword = (): JSX.Element => {
     pcapi
       .submitResetPassword(newPasswordValue, token)
       .then(() => setPasswordChanged(true))
-      .catch(reason => {
-        const { errors } = reason
-        if (errors.newPassword) {
-          setNewPasswordErrorMessage(errors.newPassword[0])
-        } else {
-          notification.error(
-            "Une erreur s'est produite, veuillez réessayer ultérieurement."
-          )
-        }
+      .catch(() => {
+        notification.error(
+          "Une erreur s'est produite, veuillez réessayer ultérieurement."
+        )
       })
   }
 
@@ -81,14 +75,6 @@ const LostPassword = (): JSX.Element => {
 
   const isChangePasswordRequestSubmitDisabled = () => {
     return emailValue === ''
-  }
-
-  const isChangePasswordSubmitDisabled = (values: Record<string, string>) => {
-    if (!values.newPasswordValue) {
-      return true
-    }
-
-    return values.newPasswordValue === ''
   }
 
   return (
@@ -116,11 +102,7 @@ const LostPassword = (): JSX.Element => {
             />
           )}
           {token && !passwordChanged && (
-            <ChangePasswordForm
-              isChangePasswordSubmitDisabled={isChangePasswordSubmitDisabled}
-              newPasswordErrorMessage={newPasswordErrorMessage}
-              onSubmit={submitChangePassword}
-            />
+            <ChangePasswordForm onSubmit={submitChangePassword} />
           )}
           {!token && !passwordSent && !passwordChanged && (
             <ChangePasswordRequestForm
