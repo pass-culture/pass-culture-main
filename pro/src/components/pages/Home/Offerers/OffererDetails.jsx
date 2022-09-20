@@ -6,6 +6,7 @@ import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import { Events } from 'core/FirebaseEvents/constants'
+import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as ClosedEyeSvg } from 'icons/ico-eye-full-close.svg'
 import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
@@ -199,8 +200,24 @@ const OffererDetails = ({
           <>
             <div className="od-separator horizontal" />
             {!selectedOfferer.isValidated && (
-              <Banner type="notification-info" className="banner">
-                Votre structure est en cours de validation
+              <Banner
+                type="notification-info"
+                className="banner"
+                links={[
+                  {
+                    href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
+                    linkTitle: 'En savoir plus',
+                    Icon: ExternalSiteIcon,
+                  },
+                ]}
+              >
+                <strong>
+                  Le rattachement à votre structure est en cours de validation
+                </strong>
+                <br />
+                Un e-mail vous sera envoyé lors de la validation de votre
+                rattachement. Vous aurez alors accès à l’ensemble des
+                fonctionnalités du pass Culture Pro.
               </Banner>
             )}
             {isUserOffererValidated && (
