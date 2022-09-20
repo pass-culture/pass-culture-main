@@ -1,3 +1,8 @@
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+
 import { patchIsCollectiveOfferActiveAdapter } from '../patchIsCollectiveOfferActiveAdapter'
 
 describe('patchIsOfferActiveCollectiveAdapter', () => {
@@ -19,10 +24,11 @@ describe('patchIsOfferActiveCollectiveAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 422,
-    })
+    jest
+      .spyOn(api, 'patchCollectiveOffersActiveStatus')
+      .mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 422 } as ApiResult, '')
+      )
 
     // when
     const response = await patchIsCollectiveOfferActiveAdapter({
@@ -38,11 +44,7 @@ describe('patchIsOfferActiveCollectiveAdapter', () => {
   })
   it('should confirm when the offer was activated', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      ok: true,
-      status: 204,
-    })
+    jest.spyOn(api, 'patchCollectiveOffersActiveStatus').mockResolvedValueOnce()
 
     // when
     const response = await patchIsCollectiveOfferActiveAdapter({
@@ -58,11 +60,7 @@ describe('patchIsOfferActiveCollectiveAdapter', () => {
   })
   it('should confirm when the offer was deactivated', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      ok: true,
-      status: 204,
-    })
+    jest.spyOn(api, 'patchCollectiveOffersActiveStatus').mockResolvedValueOnce()
 
     // when
     const response = await patchIsCollectiveOfferActiveAdapter({

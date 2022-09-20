@@ -20,16 +20,6 @@ export const loadFeatures = async () => {
 // offers
 //
 
-export const patchIsCollectiveOfferActive = (
-  offerIds: string[],
-  isActive: boolean
-) => {
-  return client.patch(`/collective/offers/active-status`, {
-    ids: offerIds,
-    isActive,
-  })
-}
-
 export const loadFilteredOffers = async ({
   nameOrIsbn = DEFAULT_SEARCH_FILTERS.nameOrIsbn,
   offererId = DEFAULT_SEARCH_FILTERS.offererId,
