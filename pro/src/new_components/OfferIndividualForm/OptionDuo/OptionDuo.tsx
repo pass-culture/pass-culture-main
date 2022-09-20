@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
 import { Checkbox } from 'ui-kit'
@@ -9,7 +9,14 @@ import { IOfferIndividualFormValues } from '../types'
 const OptionDuo = (): JSX.Element | null => {
   const {
     values: { subCategoryFields },
+    setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
+
+  useEffect(() => {
+    !subCategoryFields.includes('isDuo')
+      ? setFieldValue('isDuo', false)
+      : setFieldValue('isDuo', true)
+  }, [subCategoryFields])
 
   if (!subCategoryFields.includes('isDuo')) {
     return null

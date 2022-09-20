@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
-import { Formik } from 'formik'
+import { render, screen, waitFor } from '@testing-library/react'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
+import { SubmitButton } from 'ui-kit'
 
 import OptionDuo from '../OptionDuo'
 import validationSchema from '../validationSchema'
@@ -23,7 +24,10 @@ const renderOptionDuo = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <OptionDuo />
+      <Form>
+        <OptionDuo />
+        <SubmitButton isLoading={false}>Submit</SubmitButton>
+      </Form>
     </Formik>
   )
 }
@@ -39,15 +43,17 @@ describe('OfferIndividual section: OptionDuo', () => {
       initialValues,
       onSubmit,
     })
-    expect(
-      screen.getByRole('heading', { name: 'Réservations “duo“' })
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Réservations “duo“' })
+      ).toBeInTheDocument()
 
-    expect(
-      screen.getByLabelText('Accepter les réservations “duo“', {
-        exact: false,
-      })
-    ).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Accepter les réservations “duo“', {
+          exact: false,
+        })
+      ).toBeInTheDocument()
+    })
   })
 
   it('should not render the component when "isDuo" option not available', async () => {
@@ -58,13 +64,15 @@ describe('OfferIndividual section: OptionDuo', () => {
       initialValues,
       onSubmit,
     })
-    expect(
-      screen.queryByRole('heading', { name: 'Réservations “duo“' })
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Accepter les réservations "duo"', {
-        exact: false,
-      })
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', { name: 'Réservations “duo“' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByLabelText('Accepter les réservations "duo"', {
+          exact: false,
+        })
+      ).not.toBeInTheDocument()
+    })
   })
 })
