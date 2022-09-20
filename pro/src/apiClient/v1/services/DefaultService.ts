@@ -878,12 +878,14 @@ export class DefaultService {
    * list_offerers_names <GET>
    * @param validated
    * @param validatedForUser
+   * @param offererId
    * @returns GetOfferersNamesResponseModel OK
    * @throws ApiError
    */
   public listOfferersNames(
     validated?: boolean | null,
     validatedForUser?: boolean | null,
+    offererId?: string | null,
   ): CancelablePromise<GetOfferersNamesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -891,6 +893,7 @@ export class DefaultService {
       query: {
         'validated': validated,
         'validated_for_user': validatedForUser,
+        'offerer_id': offererId,
       },
       errors: {
         403: `Forbidden`,
