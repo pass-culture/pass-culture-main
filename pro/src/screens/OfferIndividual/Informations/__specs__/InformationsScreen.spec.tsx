@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -26,6 +27,12 @@ jest.mock('screens/OfferIndividual/Informations/utils', () => {
 })
 
 window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    postOffer: jest.fn(),
+  },
+}))
 
 const renderInformationsScreen = (
   props: IInformationsProps,
@@ -72,7 +79,7 @@ describe('screens:OfferCreation::Informations', () => {
     ]
     const subCategories = [
       {
-        id: 'A-A',
+        id: 'virtual',
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
         isEvent: false,
@@ -84,12 +91,12 @@ describe('screens:OfferCreation::Informations', () => {
         isSelectable: true,
       },
       {
-        id: 'A-B',
+        id: 'physical',
         categoryId: 'A',
         proLabel: 'Sous catégorie offline de A',
         isEvent: false,
         conditionalFields: [],
-        canBeDuo: false,
+        canBeDuo: true,
         canBeEducational: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
@@ -222,7 +229,7 @@ describe('screens:OfferCreation::Informations', () => {
 
       await userEvent.selectOptions(
         await screen.findByLabelText('Choisir une sous-catégorie'),
-        'A-A'
+        'virtual'
       )
       expect(
         screen.queryByRole('heading', { name: 'Informations générales' })
@@ -247,7 +254,7 @@ describe('screens:OfferCreation::Informations', () => {
 
       await userEvent.selectOptions(
         await screen.findByLabelText('Choisir une sous-catégorie'),
-        'A-B'
+        'physical'
       )
       expect(
         screen.getByRole('heading', { name: 'Informations générales' })
@@ -277,6 +284,131 @@ describe('screens:OfferCreation::Informations', () => {
       behavior: 'auto',
       block: 'center',
       inline: 'center',
+    })
+  })
+
+  describe('submit', () => {
+    beforeEach(async () => {
+      const venue: TOfferIndividualVenue = {
+        id: 'AA',
+        name: 'Lieu offline AA',
+        managingOffererId: 'A',
+        isVirtual: false,
+        withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
+      }
+      contextValue.venueList = [
+        venue,
+        {
+          id: 'BB',
+          name: 'Lieu online BB',
+          managingOffererId: 'A',
+          isVirtual: true,
+          withdrawalDetails: '',
+          accessibility: {
+            visual: false,
+            mental: false,
+            audio: false,
+            motor: false,
+            none: true,
+          },
+        },
+      ]
+      contextValue.offererNames = [{ id: 'A', name: 'mon offerer A' }]
+      props = {
+        initialValues: FORM_DEFAULT_VALUES,
+      }
+    })
+    it('should submit minimal physical offer', async () => {
+      renderInformationsScreen(props, store, contextValue)
+
+      const categorySelect = await screen.findByLabelText(
+        'Choisir une catégorie'
+      )
+      await userEvent.selectOptions(categorySelect, 'A')
+      const subCategorySelect = screen.getByLabelText(
+        'Choisir une sous-catégorie'
+      )
+      await userEvent.selectOptions(subCategorySelect, 'physical')
+      const nameField = screen.getByLabelText("Titre de l'offre")
+      await userEvent.type(nameField, 'Le nom de mon offre')
+
+      await userEvent.click(await screen.findByText('Suivant'))
+
+      expect(api.postOffer).toHaveBeenCalledTimes(1)
+      expect(api.postOffer).toHaveBeenCalledWith({
+        audioDisabilityCompliant: false,
+        bookingEmail: null,
+        description: null,
+        durationMinutes: null,
+        externalTicketOfficeUrl: null,
+        extraData: {},
+        isDuo: true,
+        isEducational: false,
+        isNational: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
+        name: 'Le nom de mon offre',
+        offererId: 'A',
+        subcategoryId: 'physical',
+        url: null,
+        venueId: 'AA',
+        visualDisabilityCompliant: false,
+        withdrawalDelay: null,
+        withdrawalDetails: null,
+        withdrawalType: null,
+      })
+    })
+
+    it('should submit minimal virtual offer', async () => {
+      renderInformationsScreen(props, store, contextValue)
+
+      const categorySelect = await screen.findByLabelText(
+        'Choisir une catégorie'
+      )
+      await userEvent.selectOptions(categorySelect, 'A')
+      const subCategorySelect = screen.getByLabelText(
+        'Choisir une sous-catégorie'
+      )
+      await userEvent.selectOptions(subCategorySelect, 'virtual')
+      const nameField = screen.getByLabelText("Titre de l'offre")
+      await userEvent.type(nameField, 'Le nom de mon offre')
+
+      const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+
+      await userEvent.type(urlField, 'http://example.com/')
+
+      await userEvent.click(await screen.findByText('Suivant'))
+
+      expect(api.postOffer).toHaveBeenCalledTimes(1)
+      expect(api.postOffer).toHaveBeenCalledWith({
+        audioDisabilityCompliant: false,
+        bookingEmail: null,
+        description: null,
+        durationMinutes: null,
+        externalTicketOfficeUrl: null,
+        extraData: {},
+        isDuo: false,
+        isEducational: false,
+        isNational: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
+        name: 'Le nom de mon offre',
+        offererId: 'A',
+        subcategoryId: 'virtual',
+        url: 'http://example.com/',
+        venueId: 'BB',
+        visualDisabilityCompliant: false,
+        withdrawalDelay: null,
+        withdrawalDetails: null,
+        withdrawalType: null,
+      })
     })
   })
 })

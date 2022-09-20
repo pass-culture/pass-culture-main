@@ -61,6 +61,10 @@ const setInitialFormValues = (
       offer.durationMinutes === null
         ? undefined
         : serializeDurationHour(offer.durationMinutes),
+    url: offer.url || FORM_DEFAULT_VALUES['url'],
+    externalTicketOfficeUrl:
+      offer.externalTicketOfficeUrl ||
+      FORM_DEFAULT_VALUES['externalTicketOfficeUrl'],
   }
 }
 

@@ -54,11 +54,12 @@ export const serializePostOffer = (
 ): PostOfferBodyModel => {
   return {
     audioDisabilityCompliant: formValues.accessibility[AccessiblityEnum.AUDIO],
-    description: formValues.description,
+    bookingEmail: formValues.bookingEmail || null,
+    description: formValues.description || null,
     extraData: serializeExtraData(formValues),
     isEducational: false,
     isNational: formValues.isNational,
-    isDuo: !!formValues.isDuo,
+    isDuo: formValues.isDuo,
     mentalDisabilityCompliant:
       formValues.accessibility[AccessiblityEnum.MENTAL],
     motorDisabilityCompliant: formValues.accessibility[AccessiblityEnum.MOTOR],
@@ -68,11 +69,11 @@ export const serializePostOffer = (
     venueId: formValues.venueId,
     visualDisabilityCompliant:
       formValues.accessibility[AccessiblityEnum.VISUAL],
-    withdrawalDelay: formValues.withdrawalDelay,
-    withdrawalDetails: formValues.withdrawalDetails,
-    withdrawalType: formValues.withdrawalType,
+    withdrawalDelay: formValues.withdrawalDelay || null,
+    withdrawalDetails: formValues.withdrawalDetails || null,
+    withdrawalType: formValues.withdrawalType || null,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes || ''),
-    url: formValues.url,
-    externalTicketOfficeUrl: formValues.externalTicketOfficeUrl,
+    url: formValues.url || null,
+    externalTicketOfficeUrl: formValues.externalTicketOfficeUrl || null,
   }
 }
