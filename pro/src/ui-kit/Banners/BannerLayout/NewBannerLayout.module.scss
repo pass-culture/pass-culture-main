@@ -73,7 +73,7 @@
     &:after {
       content: url(/icons/ico-bulb.svg);
     }
-    path {
+    path:nth-child(2) {
       fill: colors.$tertiary;
     }
   }
