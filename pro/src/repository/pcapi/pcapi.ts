@@ -3,7 +3,7 @@ import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_const
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { ReimbursementPointsResponseModel } from 'core/Finances'
 import { EducationalDomain } from 'core/OfferEducational'
-import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { ALL_OFFERERS } from 'core/Offers/constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -20,78 +20,12 @@ export const loadFeatures = async () => {
 // offers
 //
 
-export const loadFilteredOffers = async ({
-  nameOrIsbn = DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-  offererId = DEFAULT_SEARCH_FILTERS.offererId,
-  venueId = DEFAULT_SEARCH_FILTERS.venueId,
-  categoryId = DEFAULT_SEARCH_FILTERS.categoryId,
-  periodBeginningDate = DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-  periodEndingDate = DEFAULT_SEARCH_FILTERS.periodEndingDate,
-  status = DEFAULT_SEARCH_FILTERS.status,
-  creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
-}) => {
-  const body = createRequestBody({
-    nameOrIsbn,
-    offererId,
-    venueId,
-    categoryId,
-    status,
-    creationMode,
-    periodBeginningDate,
-    periodEndingDate,
-  })
-
-  const queryParams = stringify(body)
-  return client.get(`/offers${queryParams ? `?${queryParams}` : ''}`)
-}
-
 export const updateOffersActiveStatus = (ids: string[], isActive: boolean) =>
   client.patch('/offers/active-status', { ids, isActive })
 
 export const updateAllOffersActiveStatus = (
   body: ListOffersQueryModel & { isActive: boolean }
 ) => client.patch('/offers/all-active-status', body)
-
-export const updateAllCollectiveOffersActiveStatus = (
-  body: ListOffersQueryModel & { isActive: boolean }
-) => client.patch('/collective/offers/all-active-status', body)
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'searchFilters' implicitly has an 'any' ... Remove this comment to see the full error message
-const createRequestBody = searchFilters => {
-  const body = {}
-  Object.keys(DEFAULT_SEARCH_FILTERS).forEach(field => {
-    if (
-      searchFilters[field] &&
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      searchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
-    ) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      body[field] = searchFilters[field]
-    }
-  })
-
-  if (searchFilters.page) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'page' does not exist on type '{}'.
-    body.page = searchFilters.page
-  }
-
-  if (
-    searchFilters.periodBeginningDate !==
-    DEFAULT_SEARCH_FILTERS.periodBeginningDate
-  ) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'periodBeginningDate' does not exist on t... Remove this comment to see the full error message
-    body.periodBeginningDate = searchFilters.periodBeginningDate
-  }
-
-  if (
-    searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.periodEndingDate
-  ) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'periodEndingDate' does not exist on type... Remove this comment to see the full error message
-    body.periodEndingDate = searchFilters.periodEndingDate
-  }
-
-  return body
-}
 
 //
 // offerers
