@@ -1,4 +1,5 @@
 import datetime
+import json
 from typing import Dict
 
 from pydantic import Field
@@ -19,9 +20,16 @@ class ShowTariffCDS(BaseModel):
         allow_population_by_field_name = True
 
 
+class CinemaParameterCDS(BaseModel):
+    id: int
+    key: str
+    value: str | None
+
+
 class CinemaCDS(BaseModel):
     id: str
     is_internet_sale_gauge_active: bool = Field(alias="internetsalegaugeactive")
+    cinema_parameters: list[CinemaParameterCDS] = Field(alias="cinemaParameters", default_factory=list)
 
     class Config:
         allow_population_by_field_name = True
@@ -198,23 +206,34 @@ class CreateTransactionResponseCDS(BaseModel):
 
 
 class SeatCDS:
-    def __init__(self, seat_location_indices: tuple[int, int], screen_infos: ScreenCDS, seat_map: SeatmapCDS):
+    def __init__(
+        self,
+        seat_location_indices: tuple[int, int],
+        screen_infos: ScreenCDS,
+        seat_map: SeatmapCDS,
+        hardcoded_seatmap: str = None,
+    ):
         self.seatRow = seat_location_indices[0] + 1
         self.seatCol = seat_location_indices[1] + 1
-        if not screen_infos.seatmap_front_to_back:
-            self.seatRow = seat_map.nb_row - seat_location_indices[0]
-        if not screen_infos.seatmap_left_to_right:
-            self.seatCol = seat_map.nb_col - seat_location_indices[1]
+        if hardcoded_seatmap:
+            hardcoded_seatmap = json.loads(hardcoded_seatmap)
+            assert isinstance(hardcoded_seatmap, list)
+            self.seatNumber: str = hardcoded_seatmap[self.seatRow - 1][self.seatCol - 1]
+        else:
+            if not screen_infos.seatmap_front_to_back:
+                self.seatRow = seat_map.nb_row - seat_location_indices[0]
+            if not screen_infos.seatmap_left_to_right:
+                self.seatCol = seat_map.nb_col - seat_location_indices[1]
 
-        if screen_infos.seatmap_skip_missing_seats:
-            seat_row_array = seat_map.map[seat_location_indices[0]]
-            previous_seats = (
-                seat_row_array[: seat_location_indices[1]]
-                if screen_infos.seatmap_left_to_right
-                else seat_row_array[seat_location_indices[1] :]
-            )
-            skipped_seat = sum(1 for seat_value in previous_seats if seat_value == 0)
-            self.seatCol -= skipped_seat
+            if screen_infos.seatmap_skip_missing_seats:
+                seat_row_array = seat_map.map[seat_location_indices[0]]
+                previous_seats = (
+                    seat_row_array[: seat_location_indices[1]]
+                    if screen_infos.seatmap_left_to_right
+                    else seat_row_array[seat_location_indices[1] :]
+                )
+                skipped_seat = sum(1 for seat_value in previous_seats if seat_value == 0)
+                self.seatCol -= skipped_seat
 
-        seat_letter = chr(ord("A") + self.seatRow - 1)
-        self.seatNumber = f"{seat_letter}_{self.seatCol}"
+            seat_letter = chr(ord("A") + self.seatRow - 1)
+            self.seatNumber = f"{seat_letter}_{self.seatCol}"
