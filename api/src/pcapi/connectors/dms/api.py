@@ -10,7 +10,6 @@ from gql.transport.requests import RequestsHTTPTransport
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
-from pcapi.utils import requests
 
 from . import exceptions
 
@@ -31,19 +30,6 @@ UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
 
 class ApiDemarchesSimplifieesException(Exception):
     pass
-
-
-def get_application_details(application_id: str, procedure_id: str, token: str) -> dict:
-    response = requests.get(
-        f"https://www.demarches-simplifiees.fr/api/v1/procedures/{procedure_id}/dossiers/{application_id}?token={token}"
-    )
-
-    if response.status_code != 200:
-        raise ApiDemarchesSimplifieesException(
-            f"Error getting API démarches simplifiées DATA for procedure_id: {procedure_id}, application_id: {application_id}"
-        )
-
-    return response.json()
 
 
 class DMSGraphQLClient:

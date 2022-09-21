@@ -1,5 +1,4 @@
 import datetime
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import freezegun
@@ -10,26 +9,6 @@ from pcapi.connectors.dms import models as dms_models
 from tests.scripts.beneficiary.fixture import make_graphql_application
 from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
 from tests.scripts.beneficiary.fixture import make_single_application
-
-
-class GetApplicationDetailsTest:
-    @patch("pcapi.connectors.dms.api.requests.get")
-    def test_calls_demarche_simplifiee_api_with_right_link(self, requests_get):
-        # Given
-        response_return_value = MagicMock(status_code=200, text="")
-        response_return_value.json = MagicMock(return_value={"test": "value"})
-        requests_get.return_value = response_return_value
-        procedure_number = 1
-        application_id = 2
-        token = "12345"
-
-        # When
-        application_details = api_dms.get_application_details(application_id, procedure_number, token)
-
-        # Then
-        call_args = requests_get.call_args
-        assert call_args[0] == ("https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers/2?token=12345",)
-        assert application_details == {"test": "value"}
 
 
 class GraphqlResponseTest:
