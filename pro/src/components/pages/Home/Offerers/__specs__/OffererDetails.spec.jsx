@@ -525,31 +525,31 @@ describe('offererDetailsLegacy', () => {
       api.getOfferer.mockResolvedValue(offererWithNoPhysicalVenues)
     })
 
-    it('should display offerer informations', async () => {
+    it('should not display offerer informations', async () => {
       // When
       const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
       expect(
-        within(offerer).getByText(offererWithNoPhysicalVenues.siren)
-      ).toBeInTheDocument()
+        within(offerer).queryByText(offererWithNoPhysicalVenues.siren)
+      ).not.toBeInTheDocument()
       expect(
-        within(offerer).getByText(offererWithNoPhysicalVenues.name, {
+        within(offerer).queryByText(offererWithNoPhysicalVenues.name, {
           selector: 'span',
         })
-      ).toBeInTheDocument()
+      ).not.toBeInTheDocument()
       expect(
-        within(offerer).getByText(offererWithNoPhysicalVenues.address, {
+        within(offerer).queryByText(offererWithNoPhysicalVenues.address, {
           exact: false,
         })
-      ).toBeInTheDocument()
+      ).not.toBeInTheDocument()
       expect(
-        within(offerer).getByText(
+        within(offerer).queryByText(
           `${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`,
           { exact: false }
         )
-      ).toBeInTheDocument()
+      ).not.toBeInTheDocument()
     })
 
     it('should hide offerer informations on click on hide button', async () => {
@@ -694,9 +694,7 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       expect(
-        within(offerer).getByText(
-          'Le rattachement à votre structure est en cours de validation'
-        )
+        within(offerer).getByText('Votre structure est en cours de validation')
       ).toBeInTheDocument()
     })
 
@@ -707,8 +705,8 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       expect(
-        within(offerer).getByText('Informations pratiques')
-      ).toBeInTheDocument()
+        within(offerer).queryByText('Informations pratiques')
+      ).not.toBeInTheDocument()
     })
 
     it('should allow user to add venue and offer', async () => {
@@ -747,10 +745,10 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       expect(
-        screen.getByText(
+        screen.queryByText(
           'Le rattachement à votre structure est en cours de validation'
         )
-      ).toBeInTheDocument()
+      ).not.toBeInTheDocument()
     })
 
     it('should not allow user to view offerer informations', async () => {
