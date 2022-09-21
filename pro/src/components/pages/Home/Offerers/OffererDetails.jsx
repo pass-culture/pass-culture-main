@@ -79,6 +79,11 @@ const OffererDetails = ({
       .some(Boolean)
   }, [isBankInformationWithSiretActive, selectedOfferer])
 
+  const hasAtLeastOneVenue = selectedOfferer.managedVenues
+    .filter(venue => !venue.isVirtual)
+    .map(venue => venue.id)
+    .some(Boolean)
+
   const hasMissingReimbursementPoints = useMemo(() => {
     if (!isNewBankInformationActive) return false
     if (!selectedOfferer) return false
@@ -199,7 +204,7 @@ const OffererDetails = ({
         {isExpanded && (
           <>
             <div className="od-separator horizontal" />
-            {!selectedOfferer.isValidated && (
+            {!selectedOfferer.isValidated && !hasAtLeastOneVenue && (
               <Banner
                 type="notification-info"
                 className="banner"
@@ -218,6 +223,29 @@ const OffererDetails = ({
                 Un e-mail vous sera envoyé lors de la validation de votre
                 rattachement. Vous aurez alors accès à l’ensemble des
                 fonctionnalités du pass Culture Pro.
+              </Banner>
+            )}
+            {!selectedOfferer.isValidated && hasAtLeastOneVenue && (
+              <Banner
+                type="notification-info"
+                className="banner"
+                links={[
+                  {
+                    href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
+                    linkTitle:
+                      'En savoir plus sur le fonctionnement du pass Culture',
+                    Icon: ExternalSiteIcon,
+                  },
+                ]}
+              >
+                <strong>
+                  Votre structure est en cours de validation par les équipes du
+                  pass Culture !
+                </strong>
+                <br />
+                Toutes les offres créées à l’échelle de vos lieux seront
+                publiées sous réserve de validation de votre structure par nos
+                équipes.
               </Banner>
             )}
             {isUserOffererValidated && (
