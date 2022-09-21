@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -11,6 +12,7 @@ import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
 import { ReactComponent as IconHome } from 'icons/ico-home.svg'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
+import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 
 import Logo from '../Logo'
 
@@ -20,6 +22,7 @@ const Header = () => {
   const history = useHistory()
   const { logEvent } = useAnalytics()
   const location = useLocation()
+  const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
 
   const onSignoutClick = useCallback(() => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
@@ -100,6 +103,22 @@ const Header = () => {
             <IconEuro aria-hidden className="nav-item-icon" />
             Remboursements
           </NavLink>
+
+          {isOffererStatsActive && (
+            <NavLink
+              className="nav-item"
+              onClick={() => {
+                logEvent?.(Events.CLICKED_STATS, {
+                  from: location.pathname,
+                })
+              }}
+              role="menuitem"
+              to="/statistiques"
+            >
+              <StatsIcon aria-hidden className="nav-item-icon" />
+              Statistiques
+            </NavLink>
+          )}
 
           <div className="separator" />
 
