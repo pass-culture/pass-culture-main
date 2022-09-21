@@ -378,6 +378,8 @@ def create_industrial_educational_bookings() -> None:
             collectiveDomains=[get_educational_domain(), get_educational_domain()],
             collectiveNetwork=["127830", "128029", "130265"],
             collectiveInterventionArea=ALL_INTERVENTION_AREA,
+            pricing_point="self",
+            reimbursement_point="self",
         )
     )
     venues.append(
@@ -390,6 +392,8 @@ def create_industrial_educational_bookings() -> None:
             collectiveDomains=[get_educational_domain()],
             collectiveNetwork=["127344"],
             collectiveInterventionArea=MAINLAND_INTERVENTION_AREA,
+            pricing_point="self",
+            reimbursement_point="self",
         )
     )
     venues.append(
@@ -401,6 +405,8 @@ def create_industrial_educational_bookings() -> None:
             venueEducationalStatusId=(3 % len(VENUE_EDUCATIONAL_STATUS)) + 2,
             collectiveDomains=[get_educational_domain(), get_educational_domain(), get_educational_domain()],
             collectiveNetwork=["126531", "130079"],
+            pricing_point="self",
+            reimbursement_point="self",
         )
     )
 
@@ -413,6 +419,8 @@ def create_industrial_educational_bookings() -> None:
                 name=f"[EAC] Lieux factice du CNL {i}",
                 comment="Ce lieu est un lieu fictif créé pour les tests de l'EAC",
                 venueEducationalStatusId=(i + 3) if (i + 3) in VENUE_EDUCATIONAL_STATUS else None,
+                pricing_point="self",
+                reimbursement_point="self",
             )
         )
 
@@ -424,6 +432,8 @@ def create_industrial_educational_bookings() -> None:
                 departementCode=address["department"],
                 city=address["city"],
                 postalCode=address["postalCode"],
+                pricing_point="self",
+                reimbursement_point="self",
             )
         )
 
