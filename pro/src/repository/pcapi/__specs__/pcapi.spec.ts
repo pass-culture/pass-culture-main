@@ -5,7 +5,6 @@ import {
   getVenuesForOfferer,
   signout,
   updateUserInformations,
-  buildGetOfferersQuery,
   deleteStock,
   postThumbnail,
   setHasSeenTutos,
@@ -217,40 +216,6 @@ describe('pcapi', () => {
       expect(client.getPlainText).toHaveBeenCalledWith(
         '/bookings/csv?page=2&venueId=AA&eventDate=2020-09-13&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04&bookingStatusFilter=validated'
       )
-    })
-  })
-
-  describe('buildGetOfferersQuery', () => {
-    describe('when there is one keyword', () => {
-      it('should create api url with keywords params only', () => {
-        // given
-        const keywords = ['example']
-        const page = '7'
-        const filters = { keywords, page }
-
-        // when
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ keywords: string[]; page: stri... Remove this comment to see the full error message
-        const result = buildGetOfferersQuery(filters)
-
-        // then
-        expect(result).toBe('?keywords=example&page=7')
-      })
-    })
-
-    describe('when there is multiple keywords', () => {
-      it('should create api url with keywords params', () => {
-        // given
-        const keywords = ['example', 'keyword']
-        const page = '666'
-        const filters = { keywords, page }
-
-        // when
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ keywords: string[]; page: stri... Remove this comment to see the full error message
-        const result = buildGetOfferersQuery(filters)
-
-        // then
-        expect(result).toBe('?keywords=example+keyword&page=666')
-      })
     })
   })
 })
