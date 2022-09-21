@@ -202,6 +202,7 @@ class Pricing(Base, Model):  # type: ignore [valid-type, misc]
 
     __table_args__ = (
         sqla.Index("idx_uniq_booking_id", bookingId, postgresql_where=status != PricingStatus.CANCELLED, unique=True),
+        sqla.CheckConstraint('num_nonnulls("bookingId", "collectiveBookingId") = 1'),
         sqla.CheckConstraint(
             """
             (
