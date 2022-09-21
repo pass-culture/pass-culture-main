@@ -7,7 +7,6 @@ from psycopg2._range import DateTimeRange
 import sqlalchemy
 from sqlalchemy import Integer
 
-from pcapi.utils.date import DateTimes
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -53,8 +52,3 @@ def _(value, column=None):  # type: ignore [no-untyped-def]
 @serialize.register(list)
 def _(value, column=None):  # type: ignore [no-untyped-def]
     return [serialize(d) for d in value]
-
-
-@serialize.register(DateTimes)
-def _(value, column=None):  # type: ignore [no-untyped-def]
-    return [format_into_utc_date(v) for v in value.datetimes]

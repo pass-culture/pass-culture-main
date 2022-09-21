@@ -77,14 +77,6 @@ class FrenchParserInfo(parserinfo):
     ]
 
 
-class DateTimes:
-    def __init__(self, *datetimes):  # type: ignore [no-untyped-def]
-        self.datetimes = list(datetimes)
-
-    def __eq__(self, other):  # type: ignore [no-untyped-def]
-        return self.datetimes == other.datetimes
-
-
 def format_datetime(date_time: datetime) -> str:
     return babel_format_datetime(date_time, format="long", locale="fr")[:-9]
 
