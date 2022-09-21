@@ -118,7 +118,7 @@ def venue_demarche_simplifiee_application_detail_response_without_siret(
     }
 
 
-def venue_demarche_simplifiee_get_bic_response_v2(annotation: dict):
+def get_bank_info_response_procedure_v2(annotation: dict):
     return {
         "dossier": {
             "id": "Q2zzbXAtNzgyODAw",
@@ -156,7 +156,7 @@ def venue_demarche_simplifiee_get_bic_response_v2(annotation: dict):
     }
 
 
-def venue_application_detail_response_procedure_v4(
+def get_bank_info_response_procedure_v4(
     dms_token: str = "1234567890abcdef",
     etablissement: dict | None = None,
     state: str = GraphQLApplicationStates.accepted.value,

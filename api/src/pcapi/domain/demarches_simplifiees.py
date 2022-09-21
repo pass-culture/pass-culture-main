@@ -67,7 +67,7 @@ class ApplicationDetail:
         self.dossier_id = dossier_id
 
 
-def parse_raw_bic_data(data: dict, procedure_version: int) -> dict:
+def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
     result = {
         "status": data["dossier"]["state"],
         "updated_at": data["dossier"]["dateDerniereModification"],
@@ -124,8 +124,8 @@ def get_venue_bank_information_application_details_by_application_id(
         return application_details
     if dms_api_version == 2:
         client = api_dms.DMSGraphQLClient()
-        raw_data = client.get_bic(int(application_id))
-        data = parse_raw_bic_data(raw_data, procedure_version)
+        raw_data = client.get_bank_info(int(application_id))
+        data = parse_raw_bank_info_data(raw_data, procedure_version)
         return ApplicationDetail(
             siren=data.get("siren", None),
             status=_get_status_from_demarches_simplifiees_application_state_v2(

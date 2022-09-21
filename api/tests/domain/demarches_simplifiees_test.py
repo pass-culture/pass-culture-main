@@ -9,7 +9,7 @@ from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import CannotRegisterBankInformation
 from pcapi.domain.demarches_simplifiees import _get_status_from_demarches_simplifiees_application_state
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
-from pcapi.domain.demarches_simplifiees import parse_raw_bic_data
+from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
 from pcapi.utils.date import DATE_ISO_FORMAT
 
 from tests.connector_creators.demarches_simplifiees_creators import (
@@ -18,7 +18,7 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 from tests.connector_creators.demarches_simplifiees_creators import (
     venue_demarche_simplifiee_application_detail_response_without_siret,
 )
-from tests.connector_creators.demarches_simplifiees_creators import venue_demarche_simplifiee_get_bic_response_v2
+from tests.connector_creators.demarches_simplifiees_creators import get_bank_info_response_procedure_v2
 
 
 @patch("pcapi.connectors.dms.api.get_application_details")
@@ -62,7 +62,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, get_application_details, annotation):
         # Given
         updated_at = datetime(2020, 1, 3)
-        DMSGraphQLClient.return_value.get_bic.return_value = venue_demarche_simplifiee_get_bic_response_v2(annotation)
+        DMSGraphQLClient.return_value.get_bank_info.return_value = get_bank_info_response_procedure_v2(annotation)
 
         # When
         application_details = get_venue_bank_information_application_details_by_application_id(8, 2, 3)
@@ -251,7 +251,7 @@ EXPECTED_RESULT_V4 = {
 }
 
 
-class ParseRawBicDataTest:
+class ParseRawBankInfoDataTest:
     @pytest.mark.parametrize(
         "procedure_version, etablissement, identifiant_du_lieu, expected_result",
         [
@@ -354,6 +354,6 @@ class ParseRawBicDataTest:
         if procedure_version == 4:
             input_data["dossier"]["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId"})
 
-        result = parse_raw_bic_data(input_data, procedure_version)
+        result = parse_raw_bank_info_data(input_data, procedure_version)
 
         assert result == expected_result

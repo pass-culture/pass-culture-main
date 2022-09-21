@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
 
 ARCHIVE_APPLICATION_QUERY_NAME = "archive_application"
-GET_BIC_QUERY_NAME = "pro/get_banking_info_v2"
+GET_BANK_INFO_QUERY_NAME = "pro/get_bank_info_v2"
 GET_DELETED_APPLICATIONS_QUERY_NAME = "get_deleted_applications"
 GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_details"
 GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME = "beneficiaries/get_applications_with_details"
@@ -201,9 +201,9 @@ class DMSGraphQLClient:
 
         return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
 
-    def get_bic(self, dossier_id: int) -> Any:
+    def get_bank_info(self, dossier_id: int) -> Any:
         variables = {"dossierNumber": dossier_id}
-        return self.execute_query(GET_BIC_QUERY_NAME, variables=variables)
+        return self.execute_query(GET_BANK_INFO_QUERY_NAME, variables=variables)
 
     def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> dict:
         variables = {
