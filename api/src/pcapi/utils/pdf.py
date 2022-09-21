@@ -24,15 +24,26 @@ class CachingUrlFetcher:
     """A URL fetcher for weasyprint that caches files."""
 
     def __init__(self) -> None:
-        self.tmp_dir = pathlib.Path(tempfile.mkdtemp()) / "weasyprint_cache"
-        self.tmp_dir.mkdir()
+        self.create_cache()
 
     def __del__(self) -> None:
         self.delete_cache()
 
+    def create_cache(self) -> None:
+        self.tmp_dir_parent = pathlib.Path(tempfile.mkdtemp())
+        self.tmp_dir = self.tmp_dir_parent / "weasyprint_cache"
+        self.tmp_dir.mkdir()
+        # `shutil.rmtree()` may be called when the interpreter shuts
+        # down. If we imported `shutil` at module-scope during
+        # shutdown, it would not be available: it would be `None` and
+        # accessing `shutil.rmtree` would raise an `AttributeError`
+        # that would go unnoticed because exceptions are ignored
+        # during shutdown.
+        self.shutil_rmtree = shutil.rmtree
+
     def delete_cache(self) -> None:
         try:
-            shutil.rmtree(self.tmp_dir)
+            self.shutil_rmtree(self.tmp_dir_parent)
         except Exception:  # pylint: disable=broad-except
             pass
 
