@@ -14,6 +14,7 @@ import { ProfileAndSupport } from './ProfileAndSupport'
 
 const Homepage = (): JSX.Element => {
   const profileRef = useRef(null)
+  const statsRef = useRef(null)
   const {
     currentUser: { hasSeenProRgs },
   } = useCurrentUser()
@@ -36,14 +37,16 @@ const Homepage = (): JSX.Element => {
       )}
       <HomepageBreadcrumb
         activeStep={STEP_ID_OFFERERS}
+        isOffererStatsActive={isOffererStatsActive}
         profileRef={profileRef}
+        statsRef={statsRef}
       />
 
       <section className="h-section">
         <Offerers />
       </section>
       {isOffererStatsActive && (
-        <section className="h-section">
+        <section className="h-section" ref={statsRef}>
           <OffererStats />
         </section>
       )}
