@@ -4,7 +4,6 @@ from flask import jsonify
 
 from pcapi.core.bookings import exceptions
 from pcapi.domain.client_exceptions import ClientError
-from pcapi.domain.users import UnauthorizedForAdminUser
 from pcapi.models import api_errors
 
 
@@ -21,11 +20,6 @@ JsonResponse = tuple[Response, int]
 @app.errorhandler(exceptions.OfferCategoryNotBookableByUser)
 def handle_book_an_offer(exception: ClientError) -> JsonResponse:
     return jsonify(exception.errors), 400
-
-
-@app.errorhandler(UnauthorizedForAdminUser)
-def handle_get_all_bookings_exceptions(exception: UnauthorizedForAdminUser) -> JsonResponse:
-    return jsonify(exception.errors), 401
 
 
 @app.errorhandler(exceptions.CannotCancelConfirmedBooking)
