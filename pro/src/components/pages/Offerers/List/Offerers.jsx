@@ -5,6 +5,7 @@ import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
@@ -12,7 +13,6 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import { mapApiToBrowser } from 'utils/translate'
 
@@ -104,8 +104,8 @@ class Offerers extends PureComponent {
       page: queryParams.get('page') || '1',
     }
 
-    await pcapi
-      .getOfferers(filters)
+    await api
+      .getOfferers(filters.keywords.join(' '), filters.page)
       .then(this.handleGetOfferersSuccess)
       .catch(this.handleGetOfferersFail)
   }

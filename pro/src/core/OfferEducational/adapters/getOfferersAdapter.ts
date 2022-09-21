@@ -4,7 +4,6 @@ import {
   GetEducationalOfferersResponseModel,
 } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 type Params = string | null
 

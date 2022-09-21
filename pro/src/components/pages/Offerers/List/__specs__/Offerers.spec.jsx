@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 
 import Offerers from '../Offerers'
@@ -21,8 +21,8 @@ const renderOfferers = async (storeOverride = {}) => {
   )
 }
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getOfferers: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: { getOfferers: jest.fn() },
 }))
 
 describe('src | components | Offerers', () => {
@@ -30,7 +30,7 @@ describe('src | components | Offerers', () => {
 
   beforeEach(() => {
     offerer = { id: 'AE', siren: '1234567' }
-    pcapi.getOfferers.mockResolvedValue({
+    api.getOfferers.mockResolvedValue({
       offerers: [offerer],
       nbTotalResults: 1,
     })
@@ -86,7 +86,7 @@ describe('src | components | Offerers', () => {
 
       it('should display Structures juridiques when many offerers', async () => {
         // given
-        pcapi.getOfferers.mockResolvedValue({
+        api.getOfferers.mockResolvedValue({
           offerers: [{ id: 'AE' }, { id: 'AF' }],
           nbTotalResults: 2,
         })
@@ -112,7 +112,7 @@ describe('src | components | Offerers', () => {
             name: 'My Offerer',
             managedVenues: [],
           }
-          pcapi.getOfferers.mockResolvedValue({
+          api.getOfferers.mockResolvedValue({
             offerers: [offerer],
             nbTotalResults: 1,
           })
@@ -137,7 +137,7 @@ describe('src | components | Offerers', () => {
               isValidated: false,
               userHasAccess: true,
             }
-            pcapi.getOfferers.mockResolvedValue({
+            api.getOfferers.mockResolvedValue({
               offerers: [offerer],
               nbTotalResults: 1,
             })
@@ -163,7 +163,7 @@ describe('src | components | Offerers', () => {
               isValidated: true,
               userHasAccess: false,
             }
-            pcapi.getOfferers.mockResolvedValue({
+            api.getOfferers.mockResolvedValue({
               offerers: [offerer],
               nbTotalResults: 1,
             })
