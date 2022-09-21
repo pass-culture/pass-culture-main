@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { useState } from 'react'
 
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import useNotification from 'components/hooks/useNotification'
@@ -10,6 +10,7 @@ import { ReactComponent as CalendarIcon } from 'icons/ico-calendar.svg'
 import { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
+import CancelCollectiveBookingModal from 'new_components/CancelCollectiveBookingModal'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { pluralizeString } from 'utils/pluralize'
@@ -25,15 +26,17 @@ export interface ICollectiveBookingDetailsProps {
   bookingDetails: CollectiveBookingByIdResponseModel
   offerId: string
   reloadBookings: () => void
-  canCanelBooking: boolean
+  canCancelBooking: boolean
 }
 
 const CollectiveBookingDetails = ({
   bookingDetails,
   offerId,
   reloadBookings,
-  canCanelBooking,
+  canCancelBooking,
 }: ICollectiveBookingDetailsProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   const notify = useNotification()
   const offerEditionUrl = useOfferEditionURL(true, offerId, false, false)
 
@@ -112,8 +115,8 @@ const CollectiveBookingDetails = ({
       <div className={styles['action-buttons']}>
         <Button
           variant={ButtonVariant.SECONDARY}
-          onClick={cancelBooking}
-          disabled={!canCanelBooking}
+          onClick={() => setIsModalOpen(true)}
+          disabled={!canCancelBooking}
         >
           Annuler la réservation
         </Button>
@@ -124,6 +127,12 @@ const CollectiveBookingDetails = ({
           Éditer l’offre
         </ButtonLink>
       </div>
+      {isModalOpen && (
+        <CancelCollectiveBookingModal
+          onDismiss={() => setIsModalOpen(false)}
+          onValidate={cancelBooking}
+        />
+      )}
     </div>
   )
 }

@@ -3,20 +3,17 @@ import React from 'react'
 import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 
-import styles from './OfferEducationalActionsModal.module.scss'
-
 interface IOfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
 }
 
-const OfferEducationalModal = ({
+const CancelCollectiveBookingModal = ({
   onDismiss,
   onValidate,
 }: IOfferEducationalModalProps): JSX.Element => {
   return (
     <ConfirmDialog
-      extraClassNames={styles['modal-icon-wrapper']}
       onCancel={onDismiss}
       onConfirm={onValidate}
       cancelText="Retour"
@@ -32,4 +29,4 @@ const OfferEducationalModal = ({
   )
 }
 
-export default OfferEducationalModal
+export default CancelCollectiveBookingModal
