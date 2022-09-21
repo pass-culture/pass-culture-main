@@ -12,7 +12,7 @@ class ShowType(ShowSubType):
     children: list[ShowSubType]
 
 
-# WARNING: the list below MUST be kept in sync with the list at pro/src/components/pages/Offers/Offer/OfferDetails/OfferForm/OfferCategories/subTypes.js
+# WARNING: the list below MUST be kept in sync with the list at pro/src/core/Offers/categoriesSubTypes.ts
 show_types = [
     ShowType(
         code=100,
