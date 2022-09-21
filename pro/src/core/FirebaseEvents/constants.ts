@@ -30,6 +30,7 @@ export enum Events {
   CLICKED_PRO = 'hasClickedPro',
   CLICKED_REIMBURSEMENT = 'hasClickedReimbursement',
   CLICKED_SHOW_BOOKINGS = 'hasClickedShowBooking',
+  CLICKED_STATS = 'hasClickedStats',
   CLICKED_TICKET = 'hasClickedTicket',
   CLICKED_TOGGLE_HIDE_OFFERER_NAME = 'hasClickedToggleHideOffererName',
   FIRST_LOGIN = 'firstLogin',
