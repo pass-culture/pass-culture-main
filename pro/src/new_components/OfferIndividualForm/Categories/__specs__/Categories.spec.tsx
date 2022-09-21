@@ -9,28 +9,19 @@ import * as yup from 'yup'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 
 import Categories, { ICategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
 import validationSchema from '../validationSchema'
 
-interface IInitialValues {
-  subCategoryFields: string[]
-  categoryId: string
-  subcategoryId: string
-  musicType: string
-  musicSubType: string
-  showType: string
-  showSubType: string
-}
-
 const renderCategories = ({
   initialValues,
   onSubmit,
   props,
 }: {
-  initialValues: IInitialValues
+  initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
   props: ICategoriesProps
 }) => {
@@ -49,7 +40,7 @@ const renderCategories = ({
 }
 
 describe('OfferIndividual section: Categories', () => {
-  let initialValues: IInitialValues
+  let initialValues: Partial<IOfferIndividualFormValues>
   const onSubmit = jest.fn()
   let props: ICategoriesProps
   let categories: IOfferCategory[] = []

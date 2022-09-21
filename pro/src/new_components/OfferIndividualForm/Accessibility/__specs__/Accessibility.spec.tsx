@@ -6,26 +6,17 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import { AccessiblityEnum } from 'core/shared'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 
 import { Accessibility, validationSchema } from '..'
-
-interface IInitialValues {
-  offererId: string
-  venueId: string
-  subcategoryId: string
-  withdrawalDetails: string
-  withdrawalType: string
-  withdrawalDelay: string
-  accessibility: IAccessibiltyFormValues
-}
 
 const renderAccessibility = ({
   initialValues,
   onSubmit = jest.fn(),
 }: {
-  initialValues: IInitialValues
+  initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   return render(
@@ -43,7 +34,7 @@ const renderAccessibility = ({
 }
 
 describe('Accessibility', () => {
-  let initialValues: IInitialValues
+  let initialValues: Partial<IOfferIndividualFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {
@@ -52,8 +43,6 @@ describe('Accessibility', () => {
       venueId: '',
       subcategoryId: '',
       withdrawalDetails: '',
-      withdrawalType: '',
-      withdrawalDelay: '',
       accessibility: {
         [AccessiblityEnum.VISUAL]: false,
         [AccessiblityEnum.MENTAL]: false,
@@ -116,9 +105,7 @@ describe('Accessibility', () => {
         offererId: '',
         subcategoryId: '',
         venueId: '',
-        withdrawalDelay: '',
         withdrawalDetails: '',
-        withdrawalType: '',
       },
       expect.anything()
     )
