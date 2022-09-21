@@ -292,6 +292,29 @@ describe('homepage', () => {
           screen.getByText('Statistiques', { selector: 'h2' })
         ).toBeInTheDocument()
       })
+      describe('when clicking on anchor link to stats', () => {
+        let scrollIntoViewMock
+        beforeEach(async () => {
+          scrollIntoViewMock = jest.fn()
+          Element.prototype.scrollIntoView = scrollIntoViewMock
+          await renderHomePage(store)
+        })
+
+        it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
+          // given
+          doesUserPreferReducedMotion.mockReturnValue(false)
+
+          // when
+          await userEvent.click(
+            screen.getByRole('link', { name: 'Statistiques' })
+          )
+
+          // then
+          expect(scrollIntoViewMock).toHaveBeenCalledWith({
+            behavior: 'smooth',
+          })
+        })
+      })
     })
   })
 })

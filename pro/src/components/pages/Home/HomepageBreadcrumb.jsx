@@ -9,16 +9,30 @@ import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
 
 export const STEP_ID_OFFERERS = 'offerers'
 export const STEP_ID_PROFILE = 'profile'
+export const STEP_ID_STATS = 'offererStats'
 export const STEP_OFFERER_HASH = 'structures'
 export const STEP_PROFILE_HASH = 'profil'
+export const STEP_STATS_HASH = 'offererStats'
 
-const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
+const HomepageBreadcrumb = ({
+  activeStep,
+  profileRef,
+  statsRef,
+  isOffererStatsActive,
+}) => {
   const { logEvent } = useAnalytics()
   const jumpToProfileSection = e => {
     e.preventDefault()
     logEvent?.(Events.CLICKED_BREADCRUMBS_PROFILE_AND_HELP)
 
     profileRef?.current.scrollIntoView({
+      behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
+    })
+  }
+  const jumpToStatsSection = e => {
+    e.preventDefault()
+
+    statsRef?.current.scrollIntoView({
       behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
     })
   }
@@ -30,6 +44,14 @@ const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
       hash: STEP_OFFERER_HASH,
       onClick: () => logEvent?.(Events.CLICKED_BREADCRUMBS_STRUCTURES),
     },
+    ...(isOffererStatsActive && {
+      [STEP_ID_STATS]: {
+        id: STEP_ID_STATS,
+        label: 'Statistiques',
+        hash: STEP_STATS_HASH,
+        onClick: jumpToStatsSection,
+      },
+    }),
     [STEP_ID_PROFILE]: {
       id: STEP_ID_PROFILE,
       label: 'Profil et aide',
@@ -50,11 +72,15 @@ const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
 
 HomepageBreadcrumb.defaultProps = {
   profileRef: null,
+  statsRef: null,
+  isOffererStatsActive: false,
 }
 
 HomepageBreadcrumb.propTypes = {
   activeStep: PropTypes.string.isRequired,
   profileRef: PropTypes.shape(),
+  statsRef: PropTypes.shape(),
+  isOffererStatsActive: PropTypes.bool,
 }
 
 export default HomepageBreadcrumb
