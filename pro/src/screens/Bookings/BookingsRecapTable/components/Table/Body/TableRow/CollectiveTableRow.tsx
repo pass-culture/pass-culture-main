@@ -52,7 +52,7 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
                 <CollectiveBookingDetails
                   bookingDetails={bookingDetails}
                   offerId={row.original.stock.offer_identifier}
-                  canCanelBooking={bookingDetails.isCancellable}
+                  canCancelBooking={bookingDetails.isCancellable}
                   reloadBookings={reloadBookings}
                 />
               )
