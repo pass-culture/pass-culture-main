@@ -14,7 +14,6 @@ import sqlalchemy.orm as sqla_orm
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.logging import log_elapsed
-import pcapi.core.payments.models as payments_models
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
 
@@ -135,7 +134,7 @@ def _custom_generate_invoice(
     for pricing in flat_pricings:
         rule_reference = pricing.standardRule or pricing.customRuleId
         rule = finance_api.find_reimbursement_rule(rule_reference)
-        if isinstance(rule, payments_models.CustomReimbursementRule):
+        if isinstance(rule, finance_models.CustomReimbursementRule):
             pricings_by_custom_rule[rule].append(pricing)
         else:
             pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore [attr-defined]

@@ -8,7 +8,6 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -61,9 +60,9 @@ def create_specific_invoice() -> None:
     digital_offer1 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
     digital_offer2 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
     custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
-    payments_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
+    finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
     custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    payments_factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
+    finance_factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
 
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),

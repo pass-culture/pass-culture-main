@@ -33,11 +33,11 @@ from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueForOffererSubview
 from pcapi.admin.custom_views.venue_view import VenueView
 import pcapi.core.criteria.models as criteria_models
-from pcapi.core.educational import models as educational_models
+import pcapi.core.educational.models as educational_models
+import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
-from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
@@ -282,7 +282,7 @@ def install_views(admin: Admin, session: Session) -> None:
 
     admin.add_view(
         CustomReimbursementRuleView(
-            CustomReimbursementRule,
+            finance_models.CustomReimbursementRule,
             session,
             name="Règles de remboursement personnalisées",
             category=Category.CUSTOM_OPERATIONS,

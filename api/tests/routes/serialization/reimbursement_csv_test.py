@@ -12,7 +12,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_features
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period
@@ -136,7 +135,7 @@ class ReimbursementDetailsTest:
     @override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
     def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
-        custom_reimbursement_rule = payments_factories.CustomReimbursementRuleFactory(
+        custom_reimbursement_rule = finance_factories.CustomReimbursementRuleFactory(
             amount=None,
             rate=0.1234,
         )

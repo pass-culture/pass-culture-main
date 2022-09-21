@@ -8,7 +8,7 @@ import schwifty
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.payments.factories as payments_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
 from pcapi.domain import reimbursement
 
@@ -103,6 +103,28 @@ class PricingLogFactory(BaseFactory):
     reason = models.PricingLogReason.MARK_AS_UNUSED
 
 
+class CustomReimbursementRuleFactory(BaseFactory):
+    class Meta:
+        model = models.CustomReimbursementRule
+
+    offer = factory.SubFactory(offers_factories.OfferFactory)
+    timespan = factory.LazyFunction(
+        lambda: [
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.utcnow() + datetime.timedelta(days=365),
+        ]
+    )
+    amount = 5
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+        if "rate" in kwargs:
+            kwargs["amount"] = None
+        if "offerer" in kwargs:
+            kwargs["offer"] = None
+        return super()._create(model_class, *args, **kwargs)
+
+
 class InvoiceFactory(BaseFactory):
     class Meta:
         model = models.Invoice
@@ -185,6 +207,6 @@ class PaymentStatusFactory(BaseFactory):
 
 class PaymentWithCustomRuleFactory(PaymentFactory):
     amount = factory.LazyAttribute(lambda payment: payment.customReimbursementRule.amount)
-    customReimbursementRule = factory.SubFactory(payments_factories.CustomReimbursementRuleFactory)
+    customReimbursementRule = factory.SubFactory(CustomReimbursementRuleFactory)
     reimbursementRule = None
     reimbursementRate = None

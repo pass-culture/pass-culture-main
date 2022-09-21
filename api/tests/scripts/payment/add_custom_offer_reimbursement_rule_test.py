@@ -1,7 +1,7 @@
 import decimal
 
+import pcapi.core.finance.models as finance_models
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.payments.models as payments_models
 from pcapi.utils import human_ids
 
 from tests.conftest import clean_database
@@ -31,7 +31,7 @@ def test_basics(app):
 
     # fmt: on
     assert "Created new rule" in result.output
-    rule = payments_models.CustomReimbursementRule.query.one()
+    rule = finance_models.CustomReimbursementRule.query.one()
     assert rule.offer.id == offer_id
     assert rule.amount == decimal.Decimal("12.34")
 
@@ -54,7 +54,7 @@ def test_warnings(app):
     assert "Command has failed" in result.output
     assert "Mismatch on offerer" in result.output
     assert "Mismatch on original amount" in result.output
-    assert payments_models.CustomReimbursementRule.query.count() == 0
+    assert finance_models.CustomReimbursementRule.query.count() == 0
 
 
 @clean_database
@@ -76,6 +76,6 @@ def test_force_with_warnings(app):
     )
     # fmt: on
     assert "Created new rule" in result.output
-    rule = payments_models.CustomReimbursementRule.query.one()
+    rule = finance_models.CustomReimbursementRule.query.one()
     assert rule.offer.id == offer_id
     assert rule.amount == decimal.Decimal("12.34")

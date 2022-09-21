@@ -6,6 +6,7 @@ import pathlib
 from unittest import mock
 import zipfile
 
+import freezegun
 import pytest
 import pytz
 
@@ -30,7 +31,6 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
 from pcapi.core.testing import override_features
@@ -1697,7 +1697,7 @@ def test_generate_payments_file():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=offer_venue2,
         standardRule="",
-        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
+        customRule=factories.CustomReimbursementRuleFactory(amount=6),
     )
     # pricing for an underage individual booking
     underage_user = users_factories.UnderageBeneficiaryFactory()
@@ -1710,7 +1710,7 @@ def test_generate_payments_file():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=offer_venue2,
         standardRule="",
-        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
+        customRule=factories.CustomReimbursementRuleFactory(amount=6),
     )
     # pricing for educational booking
     # check that the right deposit is used for csv
@@ -1859,7 +1859,7 @@ def test_generate_payments_file_legacy_with_business_units():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=offer_venue2,
         standardRule="",
-        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
+        customRule=factories.CustomReimbursementRuleFactory(amount=6),
     )
     # pricing for an underage individual booking
     underage_user = users_factories.UnderageBeneficiaryFactory()
@@ -1872,7 +1872,7 @@ def test_generate_payments_file_legacy_with_business_units():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=offer_venue2,
         standardRule="",
-        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
+        customRule=factories.CustomReimbursementRuleFactory(amount=6),
     )
     # pricing for educational booking
     # check that the right deposit is used for csv
@@ -2248,9 +2248,9 @@ def invoice_test_data(use_reimbursement_point):
     digital_offer1 = offers_factories.DigitalOfferFactory(venue=venue)
     digital_offer2 = offers_factories.DigitalOfferFactory(venue=venue)
     custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
-    payments_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
+    factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
     custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    payments_factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
+    factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
 
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),
@@ -2479,7 +2479,7 @@ class GenerateInvoiceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=23)
-        payments_factories.CustomReimbursementRuleFactory(amount=22, offer=offer)
+        factories.CustomReimbursementRuleFactory(amount=22, offer=offer)
         booking1 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
         booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
         api.price_booking(booking1, self.use_pricing_point)
@@ -3063,3 +3063,81 @@ def test_get_drive_folder_name():
     batch = factories.CashflowBatchFactory(cutoff=cutoff)
     name = api._get_drive_folder_name(batch.id)
     assert name == "2022-04 - jusqu'au 30 avril"
+
+
+class CreateOffererReimbursementRuleTest:
+    @freezegun.freeze_time("2021-10-01 00:00:00")
+    def test_create_rule(self):
+        offerer = offerers_factories.OffererFactory()
+        start = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=1))
+        end = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=2))
+        rule = api.create_offerer_reimbursement_rule(
+            offerer.id, subcategories=["VOD"], rate=0.8, start_date=start, end_date=end
+        )
+
+        db.session.refresh(rule)
+        assert rule.offerer == offerer
+        assert rule.subcategories == ["VOD"]
+        assert rule.rate == Decimal("0.8")
+        assert rule.timespan.lower == datetime.datetime(2021, 10, 2, 0, 0)
+        assert rule.timespan.upper == datetime.datetime(2021, 10, 3, 0, 0)
+
+    def test_validation(self):
+        # Validation is thoroughly verified in `test_validation.py`.
+        # This is just an integration test.
+        offerer = offerers_factories.OffererFactory()
+        start = (datetime.datetime.today() + datetime.timedelta(days=1)).astimezone(pytz.utc)
+        with pytest.raises(exceptions.UnknownSubcategoryForReimbursementRule):
+            api.create_offerer_reimbursement_rule(offerer.id, subcategories=["UNKNOWN"], rate=0.8, start_date=start)
+
+
+class CreateOfferReimbursementRuleTest:
+    @freezegun.freeze_time("2021-10-01 00:00:00")
+    def test_create_rule(self):
+        offer = offers_factories.OfferFactory()
+        start = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=1))
+        end = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=2))
+        rule = api.create_offer_reimbursement_rule(offer.id, amount=12.34, start_date=start, end_date=end)
+
+        db.session.refresh(rule)
+        assert rule.offer == offer
+        assert rule.amount == Decimal("12.34")
+        assert rule.timespan.lower == datetime.datetime(2021, 10, 2, 0, 0)
+        assert rule.timespan.upper == datetime.datetime(2021, 10, 3, 0, 0)
+
+    def test_validation(self):
+        # Validation is thoroughly verified in `test_validation.py`.
+        # This is just an integration test.
+        offer = offers_factories.OfferFactory()
+        start = (datetime.datetime.today() + datetime.timedelta(days=1)).astimezone(pytz.utc)
+        factories.CustomReimbursementRuleFactory(offer=offer, timespan=(start, None))
+        with pytest.raises(exceptions.ConflictingReimbursementRule):
+            api.create_offer_reimbursement_rule(offer.id, amount=12.34, start_date=start)
+
+
+class EditReimbursementRuleTest:
+    def test_edit_rule(self):
+        timespan = (pytz.utc.localize(datetime.datetime(2021, 1, 1)), None)
+        rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
+        end = pytz.utc.localize(datetime.datetime(2030, 10, 3, 0, 0))
+        api.edit_reimbursement_rule(rule, end_date=end)
+
+        db.session.refresh(rule)
+        assert rule.timespan.lower == datetime.datetime(2021, 1, 1, 0, 0)  # unchanged
+        assert rule.timespan.upper == datetime.datetime(2030, 10, 3, 0, 0)
+
+    def test_cannot_change_existing_end_date(self):
+        today = datetime.datetime.today()
+        timespan = (today - datetime.timedelta(days=10), today)
+        rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
+        with pytest.raises(exceptions.WrongDateForReimbursementRule):
+            api.edit_reimbursement_rule(rule, end_date=today + datetime.timedelta(days=5))
+
+    def test_validation(self):
+        # Validation is thoroughly verified in `test_validation.py`.
+        # This is just an integration test.
+        timespan = (datetime.datetime.today() - datetime.timedelta(days=10), None)
+        rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
+        end = pytz.utc.localize(datetime.datetime.today())
+        with pytest.raises(exceptions.WrongDateForReimbursementRule):
+            api.edit_reimbursement_rule(rule, end_date=end)

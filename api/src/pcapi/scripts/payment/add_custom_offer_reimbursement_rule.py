@@ -4,9 +4,9 @@ import decimal
 import click
 import sqlalchemy.orm as sqla_orm
 
+import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
-import pcapi.core.payments.api as payments_api
 from pcapi.utils import human_ids
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
@@ -77,7 +77,7 @@ def add_custom_offer_reimbursement_rule(  # type: ignore [no-untyped-def]
         else None
     )
 
-    rule = payments_api.create_offer_reimbursement_rule(
+    rule = finance_api.create_offer_reimbursement_rule(
         offer_id=offer.id,
         amount=reimbursed_amount,
         start_date=valid_from,
