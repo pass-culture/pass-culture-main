@@ -43,7 +43,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     finance_models.InvoiceLine.query.delete()
     finance_models.Invoice.query.delete()
     finance_models.BusinessUnitVenueLink.query.delete()
-    payments_models.CustomReimbursementRule.query.delete()
+    finance_models.CustomReimbursementRule.query.delete()
     educational_models.CollectiveOfferDomain.query.delete()
     educational_models.CollectiveOfferTemplateDomain.query.delete()
     educational_models.EducationalDomain.query.delete()

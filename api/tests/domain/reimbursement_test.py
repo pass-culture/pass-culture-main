@@ -8,9 +8,9 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.finance.models as finance_models
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.payments.factories as payments_factories
-import pcapi.core.payments.models as payments_models
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 
@@ -301,7 +301,7 @@ class ReimbursementRateForBookAbove20000Test:
 
 
 class ReimbursementRuleIsActiveTest:
-    class DummyRule(payments_models.ReimbursementRule):
+    class DummyRule(finance_models.ReimbursementRule):
         rate = Decimal(10)
         description = "Dummy rule"
 
@@ -370,7 +370,7 @@ class CustomRuleFinderTest:
         offer = booking1.stock.offer
         booking2 = bookings_factories.UsedBookingFactory(stock=booking1.stock, dateUsed=far_in_the_past)
         booking3 = bookings_factories.UsedBookingFactory()
-        rule = payments_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(yesterday, None))
+        rule = finance_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(yesterday, None))
 
         finder = reimbursement.CustomRuleFinder()
         assert finder.get_rule(booking1) == rule
@@ -384,7 +384,7 @@ class CustomRuleFinderTest:
         offerer = booking1.offerer
         booking2 = bookings_factories.UsedBookingFactory(offerer=offerer, dateUsed=far_in_the_past)
         booking3 = bookings_factories.UsedBookingFactory()
-        rule = payments_factories.CustomReimbursementRuleFactory(offerer=offerer, timespan=(yesterday, None))
+        rule = finance_factories.CustomReimbursementRuleFactory(offerer=offerer, timespan=(yesterday, None))
 
         finder = reimbursement.CustomRuleFinder()
         assert finder.get_rule(booking1) == rule
@@ -403,7 +403,7 @@ class CustomRuleFinderTest:
             offerer=offerer, stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id, dateUsed=far_in_the_past
         )
         booking4 = bookings_factories.UsedBookingFactory()
-        rule = payments_factories.CustomReimbursementRuleFactory(
+        rule = finance_factories.CustomReimbursementRuleFactory(
             offerer=offerer, subcategories=[subcategories.FESTIVAL_CINE.id], timespan=(yesterday, None)
         )
 

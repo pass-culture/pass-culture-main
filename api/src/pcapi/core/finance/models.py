@@ -23,6 +23,12 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
+from . import conf
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.bookings.models import Booking
+
 
 class PricingStatus(enum.Enum):
     PENDING = "pending"
@@ -239,6 +245,117 @@ class PricingLog(Base, Model):  # type: ignore [valid-type, misc]
     reason: PricingLogReason = sqla.Column(db_utils.MagicEnum(PricingLogReason), nullable=False)
 
 
+class ReimbursementRule:
+    # A `rate` attribute (or property) must be defined by subclasses.
+    # It's not defined in this abstract class because SQLAlchemy would
+    # then miss the `rate` column in `CustomReimbursementRule`.
+
+    def is_active(self, booking: "Booking") -> bool:
+        valid_from = self.valid_from or datetime.datetime(datetime.MINYEAR, 1, 1)  # type: ignore [attr-defined]
+        valid_until = self.valid_until or datetime.datetime(datetime.MAXYEAR, 1, 1)  # type: ignore [attr-defined]
+        return valid_from <= booking.dateUsed < valid_until  # type: ignore [operator]
+
+    def is_relevant(self, booking: "Booking", cumulative_revenue: decimal.Decimal) -> bool:
+        raise NotImplementedError()
+
+    @property
+    def description(self) -> str:
+        raise NotImplementedError()
+
+    def matches(self, booking: "Booking", cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
+        return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
+
+    def apply(self, booking: "Booking") -> decimal.Decimal:
+        return decimal.Decimal(booking.total_amount * self.rate)  # type: ignore [attr-defined]
+
+    @property
+    def group(self) -> str:
+        raise NotImplementedError()
+
+
+class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [valid-type, misc]
+    """Some offers are linked to custom reimbursement rules that overrides
+    standard reimbursement rules.
+
+    An offer may be linked to more than one reimbursement rules, but
+    only one rule can be valid at a time.
+    """
+
+    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+
+    offerId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offer.id"), nullable=True)
+
+    offer = sqla_orm.relationship("Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules")  # type: ignore [misc]
+
+    offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), nullable=True)
+
+    offerer = sqla_orm.relationship("Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules")  # type: ignore [misc]
+
+    # FIXME (dbaty, 2021-11-04): remove `categories` column once v161 is deployed
+    categories = sqla.Column(sqla_psql.ARRAY(sqla.Text()), server_default="{}")
+    # A list of identifiers of subcategories on which the rule applies.
+    # If the list is empty, the rule applies on all offers of an
+    # offerer.
+    subcategories = sqla.Column(sqla_psql.ARRAY(sqla.Text()), server_default="{}")
+
+    # FIXME (dbaty, 2022-09-21): it would be nice to move this to
+    # eurocents like other models do.
+    # Contrary to other models, this amount is in euros, not eurocents.
+    amount = sqla.Column(sqla.Numeric(10, 2), nullable=True)
+
+    # rate is between 0 and 1 (included), or NULL if `amount` is set.
+    rate = sqla.Column(sqla.Numeric(5, 4), nullable=True)
+
+    # timespan is an interval during which this rule is applicable
+    # (see `is_active()` below). The lower bound is inclusive and
+    # required. The upper bound is exclusive and optional. If there is
+    # no upper bound, it means that the rule is still applicable.
+    timespan = sqla.Column(sqla_psql.TSRANGE)
+
+    __table_args__ = (
+        # A rule relates to an offer or an offerer, never both.
+        sqla.CheckConstraint('num_nonnulls("offerId", "offererId") = 1'),
+        # A rule has an amount or a rate, never both.
+        sqla.CheckConstraint("num_nonnulls(amount, rate) = 1"),
+        # A timespan must have a lower bound. Upper bound is optional.
+        # Overlapping rules are rejected by `validation._check_reimbursement_rule_conflicts()`.
+        sqla.CheckConstraint("lower(timespan) IS NOT NULL"),
+        sqla.CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
+    )
+
+    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
+        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
+        super().__init__(**kwargs)
+
+    def is_active(self, booking: "Booking"):  # type: ignore [no-untyped-def]
+        if booking.dateUsed < self.timespan.lower:  # type: ignore [union-attr]
+            return False
+        return self.timespan.upper is None or booking.dateUsed < self.timespan.upper  # type: ignore [union-attr]
+
+    def is_relevant(self, booking: "Booking", cumulative_revenue="ignored"):  # type: ignore [no-untyped-def]
+        if booking.stock.offerId == self.offerId:
+            return True
+        if self.subcategories:
+            if booking.stock.offer.subcategoryId not in self.subcategories:
+                return False
+        if booking.offererId == self.offererId:
+            return True
+        return False
+
+    def apply(self, booking: "Booking"):  # type: ignore [no-untyped-def]
+        if self.amount is not None:
+            return booking.quantity * self.amount
+        return booking.total_amount * self.rate  # type: ignore [operator]
+
+    @property
+    def description(self):  # type: ignore [no-untyped-def] # implementation of ReimbursementRule.description
+        raise TypeError("A custom reimbursement rule does not have any description")
+
+    @property
+    def group(self):  # type: ignore [no-untyped-def]
+        return conf.RuleGroups.CUSTOM
+
+
 class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
@@ -440,6 +557,7 @@ class Payment(Base, Model):  # type: ignore [valid-type, misc]
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking = sqla_orm.relationship("CollectiveBooking", foreign_keys=[collectiveBookingId], backref="payments")  # type: ignore [misc]
+    # Contrary to other models, this amount is in euros, not eurocents.
     amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=False)
     reimbursementRule = sqla.Column(sqla.String(200))
     reimbursementRate = sqla.Column(sqla.Numeric(10, 2))

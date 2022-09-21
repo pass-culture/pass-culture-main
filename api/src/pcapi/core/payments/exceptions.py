@@ -13,21 +13,3 @@ class UserNotGrantable(Exception):
 
 class UserHasAlreadyActiveDeposit(UserNotGrantable):
     pass
-
-
-class ReimbursementRuleValidationError(Exception):
-    pass
-
-
-class ConflictingReimbursementRule(ReimbursementRuleValidationError):
-    def __init__(self, msg, conflicts):  # type: ignore [no-untyped-def]
-        super().__init__(msg)
-        self.conflicts = conflicts
-
-
-class WrongDateForReimbursementRule(ReimbursementRuleValidationError):
-    pass
-
-
-class UnknownSubcategoryForReimbursementRule(ReimbursementRuleValidationError):
-    pass

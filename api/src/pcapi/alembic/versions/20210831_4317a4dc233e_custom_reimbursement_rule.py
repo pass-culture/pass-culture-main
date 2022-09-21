@@ -4,7 +4,7 @@ import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
 
-from pcapi.core.payments.models import CustomReimbursementRule
+from pcapi.core.finance.models import CustomReimbursementRule
 
 
 # revision identifiers, used by Alembic.

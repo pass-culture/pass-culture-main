@@ -21,12 +21,12 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.categories.categories import ALL_CATEGORIES_DICT
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.exceptions as finance_exceptions
+import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
-import pcapi.core.payments.api as payments_api
-import pcapi.core.payments.exceptions as payments_exceptions
-import pcapi.core.payments.models as payment_models
 import pcapi.utils.date as date_utils
 from pcapi.utils.urls import build_pc_pro_offer_link
 from pcapi.utils.urls import build_pc_pro_offerer_link
@@ -109,7 +109,7 @@ class EditForm(SecureForm):
 
 
 def format_amount(
-    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+    view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
     if not model.amount:
         return ""
@@ -117,7 +117,7 @@ def format_amount(
 
 
 def format_offer(
-    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+    view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
     if not model.offer:
         return ""
@@ -129,7 +129,7 @@ def format_offer(
 
 
 def format_offerer(
-    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+    view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
     offerer = model.offerer or model.offer.venue.managingOfferer
     url = build_pc_pro_offerer_link(offerer)
@@ -139,14 +139,14 @@ def format_offerer(
     )
 
 
-def format_rate(view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str) -> str:
+def format_rate(view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str) -> str:
     if not model.rate:
         return ""
     return f"{model.rate * 100:.2f} %".replace(".", ",")
 
 
 def format_timespan(
-    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+    view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
     if not model.timespan:
         return ""
@@ -159,7 +159,7 @@ def format_timespan(
 
 
 def format_subcategories(
-    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+    view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
     if not model.subcategories:
         return ""
@@ -177,14 +177,14 @@ def format_subcategories(
 
 
 def format_siren(
-    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+    view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
     offerer = model.offerer or model.offer.venue.managingOfferer
     return offerer.siren
 
 
 def format_venue(
-    view: BaseAdminView, context: Context, model: payment_models.CustomReimbursementRule, name: str
+    view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
     if model.offererId:
         return ""
@@ -196,8 +196,8 @@ def format_venue(
     )
 
 
-def get_error_message(exception: payments_exceptions.ReimbursementRuleValidationError) -> str:
-    if isinstance(exception, payments_exceptions.ConflictingReimbursementRule):
+def get_error_message(exception: finance_exceptions.ReimbursementRuleValidationError) -> str:
+    if isinstance(exception, finance_exceptions.ConflictingReimbursementRule):
         msg = str(exception)
         msg += " Identifiant(s) technique(s) : "
         msg += ", ".join(
@@ -273,7 +273,7 @@ class CustomReimbursementRuleView(BaseAdminView):
     def get_edit_form(self) -> typing.Type[EditForm]:
         return EditForm
 
-    def create_model(self, form: AddForm) -> payment_models.CustomReimbursementRule | None:
+    def create_model(self, form: AddForm) -> finance_models.CustomReimbursementRule | None:
         if not self.can_create:
             raise Forbidden()
         start_date = date_utils.get_day_start(form.start_date.data, finance_utils.ACCOUNTING_TIMEZONE)
@@ -284,7 +284,7 @@ class CustomReimbursementRuleView(BaseAdminView):
         )
         rate = Decimal(form.rate.data / 100).quantize(Decimal("0.0001"))
         try:
-            rule = payments_api.create_offerer_reimbursement_rule(
+            rule = finance_api.create_offerer_reimbursement_rule(
                 offerer_id=int(form.offerer.data),
                 subcategories=form.subcategories.data,
                 rate=rate,
@@ -292,21 +292,21 @@ class CustomReimbursementRuleView(BaseAdminView):
                 end_date=end_date,
             )
             return rule
-        except payments_exceptions.ReimbursementRuleValidationError as exc:
+        except finance_exceptions.ReimbursementRuleValidationError as exc:
             # XXX (dbaty, 2021-10-20): WTForms does not have form-level validation, as of 2.3.3.
             # https://github.com/wtforms/wtforms/commit/22636b55eda9300b549c8bbaae6f9ae31595d445
             form._fields["offerer"].errors = [get_error_message(exc)]
             return None
 
     def update_model(
-        self, form: EditForm, rule: payment_models.CustomReimbursementRule
-    ) -> payment_models.CustomReimbursementRule | None:
+        self, form: EditForm, rule: finance_models.CustomReimbursementRule
+    ) -> finance_models.CustomReimbursementRule | None:
         if not self.can_edit:
             raise Forbidden()
         end_date = date_utils.get_day_start(form.end_date.data, finance_utils.ACCOUNTING_TIMEZONE)
         try:
-            rule = payments_api.edit_reimbursement_rule(rule, end_date=end_date)
-        except payments_exceptions.ReimbursementRuleValidationError as exc:
+            rule = finance_api.edit_reimbursement_rule(rule, end_date=end_date)
+        except finance_exceptions.ReimbursementRuleValidationError as exc:
             form._fields["end_date"].errors = [get_error_message(exc)]
             return None
         return rule

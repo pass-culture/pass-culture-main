@@ -72,9 +72,10 @@ from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
-from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
-from pcapi.utils import pdf as pdf_utils
+import pcapi.utils.date as date_utils
+import pcapi.utils.db as db_utils
+import pcapi.utils.pdf as pdf_utils
 
 from . import conf
 from . import exceptions
@@ -668,8 +669,8 @@ def _price_booking(
         "pricingPointId": pricing_point_id,
         "valueDate": booking.dateUsed,
         "amount": amount,
-        "standardRule": rule.description if not isinstance(rule, payments_models.CustomReimbursementRule) else "",
-        "customRuleId": rule.id if isinstance(rule, payments_models.CustomReimbursementRule) else None,
+        "standardRule": rule.description if not isinstance(rule, models.CustomReimbursementRule) else "",
+        "customRuleId": rule.id if isinstance(rule, models.CustomReimbursementRule) else None,
         "revenue": new_revenue,
         "lines": lines,
         "bookingId": booking.id if not is_booking_collective else None,
@@ -1590,14 +1591,14 @@ def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
     db.session.commit()
 
 
-def find_reimbursement_rule(rule_reference: str | int) -> payments_models.ReimbursementRule:
+def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRule:
     # regular rule description
     if isinstance(rule_reference, str):
         for regular_rule in reimbursement.REGULAR_RULES:
             if rule_reference == regular_rule.description:
                 return regular_rule
     # CustomReimbursementRule.id
-    return payments_models.CustomReimbursementRule.query.get(rule_reference)
+    return models.CustomReimbursementRule.query.get(rule_reference)
 
 
 def _make_invoice_line(
@@ -1804,7 +1805,7 @@ def _generate_invoice(
     for pricing in flat_pricings:
         rule_reference = pricing.standardRule or pricing.customRuleId
         rule = find_reimbursement_rule(rule_reference)
-        if isinstance(rule, payments_models.CustomReimbursementRule):
+        if isinstance(rule, models.CustomReimbursementRule):
             pricings_by_custom_rule[rule].append(pricing)
         else:
             pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore [attr-defined]
@@ -2223,3 +2224,75 @@ def reload_collective_booking_for_pricing(booking_id: int, use_pricing_point: bo
             .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
         )
     return query.one()
+
+
+def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_date, end_date=None):  # type: ignore [no-untyped-def]
+    return _create_reimbursement_rule(
+        offerer_id=offerer_id,
+        subcategories=subcategories,
+        rate=rate,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+
+def create_offer_reimbursement_rule(offer_id, amount, start_date, end_date=None):  # type: ignore [no-untyped-def]
+    return _create_reimbursement_rule(
+        offer_id=offer_id,
+        amount=amount,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+
+def _create_reimbursement_rule(  # type: ignore [no-untyped-def]
+    offerer_id=None, offer_id=None, subcategories=None, rate=None, amount=None, start_date=None, end_date=None
+):
+    subcategories = subcategories or []
+    if not (bool(offerer_id) ^ bool(offer_id)):
+        raise ValueError("Must provider offer or offerer (but not both)")
+    if not (bool(rate) ^ bool(amount)):
+        raise ValueError("Must provider rate or amount (but not both)")
+    if not (bool(rate) or not bool(offerer_id)):
+        raise ValueError("Rate must be specified only with an offerere (not with an offer)")
+    if not (bool(amount) or not bool(offer_id)):
+        raise ValueError("Amount must be specified only with an offer (not with an offerer)")
+    if not start_date:
+        raise ValueError("Start date must be provided")
+    rule = models.CustomReimbursementRule(
+        offererId=offerer_id,
+        offerId=offer_id,
+        subcategories=subcategories,
+        rate=rate,  # only for offerers
+        amount=amount,  # only for offers
+        timespan=(start_date, end_date),
+    )
+    validation.validate_reimbursement_rule(rule)
+    db.session.add(rule)
+    db.session.commit()
+    return rule
+
+
+def edit_reimbursement_rule(rule, end_date):  # type: ignore [no-untyped-def]
+    # To avoid complexity, we do not allow to edit the end date of a
+    # rule that already has one.
+    if rule.timespan.upper:
+        error = "Il n'est pas possible de modifier la date de fin lorsque celle-ci est déjà définie."
+        raise exceptions.WrongDateForReimbursementRule(error)
+    # `rule.timespan.lower` is a naive datetime but it comes from the
+    # database, and is thus UTC. We hence need to localize it so that
+    # `make_timerange()` does not convert it again. This is not needed
+    # on production (where the server timezone is UTC), but it's
+    # necessary for local development and tests that may be run
+    # under a different timezone.
+    rule.timespan = db_utils.make_timerange(pytz.utc.localize(rule.timespan.lower), end_date)
+    try:
+        validation.validate_reimbursement_rule(rule, check_start_date=False)
+    except exceptions.ReimbursementRuleValidationError:
+        # Make sure that the change to `timespan` is not accidentally
+        # flushed to the database.
+        db.session.expire(rule)
+        raise
+    db.session.add(rule)
+    db.session.commit()
+    return rule

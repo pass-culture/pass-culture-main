@@ -3,10 +3,10 @@ import datetime
 import pytest
 
 from pcapi.core.categories import subcategories
-from pcapi.core.payments import exceptions
-from pcapi.core.payments import factories
-from pcapi.core.payments import models
-from pcapi.core.payments import validation
+from pcapi.core.finance import exceptions
+from pcapi.core.finance import factories
+from pcapi.core.finance import models
+from pcapi.core.finance import validation
 
 
 class CustomReimbursementRuleValidationTest:

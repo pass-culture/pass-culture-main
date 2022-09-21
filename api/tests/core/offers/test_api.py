@@ -14,6 +14,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
@@ -22,7 +23,6 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_validation
-import pcapi.core.payments.factories as payments_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -371,7 +371,7 @@ class UpsertStocksTest:
     def test_cannot_edit_price_if_reimbursement_rule_exists(self):
         user = users_factories.AdminFactory()
         stock = factories.ThingStockFactory(price=10)
-        payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+        finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
 
         data = stock_serialize.StockEditionBodyModel(id=stock.id, price=9)
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -384,7 +384,7 @@ class UpsertStocksTest:
         user = users_factories.AdminFactory()
         stock = factories.ThingStockFactory(price=10)
         offer = stock.offer
-        payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+        finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
 
         data = stock_serialize.StockCreationBodyModel(price=9)
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -397,7 +397,7 @@ class UpsertStocksTest:
         user = users_factories.AdminFactory()
         stock = factories.ThingStockFactory(price=10, isSoftDeleted=True)
         offer = stock.offer
-        payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+        finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
 
         data = stock_serialize.StockCreationBodyModel(price=9)
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -410,7 +410,7 @@ class UpsertStocksTest:
         # though, and block stock creation.
         user = users_factories.AdminFactory()
         offer = factories.ThingOfferFactory()
-        payments_factories.CustomReimbursementRuleFactory(offer=offer)
+        finance_factories.CustomReimbursementRuleFactory(offer=offer)
 
         data = stock_serialize.StockCreationBodyModel(price=9)
         with pytest.raises(api_errors.ApiErrors) as error:
