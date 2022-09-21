@@ -1,8 +1,4 @@
-import {
-  OfferAddressType,
-  StudentLevels,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
+import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
 
 import {
   EducationalOfferType,
@@ -10,6 +6,7 @@ import {
   OfferEducationalStockFormValues,
   VisibilityFormValues,
 } from './types'
+import { buildStudentLevelsMapWithDefaultValue } from './utils/buildStudentLevelsMapWithDefaultValue'
 
 export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   category: '',
@@ -27,13 +24,7 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   interventionArea: [],
   participants: {
     all: false,
-    quatrieme: false,
-    troisieme: false,
-    CAPAnnee1: false,
-    CAPAnnee2: false,
-    seconde: false,
-    premiere: false,
-    terminale: false,
+    ...buildStudentLevelsMapWithDefaultValue(false),
   },
   accessibility: {
     visual: false,
@@ -49,16 +40,6 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   domains: [],
   'search-domains': '',
   'search-interventionArea': '',
-}
-
-export const PARTICIPANTS: Record<string, StudentLevels> = {
-  quatrieme: StudentLevels.COLL_GE_4E,
-  troisieme: StudentLevels.COLL_GE_3E,
-  CAPAnnee1: StudentLevels.CAP_1RE_ANN_E,
-  CAPAnnee2: StudentLevels.CAP_2E_ANN_E,
-  seconde: StudentLevels.LYC_E_SECONDE,
-  premiere: StudentLevels.LYC_E_PREMI_RE,
-  terminale: StudentLevels.LYC_E_TERMINALE,
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {

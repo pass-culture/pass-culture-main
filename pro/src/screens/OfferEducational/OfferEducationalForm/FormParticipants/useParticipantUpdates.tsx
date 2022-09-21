@@ -1,7 +1,9 @@
 import isEqual from 'lodash.isequal'
 import { useEffect, useState } from 'react'
 
+import { StudentLevels } from 'apiClient/v1'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 const useParticipantUpdates = (
   values: IOfferEducationalFormValues['participants'],
@@ -12,15 +14,9 @@ const useParticipantUpdates = (
 
   useEffect(() => {
     if (!isEqual(values, prevValue)) {
-      const participantValues = [
-        values.quatrieme,
-        values.troisieme,
-        values.seconde,
-        values.premiere,
-        values.terminale,
-        values.CAPAnnee1,
-        values.CAPAnnee2,
-      ]
+      const participantValues = Object.values(StudentLevels).map(
+        studentLevel => values[studentLevel]
+      )
       const areAllParticipantsSelected = participantValues.every(
         participant => participant === true
       )
@@ -32,25 +28,13 @@ const useParticipantUpdates = (
 
       if (userSelectedAllParticipants) {
         newValues = {
-          ...newValues,
-          quatrieme: true,
-          troisieme: true,
-          seconde: true,
-          premiere: true,
-          terminale: true,
-          CAPAnnee1: true,
-          CAPAnnee2: true,
+          ...buildStudentLevelsMapWithDefaultValue(true),
+          all: true,
         }
       } else if (userDeselectedAllparticipants) {
         newValues = {
-          ...newValues,
-          quatrieme: false,
-          troisieme: false,
-          seconde: false,
-          premiere: false,
-          terminale: false,
-          CAPAnnee1: false,
-          CAPAnnee2: false,
+          ...buildStudentLevelsMapWithDefaultValue(false),
+          all: false,
         }
       } else if (!areAllParticipantsSelected) {
         newValues = {

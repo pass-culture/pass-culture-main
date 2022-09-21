@@ -2,12 +2,13 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   SubcategoryIdEnum,
+  StudentLevels,
 } from 'apiClient/v1'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
-  PARTICIPANTS,
 } from 'core/OfferEducational'
+import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 const computeDurationString = (
   durationMinutes: number | undefined | null
@@ -31,16 +32,12 @@ export const computeInitialValuesFromOffer = (
   const eventAddress = offer?.offerVenue
 
   const participants = {
-    all: Object.values(PARTICIPANTS).every(student =>
+    all: Object.values(StudentLevels).every(student =>
       offer.students.includes(student)
     ),
-    quatrieme: offer.students.includes(PARTICIPANTS.quatrieme),
-    troisieme: offer.students.includes(PARTICIPANTS.troisieme),
-    CAPAnnee1: offer.students.includes(PARTICIPANTS.CAPAnnee1),
-    CAPAnnee2: offer.students.includes(PARTICIPANTS.CAPAnnee2),
-    seconde: offer.students.includes(PARTICIPANTS.seconde),
-    premiere: offer.students.includes(PARTICIPANTS.premiere),
-    terminale: offer.students.includes(PARTICIPANTS.terminale),
+    ...buildStudentLevelsMapWithDefaultValue((studentKey: StudentLevels) =>
+      offer.students.includes(studentKey)
+    ),
   }
 
   const email = offer.contactEmail

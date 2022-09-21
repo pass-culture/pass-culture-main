@@ -7,11 +7,17 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import {
   Params,
   patchCollectiveOfferTemplateAdapter,
 } from '../patchCollectiveOfferTemplateAdapter'
+
+const allParticipantsOptionsToFalse = {
+  all: false,
+  ...buildStudentLevelsMapWithDefaultValue(false),
+}
 
 describe('patchCollectiveOfferTemplateAdapter', () => {
   let props: Params
@@ -32,16 +38,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
           venueId: '',
         },
         interventionArea: [],
-        participants: {
-          all: false,
-          quatrieme: false,
-          troisieme: false,
-          CAPAnnee1: false,
-          CAPAnnee2: false,
-          seconde: true,
-          premiere: true,
-          terminale: false,
-        },
+        participants: allParticipantsOptionsToFalse,
         accessibility: {
           audio: false,
           mental: true,
@@ -69,16 +66,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
           venueId: '',
         },
         interventionArea: [],
-        participants: {
-          all: false,
-          quatrieme: false,
-          troisieme: false,
-          CAPAnnee1: false,
-          CAPAnnee2: false,
-          seconde: true,
-          premiere: false,
-          terminale: false,
-        },
+        participants: allParticipantsOptionsToFalse,
         accessibility: {
           audio: false,
           mental: false,
