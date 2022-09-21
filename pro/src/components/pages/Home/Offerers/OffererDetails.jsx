@@ -204,6 +204,30 @@ const OffererDetails = ({
         {isExpanded && (
           <>
             <div className="od-separator horizontal" />
+            {selectedOfferer.isValidated && !hasAtLeastOneVenue && (
+              <Banner
+                type="notification-info"
+                className="banner"
+                links={[
+                  {
+                    href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
+                    linkTitle: 'En savoir plus sur la création d’un lieu',
+                    Icon: ExternalSiteIcon,
+                  },
+                ]}
+              >
+                <p>
+                  Nous vous invitons à créer un lieu, cela vous permettra
+                  ensuite de créer des offres physiques ou des événements qui
+                  seront réservables.
+                </p>
+                <br />
+                <p>
+                  Vous avez la possibilité de créer dès maintenant des offres
+                  numériques.
+                </p>
+              </Banner>
+            )}
             {!selectedOfferer.isValidated && !hasAtLeastOneVenue && (
               <Banner
                 type="notification-info"
