@@ -676,8 +676,8 @@ class SaveVenueBankInformationsTest:
         def test_draft_application(self, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bic.return_value = (
-                dms_creators.venue_application_detail_response_procedure_v4(
+            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+                dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.draft.value, dms_token=venue.dmsToken
                 )
             )
@@ -693,8 +693,8 @@ class SaveVenueBankInformationsTest:
         def test_on_going_application(self, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bic.return_value = (
-                dms_creators.venue_application_detail_response_procedure_v4(
+            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+                dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.on_going.value, dms_token=venue.dmsToken
                 )
             )
@@ -710,8 +710,8 @@ class SaveVenueBankInformationsTest:
         def test_accepted_application(self, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bic.return_value = (
-                dms_creators.venue_application_detail_response_procedure_v4(
+            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+                dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
                 )
             )
@@ -728,8 +728,8 @@ class SaveVenueBankInformationsTest:
         def test_refused_application(self, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bic.return_value = (
-                dms_creators.venue_application_detail_response_procedure_v4(
+            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+                dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.refused.value, dms_token=venue.dmsToken
                 )
             )
@@ -745,8 +745,8 @@ class SaveVenueBankInformationsTest:
         def test_without_continuation_application(self, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
-            mock_dms_graphql_client.return_value.get_bic.return_value = (
-                dms_creators.venue_application_detail_response_procedure_v4(
+            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+                dms_creators.get_bank_info_response_procedure_v4(
                     state=GraphQLApplicationStates.without_continuation.value, dms_token=venue.dmsToken
                 )
             )
