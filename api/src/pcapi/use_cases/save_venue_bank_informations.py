@@ -1,7 +1,6 @@
 import logging
 
 from pcapi import settings
-from pcapi.connectors import api_entreprises
 from pcapi.connectors import sirene
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.finance.models import BusinessUnit
@@ -25,7 +24,6 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
     VenueWithBasicInformationRepository,
 )
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.utils import urls
 
@@ -206,20 +204,12 @@ class SaveVenueBankInformations:
             venue = self.venue_repository.find_by_siret(siret)
             if not venue:
                 api_errors.add_error("Venue", "Venue not found")
-            elif FeatureToggle.USE_INSEE_SIRENE_API.is_active():
+            else:
                 try:
                     if not sirene.siret_is_active(siret):
                         api_errors.add_error("Venue", "SIRET is no longer active")
                 except sirene.SireneException:
                     api_errors.add_error("Venue", "Error while checking SIRET on Sirene API")
-            else:
-                try:
-                    is_siret_active = api_entreprises.check_siret_is_still_active(siret)
-                    if not is_siret_active:
-                        api_errors.add_error("Venue", "SIRET is no longer active")
-                except api_entreprises.ApiEntrepriseException:
-                    api_errors.add_error("Venue", "Error while checking SIRET on Api Entreprise")
-
         else:
             if offerer and (name := (application_details.venue_name or "").strip()):
                 venues = self.venue_repository.find_by_name(name, offerer.id)

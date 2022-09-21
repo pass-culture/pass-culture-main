@@ -40,7 +40,6 @@ from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import zendesk_sell
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 from pcapi.utils.urls import build_pc_pro_offerer_link
 from pcapi.utils.urls import build_pc_pro_venue_bookings_link
@@ -243,7 +242,6 @@ class VenueView(BaseAdminView):
         current_siret = venue.siret
         new_siret = edit_venue_form.siret.data.strip() if edit_venue_form.siret.data else None
         existing_pricing_point_id = None
-        unavailable_sirene = False
         if current_siret and not new_siret:
             flash("Le champ SIRET ne peut pas être vide si ce lieu avait déjà un SIRET.")
             return False
@@ -273,13 +271,14 @@ class VenueView(BaseAdminView):
                 )
                 return False
 
-            if FeatureToggle.USE_INSEE_SIRENE_API.is_active():
-                try:
-                    if not sirene.siret_is_active(new_siret):
-                        flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "error")
-                        return False
-                except sirene.SireneException:
-                    unavailable_sirene = True
+            try:
+                if not sirene.siret_is_active(new_siret):
+                    flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "error")
+                    return False
+            except sirene.SireneException:
+                unavailable_sirene = True
+            else:
+                unavailable_sirene = False
 
             update_siret = True
 

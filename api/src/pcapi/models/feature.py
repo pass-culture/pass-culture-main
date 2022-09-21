@@ -116,6 +116,7 @@ class FeatureToggle(enum.Enum):
         "Protege le pass culture contre les ministeres qui dépenseraient plus que leur budget sur les 4 derniers mois "
         "de l'année"
     )
+    # FIXME (dbaty, 2022-09-21): remove USE_INSEE_SIRENE_API once v207 is deployed.
     USE_INSEE_SIRENE_API = "Utiliser la nouvelle API Sirene de l'Insee"
     APP_ENABLE_COOKIES_V2 = "Activer la gestion conforme des cookies"
     VENUE_FORM_V2 = "Afficher la version 2 du formulaire de lieu"
