@@ -102,12 +102,14 @@ def _get_filled_dms_fraud_check(
     )
 
 
-def should_complete_profile(user: users_models.User, eligibility: users_models.EligibilityType) -> bool:
+def has_completed_profile_for_given_eligibility(
+    user: users_models.User, eligibility: users_models.EligibilityType
+) -> bool:
     if repository.get_completed_profile_check(user, eligibility) is not None:
-        return False
+        return True
     if _get_filled_dms_fraud_check(user, eligibility) is not None:
-        return False
-    return True
+        return True
+    return False
 
 
 def get_declared_names(user: users_models.User) -> typing.Tuple[str, str] | None:
@@ -205,7 +207,7 @@ def get_user_profiling_subscription_item(
 def get_profile_completion_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType
 ) -> models.SubscriptionItem:
-    if not should_complete_profile(user, eligibility):
+    if has_completed_profile_for_given_eligibility(user, eligibility):
         status = models.SubscriptionItemStatus.OK
     elif is_eligibility_activable(user, eligibility):
         status = models.SubscriptionItemStatus.TODO
@@ -311,7 +313,7 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
     if user_profiling_item.status == models.SubscriptionItemStatus.KO:
         return None
 
-    if should_complete_profile(user, user.eligibility):
+    if not has_completed_profile_for_given_eligibility(user, user.eligibility):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
     if _needs_to_perform_identity_check(user):
