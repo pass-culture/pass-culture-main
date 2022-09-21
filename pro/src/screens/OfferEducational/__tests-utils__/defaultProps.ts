@@ -1,5 +1,6 @@
 import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
+import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 
@@ -62,6 +63,11 @@ export const defaultCreationProps: IOfferEducationalProps = {
   }),
 }
 
+const allParticipantsOptionsToTrue = {
+  all: false,
+  ...buildStudentLevelsMapWithDefaultValue(true),
+}
+
 const editionFormValues = {
   category: 'MUSEE',
   subCategory: SubcategoryIdEnum.VISITE_GUIDEE,
@@ -76,16 +82,7 @@ const editionFormValues = {
     venueId: '',
   },
   interventionArea: [],
-  participants: {
-    all: true,
-    quatrieme: true,
-    troisieme: true,
-    CAPAnnee1: true,
-    CAPAnnee2: true,
-    seconde: true,
-    premiere: true,
-    terminale: true,
-  },
+  participants: allParticipantsOptionsToTrue,
   accessibility: {
     visual: true,
     audio: true,

@@ -1,9 +1,9 @@
-import { PARTICIPANTS } from 'core/OfferEducational'
+import { StudentLevels } from 'apiClient/v1'
 
 export const participantsOptions = [
   { label: 'Tout sélectionner', name: 'participants.all' },
-  ...Object.keys(PARTICIPANTS).map(key => ({
-    label: PARTICIPANTS[key],
-    name: `participants.${key}`,
+  ...Object.values(StudentLevels).map(studentLevel => ({
+    label: studentLevel,
+    name: `participants.${studentLevel}`,
   })),
 ]
