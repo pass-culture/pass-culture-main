@@ -1,10 +1,7 @@
 import React from 'react'
 
 import useAnalytics from 'components/hooks/useAnalytics'
-import {
-  useOfferEditionURL,
-  useOfferStockEditionURL,
-} from 'components/hooks/useOfferEditionURL'
+import { useOfferStockEditionURL } from 'components/hooks/useOfferEditionURL'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -40,7 +37,6 @@ const OfferBreadcrumb = ({
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId, false)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
   const isTemplateId = offerId.startsWith('T-')
@@ -60,7 +56,9 @@ const OfferBreadcrumb = ({
       {
         id: OfferBreadcrumbStep.DETAILS,
         label: "Détails de l'offre",
-        url: offerEditionUrl,
+        url: isOfferEducational
+          ? `/offre/${offerId}/collectif/edition`
+          : `/offre/${offerId}/individuel/edition`,
       },
       {
         id: OfferBreadcrumbStep.STOCKS,
