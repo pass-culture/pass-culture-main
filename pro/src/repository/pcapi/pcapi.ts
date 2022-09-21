@@ -19,25 +19,6 @@ export const loadFeatures = async () => {
 // offerers
 //
 
-export const buildGetOfferersQuery = ({ keywords = [], page = 1 }) => {
-  const apiQueryParams = {}
-  if (keywords.length > 0) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'keywords' does not exist on type '{}'.
-    apiQueryParams.keywords = keywords.join(' ')
-  }
-
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'page' does not exist on type '{}'.
-  apiQueryParams.page = page
-
-  return `?${stringify(apiQueryParams)}`
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getOfferers = filters => {
-  const queryParams = buildGetOfferersQuery(filters)
-  return client.get(`/offerers${queryParams}`)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerer' implicitly has an 'any' type.
 export const createOfferer = offerer => client.post(`/offerers`, offerer)
 

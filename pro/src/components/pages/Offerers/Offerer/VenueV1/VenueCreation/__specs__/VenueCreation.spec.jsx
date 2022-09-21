@@ -20,6 +20,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn(),
     getOfferer: jest.fn(),
+    canOffererCreateEducationalOffer: jest.fn(),
   },
 }))
 
