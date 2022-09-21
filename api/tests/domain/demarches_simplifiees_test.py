@@ -1,56 +1,18 @@
 from datetime import datetime
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
-from pcapi.domain.demarches_simplifiees import CannotRegisterBankInformation
-from pcapi.domain.demarches_simplifiees import _get_status_from_demarches_simplifiees_application_state
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
-from pcapi.utils.date import DATE_ISO_FORMAT
 
-from tests.connector_creators.demarches_simplifiees_creators import (
-    venue_demarche_simplifiee_application_detail_response_with_siret,
-)
-from tests.connector_creators.demarches_simplifiees_creators import (
-    venue_demarche_simplifiee_application_detail_response_without_siret,
-)
 from tests.connector_creators.demarches_simplifiees_creators import get_bank_info_response_procedure_v2
 
 
-@patch("pcapi.connectors.dms.api.get_application_details")
 @patch("pcapi.connectors.dms.api.DMSGraphQLClient")
-class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
-    def test_retrieve_and_format_all_fields_when_with_siret(self, DMSGraphQLClient, get_application_details):
-        # Given
-        updated_at = datetime(2020, 1, 3)
-        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-            siret="12345678900012",
-            siren="123456789",
-            bic="SOGEFRPP",
-            iban="FR7630007000111234567890144",
-            idx=8,
-            state="closed",
-            updated_at=updated_at.strftime(DATE_ISO_FORMAT),
-        )
-
-        # When
-        application_details = get_venue_bank_information_application_details_by_application_id(8)
-
-        # Then
-        assert isinstance(application_details, ApplicationDetail)
-        assert application_details.siren == "123456789"
-        assert application_details.status == BankInformationStatus.ACCEPTED
-        assert application_details.application_id == 8
-        assert application_details.iban == "FR7630007000111234567890144"
-        assert application_details.bic == "SOGEFRPP"
-        assert application_details.siret == "12345678900012"
-        assert application_details.venue_name == None
-        assert application_details.modification_date == updated_at
-
+class GetVenueBankInformationApplicationDetailsByApplicationIdTest:
     @pytest.mark.parametrize(
         "annotation",
         [
@@ -59,13 +21,13 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
             {"label": "Nouvelle annotation Texte", "id": "OTHERID"},
         ],
     )
-    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, get_application_details, annotation):
+    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, annotation):
         # Given
         updated_at = datetime(2020, 1, 3)
         DMSGraphQLClient.return_value.get_bank_info.return_value = get_bank_info_response_procedure_v2(annotation)
 
         # When
-        application_details = get_venue_bank_information_application_details_by_application_id(8, 2, 3)
+        application_details = get_venue_bank_information_application_details_by_application_id("8", 3)
 
         # Then
         assert isinstance(application_details, ApplicationDetail)
@@ -80,103 +42,6 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         assert application_details.error_annotation_id == (
             annotation["id"] if annotation["label"] == "Erreur traitement pass Culture" else None
         )
-
-    def test_retrieve_and_format_all_fields_when_without_siret(self, DMSGraphQLClient, get_application_details):
-        # Given
-        updated_at = datetime(2020, 1, 3)
-        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
-            siret="12345678900012",
-            bic="SOGEFRPP",
-            iban="FR7630007000111234567890144",
-            idx=8,
-            state="closed",
-            updated_at=updated_at.strftime(DATE_ISO_FORMAT),
-        )
-
-        # When
-        application_details = get_venue_bank_information_application_details_by_application_id(8)
-
-        # Then
-        assert isinstance(application_details, ApplicationDetail)
-        assert application_details.siren == "123456789"
-        assert application_details.status == BankInformationStatus.ACCEPTED
-        assert application_details.application_id == 8
-        assert application_details.iban == "FR7630007000111234567890144"
-        assert application_details.bic == "SOGEFRPP"
-        assert application_details.siret == ""
-        assert application_details.venue_name == "VENUE_NAME"
-        assert application_details.modification_date == updated_at
-
-    @patch("pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic")
-    def test_format_bic_and_iban_when_with_siret(
-        self, mock_format_raw_iban_and_bic, DMSGraphQLClient, get_application_details
-    ):
-        # Given
-        updated_at = datetime(2020, 1, 3)
-        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-            siret="12345678912345",
-            bic="SOGeferp",
-            iban="F R763000 700011123 45 67890144",
-            idx=8,
-            state="closed",
-            updated_at=updated_at.strftime(DATE_ISO_FORMAT),
-        )
-
-        # When
-        get_venue_bank_information_application_details_by_application_id(8)
-
-        # Then
-        mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
-
-    @patch("pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic")
-    def test_format_bic_and_iban_when_without_siret(
-        self, mock_format_raw_iban_and_bic, DMSGraphQLClient, get_application_details
-    ):
-        # Given
-        updated_at = datetime(2020, 1, 3)
-        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
-            siret="12345678912345",
-            bic="SOGeferp",
-            iban="F R763000 700011123 45 67890144",
-            idx=8,
-            state="closed",
-            updated_at=updated_at.strftime(DATE_ISO_FORMAT),
-        )
-
-        # When
-        get_venue_bank_information_application_details_by_application_id("8")
-
-        # Then
-        mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
-
-
-class GetStatusFromDemarchesSimplifieesApplicationStateTest:
-    def test_correctly_infer_status_from_state(self):
-        # Given
-        states = ["closed", "initiated", "refused", "received", "without_continuation"]
-
-        # when
-        statuses = [_get_status_from_demarches_simplifiees_application_state(state) for state in states]
-
-        # Then
-        assert statuses == [
-            BankInformationStatus.ACCEPTED,
-            BankInformationStatus.DRAFT,
-            BankInformationStatus.REJECTED,
-            BankInformationStatus.DRAFT,
-            BankInformationStatus.REJECTED,
-        ]
-
-    def test_raise_error_in_unknown_state(self):
-        # Given
-        state = "wrong"
-
-        # When
-        with pytest.raises(CannotRegisterBankInformation) as error:
-            _get_status_from_demarches_simplifiees_application_state(state)
-
-        # Then
-        assert error.value.errors == {"BankInformation": "Unknown Demarches Simplifiées state wrong"}
 
 
 VENUE_DMS_TOKEN_FIELD = {

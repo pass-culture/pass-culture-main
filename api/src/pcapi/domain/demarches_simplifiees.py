@@ -7,16 +7,10 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
-from pcapi.utils.date import DATE_ISO_FORMAT
 
 
 logger = logging.getLogger(__name__)
 
-
-FIELD_FOR_VENUE_WITH_SIRET = (
-    "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :"
-)
-FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :"
 # These base64 str are the field ids received from DMS. They are NOT unique across procedures, beware !
 ID_TO_NAME_MAPPING = {
     "Q2hhbXAtNDA3ODg5": "firstname",
@@ -93,72 +87,26 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
 
 def get_venue_bank_information_application_details_by_application_id(
     application_id: str,
-    dms_api_version: int = 1,
-    procedure_version: int = 1,
+    procedure_version: int = 4,
 ) -> ApplicationDetail:
-    if dms_api_version == 1:
-        assert settings.DMS_VENUE_PROCEDURE_ID
-        assert settings.DMS_TOKEN
-        response_application_details = api_dms.get_application_details(
-            application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID, token=settings.DMS_TOKEN
-        )
-
-        application_details = ApplicationDetail(
-            siren=response_application_details["dossier"]["entreprise"]["siren"],
-            status=_get_status_from_demarches_simplifiees_application_state(
-                response_application_details["dossier"]["state"]
-            ),
-            application_id=int(response_application_details["dossier"]["id"]),
-            iban=format_raw_iban_and_bic(
-                _find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")
-            ),
-            bic=format_raw_iban_and_bic(
-                _find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")
-            ),
-            siret=_find_value_in_fields(response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITH_SIRET),
-            venue_name=_find_value_in_fields(
-                response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITHOUT_SIRET
-            ),
-            modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
-        )
-        return application_details
-    if dms_api_version == 2:
-        client = api_dms.DMSGraphQLClient()
-        raw_data = client.get_bank_info(int(application_id))
-        data = parse_raw_bank_info_data(raw_data, procedure_version)
-        return ApplicationDetail(
-            siren=data.get("siren", None),
-            status=_get_status_from_demarches_simplifiees_application_state_v2(
-                dms_models.GraphQLApplicationStates(data["status"])
-            ),
-            application_id=int(application_id),
-            iban=data["iban"],
-            bic=data["bic"],
-            siret=data.get("siret", None),
-            dms_token=data["dms_token"] if procedure_version == 4 else None,
-            modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
-            error_annotation_id=data["error_annotation_id"],
-            dossier_id=data["dossier_id"],
-            venue_url_annotation_id=data["venue_url_annotation_id"],
-        )
-    raise ValueError("Unknown dms_api_version %s" % dms_api_version)
-
-
-def _get_status_from_demarches_simplifiees_application_state(state: str) -> BankInformationStatus:
-    try:
-        dms_state = dms_models.DmsApplicationStates[state]
-    except KeyError:
-        raise CannotRegisterBankInformation(errors={"BankInformation": f"Unknown Demarches Simplifiées state {state}"})
-    rejected_states = REJECTED_DMS_STATUS
-    accepted_states = ACCEPTED_DMS_STATUS
-    draft_states = DRAFT_DMS_STATUS
-    if dms_state in rejected_states:
-        return BankInformationStatus.REJECTED
-    if dms_state in accepted_states:
-        return BankInformationStatus.ACCEPTED
-    if dms_state in draft_states:
-        return BankInformationStatus.DRAFT
-    raise ValueError(f"Unexpected DMS status: '{state}'")
+    client = api_dms.DMSGraphQLClient()
+    raw_data = client.get_bank_info(int(application_id))
+    data = parse_raw_bank_info_data(raw_data, procedure_version)
+    return ApplicationDetail(
+        siren=data.get("siren", None),
+        status=_get_status_from_demarches_simplifiees_application_state_v2(
+            dms_models.GraphQLApplicationStates(data["status"])
+        ),
+        application_id=int(application_id),
+        iban=data["iban"],
+        bic=data["bic"],
+        siret=data.get("siret", None),
+        dms_token=data["dms_token"] if procedure_version == 4 else None,
+        modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
+        error_annotation_id=data["error_annotation_id"],
+        dossier_id=data["dossier_id"],
+        venue_url_annotation_id=data["venue_url_annotation_id"],
+    )
 
 
 def _get_status_from_demarches_simplifiees_application_state_v2(
@@ -171,13 +119,6 @@ def _get_status_from_demarches_simplifiees_application_state_v2(
         dms_models.GraphQLApplicationStates.refused: BankInformationStatus.REJECTED,
         dms_models.GraphQLApplicationStates.without_continuation: BankInformationStatus.REJECTED,
     }[state]
-
-
-def _find_value_in_fields(fields: list[dict], value_name: str) -> str | None:
-    for field in fields:
-        if field["type_de_champ"]["libelle"] == value_name:
-            return field["value"]
-    return None
 
 
 def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id: str, message: str) -> None:
