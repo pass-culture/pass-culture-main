@@ -22,6 +22,7 @@ from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
+from pcapi.core.offers.repository import venues_with_no_offer_since_x_days
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 import pcapi.core.users.constants as users_constants
@@ -216,6 +217,40 @@ def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
                 extra={
                     "individualBookingId": individual_booking.id,
                     "userId": individual_booking.userId,
+                },
+            )
+
+
+@blueprint.cli.command("send_email_reminder_offer_creation_j5")
+@log_cron_with_transaction
+def send_email_reminder_offer_creation_j5_to_pro() -> None:
+    """Triggers email reminder to pro 5 days after venue creation if no offer is created"""
+    venues = venues_with_no_offer_since_x_days(5)
+    for venue_id, venue_booking_email in venues:
+        try:
+            transactional_mails.send_reminder_offer_creation_j5_to_pro(venue_booking_email)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not send email reminder offer creation j+5 to pro",
+                extra={
+                    "venue.id": venue_id,
+                },
+            )
+
+
+@blueprint.cli.command("send_email_reminder_offer_creation_j10")
+@log_cron_with_transaction
+def send_email_reminder_offer_creation_j10_to_pro() -> None:
+    """Triggers email reminder to pro 10 days after venue creation if no offer is created"""
+    venues = venues_with_no_offer_since_x_days(10)
+    for venue_id, venue_booking_email in venues:
+        try:
+            transactional_mails.send_reminder_offer_creation_j10_to_pro(venue_booking_email)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not send email reminder offer creation j+10 to pro",
+                extra={
+                    "venue.id": venue_id,
                 },
             )
 
