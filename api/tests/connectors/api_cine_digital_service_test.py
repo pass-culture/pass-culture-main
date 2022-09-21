@@ -112,7 +112,7 @@ class CineDigitalServiceGetResourceTest:
 class CineDigitalServicePutResourceTest:
     @mock.patch("pcapi.connectors.cine_digital_service.requests.put")
     @override_settings(IS_DEV=False)
-    def test_should_return_shows_with_success(self, request_put):
+    def test_should_call_put_request_with_the_right_arguments(self, request_put):
         # Given
         cinema_id = "test_id"
         api_url = "test_url/"
