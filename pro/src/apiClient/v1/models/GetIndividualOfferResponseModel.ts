@@ -20,7 +20,6 @@ export type GetIndividualOfferResponseModel = {
   conditions?: string | null;
   dateCreated: string;
   dateModifiedAtLastProvider?: string | null;
-  dateRange: Array<string>;
   description?: string | null;
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;

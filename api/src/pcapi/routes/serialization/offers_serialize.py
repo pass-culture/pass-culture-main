@@ -21,7 +21,6 @@ from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import DateTimes
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -450,7 +449,6 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     conditions: str | None
     dateCreated: datetime
     dateModifiedAtLastProvider: datetime | None
-    dateRange: list[datetime]
     description: str | None
     durationMinutes: int | None
     extraData: Any
@@ -488,14 +486,6 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     _humanize_product_id = humanize_field("productId")
     _humanize_venue_id = humanize_field("venueId")
     _humanize_last_provider_id = humanize_field("lastProviderId")
-
-    @validator("dateRange", pre=True)
-    def extract_datetime_list_from_DateTimes_type(  # pylint: disable=no-self-argument
-        cls, date_range: DateTimes
-    ) -> list[datetime]:
-        if isinstance(date_range, DateTimes):
-            return date_range.datetimes
-        return date_range
 
     @classmethod
     def from_orm(cls, offer):  # type: ignore

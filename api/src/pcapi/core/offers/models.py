@@ -33,7 +33,6 @@ from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
-from pcapi.utils.date import DateTimes
 
 
 logger = logging.getLogger(__name__)
@@ -484,15 +483,6 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
     @isPermanent.expression  # type: ignore [no-redef]
     def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
-
-    @property
-    def dateRange(self) -> DateTimes:
-        if self.isThing or not self.activeStocks:
-            return DateTimes()
-
-        start = min(stock.beginningDatetime for stock in self.activeStocks)  # type: ignore [type-var]
-        end = max(stock.beginningDatetime for stock in self.activeStocks)  # type: ignore [type-var]
-        return DateTimes(start, end)
 
     @sa.ext.hybrid.hybrid_property
     def isEvent(self) -> bool:

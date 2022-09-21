@@ -80,7 +80,6 @@ describe('stocks page', () => {
       status: 'DRAFT',
       stocks: [],
       dateCreated: '',
-      dateRange: [],
       fieldsUpdated: [],
       hasBookingLimitDatetimesPassed: true,
       isActive: true,

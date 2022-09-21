@@ -14,7 +14,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import DeletedRecordException
 from pcapi.repository import repository
 from pcapi.utils import human_ids
-from pcapi.utils.date import DateTimes
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -42,35 +41,6 @@ class ProductModelTest:
             assert product.can_be_synchronized == can_be_synchronized
             assert models.Product.query.filter(models.Product.can_be_synchronized).count() == int(can_be_synchronized)
             models.Product.query.delete()
-
-
-class OfferDateRangeTest:
-    def test_thing_offer(self):
-        offer = factories.ThingOfferFactory()
-        factories.StockFactory(offer=offer)
-        assert offer.dateRange == DateTimes()
-
-    def test_event_offer(self):
-        offer = factories.EventOfferFactory()
-        first = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        last = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        factories.StockFactory(offer=offer, beginningDatetime=first)
-        factories.StockFactory(offer=offer, beginningDatetime=last)
-        assert offer.dateRange == DateTimes(first, last)
-
-    def test_single_stock(self):
-        offer = factories.EventOfferFactory()
-        stock = factories.StockFactory(offer=offer)
-        assert offer.dateRange == DateTimes(stock.beginningDatetime, stock.beginningDatetime)
-
-    def test_no_stock(self):
-        offer = factories.EventOfferFactory()
-        assert offer.dateRange == DateTimes()
-
-    def test_deleted_stock_is_ignored(self):
-        offer = factories.EventOfferFactory()
-        factories.StockFactory(offer=offer, isSoftDeleted=True)
-        assert offer.dateRange == DateTimes()
 
 
 class OfferIsDigitalTest:

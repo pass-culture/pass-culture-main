@@ -2,13 +2,11 @@ import datetime
 import enum
 
 from pcapi.routes.serialization.serializer import serialize
-from pcapi.utils.date import DateTimes
 
 
-def test_serialize_custom_datetimes_class():
-    assert serialize(DateTimes()) == []  # pylint: disable=use-implicit-booleaness-not-comparison
+def test_serialize_datetime():
     d = datetime.datetime(2022, 1, 1, 12, 34, 56)
-    assert serialize(DateTimes(d)) == ["2022-01-01T12:34:56Z"]
+    assert serialize(d) == "2022-01-01T12:34:56Z"
 
 
 def test_serialize_enum():

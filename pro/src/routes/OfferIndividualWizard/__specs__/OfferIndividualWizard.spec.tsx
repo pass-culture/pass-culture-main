@@ -24,7 +24,6 @@ const apiOffer: GetIndividualOfferResponseModel = {
   conditions: null,
   dateCreated: '2022-05-18T08:25:30.991476Z',
   dateModifiedAtLastProvider: '2022-05-18T08:25:30.991481Z',
-  dateRange: ['2022-05-23T08:25:31.009799Z', '2022-05-23T08:25:31.009799Z'],
   description: 'A passionate description of product 80',
   durationMinutes: null,
   extraData: null,
