@@ -168,7 +168,7 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.getByText(
-          'Avant de créer votre première offre physique vous devez avoir un lieu'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
         )
       ).toBeInTheDocument()
 
@@ -202,7 +202,7 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.queryByText(
-          'Avant de créer votre première offre physique vous devez avoir un lieu'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
         )
       ).not.toBeInTheDocument()
 
@@ -235,9 +235,9 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.queryByText(
-          'Avant de créer votre première offre physique vous devez avoir un lieu'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
         )
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
 
       expect(
         screen.queryByRole('link', {
@@ -268,7 +268,7 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.queryByText(
-          'Avant de créer votre première offre physique vous devez avoir un lieu'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
         )
       ).not.toBeInTheDocument()
       expect(
@@ -315,7 +315,7 @@ describe('creationLinks', () => {
     it('should not display venue creation links', () => {
       expect(
         screen.queryByText(
-          'Avant de créer votre première offre physique vous devez avoir un lieu'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
         )
       ).not.toBeInTheDocument()
 

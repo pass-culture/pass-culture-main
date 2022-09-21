@@ -19,6 +19,7 @@ import BankInformations from './BankInformations'
 import InvalidBusinessUnits from './InvalidBusinessUnits'
 import MissingBusinessUnits from './MissingBusinessUnits'
 import MissingReimbursementPoints from './MissingReimbursementPoints/MissingReimbursementPoints'
+import VenueCreationLinks from './VenueCreationLinks'
 
 const hasRejectedOrDraftBankInformation = offerer =>
   Boolean(
@@ -79,8 +80,13 @@ const OffererDetails = ({
       .some(Boolean)
   }, [isBankInformationWithSiretActive, selectedOfferer])
 
-  const hasAtLeastOneVenue = selectedOfferer.managedVenues
+  const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
     .filter(venue => !venue.isVirtual)
+    .map(venue => venue.id)
+    .some(Boolean)
+
+  const hasAtLeastOneVirtualVenue = selectedOfferer.managedVenues
+    .filter(venue => venue.isVirtual)
     .map(venue => venue.id)
     .some(Boolean)
 
@@ -204,31 +210,7 @@ const OffererDetails = ({
         {isExpanded && (
           <>
             <div className="od-separator horizontal" />
-            {selectedOfferer.isValidated && !hasAtLeastOneVenue && (
-              <Banner
-                type="notification-info"
-                className="banner"
-                links={[
-                  {
-                    href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
-                    linkTitle: 'En savoir plus sur la création d’un lieu',
-                    Icon: ExternalSiteIcon,
-                  },
-                ]}
-              >
-                <p>
-                  Nous vous invitons à créer un lieu, cela vous permettra
-                  ensuite de créer des offres physiques ou des événements qui
-                  seront réservables.
-                </p>
-                <br />
-                <p>
-                  Vous avez la possibilité de créer dès maintenant des offres
-                  numériques.
-                </p>
-              </Banner>
-            )}
-            {!selectedOfferer.isValidated && !hasAtLeastOneVenue && (
+            {selectedOfferer.isValidated && !isUserOffererValidated && (
               <Banner
                 type="notification-info"
                 className="banner"
@@ -249,30 +231,53 @@ const OffererDetails = ({
                 fonctionnalités du pass Culture Pro.
               </Banner>
             )}
-            {!selectedOfferer.isValidated && hasAtLeastOneVenue && (
-              <Banner
-                type="notification-info"
-                className="banner"
-                links={[
-                  {
-                    href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
-                    linkTitle:
-                      'En savoir plus sur le fonctionnement du pass Culture',
-                    Icon: ExternalSiteIcon,
-                  },
-                ]}
-              >
-                <strong>
-                  Votre structure est en cours de validation par les équipes du
-                  pass Culture !
-                </strong>
-                <br />
-                Toutes les offres créées à l’échelle de vos lieux seront
-                publiées sous réserve de validation de votre structure par nos
-                équipes.
-              </Banner>
-            )}
-            {isUserOffererValidated && (
+            {!selectedOfferer.isValidated &&
+              isUserOffererValidated &&
+              hasAtLeastOnePhysicalVenue && (
+                <Banner
+                  type="notification-info"
+                  className="banner"
+                  links={[
+                    {
+                      href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
+                      linkTitle:
+                        'En savoir plus sur le fonctionnement du pass Culture',
+                      Icon: ExternalSiteIcon,
+                    },
+                  ]}
+                >
+                  <strong>Votre structure est en cours de validation</strong>
+                  <br />
+                  Toutes les offres créées à l’échelle de vos lieux seront
+                  publiées sous réserve de validation de votre structure par nos
+                  équipes.
+                </Banner>
+              )}
+            {!selectedOfferer.isValidated &&
+              isUserOffererValidated &&
+              !hasAtLeastOnePhysicalVenue && (
+                <Banner
+                  type="notification-info"
+                  className="banner"
+                  links={[
+                    {
+                      href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
+                      linkTitle: 'En savoir plus',
+                      Icon: ExternalSiteIcon,
+                    },
+                  ]}
+                >
+                  <strong>Votre structure est en cours de validation</strong>
+                  <br />
+                  Nous vous invitons à créer un lieu afin de pouvoir proposer
+                  des offres physiques ou des événements. <br />
+                  Vous pouvez dès à présent créer des offres numériques.
+                  L’ensemble de ces offres sera publié une fois votre structure
+                  validée.
+                </Banner>
+              )}
+
+            {isUserOffererValidated && hasAtLeastOnePhysicalVenue && (
               <div className="h-card-cols">
                 <div className="h-card-col">
                   <h3 className="h-card-secondary-title">
@@ -305,6 +310,7 @@ const OffererDetails = ({
                     </ul>
                   </div>
                 </div>
+
                 {isNewBankInformationActive && hasMissingReimbursementPoints && (
                   <div className="h-card-col">
                     <MissingReimbursementPoints />
@@ -341,6 +347,39 @@ const OffererDetails = ({
                     </div>
                   )}
               </div>
+            )}
+            {selectedOfferer.isValidated &&
+              isUserOffererValidated &&
+              !hasAtLeastOnePhysicalVenue && (
+                <Banner
+                  type="notification-info"
+                  className="banner"
+                  links={[
+                    {
+                      href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
+                      linkTitle: 'En savoir plus sur la création d’un lieu',
+                      Icon: ExternalSiteIcon,
+                    },
+                  ]}
+                >
+                  <p>
+                    Nous vous invitons à créer un lieu, cela vous permettra
+                    ensuite de créer des offres physiques ou des événements qui
+                    seront réservables.
+                  </p>
+                  <br />
+                  <p>
+                    Vous avez la possibilité de créer dès maintenant des offres
+                    numériques.
+                  </p>
+                </Banner>
+              )}
+            {isUserOffererValidated && !hasAtLeastOnePhysicalVenue && (
+              <VenueCreationLinks
+                hasPhysicalVenue={hasAtLeastOnePhysicalVenue}
+                hasVirtualOffers={hasAtLeastOneVirtualVenue}
+                offererId={selectedOfferer.id}
+              />
             )}
           </>
         )}

@@ -148,15 +148,17 @@ const Offerers = () => {
 
       {!userHasOfferers && <OffererCreationLinks />}
 
-      {isUserOffererValidated && !isOffererSoftDeleted && (
-        <VenueCreationLinks
-          hasPhysicalVenue={physicalVenues.length > 0}
-          hasVirtualOffers={
-            !!virtualVenue && !!selectedOfferer.hasDigitalVenueAtLeastOneOffer
-          }
-          offererId={selectedOfferer ? selectedOfferer.id : null}
-        />
-      )}
+      {isUserOffererValidated &&
+        !isOffererSoftDeleted &&
+        physicalVenues.length > 0 && (
+          <VenueCreationLinks
+            hasPhysicalVenue={physicalVenues.length > 0}
+            hasVirtualOffers={
+              !!virtualVenue && !!selectedOfferer.hasDigitalVenueAtLeastOneOffer
+            }
+            offererId={selectedOfferer ? selectedOfferer.id : null}
+          />
+        )}
     </>
   )
 }
