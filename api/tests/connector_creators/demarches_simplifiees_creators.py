@@ -1,121 +1,4 @@
-from typing import Optional
-
 from pcapi.connectors.dms.models import GraphQLApplicationStates
-
-
-def venue_demarche_simplifiee_application_detail_response_with_siret(
-    siret: str,
-    bic: Optional[str],
-    iban: Optional[str],
-    idx: int = 1,
-    updated_at: str = "2020-01-21T18:55:03.387Z",
-    siren: Optional[str] = None,
-    state: str = "closed",
-) -> dict:
-    return {
-        "dossier": {
-            "id": idx,
-            "updated_at": updated_at,
-            "state": state,
-            "entreprise": {
-                "siren": siren or siret[0:9],
-            },
-            "etablissement": {
-                "siret": siret,
-            },
-            "champs": [
-                {
-                    "value": siret,
-                    "type_de_champ": {
-                        "id": 782800,
-                        "libelle": "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :",
-                    },
-                    "etablissement": {
-                        "siret": siret,
-                    },
-                    "entreprise": {
-                        "siren": siret[0:9],
-                    },
-                },
-                {
-                    "value": "",
-                    "type_de_champ": {
-                        "id": 909032,
-                        "libelle": "Si vous souhaitez renseigner les coordonn\\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \\u00e0 l'identique de celui dans le pass Culture Pro :",
-                    },
-                },
-                {
-                    "value": iban,
-                    "type_de_champ": {
-                        "id": 352722,
-                        "libelle": "IBAN",
-                    },
-                },
-                {
-                    "value": bic,
-                    "type_de_champ": {
-                        "id": 352727,
-                        "libelle": "BIC",
-                    },
-                },
-            ],
-        }
-    }
-
-
-def venue_demarche_simplifiee_application_detail_response_without_siret(
-    siret: str,
-    bic: Optional[str],
-    iban: Optional[str],
-    idx: int = 1,
-    updated_at: str = "2020-01-21T18:55:03.387Z",
-    state: str = "closed",
-) -> dict:
-    return {
-        "dossier": {
-            "id": idx,
-            "updated_at": updated_at,
-            "state": state,
-            "entreprise": {
-                "siren": siret[0:9],
-            },
-            "etablissement": {
-                "siret": siret,
-            },
-            "champs": [
-                {
-                    "value": "",
-                    "type_de_champ": {
-                        "id": 782800,
-                        "libelle": "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :",
-                    },
-                    "etablissement": None,
-                    "entreprise": None,
-                },
-                {
-                    "value": "VENUE_NAME",
-                    "type_de_champ": {
-                        "id": 909032,
-                        "libelle": "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :",
-                    },
-                },
-                {
-                    "value": iban,
-                    "type_de_champ": {
-                        "id": 352722,
-                        "libelle": "IBAN",
-                    },
-                },
-                {
-                    "value": bic,
-                    "type_de_champ": {
-                        "id": 352727,
-                        "libelle": "BIC",
-                    },
-                },
-            ],
-        }
-    }
 
 
 def get_bank_info_response_procedure_v2(annotation: dict):
@@ -161,6 +44,7 @@ def get_bank_info_response_procedure_v4(
     etablissement: dict | None = None,
     state: str = GraphQLApplicationStates.accepted.value,
     annotations: dict | None = None,
+    dossier_id: str = "Q2zzbXAtNzgyODAw",
 ) -> dict:
     etablissement = etablissement or {
         "etablissement": {
@@ -174,7 +58,7 @@ def get_bank_info_response_procedure_v4(
     annotations = annotations or [{"label": "Nouvelle annotation Texte", "id": "OTHERID"}]
     result = {
         "dossier": {
-            "id": "Q2zzbXAtNzgyODAw",
+            "id": dossier_id,
             "champs": [
                 {
                     "id": "Q2hhbXAtMjY3NDMyMQ==",
