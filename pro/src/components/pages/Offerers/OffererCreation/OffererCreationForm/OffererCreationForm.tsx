@@ -1,11 +1,13 @@
 import React, { useCallback } from 'react'
-import type { FormRenderProps } from 'react-final-form'
+import type { FormRenderProps, FormSpyRenderProps } from 'react-final-form'
 import { FormSpy } from 'react-final-form'
 import { Link } from 'react-router-dom'
 
+import { CreateOffererQueryModel } from 'apiClient/v1'
 import { SirenField } from 'components/layout/form/fields/SirenField'
 
-interface IOffererCreationForm extends FormRenderProps {
+interface IOffererCreationForm
+  extends Pick<FormRenderProps, 'handleSubmit' | 'invalid' | 'pristine'> {
   backTo: string
 }
 
@@ -16,10 +18,7 @@ const OffererCreationForm = ({
   pristine,
 }: IOffererCreationForm): JSX.Element => {
   const renderAddress = useCallback(
-    (
-      // @ts-ignore
-      { values }
-    ) => (
+    ({ values }: FormSpyRenderProps<CreateOffererQueryModel>) => (
       <div className="op-detail-creation-form">
         <span>{'Siège social : '}</span>
         {values.postalCode && (
@@ -32,10 +31,7 @@ const OffererCreationForm = ({
     []
   )
   const renderName = useCallback(
-    (
-      // @ts-ignore
-      { values }
-    ) => (
+    ({ values }: FormSpyRenderProps<CreateOffererQueryModel>) => (
       <div className="op-detail-creation-form">
         <span>{'Désignation : '}</span>
         {values.name && <span>{values.name}</span>}
@@ -49,8 +45,8 @@ const OffererCreationForm = ({
       <div className="section">
         <div className="op-creation-form">
           <SirenField />
-          <FormSpy render={renderName} />
-          <FormSpy render={renderAddress} />
+          <FormSpy<CreateOffererQueryModel> render={renderName} />
+          <FormSpy<CreateOffererQueryModel> render={renderAddress} />
         </div>
         <div className="offerer-form-validation">
           <div className="control">

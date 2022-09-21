@@ -16,13 +16,6 @@ export const loadFeatures = async () => {
 }
 
 //
-// offerers
-//
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerer' implicitly has an 'any' type.
-export const createOfferer = offerer => client.post(`/offerers`, offerer)
-
-//
 // venues
 //
 export const getVenuesForOfferer = ({
