@@ -1,3 +1,4 @@
+# "categorieJuridiqueUniteLegale"
 CODE_TO_CATEGORY_MAPPING = {
     0000: "Organisme de placement collectif en valeurs mobilières sans personnalité morale",
     1000: "Entrepreneur individuel",

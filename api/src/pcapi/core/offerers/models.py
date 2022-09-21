@@ -38,8 +38,6 @@ from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
 from pcapi.connectors import sirene
-from pcapi.connectors.api_entreprises import get_offerer_legal_category
-from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
@@ -50,7 +48,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
@@ -63,6 +60,8 @@ from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
 import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
+
+from . import constants
 
 
 logger = logging.getLogger(__name__)
@@ -613,12 +612,6 @@ class Offerer(
 
     @cached_property
     def legal_category(self) -> dict:
-        if not FeatureToggle.USE_INSEE_SIRENE_API.is_active():
-            category = get_offerer_legal_category(self)
-            return {
-                "code": category["legal_category_code"],
-                "label": category["legal_category_label"],
-            }
         code = None
         if self.siren:
             try:
@@ -629,7 +622,7 @@ class Offerer(
                     extra={"exc": exc, "siren": self.siren},
                 )
         if code:
-            label = CODE_TO_CATEGORY_MAPPING.get(int(code), "")
+            label = constants.CODE_TO_CATEGORY_MAPPING.get(int(code), "")
         else:
             code = label = "Donnée indisponible"
         return {"code": code, "label": label}

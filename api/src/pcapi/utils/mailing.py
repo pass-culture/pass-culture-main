@@ -5,7 +5,6 @@ from pprint import pformat
 from flask import render_template
 
 from pcapi import settings
-from pcapi.connectors import api_entreprises
 from pcapi.connectors import sirene
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
@@ -18,7 +17,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import urls
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
@@ -62,21 +60,18 @@ def make_offerer_internal_validation_email(
     offerer: offerers_models.Offerer,
     user_offerer: offerers_models.UserOfferer,
 ) -> mails_models.TransactionalWithoutTemplateEmailData:
-    siren_info: sirene.SirenInfo | dict | None = None
-    if FeatureToggle.USE_INSEE_SIRENE_API.is_active():
-        try:
-            assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
-            siren_info = sirene.get_siren(offerer.siren)
-        except sirene.SireneException as exc:
-            logger.info(
-                "Could not fetch info from Sirene API for offerer validation e-mail",
-                extra={"exc": exc},
-            )
-            siren_info = siren_info_as_dict = None
-        else:
-            siren_info_as_dict = siren_info.dict()
+    siren_info: sirene.SirenInfo | None = None
+    assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
+    try:
+        siren_info = sirene.get_siren(offerer.siren)
+    except sirene.SireneException as exc:
+        logger.info(
+            "Could not fetch info from Sirene API for offerer validation e-mail",
+            extra={"exc": exc},
+        )
+        siren_info = siren_info_as_dict = None
     else:
-        siren_info = siren_info_as_dict = api_entreprises.get_by_offerer(offerer)
+        siren_info_as_dict = siren_info.dict()
 
     offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()
 
@@ -181,17 +176,14 @@ def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
     )
 
 
-# FIXME (dbaty, 2022-08-12): once the old api_entreprises is removed,
-# we'll always receive a SirenInfo object here (or None if an error
-# occurred). Adapt typing and simplify function accordingly.
-def _summarize_offerer_vars(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo | dict | None) -> dict:
-    if isinstance(siren_info, sirene.SirenInfo):
+def _summarize_offerer_vars(
+    offerer: offerers_models.Offerer,
+    siren_info: sirene.SirenInfo | None,
+) -> dict:
+    if siren_info:
         head_office_siret = siren_info.head_office_siret
         ape_code = siren_info.ape_code
-    elif isinstance(siren_info, dict):  # legacy API
-        head_office_siret = siren_info["unite_legale"]["etablissement_siege"]["siret"]
-        ape_code = siren_info["unite_legale"]["activite_principale"]
-    else:  # None
+    else:
         head_office_siret = ape_code = "Inconnu (erreur API Sirene)"
     return {
         "name": offerer.name,

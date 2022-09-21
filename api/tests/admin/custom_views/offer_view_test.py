@@ -9,7 +9,6 @@ from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offer_view import ValidationCollectiveOfferTemplateView
 from pcapi.admin.custom_views.offer_view import ValidationCollectiveOfferView
 from pcapi.admin.custom_views.offer_view import ValidationOfferView
-from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.core import testing
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
@@ -24,7 +23,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationType
@@ -134,10 +132,7 @@ class OfferValidationViewTest:
         assert url_for(view_name) in response.data.decode("utf-8")
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    def test_approve_offer_and_go_to_next_offer(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, client
-    ):
+    def test_approve_offer_and_go_to_next_offer(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -166,11 +161,6 @@ class OfferValidationViewTest:
             id=1,
         )
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
-
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
         response = client.with_session_auth("admin@example.com").post(
             url_for("validation.edit", id=currently_displayed_offer.id), form=data
@@ -182,9 +172,8 @@ class OfferValidationViewTest:
         assert url_for("validation.edit", id=oldest_offer.id) in response.location
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_approve_last_pending_offer_and_go_to_the_next_offer_redirect_to_validation_page(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, client
+        self, mocked_validate_csrf_token, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
@@ -200,11 +189,6 @@ class OfferValidationViewTest:
             venue=venue,
         )
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
-
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
         response = client.with_session_auth("admin@example.com").post(
             url_for("validation.edit", id=offer.id), form=data
@@ -215,12 +199,10 @@ class OfferValidationViewTest:
         assert url_for("validation.index_view") in response.location
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     def test_approve_virtual_offer_and_send_mail_to_managing_offerer(
         self,
         mocked_send_offer_validation_status_update_email,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -234,10 +216,6 @@ class OfferValidationViewTest:
 
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True, venue=venue)
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
 
         # When
@@ -249,12 +227,10 @@ class OfferValidationViewTest:
         )
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
     def test_approve_physical_offer_and_send_mail_to_venue_booking_email(
         self,
         mocked_send_offer_validation_status_update_email,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -265,10 +241,6 @@ class OfferValidationViewTest:
 
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True, venue=venue)
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
 
         # When
@@ -419,12 +391,10 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_offer_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -444,10 +414,6 @@ class OfferValidationViewTest:
         import_offer_validation_config(config_yaml)
         users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
         # When
@@ -467,12 +433,10 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_offer_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -493,10 +457,6 @@ class OfferValidationViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
 
         # When
@@ -592,10 +552,7 @@ class OfferValidationViewTest:
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    def test_batch_approve_offers(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
-    ):
+    def test_batch_approve_offers(self, mocked_validate_csrf_token, action, expected, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -614,11 +571,6 @@ class OfferValidationViewTest:
             venue=venue,
         )
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
-
         data = dict(rowid=[offer1.id, offer2.id], action=action)
         client.with_session_auth("admin@example.com")
         response = client.post(url_for("validation.action_view"), form=data)
@@ -635,12 +587,10 @@ class OfferValidationViewTest:
 
     @pytest.mark.parametrize("action", ["approve", "reject"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.core.offers.api.update_pending_offer_validation")
     def test_batch_approve_reject_offers_not_updated(
         self,
         mocked_update_pending_offer_validation,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         action,
         client,
@@ -657,11 +607,6 @@ class OfferValidationViewTest:
             venue=venue,
         )
         offers_factories.OfferValidationConfigFactory()
-
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
 
         mocked_update_pending_offer_validation.return_value = False
 
@@ -683,12 +628,10 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_collective_offer_template_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -710,10 +653,6 @@ class OfferValidationViewTest:
         offer = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.PENDING, isActive=True
         )
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
         # When
@@ -733,12 +672,10 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_template_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -759,10 +696,6 @@ class OfferValidationViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
 
         # When
@@ -827,10 +760,7 @@ class OfferValidationViewTest:
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    def test_batch_approve_collective_offers_template(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
-    ):
+    def test_batch_approve_collective_offers_template(self, mocked_validate_csrf_token, action, expected, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -849,11 +779,6 @@ class OfferValidationViewTest:
             venue=venue,
         )
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
-
         data = dict(rowid=[offer1.id, offer2.id], action=action)
         client.with_session_auth("admin@example.com")
         response = client.post(url_for("validation-collective-offer-template.action_view"), form=data)
@@ -870,12 +795,10 @@ class OfferValidationViewTest:
 
     @pytest.mark.parametrize("action", ["approve", "reject"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.core.offers.api.update_pending_offer_validation")
     def test_batch_approve_reject_collective_offers_template_not_updated(
         self,
         mocked_update_pending_offer_validation,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         action,
         client,
@@ -892,11 +815,6 @@ class OfferValidationViewTest:
             venue=venue,
         )
         offers_factories.OfferValidationConfigFactory()
-
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
 
         mocked_update_pending_offer_validation.return_value = False
 
@@ -921,12 +839,10 @@ class OfferValidationViewTest:
     @freeze_time("2020-11-17 15:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_approve_collective_offer_and_send_mail_to_administration_and_notify_adage(
         self,
         mocked_send_offer_validation_notification_to_administration,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -951,10 +867,6 @@ class OfferValidationViewTest:
             collectiveOffer__isActive=True,
             collectiveOffer__institution=educational_institution,
         ).collectiveOffer
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
         # When
@@ -978,12 +890,10 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.domain.admin_emails.send_offer_validation_notification_to_administration")
     def test_reject_collective_offer_and_send_mail_to_administration(
         self,
         mocked_send_offer_validation_notification_to_administration,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         client,
     ):
@@ -1004,10 +914,6 @@ class OfferValidationViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
 
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
 
         # When
@@ -1108,10 +1014,7 @@ class OfferValidationViewTest:
     )
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    def test_batch_approve_collective_offers(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
-    ):
+    def test_batch_approve_collective_offers(self, mocked_validate_csrf_token, action, expected, client):
         users_factories.AdminFactory(email="admin@example.com")
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -1131,11 +1034,6 @@ class OfferValidationViewTest:
             collectiveOffer__venue__bookingEmail="email1@example.com",
             collectiveOffer__venue=venue,
         ).collectiveOffer
-
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
 
         data = dict(rowid=[offer1.id, offer2.id], action=action)
         client.with_session_auth("admin@example.com")
@@ -1158,12 +1056,10 @@ class OfferValidationViewTest:
 
     @pytest.mark.parametrize("action", ["approve", "reject"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.core.offers.api.update_pending_offer_validation")
     def test_batch_approve_reject_collective_offers_not_updated(
         self,
         mocked_update_pending_offer_validation,
-        mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
         action,
         client,
@@ -1180,11 +1076,6 @@ class OfferValidationViewTest:
             venue=venue,
         )
         offers_factories.OfferValidationConfigFactory()
-
-        mocked_get_offerer_legal_category.return_value = {
-            "code": 5202,
-            "label": "Société en nom collectif",
-        }
 
         mocked_update_pending_offer_validation.return_value = False
 
@@ -1203,69 +1094,6 @@ class OfferValidationViewTest:
             "Une erreur s&#39;est produite lors de la mise à jour du statut de validation des offres"
             in get_response.data.decode("utf8")
         )
-
-
-class GetOfferValidationViewTest:
-    CONFIG_YAML = """
-                minimum_score: 0.6
-                rules:
-                   - name: "check offer name"
-                     factor: 0
-                     conditions:
-                       - model: "Offerer"
-                         attribute: "legal_category"
-                         condition:
-                            operator: "=="
-                            comparated: "5202"
-                """
-
-    @clean_database
-    @override_features(USE_INSEE_SIRENE_API=False)
-    @patch("pcapi.core.offerers.models.get_offerer_legal_category")
-    def test_offer_validation_legal_category_api_calls(self, mocked_get_offerer_legal_category, app):
-        import_offer_validation_config(self.CONFIG_YAML)
-        users_factories.AdminFactory(email="admin@example.com")
-        offerer = offerers_factories.OffererFactory()
-        offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
-        )
-        offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
-        )
-        offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
-        )
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
-        }
-
-        response_1 = client.get(url_for("validation.index_view"))
-        response_2 = client.get(url_for("validation.index_view"))
-        response_3 = client.get(url_for("validation.edit", id=offer.id))
-
-        assert response_1.status_code == response_2.status_code == response_3.status_code == 200
-        assert mocked_get_offerer_legal_category.call_count == 1
-
-    @clean_database
-    @override_features(USE_INSEE_SIRENE_API=False)
-    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
-    def test_view_form_loads_if_wrong_siren(self, mocked_get_by_offerer, app, client, caplog):
-        import_offer_validation_config(self.CONFIG_YAML)
-        users_factories.AdminFactory(email="admin@example.com")
-        offerer = offerers_factories.OffererFactory()
-        offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
-        )
-        client = client.with_session_auth("admin@example.com")
-        mocked_get_by_offerer.side_effect = ApiEntrepriseException(
-            f"Error getting API entreprise DATA for SIREN:{offerer.siren}"
-        )
-        response = client.get(url_for("validation.edit", id=offer.id))
-
-        assert response.status_code == 200
-        assert caplog.messages == ["Could not reach API Entreprise"]
 
 
 class OfferViewTest:

@@ -11,7 +11,6 @@ from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -166,26 +165,6 @@ class VenueNApprovedOffersTest:
 
 
 class OffererLegalCategoryTest:
-    @override_features(USE_INSEE_SIRENE_API=False)
-    @patch("pcapi.core.offerers.models.get_offerer_legal_category")
-    def test_offerer_legal_category_legacy_api(self, mocked_get_offerer_legal_category):
-        info = {
-            "legal_category_code": "5202",
-            "legal_category_label": "Société en nom collectif",
-        }
-        mocked_get_offerer_legal_category.return_value = info
-        offerer = factories.OffererFactory.build()
-
-        expected = {
-            "code": "5202",
-            "label": "Société en nom collectif",
-        }
-        assert offerer.legal_category == expected
-        assert offerer.legal_category == expected
-        assert offerer.legal_category == expected
-        assert mocked_get_offerer_legal_category.call_count == 1
-
-    @override_features(USE_INSEE_SIRENE_API=True)
     def test_offerer_legal_category(self):
         offerer = factories.OffererFactory.build()
         assert offerer.legal_category == {
@@ -193,7 +172,6 @@ class OffererLegalCategoryTest:
             "label": "Entrepreneur individuel",
         }
 
-    @override_features(USE_INSEE_SIRENE_API=True)
     @patch("pcapi.connectors.sirene.get_siren", side_effect=sirene.UnknownEntityException())
     def test_offerer_legal_category_on_error(self, get_siren_mock):
         offerer = factories.OffererFactory.build()

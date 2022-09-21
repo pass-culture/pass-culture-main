@@ -1,5 +1,4 @@
 from unittest.mock import MagicMock
-from unittest.mock import patch
 
 import pytest
 
@@ -17,10 +16,7 @@ from pcapi.domain.admin_emails import send_suspended_fraudulent_users_email
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.connectors.api_entreprises.requests.get")
-def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate(
-    mock_api_entreprise, app
-):
+def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate():
     # Given
     response_return_value = MagicMock(status_code=200, text="")
     response_return_value.json = MagicMock(
@@ -28,7 +24,6 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
             "unite_legale": {"etablissement_siege": {"siret": ""}, "etablissements": [], "activite_principale": ""}
         }
     )
-    mock_api_entreprise.return_value = response_return_value
     user = users_factories.UserFactory()
     offerer = offerers_factories.OffererFactory(validationToken="12356")
     user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, user=user)
