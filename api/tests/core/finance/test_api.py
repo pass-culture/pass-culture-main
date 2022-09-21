@@ -2276,6 +2276,7 @@ class GenerateInvoicesTest:
     @mock.patch("pcapi.core.finance.api._generate_invoice_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
     @auto_override_features
+    @clean_temporary_files
     def test_basics(self, _mocked1, _mocked2):
         booking1 = bookings_factories.UsedIndividualBookingFactory(stock=self.stock_factory())
         booking2 = bookings_factories.UsedIndividualBookingFactory(stock=self.stock_factory())
