@@ -18,10 +18,6 @@ import pcapi.core.booking_providers.models as booking_providers_models
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
-def _is_available_and_normal_seat(seat_value: int) -> bool:
-    return seat_value % 10 == 1 and seat_value // 10 == 0
-
-
 class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
     def __init__(self, cinema_id: str, account_id: str, api_url: str, cinema_api_token: str | None):
         if not cinema_api_token:
@@ -125,28 +121,35 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_available_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[cds_serializers.SeatCDS]:
-        seatmap = self.get_seatmap(show_id)
+    def get_hardcoded_setmap(self, show: cds_serializers.ShowCDS) -> str | None:
+        cinema = self.get_cinema_infos()
+        for parameter in cinema.cinema_parameters:
+            if parameter.key == cds_constants.SEATMAP_HARDCODED_LABELS_SCREENID + str(show.screen.id):
+                return parameter.value
+        return None
+
+    def get_available_seat(
+        self, show: cds_serializers.ShowCDS, screen: cds_serializers.ScreenCDS
+    ) -> list[cds_serializers.SeatCDS]:
+        seatmap = self.get_seatmap(show.id)
         available_seats_index = [
-            (i, j)
-            for i in range(0, seatmap.nb_row)
-            for j in range(0, seatmap.nb_col)
-            if _is_available_and_normal_seat(seatmap.map[i][j])
+            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] == 1
         ]
         if len(available_seats_index) == 0:
             return []
         best_seat = self._get_closest_seat_to_center((seatmap.nb_row // 2, seatmap.nb_col // 2), available_seats_index)
-        return [cds_serializers.SeatCDS(best_seat, screen, seatmap)]
 
-    def get_available_duo_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[cds_serializers.SeatCDS]:
-        seatmap = self.get_seatmap(show_id)
+        hardcoded_seatmap = self.get_hardcoded_setmap(show)
+        return [cds_serializers.SeatCDS(best_seat, screen, seatmap, hardcoded_seatmap)]
+
+    def get_available_duo_seat(
+        self, show: cds_serializers.ShowCDS, screen: cds_serializers.ScreenCDS
+    ) -> list[cds_serializers.SeatCDS]:
+        seatmap = self.get_seatmap(show.id)
         seatmap_center = ((seatmap.nb_row - 1) / 2, (seatmap.nb_col - 1) / 2)
 
         available_seats_index = [
-            (i, j)
-            for i in range(0, seatmap.nb_row)
-            for j in range(0, seatmap.nb_col)
-            if _is_available_and_normal_seat(seatmap.map[i][j])
+            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] == 1
         ]
         if len(available_seats_index) <= 1:
             return []
@@ -163,9 +166,11 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
             available_seats_index.remove(first_seat)
             second_seat = self._get_closest_seat_to_center(seatmap_center, available_seats_index)
 
+        hardcoded_seatmap = self.get_hardcoded_setmap(show)
+
         return [
-            cds_serializers.SeatCDS(first_seat, screen, seatmap),
-            cds_serializers.SeatCDS(second_seat, screen, seatmap),
+            cds_serializers.SeatCDS(first_seat, screen, seatmap, hardcoded_seatmap),
+            cds_serializers.SeatCDS(second_seat, screen, seatmap, hardcoded_seatmap),
         ]
 
     def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
@@ -306,3 +311,13 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         # In this case we take the tariff with the lower price
         min_price_voucher = min(show_pc_vouchers, key=attrgetter("tariff.price"))
         return min_price_voucher
+
+    def get_cinema_infos(self) -> cds_serializers.CinemaCDS:
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
+        cinemas = parse_obj_as(list[cds_serializers.CinemaCDS], data)
+        for cinema in cinemas:
+            if cinema.id == self.cinema_id:
+                return cinema
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Cinema not found in Cine Digital Service API " f"for cinemaId={self.cinema_id} & url={self.api_url}"
+        )
