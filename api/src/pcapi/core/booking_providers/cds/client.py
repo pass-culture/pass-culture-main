@@ -168,10 +168,10 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
             cds_serializers.SeatCDS(second_seat, screen, seatmap),
         ]
 
-    def get_seatmap(self, show_id: int) -> booking_providers_models.SeatMap:
+    def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
         seatmap_cds = parse_obj_as(cds_serializers.SeatmapCDS, data)
-        return booking_providers_models.SeatMap(seatmap_cds.map)
+        return seatmap_cds
 
     def _get_closest_seat_to_center(
         self, center: tuple[float, float], seats_index: list[tuple[int, int]]
@@ -246,9 +246,9 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         seats_to_book = []
         if not show.is_disabled_seatmap and not show.is_empty_seatmap:
             seats_to_book = (
-                self.get_available_seat(show.id, screen)
+                self.get_available_seat(show, screen)
                 if booking_quantity == 1
-                else self.get_available_duo_seat(show.id, screen)
+                else self.get_available_duo_seat(show, screen)
             )
 
             if not seats_to_book:
