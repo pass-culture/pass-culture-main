@@ -36,7 +36,6 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.feature import FeatureToggle
@@ -55,6 +54,7 @@ from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
+import pcapi.utils.postal_code as postal_code_utils
 
 
 logger = logging.getLogger(__name__)
@@ -993,7 +993,7 @@ def create_collective_offer_public(
 def get_educational_institution_department_code(
     institution: educational_models.EducationalInstitution,
 ) -> str:
-    department_code = PostalCode(institution.postalCode).get_departement_code()
+    department_code = postal_code_utils.PostalCode(institution.postalCode).get_departement_code()
     return department_code
 
 

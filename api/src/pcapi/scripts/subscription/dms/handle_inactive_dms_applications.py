@@ -11,8 +11,8 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.repository import repository
+import pcapi.utils.postal_code as postal_code_utils
 
 
 logger = logging.getLogger(__name__)
@@ -113,7 +113,9 @@ def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationRespo
         return True
     applicant_birth_date = application_content.get_birth_date()
     applicant_postal_code = application_content.get_postal_code()
-    applicant_department = PostalCode(applicant_postal_code).get_departement_code() if applicant_postal_code else None
+    applicant_department = (
+        postal_code_utils.PostalCode(applicant_postal_code).get_departement_code() if applicant_postal_code else None
+    )
     if applicant_birth_date is None or applicant_department is None:
         return True
 

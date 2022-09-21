@@ -40,8 +40,6 @@ from werkzeug.utils import cached_property
 from pcapi.connectors import sirene
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance.models import BankInformationStatus
-from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models import Base
 from pcapi.models import Model
@@ -60,6 +58,7 @@ from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
 import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
+import pcapi.utils.postal_code as postal_code_utils
 
 from . import constants
 
@@ -282,7 +281,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
     def store_departement_code(self) -> None:
         if not self.postalCode:
             return
-        self.departementCode = PostalCode(self.postalCode).get_departement_code()
+        self.departementCode = postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
     @property
     def bic(self) -> str | None:
@@ -596,14 +595,15 @@ class Offerer(
 
     @hybrid_property
     def departementCode(self) -> str:
-        return PostalCode(self.postalCode).get_departement_code()
+        return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
     @departementCode.expression  # type: ignore [no-redef]
     def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
         return case(
             [
                 (
-                    cast(func.substring(cls.postalCode, 1, 2), Integer) >= OVERSEAS_DEPARTEMENT_CODE_START,
+                    cast(func.substring(cls.postalCode, 1, 2), Integer)
+                    >= postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_START,
                     func.substring(cls.postalCode, 1, 3),
                 )
             ],

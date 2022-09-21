@@ -8,7 +8,7 @@ from babel.dates import format_datetime as babel_format_datetime
 from dateutil.parser import parserinfo
 from pytz import BaseTzInfo as pytz_BaseTzInfo
 
-from pcapi.domain.postal_code.postal_code import PostalCode
+import pcapi.utils.postal_code as postal_code_utils
 
 
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -90,7 +90,7 @@ def format_datetime(date_time: datetime) -> str:
 
 
 def get_postal_code_timezone(postal_code: str) -> str:
-    return get_department_timezone(PostalCode(postal_code).get_departement_code())
+    return get_department_timezone(postal_code_utils.PostalCode(postal_code).get_departement_code())
 
 
 def get_department_timezone(departement_code: str | None) -> str:

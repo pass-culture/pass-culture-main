@@ -14,19 +14,18 @@ import sqlalchemy as sa
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.common import models as common_fraud_models
+import pcapi.core.fraud.common.models as common_fraud_models
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
-from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
-from pcapi.core.users import constants as users_constants
-from pcapi.core.users import external as users_external
-from pcapi.core.users import repository as users_repository
-from pcapi.core.users import utils as users_utils
+import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
+import pcapi.core.users.constants as users_constants
+import pcapi.core.users.external as users_external
+import pcapi.core.users.repository as users_repository
+import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_hashed_password
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -34,9 +33,10 @@ from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
-from pcapi.utils import db as db_utils
-from pcapi.utils import phone_number as phone_number_utils
+import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
+import pcapi.utils.phone_number as phone_number_utils
+import pcapi.utils.postal_code as postal_code_utils
 
 from . import constants
 from . import exceptions
@@ -209,7 +209,7 @@ def update_user_information(
         user.married_name = married_name
     if postal_code is not None:
         user.postalCode = postal_code
-        user.departementCode = PostalCode(postal_code).get_departement_code() if postal_code else None
+        user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
 
     user.remove_admin_role()
 
@@ -636,7 +636,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
     new_pro_user.generate_validation_token()
 
     if pro_user.postal_code:
-        new_pro_user.departementCode = PostalCode(pro_user.postal_code).get_departement_code()
+        new_pro_user.departementCode = postal_code_utils.PostalCode(pro_user.postal_code).get_departement_code()
 
     if settings.IS_INTEGRATION:
         new_pro_user.add_beneficiary_role()
@@ -666,7 +666,7 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
 
 def _set_offerer_departement_code(new_user: models.User, offerer: offerers_models.Offerer) -> models.User:
     if offerer.postalCode:  # not None, not ""
-        new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
+        new_user.departementCode = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
     else:
         new_user.departementCode = None
     return new_user
