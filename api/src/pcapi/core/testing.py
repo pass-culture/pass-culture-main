@@ -320,10 +320,10 @@ def clean_temporary_files(test_function: typing.Callable) -> typing.Callable:
             else:
                 path.unlink()
 
-    def wrapper() -> None:
+    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> None:
         try:
             with mock.patch.multiple(tempfile, mkdtemp=patched_mkdtemp, mkstemp=patched_mkstemp):
-                test_function()
+                test_function(*args, **kwargs)
         finally:
             cleanup()
 
