@@ -8,21 +8,17 @@ import * as yup from 'yup'
 
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import { VENUE_DEFAULT_VALUES, Venue, validationSchema } from '..'
 import { IVenueProps } from '../Venue'
-
-interface IInitialValues {
-  offererId: string
-  venueId: string
-}
 
 const renderVenue = ({
   initialValues,
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: IInitialValues
+  initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
   props: IVenueProps
 }) => {
@@ -38,7 +34,7 @@ const renderVenue = ({
 }
 
 describe('OfferIndividual section: venue', () => {
-  let initialValues: IInitialValues
+  let initialValues: Partial<IOfferIndividualFormValues>
   let props: IVenueProps
   const onSubmit = jest.fn()
 
@@ -127,27 +123,27 @@ describe('OfferIndividual section: venue', () => {
     }
   })
 
-  it('should not automatically select a structure', () => {
+  it('should not automatically select a structure', async () => {
     renderVenue({
       initialValues,
       onSubmit,
       props,
     })
 
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectOfferer = await screen.getByLabelText('Structure')
 
     expect(selectOfferer).toBeInTheDocument()
     expect(selectOfferer).toHaveValue(VENUE_DEFAULT_VALUES.offererId)
     expect(selectOfferer.childNodes.length).toBe(4)
   })
 
-  it('should not automatically select an offerer when the structure is not defined', () => {
+  it('should not automatically select an offerer when the structure is not defined', async () => {
     renderVenue({
       initialValues,
       onSubmit,
       props,
     })
-    const selectVenue = screen.getByLabelText('Lieu')
+    const selectVenue = await screen.getByLabelText('Lieu')
 
     expect(selectVenue).toBeInTheDocument()
     expect(selectVenue).toHaveValue(VENUE_DEFAULT_VALUES.venueId)
@@ -208,7 +204,7 @@ describe('OfferIndividual section: venue', () => {
     await userEvent.selectOptions(selectOfferer, 'CC')
     expect(selectOfferer).toHaveValue('CC')
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(selectVenue).not.toBeDisabled()
     })
 
@@ -242,14 +238,14 @@ describe('OfferIndividual section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = screen.getByLabelText('Lieu')
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectVenue = await screen.getByLabelText('Lieu')
+    const selectOfferer = await screen.getByLabelText('Structure')
 
     expect(
-      screen.queryByText('Veuillez sélectionner une structure')
+      await screen.queryByText('Veuillez sélectionner une structure')
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByText('Veuillez sélectionner un lieu')
+      await screen.queryByText('Veuillez sélectionner un lieu')
     ).not.toBeInTheDocument()
 
     await userEvent.selectOptions(selectOfferer, 'Offerer CC')
@@ -257,7 +253,7 @@ describe('OfferIndividual section: venue', () => {
 
     await userEvent.selectOptions(selectVenue, 'Selectionner un lieu')
     await userEvent.tab()
-    waitFor(() =>
+    await waitFor(() =>
       expect(
         screen.getByText('Veuillez sélectionner un lieu')
       ).toBeInTheDocument()
@@ -266,12 +262,12 @@ describe('OfferIndividual section: venue', () => {
     await userEvent.selectOptions(selectOfferer, 'Selectionner une structure')
     await userEvent.tab()
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(
         screen.getByText('Veuillez sélectionner une structure')
       ).toBeInTheDocument()
       expect(
-        screen.getByText('Veuillez sélectionner un lieu')
+        screen.queryByText('Veuillez sélectionner un lieu')
       ).not.toBeInTheDocument()
     })
   })
