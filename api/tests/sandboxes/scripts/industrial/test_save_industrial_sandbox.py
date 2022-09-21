@@ -21,10 +21,10 @@ class SaveIndustrialSandboxTest:
         assert offers_models.Offer.query.count() == 127
         assert offers_models.Stock.query.count() == 128
         assert 170 <= bookings_models.Booking.query.count() <= 200
-        assert finance_models.Invoice.query.count() == 8
-        assert finance_models.Cashflow.query.count() == 9
+        assert finance_models.Invoice.query.count() == 3
+        assert finance_models.Cashflow.query.count() == 4
         assert (
             finance_models.Pricing.query.filter(
                 finance_models.Pricing.status != finance_models.PricingStatus.INVOICED
             ).count()
-        ) == 12  # FIXME (dbaty, 2022-09-14): should probably be 0
+        ) == 63  # FIXME (dbaty, 2022-09-14): should probably be 0

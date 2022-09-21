@@ -31,23 +31,20 @@ def create_industrial_invoices() -> None:
 def create_specific_invoice() -> None:
     logger.info("create_specific_invoice")
     bank_info = finance_factories.BankInformationFactory()
-    business_unit = finance_factories.BusinessUnitFactory(
-        name="0 - Point de remboursement avec justificatif copieux",
-        bankAccount=bank_info,
-    )
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copieux")
     pro = users_factories.ProFactory(email="pctest.pro.justificatif.copieux@example.com")
     offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
     venue = offerers_factories.VenueFactory(
         name="0 - Lieu avec justificatif copieux",
-        siret=business_unit.siret,
-        businessUnit=business_unit,
         managingOfferer=offerer,
         pricing_point="self",
         reimbursement_point="self",
     )
     virtual_venue = offerers_factories.VirtualVenueFactory(
-        managingOfferer=offerer, name=f"{venue.name} (Offre numérique)", businessUnit__name=offerer.name
+        managingOfferer=offerer,
+        name=f"{venue.name} (Offre numérique)",
+        pricing_point=venue,
+        reimbursement_point=venue,
     )
     bank_info.venue = venue
     db.session.add(bank_info)
@@ -102,11 +99,7 @@ def create_specific_invoice() -> None:
     for booking in bookings[3:]:
         finance_api.price_booking(booking)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
-    cashflows = (
-        finance_models.Cashflow.query.join(finance_models.Cashflow.pricings)
-        .filter(finance_models.Pricing.businessUnitId == business_unit.id)
-        .all()
-    )
+    cashflows = finance_models.Cashflow.query.filter_by(reimbursementPoint=venue).all()
     cashflow_ids = [c.id for c in cashflows]
 
     finance_api.generate_and_store_invoice(
