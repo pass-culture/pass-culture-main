@@ -26,7 +26,7 @@ from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.mailing import build_pc_pro_create_password_link
-from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
+import pcapi.utils.postal_code as postal_code_utils
 
 from .mixins.suspension_mixin import SuspensionMixin
 
@@ -148,7 +148,10 @@ class ProUserView(SuspensionMixin, BaseAdminView):
             "Code postal de la structure",
             [
                 validators.DataRequired(),
-                validators.Regexp(POSTAL_CODE_REGEX, message="Le code postal saisi doit être valide"),
+                validators.Regexp(
+                    postal_code_utils.POSTAL_CODE_REGEX,
+                    message="Le code postal saisi doit être valide",
+                ),
             ],
         )
         form.offererCity = StringField("Ville de la structure", [validators.DataRequired()])

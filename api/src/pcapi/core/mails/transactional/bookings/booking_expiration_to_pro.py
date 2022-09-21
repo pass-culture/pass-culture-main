@@ -8,18 +8,19 @@ from pcapi.core.categories import subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers.models import Offerer
-from pcapi.domain.postal_code.postal_code import PostalCode
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi.utils.urls import build_pc_pro_offer_link
 
 
 def get_bookings_expiration_to_pro_email_data(
     offerer: Offerer, bookings: list[Booking], withdrawal_period: int
 ) -> models.TransactionalEmailData:
+    departement_code = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value,
         params={
             "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings),
-            "DEPARTMENT": PostalCode(offerer.postalCode).get_departement_code(),
+            "DEPARTMENT": departement_code,
             "WITHDRAWAL_PERIOD": withdrawal_period,
         },
     )

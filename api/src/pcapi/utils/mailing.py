@@ -16,10 +16,10 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.utils import urls
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
+import pcapi.utils.postal_code as postal_code_utils
 
 
 logger = logging.getLogger(__name__)
@@ -73,7 +73,7 @@ def make_offerer_internal_validation_email(
     else:
         siren_info_as_dict = siren_info.dict()
 
-    offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()
+    offerer_departement_code = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
 
     email_html = render_template(
         "mails/internal_validation_email.html",

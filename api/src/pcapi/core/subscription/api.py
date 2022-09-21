@@ -18,10 +18,10 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions
@@ -345,7 +345,7 @@ def complete_profile(
         "address": address,
         "city": city,
         "postalCode": postal_code,
-        "departementCode": PostalCode(postal_code).get_departement_code(),
+        "departementCode": postal_code_utils.PostalCode(postal_code).get_departement_code(),
         "activity": activity,
         "schoolType": school_type,
     }
