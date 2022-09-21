@@ -176,6 +176,26 @@ describe('navigation menu', () => {
       )
     })
 
+    it('when clicking on Stats', async () => {
+      // given
+      const overrideStore = {
+        ...defaultStore,
+        features: {
+          list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
+        },
+      }
+      renderHeader(overrideStore)
+
+      // When
+      await userEvent.click(screen.getAllByRole('menuitem')[5])
+
+      // Then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_STATS, {
+        from: '/accueil',
+      })
+    })
+
     it('when clicking on Logout', async () => {
       // given
       renderHeader()
