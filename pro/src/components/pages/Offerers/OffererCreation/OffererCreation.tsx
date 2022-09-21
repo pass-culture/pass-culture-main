@@ -2,21 +2,17 @@ import React from 'react'
 import { Form } from 'react-final-form'
 import { useHistory } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { CreateOffererQueryModel } from 'apiClient/v1'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import { addressAndDesignationFromSirenDecorator } from 'components/layout/form/fields/SirenField'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import GoBackLink from 'new_components/GoBackLink'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCreationUnavailable'
-
-interface iOfferer {
-  id?: string
-  siren?: string
-}
 
 const OffererCreation = (): JSX.Element => {
   const isEntrepriseApiDisabled = useActiveFeature('DISABLE_ENTERPRISE_API')
@@ -27,9 +23,10 @@ const OffererCreation = (): JSX.Element => {
     history.replace(`/accueil?structure=${createdOffererId}`)
   }
 
-  const handleSubmit = async (offerer: iOfferer) => {
+  const handleSubmit = async (offerer: CreateOffererQueryModel) => {
     const { siren } = offerer
-    await pcapi
+
+    await api
       .createOfferer({
         ...offerer,
         siren: siren?.replace(/\s/g, ''),
@@ -62,9 +59,15 @@ const OffererCreation = (): JSX.Element => {
       {isEntrepriseApiDisabled ? (
         <OffererCreationUnavailable />
       ) : (
-        <Form
-          backTo="/accueil"
-          component={OffererCreationForm as any /* eslint-disable-line */}
+        <Form<CreateOffererQueryModel>
+          component={({ handleSubmit, invalid, pristine }) => (
+            <OffererCreationForm
+              backTo="/accueil"
+              handleSubmit={handleSubmit}
+              invalid={invalid}
+              pristine={pristine}
+            />
+          )}
           decorators={[addressAndDesignationFromSirenDecorator]}
           onSubmit={handleSubmit}
         />
