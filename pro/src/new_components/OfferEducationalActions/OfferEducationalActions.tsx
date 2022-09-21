@@ -4,10 +4,11 @@ import React, { useState } from 'react'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import CancelCollectiveBookingModal from '../CancelCollectiveBookingModal'
+
 import { ReactComponent as IconActive } from './assets/icon-active.svg'
 import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'
 import style from './OfferEducationalActions.module.scss'
-import ConfirmModal from './OfferEducationalActionsModal'
 
 interface IOfferEducationalActions {
   className?: string
@@ -31,7 +32,7 @@ const OfferEducationalActions = ({
   return (
     <>
       {isModalOpen && cancelActiveBookings && (
-        <ConfirmModal
+        <CancelCollectiveBookingModal
           onDismiss={() => setIsModalOpen(false)}
           onValidate={cancelActiveBookings}
         />

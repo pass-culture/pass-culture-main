@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 import '@testing-library/jest-dom'
 
+import { api } from 'apiClient/api'
 import { OfferAddressType, StudentLevels } from 'apiClient/v1'
 import { configureTestStore } from 'store/testUtils'
 
@@ -58,7 +59,7 @@ describe('CollectiveBookingDetails', () => {
             bookingDetails={bookingDetails}
             reloadBookings={reloadBookings}
             offerId="A1"
-            canCanelBooking={true}
+            canCancelBooking={true}
           />
         </Router>
       </Provider>
@@ -67,6 +68,11 @@ describe('CollectiveBookingDetails', () => {
     await userEvent.click(
       await screen.findByRole('button', { name: 'Annuler la réservation' })
     )
+    expect(
+      screen.queryByText('Voulez-vous annuler la réservation ?')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmer' }))
+    expect(api.cancelCollectiveOfferBooking).toHaveBeenCalledWith('A1')
     await waitFor(() => expect(reloadBookings).toHaveBeenCalledTimes(1))
   })
 
@@ -78,7 +84,7 @@ describe('CollectiveBookingDetails', () => {
             bookingDetails={bookingDetails}
             reloadBookings={jest.fn()}
             offerId="A1"
-            canCanelBooking={false}
+            canCancelBooking={false}
           />
         </Router>
       </Provider>
