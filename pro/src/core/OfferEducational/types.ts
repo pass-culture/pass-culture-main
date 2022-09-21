@@ -33,16 +33,7 @@ export type IOfferEducationalFormValues = {
     venueId: string
   }
   interventionArea: string[]
-  participants: {
-    all: boolean
-    quatrieme: boolean
-    troisieme: boolean
-    CAPAnnee1: boolean
-    CAPAnnee2: boolean
-    seconde: boolean
-    premiere: boolean
-    terminale: boolean
-  }
+  participants: Record<StudentLevels | 'all', boolean>
   accessibility: IAccessibiltyFormValues
   phone: string
   email: string
