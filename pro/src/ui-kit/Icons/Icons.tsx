@@ -43,6 +43,7 @@ import { ReactComponent as IcoPlusIcon } from 'icons/ico-plus.svg'
 import { ReactComponent as IcoRightCircleArrowIcon } from 'icons/ico-right-circle-arrow.svg'
 import { ReactComponent as IcoSearchGrayIcon } from 'icons/ico-search-gray.svg'
 import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
+import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import { ReactComponent as IcoStructureIcon } from 'icons/ico-structure.svg'
 import { ReactComponent as IcoTagIcon } from 'icons/ico-tag.svg'
 import { ReactComponent as IcoTrashIcon } from 'icons/ico-trash.svg'
@@ -460,6 +461,12 @@ export const Icons = () => (
           <OffersIcon />
         </td>
         <td>ico-offers</td>
+      </tr>
+      <tr>
+        <td>
+          <StatsIcon />
+        </td>
+        <td>ico-stats</td>
       </tr>
     </body>
   </table>
