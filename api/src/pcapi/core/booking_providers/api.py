@@ -15,11 +15,6 @@ def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[int, int]:
     return client.get_shows_remaining_places(shows_id)
 
 
-def get_available_seats(venue_id: int, show_id: int) -> booking_providers_models.SeatMap:
-    client = _get_booking_provider_client_api(venue_id)
-    return client.get_seatmap(show_id)
-
-
 def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
     client = _get_booking_provider_client_api(venue_id)
     client.cancel_booking(barcodes)

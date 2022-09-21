@@ -7,7 +7,6 @@ from pcapi.connectors.cine_digital_service import ResourceCDS
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
-from pcapi.core.booking_providers.models import SeatMap
 from pcapi.core.testing import override_settings
 
 
@@ -586,11 +585,14 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
             seatmapskipmissingseats=False,
         )
 
+        show = create_show_cds(id_=1)
+
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
-        best_seat = cine_digital_service.get_available_seat(1, screen)
+
+        best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
         assert best_seat[0].seatRow == 5
         assert best_seat[0].seatCol == 6
@@ -616,12 +618,12 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
             seatmaplefttoright=True,
             seatmapskipmissingseats=False,
         )
-
+        show = create_show_cds(id_=1, screen_id=1)
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
-        best_seat = cine_digital_service.get_available_seat(1, screen)
+        best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
         assert best_seat[0].seatRow == 4
         assert best_seat[0].seatCol == 6
@@ -644,11 +646,13 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
             seatmapskipmissingseats=True,
         )
 
+        show = create_show_cds(id_=1, screen_id=1)
+
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
-        best_seat = cine_digital_service.get_available_seat(1, screen)
+        best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
         assert best_seat[0].seatRow == 2
         assert best_seat[0].seatCol == 2
@@ -670,12 +674,13 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
             seatmaplefttoright=True,
             seatmapskipmissingseats=False,
         )
+        show = create_show_cds(id_=1, screen_id=1)
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
-        best_seat = cine_digital_service.get_available_seat(1, screen)
+        best_seat = cine_digital_service.get_available_seat(show, screen)
         assert not best_seat
 
 
@@ -696,12 +701,13 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
             seatmaplefttoright=True,
             seatmapskipmissingseats=False,
         )
+        show = create_show_cds(id_=1, screen_id=1)
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
-        duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
+        duo_seats = cine_digital_service.get_available_duo_seat(show, screen)
         assert len(duo_seats) == 2
         assert duo_seats[0].seatNumber == "B_2"
         assert duo_seats[1].seatNumber == "B_3"
@@ -722,12 +728,13 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
             seatmaplefttoright=True,
             seatmapskipmissingseats=False,
         )
+        show = create_show_cds(id_=1, screen_id=1)
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
-        duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
+        duo_seats = cine_digital_service.get_available_duo_seat(show, screen)
         assert len(duo_seats) == 0
 
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
@@ -746,12 +753,13 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
             seatmaplefttoright=True,
             seatmapskipmissingseats=False,
         )
+        show = create_show_cds(id_=1, screen_id=1)
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
-        duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
+        duo_seats = cine_digital_service.get_available_duo_seat(show, screen)
         assert len(duo_seats) == 2
         assert duo_seats[0].seatNumber == "C_3"
         assert duo_seats[1].seatNumber == "D_3"
@@ -896,7 +904,7 @@ class CineDigitalServiceBookTicketTest:
 
         mocked_get_available_seat.return_value = [
             cds_serializers.SeatCDS(
-                (0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])
+                (0, 0), create_screen_cds(), cds_serializers.SeatmapCDS(__root__=[[1, 1, 1], [1, 1, 1], [1, 1, 1]])
             ),
         ]
 
@@ -970,14 +978,10 @@ class CineDigitalServiceBookTicketTest:
                 tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
             )
         ]
-
+        mocked_seatmap = cds_serializers.SeatmapCDS(__root__=[[1, 1, 1], [1, 1, 1], [1, 1, 1]])
         mocked_get_available_duo_seat.return_value = [
-            cds_serializers.SeatCDS(
-                (0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])
-            ),
-            cds_serializers.SeatCDS(
-                (0, 1), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])
-            ),
+            cds_serializers.SeatCDS((0, 0), create_screen_cds(), mocked_seatmap),
+            cds_serializers.SeatCDS((0, 1), create_screen_cds(), mocked_seatmap),
         ]
 
         mocked_get_show.return_value = create_show_cds(
