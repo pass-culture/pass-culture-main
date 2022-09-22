@@ -73,9 +73,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_NEW_IDENTIFICATION_FLOW = "Activer le nouveau flux d'inscription jeune pré-Ubble"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
-    ENABLE_PHONE_VALIDATION_IN_STEPPER = (
-        "Déplace la validation du numéro de téléphone dans le flux du parcours d'inscription"
-    )
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
     ENABLE_PRO_NEW_VENUE_PROVIDER_UI = "Activer le nouveau affichage de la section synchronisation sur la page lieu"
