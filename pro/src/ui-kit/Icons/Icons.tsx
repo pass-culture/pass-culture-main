@@ -17,6 +17,7 @@ import { ReactComponent as IcoCalendarIcon } from 'icons/ico-calendar.svg'
 import { ReactComponent as IcoCaretDownIcon } from 'icons/ico-caret-down.svg'
 import { ReactComponent as IcoCaretRightIcon } from 'icons/ico-caret-right.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
+import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IcoDownloadFilledIcon } from 'icons/ico-download-filled.svg'
 import { ReactComponent as IcoDownloadIcon } from 'icons/ico-download.svg'
 import { ReactComponent as IcoDuoIcon } from 'icons/ico-duo.svg'
@@ -29,9 +30,11 @@ import { ReactComponent as IcoExternalSiteRedFilledIcon } from 'icons/ico-extern
 import { ReactComponent as IcoEyeCloseIcon } from 'icons/ico-eye-close.svg'
 import { ReactComponent as IcoEyeHiddenIcon } from 'icons/ico-eye-hidden.svg'
 import { ReactComponent as IcoEyeOpenIcon } from 'icons/ico-eye-open.svg'
+import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
 import { ReactComponent as IcoMailIcon } from 'icons/ico-mail.svg'
 import { ReactComponent as IcoMoreCircleIcon } from 'icons/ico-more-circle.svg'
 import { ReactComponent as IcoMoreHorizIcon } from 'icons/ico-more-horiz.svg'
+import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
 import { ReactComponent as IcoOuterPenIcon } from 'icons/ico-outer-pen.svg'
 import { ReactComponent as IcoPasscultureIcon } from 'icons/ico-passculture.svg'
 import { ReactComponent as IcoPenBlackIcon } from 'icons/ico-pen-black.svg'
@@ -39,6 +42,7 @@ import { ReactComponent as IcoPenIcon } from 'icons/ico-pen.svg'
 import { ReactComponent as IcoPlusIcon } from 'icons/ico-plus.svg'
 import { ReactComponent as IcoRightCircleArrowIcon } from 'icons/ico-right-circle-arrow.svg'
 import { ReactComponent as IcoSearchGrayIcon } from 'icons/ico-search-gray.svg'
+import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
 import { ReactComponent as IcoStructureIcon } from 'icons/ico-structure.svg'
 import { ReactComponent as IcoTagIcon } from 'icons/ico-tag.svg'
 import { ReactComponent as IcoTrashIcon } from 'icons/ico-trash.svg'
@@ -432,6 +436,30 @@ export const Icons = () => (
           <TropheeIcon />
         </td>
         <td>ico-trophee</td>
+      </tr>
+      <tr>
+        <td>
+          <HomeIcon />
+        </td>
+        <td>ico-home</td>
+      </tr>
+      <tr>
+        <td>
+          <IconDesk />
+        </td>
+        <td>ico-desk</td>
+      </tr>
+      <tr>
+        <td>
+          <SignoutIcon />
+        </td>
+        <td>ico-signout</td>
+      </tr>
+      <tr>
+        <td>
+          <OffersIcon />
+        </td>
+        <td>ico-offers</td>
       </tr>
     </body>
   </table>

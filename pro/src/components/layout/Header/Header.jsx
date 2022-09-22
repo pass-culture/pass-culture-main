@@ -5,15 +5,14 @@ import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { Events } from 'core/FirebaseEvents/constants'
+import { ReactComponent as IconCalendar } from 'icons/ico-calendar.svg'
+import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
+import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
+import { ReactComponent as IconHome } from 'icons/ico-home.svg'
+import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
+import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 
 import Logo from '../Logo'
-
-import { ReactComponent as BookingsSvg } from './assets/bookings.svg'
-import { ReactComponent as CounterSvg } from './assets/counter.svg'
-import { ReactComponent as HomeSvg } from './assets/home.svg'
-import { ReactComponent as OffersSvg } from './assets/offers.svg'
-import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
-import { ReactComponent as SignoutSvg } from './assets/signout.svg'
 
 const Header = () => {
   const { currentUser } = useCurrentUser()
@@ -48,7 +47,7 @@ const Header = () => {
             role="menuitem"
             to={currentUser.isAdmin ? '/structures' : '/accueil'}
           >
-            <HomeSvg aria-hidden />
+            <IconHome aria-hidden className="nav-item-icon" />
             Accueil
           </NavLink>
 
@@ -60,7 +59,7 @@ const Header = () => {
             role="menuitem"
             to="/guichet"
           >
-            <CounterSvg aria-hidden />
+            <IconDesk aria-hidden className="nav-item-icon" />
             Guichet
           </NavLink>
 
@@ -72,7 +71,7 @@ const Header = () => {
             role="menuitem"
             to="/offres"
           >
-            <OffersSvg aria-hidden />
+            <IconOffers aria-hidden className="nav-item-icon" />
             Offres
           </NavLink>
 
@@ -84,7 +83,7 @@ const Header = () => {
             role="menuitem"
             to="/reservations"
           >
-            <BookingsSvg aria-hidden />
+            <IconCalendar aria-hidden className="nav-item-icon" />
             Réservations
           </NavLink>
 
@@ -98,7 +97,7 @@ const Header = () => {
             role="menuitem"
             to="/remboursements/justificatifs"
           >
-            <RefundsSvg aria-hidden />
+            <IconEuro aria-hidden className="nav-item-icon" />
             Remboursements
           </NavLink>
 
@@ -110,7 +109,7 @@ const Header = () => {
             role="menuitem"
             type="button"
           >
-            <SignoutSvg />
+            <IconSignout className="nav-item-icon signout-icon" />
           </button>
         </div>
       </nav>
