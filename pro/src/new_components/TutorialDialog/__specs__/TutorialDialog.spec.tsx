@@ -1,10 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
+import type { Store } from 'redux'
 
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -24,7 +25,7 @@ const stepTitles = [
   'Suivre et gérer vos réservations',
 ]
 
-const renderTutorialDialog = async store => {
+const renderTutorialDialog = async (store: Store) => {
   return render(
     <Provider store={store}>
       <MemoryRouter>
@@ -37,7 +38,7 @@ const renderTutorialDialog = async store => {
 const mockLogEvent = jest.fn()
 
 describe('tutorial modal', () => {
-  let store
+  let store: Store
 
   beforeEach(() => {
     store = configureTestStore({})
@@ -55,7 +56,7 @@ describe('tutorial modal', () => {
         },
       },
     })
-    renderTutorialDialog(store, {})
+    renderTutorialDialog(store)
     const closeButton = screen.getByTitle('Fermer la modale')
     await userEvent.click(closeButton)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.TUTO_PAGE_VIEW, {
@@ -96,7 +97,7 @@ describe('tutorial modal', () => {
   })
 
   describe('interacting with navigation buttons', () => {
-    let buttonNext
+    let buttonNext: HTMLElement
     beforeEach(async () => {
       store = configureTestStore({
         user: {
@@ -120,50 +121,47 @@ describe('tutorial modal', () => {
       it('should show change steps when clicking on "next"', async () => {
         expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
 
-        await fireEvent.click(buttonNext)
+        await userEvent.click(buttonNext)
         expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
 
-        await fireEvent.click(buttonNext)
+        await userEvent.click(buttonNext)
         expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
 
-        await fireEvent.click(buttonNext)
+        await userEvent.click(buttonNext)
         expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
       })
     })
 
     describe('from last step', () => {
-      let buttonPrevious
+      let buttonPrevious: HTMLElement
 
       beforeEach(async () => {
-        await fireEvent.click(buttonNext)
-        await fireEvent.click(buttonNext)
-        await fireEvent.click(buttonNext)
+        await userEvent.click(buttonNext)
+        await userEvent.click(buttonNext)
+        await userEvent.click(buttonNext)
 
         buttonPrevious = screen.getByText('Précédent')
       })
 
       describe('when clicking on finish button', () => {
         it('should close tutorial', async () => {
-          const buttonFinish = screen.queryByText('Terminer')
+          const buttonFinish = screen.getByText('Terminer')
           expect(buttonFinish).toBeInTheDocument()
 
           expect(screen.getByTestId('tutorial-container')).toBeInTheDocument()
-          await act(async () => {
-            await fireEvent.click(buttonFinish)
-          })
+          await userEvent.click(buttonFinish)
+
           expect(
             screen.queryByTestId('tutorial-container')
           ).not.toBeInTheDocument()
         })
 
         it('should call set has seen tutos function', async () => {
-          const buttonFinish = screen.queryByText('Terminer')
+          const buttonFinish = screen.getByText('Terminer')
           expect(buttonFinish).toBeInTheDocument()
 
           expect(screen.getByTestId('tutorial-container')).toBeInTheDocument()
-          await act(async () => {
-            await fireEvent.click(buttonFinish)
-          })
+          await userEvent.click(buttonFinish)
           expect(pcapi.setHasSeenTutos).toHaveBeenCalledWith()
         })
       })
@@ -171,33 +169,33 @@ describe('tutorial modal', () => {
       it('should change step when clicking on "next"', async () => {
         expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
 
-        await fireEvent.click(buttonPrevious)
+        await userEvent.click(buttonPrevious)
         expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
 
-        await fireEvent.click(buttonPrevious)
+        await userEvent.click(buttonPrevious)
         expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
 
-        await fireEvent.click(buttonPrevious)
+        await userEvent.click(buttonPrevious)
         expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
       })
     })
 
     it('should change step when clicking on "previous"', async () => {
-      await fireEvent.click(buttonNext)
-      await fireEvent.click(buttonNext)
-      await fireEvent.click(buttonNext)
+      await userEvent.click(buttonNext)
+      await userEvent.click(buttonNext)
+      await userEvent.click(buttonNext)
 
-      const buttonPrevious = screen.queryByText('Précédent')
+      const buttonPrevious = screen.getByText('Précédent')
 
       expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
 
-      await fireEvent.click(buttonPrevious)
+      await userEvent.click(buttonPrevious)
       expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
 
-      await fireEvent.click(buttonPrevious)
+      await userEvent.click(buttonPrevious)
       expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
 
-      await fireEvent.click(buttonPrevious)
+      await userEvent.click(buttonPrevious)
       expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
     })
 
@@ -206,16 +204,16 @@ describe('tutorial modal', () => {
 
       expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
 
-      await fireEvent.click(navDottes[3])
+      await userEvent.click(navDottes[3])
       expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
 
-      await fireEvent.click(navDottes[1])
+      await userEvent.click(navDottes[1])
       expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
 
-      await fireEvent.click(navDottes[0])
+      await userEvent.click(navDottes[0])
       expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
 
-      await fireEvent.click(navDottes[2])
+      await userEvent.click(navDottes[2])
       expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
     })
   })
