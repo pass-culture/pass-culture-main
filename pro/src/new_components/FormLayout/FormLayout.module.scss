@@ -44,6 +44,7 @@ $info-box-margin-left: rem.torem(24px);
 
     &.inline-group {
       display: flex;
+      align-items: center;
 
       > *:not(:last-child) {
         margin-right: rem.torem(24px);

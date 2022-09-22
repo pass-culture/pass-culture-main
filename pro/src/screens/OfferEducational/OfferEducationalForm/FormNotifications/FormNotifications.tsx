@@ -3,12 +3,11 @@ import React, { useEffect } from 'react'
 
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
-import { Checkbox, TextInput } from 'ui-kit'
+import { Checkbox } from 'ui-kit'
 
-import {
-  NOTIFICATIONS_EMAIL_LABEL,
-  NOTIFICATIONS_LABEL,
-} from '../../constants/labels'
+import { NOTIFICATIONS_LABEL } from '../../constants/labels'
+
+import EmailInputRow from './EmailInputRow/EmailInputRow'
 
 const FormNotifications = ({
   disableForm,
@@ -36,13 +35,11 @@ const FormNotifications = ({
         />
       </FormLayout.Row>
       {values.notifications && (
-        <FormLayout.Row>
-          <TextInput
-            label={NOTIFICATIONS_EMAIL_LABEL}
-            name="notificationEmail"
-            disabled={disableForm}
-          />
-        </FormLayout.Row>
+        <EmailInputRow
+          disableForm={disableForm}
+          displayTrash={false}
+          name={'notificationEmail'}
+        />
       )}
     </FormLayout.Section>
   )
