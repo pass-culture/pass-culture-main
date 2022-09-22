@@ -162,7 +162,7 @@ const serializerPreviewProps = (
   offer: IOfferIndividual
 ): IOfferAppPreviewProps => {
   return {
-    imageSrc: offer.thumbUrl,
+    imageSrc: offer.image?.url,
     offerData: {
       name: offer.name,
       description: offer.description,

@@ -2,19 +2,25 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import {
+  IOfferCategory,
+  IOfferIndividualImage,
+  IOfferSubCategory,
+} from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
+import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
 import { ExternalLink } from './ExternalLink'
 import { useFilteredVenueList } from './hooks'
-import { Image } from './Image'
+import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
 import { OptionDuo } from './OptionDuo'
@@ -26,6 +32,9 @@ export interface IOfferIndividualFormProps {
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
   readOnlyFields: string[]
+  onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
+  onImageDelete: () => Promise<void>
+  imageOffer?: IOfferIndividualImage
 }
 
 const OfferIndividualForm = ({
@@ -34,6 +43,9 @@ const OfferIndividualForm = ({
   categories,
   subCategories,
   readOnlyFields = [],
+  onImageUpload,
+  onImageDelete,
+  imageOffer,
 }: IOfferIndividualFormProps) => {
   const {
     currentUser: { isAdmin },
@@ -41,6 +53,7 @@ const OfferIndividualForm = ({
   const {
     values: { offererId, subcategoryId, venueId },
   } = useFormikContext<IOfferIndividualFormValues>()
+  const { offer } = useOfferIndividualContext()
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -75,7 +88,13 @@ const OfferIndividualForm = ({
       {subcategoryId.length > 0 && filteredVenueList.length > 0 && (
         <>
           <Informations readOnlyFields={readOnlyFields} />
-          <Image />
+          {offer && (
+            <ImageUploaderOffer
+              onImageUpload={onImageUpload}
+              onImageDelete={onImageDelete}
+              imageOffer={imageOffer}
+            />
+          )}
           <UsefulInformations
             isUserAdmin={isAdmin}
             offererNames={offererNames}
