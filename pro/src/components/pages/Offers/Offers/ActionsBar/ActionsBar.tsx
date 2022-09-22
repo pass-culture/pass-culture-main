@@ -4,19 +4,24 @@ import { useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
-import Icon from 'components/layout/Icon'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { Events } from 'core/FirebaseEvents/constants'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience, NBSP } from 'core/shared'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
+import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
+import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { searchFiltersSelector } from 'store/offers/selectors'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
+import style from './ActionsBar.module.scss'
 import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateAllCollectiveOffersActiveStatusAdapter'
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
+
 interface IActionBarProps {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
@@ -134,7 +139,10 @@ const ActionsBar = ({
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   return (
-    <div className="offers-actions-bar" data-testid="offers-actions-bar">
+    <div
+      className={style['offers-actions-bar']}
+      data-testid="offers-actions-bar"
+    >
       <span>{computeSelectedOffersLabel()}</span>
       {isConfirmDialogOpen && (
         <ConfirmDialog
@@ -171,30 +179,19 @@ const ActionsBar = ({
             : 'Dans ce cas, elles ne seront plus visibles sur l’application pass Culture.'}
         </ConfirmDialog>
       )}
-      <div className="actions-container">
-        <button
-          className="primary-button with-icon"
+      <div className={style['actions-container']}>
+        <Button
           onClick={() => setIsConfirmDialogOpen(true)}
-          type="button"
+          Icon={StatusInactiveIcon}
         >
-          <Icon svg="ico-status-inactive" />
           Désactiver
-        </button>
-        <button
-          className="primary-button with-icon"
-          onClick={handleActivate}
-          type="button"
-        >
-          <Icon svg="ico-status-validated" />
+        </Button>
+        <Button onClick={handleActivate} Icon={StatusValidatedIcon}>
           Publier
-        </button>
-        <button
-          className="secondary-button"
-          onClick={handleClose}
-          type="button"
-        >
+        </Button>
+        <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
           Annuler
-        </button>
+        </Button>
       </div>
     </div>
   )
