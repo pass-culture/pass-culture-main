@@ -146,6 +146,8 @@ describe('OfferIndividualForm', () => {
       offererNames,
       venueList,
       readOnlyFields: [],
+      onImageUpload: jest.fn(),
+      onImageDelete: jest.fn(),
     }
   })
 

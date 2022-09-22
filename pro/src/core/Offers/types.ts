@@ -139,6 +139,11 @@ export interface IOfferIndividualVenueProvider {
   name: string
 }
 
+export interface IOfferIndividualImage {
+  url: string
+  credit: string
+}
+
 export interface IOfferIndividual {
   id: string
   nonHumanizedId: number
@@ -163,7 +168,7 @@ export interface IOfferIndividual {
   stageDirector: string
   speaker: string
   subcategoryId: string
-  thumbUrl?: string
+  image?: IOfferIndividualImage
   url: string
   externalTicketOfficeUrl: string
   venueId: string

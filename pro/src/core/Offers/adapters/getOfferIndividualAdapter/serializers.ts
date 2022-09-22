@@ -5,6 +5,7 @@ import {
 } from 'apiClient/v1'
 import {
   IOfferIndividual,
+  IOfferIndividualImage,
   IOfferIndividualOfferer,
   IOfferIndividualStock,
   IOfferIndividualVenue,
@@ -100,6 +101,21 @@ export const serializeLastProvider = (
   }
 }
 
+const serializeOfferApiImage = (
+  apiOffer: GetIndividualOfferResponseModel
+): IOfferIndividualImage | undefined => {
+  if (apiOffer.mediations?.length > 0) {
+    const mediation = apiOffer.mediations[0]
+    if (mediation.thumbUrl) {
+      return {
+        url: mediation.thumbUrl,
+        credit: mediation.credit || '',
+      }
+    }
+  }
+  return undefined
+}
+
 export const serializeOfferApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividual => {
@@ -131,7 +147,7 @@ export const serializeOfferApi = (
     withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay: apiOffer.withdrawalDelay || null,
     withdrawalType: apiOffer.withdrawalType || null,
-    thumbUrl: apiOffer.thumbUrl || '',
+    image: serializeOfferApiImage(apiOffer),
     accessibility: {
       ...baseAccessibility,
       [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
