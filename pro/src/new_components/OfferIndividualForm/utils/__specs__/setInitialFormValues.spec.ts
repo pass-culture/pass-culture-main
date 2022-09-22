@@ -37,7 +37,7 @@ describe('setFormReadOnlyFields', () => {
       stageDirector: 'Offer stageDirector',
       speaker: 'Offer speaker',
       subcategoryId: 'SCID',
-      thumbUrl: undefined,
+      image: undefined,
       url: 'http://offer.example.com',
       externalTicketOfficeUrl: 'http://external.example.com',
       venueId: 'VID',

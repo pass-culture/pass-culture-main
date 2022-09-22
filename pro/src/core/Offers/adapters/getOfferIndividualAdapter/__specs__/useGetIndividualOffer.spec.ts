@@ -177,7 +177,7 @@ describe('useGetOfferIndividual', () => {
       name: 'Séance ciné duo',
       isEvent: true,
       withdrawalType: null,
-      thumbUrl: '',
+      image: undefined,
       musicSubType: '',
       musicType: '',
       nonHumanizedId: 192,

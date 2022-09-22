@@ -39,7 +39,7 @@ const ButtonImageEdit = ({
           Modifier
         </Button>
       ) : (
-        <ButtonImageAdd onClick={showModal} />
+        <ButtonImageAdd mode={mode} onClick={showModal} />
       )}
       {!!visible && (
         <ModalImageEdit
