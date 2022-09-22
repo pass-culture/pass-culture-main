@@ -19,7 +19,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class NextStepTest:
-    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription_test(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -36,11 +36,11 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
-    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription_test_profile_completion(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -68,7 +68,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -111,7 +111,7 @@ class NextStepTest:
             },
         }
 
-    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     @pytest.mark.parametrize(
         "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck,subscription_message",
         [
@@ -199,7 +199,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -223,7 +223,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -237,7 +237,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -259,14 +259,13 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": pending_idcheck,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": subscription_message,
         }
 
     @override_features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
-        ENABLE_PHONE_VALIDATION_IN_STEPPER=False,
         ENABLE_USER_PROFILING=True,
     )
     @freeze_time("2022-09-08 12:39:04.289878")
@@ -313,7 +312,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -328,7 +327,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -351,7 +350,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -366,7 +365,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -389,7 +388,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": True,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -408,7 +407,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": True,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": {
                 "callToAction": None,
                 "popOverIcon": "CLOCK",
@@ -431,14 +430,13 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
     @override_features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
-        ENABLE_PHONE_VALIDATION_IN_STEPPER=False,
         ENABLE_USER_PROFILING=True,
     )
     def test_underage_ubble_ok_turned_18(self, client):
@@ -493,7 +491,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
@@ -503,12 +501,13 @@ class NextStepTest:
         ENABLE_UBBLE=True,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
-        ENABLE_PHONE_VALIDATION_IN_STEPPER=False,
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
     )
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    @pytest.mark.parametrize(
+        "age, stepper_includes_phone_validation", [(15, False), (16, False), (17, False), (18, True)]
+    )
     @freeze_time("2022-09-08T12:45:13.534068")
-    def test_ubble_subcription_limited(self, client, age):
+    def test_ubble_subcription_limited(self, client, age, stepper_includes_phone_validation):
         birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
         # the user has:
@@ -550,7 +549,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": stepper_includes_phone_validation,
             "subscriptionMessage": None,
         }
 
@@ -584,7 +583,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": [],
             "maintenancePageType": "without-dms",
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": stepper_includes_phone_validation,
             "subscriptionMessage": {
                 "callToAction": None,
                 "popOverIcon": "CLOCK",
@@ -594,7 +593,7 @@ class NextStepTest:
         }
 
     @override_features(ENABLE_UBBLE=True)
-    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_ubble_restart_workflow(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -639,7 +638,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
-            "stepperIncludesPhoneValidation": False,
+            "stepperIncludesPhoneValidation": True,
             "subscriptionMessage": None,
         }
 
