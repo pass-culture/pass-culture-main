@@ -27,7 +27,7 @@ const BannerLayout = ({
   className,
   linkNode,
 }: IBannerLayoutProps): JSX.Element => {
-  const isNewStyles = true
+  const isNewStyles = false
   const styles = isNewStyles ? newStyles : oldStyles
   return (
     <div
