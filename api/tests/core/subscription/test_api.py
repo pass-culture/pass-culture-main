@@ -509,34 +509,24 @@ class NextSubscriptionStepTest:
         [
             # User 18
             (
-                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                {"ENABLE_PHONE_VALIDATION": True},
                 18,
                 True,
             ),
             (
-                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": False},
-                18,
-                False,
-            ),
-            (
-                {"ENABLE_PHONE_VALIDATION": False, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                {"ENABLE_PHONE_VALIDATION": False},
                 18,
                 False,
             ),
             # User 15 - 17
             (
-                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                {"ENABLE_PHONE_VALIDATION": True},
                 15,
                 False,
             ),
             (
-                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                {"ENABLE_PHONE_VALIDATION": False},
                 16,
-                False,
-            ),
-            (
-                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
-                17,
                 False,
             ),
         ],

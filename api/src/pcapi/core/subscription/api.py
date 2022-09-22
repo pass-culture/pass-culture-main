@@ -408,11 +408,7 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
 
 
 def is_phone_validation_in_stepper(user: users_models.User) -> bool:
-    return (
-        user.eligibility == users_models.EligibilityType.AGE18
-        and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
-        and FeatureToggle.ENABLE_PHONE_VALIDATION_IN_STEPPER.is_active()
-    )
+    return user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
 
 
 def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
