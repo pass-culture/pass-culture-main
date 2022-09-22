@@ -29,7 +29,7 @@ const Banner = ({
   links = [],
   ...bannerLayoutProps
 }: IBannerProps): JSX.Element => {
-  const isNewStyles = true
+  const isNewStyles = false
   const styles = isNewStyles ? newStyles : oldStyles
   const getLinkNode = (link: Link) => (
     <ButtonLink
