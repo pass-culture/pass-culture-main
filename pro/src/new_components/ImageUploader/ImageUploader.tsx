@@ -27,7 +27,11 @@ const ImageUploader = ({
     <div className={styles['image-uploader-image-container']}>
       {imageUrl && originalImageUrl ? (
         <>
-          <ImagePreview imageUrl={imageUrl} alt="Prévisualisation de l'image" />
+          <ImagePreview
+            mode={mode}
+            imageUrl={imageUrl}
+            alt="Prévisualisation de l'image"
+          />
           <div className={styles['image-uploader-actions-container']}>
             <ButtonImageEdit
               mode={mode}
