@@ -725,7 +725,11 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
     )
+    # FIXME (vroullier, 2022-09-21): Remove if and bookingEmail assignation when front's bookingEmails is deployed
     collective_offer.bookingEmail = offer_data.booking_email
+    if offer_data.booking_emails:
+        collective_offer.bookingEmail = offer_data.booking_emails[0]
+        collective_offer.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer)
     db.session.commit()
     logger.info(
