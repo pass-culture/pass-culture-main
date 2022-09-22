@@ -95,7 +95,7 @@ const editionFormValues = {
   phone: '0466841425',
   email: 'email@email.com',
   notifications: true,
-  notificationEmail: 'email.notification@email.com',
+  notificationEmails: ['email.notification@email.com'],
   domains: [],
 }
 

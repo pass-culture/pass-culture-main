@@ -29,7 +29,11 @@ const EmailInputRow = ({
         className={styles['notification-mail-input']}
       />
       {displayTrash && (
-        <TrashFilledIcon onClick={onDelete} className={styles['trash-icon']} />
+        <TrashFilledIcon
+          onClick={onDelete}
+          className={styles['trash-icon']}
+          title="Supprimer"
+        />
       )}
     </FormLayout.Row>
   )
