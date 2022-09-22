@@ -16,10 +16,13 @@ const useVenueUpdates = (venueList: TOfferIndividualVenue[]): void => {
     if (venueId !== prevValue) {
       const venue = venueList.find(v => v.id === venueId)
 
-      // update offer accessibility from venue when venue accessibility is defined.
-      venue &&
+      if (venue) {
+        // update offer accessibility from venue when venue accessibility is defined.
         Object.values(venue.accessibility).includes(true) &&
-        setFieldValue('accessibility', venue.accessibility)
+          setFieldValue('accessibility', venue.accessibility)
+
+        setFieldValue('isVenueVirtual', venue.isVirtual)
+      }
       setPrevValue(venueId)
     }
   }, [venueId, prevValue, setFieldValue])

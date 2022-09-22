@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -341,28 +341,30 @@ describe('screens:OfferCreation::Informations', () => {
 
       await userEvent.click(await screen.findByText('Suivant'))
 
-      expect(api.postOffer).toHaveBeenCalledTimes(1)
-      expect(api.postOffer).toHaveBeenCalledWith({
-        audioDisabilityCompliant: false,
-        bookingEmail: null,
-        description: null,
-        durationMinutes: null,
-        externalTicketOfficeUrl: null,
-        extraData: {},
-        isDuo: true,
-        isEducational: false,
-        isNational: false,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: false,
-        name: 'Le nom de mon offre',
-        offererId: 'A',
-        subcategoryId: 'physical',
-        url: null,
-        venueId: 'AA',
-        visualDisabilityCompliant: false,
-        withdrawalDelay: null,
-        withdrawalDetails: null,
-        withdrawalType: null,
+      await waitFor(() => {
+        expect(api.postOffer).toHaveBeenCalledTimes(1)
+        expect(api.postOffer).toHaveBeenCalledWith({
+          audioDisabilityCompliant: false,
+          bookingEmail: null,
+          description: null,
+          durationMinutes: null,
+          externalTicketOfficeUrl: null,
+          extraData: {},
+          isDuo: true,
+          isEducational: false,
+          isNational: false,
+          mentalDisabilityCompliant: false,
+          motorDisabilityCompliant: false,
+          name: 'Le nom de mon offre',
+          offererId: 'A',
+          subcategoryId: 'physical',
+          url: null,
+          venueId: 'AA',
+          visualDisabilityCompliant: false,
+          withdrawalDelay: null,
+          withdrawalDetails: null,
+          withdrawalType: null,
+        })
       })
     })
 

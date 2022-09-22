@@ -6,7 +6,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 
 import Informations, { IInformationsProps } from '../Informations'

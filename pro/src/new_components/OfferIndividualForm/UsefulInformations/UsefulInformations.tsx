@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
@@ -33,12 +33,7 @@ const UsefulInformations = ({
 }: IUsefulInformationsProps): JSX.Element => {
   const {
     values: { subCategoryFields },
-    setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
-
-  useEffect(() => {
-    setFieldValue('isVenueVirtual', isVenueVirtual)
-  }, [isVenueVirtual])
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED

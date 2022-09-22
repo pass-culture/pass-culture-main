@@ -1,12 +1,11 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
-import { Form, Formik } from 'formik'
+import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
-import { SubmitButton } from 'ui-kit'
 
 import OptionDuo from '../OptionDuo'
 import validationSchema from '../validationSchema'
@@ -24,10 +23,7 @@ const renderOptionDuo = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <Form>
-        <OptionDuo />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
-      </Form>
+      <OptionDuo />
     </Formik>
   )
 }

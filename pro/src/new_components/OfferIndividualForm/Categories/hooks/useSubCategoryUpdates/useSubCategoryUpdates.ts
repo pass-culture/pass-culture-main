@@ -35,6 +35,10 @@ const useSubCategoryUpdates = ({
     )
     setFieldValue('subCategoryFields', subCategoryFields)
     setFieldValue('isEvent', isEvent)
+    setFieldValue(
+      'isDuo',
+      !!subCategories.find(s => s.id == subcategoryId)?.canBeDuo
+    )
   }
 
   useEffect(
