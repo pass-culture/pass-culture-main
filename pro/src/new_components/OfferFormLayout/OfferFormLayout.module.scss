@@ -15,18 +15,3 @@ h4 {
 
   font-weight: 500;
 }
-
-.action-bar {
-  background: colors.$white;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  box-shadow: 0 0 rem.torem(60px) colors.$black-shadow;
-
-  .inner {
-    width: rem.torem(802px);
-    margin: auto;
-    padding: rem.torem(20px) 0;
-  }
-}

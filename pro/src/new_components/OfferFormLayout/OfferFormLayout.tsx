@@ -2,7 +2,6 @@ import cn from 'classnames'
 import React from 'react'
 
 import style from './OfferFormLayout.module.scss'
-import ActionBar from './OfferFormLayoutActionBar'
 import Content from './OfferFormLayoutContent'
 import Stepper from './OfferFormLayoutStepper'
 import TitleBlock from './OfferFormLayoutTitleBlock'
@@ -22,6 +21,5 @@ const OfferFormLayout = ({
 OfferFormLayout.TitleBlock = TitleBlock
 OfferFormLayout.Stepper = Stepper
 OfferFormLayout.Content = Content
-OfferFormLayout.ActionBar = ActionBar
 
 export default OfferFormLayout
