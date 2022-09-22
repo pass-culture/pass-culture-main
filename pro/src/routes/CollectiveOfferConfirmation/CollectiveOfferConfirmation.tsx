@@ -39,13 +39,15 @@ const CollectiveOfferConfirmation = (): JSX.Element => {
   if (!offer) {
     return <Spinner />
   }
+  const institutionDisplayName =
+    `${offer?.institution?.institutionType} ${offer?.institution?.name}`.trim()
 
   return (
     <CollectiveOfferConfirmationScreen
       isShowcase={offer?.isShowcase}
       offerStatus={offer?.status}
       offererId={offer?.managingOffererId}
-      institutionName={offer?.institution?.name}
+      institutionDisplayName={institutionDisplayName}
     />
   )
 }
