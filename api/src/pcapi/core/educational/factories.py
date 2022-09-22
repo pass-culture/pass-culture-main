@@ -36,6 +36,7 @@ class CollectiveOfferFactory(BaseFactory):
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
     students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
+    bookingEmails = ["collectiveofferfactory+booking@example.com", "collectiveofferfactory+booking@example2.com"]
     bookingEmail = "collectiveofferfactory+booking@example.com"
     contactPhone = "+33199006328"
     offerVenue = {
