@@ -11,18 +11,18 @@ import { Audience, NBSP } from 'core/shared'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import style from './ActionsBar.module.scss'
 import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateAllCollectiveOffersActiveStatusAdapter'
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
 
-interface IActionBarProps {
+export interface IActionBarProps {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
   nbSelectedOffers: number
@@ -30,6 +30,7 @@ interface IActionBarProps {
   selectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
+  isVisible: boolean
 }
 
 const getUpdateActiveStatusAdapter = (
@@ -76,6 +77,7 @@ const ActionsBar = ({
   areAllOffersSelected,
   nbSelectedOffers,
   audience,
+  isVisible,
 }: IActionBarProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const searchFilters = useSelector(searchFiltersSelector)
@@ -138,12 +140,27 @@ const ActionsBar = ({
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
+  const Left = () => <span>{computeSelectedOffersLabel()}</span>
+
+  const Right = () => (
+    <>
+      <Button
+        onClick={() => setIsConfirmDialogOpen(true)}
+        Icon={StatusInactiveIcon}
+      >
+        Désactiver
+      </Button>
+      <Button onClick={handleActivate} Icon={StatusValidatedIcon}>
+        Publier
+      </Button>
+      <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
+        Annuler
+      </Button>
+    </>
+  )
+
   return (
-    <div
-      className={style['offers-actions-bar']}
-      data-testid="offers-actions-bar"
-    >
-      <span>{computeSelectedOffersLabel()}</span>
+    <>
       {isConfirmDialogOpen && (
         <ConfirmDialog
           cancelText={'Annuler'}
@@ -179,21 +196,12 @@ const ActionsBar = ({
             : 'Dans ce cas, elles ne seront plus visibles sur l’application pass Culture.'}
         </ConfirmDialog>
       )}
-      <div className={style['actions-container']}>
-        <Button
-          onClick={() => setIsConfirmDialogOpen(true)}
-          Icon={StatusInactiveIcon}
-        >
-          Désactiver
-        </Button>
-        <Button onClick={handleActivate} Icon={StatusValidatedIcon}>
-          Publier
-        </Button>
-        <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
-          Annuler
-        </Button>
-      </div>
-    </div>
+      <ActionsBarSticky
+        isVisible={isVisible}
+        left={<Left />}
+        right={<Right />}
+      />
+    </>
   )
 }
 

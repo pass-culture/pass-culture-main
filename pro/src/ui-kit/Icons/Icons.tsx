@@ -508,6 +508,8 @@ export const Icons = () => (
           <StatsIcon />
         </td>
         <td>ico-stats</td>
+      </tr>
+      <tr>
         <td className={styles['with-background']}>
           <StatusInactiveIcon />
         </td>

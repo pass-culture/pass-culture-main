@@ -17,13 +17,13 @@ import {
 import { computeOffersUrl } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
+import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import { BannerSummary } from 'new_components/Banner'
 import {
   IOfferAppPreviewProps,
   OfferAppPreview,
 } from 'new_components/OfferAppPreview'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import { RootState } from 'store/reducers'
 import { ButtonLink } from 'ui-kit'
@@ -182,12 +182,15 @@ const Summary = ({
               disablePublish={isDisabled}
             />
           ) : isCreation ? (
-            <OfferFormLayout.ActionBar>
-              <ActionBar
-                onClickNext={handleNextStep}
-                onClickPrevious={handlePreviousStep}
-              />
-            </OfferFormLayout.ActionBar>
+            <ActionsBarSticky
+              isVisible
+              left={
+                <ActionBar
+                  onClickNext={handleNextStep}
+                  onClickPrevious={handlePreviousStep}
+                />
+              }
+            />
           ) : (
             <ButtonLink
               link={{ to: backOfferUrl, isExternal: false }}

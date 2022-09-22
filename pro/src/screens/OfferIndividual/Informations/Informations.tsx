@@ -11,9 +11,9 @@ import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdap
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
 import { IOfferIndividualImage } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import FormLayout from 'new_components/FormLayout'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import {
   IOfferIndividualFormValues,
   OfferIndividualForm,
@@ -140,9 +140,10 @@ const Informations = ({
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
           />
-          <OfferFormLayout.ActionBar>
-            <ActionBar onClickNext={handleNextStep} />
-          </OfferFormLayout.ActionBar>
+          <ActionsBarSticky
+            isVisible
+            left={<ActionBar onClickNext={handleNextStep} />}
+          />
         </form>
       </FormLayout>
     </FormikProvider>

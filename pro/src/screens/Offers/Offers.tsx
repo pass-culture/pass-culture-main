@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 
 import { UserRole } from 'apiClient/v1'
 import useAnalytics from 'components/hooks/useAnalytics'
-import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import ActionsBar from 'components/pages/Offers/Offers/ActionsBar'
@@ -226,17 +225,7 @@ const Offers = ({
         ]}
         withQueryParams
       />
-      <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
-        <ActionsBar
-          areAllOffersSelected={areAllOffersSelected}
-          clearSelectedOfferIds={clearSelectedOfferIds}
-          nbSelectedOffers={nbSelectedOffers}
-          refreshOffers={refreshOffers}
-          selectedOfferIds={selectedOfferIds}
-          toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-          audience={audience}
-        />
-      </ActionsBarPortal>
+
       <SearchFilters
         applyFilters={applyFilters}
         audience={audience}
@@ -273,6 +262,16 @@ const Offers = ({
           urlSearchFilters={urlSearchFilters}
         />
       )}
+      <ActionsBar
+        areAllOffersSelected={areAllOffersSelected}
+        clearSelectedOfferIds={clearSelectedOfferIds}
+        nbSelectedOffers={nbSelectedOffers}
+        refreshOffers={refreshOffers}
+        selectedOfferIds={selectedOfferIds}
+        toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+        audience={audience}
+        isVisible={nbSelectedOffers > 0}
+      />
     </div>
   )
 }
