@@ -17,7 +17,7 @@ class SendEacNewBookingEmailToProTest:
     def test_with_collective_booking(self, mails: Any) -> None:
         # given
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__bookingEmail="pouet@example.com",
+            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         # when

@@ -30,7 +30,7 @@ class Returns200Test:
         offer = CollectiveOfferFactory(
             mentalDisabilityCompliant=False,
             contactEmail="johndoe@yopmail.com",
-            bookingEmail="booking@youpi.com",
+            bookingEmails=["booking@youpi.com", "kingboo@piyou.com"],
             contactPhone="0600000000",
             subcategoryId="CINE_PLEIN_AIR",
             educational_domains=None,
@@ -51,7 +51,7 @@ class Returns200Test:
             "name": "New name",
             "mentalDisabilityCompliant": True,
             "contactEmail": "toto@example.com",
-            "bookingEmail": "pifpouf@testmail.com",
+            "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
             "subcategoryId": "CONCERT",
             "domains": [domain.id],
             "students": ["Collège - 4e"],
@@ -67,7 +67,7 @@ class Returns200Test:
         assert response.json["mentalDisabilityCompliant"]
         assert response.json["contactPhone"] == "0600000000"
         assert response.json["contactEmail"] == "toto@example.com"
-        assert response.json["bookingEmail"] == "pifpouf@testmail.com"
+        assert response.json["bookingEmails"] == ["pifpouf@testmail.com", "bimbam@testmail.com"]
         assert response.json["subcategoryId"] == "CONCERT"
         assert response.json["students"] == ["Collège - 4e"]
         assert response.json["interventionArea"] == ["01", "2A"]
@@ -76,7 +76,7 @@ class Returns200Test:
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.contactEmail == "toto@example.com"
-        assert updated_offer.bookingEmail == "pifpouf@testmail.com"
+        assert updated_offer.bookingEmails == ["pifpouf@testmail.com", "bimbam@testmail.com"]
         assert updated_offer.contactPhone == "0600000000"
         assert updated_offer.subcategoryId == "CONCERT"
         assert updated_offer.students == [StudentLevels.COLLEGE4]
@@ -90,7 +90,7 @@ class Returns200Test:
                     "name",
                     "students",
                     "contactEmail",
-                    "bookingEmail",
+                    "bookingEmails",
                     "interventionArea",
                     "mentalDisabilityCompliant",
                     "subcategoryId",
@@ -154,25 +154,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert offer.interventionArea == []
-
-    def test_patch_collective_offer_with_bookingEmails_but_empty_bookingEmail(self, client):
-        # Given
-        offer = CollectiveOfferFactory(bookingEmail="alice@example.com")
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {"bookingEmails": ["bob@example.com", "chris@example.com"]}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers/{humanize(offer.id)}", json=data
-        )
-
-        # Then
-        assert response.status_code == 200
-        assert offer.bookingEmail == "bob@example.com"
-        assert offer.bookingEmails == ["bob@example.com", "chris@example.com"]
 
 
 class Returns400Test:

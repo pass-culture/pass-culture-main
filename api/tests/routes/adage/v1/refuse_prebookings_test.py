@@ -30,7 +30,7 @@ class Returns200Test:
             email="jean.doux@example.com",
         )
         collective_stock: CollectiveStock = CollectiveStockFactory(
-            collectiveOffer__bookingEmail="test_collective@mail.com",
+            collectiveOffer__bookingEmails=["test_collective@mail.com", "test2_collective@mail.com"],
             beginningDatetime=datetime(2020, 1, 1, 12, 53, 00),
         )
         collective_booking = CollectiveBookingFactory(
@@ -59,7 +59,7 @@ class Returns200Test:
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "test_collective@mail.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "test_collective@mail.com, test2_collective@mail.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": collective_offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": educational_institution.name,
@@ -77,7 +77,7 @@ class Returns200Test:
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=datetime(2020, 1, 1),
-            collectiveStock__collectiveOffer__bookingEmail="johndoe@mail.com",
+            collectiveStock__collectiveOffer__bookingEmails=["johndoe@mail.com", "jacksmith@mail.com"],
         )
 
         client.with_eac_token()

@@ -8,7 +8,7 @@ import type { StudentLevels } from './StudentLevels';
 export type PostCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean;
   beginningDatetime: string;
-  bookingEmail?: string | null;
+  bookingEmails: Array<string>;
   bookingLimitDatetime: string;
   contactEmail: string;
   contactPhone: string;

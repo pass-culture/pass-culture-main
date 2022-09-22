@@ -25,7 +25,7 @@ class Returns200Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
@@ -52,7 +52,7 @@ class Returns200Test:
         assert response.status_code == 201
         offer_id = dehumanize(response.json["id"])
         offer = CollectiveOffer.query.get(offer_id)
-        assert offer.bookingEmail == "offer@example.com"
+        assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.venue == venue
         assert offer.durationMinutes == 60
@@ -86,7 +86,7 @@ class Returns200Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain.id],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
@@ -111,47 +111,6 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-
-    def test_create_collective_offer_with_bookingEmails_but_empty_bookingEmail(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain = educational_factories.EducationalDomainFactory()
-
-        # When
-        data = {
-            "venueId": humanize(venue.id),
-            "bookingEmail": "",
-            "bookingEmails": ["offer@example.com", "pifpafpouf@example.com"],
-            "domains": [educational_domain.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "offererVenue",
-                "otherAddress": "",
-                "venueId": "",
-            },
-            "students": ["Lycée - Seconde"],
-            "offererId": humanize(offerer.id),
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": [],
-        }
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
-        assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
-        offer = CollectiveOffer.query.get(offer_id)
-        assert offer.bookingEmail == "offer@example.com"
-        assert offer.bookingEmails == ["offer@example.com", "pifpafpouf@example.com"]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -166,7 +125,7 @@ class Returns403Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "domains": [educational_factories.EducationalDomainFactory().id],
             "name": "La pièce de théâtre",
@@ -205,7 +164,7 @@ class Returns403Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "domains": [educational_factories.EducationalDomainFactory().id],
             "name": "La pièce de théâtre",
@@ -245,7 +204,7 @@ class Returns400Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": "Pouet",
@@ -281,7 +240,7 @@ class Returns400Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.OEUVRE_ART.id,
@@ -317,7 +276,7 @@ class Returns400Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
@@ -353,7 +312,7 @@ class Returns400Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "domains": [],
             "name": "La pièce de théâtre",
@@ -383,7 +342,7 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
-    def test_create_collective_offer_with_uknown_domain(self, client):
+    def test_create_collective_offer_with_unknown_domain(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -394,7 +353,7 @@ class Returns404Test:
         # When
         data = {
             "venueId": humanize(venue.id),
-            "bookingEmail": "offer@example.com",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [0, educational_domain1.id, educational_domain2.id],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",

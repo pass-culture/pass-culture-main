@@ -272,7 +272,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     name: str
     description: str | None
     subcategoryId: str
-    bookingEmail: str | None
+    bookingEmails: list[str] | None
     contactEmail: str
     contactPhone: str
     domains: list[str]
@@ -308,7 +308,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             name=offer.name,
             description=offer.description,
             subcategoryId=offer.subcategoryId,
-            bookingEmail=offer.bookingEmail,
+            bookingEmails=offer.bookingEmails,
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             domains=[domain.name for domain in offer.domains],
@@ -344,7 +344,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     name: str
     description: str
     subcategory_id: str
-    booking_email: str | None
+    booking_emails: list[str]
     contact_email: str
     contact_phone: str
     domains: list[str]
@@ -396,7 +396,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     description: str | None
     venueId: int | None
     subcategoryId: str | None
-    bookingEmail: str | None
+    bookingEmails: list[str] | None
     contactEmail: str | None
     contactPhone: str | None
     domains: list[str] | None

@@ -353,7 +353,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             name="Collège Dupont", city="Tourcoing", postalCode=59200
         )
         stock_one = educational_factories.CollectiveStockFactory(
-            collectiveOffer__bookingEmail="test@mail.com",
+            collectiveOffer__bookingEmails=["test@mail.com", "test2@mail.com"],
             beginningDatetime=datetime(2022, 11, 24, 12, 53, 00),
             collectiveOffer__name="Ma première offre expirée",
         )
@@ -366,7 +366,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         )
 
         stock_two = educational_factories.CollectiveStockFactory(
-            collectiveOffer__bookingEmail="new_test@mail.com",
+            collectiveOffer__bookingEmails=["new_test@mail.com", "newer_test@mail.com"],
             beginningDatetime=datetime(2022, 12, 3, 20, 00, 00),
             collectiveOffer__name="Ma deuxième offre expirée",
         )
@@ -390,7 +390,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com, test2@mail.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": "Ma première offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
@@ -405,7 +405,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         }
 
         second_educational_institution = second_expired_booking.educationalInstitution
-        assert mails_testing.outbox[1].sent_data["To"] == "new_test@mail.com"
+        assert mails_testing.outbox[1].sent_data["To"] == "new_test@mail.com, newer_test@mail.com"
         assert mails_testing.outbox[1].sent_data["params"] == {
             "OFFER_NAME": "Ma deuxième offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,

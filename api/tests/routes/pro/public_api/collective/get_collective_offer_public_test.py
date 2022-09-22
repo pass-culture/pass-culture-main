@@ -29,7 +29,10 @@ class CollectiveOffersPublicGetOfferTest:
             "venueId": offer.venue.id,
             "audioDisabilityCompliant": False,
             "beginningDatetime": "2022-05-02T15:00:00",
-            "bookingEmail": "collectiveofferfactory+booking@example.com",
+            "bookingEmails": [
+                "collectiveofferfactory+booking@example.com",
+                "collectiveofferfactory+booking@example2.com",
+            ],
             "bookingLimitDatetime": "2022-05-02T14:00:00",
             "contactEmail": "collectiveofferfactory+contact@example.com",
             "contactPhone": "+33199006328",

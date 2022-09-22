@@ -28,7 +28,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "description": "une description d'offre",
             "subcategoryId": "EVENEMENT_CINE",
             "venueId": venue2.id,
-            "bookingEmail": "offerer-email@example.com",
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
             "audioDisabilityCompliant": True,
@@ -69,7 +69,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.description == payload["description"]
         assert offer.venueId == venue2.id
         assert offer.subcategoryId == payload["subcategoryId"]
-        assert offer.bookingEmail == payload["bookingEmail"]
+        assert offer.bookingEmails == payload["bookingEmails"]
         assert offer.contactEmail == payload["contactEmail"]
         assert offer.contactPhone == payload["contactPhone"]
         assert offer.domains == [domain]
@@ -131,7 +131,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
             "subcategoryId": "EVENEMENT_CINE",
-            "bookingEmail": "offerer-email@example.com",
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
             "domains": ["invalid_domain"],
@@ -174,7 +174,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
             "subcategoryId": "EVENEMENT_CINE",
-            "bookingEmail": "offerer-email@example.com",
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
             "domains": ["invalid_domain"],
@@ -218,7 +218,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
             "subcategoryId": "EVENEMENT_CINE",
-            "bookingEmail": "offerer-email@example.com",
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
             "domains": ["invalid_domain"],
