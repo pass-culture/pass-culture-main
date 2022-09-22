@@ -229,6 +229,11 @@ class OffererTagFactory(BaseFactory):
     name = factory.Sequence("OffererTag_{}".format)
 
 
+class OffererTagMappingFactory(BaseFactory):
+    class Meta:
+        model = models.OffererTagMapping
+
+
 class VenueEducationalStatusFactory(BaseFactory):
     class Meta:
         model = models.VenueEducationalStatus

@@ -24,7 +24,8 @@ class Permissions(enum.Enum):
     REVIEW_PUBLIC_ACCOUNT = "faire une revue manuelle d'un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
     SEARCH_PRO_ACCOUNT = "rechercher un acteur culturel"
-    READ_PRO_ENTITY = "Visualiser une structure, un lieu ou un compte pro"
+    READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
+    MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     VALIDATE_OFFERER = "valider une structure"
 
 
