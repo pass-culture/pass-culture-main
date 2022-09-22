@@ -5,7 +5,6 @@ import logging
 from operator import or_
 import typing
 
-from flask import current_app
 from flask_sqlalchemy import BaseQuery
 from pydantic import parse_obj_as
 from pydantic.error_wrappers import ValidationError
@@ -52,6 +51,7 @@ from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.utils import rest
+from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -894,18 +894,18 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
     CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
     CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
 
-    redis_client = current_app.redis_client  # type: ignore [attr-defined]
-    cultural_partners_json = None
-    if not force_update:
-        cultural_partners_json = redis_client.get(CULTURAL_PARTNERS_CACHE_KEY)
-
-    if not cultural_partners_json:
-        # update path
+    def get_cultural_parters() -> str:
         adage_data = adage_client.get_cultural_partners()
-        cultural_partners_raw_json = json.dumps(adage_data).encode("utf-8")
-        redis_client.set(CULTURAL_PARTNERS_CACHE_KEY, cultural_partners_raw_json, ex=CULTURAL_PARTNERS_CACHE_TIMEOUT)
-        cultural_partners_json = cultural_partners_raw_json.decode("utf-8")
+        return json.dumps(adage_data)
 
+    cultural_partners_json = get_from_cache(
+        key_template=CULTURAL_PARTNERS_CACHE_KEY,
+        retriever=get_cultural_parters,
+        expire=CULTURAL_PARTNERS_CACHE_TIMEOUT,
+        return_type=str,
+        force_update=force_update,
+    )
+    cultural_partners_json = typing.cast(str, cultural_partners_json)
     cultural_partners = json.loads(cultural_partners_json)
     return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": cultural_partners})
 
