@@ -244,7 +244,6 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
 
 class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: str
-    bookingEmail: str | None
     bookingEmails: list[str]
     dateCreated: datetime
     description: str | None
@@ -341,8 +340,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: str
     subcategory_id: str
     name: str
-    booking_email: str | None
-    booking_emails: list[str] | None
+    booking_emails: list[str]
     description: str | None
     domains: list[int]
     duration_minutes: int | None
@@ -413,7 +411,6 @@ class CollectiveOfferTemplateResponseIdModel(BaseModel):
 
 
 class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmail: str | None
     bookingEmails: list[str] | None
     description: str | None
     name: str | None

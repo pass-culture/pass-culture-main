@@ -29,8 +29,8 @@ def get_education_booking_cancellation_by_institution_email_data(
 
 
 def send_education_booking_cancellation_by_institution_email(booking: CollectiveBooking) -> bool:
-    booking_email = booking.collectiveStock.collectiveOffer.bookingEmail
-    if not booking_email:
+    booking_emails = booking.collectiveStock.collectiveOffer.bookingEmails
+    if not booking_emails:
         return True
     data = get_education_booking_cancellation_by_institution_email_data(booking)
-    return mails.send(recipients=[booking_email], data=data)
+    return mails.send(recipients=booking_emails, data=data)

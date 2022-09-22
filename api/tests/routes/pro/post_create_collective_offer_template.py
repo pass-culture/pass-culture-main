@@ -35,7 +35,7 @@ class Returns200Test:
         assert template.venueId == offer.venueId
         assert template.priceDetail == data["educationalPriceDetail"]
         assert template.offerVenue == offer.offerVenue
-        assert template.bookingEmail == offer.bookingEmail
+        assert template.bookingEmails == offer.bookingEmails
         assert template.domains == [domain]
 
     def test_create_collective_offer_template_without_price_detail(self, client):
@@ -59,7 +59,7 @@ class Returns200Test:
         assert template.venueId == offer.venueId
         assert template.priceDetail is None
         assert template.offerVenue == offer.offerVenue
-        assert template.bookingEmail == offer.bookingEmail
+        assert template.bookingEmails == offer.bookingEmails
 
 
 @pytest.mark.usefixtures("db_session")

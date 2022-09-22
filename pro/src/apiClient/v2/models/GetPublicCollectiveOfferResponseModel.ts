@@ -7,7 +7,7 @@ import type { OfferVenueModel } from './OfferVenueModel';
 export type GetPublicCollectiveOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   beginningDatetime: string;
-  bookingEmail?: string | null;
+  bookingEmails?: Array<string> | null;
   bookingLimitDatetime: string;
   contactEmail: string;
   contactPhone: string;

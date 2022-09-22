@@ -7,11 +7,11 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 def send_eac_new_booking_email_to_pro(booking: CollectiveBooking) -> bool:
-    booking_email = booking.collectiveStock.collectiveOffer.bookingEmail
-    if not booking_email:
+    booking_emails = booking.collectiveStock.collectiveOffer.bookingEmails
+    if not booking_emails:
         return True
     data = get_eac_new_booking_to_pro_email_data(booking)
-    return mails.send(recipients=[booking_email], data=data)
+    return mails.send(recipients=booking_emails, data=data)
 
 
 def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.TransactionalEmailData:
