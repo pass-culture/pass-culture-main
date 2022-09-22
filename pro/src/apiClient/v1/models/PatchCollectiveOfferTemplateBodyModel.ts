@@ -8,7 +8,6 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
 export type PatchCollectiveOfferTemplateBodyModel = {
   audioDisabilityCompliant?: boolean | null;
-  bookingEmail?: string | null;
   bookingEmails?: Array<string> | null;
   contactEmail?: string | null;
   contactPhone?: string | null;

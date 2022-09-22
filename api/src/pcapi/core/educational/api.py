@@ -246,8 +246,8 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
         },
     )
 
-    booking_email = collective_booking.collectiveStock.collectiveOffer.bookingEmail
-    if booking_email:
+    booking_emails = collective_booking.collectiveStock.collectiveOffer.bookingEmails
+    if booking_emails:
         collective_stock = collective_booking.collectiveStock
         data = mails_models.TransactionalEmailData(
             template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
@@ -264,7 +264,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
                 "EDUCATIONAL_INSTITUTION_POSTAL_CODE": collective_booking.educationalInstitution.postalCode,
             },
         )
-        mails.send(recipients=[booking_email], data=data)
+        mails.send(recipients=booking_emails, data=data)
 
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
 
@@ -724,11 +724,7 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
     )
-    # FIXME (vroullier, 2022-09-21): Remove if and bookingEmail assignation when front's bookingEmails is deployed
-    collective_offer.bookingEmail = offer_data.booking_email
-    if offer_data.booking_emails:
-        collective_offer.bookingEmail = offer_data.booking_emails[0]
-        collective_offer.bookingEmails = offer_data.booking_emails
+    collective_offer.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer)
     db.session.commit()
     logger.info(
@@ -966,7 +962,7 @@ def create_collective_offer_public(
         interventionArea=body.intervention_area,
         institutionId=body.educational_institution_id,
     )
-    collective_offer.bookingEmail = body.booking_email
+    collective_offer.bookingEmails = body.booking_emails
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=body.beginning_datetime,

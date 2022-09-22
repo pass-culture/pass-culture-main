@@ -93,8 +93,6 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     name: str = sa.Column(sa.String(140), nullable=False)
 
-    _bookingEmail = sa.Column("bookingEmail", sa.String(120), nullable=True)
-
     bookingEmails: list[str] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.String)),
         nullable=False,
@@ -140,20 +138,6 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
     institution: Mapped["EducationalInstitution"] = relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
-
-    @property
-    def bookingEmail(self) -> str | None:
-        if len(self.bookingEmails) != 0:
-            return self.bookingEmails[0]
-        return self._bookingEmail
-
-    @bookingEmail.setter
-    def bookingEmail(self, value: str | None) -> None:
-        if value is not None:
-            self.bookingEmails = [value]
-        else:
-            self.bookingEmails = []
-        self._bookingEmail = value
 
     @property
     def isEducational(self) -> bool:
@@ -251,7 +235,6 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
             "domains",
             "subcategoryId",
             "dateUpdated",
-            "bookingEmail",
             "bookingEmails",
             "lastValidationDate",
             "validation",
@@ -305,8 +288,6 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     priceDetail = sa.Column(sa.Text, nullable=True)
 
-    _bookingEmail = sa.Column("bookingEmail", sa.String(120), nullable=True)
-
     bookingEmails: list[str] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.String)),
         nullable=False,
@@ -326,20 +307,6 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
     domains: list["EducationalDomain"] = relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
     )
-
-    @property
-    def bookingEmail(self) -> str | None:
-        if len(self.bookingEmails) != 0:
-            return self.bookingEmails[0]
-        return self._bookingEmail
-
-    @bookingEmail.setter
-    def bookingEmail(self, value: str | None) -> None:
-        if value is not None:
-            self.bookingEmails = [value]
-        else:
-            self.bookingEmails = []
-        self._bookingEmail = value
 
     @property
     def isEducational(self) -> bool:
@@ -406,7 +373,6 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
             "domains",
             "subcategoryId",
             "dateUpdated",
-            "bookingEmail",
             "bookingEmails",
             "lastValidationDate",
             "validation",

@@ -8,7 +8,7 @@ import type { StudentLevels } from './StudentLevels';
 export type PatchCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean | null;
   beginningDatetime?: string | null;
-  bookingEmail?: string | null;
+  bookingEmails?: Array<string> | null;
   bookingLimitDatetime?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;

@@ -37,7 +37,6 @@ class CollectiveOfferFactory(BaseFactory):
     students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     bookingEmails = ["collectiveofferfactory+booking@example.com", "collectiveofferfactory+booking@example2.com"]
-    bookingEmail = "collectiveofferfactory+booking@example.com"
     contactPhone = "+33199006328"
     offerVenue = {
         "addressType": "other",

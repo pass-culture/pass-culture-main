@@ -13,7 +13,6 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
 export type GetCollectiveOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
-  bookingEmail?: string | null;
   bookingEmails: Array<string>;
   collectiveStock?: GetCollectiveOfferCollectiveStockResponseModel | null;
   contactEmail: string;

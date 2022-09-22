@@ -69,8 +69,8 @@ def send_booking_cancellation_confirmation_by_pro_email(bookings: list[Booking])
 
 
 def send_collective_booking_cancellation_confirmation_by_pro_email(booking: CollectiveBooking) -> bool:
-    offerer_booking_email = booking.collectiveStock.collectiveOffer.bookingEmail
-    if not offerer_booking_email:
+    offerer_booking_emails = booking.collectiveStock.collectiveOffer.bookingEmails
+    if not offerer_booking_emails:
         return True
     data = get_collective_booking_cancellation_confirmation_by_pro_email_data(booking)
-    return mails.send(recipients=[offerer_booking_email], data=data)
+    return mails.send(recipients=offerer_booking_emails, data=data)
