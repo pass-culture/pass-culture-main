@@ -4,15 +4,18 @@ import React from 'react'
 
 import PortalContainer from 'app/PortalContainer'
 
+import style from './ActionsBarPortal.module.scss'
+
 const ActionsBarPortal = ({ isVisible, children }) => (
   <PortalContainer>
     <div
-      className={classnames('actions-bar', {
-        'actions-bar-visible': isVisible,
-      })}
+      className={classnames(
+        style['actions-bar'],
+        isVisible && style['actions-bar-visible']
+      )}
       data-testid="actions-bar"
     >
-      <div className="actions-bar-content">{children}</div>
+      <div className={style['actions-bar-content']}>{children}</div>
     </div>
   </PortalContainer>
 )

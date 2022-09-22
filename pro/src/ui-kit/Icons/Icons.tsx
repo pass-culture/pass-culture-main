@@ -49,6 +49,8 @@ import { ReactComponent as IcoRightCircleArrowIcon } from 'icons/ico-right-circl
 import { ReactComponent as IcoSearchGrayIcon } from 'icons/ico-search-gray.svg'
 import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
+import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
+import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import { ReactComponent as IcoStructureIcon } from 'icons/ico-structure.svg'
 import { ReactComponent as IcoTagIcon } from 'icons/ico-tag.svg'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
@@ -506,6 +508,16 @@ export const Icons = () => (
           <StatsIcon />
         </td>
         <td>ico-stats</td>
+        <td className={styles['with-background']}>
+          <StatusInactiveIcon />
+        </td>
+        <td>ico-status-inactive</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <StatusValidatedIcon />
+        </td>
+        <td>ico-status-validated</td>
       </tr>
       <tr>
         <td>
