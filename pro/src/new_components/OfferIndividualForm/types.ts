@@ -31,4 +31,5 @@ export interface IOfferIndividualFormValues {
   isDuo: boolean
   externalTicketOfficeUrl: string
   url: string
+  isVenueVirtual?: boolean
 }

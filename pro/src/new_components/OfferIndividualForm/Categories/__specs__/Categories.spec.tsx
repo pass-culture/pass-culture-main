@@ -125,6 +125,7 @@ describe('OfferIndividual section: Categories', () => {
       await screen.findByLabelText('Choisir une catégorie')
     ).toBeInTheDocument()
   })
+
   it('should submit valid form', async () => {
     renderCategories({
       initialValues,
@@ -161,6 +162,7 @@ describe('OfferIndividual section: Categories', () => {
         subCategoryFields: ['showType', 'showSubType'],
         subcategoryId: 'C-A',
         visa: '',
+        isDuo: false,
         withdrawalDelay: undefined,
         withdrawalType: undefined,
       },

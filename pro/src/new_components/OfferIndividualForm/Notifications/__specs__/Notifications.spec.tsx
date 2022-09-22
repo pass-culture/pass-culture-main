@@ -7,7 +7,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { configureTestStore } from 'store/testUtils'
 import { SubmitButton } from 'ui-kit'
 

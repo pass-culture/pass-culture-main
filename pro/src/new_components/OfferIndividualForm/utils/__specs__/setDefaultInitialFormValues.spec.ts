@@ -20,6 +20,7 @@ describe('setDefaultInitialFormValues', () => {
       ...FORM_DEFAULT_VALUES,
       offererId: 'A',
       venueId: 'C',
+      isVenueVirtual: true,
       withdrawalDetails: 'détails de retrait',
       accessibility: { ...FORM_DEFAULT_VALUES.accessibility, none: true },
     }
@@ -95,6 +96,7 @@ describe('setDefaultInitialFormValues', () => {
 
     // then
     expectedInitialValues.venueId = FORM_DEFAULT_VALUES.venueId
+    expectedInitialValues.isVenueVirtual = undefined
     expectedInitialValues.accessibility = FORM_DEFAULT_VALUES.accessibility
     expectedInitialValues.withdrawalDetails =
       FORM_DEFAULT_VALUES.withdrawalDetails
