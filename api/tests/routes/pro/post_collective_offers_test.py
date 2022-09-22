@@ -112,6 +112,47 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
 
+    def test_create_collective_offer_with_bookingEmails_but_empty_bookingEmail(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        educational_domain = educational_factories.EducationalDomainFactory()
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "bookingEmail": "",
+            "bookingEmails": ["offer@example.com", "pifpafpouf@example.com"],
+            "domains": [educational_domain.id],
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "contactEmail": "pouet@example.com",
+            "contactPhone": "01 99 00 25 68",
+            "offerVenue": {
+                "addressType": "offererVenue",
+                "otherAddress": "",
+                "venueId": "",
+            },
+            "students": ["Lycée - Seconde"],
+            "offererId": humanize(offerer.id),
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "interventionArea": [],
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 201
+        offer_id = dehumanize(response.json["id"])
+        offer = CollectiveOffer.query.get(offer_id)
+        assert offer.bookingEmail == "offer@example.com"
+        assert offer.bookingEmails == ["offer@example.com", "pifpafpouf@example.com"]
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
