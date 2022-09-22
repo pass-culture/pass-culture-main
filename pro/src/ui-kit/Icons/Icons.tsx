@@ -46,6 +46,7 @@ import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import { ReactComponent as IcoStructureIcon } from 'icons/ico-structure.svg'
 import { ReactComponent as IcoTagIcon } from 'icons/ico-tag.svg'
+import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ReactComponent as IcoTrashIcon } from 'icons/ico-trash.svg'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import { ReactComponent as IcoUnavailableGradientIcon } from 'icons/ico-unavailable-gradient.svg'
@@ -323,6 +324,12 @@ export const Icons = () => (
           <IcoTrashIcon />
         </td>
         <td>ico-trash</td>
+      </tr>
+      <tr>
+        <td>
+          <TrashFilledIcon />
+        </td>
+        <td>ico-trash-filled</td>
       </tr>
       <tr>
         <td>

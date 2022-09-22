@@ -459,12 +459,6 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
-          <Icon svg="ico-trash-filled" />
-        </td>
-        <td>public/icons/ico-trash-filled</td>
-      </tr>
-      <tr>
-        <td>
           <Icon svg="ico-trash" />
         </td>
         <td>public/icons/ico-trash</td>

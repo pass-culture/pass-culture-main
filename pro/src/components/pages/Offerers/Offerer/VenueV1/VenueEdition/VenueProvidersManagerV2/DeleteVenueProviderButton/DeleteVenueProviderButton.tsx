@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react'
 
 import useNotification from 'components/hooks/useNotification'
-import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
+import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { deleteVenueProvider } from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -45,10 +45,9 @@ const DeleteVenueProviderButton = ({
         onClick={showModal}
         variant={ButtonVariant.TERNARY}
       >
-        <Icon
-          alt="Supprimer la synchronisation"
+        <TrashFilledIcon
+          title="Supprimer la synchronisation"
           className={style['provider-action-icon']}
-          svg="ico-trash-filled"
         />
         Supprimer
       </Button>
