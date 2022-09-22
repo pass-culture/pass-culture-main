@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import useNotification from 'components/hooks/useNotification'
-import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
+import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -32,10 +32,7 @@ const ButtonImageDelete = ({
   return (
     <>
       <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
-        <Icon
-          className={styles['button-image-delete-icon']}
-          svg="ico-trash-filled"
-        />
+        <TrashFilledIcon className={styles['button-image-delete-icon']} />
         Supprimer
       </Button>
       {!!visible && (
