@@ -11,6 +11,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions.models import Permissions
@@ -786,3 +787,246 @@ class ValidateOffererTest:
         db.session.refresh(user_offerer)
         assert not user_offerer.offerer.isValidated
         assert not user_offerer.user.has_pro_role
+
+
+class GetOfferersTagsTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerers_tags_list(self, client):
+        # given
+        tag1 = offerers_factories.OffererTagFactory(name="test-top-acteur", label="Top acteur")
+        tag2 = offerers_factories.OffererTagFactory(name="test-type-ei", label="Entreprise individuelle")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_tags_list"))
+
+        # then
+        assert response.status_code == 200
+        assert response.json["data"] == [
+            {
+                "id": tag2.id,
+                "name": tag2.name,
+                "label": tag2.label,
+            },
+            {
+                "id": tag1.id,
+                "name": tag1.name,
+                "label": tag1.label,
+            },
+        ]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_offerers_tags_list_without_permission(self, client):
+        # given
+        offerers_factories.OffererTagFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_tags_list"))
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_offerers_tags_list_as_anonymous(self, client):
+        # given
+        offerers_factories.OffererTagFactory()
+
+        # when
+        response = client.get(url_for("backoffice_blueprint.get_offerers_tags_list"))
+
+        # then
+        assert response.status_code == 403
+
+
+class AddOffererTagTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_add_tag_to_offerer(self, client):
+        # given
+        # create 2 offerers and 2 tags to ensure that only one tag is added to only one offerer
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.OffererFactory()
+        tag = offerers_factories.OffererTagFactory(name="test-top-acteur", label="Top acteur")
+        offerers_factories.OffererTagFactory(name="test-type-ei", label="Entreprise individuelle")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 204
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 1
+        assert offerer_tag_mapping[0].offererId == offerer.id
+        assert offerer_tag_mapping[0].tagId == tag.id
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_add_tag_to_offerer_twice(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory()
+        tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
+        offerers_factories.OffererTagMappingFactory(offererId=offerer.id, tagId=tag.id)
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["global"] == ["Une entrée avec cet identifiant existe déjà dans notre base de données"]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_add_tag_to_offerer_without_permission(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory()
+        tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 403
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_add_tag_to_offerer_as_anonymous(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory()
+        tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 403
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 0
+
+
+class RemoveOffererTagTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_remove_tag_from_offerer(self, client):
+        # given
+        offerer1 = offerers_factories.OffererFactory()
+        offerer2 = offerers_factories.OffererFactory()
+        tag1 = offerers_factories.OffererTagFactory(name="test-top-acteur", label="Top acteur")
+        tag2 = offerers_factories.OffererTagFactory(name="test-type-ei", label="Entreprise individuelle")
+        mapping1 = offerers_factories.OffererTagMappingFactory(offererId=offerer1.id, tagId=tag1.id)
+        mapping2 = offerers_factories.OffererTagMappingFactory(offererId=offerer1.id, tagId=tag2.id)
+        mapping3 = offerers_factories.OffererTagMappingFactory(offererId=offerer2.id, tagId=tag1.id)
+        mapping4 = offerers_factories.OffererTagMappingFactory(offererId=offerer2.id, tagId=tag2.id)
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).delete(
+            url_for("backoffice_blueprint.remove_tag_from_offerer", offerer_id=offerer1.id, tag_name=tag2.name)
+        )
+
+        # then
+        assert response.status_code == 204
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 3
+        mapping_ids = {item.id for item in offerer_tag_mapping}
+        assert mapping1.id in mapping_ids
+        assert mapping2.id not in mapping_ids
+        assert mapping3.id in mapping_ids
+        assert mapping4.id in mapping_ids
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_remove_tag_from_offerer_when_not_mapped(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory()
+        tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).delete(
+            url_for("backoffice_blueprint.remove_tag_from_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 404
+        assert response.json["tag_name"] == "L'association structure - tag n'existe pas"
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_remove_unexisting_tag_from_offerer(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).delete(
+            url_for("backoffice_blueprint.remove_tag_from_offerer", offerer_id=offerer.id, tag_name="does-not-exist")
+        )
+
+        # then
+        assert response.status_code == 404
+        assert response.json["tag_name"] == "L'association structure - tag n'existe pas"
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_remove_tag_from_unexisting_offerer(self, client):
+        # given
+        tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).delete(
+            url_for("backoffice_blueprint.remove_tag_from_offerer", offerer_id=42, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 404
+        assert response.json["tag_name"] == "L'association structure - tag n'existe pas"
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_remove_tag_from_offerer_without_permission(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory()
+        tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
+        mapping = offerers_factories.OffererTagMappingFactory(offererId=offerer.id, tagId=tag.id)
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).delete(
+            url_for("backoffice_blueprint.remove_tag_from_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 403
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 1
+        assert offerer_tag_mapping[0].id == mapping.id
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_remove_tag_from_offerer_as_anonymous(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory()
+        tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
+        mapping = offerers_factories.OffererTagMappingFactory(offererId=offerer.id, tagId=tag.id)
+
+        # when
+        response = client.delete(
+            url_for("backoffice_blueprint.remove_tag_from_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # then
+        assert response.status_code == 403
+        offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_tag_mapping) == 1
+        assert offerer_tag_mapping[0].id == mapping.id
