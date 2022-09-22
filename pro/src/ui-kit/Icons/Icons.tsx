@@ -39,6 +39,7 @@ import { ReactComponent as IcoOuterPenIcon } from 'icons/ico-outer-pen.svg'
 import { ReactComponent as IcoPasscultureIcon } from 'icons/ico-passculture.svg'
 import { ReactComponent as IcoPenBlackIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPenIcon } from 'icons/ico-pen.svg'
+import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoPlusIcon } from 'icons/ico-plus.svg'
 import { ReactComponent as IcoRightCircleArrowIcon } from 'icons/ico-right-circle-arrow.svg'
 import { ReactComponent as IcoSearchGrayIcon } from 'icons/ico-search-gray.svg'
@@ -288,6 +289,12 @@ export const Icons = () => (
           <IcoPlusIcon />
         </td>
         <td>ico-plus</td>
+      </tr>
+      <tr>
+        <td>
+          <PlusCircleIcon />
+        </td>
+        <td>ico-plus-circle</td>
       </tr>
       <tr>
         <td>
