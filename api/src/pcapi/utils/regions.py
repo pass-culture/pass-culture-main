@@ -33,13 +33,13 @@ def get_region_name_from_department(department: str | None) -> str:
 
 
 def get_department_code_from_postal_code(postal_code: str) -> str:
-    if int(postal_code[:3]) == 202:
+    if postal_code[:3] == "202":
         return "2B"
 
-    if int(postal_code[:2]) == 20:
+    if postal_code[:2] == "20":
         return "2A"
 
-    if int(postal_code[:2]) > 95:
+    if postal_code[:2] > "95":
         return postal_code[:3]
 
     return postal_code[:2]
