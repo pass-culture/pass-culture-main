@@ -132,14 +132,14 @@ const OfferEducationalStock = ({
                   <RadioGroup
                     group={showcaseOfferRadios}
                     name="educationalOfferType"
+                    hideFooter
                   />
                 </FormLayout.Row>
               )}
-              {!displayElementsForShowcaseOption && (
+              {displayElementsForShowcaseOption ? (
+                <ShowcaseBannerInfo />
+              ) : (
                 <>
-                  {shouldDisplayShowcaseScreen && (
-                    <div className={styles['separator']} />
-                  )}
                   <Banner
                     className={styles['offer-educational-stock-banner']}
                     links={[
@@ -154,15 +154,6 @@ const OfferEducationalStock = ({
                     Vous pourrez modifier ces informations en fonction de vos
                     échanges avec l'établissement scolaire.
                   </Banner>
-                </>
-              )}
-              {displayElementsForShowcaseOption ? (
-                <>
-                  <ShowcaseBannerInfo />
-                  <div className={styles['separator']} />
-                </>
-              ) : (
-                <>
                   <p className={styles['description-text']}>
                     Indiquez le prix total de l’évènement et le nombre de
                     personnes qui y participeront.

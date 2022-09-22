@@ -28,7 +28,7 @@ const RadioButton = ({
 
   return (
     <div
-      className={cn(style['radio-button'], className, {
+      className={cn(className, {
         [style['with-border']]: withBorder,
         [style['with-border-primary']]: withBorder && field.checked,
       })}
