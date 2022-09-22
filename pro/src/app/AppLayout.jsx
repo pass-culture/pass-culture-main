@@ -5,9 +5,9 @@ import ReactTooltip from 'react-tooltip'
 
 import Header from 'components/layout/Header/Header'
 import Notification from 'components/layout/Notification/Notification'
-import TutorialDialog from 'components/layout/Tutorial/TutorialDialog'
 import DomainNameBanner from 'new_components/DomainNameBanner'
 import GoBackLink from 'new_components/GoBackLink'
+import TutorialDialog from 'new_components/TutorialDialog'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props

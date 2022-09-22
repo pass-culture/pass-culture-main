@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import useAnalytics from 'components/hooks/useAnalytics'
@@ -11,7 +10,7 @@ import { setCurrentUser } from 'store/user/actions'
 
 import styles from './TutorialDialog.module.scss'
 
-const TutorialDialog = () => {
+const TutorialDialog = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
     currentUser && !currentUser.hasSeenProTutorials
@@ -37,16 +36,9 @@ const TutorialDialog = () => {
     >
       <Tutorial onFinish={saveHasSeenProTutorials} />
     </DialogBox>
-  ) : null
-}
-
-TutorialDialog.defaultProps = {
-  currentUser: null,
-}
-
-TutorialDialog.propTypes = {
-  currentUser: PropTypes.shape(),
-  setUserHasSeenTuto: PropTypes.func.isRequired,
+  ) : (
+    <></>
+  )
 }
 
 export default TutorialDialog
