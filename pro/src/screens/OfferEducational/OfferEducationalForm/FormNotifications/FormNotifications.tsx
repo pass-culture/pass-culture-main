@@ -1,9 +1,11 @@
-import { useFormikContext } from 'formik'
+import { FieldArray, useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
 
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
 import FormLayout from 'new_components/FormLayout'
-import { Checkbox } from 'ui-kit'
+import { Button, Checkbox } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { NOTIFICATIONS_LABEL } from '../../constants/labels'
 
@@ -18,8 +20,8 @@ const FormNotifications = ({
     useFormikContext<IOfferEducationalFormValues>()
 
   useEffect(() => {
-    if (values.notifications && values.email && !values.notificationEmail) {
-      setFieldValue('notificationEmail', values.email)
+    if (values.notifications && values.email && !values.notificationEmails[0]) {
+      setFieldValue('notificationEmails.0', values.email)
     }
   }, [values.notifications, setFieldValue])
 
@@ -35,11 +37,31 @@ const FormNotifications = ({
         />
       </FormLayout.Row>
       {values.notifications && (
-        <EmailInputRow
-          disableForm={disableForm}
-          displayTrash={false}
-          name={'notificationEmail'}
-        />
+        <FieldArray name="notificationEmails">
+          {({ remove, push }) => (
+            <>
+              {values.notificationEmails.map((_, index) => (
+                <EmailInputRow
+                  disableForm={disableForm}
+                  displayTrash={index > 0}
+                  name={`notificationEmails.${index}`}
+                  key={`notificationEmails.${index}`}
+                  onDelete={() => {
+                    remove(index)
+                  }}
+                />
+              ))}
+              <Button
+                variant={ButtonVariant.TERNARY}
+                Icon={PlusCircleIcon}
+                onClick={() => push('')}
+                disabled={values.notificationEmails.length >= 5}
+              >
+                Ajouter un e-mail de notification
+              </Button>
+            </>
+          )}
+        </FieldArray>
       )}
     </FormLayout.Section>
   )

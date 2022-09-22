@@ -49,7 +49,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         phone: '+33199006328',
         email: 'collectiveofferfactory+contact@example.com',
         notifications: true,
-        notificationEmail: 'collectiveofferfactory+booking@example.com',
+        notificationEmails: ['collectiveofferfactory+booking@example.com'],
         domains: [],
       },
       initialValues: {
@@ -77,7 +77,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         phone: '+33199006328',
         email: 'collectiveofferfactory+contact@example.com',
         notifications: true,
-        notificationEmail: 'collectiveofferfactory+booking@example.com',
+        notificationEmails: ['collectiveofferfactory+booking@example.com'],
         domains: [],
       },
     }
