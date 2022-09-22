@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
+import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { pluralize } from 'utils/pluralize'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
@@ -49,7 +50,7 @@ const OffererItem = ({ offerer }) => {
                 className="has-text-primary"
                 to={`/offres?structure=${offererId}`}
               >
-                <Icon svg="ico-offres-r" />
+                <IconOffers className="counter-offers-icon" />
                 {
                   // Count is negative if offerer has too much venues and
                   // probably too much offers to count.

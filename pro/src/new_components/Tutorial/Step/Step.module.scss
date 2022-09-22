@@ -33,12 +33,11 @@ p.tw-numbers {
   .header-example {
     @include fonts.button();
 
-    background-image:
-      linear-gradient(
-        97deg,
-        colors.$primary,
-        colors.$secondary
-      );
+    background-image: linear-gradient(
+      97deg,
+      colors.$primary,
+      colors.$secondary
+    );
     color: colors.$white;
     display: grid;
     grid-column-end: 5;
@@ -51,8 +50,11 @@ p.tw-numbers {
       display: flex;
       justify-content: center;
 
-      img {
+      &-icon {
+        height: rem.torem(24px);
         margin-right: rem.torem(8px);
+        width: rem.torem(24px);
+        fill: white;
       }
     }
 

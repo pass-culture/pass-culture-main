@@ -72,4 +72,12 @@
   .validating-status {
     font-style: italic;
   }
+
+  .counter-offers-icon {
+    width: rem.torem(16px);
+    height: rem.torem(16px);
+    margin-right: rem.torem(3.2px);
+    vertical-align: middle;
+    fill: colors.$primary;
+  }
 }
