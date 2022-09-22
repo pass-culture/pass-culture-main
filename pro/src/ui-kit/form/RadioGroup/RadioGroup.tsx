@@ -14,6 +14,7 @@ export enum Direction {
 export interface IRadioGroupProps {
   direction?: Direction.HORIZONTAL | Direction.VERTICAL
   disabled?: boolean
+  hideFooter?: boolean
   name: string
   legend?: string
   group: {
@@ -27,6 +28,7 @@ export interface IRadioGroupProps {
 const RadioGroup = ({
   direction = Direction.VERTICAL,
   disabled,
+  hideFooter = false,
   group,
   name,
   legend,
@@ -44,7 +46,7 @@ const RadioGroup = ({
       )}
       dataTestId={`wrapper-${name}`}
       error={meta.touched && !!meta.error ? meta.error : undefined}
-      hideFooter={false}
+      hideFooter={hideFooter}
       legend={legend}
       name={`radio-group-${name}`}
     >
