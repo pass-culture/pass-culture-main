@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import cast
 
 from pcapi.core.educational import models as educational_models
@@ -11,6 +12,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 @blueprint.pro_public_api_v2.route("/collective/student-levels", methods=["GET"])
 @api_key_required
+@lru_cache(maxsize=1)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives"],
