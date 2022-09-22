@@ -138,14 +138,14 @@ def offerer_active_individual_offers(offerer, venue_with_accepted_bank_info):
             isActive=True,
             validation=offers_models.OfferValidationStatus.APPROVED.value,
         )
-        for _ in range(5)
+        for _ in range(3)
     ] + [
         offers_factories.OfferFactory(
             venue=venue_with_accepted_bank_info,
             isActive=True,
             validation=offers_models.OfferValidationStatus.REJECTED.value,
         )
-        for _ in range(5)
+        for _ in range(1)
     ]
     return offers
 
@@ -158,14 +158,14 @@ def offerer_inactive_individual_offers(offerer, venue_with_accepted_bank_info):
             isActive=False,
             validation=offers_models.OfferValidationStatus.APPROVED.value,
         )
-        for _ in range(5)
+        for _ in range(4)
     ] + [
         offers_factories.OfferFactory(
             venue=venue_with_accepted_bank_info,
             isActive=False,
             validation=offers_models.OfferValidationStatus.REJECTED.value,
         )
-        for _ in range(5)
+        for _ in range(1)
     ]
     return offers
 
@@ -185,7 +185,7 @@ def offerer_active_collective_offers(offerer, venue_with_accepted_bank_info):
             isActive=True,
             validation=offers_models.OfferValidationStatus.REJECTED.value,
         )
-        for _ in range(5)
+        for _ in range(1)
     ]
     return offers
 
@@ -198,14 +198,14 @@ def offerer_inactive_collective_offers(offerer, venue_with_accepted_bank_info):
             isActive=False,
             validation=offers_models.OfferValidationStatus.APPROVED.value,
         )
-        for _ in range(5)
+        for _ in range(6)
     ] + [
         educational_factories.CollectiveOfferFactory(
             venue=venue_with_accepted_bank_info,
             isActive=False,
             validation=offers_models.OfferValidationStatus.REJECTED.value,
         )
-        for _ in range(5)
+        for _ in range(1)
     ]
     return offers
 
@@ -640,10 +640,10 @@ class GetOffererOffersStatsTest:
         # then
         assert response.status_code == 200
         offer_stats = response.json["data"]
-        assert offer_stats["active"]["individual"] == 5
+        assert offer_stats["active"]["individual"] == 3
         assert offer_stats["active"]["collective"] == 5
-        assert offer_stats["inactive"]["individual"] == 5
-        assert offer_stats["inactive"]["collective"] == 5
+        assert offer_stats["inactive"]["individual"] == 4
+        assert offer_stats["inactive"]["collective"] == 6
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_offerer_offers_stats_0_if_no_offer(
