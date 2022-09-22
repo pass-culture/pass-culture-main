@@ -16,6 +16,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions.models import Permissions
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -716,3 +717,72 @@ class GetOffererOffersStatsTest:
 
         # then
         assert response.status_code == 403
+
+
+class ValidateOffererTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_validate_offerer(self, client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory(
+            user=users_factories.UserFactory(), offerer__validationToken="TOKEN"
+        )
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer", offerer_id=user_offerer.offerer.id)
+        )
+
+        # then
+        assert response.status_code == 204
+        db.session.refresh(user_offerer)
+        assert user_offerer.offerer.isValidated
+        assert user_offerer.user.has_pro_role
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_validate_offerer_returns_404_if_offerer_is_not_found(self, client):
+        # given
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer", offerer_id=42)
+        )
+
+        # then
+        assert response.status_code == 404
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_validate_offerer_without_permission(self, client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory(
+            user=users_factories.UserFactory(), offerer__validationToken="TOKEN"
+        )
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer", offerer_id=user_offerer.offerer.id)
+        )
+
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        assert not user_offerer.offerer.isValidated
+        assert not user_offerer.user.has_pro_role
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_validate_offerer_as_anonymous(self, client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory(
+            user=users_factories.UserFactory(), offerer__validationToken="TOKEN"
+        )
+
+        # when
+        response = client.post(url_for("backoffice_blueprint.validate_offerer", offerer_id=user_offerer.offerer.id))
+
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        assert not user_offerer.offerer.isValidated
+        assert not user_offerer.user.has_pro_role

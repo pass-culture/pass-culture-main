@@ -37,9 +37,9 @@ def validate_offerer_attachment(token) -> str:  # type: ignore [no-untyped-def]
 
 @blueprint.pro_public_api_v1.route("/validate/offerer/<token>", methods=["GET"])
 @spectree_serialize(on_success_status=202, json_format=False)
-def validate_new_offerer(token) -> str:  # type: ignore [no-untyped-def]
+def validate_new_offerer(token: str) -> str:
     try:
-        api.validate_offerer(token)
+        api.validate_offerer_by_token(token)
     except ValidationTokenNotFoundError:
         errors = ResourceNotFoundError()
         errors.add_error(
@@ -51,7 +51,7 @@ def validate_new_offerer(token) -> str:  # type: ignore [no-untyped-def]
 
 @blueprint.pro_private_api.route("/validate/user/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def validate_user(token) -> None:  # type: ignore [no-untyped-def]
+def validate_user(token: str) -> None:
     user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
 
