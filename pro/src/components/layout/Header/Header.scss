@@ -21,6 +21,7 @@ header.menu-v2 {
     .nav-menu {
       display: flex;
       height: rem.torem(72px);
+      justify-content: center;
 
       button.nav-item {
         background: none;
@@ -37,20 +38,19 @@ header.menu-v2 {
         height: 100%;
         padding: 0 rem.torem(16px);
 
-        svg {
-          height: rem.torem(40px);
+        .nav-item-icon {
+          height: rem.torem(24px);
           margin-right: rem.torem(8px);
-          width: rem.torem(40px);
+          width: rem.torem(24px);
+          fill: white;
         }
 
         &.icon-only {
           flex-shrink: 0;
           padding: 0 rem.torem(8px);
 
-          svg {
-            height: rem.torem(32px);
+          .signout-icon {
             margin-right: 0;
-            width: rem.torem(32px);
           }
         }
 

@@ -1,9 +1,9 @@
 import React from 'react'
 
-import { ReactComponent as BookingsSvg } from 'components/layout/Header/assets/bookings.svg'
-import { ReactComponent as CounterSvg } from 'components/layout/Header/assets/counter.svg'
-import { ReactComponent as OffersSvg } from 'components/layout/Header/assets/offers.svg'
-import { ReactComponent as RefundsSvg } from 'components/layout/Header/assets/refunds.svg'
+import { ReactComponent as IconCalendar } from 'icons/ico-calendar.svg'
+import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
+import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
+import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 
 import { IStepComponentProps } from '../types'
 
@@ -24,19 +24,19 @@ const ManageBookings = ({ titleId }: IStepComponentProps): JSX.Element => (
       <DownArrow className={styles['third-column']} />
       <span className={styles['header-example']}>
         <span className={styles['header-element']}>
-          <CounterSvg />
+          <IconDesk className={styles['header-element-icon']} />
           Guichet
         </span>
         <span className={styles['header-element']}>
-          <OffersSvg />
+          <IconOffers className={styles['header-element-icon']} />
           Offres
         </span>
         <span className={styles['header-element']}>
-          <BookingsSvg />
+          <IconCalendar className={styles['header-element-icon']} />
           Réservations
         </span>
         <span className={styles['header-element']}>
-          <RefundsSvg />
+          <IconEuro className={styles['header-element-icon']} />
           Remboursements
         </span>
       </span>

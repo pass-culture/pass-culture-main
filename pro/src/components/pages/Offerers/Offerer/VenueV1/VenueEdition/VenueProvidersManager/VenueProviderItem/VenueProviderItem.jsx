@@ -6,6 +6,7 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
+import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -50,7 +51,7 @@ const VenueProviderItem = ({
               <strong>{venueIdAtOfferProvider}</strong>
             </div>
             <div className="offers-container-counter">
-              <Icon height="22px" svg="ico-offres-r" width="22px" />
+              <IconOffers className="offers-counter-icon" />
               <div className="number-of-offers-label">
                 {pluralize(nOffers, 'offres')}
               </div>

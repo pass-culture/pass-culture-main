@@ -52,11 +52,15 @@
       flex: 1;
       justify-content: flex-end;
       padding-top: rem.torem(8px);
-
       .number-of-offers-label {
         display: inline-block;
         padding-left: rem.torem(5px);
         vertical-align: top;
+      }
+      .offers-counter-icon {
+        width: rem.torem(22px);
+        height: rem.torem(22px);
+        fill: colors.$primary;
       }
     }
   }
