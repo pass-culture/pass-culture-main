@@ -886,4 +886,4 @@ def get_offerer_offers_stats(offerer_id: int) -> sa.engine.Row:
         collective_offers_query.label("collective_offers"),
     )
 
-    return db.session.execute(offers_stats_query).one_or_none()
+    return db.session.execute(offers_stats_query).one()

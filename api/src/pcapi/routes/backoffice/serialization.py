@@ -272,6 +272,10 @@ class OffererAttachedUsersResponseModel(BaseModel):
 
 
 class OffererBankInformationStatus(BaseModel):
+    """
+    le nombre de lieux dont les infos permettent (ok), ou pas (ko), les remboursements
+    """
+
     ko: int
     ok: int
 
