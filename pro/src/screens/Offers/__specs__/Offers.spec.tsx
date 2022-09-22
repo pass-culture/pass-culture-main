@@ -722,8 +722,6 @@ describe('screen Offers', () => {
         </Provider>
       )
 
-      const actionBar = await screen.findByTestId('actions-bar')
-
       // When
       const checkbox = await screen.findByTestId(
         `select-offer-${offersRecap[0].id}`
@@ -731,13 +729,14 @@ describe('screen Offers', () => {
       await userEvent.click(checkbox)
 
       // Then
-      expect(actionBar).toHaveClass('actions-bar-visible')
+      const actionBar = await screen.findByTestId('actions-bar')
+      expect(actionBar).toBeInTheDocument()
 
       // When
       await userEvent.click(checkbox)
 
       // Then
-      expect(actionBar).not.toHaveClass('actions-bar-visible')
+      expect(actionBar).not.toBeInTheDocument()
     })
 
     describe('on click on select all offers checkbox', () => {

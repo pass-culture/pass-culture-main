@@ -3,7 +3,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { IOfferIndividual } from 'core/Offers/types'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import ActionsBarSticky from 'new_components/ActionsBarSticky'
 
 import { ActionBar } from '../ActionBar'
 
@@ -39,12 +39,15 @@ const Stocks = ({ offer }: IStocksProps): JSX.Element => {
       <form onSubmit={formik.handleSubmit}>
         <p> TODO stock form </p>
 
-        <OfferFormLayout.ActionBar>
-          <ActionBar
-            onClickNext={handleNextStep}
-            onClickPrevious={handlePreviousStep}
-          />
-        </OfferFormLayout.ActionBar>
+        <ActionsBarSticky
+          isVisible
+          left={
+            <ActionBar
+              onClickNext={handleNextStep}
+              onClickPrevious={handlePreviousStep}
+            />
+          }
+        />
       </form>
     </FormikProvider>
   )
