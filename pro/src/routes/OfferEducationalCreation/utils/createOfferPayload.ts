@@ -1,6 +1,5 @@
 import { OfferAddressType, PostCollectiveOfferBodyModel } from 'apiClient/v1'
 import {
-  EducationalOfferModelPayload,
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
@@ -9,7 +8,7 @@ import {
 const disabilityCompliances = (
   accessibility: IOfferEducationalFormValues['accessibility']
 ): Pick<
-  EducationalOfferModelPayload,
+  PostCollectiveOfferBodyModel,
   | 'audioDisabilityCompliant'
   | 'mentalDisabilityCompliant'
   | 'motorDisabilityCompliant'
@@ -21,25 +20,6 @@ const disabilityCompliances = (
   visualDisabilityCompliant: accessibility.visual,
 })
 
-export const createOfferPayload = (
-  offer: IOfferEducationalFormValues
-): EducationalOfferModelPayload => ({
-  offererId: offer.offererId,
-  venueId: offer.venueId,
-  subcategoryId: offer.subCategory,
-  name: offer.title,
-  bookingEmail: offer.notifications ? offer.notificationEmail : undefined,
-  description: offer.description,
-  durationMinutes: parseDuration(offer.duration),
-  ...disabilityCompliances(offer.accessibility),
-  extraData: {
-    students: serializeParticipants(offer.participants),
-    offerVenue: offer.eventAddress,
-    contactEmail: offer.email,
-    contactPhone: offer.phone,
-  },
-})
-
 export const createCollectiveOfferPayload = (
   offer: IOfferEducationalFormValues
 ): PostCollectiveOfferBodyModel => ({
@@ -47,7 +27,7 @@ export const createCollectiveOfferPayload = (
   venueId: offer.venueId,
   subcategoryId: offer.subCategory,
   name: offer.title,
-  bookingEmail: offer.notifications ? offer.notificationEmail : undefined,
+  bookingEmails: offer.notifications ? offer.notificationEmails : [],
   description: offer.description,
   durationMinutes: parseDuration(offer.duration),
   ...disabilityCompliances(offer.accessibility),

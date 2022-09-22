@@ -38,7 +38,7 @@ export type IOfferEducationalFormValues = {
   phone: string
   email: string
   notifications: boolean
-  notificationEmail: string
+  notificationEmails: string[]
   domains: string[]
   'search-domains'?: string
   'search-interventionArea'?: string
@@ -54,30 +54,6 @@ export enum Mode {
   CREATION,
   EDITION,
   READ_ONLY,
-}
-
-export type EducationalOfferModelPayload = {
-  offererId: string
-  venueId: string
-  subcategoryId: string
-  name: string
-  bookingEmail?: string
-  description?: string
-  durationMinutes?: number
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  visualDisabilityCompliant: boolean
-  extraData: {
-    students: string[]
-    contactEmail: string
-    contactPhone: string
-    offerVenue: {
-      addressType: OfferAddressType
-      otherAddress: string
-      venueId: string
-    }
-  }
 }
 
 export type OfferEducationalStockFormValues = {

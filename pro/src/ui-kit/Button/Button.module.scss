@@ -114,5 +114,8 @@
     &.button-disabled .button-icon {
       fill: colors.$grey-dark;
     }
+    .button-icon {
+      fill: black;
+    }
   }
 }

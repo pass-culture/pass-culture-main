@@ -34,14 +34,14 @@ const serializer = {
     audioDisabilityCompliant: offer.accessibility.audio,
     visualDisabilityCompliant: offer.accessibility.visual,
   }),
-  notificationEmail: (
+  notificationEmails: (
     payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => {
     if (offer.notifications) {
       return {
         ...payload,
-        bookingEmail: offer.notificationEmail,
+        bookingEmails: offer.notificationEmails,
       }
     }
     return payload
@@ -53,12 +53,12 @@ const serializer = {
     if (offer.notifications) {
       return {
         ...payload,
-        bookingEmail: offer.notificationEmail,
+        bookingEmails: offer.notificationEmails,
       }
     }
     return {
       ...payload,
-      bookingEmail: '',
+      bookingEmails: [],
     }
   },
   // Unchanged keys

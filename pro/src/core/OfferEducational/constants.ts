@@ -36,7 +36,7 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   phone: '',
   email: '',
   notifications: false,
-  notificationEmail: '',
+  notificationEmails: [''],
   domains: [],
   'search-domains': '',
   'search-interventionArea': '',
