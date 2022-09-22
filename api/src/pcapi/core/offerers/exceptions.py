@@ -44,3 +44,7 @@ class CannotLinkVenueToPricingPoint(Exception):
 
 class VenueNotFoundException(Exception):
     pass
+
+
+class OffererNotFoundException(Exception):
+    pass

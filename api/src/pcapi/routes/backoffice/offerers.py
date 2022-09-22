@@ -1,8 +1,9 @@
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
-from pcapi.models.api_errors import ApiErrors
+from pcapi.models import api_errors
 from pcapi.serialization.decorator import spectree_serialize
 import pcapi.utils.regions
 
@@ -44,7 +45,7 @@ def get_offerer_basic_info(offerer_id: int) -> serialization.Response:
     offerer_basic_info = offerers_api.get_offerer_basic_info(offerer_id)
 
     if not offerer_basic_info:
-        raise ApiErrors(errors={"offerer_id": "La structure n'existe pas"}, status_code=404)
+        raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
 
     return serialization.Response(
         data=serialization.OffererBasicInfo(
@@ -99,3 +100,13 @@ def get_offerer_offers_stats(offerer_id: int) -> serialization.Response:
             ),
         )
     )
+
+
+@blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/validate", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def validate_offerer(offerer_id: int) -> None:
+    try:
+        offerers_api.validate_offerer_by_id(offerer_id)
+    except offerers_exceptions.OffererNotFoundException:
+        raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})

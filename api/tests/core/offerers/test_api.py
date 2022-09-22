@@ -583,7 +583,7 @@ class ValidateOffererAttachmentTest:
 
 
 @freeze_time("2020-10-15 00:00:00")
-class ValidateOffererTest:
+class ValidateOffererByTokenTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
         # Given
@@ -591,7 +591,7 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
 
         # When
-        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
 
         # Then
         assert user_offerer.offerer.validationToken is None
@@ -608,7 +608,7 @@ class ValidateOffererTest:
         )
 
         # When
-        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
 
         # Then
         assert applicant.has_pro_role
@@ -624,7 +624,7 @@ class ValidateOffererTest:
         venue_2 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         # When
-        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once()
@@ -641,7 +641,7 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
 
         # When
-        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+        offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
 
         # Then
         mocked_send_new_offerer_validation_email_to_pro.assert_called_once_with(user_offerer.offerer)
@@ -654,11 +654,90 @@ class ValidateOffererTest:
 
         # When
         with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
-            offerers_api.validate_offerer("OTHER TOKEN")
+            offerers_api.validate_offerer_by_token("OTHER TOKEN")
 
         # Then
         assert not applicant.has_pro_role
         assert user_offerer.offerer.validationToken == "TOKEN"
+
+
+@freeze_time("2020-10-15 00:00:00")
+class ValidateOffererByIdTest:
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+
+        # When
+        offerers_api.validate_offerer_by_id(user_offerer.offerer.id)
+
+        # Then
+        assert user_offerer.offerer.isValidated
+        assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
+
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        another_applicant = users_factories.UserFactory()
+        another_user_on_same_offerer = offerers_factories.UserOffererFactory(
+            user=another_applicant, validationToken="TOKEN"
+        )
+
+        # When
+        offerers_api.validate_offerer_by_id(user_offerer.offerer.id)
+
+        # Then
+        assert applicant.has_pro_role
+        assert not another_applicant.has_pro_role
+        assert not another_user_on_same_offerer.isValidated
+
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_managed_venues_are_reindexed(self, mocked_async_index_offers_of_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        # When
+        offerers_api.validate_offerer_by_id(user_offerer.offerer.id)
+
+        # Then
+        mocked_async_index_offers_of_venue_ids.assert_called_once()
+        called_args, _ = mocked_async_index_offers_of_venue_ids.call_args
+        assert set(called_args[0]) == {venue_1.id, venue_2.id}
+
+    @patch("pcapi.core.mails.transactional.send_new_offerer_validation_email_to_pro", return_value=True)
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_send_validation_confirmation_email(
+        self, mocked_async_index_offers_of_venue_ids, mocked_send_new_offerer_validation_email_to_pro
+    ):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+
+        # When
+        offerers_api.validate_offerer_by_id(user_offerer.offerer.id)
+
+        # Then
+        mocked_send_new_offerer_validation_email_to_pro.assert_called_once_with(user_offerer.offerer)
+
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_do_not_validate_attachment_if_id_not_found(self, mocked_async_index_offers_of_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+
+        # When
+        with pytest.raises(offerers_exceptions.OffererNotFoundException):
+            offerers_api.validate_offerer_by_id(user_offerer.offerer.id + 100)
+
+        # Then
+        assert not applicant.has_pro_role
+        assert not user_offerer.offerer.isValidated
 
 
 def test_grant_user_offerer_access():

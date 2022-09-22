@@ -25,6 +25,7 @@ class Permissions(enum.Enum):
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
     SEARCH_PRO_ACCOUNT = "rechercher un acteur culturel"
     READ_PRO_ENTITY = "Visualiser une structure, un lieu ou un compte pro"
+    VALIDATE_OFFERER = "valider une structure"
 
 
 def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:

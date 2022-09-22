@@ -423,11 +423,7 @@ def validate_offerer_attachment(token: str) -> None:
         )
 
 
-def validate_offerer(token: str) -> None:
-    offerer = offerers_repository.find_offerer_by_validation_token(token)
-    if offerer is None:
-        raise exceptions.ValidationTokenNotFoundError()
-
+def _validate_offerer(offerer: models.Offerer) -> None:
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationToken = None
     offerer.dateValidated = datetime.utcnow()
@@ -448,6 +444,22 @@ def validate_offerer(token: str) -> None:
             "Could not send validation confirmation email to offerer",
             extra={"offerer": offerer.id},
         )
+
+
+def validate_offerer_by_token(token: str) -> None:
+    offerer = offerers_repository.find_offerer_by_validation_token(token)
+    if offerer is None:
+        raise exceptions.ValidationTokenNotFoundError()
+
+    _validate_offerer(offerer)
+
+
+def validate_offerer_by_id(offerer_id: int) -> None:
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
+        raise exceptions.OffererNotFoundException()
+
+    _validate_offerer(offerer)
 
 
 def get_timestamp_from_url(image_url: str) -> str:
