@@ -6,6 +6,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils.cache import cached_view
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
@@ -29,6 +30,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         )
     ),
 )
+@cached_view(prefix="pro_public_api_v2")
 def list_educational_domains() -> public_api_collective_offers_serialize.CollectiveOffersListDomainsResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives."""
