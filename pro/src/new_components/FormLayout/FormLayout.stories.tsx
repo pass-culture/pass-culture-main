@@ -1,3 +1,4 @@
+import type { ComponentStory } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -11,9 +12,9 @@ export default {
   component: FormLayout,
 }
 
-const Template = () => (
+const Template: ComponentStory<typeof FormLayout> = args => (
   <div style={{ width: 780 }}>
-    <FormLayout>
+    <FormLayout {...args}>
       <FormLayout.Section
         description="Lorem ipsum dolor sit amet"
         title="Lorem ipsum dolor sit amet"
@@ -58,6 +59,10 @@ const Template = () => (
 
 export const Default = Template.bind({})
 
+Default.args = {
+  small: false,
+}
+
 const DemoInformationBox = () => (
   <div>
     <h4>Information sur champs</h4>
@@ -69,10 +74,10 @@ const DemoInformationBox = () => (
   </div>
 )
 
-const TemplateDesigned = () => (
+const TemplateDesigned: ComponentStory<typeof FormLayout> = args => (
   <div style={{ width: 850 }}>
     <Formik initialValues={{}} onSubmit={() => alert('Form submit !')}>
-      <FormLayout>
+      <FormLayout {...args}>
         <FormLayout.Section
           description="Lorem ipsum dolor sit amet"
           title="Lorem ipsum dolor sit amet"
@@ -108,54 +113,6 @@ const TemplateDesigned = () => (
 
 export const Designed = TemplateDesigned.bind({})
 
-const TemplateWithInfo = () => (
-  <div style={{ width: 780 }}>
-    <FormLayout>
-      <FormLayout.Section
-        description="Lorem ipsum dolor sit amet"
-        title="Lorem ipsum dolor sit amet"
-      >
-        <FormLayout.Row>
-          <label>
-            Hello
-            <input type="text" />
-          </label>
-          <div>Information box</div>
-        </FormLayout.Row>
-      </FormLayout.Section>
-      <FormLayout.Section
-        description="Lorem ipsum dolor sit amet"
-        title="Lorem ipsum dolor sit amet"
-      >
-        <FormLayout.Row>
-          <label>
-            Hello
-            <input type="text" />
-          </label>
-          <div>Information box</div>
-        </FormLayout.Row>
-        <FormLayout.SubSection title="Sub section title">
-          <FormLayout.Row inline>
-            <>
-              <label>
-                Hello
-                <input type="text" />
-              </label>
-              <label>
-                Hello
-                <input type="text" />
-              </label>
-            </>
-            <div>Information box</div>
-          </FormLayout.Row>
-        </FormLayout.SubSection>
-      </FormLayout.Section>
-      <FormLayout.Actions>
-        <button type="button">Annuler</button>
-        <button type="button">Envoyer</button>
-      </FormLayout.Actions>
-    </FormLayout>
-  </div>
-)
-
-export const WithInfo = TemplateWithInfo.bind({})
+Designed.args = {
+  small: true,
+}
