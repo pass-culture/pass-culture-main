@@ -13,22 +13,22 @@ interface ICollectiveOfferConfirmationProps {
   offererId?: string | null
   offerStatus?: OfferStatus
   isShowcase?: boolean
-  institutionName?: string
+  institutionDisplayName?: string
 }
 
-const activeOffer = (institutionName?: string) => ({
+const activeOffer = (institutionDisplayName?: string) => ({
   title: 'Offre créée avec succès !',
   description: (
     <>
       Votre offre est désormais disponible sur <b>ADAGE</b> (L'Application
       Dédiée À la Généralisation de l’Éducation artistique et culturelle) et{' '}
-      {institutionName ? (
+      {institutionDisplayName ? (
         <>
           <b>visible uniquement</b> par :
           <br />
           <br />
           <br />
-          <b>{institutionName}</b>
+          <b>{institutionDisplayName}</b>
         </>
       ) : (
         <>visible par les enseignants et chefs d’établissement.</>
@@ -84,12 +84,12 @@ const CollectiveOfferConfirmation = ({
   offererId,
   offerStatus,
   isShowcase,
-  institutionName,
+  institutionDisplayName,
 }: ICollectiveOfferConfirmationProps): JSX.Element => {
   const { title, description, Icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase,
-    institutionName
+    institutionDisplayName
   )
 
   return (
