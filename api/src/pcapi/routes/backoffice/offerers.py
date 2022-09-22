@@ -4,6 +4,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.models import api_errors
+from pcapi.repository import repository
 from pcapi.serialization.decorator import spectree_serialize
 import pcapi.utils.regions
 
@@ -110,3 +111,44 @@ def validate_offerer(offerer_id: int) -> None:
         offerers_api.validate_offerer_by_id(offerer_id)
     except offerers_exceptions.OffererNotFoundException:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+
+
+@blueprint.backoffice_blueprint.route("offerers/tags", methods=["GET"])
+@spectree_serialize(response_model=serialization.OffererTagsResponseModel, on_success_status=200, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def get_offerers_tags_list() -> serialization.OffererTagsResponseModel:
+    tags = offerers_models.OffererTag.query.order_by(offerers_models.OffererTag.label).all()
+    return serialization.OffererTagsResponseModel(data=[serialization.OffererTagItem.from_orm(tag) for tag in tags])
+
+
+@blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/tags/<string:tag_name>", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def add_tag_to_offerer(offerer_id: int, tag_name: str) -> None:
+    tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == tag_name).one_or_none()
+
+    if tag is None:
+        raise api_errors.ResourceNotFoundError(errors={"tag_name": "Le tag n'existe pas"})
+
+    # save() method checks unique constraints and raises ApiErrors (400) in case of already existing mapping
+    offerer_tag_mapping = offerers_models.OffererTagMapping(offererId=offerer_id, tagId=tag.id)
+    repository.save(offerer_tag_mapping)
+
+
+@blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/tags/<string:tag_name>", methods=["DELETE"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def remove_tag_from_offerer(offerer_id: int, tag_name: str) -> None:
+    mapping_to_delete = (
+        offerers_models.OffererTagMapping.query.join(offerers_models.OffererTag)
+        .filter(
+            offerers_models.OffererTagMapping.offererId == offerer_id,
+            offerers_models.OffererTag.name == tag_name,
+        )
+        .one_or_none()
+    )
+
+    if mapping_to_delete is None:
+        raise api_errors.ResourceNotFoundError(errors={"tag_name": "L'association structure - tag n'existe pas"})
+
+    repository.delete(mapping_to_delete)

@@ -305,3 +305,16 @@ class OffererBasicInfo(BaseModel):
     bankInformationStatus: OffererBankInformationStatus
     isCollectiveEligible: bool
     dmsUrl: str | None
+
+
+class OffererTagItem(BaseModel):
+    class Config:
+        orm_mode = True
+
+    id: int
+    name: str
+    label: str | None
+
+
+class OffererTagsResponseModel(BaseModel):
+    data: list[OffererTagItem]
