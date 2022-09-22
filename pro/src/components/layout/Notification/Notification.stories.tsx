@@ -11,7 +11,7 @@ export default {
 }
 
 const Template: ComponentStory<typeof Notification> = store => (
-  <Provider store={configureTestStore({ store })}>
+  <Provider store={configureTestStore(store)}>
     <Notification />
   </Provider>
 )
