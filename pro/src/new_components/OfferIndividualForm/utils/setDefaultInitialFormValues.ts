@@ -26,11 +26,13 @@ const setDefaultInitialFormValues = (
   let initialVenueId = FORM_DEFAULT_VALUES.venueId
   let initialWithdrawalDetails = FORM_DEFAULT_VALUES.withdrawalDetails
   let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
+  let initialIsVenueVirtual
 
   const venue = venueList.find(venue => venue.id === venueId)
   if (venueId && venue) {
     initialVenueId = venueId
     initialAccessibility = venue.accessibility
+    initialIsVenueVirtual = venue.isVirtual
 
     if (venue.withdrawalDetails) {
       initialWithdrawalDetails = venue.withdrawalDetails
@@ -43,6 +45,7 @@ const setDefaultInitialFormValues = (
     venueId: initialVenueId,
     withdrawalDetails: initialWithdrawalDetails,
     accessibility: initialAccessibility,
+    isVenueVirtual: initialIsVenueVirtual,
   }
 }
 

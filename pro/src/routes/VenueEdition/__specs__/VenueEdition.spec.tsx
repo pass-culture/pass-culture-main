@@ -125,7 +125,7 @@ describe('route VenueEdition', () => {
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     jest.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
-  it.only('should call getVenue and display Venue Form screen on success', async () => {
+  it('should call getVenue and display Venue Form screen on success', async () => {
     // When
     await renderVenueEdition(venue.id, offerer.id, store)
 

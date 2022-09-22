@@ -10,7 +10,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 
 import UsefulInformations, {
@@ -203,7 +203,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     beforeEach(() => {
       props.isVenueVirtual = true
       props.offerSubCategory = {
-        id: 'A-A',
+        id: 'VIRTUAL_SUB_CATEGORY',
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
         isEvent: false,
@@ -214,7 +214,8 @@ describe('OfferIndividual section: UsefulInformations', () => {
         reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
         isSelectable: true,
       }
-      initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
+      initialValues.subcategoryId = 'VIRTUAL_SUB_CATEGORY'
+      initialValues.venueId = 'BBBB'
     })
 
     it('should submit valid form', async () => {
@@ -250,7 +251,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           isVenueVirtual: true,
           offererId: 'AA',
           subCategoryFields: [],
-          subcategoryId: 'ANOTHER_SUB_CATEGORY',
+          subcategoryId: 'VIRTUAL_SUB_CATEGORY',
           url: 'http://example.com/routes?params={offerId}',
           venueId: 'BBBB',
           withdrawalDelay: undefined,
@@ -270,9 +271,15 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
       await screen.findByRole('heading', { name: 'Informations pratiques' })
 
+      const offererSelect = screen.getByLabelText('Structure')
+      await userEvent.selectOptions(offererSelect, 'AA')
+      const venueSelect = screen.getByLabelText('Lieu')
+      await userEvent.selectOptions(venueSelect, 'BBBB')
+
       const urlField = await screen.findByLabelText('URL d’accès à l’offre')
       await userEvent.click(urlField)
       await userEvent.tab()
+
       expect(
         await screen.findByText(
           'Veuillez renseigner une URL valide. Ex : https://exemple.com'
