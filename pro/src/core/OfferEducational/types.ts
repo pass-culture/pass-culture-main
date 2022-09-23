@@ -19,6 +19,11 @@ export type IEducationalSubCategory = {
   label: string
 }
 
+export type EducationalCategories = {
+  educationalCategories: IEducationalCategory[]
+  educationalSubCategories: IEducationalSubCategory[]
+}
+
 export type IOfferEducationalFormValues = {
   category: string
   subCategory: SubcategoryIdEnum

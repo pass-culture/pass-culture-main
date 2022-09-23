@@ -1,24 +1,10 @@
-import { CategoriesResponseModel } from 'apiClient/v1'
-import {
-  IEducationalCategory,
-  IEducationalSubCategory,
-} from 'core/OfferEducational'
-import { Category, SubCategory } from 'custom_types/categories'
-
-interface IFilterEducationalCategoriesResult {
-  educationalCategories: IEducationalCategory[]
-  educationalSubCategories: IEducationalSubCategory[]
-}
+import { CategoriesResponseModel, CategoryResponseModel } from 'apiClient/v1'
+import { EducationalCategories } from 'core/OfferEducational'
 
 export const filterEducationalCategories = ({
   categories,
   subcategories,
-}:
-  | {
-      categories?: Category[]
-      subcategories?: SubCategory[]
-    }
-  | CategoriesResponseModel): IFilterEducationalCategoriesResult => {
+}: CategoriesResponseModel): EducationalCategories => {
   if (!subcategories || !categories) {
     return {
       educationalCategories: [],
@@ -39,18 +25,16 @@ export const filterEducationalCategories = ({
     new Set(educationalSubCategories.map(subCategory => subCategory.categoryId))
   )
 
-  const educationalCategories = filteredCategoriesIds.map(
-    (categoryId: Category['id']): IEducationalCategory => {
-      const currentCategory = categories.find(
-        category => categoryId === category.id
-      ) as Category
+  const educationalCategories = filteredCategoriesIds.map(categoryId => {
+    const currentCategory = categories.find(
+      category => categoryId === category.id
+    ) as CategoryResponseModel
 
-      return {
-        id: currentCategory.id,
-        label: currentCategory.proLabel,
-      }
+    return {
+      id: currentCategory.id,
+      label: currentCategory.proLabel,
     }
-  )
+  })
 
   return {
     educationalSubCategories,

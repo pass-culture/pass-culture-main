@@ -6,9 +6,8 @@ import {
   CanOffererCreateCollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
   GetEducationalDomainsAdapter,
-  IEducationalCategory,
-  IEducationalSubCategory,
   IOfferEducationalFormValues,
+  EducationalCategories,
   Mode,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
@@ -19,8 +18,7 @@ import OfferEducationalForm from './OfferEducationalForm'
 import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalProps {
-  educationalCategories: IEducationalCategory[]
-  educationalSubCategories: IEducationalSubCategory[]
+  categories: EducationalCategories
   initialValues: IOfferEducationalFormValues
   onSubmit(values: IOfferEducationalFormValues): void
   userOfferers: GetEducationalOffererResponseModel[]
@@ -41,8 +39,7 @@ export interface IOfferEducationalProps {
 }
 
 const OfferEducational = ({
-  educationalCategories,
-  educationalSubCategories,
+  categories,
   userOfferers,
   initialValues,
   onSubmit,
@@ -132,8 +129,7 @@ const OfferEducational = ({
       <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
           <OfferEducationalForm
-            educationalCategories={educationalCategories}
-            educationalSubCategories={educationalSubCategories}
+            categories={categories}
             getIsOffererEligible={getIsOffererEligible}
             mode={mode}
             notify={notify}

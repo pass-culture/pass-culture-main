@@ -57,16 +57,18 @@ describe('screens | OfferEducational : creation offer type step', () => {
     beforeEach(() => {
       props = {
         ...props,
-        educationalCategories: categoriesFactory([
-          { id: 'CAT_1' },
-          { id: 'CAT_2' },
-        ]),
-        educationalSubCategories: subCategoriesFactory([
-          { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-          { categoryId: 'CAT_1', id: 'SUBCAT_2' },
-          { categoryId: 'CAT_2', id: 'SUBCAT_3' },
-          { categoryId: 'CAT_2', id: 'SUBCAT_4' },
-        ]),
+        categories: {
+          educationalCategories: categoriesFactory([
+            { id: 'CAT_1' },
+            { id: 'CAT_2' },
+          ]),
+          educationalSubCategories: subCategoriesFactory([
+            { categoryId: 'CAT_1', id: 'SUBCAT_1' },
+            { categoryId: 'CAT_1', id: 'SUBCAT_2' },
+            { categoryId: 'CAT_2', id: 'SUBCAT_3' },
+            { categoryId: 'CAT_2', id: 'SUBCAT_4' },
+          ]),
+        },
       }
     })
     it('should require user to select a category before displaying subcategories', async () => {
