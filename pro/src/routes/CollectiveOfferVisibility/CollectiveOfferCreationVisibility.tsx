@@ -3,8 +3,8 @@ import { useHistory } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
+import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
-import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
@@ -34,7 +34,7 @@ const CollectiveOfferVisibility = () => {
   }, [])
 
   return (
-    <OfferEducationalLayout
+    <CollectiveOfferLayout
       activeStep={OfferBreadcrumbStep.VISIBILITY}
       isCreatingOffer
       title="Créer une nouvelle offre collective"
@@ -48,7 +48,7 @@ const CollectiveOfferVisibility = () => {
         isLoadingInstitutions={isLoadingInstitutions}
       />
       <RouteLeavingGuardOfferCreation isCollectiveFlow />
-    </OfferEducationalLayout>
+    </CollectiveOfferLayout>
   )
 }
 
