@@ -67,7 +67,7 @@ class UpdateVenueTypeTest:
         offerers_factories.VenueTypeFactory(label="new_type", id=2)
         offerers_factories.VenueFactory(venueType=old_venue_type)
 
-        stub_read_venue_type_from_file.return_value = [("666", "new_type")]
+        stub_read_venue_type_from_file.return_value = [("-1", "new_type")]
 
         # When
         update_venue_type("fake/path")
