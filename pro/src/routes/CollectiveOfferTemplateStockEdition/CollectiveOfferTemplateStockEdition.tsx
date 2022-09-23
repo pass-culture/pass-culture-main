@@ -14,8 +14,8 @@ import {
   extractOfferIdAndOfferTypeFromRouteParams,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
+import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
@@ -141,7 +141,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
   }, [offerId, isReady, notify, history])
 
   return (
-    <OfferEducationalLayout
+    <CollectiveOfferLayout
       activeStep={OfferBreadcrumbStep.STOCKS}
       isCreatingOffer={false}
       offerId={offerIdFromParams}
@@ -159,7 +159,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
       ) : (
         <Spinner />
       )}
-    </OfferEducationalLayout>
+    </CollectiveOfferLayout>
   )
 }
 

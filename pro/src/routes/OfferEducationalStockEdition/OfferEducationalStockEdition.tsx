@@ -17,8 +17,8 @@ import {
   patchIsCollectiveOfferActiveAdapter,
 } from 'core/OfferEducational'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
+import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
@@ -148,7 +148,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }, [offerId, isReady, notify, history])
 
   return (
-    <OfferEducationalLayout
+    <CollectiveOfferLayout
       activeStep={OfferBreadcrumbStep.STOCKS}
       isCreatingOffer={false}
       offerId={offerId}
@@ -168,7 +168,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       ) : (
         <Spinner />
       )}
-    </OfferEducationalLayout>
+    </CollectiveOfferLayout>
   )
 }
 

@@ -23,8 +23,8 @@ import {
   setInitialFormValues,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
@@ -193,7 +193,7 @@ const OfferEducationalEdition = (): JSX.Element => {
   }, [isReady, offerId, loadData, history, isShowcase])
 
   return (
-    <OfferEducationalLayout
+    <CollectiveOfferLayout
       activeStep={OfferBreadcrumbStep.DETAILS}
       isCreatingOffer={false}
       offerId={offerIdFromParams}
@@ -220,7 +220,7 @@ const OfferEducationalEdition = (): JSX.Element => {
       ) : (
         <Spinner />
       )}
-    </OfferEducationalLayout>
+    </CollectiveOfferLayout>
   )
 }
 

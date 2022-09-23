@@ -13,8 +13,8 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
-import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
@@ -70,7 +70,7 @@ const CollectiveOfferVisibility = () => {
   }
 
   return (
-    <OfferEducationalLayout
+    <CollectiveOfferLayout
       activeStep={OfferBreadcrumbStep.VISIBILITY}
       isCreatingOffer={false}
       title="Éditer une offre collective"
@@ -88,7 +88,7 @@ const CollectiveOfferVisibility = () => {
       ) : (
         <Spinner />
       )}
-    </OfferEducationalLayout>
+    </CollectiveOfferLayout>
   )
 }
 
