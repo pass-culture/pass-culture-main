@@ -1,12 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { History } from 'history'
-import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
@@ -54,17 +52,16 @@ const waitForLoader = () =>
     expect(screen.getByLabelText(/E-mail/)).toBeInTheDocument()
   })
 
-const renderCollectiveDataEdition = (history: History) =>
+const renderCollectiveDataEdition = () =>
   render(
-    <Router history={history}>
+    <MemoryRouter>
       <Provider store={configureTestStore({})}>
         <CollectiveDataEdition />
       </Provider>
-    </Router>
+    </MemoryRouter>
   )
 
 describe('CollectiveDataEdition', () => {
-  const history = createBrowserHistory()
   const notifyErrorMock = jest.fn()
   const notifySuccessMock = jest.fn()
 
@@ -119,13 +116,14 @@ describe('CollectiveDataEdition', () => {
 
   describe('render', () => {
     it('should render a loader while data is loading', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       expect(screen.getByText(/Chargement en cours/)).toBeInTheDocument()
+      await waitForLoader()
     })
 
     it('should render form without errors', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -168,7 +166,8 @@ describe('CollectiveDataEdition', () => {
           )
         )
 
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
+      await waitForLoader()
 
       await waitFor(() => {
         expect(notifyErrorMock).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
@@ -176,14 +175,14 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should display popin when user is leaving page without saving', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
       const phoneField = screen.getByLabelText(/Téléphone/)
       await userEvent.type(phoneField, '0612345678')
+      await userEvent.click(screen.getByText('Retour page lieu'))
 
-      history.push('/')
       await waitFor(() =>
         expect(
           screen.getByText(
@@ -196,7 +195,7 @@ describe('CollectiveDataEdition', () => {
 
   describe('error fields', () => {
     it('should display error fields', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -225,7 +224,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should not display error fields when fields are valid', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -238,7 +237,7 @@ describe('CollectiveDataEdition', () => {
       await userEvent.type(phoneField, '0600000000')
       await userEvent.type(emailField, 'email@domain.com')
 
-      fireEvent.click(title)
+      await userEvent.click(title)
 
       await waitFor(() =>
         expect(
@@ -256,7 +255,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should not display error fields when fields are empty', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -265,10 +264,10 @@ describe('CollectiveDataEdition', () => {
       const emailField = screen.getByLabelText(/E-mail/)
       const title = screen.getByText('Présentation pour les enseignants')
 
-      fireEvent.click(websiteField)
-      fireEvent.click(phoneField)
-      fireEvent.click(emailField)
-      fireEvent.click(title)
+      await userEvent.click(websiteField)
+      await userEvent.click(phoneField)
+      await userEvent.click(emailField)
+      await userEvent.click(title)
 
       await waitFor(() =>
         expect(
@@ -288,7 +287,7 @@ describe('CollectiveDataEdition', () => {
 
   describe('intervention area', () => {
     it('should select all departments when clicking on "Toute la France"', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -309,7 +308,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should select all mainland departments when clicking on "France métropolitaine"', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -326,7 +325,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should select only domtom options after selecting "Toute la France" then unselecting "France métropolitaine"', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -349,52 +348,41 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments', async () => {
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       await userEvent.click(interventionAreaField)
-      await waitFor(() =>
-        expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
-      )
+
+      expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
 
       // check all mainland options
-      await Promise.all(
-        mainlandOptions.map(option => {
-          userEvent.click(screen.getByLabelText(option.label))
-        })
-      )
-      await waitFor(() => {
-        const mainlandOption = screen.getByLabelText('France métropolitaine')
-        expect(mainlandOption).toBeChecked()
-      })
+      for await (const option of mainlandOptions) {
+        await userEvent.click(screen.getByLabelText(option.label))
+      }
+
+      const mainlandOption = screen.getByLabelText('France métropolitaine')
+      expect(mainlandOption).toBeChecked()
 
       // check all other departments
-      await Promise.all(
-        domtomOptions.map(option => {
-          userEvent.click(screen.getByLabelText(option.label))
-        })
+      for await (const option of domtomOptions) {
+        await userEvent.click(screen.getByLabelText(option.label))
+      }
+
+      const allFranceOption = screen.getByLabelText(
+        /France métropolitaine et d’outre-mer/
       )
-      await waitFor(() => {
-        const allFranceOption = screen.getByLabelText(
-          /France métropolitaine et d’outre-mer/
-        )
-        expect(allFranceOption).toBeChecked()
-      })
+      expect(allFranceOption).toBeChecked()
 
       // unselect dom tom department
       await userEvent.click(screen.getByLabelText(domtomOptions[0].label))
-      await waitFor(() =>
-        expect(
-          screen.getByLabelText(/France métropolitaine et d’outre-mer/)
-        ).not.toBeChecked()
-      )
+      expect(
+        screen.getByLabelText(/France métropolitaine et d’outre-mer/)
+      ).not.toBeChecked()
 
       await userEvent.click(screen.getByLabelText(mainlandOptions[0].label))
-      await waitFor(() =>
-        expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
-      )
+      expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
     })
   })
 
@@ -409,7 +397,7 @@ describe('CollectiveDataEdition', () => {
             ''
           )
         )
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
       await waitForLoader()
 
       const emailField = screen.getByLabelText(/E-mail/)
@@ -428,7 +416,7 @@ describe('CollectiveDataEdition', () => {
   })
 
   it('shoud redirect to venue edition page with state', async () => {
-    renderCollectiveDataEdition(history)
+    renderCollectiveDataEdition()
     await waitForLoader()
 
     const emailField = screen.getByLabelText(/E-mail/)
@@ -463,7 +451,7 @@ describe('CollectiveDataEdition', () => {
         siret: '1234567890',
       })
 
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -507,7 +495,7 @@ describe('CollectiveDataEdition', () => {
         siret: '1234567890',
       })
 
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
@@ -546,7 +534,7 @@ describe('CollectiveDataEdition', () => {
         siret: undefined,
       })
 
-      renderCollectiveDataEdition(history)
+      renderCollectiveDataEdition()
 
       await waitForLoader()
 
