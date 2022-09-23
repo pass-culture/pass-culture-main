@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -59,9 +59,7 @@ describe('src | components | pages | LostPassword', () => {
       await userEvent.click(screen.getByText(/Envoyer/))
 
       // he has been redirected to next step
-      await waitFor(() => {
-        expect(screen.getByText(/Merci/)).toBeInTheDocument()
-      })
+      expect(screen.getByText(/Merci/)).toBeInTheDocument()
     })
   })
 
@@ -82,12 +80,8 @@ describe('src | components | pages | LostPassword', () => {
       await userEvent.click(screen.getByText(/Envoyer/))
 
       // he has been redirected to final step
-      await waitFor(() => {
-        expect(screen.getByText(/Mot de passe changé !/)).toBeInTheDocument()
-      })
-      await waitFor(() => {
-        expect(screen.getByText(/Se connecter/)).toBeInTheDocument()
-      })
+      expect(screen.getByText(/Mot de passe changé !/)).toBeInTheDocument()
+      expect(screen.getByText(/Se connecter/)).toBeInTheDocument()
     })
   })
 })
