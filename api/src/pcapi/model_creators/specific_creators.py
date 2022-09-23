@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 from decimal import Decimal
 import random
 import string
@@ -277,46 +276,6 @@ def create_stock_from_offer(
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.beginningDatetime = beginning_datetime
     stock.dateModified = date_modified
-
-    return stock
-
-
-def create_stock_with_event_offer(
-    offerer: Offerer,
-    venue: Venue,
-    price: Decimal = Decimal(10),
-    booking_email: str = "offer.booking.email@example.com",
-    quantity: int = 10,
-    is_soft_deleted: bool = False,
-    event_subcategory_id: str = subcategories.EVENEMENT_JEU.id,
-    name: str = "Mains, sorts et papiers",
-    offer_id: int = None,
-    beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
-    thumb_count: int = 0,
-    booking_limit_datetime: datetime = datetime.utcnow() + timedelta(hours=71),
-    date_created: datetime = datetime.utcnow(),
-    date_modified_at_last_provider: datetime = datetime.utcnow(),
-    date_modifed: datetime = datetime.utcnow(),
-) -> Stock:
-    stock = Stock()
-    stock.offerer = offerer
-    stock.price = price
-    stock.quantity = quantity
-    stock.beginningDatetime = beginning_datetime
-    stock.bookingLimitDatetime = booking_limit_datetime
-    stock.dateCreated = date_created
-    stock.dateModifiedAtLastProvider = date_modified_at_last_provider
-    stock.dateModified = date_modifed
-    stock.offer = create_offer_with_event_product(
-        venue,
-        event_name=name,
-        event_subcategory_id=event_subcategory_id,
-        booking_email=booking_email,
-        is_national=False,
-        thumb_count=thumb_count,
-    )
-    stock.offer.id = offer_id  # type: ignore [assignment]
-    stock.isSoftDeleted = is_soft_deleted
 
     return stock
 
