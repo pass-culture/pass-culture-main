@@ -8,6 +8,7 @@ import { StudentLevels } from 'apiClient/v2'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import FormParticipants from '../FormParticipants'
+import { ALL_STUDENTS_LABEL } from '../participantsOptions'
 
 const initialValues = {
   participants: {
@@ -45,12 +46,12 @@ describe('FormParticipants', () => {
         </Formik>
       )
       const allStudentsCheckbox = screen.getByRole('checkbox', {
-        name: 'Tout sélectionner',
+        name: ALL_STUDENTS_LABEL,
       })
 
       await userEvent.click(allStudentsCheckbox)
       await waitFor(() =>
-        expect(screen.getByLabelText('Tout sélectionner')).toBeChecked()
+        expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
       Object.values(StudentLevels).forEach(studentLevel => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
@@ -74,12 +75,12 @@ describe('FormParticipants', () => {
         </Formik>
       )
       const allStudentsCheckbox = screen.getByRole('checkbox', {
-        name: 'Tout sélectionner',
+        name: ALL_STUDENTS_LABEL,
       })
 
       await userEvent.click(allStudentsCheckbox)
       await waitFor(() =>
-        expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
+        expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).not.toBeChecked()
       )
       Object.values(StudentLevels).forEach(studentLevel => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
@@ -104,12 +105,12 @@ describe('FormParticipants', () => {
         </Formik>
       )
       const allStudentsCheckbox = screen.getByRole('checkbox', {
-        name: 'Tout sélectionner',
+        name: ALL_STUDENTS_LABEL,
       })
 
       await userEvent.click(allStudentsCheckbox)
       await waitFor(() =>
-        expect(screen.getByLabelText('Tout sélectionner')).toBeChecked()
+        expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
       Object.values(StudentLevels).forEach(studentLevel => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
@@ -150,7 +151,7 @@ describe('FormParticipants', () => {
           })
           expect(studentLevelCheckbox).toBeChecked()
         })
-      expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
+      expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).not.toBeChecked()
     })
 
     it('should not change "all"', async () => {
@@ -179,7 +180,7 @@ describe('FormParticipants', () => {
       expect(
         screen.getByLabelText(StudentLevels.CAP_1RE_ANN_E)
       ).not.toBeChecked()
-      expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
+      expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).not.toBeChecked()
     })
   })
 })
