@@ -12,7 +12,7 @@ interface IChangePasswordForm {
 
 const ChangePasswordForm = ({ onSubmit }: IChangePasswordForm): JSX.Element => {
   const formik = useFormik({
-    initialValues: { newPassword: '' },
+    initialValues: { newPasswordValue: '' },
     onSubmit: onSubmit,
     validationSchema: validationSchema,
   })
