@@ -193,9 +193,6 @@ ALL_CULTURAL_SURVEY_ANSWERS = (
 )
 
 
-CulturalSurveyAnswersDict = {answer.id: answer for answer in ALL_CULTURAL_SURVEY_ANSWERS}
-
-
 SORTIES_ANSWERS = [
     FESTIVAL,
     SPECTACLE,
