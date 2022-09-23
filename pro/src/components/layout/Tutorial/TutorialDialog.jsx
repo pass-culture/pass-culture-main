@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
@@ -13,6 +14,7 @@ import styles from './TutorialDialog.module.scss'
 
 const TutorialDialog = () => {
   const { currentUser } = useCurrentUser()
+  const dispatch = useDispatch()
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
     currentUser && !currentUser.hasSeenProTutorials
   )
@@ -23,7 +25,7 @@ const TutorialDialog = () => {
     pcapi
       .setHasSeenTutos()
       .then(() => {
-        setCurrentUser({ ...currentUser, hasSeenProTutorials: true })
+        dispatch(setCurrentUser({ ...currentUser, hasSeenProTutorials: true }))
       })
       .finally(() => setAreTutoDisplayed(false))
   }, [currentUser, logEvent])
