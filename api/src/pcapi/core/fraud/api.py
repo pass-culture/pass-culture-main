@@ -1,7 +1,6 @@
 import datetime
 import logging
 import re
-import typing
 
 import sqlalchemy
 from sqlalchemy.orm import Query
@@ -601,9 +600,6 @@ def decide_eligibility(
             return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date)
 
     return eligibility_at_registration
-
-
-UserGenerator = typing.Generator[users_models.User, None, None]
 
 
 def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> Query:
