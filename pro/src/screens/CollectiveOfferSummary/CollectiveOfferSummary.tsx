@@ -6,6 +6,7 @@ import { SummaryLayout } from 'new_components/SummaryLayout'
 
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
 import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
+import CollectiveOfferNotificationSection from './components/CollectiveOfferNotificationSection'
 import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
 import CollectiveOfferPracticalInformation from './components/CollectiveOfferPracticalInformation'
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
@@ -35,6 +36,9 @@ const CollectiveOfferSummary = ({
           <CollectiveOfferContactSection
             phone={offer.contactPhone}
             email={offer.contactEmail}
+          />
+          <CollectiveOfferNotificationSection
+            bookingEmails={offer.bookingEmails}
           />
         </SummaryLayout.Section>
       </SummaryLayout.Content>
