@@ -166,19 +166,11 @@ class BookingLimitDatetimeTooLate(Exception):
     pass
 
 
-class StockNotFound(Exception):
-    pass
-
-
 class OfferNotFound(Exception):
     pass
 
 
 class EducationalOfferHasMultipleStocks(Exception):
-    pass
-
-
-class NoBookingToCancel(Exception):
     pass
 
 
