@@ -4,8 +4,13 @@ import { useParams } from 'react-router'
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
+import {
+  extractOfferIdAndOfferTypeFromRouteParams,
+  getEducationalCategoriesAdapter,
+  EducationalCategories,
+} from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferSummary from 'screens/CollectiveOfferSummary'
 
@@ -18,26 +23,35 @@ const CollectiveOfferTemplateSummary = () => {
 
   const [offer, setOffer] =
     useState<GetCollectiveOfferTemplateResponseModel | null>(null)
+  const [categories, setCategories] = useState<EducationalCategories | null>(
+    null
+  )
 
   useEffect(() => {
-    const loadOffer = async () => {
-      const response = await getCollectiveOfferTemplateAdapter(offerId)
+    const loadData = async () => {
+      const [offerResponse, categoriesResponse] = await Promise.all([
+        getCollectiveOfferTemplateAdapter(offerId),
+        getEducationalCategoriesAdapter(),
+      ])
 
-      if (!response.isOk) {
-        return notify.error(response.message)
+      if (!offerResponse.isOk || !categoriesResponse.isOk) {
+        return notify.error(GET_DATA_ERROR_MESSAGE)
       }
 
-      setOffer(response.payload)
+      setOffer(offerResponse.payload)
+      setCategories(categoriesResponse.payload)
     }
 
-    loadOffer()
+    loadData()
   }, [offerId])
 
-  return offer === null ? (
+  const isReady = offer !== null && categories !== null
+
+  return !isReady ? (
     <Spinner />
   ) : (
     <CollectiveOfferLayout title="Récapitulatif" subTitle={offer.name}>
-      <CollectiveOfferSummary offer={offer} />
+      <CollectiveOfferSummary offer={offer} categories={categories} />
     </CollectiveOfferLayout>
   )
 }
