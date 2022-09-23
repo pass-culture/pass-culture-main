@@ -170,10 +170,6 @@ class OfferNotFound(Exception):
     pass
 
 
-class EducationalOfferHasMultipleStocks(Exception):
-    pass
-
-
 class CollectiveStockNotFound(Exception):
     pass
 
