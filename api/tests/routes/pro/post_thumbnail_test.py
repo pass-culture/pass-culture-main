@@ -57,6 +57,7 @@ class CreateThumbnailFromFileTest:
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
+            "credit": "John Do",
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -68,7 +69,9 @@ class CreateThumbnailFromFileTest:
         mediation = Mediation.query.one()
         assert mediation.thumbCount == 1
         assert response.json == {
+            "credit": "John Do",
             "id": humanize(mediation.id),
+            "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
         }
 
     def test_wrong_content_type_from_file(self, app, offer, offerer):
