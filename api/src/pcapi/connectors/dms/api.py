@@ -28,10 +28,6 @@ SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
 
 
-class ApiDemarchesSimplifieesException(Exception):
-    pass
-
-
 class DMSGraphQLClient:
     def __init__(self) -> None:
         transport = RequestsHTTPTransport(
