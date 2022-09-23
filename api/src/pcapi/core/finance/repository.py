@@ -63,10 +63,6 @@ def get_reimbursement_points_query(user: users_models.User, offerer_id: int = No
     return query
 
 
-def find_business_unit_by_siret(siret: str) -> models.BusinessUnit | None:
-    return models.BusinessUnit.query.filter_by(siret=siret).one_or_none()
-
-
 def get_invoices_query(
     user: users_models.User,
     business_unit_id: int | None = None,
