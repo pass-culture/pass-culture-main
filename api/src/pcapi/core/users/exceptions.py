@@ -33,14 +33,6 @@ class UserDoesNotExist(Exception):
     pass
 
 
-class MissingEmailInMetadataException(Exception):
-    pass
-
-
-class IdentityDocumentVerificationException(Exception):
-    pass
-
-
 class InvalidUserRoleException(Exception):
     pass
 
