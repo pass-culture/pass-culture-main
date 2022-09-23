@@ -8,6 +8,8 @@ import {
 } from 'core/OfferEducational'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
@@ -83,6 +85,12 @@ const CollectiveOfferSummary = ({
           </SummaryLayout.Section>
         </SummaryLayout.Content>
       </SummaryLayout>
+      <ButtonLink
+        variant={ButtonVariant.PRIMARY}
+        link={{ isExternal: false, to: '/offers/collective' }}
+      >
+        Retour à la liste des offres
+      </ButtonLink>
     </>
   )
 }
