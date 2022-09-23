@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 
 import {
-  fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -45,7 +44,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderHomePage = ({ store }) => {
+const renderHomePage = async ({ store }) => {
   const utils = render(
     <Provider store={store}>
       <MemoryRouter>
@@ -54,6 +53,8 @@ const renderHomePage = ({ store }) => {
     </Provider>
   )
 
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
   const waitForElements = async () => {
     await screen.findByTestId('offerrer-wrapper')
     const offerer = screen.queryByTestId('offerrer-wrapper')
@@ -61,9 +62,13 @@ const renderHomePage = ({ store }) => {
 
     const selectOfferer = async offererName => {
       await userEvent.selectOptions(
-        within(offerer).getByDisplayValue('Bar des amis'),
+        within(offerer).getByRole('combobox'),
         offererName
       )
+      const spinner = screen.queryByTestId('spinner')
+      if (spinner) {
+        await waitForElementToBeRemoved(spinner)
+      }
     }
 
     return {
@@ -210,13 +215,15 @@ describe('offererDetailsLegacy', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+
+    pcapi.getBusinessUnits.mockResolvedValue([{}])
   })
 
   it('should display offerer select', async () => {
-    const { waitForElements } = renderHomePage({ store })
+    const { waitForElements } = await renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
-    fireEvent.click(showButton)
+    await userEvent.click(showButton)
 
     expect(
       screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name)
@@ -225,12 +232,12 @@ describe('offererDetailsLegacy', () => {
 
   it('should not warn user when offerer is validated', async () => {
     // Given
-    const { waitForElements } = renderHomePage({ store })
+    const { waitForElements } = await renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
 
     // When
-    fireEvent.click(showButton)
+    await userEvent.click(showButton)
 
     // Then
     expect(
@@ -241,10 +248,10 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display first offerer informations', async () => {
-    const { waitForElements } = renderHomePage({ store })
+    const { waitForElements } = await renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
-    fireEvent.click(showButton)
+    await userEvent.click(showButton)
 
     const selectedOfferer = firstOffererByAlphabeticalOrder
     expect(screen.getByText(selectedOfferer.siren)).toBeInTheDocument()
@@ -263,10 +270,10 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display offerer venues informations', async () => {
-    const { waitForElements } = renderHomePage({ store })
+    const { waitForElements } = await renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
-    fireEvent.click(showButton)
+    await userEvent.click(showButton)
 
     const selectedOfferer = firstOffererByAlphabeticalOrder
     const virtualVenueTitle = screen.getByText('Offres numériques')
@@ -302,7 +309,7 @@ describe('offererDetailsLegacy', () => {
     api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
     // When
-    const { waitForElements } = renderHomePage({ store })
+    const { waitForElements } = await renderHomePage({ store })
     const { venues } = await waitForElements()
 
     // Then
@@ -362,17 +369,17 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       }
-      const { waitForElements } = renderHomePage({ store })
-      const { selectOfferer } = await waitForElements()
       api.getOfferer.mockResolvedValue(newSelectedOfferer)
+      const { waitForElements } = await renderHomePage({ store })
+      const { selectOfferer } = await waitForElements()
 
-      selectOfferer(newSelectedOfferer.name)
-      const { offerer: newOfferer } = await waitForElements()
+      await selectOfferer(newSelectedOfferer.name)
+      const newOfferer = screen.queryByTestId('offerrer-wrapper')
 
       const showButton = within(newOfferer).getByRole('button', {
         name: 'Afficher',
       })
-      fireEvent.click(showButton)
+      await userEvent.click(showButton)
     })
 
     it('should change displayed offerer informations', async () => {
@@ -418,8 +425,9 @@ describe('offererDetailsLegacy', () => {
   describe('when selecting "add offerer" option"', () => {
     it('should redirect to offerer creation page', async () => {
       // Given
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { selectOfferer } = await waitForElements()
+
       // When
       await selectOfferer('+ Ajouter une structure')
 
@@ -434,7 +442,7 @@ describe('offererDetailsLegacy', () => {
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
@@ -459,7 +467,7 @@ describe('offererDetailsLegacy', () => {
         ...firstOffererByAlphabeticalOrder,
         hasMissingBankInformation: false,
       })
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
       const warningIcons = within(offerer).queryByAltText(
         'Informations bancaires manquantes'
@@ -479,12 +487,12 @@ describe('offererDetailsLegacy', () => {
         },
       ]
       api.getOfferer.mockResolvedValue(baseOfferers[0])
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
       })
-      fireEvent.click(showButton)
+      await userEvent.click(showButton)
       expect(
         screen.getByRole('link', { name: 'Voir le dossier' })
       ).toBeInTheDocument()
@@ -527,7 +535,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not display offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -554,14 +562,14 @@ describe('offererDetailsLegacy', () => {
 
     it('should hide offerer informations on click on hide button', async () => {
       // Given
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
       const hideButton = within(offerer).getByRole('button', {
         name: 'Masquer',
       })
 
       // When
-      fireEvent.click(hideButton)
+      await userEvent.click(hideButton)
 
       //Then
       const selectedOffererAddress = `${offererWithNoPhysicalVenues.address} ${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`
@@ -619,7 +627,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not display offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -639,14 +647,14 @@ describe('offererDetailsLegacy', () => {
 
     it('should show offerer informations on click on show button', async () => {
       // Given
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
       })
 
       // When
-      fireEvent.click(showButton)
+      await userEvent.click(showButton)
 
       //Then
       expect(
@@ -689,7 +697,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should warn user that offerer is being validated', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -700,7 +708,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should allow user to view offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -711,7 +719,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should allow user to add venue and offer', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -740,7 +748,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should warn user offerer is being validated', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -753,7 +761,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to view offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       await waitForElements()
       // Then
       expect(
@@ -766,7 +774,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to update offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -779,7 +787,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to add venue and virtual offer', async () => {
       // When
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -809,23 +817,18 @@ describe('offererDetailsLegacy', () => {
         })
         .mockRejectedValueOnce({ status: 403 })
 
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       await waitForElements()
 
       // When
-      fireEvent.change(
+      await userEvent.selectOptions(
         screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name),
-        {
-          target: { value: baseOfferers[0].id },
-        }
+        baseOfferers[0].id
       )
 
       // Then
       expect(api.getOfferer).toHaveBeenCalledTimes(2)
 
-      await waitForElementToBeRemoved(() =>
-        screen.getByRole('heading', { level: 3, name: 'Offres numériques' })
-      )
       const previouslySelectedOfferersPhysicalVenueName = screen.queryByRole(
         'heading',
         {
@@ -879,7 +882,7 @@ describe('offererDetailsLegacy', () => {
           iban: 'FR9410010000000000000000022',
         },
       ])
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       expect(
@@ -906,7 +909,7 @@ describe('offererDetailsLegacy', () => {
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
       pcapi.getBusinessUnits.mockResolvedValue([])
 
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       expect(
@@ -945,7 +948,7 @@ describe('offererDetailsLegacy', () => {
         },
       ])
 
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       const displayButton = within(offerer).getByRole('button', {
@@ -1020,7 +1023,7 @@ describe('offererDetailsLegacy', () => {
       }
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       expect(
@@ -1049,7 +1052,7 @@ describe('offererDetailsLegacy', () => {
       }
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
-      const { waitForElements } = renderHomePage({ store })
+      const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       const displayButton = within(offerer).getByRole('button', {
