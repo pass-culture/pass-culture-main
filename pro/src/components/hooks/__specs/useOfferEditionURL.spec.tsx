@@ -30,7 +30,7 @@ describe('useOfferEditionURL', () => {
       isShowcase
     )
 
-    expect(urlResutl).toStrictEqual('/offre/T-offerID/collectif/edition')
+    expect(urlResutl).toStrictEqual('/offre/T-offerID/collectif/recapitulatif')
   })
 
   test('It should retrun right url when offer is individual and offerFormV3 is activated', () => {
