@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { act, render, screen } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -20,16 +24,14 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOffererDetails = async ({ props, store }) => {
-  return await act(async () => {
-    await render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <OffererDetails {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+const renderOffererDetails = ({ props, store }) => {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <OffererDetails {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
 }
 
 jest.mock('react-router-dom', () => ({
@@ -59,6 +61,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
         publicName: 'fake venue',
         postalCode: '75000',
         city: 'Paris',
+        id: 'AA',
       },
     ],
   })
@@ -66,7 +69,8 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
   describe('render', () => {
     it('should render Venues', async () => {
       // when
-      await renderOffererDetails({ props, store })
+      renderOffererDetails({ props, store })
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       // then
       expect(screen.getByText('Lieux')).toBeInTheDocument()
