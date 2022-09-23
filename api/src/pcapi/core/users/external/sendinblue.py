@@ -8,7 +8,6 @@ from typing import Callable
 from typing import Iterable
 import urllib.parse
 
-from flask import url_for
 import sib_api_v3_sdk
 from sib_api_v3_sdk.api.contacts_api import ContactsApi
 from sib_api_v3_sdk.models.created_process_id import CreatedProcessId
@@ -321,9 +320,7 @@ def _send_import_request(
     request_contact_import.list_ids = [sib_list_id]
     request_contact_import.notify_url = urllib.parse.urljoin(
         settings.API_URL,
-        url_for(
-            "Public API.sendinblue_notify_importcontacts", list_id=sib_list_id, iteration=iteration, _external=False
-        ),
+        f"/webhooks/sendinblue/importcontacts/{sib_list_id}/{iteration}",
     )
 
     import_response: CreatedProcessId = api_instance.import_contacts(request_contact_import)
