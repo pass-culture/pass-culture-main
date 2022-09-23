@@ -1,6 +1,5 @@
 alembic==1.8.0
 algoliasearch==2.4.0
-APScheduler==3.6.3
 Authlib==0.15.5
 Babel==2.9.1
 basecrm==1.2.9
@@ -65,8 +64,6 @@ simplejson==3.17.2
 spectree==0.7.2
 SQLAlchemy[mypy]==1.4.*
 slack-sdk==3.13.0
-# FIXME (xordoquy, 2021-08-16): current apscheduler version (3.6.3)
-# does not work with tzlocal 3+.
 transitions
 types-freezegun
 types-python-dateutil
@@ -76,7 +73,6 @@ types-redis
 types-requests
 types-simplejson
 types-urllib3
-tzlocal<3.0.0
 # Pin weasyprint to keep new versions from changing how our PDF files look.
 weasyprint==56.1
 Werkzeug==2.0.3
