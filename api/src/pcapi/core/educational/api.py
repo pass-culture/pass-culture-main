@@ -32,7 +32,6 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import validation as offer_validation
-from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
@@ -773,11 +772,6 @@ def create_collective_offer_template_from_collective_offer(
         extra={"collectiveOfferTemplate": collective_offer_template.id, "CollectiveOffer": offer.id},
     )
     return collective_offer_template
-
-
-def get_collective_offer_id_from_educational_stock(stock: Stock) -> int:
-    collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)
-    return collective_offer.id
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
