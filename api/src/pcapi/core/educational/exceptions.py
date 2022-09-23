@@ -19,16 +19,6 @@ class EducationalYearNotFound(ClientError):
         )
 
 
-class OfferIsNotEducational(ClientError):
-    def __init__(self, offer_id: int) -> None:
-        super().__init__("offer", f"L'offre {offer_id} n'est pas une offre éducationnelle")
-
-
-class OfferIsNotEvent(ClientError):
-    def __init__(self, offer_id: int) -> None:
-        super().__init__("offer", f"L'offre {offer_id} n'est pas une offre évènementielle")
-
-
 class InsufficientFund(Exception):
     pass
 
