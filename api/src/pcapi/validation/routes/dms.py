@@ -11,15 +11,6 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.models.api_errors import ForbiddenError
 
 
-def coerce_for_enum(enum):  # type: ignore [no-untyped-def]
-    def coerce(name):  # type: ignore [no-untyped-def]
-        if isinstance(name, enum):
-            return name
-        return enum(name)
-
-    return coerce
-
-
 class DMSWebhookRequest(pydantic.BaseModel):
     procedure_id: int
     dossier_id: int
