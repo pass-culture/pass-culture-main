@@ -13,7 +13,6 @@ from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapPendingHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
-from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
@@ -69,17 +68,6 @@ class ListBookingsResponseModel(BaseModel):
 class PatchBookingByTokenQueryModel(BaseModel):
     email: str | None
     offer_id: str | None
-
-
-def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> ListBookingsResponseModel:
-    return ListBookingsResponseModel(
-        bookingsRecap=[
-            _serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
-        ],
-        page=bookings_recap_paginated.page,
-        pages=bookings_recap_paginated.pages,
-        total=bookings_recap_paginated.total,
-    )
 
 
 def _serialize_booking_status_info(
