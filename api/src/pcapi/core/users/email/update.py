@@ -8,9 +8,8 @@ from pcapi import settings
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
+from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserEmailHistory
 from pcapi.repository import repository
 
 from .send import send_beneficiary_user_emails_for_email_change
@@ -20,7 +19,7 @@ from .send import send_pro_user_emails_for_email_change
 logger = logging.getLogger(__name__)
 
 
-def request_email_update(user: User, email: str, password: str) -> None:
+def request_email_update(user: models.User, email: str, password: str) -> None:
     check_user_password(user, password)
     check_email_update_attempts(user)
 
@@ -29,26 +28,26 @@ def request_email_update(user: User, email: str, password: str) -> None:
 
     check_email_address_does_not_exist(email)
 
-    email_history = UserEmailHistory.build_update_request(user=user, new_email=email)
+    email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email)
     repository.save(email_history)
 
     send_beneficiary_user_emails_for_email_change(user, email, expiration_date)
 
 
-def request_email_update_from_pro(user: User, email: str, password: str) -> None:
+def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
     check_user_password(user, password)
     check_pro_email_update_attempts(user)
     check_email_address_does_not_exist(email)
 
     expiration_date = generate_token_expiration_date()
 
-    email_history = UserEmailHistory.build_update_request(user=user, new_email=email)
+    email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email)
     repository.save(email_history)
 
     send_pro_user_emails_for_email_change(user, email, expiration_date)
 
 
-def check_email_update_attempts(user: User) -> None:
+def check_email_update_attempts(user: models.User) -> None:
     update_email_attempts_key = f"update_email_attemps_user_{user.id}"
     count = app.redis_client.incr(update_email_attempts_key)  # type: ignore [attr-defined]
 
@@ -59,7 +58,7 @@ def check_email_update_attempts(user: User) -> None:
         raise exceptions.EmailUpdateLimitReached()
 
 
-def check_pro_email_update_attempts(user: User) -> None:
+def check_pro_email_update_attempts(user: models.User) -> None:
     update_email_attempts_key = f"update_email_attemps_user_{user.id}"
     count = app.redis_client.incr(update_email_attempts_key)  # type: ignore [attr-defined]
 
@@ -70,14 +69,14 @@ def check_pro_email_update_attempts(user: User) -> None:
         raise exceptions.EmailUpdateLimitReached()
 
 
-def request_email_update_from_admin(user: User, email: str) -> None:
+def request_email_update_from_admin(user: models.User, email: str) -> None:
     """
     When email is changed by admin, it is immediately changed in the user profile.
     User can no longer login with his former email, and must confirm new email.
     """
     check_email_address_does_not_exist(email)
 
-    email_history = UserEmailHistory.build_update_request(user=user, new_email=email, by_admin=True)
+    email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email, by_admin=True)
 
     user.email = email
     user.isEmailValidated = False
@@ -87,11 +86,11 @@ def request_email_update_from_admin(user: User, email: str) -> None:
     api.request_email_confirmation(user)
 
 
-def get_no_active_token_key(user: User) -> str:
+def get_no_active_token_key(user: models.User) -> str:
     return f"update_email_active_tokens_{user.id}"
 
 
-def check_no_active_token_exists(user: User, expiration_date: datetime) -> None:
+def check_no_active_token_exists(user: models.User, expiration_date: datetime) -> None:
     """
     Use a dummy counter to find out whether the user already has an
     active token.
@@ -123,7 +122,7 @@ def generate_token_expiration_date() -> datetime:
     return datetime.utcnow() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
 
 
-def check_user_password(user: User, password: str) -> None:
+def check_user_password(user: models.User, password: str) -> None:
     try:
         users_repository.check_user_and_credentials(user, password)
     except exceptions.InvalidIdentifier as exc:
