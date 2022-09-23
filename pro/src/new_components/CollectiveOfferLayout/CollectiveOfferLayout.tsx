@@ -6,9 +6,9 @@ import OfferBreadcrumb, {
 } from 'new_components/OfferBreadcrumb'
 import { Title } from 'ui-kit'
 
-import styles from './OfferEducationalLayout.module.scss'
+import styles from './CollectiveOfferLayout.module.scss'
 
-interface IOfferEducationalLayout {
+interface ICollectiveOfferLayout {
   children: React.ReactNode | React.ReactNode[]
   activeStep: OfferBreadcrumbStep
   isCreatingOffer: boolean
@@ -16,13 +16,13 @@ interface IOfferEducationalLayout {
   title: string
 }
 
-const OfferEducationalLayout = ({
+const CollectiveOfferLayout = ({
   children,
   activeStep,
   isCreatingOffer,
   offerId,
   title,
-}: IOfferEducationalLayout): JSX.Element => {
+}: ICollectiveOfferLayout): JSX.Element => {
   return (
     <div className={styles['eac-layout']}>
       <Title className={styles['eac-layout-heading']} level={1}>
@@ -41,4 +41,4 @@ const OfferEducationalLayout = ({
   )
 }
 
-export default OfferEducationalLayout
+export default CollectiveOfferLayout

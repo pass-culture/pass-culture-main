@@ -15,8 +15,8 @@ import {
   setInitialFormValues,
 } from 'core/OfferEducational'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
@@ -90,7 +90,7 @@ const OfferEducationalCreation = (): JSX.Element => {
   }, [isReady, venueId, offererId])
 
   return (
-    <OfferEducationalLayout
+    <CollectiveOfferLayout
       activeStep={OfferBreadcrumbStep.DETAILS}
       isCreatingOffer
       title="Créer une nouvelle offre collective"
@@ -111,7 +111,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       ) : (
         <Spinner />
       )}
-    </OfferEducationalLayout>
+    </CollectiveOfferLayout>
   )
 }
 

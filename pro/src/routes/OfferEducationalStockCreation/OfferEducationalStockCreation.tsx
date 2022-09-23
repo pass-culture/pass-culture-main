@@ -11,8 +11,8 @@ import {
   OfferEducationalStockFormValues,
   getStockCollectiveOfferAdapter,
 } from 'core/OfferEducational'
+import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
@@ -91,7 +91,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   }, [offerId, notify, isReady])
 
   return (
-    <OfferEducationalLayout
+    <CollectiveOfferLayout
       activeStep={OfferBreadcrumbStep.STOCKS}
       isCreatingOffer
       title="Créer une nouvelle offre collective"
@@ -109,7 +109,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       ) : (
         <Spinner />
       )}
-    </OfferEducationalLayout>
+    </CollectiveOfferLayout>
   )
 }
 
