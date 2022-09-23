@@ -330,12 +330,6 @@ def find_expiring_collective_bookings_query() -> BaseQuery:
     )
 
 
-def find_expiring_collective_booking_ids_from_query(query: BaseQuery) -> BaseQuery:
-    return query.order_by(educational_models.CollectiveBooking.id).with_entities(
-        educational_models.CollectiveBooking.id
-    )
-
-
 def find_expired_collective_bookings() -> list[educational_models.CollectiveBooking]:
     expired_on = date.today()
     return (
