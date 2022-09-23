@@ -3,6 +3,7 @@ from datetime import timedelta
 import logging
 
 from flask import current_app as app
+import sqlalchemy as sqla
 
 from pcapi import settings
 from pcapi.core.users import api
@@ -10,6 +11,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
+from pcapi.models import db
 from pcapi.repository import repository
 
 from .send import send_beneficiary_user_emails_for_email_change
@@ -139,3 +141,22 @@ def check_user_password(user: models.User, password: str) -> None:
 def check_email_address_does_not_exist(email: str) -> None:
     if users_repository.find_user_by_email(email):
         raise exceptions.EmailExistsError(email)
+
+
+def validated_update_request_exists(old_email: str, new_email: str) -> bool:
+    """
+    Check if an email update exists and has been validated (by the user
+    or by an admin).
+    """
+    return db.session.query(
+        models.UserEmailHistory.query.filter(
+            models.UserEmailHistory.oldEmail == old_email, models.UserEmailHistory.newEmail == new_email
+        )
+        .filter(
+            sqla.or_(
+                models.UserEmailHistory.eventType == models.EmailHistoryEventTypeEnum.VALIDATION,
+                models.UserEmailHistory.eventType == models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
+            )
+        )
+        .exists()
+    ).scalar()
