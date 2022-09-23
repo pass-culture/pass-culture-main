@@ -59,10 +59,6 @@ class EducationalStockAlreadyExists(Exception):
     pass
 
 
-class OfferIsNotShowcase(Exception):
-    pass
-
-
 class CollectiveStockAlreadyExists(Exception):
     pass
 
