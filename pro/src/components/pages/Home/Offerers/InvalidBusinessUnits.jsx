@@ -38,7 +38,7 @@ const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
 }
 
 InvalidBusinessUnits.propTypes = {
-  hasTitle: PropTypes.bool.isRequired,
+  hasTitle: PropTypes.bool,
   offererId: PropTypes.string.isRequired,
 }
 
