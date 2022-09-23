@@ -14,7 +14,7 @@ import {
   Mode,
   cancelCollectiveBookingAdapter,
   extractOfferIdAndOfferTypeFromRouteParams,
-  getCategoriesAdapter,
+  getEducationalCategoriesAdapter,
   getEducationalDomainsAdapter,
   getOfferersAdapter,
   patchIsCollectiveOfferActiveAdapter,
@@ -34,7 +34,7 @@ import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromO
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
-  'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
+  'categories' | 'userOfferers'
 >
 
 const OfferEducationalEdition = (): JSX.Element => {
@@ -122,7 +122,7 @@ const OfferEducationalEdition = (): JSX.Element => {
       const offererId = offer.venue.managingOffererId
 
       const results = await Promise.all([
-        getCategoriesAdapter(null),
+        getEducationalCategoriesAdapter(),
         getOfferersAdapter(offererId),
       ])
 
@@ -154,8 +154,7 @@ const OfferEducationalEdition = (): JSX.Element => {
       )
 
       setScreenProps({
-        educationalCategories: categories.payload.educationalCategories,
-        educationalSubCategories: categories.payload.educationalSubCategories,
+        categories: categories.payload,
         userOfferers,
       })
 

@@ -34,8 +34,7 @@ type IOfferEducationalFormProps = Omit<
 }
 
 const OfferEducationalForm = ({
-  educationalCategories,
-  educationalSubCategories,
+  categories,
   userOfferers,
   getIsOffererEligible,
   notify,
@@ -120,8 +119,8 @@ const OfferEducationalForm = ({
       {isEligible && values.offererId && values.venueId ? (
         <>
           <FormOfferType
-            categories={educationalCategories}
-            subCategories={educationalSubCategories}
+            categories={categories.educationalCategories}
+            subCategories={categories.educationalSubCategories}
             domainsOptions={domainsOptions}
             disableForm={mode === Mode.READ_ONLY}
           />

@@ -9,7 +9,7 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
-  getCategoriesAdapter,
+  getEducationalCategoriesAdapter,
   getEducationalDomainsAdapter,
   getOfferersAdapter,
   setInitialFormValues,
@@ -25,7 +25,7 @@ import postCollectiveOfferAdapter from './adapters/postCollectiveOfferAdapter'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
-  'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
+  'categories' | 'userOfferers'
 >
 
 const OfferEducationalCreation = (): JSX.Element => {
@@ -58,7 +58,7 @@ const OfferEducationalCreation = (): JSX.Element => {
     if (!isReady) {
       const loadData = async () => {
         const results = await Promise.all([
-          getCategoriesAdapter(null),
+          getEducationalCategoriesAdapter(),
           getOfferersAdapter(offererId),
           getEducationalDomainsAdapter(),
         ])
@@ -73,8 +73,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         const [categories, offerers] = results
 
         setScreenProps({
-          educationalCategories: categories.payload.educationalCategories,
-          educationalSubCategories: categories.payload.educationalSubCategories,
+          categories: categories.payload,
           userOfferers: offerers.payload,
         })
 
