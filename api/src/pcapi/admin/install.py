@@ -8,7 +8,6 @@ from pcapi.admin.custom_views import offer_view
 from pcapi.admin.custom_views.admin_user_view import AdminUserView
 from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
 from pcapi.admin.custom_views.api_key_view import ApiKeyView
-from pcapi.admin.custom_views.beneficiary_import_view import BeneficiaryImportView
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.booking_view import BookingView
 from pcapi.admin.custom_views.category_view import CategoryView
@@ -43,7 +42,6 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
-from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.feature import Feature
 
 from . import base_configuration
@@ -164,7 +162,6 @@ def install_views(admin: Admin, session: Session) -> None:
         )
     )
     admin.add_view(FeatureView(Feature, session, name="Feature Flipping", category=None))
-    admin.add_view(BeneficiaryImportView(BeneficiaryImport, session, name="Imports DMS", category=Category.USERS))
     admin.add_view(ApiKeyView(offerers_models.ApiKey, session, name="Clés API", category=Category.USERS))
     admin.add_view(
         UserEmailHistoryView(
