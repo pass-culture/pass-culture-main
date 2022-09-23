@@ -389,6 +389,35 @@ class ChangeUserEmailTest:
         reloaded_user = users_models.User.query.get(user.id)
         assert not reloaded_user.email_history
 
+    def test_change_user_email_twice(self):
+        """
+        Test that when the function is called twice:
+            1. no error is raised
+            2. no email updated is performed (email history stays the
+               same)
+        Update has been done, no need to panic.
+        """
+        old_email = "oldemail@mail.com"
+        new_email = "newemail@mail.com"
+
+        user = users_factories.UserFactory(email=old_email)
+        users_factories.UserSessionFactory(user=user)
+
+        # first call, email is updated as expected
+        users_api.change_user_email(old_email, new_email)
+        db.session.commit()
+
+        reloaded_user = users_models.User.query.get(user.id)
+        assert reloaded_user.email == new_email
+        assert len(reloaded_user.email_history) == 1
+
+        # second call, no error, no update
+        users_api.change_user_email(old_email, new_email)
+
+        reloaded_user = users_models.User.query.get(user.id)
+        assert reloaded_user.email == new_email
+        assert len(reloaded_user.email_history) == 1
+
 
 class CreateBeneficiaryTest:
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
