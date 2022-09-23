@@ -33,14 +33,6 @@ logger = logging.getLogger(__name__)
 
 FRAUD_RESULT_REASON_SEPARATOR = ";"
 
-USER_PROFILING_RISK_MAPPING = {
-    models.UserProfilingRiskRating.TRUSTED: models.FraudStatus.OK,
-    models.UserProfilingRiskRating.NEUTRAL: models.FraudStatus.OK,
-    models.UserProfilingRiskRating.LOW: models.FraudStatus.OK,
-    models.UserProfilingRiskRating.MEDIUM: models.FraudStatus.SUSPICIOUS,
-    models.UserProfilingRiskRating.HIGH: models.FraudStatus.KO,
-}
-
 USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
     models.UserProfilingRiskRating.TRUSTED: models.FraudCheckStatus.OK,
     models.UserProfilingRiskRating.NEUTRAL: models.FraudCheckStatus.OK,
