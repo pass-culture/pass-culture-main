@@ -4,6 +4,7 @@ import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { EducationalCategories } from 'core/OfferEducational'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 
+import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
 import CollectiveOfferPracticalInformation from './components/CollectiveOfferPracticalInformation'
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
@@ -27,6 +28,7 @@ const CollectiveOfferSummary = ({
           <CollectiveOfferVenueSection venue={offer.venue} />
           <CollectiveOfferTypeSection offer={offer} categories={categories} />
           <CollectiveOfferPracticalInformation offer={offer} />
+          <CollectiveOfferParticipantSection students={offer.students} />
         </SummaryLayout.Section>
       </SummaryLayout.Content>
     </SummaryLayout>
