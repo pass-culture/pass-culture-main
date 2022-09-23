@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import React from 'react'
@@ -23,14 +27,13 @@ jest.mock('apiClient/api', () => ({
 const mockLogEvent = jest.fn()
 
 const renderReimbursementPoint = async props => {
-  const rtlReturn = await render(
+  const rtlReturn = render(
     <MemoryRouter path={'/structures'}>
       <Form onSubmit={() => {}}>{() => <ReimbursementPoint {...props} />}</Form>
     </MemoryRouter>
   )
 
-  const loadingMessage = screen.queryByText('Chargement en cours ...')
-  await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+  await waitForElementToBeRemoved(() => screen.getByText('Chargement en cours'))
 
   return rtlReturn
 }
@@ -138,28 +141,26 @@ describe('src | Venue | ReimbursementPoint', () => {
       })
     )
     // Then
-    await waitFor(() =>
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_ADD_BANK_INFORMATIONS,
-        {
-          from: '/structures',
-        }
-      )
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_ADD_BANK_INFORMATIONS,
+      {
+        from: '/structures',
+      }
     )
+
     await userEvent.click(
       screen.getByRole('button', {
         name: /J'ai compris/,
       })
     )
-    await waitFor(() =>
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        2,
-        Events.CLICKED_NO_PRICING_POINT_SELECTED_YET,
-        {
-          from: '/structures',
-        }
-      )
+
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      2,
+      Events.CLICKED_NO_PRICING_POINT_SELECTED_YET,
+      {
+        from: '/structures',
+      }
     )
   })
 
@@ -199,6 +200,7 @@ describe('src | Venue | ReimbursementPoint', () => {
       id: 'AA',
       name: 'fake venue name',
       hasPendingBankInformationApplication: true,
+      demarchesSimplifieesApplicationId: 'ABC',
     }
 
     props.initialVenue = venueWithPendingApplication
