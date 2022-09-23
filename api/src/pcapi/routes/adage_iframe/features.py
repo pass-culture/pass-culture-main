@@ -4,6 +4,7 @@ from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.serialization import features_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.cache import cached_view
 
 
 @blueprint.adage_iframe.route("/features", methods=["GET"])
@@ -11,6 +12,7 @@ from pcapi.serialization.decorator import spectree_serialize
 @spectree_serialize(
     response_model=features_serialize.ListFeatureResponseModel, api=blueprint.api, on_error_statuses=[404]
 )
+@cached_view(prefix="features", ignore_args=True, expire=None)
 def list_features(authenticated_information: AuthenticatedInformation) -> features_serialize.ListFeatureResponseModel:
     features = feature_queries.find_all()
     return features_serialize.ListFeatureResponseModel(__root__=features)

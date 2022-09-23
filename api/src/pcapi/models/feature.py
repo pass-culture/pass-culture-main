@@ -17,6 +17,9 @@ from pcapi.models.pc_object import PcObject
 
 logger = logging.getLogger(__name__)
 
+PRO_FEATURE_CACHE = "api:cached_function:features:list_features:args:args_ignored"
+NATIVE_FEATURE_CACHE = "api:cached_function:features:get_settings:args:args_ignored"
+
 
 class DisabledFeatureError(Exception):
     pass
@@ -207,6 +210,7 @@ def legacy_add_feature_to_database(feature: FeatureToggle) -> None:
         initial_value=feature not in FEATURES_DISABLED_BY_DEFAULT,
     )
     op.execute(statement)
+    invalidate_feature_cache()
 
 
 def add_feature_to_database(feature: Feature) -> None:
@@ -226,6 +230,7 @@ def add_feature_to_database(feature: Feature) -> None:
         is_active=feature.isActive,
     )
     op.execute(statement)
+    invalidate_feature_cache()
 
 
 def remove_feature_from_database(feature: Feature) -> None:
@@ -234,6 +239,7 @@ def remove_feature_from_database(feature: Feature) -> None:
     """
     statement = text("DELETE FROM feature WHERE name = :name").bindparams(name=feature.name)
     op.execute(statement)
+    invalidate_feature_cache()
 
 
 def install_feature_flags() -> None:
@@ -257,6 +263,21 @@ def install_feature_flags() -> None:
         )
 
     db.session.commit()
+    if to_install_flags or to_remove_flags:
+        invalidate_feature_cache()
 
     if to_remove_flags:
         logger.error("The following feature flags are present in database but not present in code: %s", to_remove_flags)
+
+
+def invalidate_feature_cache() -> None:
+    try:
+        redis_client = flask.current_app.redis_client  # type: ignore [attr-defined]
+    except RuntimeError:
+        # curently installing the flags outside flask
+        import redis
+
+        from pcapi import settings
+
+        redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
+    redis_client.delete(PRO_FEATURE_CACHE, NATIVE_FEATURE_CACHE)

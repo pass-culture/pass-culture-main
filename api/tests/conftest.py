@@ -104,6 +104,8 @@ def clear_outboxes():
 
 @pytest.fixture(autouse=True)
 def clear_redis(app):
+    # some test can leak redis keys due to added cache
+    app.redis_client.flushdb()
     try:
         yield
     finally:
