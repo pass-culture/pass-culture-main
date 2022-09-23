@@ -7,6 +7,7 @@ import Spinner from 'components/layout/Spinner'
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
+import CollectiveOfferSummary from 'screens/CollectiveOfferSummary'
 
 const CollectiveOfferTemplateSummary = () => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
@@ -36,7 +37,7 @@ const CollectiveOfferTemplateSummary = () => {
     <Spinner />
   ) : (
     <CollectiveOfferLayout title="Récapitulatif" subTitle={offer.name}>
-      <div></div>
+      <CollectiveOfferSummary offer={offer} />
     </CollectiveOfferLayout>
   )
 }
