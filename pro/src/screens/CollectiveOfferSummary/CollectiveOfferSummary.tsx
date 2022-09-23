@@ -1,15 +1,21 @@
 import React from 'react'
 
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import { EducationalCategories } from 'core/OfferEducational'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 
+import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 
 interface ICollectiveOfferSummaryProps {
   offer: GetCollectiveOfferTemplateResponseModel
+  categories: EducationalCategories
 }
 
-const CollectiveOfferSummary = ({ offer }: ICollectiveOfferSummaryProps) => {
+const CollectiveOfferSummary = ({
+  offer,
+  categories,
+}: ICollectiveOfferSummaryProps) => {
   return (
     <SummaryLayout>
       <SummaryLayout.Content fullWidth>
@@ -18,6 +24,7 @@ const CollectiveOfferSummary = ({ offer }: ICollectiveOfferSummaryProps) => {
           editLink={`/offre/T-${offer.id}/collectif/edition`}
         >
           <CollectiveOfferVenueSection venue={offer.venue} />
+          <CollectiveOfferTypeSection offer={offer} categories={categories} />
         </SummaryLayout.Section>
       </SummaryLayout.Content>
     </SummaryLayout>
