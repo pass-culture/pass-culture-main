@@ -149,9 +149,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
   return (
     <CollectiveOfferLayout
-      activeStep={OfferBreadcrumbStep.STOCKS}
-      isCreatingOffer={false}
-      offerId={offerId}
+      breadCrumpProps={{
+        activeStep: OfferBreadcrumbStep.STOCKS,
+        isCreatingOffer: false,
+        offerId,
+      }}
       title="Éditer une offre collective"
     >
       {offer && isReady ? (
