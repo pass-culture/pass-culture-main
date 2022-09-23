@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -48,12 +48,10 @@ describe('src | components | Offerers', () => {
           })
 
           // then
-          await waitFor(() =>
-            expect(screen.getByText('créer un nouveau lieu')).toHaveAttribute(
-              'href',
-              '/structures/AE/lieux/creation'
-            )
-          )
+
+          expect(
+            await screen.findByText('créer un nouveau lieu')
+          ).toHaveAttribute('href', '/structures/AE/lieux/creation')
         })
       })
 
@@ -63,12 +61,10 @@ describe('src | components | Offerers', () => {
           renderOfferers()
 
           // then
-          await waitFor(() =>
-            expect(screen.getByText('créer un nouveau lieu')).toHaveAttribute(
-              'href',
-              '/erreur/indisponible'
-            )
-          )
+
+          expect(
+            await screen.findByText('créer un nouveau lieu')
+          ).toHaveAttribute('href', '/erreur/indisponible')
         })
       })
     })
@@ -79,15 +75,19 @@ describe('src | components | Offerers', () => {
         renderOfferers()
 
         // then
-        await waitFor(() =>
-          expect(screen.getByText('Structure juridique')).toBeInTheDocument()
-        )
+
+        expect(
+          await screen.findByText('Structure juridique')
+        ).toBeInTheDocument()
       })
 
       it('should display Structures juridiques when many offerers', async () => {
         // given
         api.getOfferers.mockResolvedValue({
-          offerers: [{ id: 'AE' }, { id: 'AF' }],
+          offerers: [
+            { id: 'AE', siren: '1234567' },
+            { id: 'AF', siren: '1234568' },
+          ],
           nbTotalResults: 2,
         })
 
@@ -95,9 +95,10 @@ describe('src | components | Offerers', () => {
         renderOfferers()
 
         // then
-        await waitFor(() =>
-          expect(screen.getByText('Structures juridiques')).toBeInTheDocument()
-        )
+
+        expect(
+          await screen.findByText('Structures juridiques')
+        ).toBeInTheDocument()
       })
     })
 
@@ -121,9 +122,8 @@ describe('src | components | Offerers', () => {
           renderOfferers()
 
           // then
-          await waitFor(() =>
-            expect(screen.getByText('My Offerer')).toBeInTheDocument()
-          )
+
+          expect(await screen.findByText('My Offerer')).toBeInTheDocument()
         })
       })
 
@@ -146,11 +146,10 @@ describe('src | components | Offerers', () => {
             renderOfferers()
 
             // then
-            await waitFor(() =>
-              expect(
-                screen.getByText('Rattachement en cours de validation')
-              ).toBeInTheDocument()
-            )
+
+            expect(
+              await screen.findByText('Rattachement en cours de validation')
+            ).toBeInTheDocument()
           })
         })
 
@@ -172,11 +171,10 @@ describe('src | components | Offerers', () => {
             renderOfferers()
 
             // then
-            await waitFor(() =>
-              expect(
-                screen.getByText('Rattachement en cours de validation')
-              ).toBeInTheDocument()
-            )
+
+            expect(
+              await screen.findByText('Rattachement en cours de validation')
+            ).toBeInTheDocument()
           })
         })
       })
@@ -193,12 +191,10 @@ describe('src | components | Offerers', () => {
           })
 
           // then
-          await waitFor(() =>
-            expect(screen.getByText('Ajouter une structure')).toHaveAttribute(
-              'href',
-              '/structures/creation'
-            )
-          )
+
+          expect(
+            await screen.findByText('Ajouter une structure')
+          ).toHaveAttribute('href', '/structures/creation')
         })
       })
 
@@ -210,12 +206,9 @@ describe('src | components | Offerers', () => {
           renderOfferers()
 
           // then
-          await waitFor(() =>
-            expect(screen.getByText('Ajouter une structure')).toHaveAttribute(
-              'href',
-              '/erreur/indisponible'
-            )
-          )
+          expect(
+            await screen.findByText('Ajouter une structure')
+          ).toHaveAttribute('href', '/erreur/indisponible')
         })
       })
     })
