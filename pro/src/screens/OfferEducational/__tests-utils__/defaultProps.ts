@@ -42,8 +42,10 @@ export const defaultCreationProps: IOfferEducationalProps = {
   userOfferers: mockUserOfferers,
   initialValues: DEFAULT_EAC_FORM_VALUES,
   onSubmit: jest.fn(),
-  educationalCategories: mockEducationalCategories,
-  educationalSubCategories: mockEducationalSubcategories,
+  categories: {
+    educationalCategories: mockEducationalCategories,
+    educationalSubCategories: mockEducationalSubcategories,
+  },
   getIsOffererEligible: jest.fn().mockResolvedValue({
     isOk: true,
     message: null,
@@ -101,8 +103,10 @@ export const defaultEditionProps: IOfferEducationalProps = {
   userOfferers: mockUserOfferers,
   initialValues: editionFormValues,
   onSubmit: jest.fn(),
-  educationalCategories: mockEducationalCategories,
-  educationalSubCategories: mockEducationalSubcategories,
+  categories: {
+    educationalCategories: mockEducationalCategories,
+    educationalSubCategories: mockEducationalSubcategories,
+  },
   notify: {
     success: jest.fn(),
     pending: jest.fn(),

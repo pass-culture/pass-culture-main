@@ -22,10 +22,12 @@ describe('screens | OfferEducational : event address step', () => {
   beforeEach(() => {
     props = {
       ...defaultCreationProps,
-      educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
-      educationalSubCategories: subCategoriesFactory([
-        { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-      ]),
+      categories: {
+        educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
+        educationalSubCategories: subCategoriesFactory([
+          { categoryId: 'CAT_1', id: 'SUBCAT_1' },
+        ]),
+      },
     }
   })
 
