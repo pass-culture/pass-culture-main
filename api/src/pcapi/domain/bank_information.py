@@ -4,7 +4,6 @@ from schwifty import BIC
 from schwifty import IBAN
 
 from pcapi.core.finance.models import BankInformationStatus
-from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.models.api_errors import ApiErrors
 
@@ -14,11 +13,6 @@ status_weight = {BankInformationStatus.ACCEPTED: 2, BankInformationStatus.DRAFT:
 
 class CannotRegisterBankInformation(ApiErrors):
     pass
-
-
-def check_offerer_presence(offerer: Offerer, api_errors: CannotRegisterBankInformation) -> None:
-    if not offerer:
-        api_errors.add_error("Offerer", "Offerer not found")
 
 
 def check_new_bank_information_older_than_saved_one(
