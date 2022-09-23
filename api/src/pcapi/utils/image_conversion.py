@@ -59,9 +59,6 @@ MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = CropParams()
 
-IMAGE_RATIO_PORTRAIT_DEFAULT = 6 / 9
-IMAGE_RATIO_LANDSCAPE_DEFAULT = 3 / 2
-
 
 def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams | None = None) -> bytes:
     """
