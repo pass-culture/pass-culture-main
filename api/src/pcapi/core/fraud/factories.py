@@ -17,11 +17,6 @@ import pcapi.core.users.factories as users_factories
 from . import models
 
 
-USERPROFILING_RATING = [rating.value for rating in models.UserProfilingRiskRating]
-USERPROFILING_RESULTS = ["sucess", "failure"]
-USERPROFILING_BOOL = ["yes", "no"]
-
-
 class UserProfilingFraudDataFactory(factory.Factory):
     class Meta:
         model = models.UserProfilingFraudData
