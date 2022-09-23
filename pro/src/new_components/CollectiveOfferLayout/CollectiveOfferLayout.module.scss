@@ -4,6 +4,10 @@
   position: relative;
 
   &-heading {
+    margin-bottom: rem.torem(4px);
+  }
+
+  &-sub-heading {
     margin-bottom: rem.torem(32px);
   }
 
