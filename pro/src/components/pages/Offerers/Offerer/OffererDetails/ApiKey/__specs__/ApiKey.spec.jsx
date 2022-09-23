@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 
@@ -27,7 +28,7 @@ Object.assign(navigator, {
   },
 })
 
-const renderApiKey = async (props = defaultProps) => {
+const renderApiKey = (props = defaultProps) => {
   return render(
     <Provider store={store}>
       <ApiKey
@@ -47,20 +48,21 @@ Object.defineProperty(navigator, 'clipboard', {
 })
 
 describe('src | Offerer | ApiKey', () => {
-  it('should display api keys and generate new key', async () => {
+  it('should display api keys and generate new key', () => {
     // when
-    await renderApiKey()
+    renderApiKey()
 
     // then
     expect(screen.getByText('key-prefix1********')).toBeInTheDocument()
     expect(screen.getByText('1/5')).toBeInTheDocument()
   })
 
-  it('should display the button as disabled if limit reached', async () => {
+  it('should display the button as disabled if limit reached', () => {
     // when
-    await renderApiKey({
+    renderApiKey({
       maxAllowedApiKeys: 5,
       savedApiKeys: ['key1', 'key2', 'key3', 'key4', 'key5'],
+      reloadOfferer: defaultProps.reloadOfferer,
     })
 
     // then
@@ -71,40 +73,38 @@ describe('src | Offerer | ApiKey', () => {
 
   it('should generate a new key', async () => {
     // given
-    await renderApiKey()
+    renderApiKey()
     generateFakeOffererApiKey('new-key')
 
     // when
-    fireEvent.click(
+    await userEvent.click(
       screen.getByText('Générer une clé API', { selector: 'button' })
     )
 
     // then
-    await waitFor(() => expect(screen.getByText('new-key')).toBeInTheDocument())
+    expect(screen.getByText('new-key')).toBeInTheDocument()
   })
 
   it('should copy key in clipboar', async () => {
     // given
-    await renderApiKey()
+    renderApiKey()
     jest.spyOn(navigator.clipboard, 'writeText')
     generateFakeOffererApiKey('new-key')
-    fireEvent.click(
+    await userEvent.click(
       screen.getByText('Générer une clé API', { selector: 'button' })
     )
-    await waitFor(() => screen.getByText('Copier', { selector: 'button' }))
+    screen.getByText('Copier', { selector: 'button' })
 
     // when
-    fireEvent.click(screen.getByText('Copier', { selector: 'button' }))
+    await userEvent.click(screen.getByText('Copier', { selector: 'button' }))
 
     // then
-    await waitFor(() =>
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('new-key')
-    )
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('new-key')
   })
 
   it('should display an error when the api call fails', async () => {
     // given
-    await renderApiKey()
+    renderApiKey()
 
     const showNotificationSpy = jest.spyOn(
       notificationReducer,
@@ -113,49 +113,44 @@ describe('src | Offerer | ApiKey', () => {
     failToGenerateOffererApiKey()
 
     // when
-    fireEvent.click(
+    await userEvent.click(
       screen.getByText('Générer une clé API', { selector: 'button' })
     )
 
     // then
-    await waitFor(() =>
-      expect(showNotificationSpy).toHaveBeenCalledWith({
-        type: 'error',
-        duration: 5000,
-        text: "Une erreur s'est produite, veuillez réessayer",
-      })
-    )
-  })
-
-  it('should not delete key on modal dismiss', async () => {
-    await renderApiKey()
-    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockReturnValue(null)
-    fireEvent.click(screen.getByText('supprimer'))
-
-    // when
-    fireEvent.click(screen.getByText('Annuler', { selector: 'button' }))
-
-    // then
-    expect(deleteSpy).not.toHaveBeenCalled()
-    await waitFor(() => {
-      expect(defaultProps.reloadOfferer).not.toHaveBeenCalledWith()
+    expect(showNotificationSpy).toHaveBeenCalledWith({
+      type: 'error',
+      duration: 5000,
+      text: "Une erreur s'est produite, veuillez réessayer",
     })
   })
 
-  it('should delete a key on modal confirm', async () => {
-    await renderApiKey()
+  it('should not delete key on modal dismiss', async () => {
+    renderApiKey()
     const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockReturnValue(null)
-    fireEvent.click(screen.getByText('supprimer'))
+    await userEvent.click(screen.getByText('supprimer'))
 
     // when
-    fireEvent.click(
+    await userEvent.click(screen.getByText('Annuler', { selector: 'button' }))
+
+    // then
+    expect(deleteSpy).not.toHaveBeenCalled()
+
+    expect(defaultProps.reloadOfferer).not.toHaveBeenCalledWith()
+  })
+
+  it('should delete a key on modal confirm', async () => {
+    renderApiKey()
+    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockReturnValue(null)
+    await userEvent.click(screen.getByText('supprimer'))
+
+    // when
+    await userEvent.click(
       screen.getByText('Confirmer la suppression', { selector: 'button' })
     )
 
     // then
     expect(deleteSpy).toHaveBeenCalledWith('key-prefix1')
-    await waitFor(() => {
-      expect(defaultProps.reloadOfferer).toHaveBeenCalledWith('AE')
-    })
+    expect(defaultProps.reloadOfferer).toHaveBeenCalledWith('AE')
   })
 })
