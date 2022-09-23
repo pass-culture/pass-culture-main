@@ -22,12 +22,12 @@ import {
   setInitialFormValues,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
-import getCollectiveOfferTemplateAdapter from './adapters/getCollectiveOfferTemplateAdapter'
 import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'

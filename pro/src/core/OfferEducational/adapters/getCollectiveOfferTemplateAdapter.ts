@@ -22,7 +22,7 @@ const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
       return {
         isOk: true,
         message: '',
-        payload: { ...offer, isBooked: false },
+        payload: { ...offer },
       }
     } catch (error) {
       return FAILING_RESPONSE
