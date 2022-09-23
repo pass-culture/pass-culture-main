@@ -8,6 +8,10 @@
 
   &-content {
     width: rem.torem(485px);
+
+    &.full-width {
+      width: 100%;
+    }
   }
 
   &-side {
