@@ -199,10 +199,6 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
     )
 
 
-def find_expiring_booking_ids_from_query(query: BaseQuery) -> BaseQuery:
-    return query.order_by(Booking.id).with_entities(Booking.id)
-
-
 def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date = None) -> BaseQuery:
     given_date = given_date or date.today()
     books_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
