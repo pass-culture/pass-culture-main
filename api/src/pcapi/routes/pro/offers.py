@@ -199,7 +199,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
         crop_params=form.crop_params,
     )
 
-    return CreateThumbnailResponseModel(id=thumbnail.id)
+    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)
 
 
 @private_api.route("/offers/thumbnails/<offer_id>", methods=["DELETE"])
