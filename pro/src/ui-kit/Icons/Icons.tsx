@@ -74,12 +74,6 @@ export const Icons = () => (
     <body>
       <tr>
         <td>
-          <AudioDisabilityIcon />
-        </td>
-        <td>audio-disability</td>
-      </tr>
-      <tr>
-        <td>
           <BuildingIcon />
         </td>
         <td>building</td>
@@ -380,6 +374,18 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
+          <AudioDisabilityIcon />
+        </td>
+        <td>audio-disability</td>
+      </tr>
+      <tr>
+        <td>
+          <VisualDisabilityIcon />
+        </td>
+        <td>visual-disability</td>
+      </tr>
+      <tr>
+        <td>
           <MentalDisabilityIcon />
         </td>
         <td>mental-disability</td>
@@ -426,12 +432,7 @@ export const Icons = () => (
         </td>
         <td>user</td>
       </tr>
-      <tr>
-        <td>
-          <VisualDisabilityIcon />
-        </td>
-        <td>visual-disability</td>
-      </tr>
+
       <tr>
         <td>
           <TropheeIcon />

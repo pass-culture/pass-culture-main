@@ -85,6 +85,10 @@ input[type='checkbox'] {
   }
 }
 
+.checkbox-icon {
+  fill: colors.$black;
+}
+
 .field-checkbox {
   .input-checkbox-input {
     align-self: flex-start;
