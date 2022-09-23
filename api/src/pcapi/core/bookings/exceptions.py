@@ -124,10 +124,6 @@ class CannotDeleteVenueWithBookingsException(ClientError):
         )
 
 
-class CannotMarkAsConfirmedIndividualBooking(Exception):
-    pass
-
-
 class ConfirmationLimitDateHasPassed(Exception):
     pass
 
