@@ -36,7 +36,7 @@ const BaseCheckbox = ({
       />
       {!!Icon && (
         <span className={styles['base-checkbox-icon']}>
-          <Icon />
+          <Icon className={styles['base-checkbox-icon-svg']} />
         </span>
       )}
       <span className={styles['base-checkbox-label']}>{label}</span>

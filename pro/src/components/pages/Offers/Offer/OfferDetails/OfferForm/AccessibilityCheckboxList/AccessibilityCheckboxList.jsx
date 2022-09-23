@@ -110,7 +110,6 @@ const AccessibilityCheckboxList = ({
         name="noDisabilityCompliant"
         onChange={handleChange}
       />
-
       {isInError && (
         <InputError>Veuillez cocher au moins une option ci-dessus</InputError>
       )}

@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { FunctionComponent, SVGProps } from 'react'
 
 export interface IProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   label: string
   name: string
-  SvgElement?: React.ComponentType | null
+  SvgElement?: FunctionComponent<SVGProps<SVGSVGElement>> | null
   checked?: boolean
   className?: string
   disabled?: boolean
@@ -57,7 +57,7 @@ const CheckboxInput = ({
         type="checkbox"
         {...checkboxAttributes}
       />
-      {SvgElement && <SvgElement aria-hidden />}
+      {SvgElement && <SvgElement aria-hidden className="checkbox-icon" />}
       <span className={textClasses.join(' ')}>
         {label}
         {subLabel && (

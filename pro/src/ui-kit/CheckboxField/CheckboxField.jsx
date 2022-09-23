@@ -20,7 +20,7 @@ const CheckboxField = ({
       return (
         <label className={cx('checkbox-field', className)} htmlFor={id}>
           <input {...inputProps} id={id} type="checkbox" />
-          {SvgElement && <SvgElement aria-hidden />}
+          {SvgElement && <SvgElement aria-hidden className="checkbox-icon" />}
           <span className="input-checkbox-label">{label}</span>
         </label>
       )
