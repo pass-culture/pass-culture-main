@@ -39,8 +39,9 @@ const CollectiveOfferConfirmation = (): JSX.Element => {
   if (!offer) {
     return <Spinner />
   }
-  const institutionDisplayName =
-    `${offer?.institution?.institutionType} ${offer?.institution?.name}`.trim()
+
+  const { institutionType, name } = offer?.institution ?? {}
+  const institutionDisplayName = `${institutionType ?? ''} ${name ?? ''}`.trim()
 
   return (
     <CollectiveOfferConfirmationScreen
