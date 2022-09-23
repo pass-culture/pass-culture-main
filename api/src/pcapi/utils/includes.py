@@ -7,5 +7,3 @@ USER_INCLUDES = [
     "-validationToken",
     "hasPhysicalVenues",
 ]
-
-FEATURE_INCLUDES = ["nameKey"]
