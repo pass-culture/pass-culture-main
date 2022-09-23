@@ -8,19 +8,20 @@ import { Title } from 'ui-kit'
 
 import styles from './CollectiveOfferLayout.module.scss'
 
-interface ICollectiveOfferLayout {
-  children: React.ReactNode | React.ReactNode[]
+interface IBreadcrumbProps {
   activeStep: OfferBreadcrumbStep
   isCreatingOffer: boolean
   offerId?: string
+}
+interface ICollectiveOfferLayout {
+  children: React.ReactNode | React.ReactNode[]
+  breadCrumpProps?: IBreadcrumbProps
   title: string
 }
 
 const CollectiveOfferLayout = ({
   children,
-  activeStep,
-  isCreatingOffer,
-  offerId,
+  breadCrumpProps,
   title,
 }: ICollectiveOfferLayout): JSX.Element => {
   return (
@@ -28,13 +29,15 @@ const CollectiveOfferLayout = ({
       <Title className={styles['eac-layout-heading']} level={1}>
         {title}
       </Title>
-      <OfferBreadcrumb
-        activeStep={activeStep}
-        className={styles['eac-layout-breadcrumb']}
-        isCreatingOffer={isCreatingOffer}
-        isOfferEducational
-        offerId={offerId}
-      />
+      {breadCrumpProps && (
+        <OfferBreadcrumb
+          activeStep={breadCrumpProps.activeStep}
+          className={styles['eac-layout-breadcrumb']}
+          isCreatingOffer={breadCrumpProps.isCreatingOffer}
+          isOfferEducational
+          offerId={breadCrumpProps.offerId}
+        />
+      )}
       {children}
       <HelpLink />
     </div>

@@ -193,9 +193,11 @@ const OfferEducationalEdition = (): JSX.Element => {
 
   return (
     <CollectiveOfferLayout
-      activeStep={OfferBreadcrumbStep.DETAILS}
-      isCreatingOffer={false}
-      offerId={offerIdFromParams}
+      breadCrumpProps={{
+        activeStep: OfferBreadcrumbStep.DETAILS,
+        isCreatingOffer: false,
+        offerId: offerIdFromParams,
+      }}
       title="Éditer une offre collective"
     >
       {isReady && screenProps ? (

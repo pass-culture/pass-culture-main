@@ -91,8 +91,10 @@ const OfferEducationalCreation = (): JSX.Element => {
 
   return (
     <CollectiveOfferLayout
-      activeStep={OfferBreadcrumbStep.DETAILS}
-      isCreatingOffer
+      breadCrumpProps={{
+        activeStep: OfferBreadcrumbStep.DETAILS,
+        isCreatingOffer: true,
+      }}
       title="Créer une nouvelle offre collective"
     >
       {isReady && screenProps ? (

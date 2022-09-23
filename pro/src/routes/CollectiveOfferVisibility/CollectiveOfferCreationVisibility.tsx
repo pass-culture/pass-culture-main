@@ -35,8 +35,10 @@ const CollectiveOfferVisibility = () => {
 
   return (
     <CollectiveOfferLayout
-      activeStep={OfferBreadcrumbStep.VISIBILITY}
-      isCreatingOffer
+      breadCrumpProps={{
+        activeStep: OfferBreadcrumbStep.VISIBILITY,
+        isCreatingOffer: true,
+      }}
       title="Créer une nouvelle offre collective"
     >
       <CollectiveOfferVisibilityScreen
