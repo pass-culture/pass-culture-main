@@ -180,7 +180,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
     culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    dateOfBirth = sa.Column(sa.DateTime, nullable=True)
+    dateOfBirth = sa.Column(sa.DateTime, nullable=True)  # declared at signup
     departementCode = sa.Column(sa.String(3), nullable=True)
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
@@ -218,6 +218,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         server_default="{}",
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
+    validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
 
     def _add_role(self, role: UserRole) -> None:
         from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -335,6 +336,18 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     @property
     def age(self) -> int | None:
         return users_utils.get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
+
+    @property
+    def birth_date(self) -> date | None:
+        """
+        Returns the birth date validated by an Identity Provider if it exists,
+        otherwise the birth date declared by the user at signup.
+        """
+        if self.validatedBirthDate:
+            return self.validatedBirthDate
+        if self.dateOfBirth:
+            return self.dateOfBirth.date()
+        return None
 
     @property
     def deposit(self) -> "Deposit | None":
