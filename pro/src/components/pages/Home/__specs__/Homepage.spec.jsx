@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -173,7 +177,8 @@ describe('homepage', () => {
       beforeEach(async () => {
         scrollIntoViewMock = jest.fn()
         Element.prototype.scrollIntoView = scrollIntoViewMock
-        await renderHomePage(store)
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       })
 
       it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
@@ -210,7 +215,7 @@ describe('homepage', () => {
     })
     describe('when clicking on anchor link to offerers', () => {
       it('should trigger', async () => {
-        await renderHomePage(store)
+        renderHomePage(store)
         // given
         doesUserPreferReducedMotion.mockReturnValue(true)
 
@@ -233,13 +238,14 @@ describe('homepage', () => {
           .spyOn(pcapi, 'setHasSeenRGSBanner')
           .mockResolvedValue()
         renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
         await userEvent.click(
           screen.getByRole('button', { name: /Masquer le bandeau/ })
         )
         expect(spyRegister).toHaveBeenCalledTimes(1)
         expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
       })
-      it('should not display if user has already seen', () => {
+      it('should not display if user has already seen', async () => {
         jest.spyOn(api, 'getProfile').mockResolvedValue({ hasSeenProRgs: true })
         store = configureTestStore({
           user: {
@@ -249,6 +255,7 @@ describe('homepage', () => {
           },
         })
         renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
         expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
       })
     })
@@ -256,6 +263,7 @@ describe('homepage', () => {
     describe('profileAndSupport', () => {
       beforeEach(async () => {
         renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       })
 
       it('should display section and subsection titles', () => {
@@ -291,17 +299,21 @@ describe('homepage', () => {
         })
       })
       it('should display section when ff is active', async () => {
-        await renderHomePage(store)
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
         expect(
           screen.getByText('Statistiques', { selector: 'h2' })
         ).toBeInTheDocument()
       })
+
       describe('when clicking on anchor link to stats', () => {
         let scrollIntoViewMock
         beforeEach(async () => {
           scrollIntoViewMock = jest.fn()
           Element.prototype.scrollIntoView = scrollIntoViewMock
-          await renderHomePage(store)
+          renderHomePage(store)
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
         })
 
         it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
@@ -309,9 +321,10 @@ describe('homepage', () => {
           doesUserPreferReducedMotion.mockReturnValue(false)
 
           // when
-          await userEvent.click(
-            screen.getByRole('link', { name: 'Statistiques' })
-          )
+          const statLink = await screen.findByRole('link', {
+            name: 'Statistiques',
+          })
+          await userEvent.click(statLink)
 
           // then
           expect(scrollIntoViewMock).toHaveBeenCalledWith({
