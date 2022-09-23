@@ -21,14 +21,14 @@ from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyM
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.rest import load_or_404
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint
 
 
 logger = logging.getLogger(__name__)
-from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import load_or_404
 
 
 @private_api.route("/offers", methods=["GET"])
@@ -200,7 +200,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
         crop_params=form.crop_params,
     )
 
-    return CreateThumbnailResponseModel(id=thumbnail.id)
+    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)
 
 
 @private_api.route("/offers/thumbnails/<offer_id>", methods=["DELETE"])
