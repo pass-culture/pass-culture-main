@@ -22,6 +22,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
+import pcapi.core.users.email.update as email_update
 import pcapi.core.users.external as users_external
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
@@ -463,11 +464,24 @@ def change_user_email(
     new_email: str,
     by_admin: bool = False,
 ) -> None:
+    """
+    Change a user's email and add a new (validation) entry to its email
+    history.
+
+    If no user if found, check whether a validated update request
+    exists: if so, there is no need to panic nor to redo the update
+    since it already has been done.
+
+    Therefore this function can be called multiple times with the same
+    inputs safely.
+    """
     current_user = users_repository.find_user_by_email(current_email)
 
     if not current_user:
-        raise exceptions.UserDoesNotExist()
-    change_email(current_user, new_email, by_admin)
+        if not email_update.validated_update_request_exists(current_email, new_email):
+            raise exceptions.UserDoesNotExist()
+    else:
+        change_email(current_user, new_email, by_admin)
 
 
 def change_pro_user_email(
