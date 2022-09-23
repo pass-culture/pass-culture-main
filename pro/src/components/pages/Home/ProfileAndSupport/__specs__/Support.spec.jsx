@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter } from 'react-router-dom'
@@ -12,7 +12,7 @@ import Support from '../Support'
 
 const mockLogEvent = jest.fn()
 
-const renderSupport = async () => {
+const renderSupport = () => {
   return render(
     <MemoryRouter initialEntries={['/accueil']}>
       <Support />
@@ -22,8 +22,8 @@ const renderSupport = async () => {
 
 describe('homepage: ProfileAndSupport: Support', () => {
   describe('render', () => {
-    it('should display help links', async () => {
-      await renderSupport()
+    it('should display help links', () => {
+      renderSupport()
       const contactLink = screen.getByText('Contacter le support')
       const cguLink = screen.getByText('Conditions Générales d’Utilisation')
       const helpCenterLink = screen.getByText('Centre d’aide')
@@ -42,19 +42,21 @@ describe('homepage: ProfileAndSupport: Support', () => {
         'https://aide.passculture.app'
       )
     })
+
     it('should trigger events when clicking on link', async () => {
       jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      await renderSupport()
+      renderSupport()
       const contactLink = screen.getByText('Contacter le support')
       const cguLink = screen.getByText('Conditions Générales d’Utilisation')
       const helpCenterLink = screen.getByText('Centre d’aide')
 
-      userEvent.click(contactLink)
-      userEvent.click(cguLink)
-      userEvent.click(helpCenterLink)
-      await waitFor(() => expect(mockLogEvent).toHaveBeenCalledTimes(3))
+      await userEvent.click(contactLink)
+      await userEvent.click(cguLink)
+      await userEvent.click(helpCenterLink)
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(3)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
         Events.CLICKED_CONSULT_SUPPORT,
