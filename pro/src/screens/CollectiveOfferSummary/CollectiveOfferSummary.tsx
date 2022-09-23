@@ -11,6 +11,7 @@ import CollectiveOfferParticipantSection from './components/CollectiveOfferParti
 import CollectiveOfferPracticalInformation from './components/CollectiveOfferPracticalInformation'
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
+import { DEFAULT_RECAP_VALUE } from './components/constants'
 
 interface ICollectiveOfferSummaryProps {
   offer: GetCollectiveOfferTemplateResponseModel
@@ -39,6 +40,15 @@ const CollectiveOfferSummary = ({
           />
           <CollectiveOfferNotificationSection
             bookingEmails={offer.bookingEmails}
+          />
+        </SummaryLayout.Section>
+        <SummaryLayout.Section
+          title="Date & Prix"
+          editLink={`/offre/T-${offer.id}/collectif/stocks/edition`}
+        >
+          <SummaryLayout.Row
+            title="Détails"
+            description={offer.educationalPriceDetail || DEFAULT_RECAP_VALUE}
           />
         </SummaryLayout.Section>
       </SummaryLayout.Content>
