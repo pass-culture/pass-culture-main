@@ -5,6 +5,7 @@ import { EducationalCategories } from 'core/OfferEducational'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
+import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
 import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
 import CollectiveOfferPracticalInformation from './components/CollectiveOfferPracticalInformation'
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
@@ -31,6 +32,10 @@ const CollectiveOfferSummary = ({
           <CollectiveOfferPracticalInformation offer={offer} />
           <CollectiveOfferParticipantSection students={offer.students} />
           <CollectiveOfferAccessibilitySection offer={offer} />
+          <CollectiveOfferContactSection
+            phone={offer.contactPhone}
+            email={offer.contactEmail}
+          />
         </SummaryLayout.Section>
       </SummaryLayout.Content>
     </SummaryLayout>
