@@ -129,7 +129,8 @@ class ChangeEmailTokenContent(BaseModel):
 
 class UserProfileResponse(BaseModel):
     booked_offers: dict[str, int]
-    dateOfBirth: datetime.date | None
+    birth_date: datetime.date | None
+    date_of_birth: datetime.date | None  # TODO: remove when all app clients use birth_date field
     deposit_expiration_date: datetime.datetime | None
     deposit_type: DepositType | None
     deposit_version: int | None
@@ -205,7 +206,10 @@ class UserProfileResponse(BaseModel):
         if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False
 
-        return super().from_orm(user)
+        serialized_user = super().from_orm(user)
+        serialized_user.date_of_birth = user.birth_date
+
+        return serialized_user
 
 
 def _should_prevent_from_filling_cultural_survey(user: User) -> bool:
