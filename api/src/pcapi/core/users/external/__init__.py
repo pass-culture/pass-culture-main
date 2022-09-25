@@ -186,7 +186,7 @@ def get_user_attributes(user: User) -> UserAttributes:
 
     # A user becomes a former beneficiary only after the last credit is expired or spent or can no longer be claimed
     is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
-        user.has_underage_beneficiary_role and get_eligibility_at_date(user.birth_date, datetime.utcnow()) is None
+        user.has_underage_beneficiary_role and user.eligibility is None
     )
     user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
 
