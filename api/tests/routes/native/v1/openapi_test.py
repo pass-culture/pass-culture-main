@@ -1301,6 +1301,7 @@ def test_public_api(client):
                             "title": "Bookedoffers",
                             "type": "object",
                         },
+                        "birthDate": {"format": "date", "nullable": True, "title": "Birthdate", "type": "string"},
                         "dateOfBirth": {"format": "date", "nullable": True, "title": "Dateofbirth", "type": "string"},
                         "depositExpirationDate": {
                             "format": "date-time",
