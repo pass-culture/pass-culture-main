@@ -99,6 +99,7 @@ class AccountTest:
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             publicName="jdo",
+            validatedBirthDate=datetime(2000, 1, 11),
             **USER_DATA,
         )
 
@@ -117,13 +118,14 @@ class AccountTest:
                 "digital": {"initial": 10000, "remaining": 10000},
                 "physical": None,
             },
-            "dateOfBirth": "2000-01-01",
+            "birthDate": "2000-01-11",
+            "dateOfBirth": "2000-01-11",
             "depositVersion": 2,
             "depositType": "GRANT_18",
             "depositExpirationDate": "2040-01-01T00:00:00Z",
             "eligibility": "age-18",
-            "eligibilityEndDatetime": "2019-01-01T11:00:00Z",
-            "eligibilityStartDatetime": "2015-01-01T00:00:00Z",
+            "eligibilityEndDatetime": "2019-01-11T11:00:00Z",
+            "eligibilityStartDatetime": "2015-01-11T00:00:00Z",
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
             "roles": ["BENEFICIARY"],
@@ -137,6 +139,7 @@ class AccountTest:
 
         assert response.status_code == 200
         assert response.json == EXPECTED_DATA
+        assert user.dateOfBirth == datetime(2000, 1, 1)
 
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
