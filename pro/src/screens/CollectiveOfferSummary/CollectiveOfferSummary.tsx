@@ -1,6 +1,9 @@
 import React from 'react'
 
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import {
   EducationalCategories,
@@ -21,8 +24,18 @@ import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 import { DEFAULT_RECAP_VALUE } from './components/constants'
 
+const isCollectiveOfferTemplate = (
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
+): offer is GetCollectiveOfferTemplateResponseModel => {
+  return !('collectiveStock' in offer)
+}
+
 interface ICollectiveOfferSummaryProps {
-  offer: GetCollectiveOfferTemplateResponseModel
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
   categories: EducationalCategories
 }
 
@@ -45,6 +58,10 @@ const CollectiveOfferSummary = ({
     notify.error(response.message)
   }
 
+  const editLink = `/offre/${isCollectiveOfferTemplate(offer) ? 'T-' : ''}${
+    offer.id
+  }/collectif/edition`
+
   return (
     <>
       <OfferEducationalActions
@@ -57,10 +74,7 @@ const CollectiveOfferSummary = ({
       />
       <SummaryLayout>
         <SummaryLayout.Content fullWidth>
-          <SummaryLayout.Section
-            title="Détails de l’offre"
-            editLink={`/offre/T-${offer.id}/collectif/edition`}
-          >
+          <SummaryLayout.Section title="Détails de l’offre" editLink={editLink}>
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
             <CollectiveOfferPracticalInformation offer={offer} />
@@ -78,10 +92,14 @@ const CollectiveOfferSummary = ({
             title="Date & Prix"
             editLink={`/offre/T-${offer.id}/collectif/stocks/edition`}
           >
-            <SummaryLayout.Row
-              title="Détails"
-              description={offer.educationalPriceDetail || DEFAULT_RECAP_VALUE}
-            />
+            {isCollectiveOfferTemplate(offer) ? (
+              <SummaryLayout.Row
+                title="Détails"
+                description={
+                  offer.educationalPriceDetail || DEFAULT_RECAP_VALUE
+                }
+              />
+            ) : null}
           </SummaryLayout.Section>
         </SummaryLayout.Content>
       </SummaryLayout>
