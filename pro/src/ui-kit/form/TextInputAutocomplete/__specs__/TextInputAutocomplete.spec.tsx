@@ -11,7 +11,7 @@ const renderTextInputAutocomplete = async (
   initialValues: any,
   props: ITextInputAutocompleteProps
 ) => {
-  await render(
+  render(
     <>
       <Formik initialValues={initialValues} onSubmit={() => {}}>
         <TextInputAutocomplete {...props} />

@@ -8,7 +8,7 @@ import React from 'react'
 import DurationInput from '../DurationInput'
 
 const renderDurationInput = async props => {
-  await render(<DurationInput {...props} />)
+  render(<DurationInput {...props} />)
 }
 
 describe('src | components | inputs | DurationInput', () => {

@@ -58,7 +58,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
     renderHead(props)
 
     // Then
-    expect(await screen.queryByRole('row')).not.toBeInTheDocument()
+    expect(screen.queryByRole('row')).not.toBeInTheDocument()
   })
 
   it('should render one line with default sorting icon when column is sortable', () => {
@@ -115,7 +115,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
 
     // Then
     expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
-    expect(await screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
   it('should render one line with icon sorted ASC when column is sorted by ASC', () => {

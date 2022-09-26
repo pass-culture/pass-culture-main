@@ -41,7 +41,7 @@ describe('venue Item offer link', () => {
       setLogEvent: null,
     }))
     renderItem()
-    await userEvent.click(await screen.queryByText('Créer une offre'))
+    await userEvent.click(screen.queryByText('Créer une offre'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(

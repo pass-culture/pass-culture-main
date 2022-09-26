@@ -22,7 +22,7 @@ const renderInformations = async ({
   props: IInformations
 }) => {
   const validationSchema = yup.object().shape(informationsValidationSchema)
-  const rtlReturns = await render(
+  const rtlReturns = render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}

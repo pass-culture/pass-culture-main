@@ -61,7 +61,7 @@ describe('Breadcrumb', () => {
     it('should render default breadcrumb', async () => {
       renderBreadcrumb(props)
 
-      expect(await screen.getByTestId('bc-default')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-default')).toBeInTheDocument()
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -92,10 +92,10 @@ describe('Breadcrumb', () => {
         .closest('a')
       expect(informationLink).toHaveAttribute('href', '/informations')
 
-      const StockLink = await screen.getByText('Stocks & Prix').closest('a')
+      const StockLink = screen.getByText('Stocks & Prix').closest('a')
       expect(StockLink).toHaveAttribute('href', '/stocks')
 
-      const SummaryLink = await screen.getByText('Récapitulatif').closest('a')
+      const SummaryLink = screen.getByText('Récapitulatif').closest('a')
       expect(SummaryLink).toHaveAttribute('href', '#recapitulatif')
 
       const ConfirmationLink = await screen
@@ -137,7 +137,7 @@ describe('Breadcrumb', () => {
     it('should render tab breadcrumb', async () => {
       renderBreadcrumb(props)
 
-      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -168,10 +168,10 @@ describe('Breadcrumb', () => {
         .closest('a')
       expect(informationLink).toHaveAttribute('href', '/informations')
 
-      const StockLink = await screen.getByText('Stocks & Prix').closest('a')
+      const StockLink = screen.getByText('Stocks & Prix').closest('a')
       expect(StockLink).toHaveAttribute('href', '/stocks')
 
-      const SummaryLink = await screen.getByText('Récapitulatif').closest('a')
+      const SummaryLink = screen.getByText('Récapitulatif').closest('a')
       expect(SummaryLink).toHaveAttribute('href', '#recapitulatif')
 
       const ConfirmationLink = await screen
@@ -211,7 +211,7 @@ describe('Breadcrumb', () => {
 
       renderBreadcrumb(props)
 
-      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+      expect(screen.getByTestId('stepper')).toBeInTheDocument()
       // see other tests in Stepper tests
     })
   })

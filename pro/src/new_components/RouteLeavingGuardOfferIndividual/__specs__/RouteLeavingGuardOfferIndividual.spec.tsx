@@ -66,7 +66,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Stocks'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -75,7 +75,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Récapitulatif'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -84,7 +84,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Confirmation'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
   })
@@ -109,7 +109,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Création'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -118,7 +118,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Création with offer'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -127,7 +127,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Récapitulatif'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -136,7 +136,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Confirmation'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
   })
@@ -161,7 +161,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Création'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -170,7 +170,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Création with offer'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -179,7 +179,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Stocks'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -188,7 +188,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Confirmation'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
   })
@@ -199,7 +199,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('About'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -208,7 +208,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Création'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -217,7 +217,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Création with offer'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -226,7 +226,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Stocks'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
@@ -236,7 +236,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('Récapitulatif'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
       expect(spyHistory).toHaveBeenLastCalledWith(
         expect.objectContaining({ pathname: '/offres' })

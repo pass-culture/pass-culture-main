@@ -85,7 +85,7 @@ describe('test OfferIndividualStepper', () => {
     it('should render stepper breadcrumb in creation', async () => {
       await renderOfferIndividualStepper()
 
-      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+      expect(screen.getByTestId('stepper')).toBeInTheDocument()
     })
 
     it('should render steps when no offer is given', async () => {
@@ -98,7 +98,7 @@ describe('test OfferIndividualStepper', () => {
       expect(tabConfirmation).toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+      expect(screen.getByTestId('stepper')).toBeInTheDocument()
 
       tabStocks && (await userEvent.click(tabStocks))
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
@@ -221,7 +221,7 @@ describe('test OfferIndividualStepper', () => {
       )
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      expect(await screen.getByTestId('bc-default')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-default')).toBeInTheDocument()
     })
 
     it('should render steps on Information', async () => {

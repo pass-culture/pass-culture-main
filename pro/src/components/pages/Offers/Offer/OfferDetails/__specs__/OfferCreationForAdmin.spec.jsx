@@ -29,7 +29,7 @@ jest.mock('apiClient/api', () => ({
 
 const renderOffers = async (props, store, queryParams = null) => {
   await act(async () => {
-    await render(
+    render(
       <Provider store={store}>
         <MemoryRouter
           initialEntries={[
