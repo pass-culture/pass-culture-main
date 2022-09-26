@@ -6,6 +6,7 @@ from flask import jsonify
 from flask import request
 import simplejson as json
 from sqlalchemy.exc import DatabaseError
+from werkzeug import exceptions as werkzeug_exceptions
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
@@ -115,7 +116,7 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
     try:
         if request.is_json and "identifier" in request.json:  # type: ignore [operator]
             identifier = request.json["identifier"]  # type: ignore [index]
-    except json.JSONDecodeError as e:
+    except (json.JSONDecodeError, werkzeug_exceptions.BadRequest) as e:
         logger.info("Could not extract user identifier from request: %s", e)
     auth = get_request_authorization()
     if auth and auth.username:
