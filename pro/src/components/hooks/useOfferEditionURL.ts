@@ -9,9 +9,7 @@ export const useOfferEditionURL = (
 ): string => {
   if (isOfferEducational) {
     const id = getOfferId(offerId, isShowcase)
-    return isShowcase
-      ? `/offre/${id}/collectif/recapitulatif`
-      : `/offre/${id}/collectif/edition`
+    return `/offre/${id}/collectif/recapitulatif`
   }
 
   return isOfferFormV3
