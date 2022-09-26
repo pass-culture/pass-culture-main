@@ -32,7 +32,7 @@ describe('individual offer step', () => {
       await renderOffer({ pathname: '/offre/creation/individuel' })
 
       // Then
-      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+      expect(screen.getByTestId('stepper')).toBeInTheDocument()
       const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
@@ -59,7 +59,7 @@ describe('individual offer step', () => {
       await renderOffer({ pathname: `/offre/${offer.id}/individuel/edition` })
 
       // Then
-      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
       const detailTab = await screen.findByText("Détails de l'offre", {
         selector: 'a',
       })
@@ -90,7 +90,7 @@ describe('stocks step', () => {
       })
 
       // Then
-      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+      expect(screen.getByTestId('stepper')).toBeInTheDocument()
       const detailTab = await screen
         .getByText("Détails de l'offre")
         .closest('a')
@@ -123,7 +123,7 @@ describe('stocks step', () => {
       await renderOffer({ pathname: `/offre/${offer.id}/individuel/stocks` })
 
       // Then
-      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
       const detailTab = await screen.findByText("Détails de l'offre", {
         selector: 'a',
       })

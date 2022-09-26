@@ -12,7 +12,7 @@ jest.mock('utils/config', () => ({
 
 const renderBicIbanFields = async props => {
   return await act(async () => {
-    await render(<BicIbanFields {...props} />)
+    render(<BicIbanFields {...props} />)
   })
 }
 

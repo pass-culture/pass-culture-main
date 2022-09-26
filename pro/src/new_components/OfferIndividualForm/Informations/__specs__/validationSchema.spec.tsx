@@ -21,7 +21,7 @@ const renderInformations = async ({
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
-  const rtlReturns = await render(
+  const rtlReturns = render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -157,7 +157,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         await userEvent.type(durationMinutesInput, durationMinutesValue)
         await userEvent.click(buttonSubmit)
         expect(
-          await screen.queryByText(
+          screen.queryByText(
             'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
           )
         ).not.toBeInTheDocument()

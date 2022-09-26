@@ -13,7 +13,7 @@ import { loadFakeApiVenueStats } from 'utils/fakeApi'
 
 const renderVenue = async (props, store) => {
   return await act(async () => {
-    await render(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Venue {...props} />

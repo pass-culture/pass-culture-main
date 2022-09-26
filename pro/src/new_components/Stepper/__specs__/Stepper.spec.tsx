@@ -71,16 +71,16 @@ describe('Stepper', () => {
   it('should render link when needed', async () => {
     renderStepper(props)
 
-    const informationLink = await screen.getByText('Informations').closest('a')
+    const informationLink = screen.getByText('Informations').closest('a')
     expect(informationLink).toHaveAttribute('href', '/informations')
 
-    const StockLink = await screen.getByText('Stocks & Prix').closest('a')
+    const StockLink = screen.getByText('Stocks & Prix').closest('a')
     expect(StockLink).toHaveAttribute('href', '/stocks')
 
-    const SummaryLink = await screen.getByText('Récapitulatif').closest('a')
+    const SummaryLink = screen.getByText('Récapitulatif').closest('a')
     expect(SummaryLink).toHaveAttribute('href', '/recapitulatif')
 
-    const ConfirmationLink = await screen.getByText('Confirmation').closest('a')
+    const ConfirmationLink = screen.getByText('Confirmation').closest('a')
     expect(ConfirmationLink).toBeNull()
   })
 
@@ -103,7 +103,7 @@ describe('Stepper', () => {
   it('should trigger onClick', async () => {
     renderStepper(props)
 
-    const informationLink = await screen.getByText('Informations').closest('a')
+    const informationLink = screen.getByText('Informations').closest('a')
 
     informationLink && (await userEvent.click(informationLink))
 

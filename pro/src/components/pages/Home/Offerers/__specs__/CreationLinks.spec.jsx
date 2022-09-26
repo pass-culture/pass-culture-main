@@ -37,7 +37,7 @@ const renderHomePage = async () => {
   })
 
   return await act(async () => {
-    await render(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Homepage />

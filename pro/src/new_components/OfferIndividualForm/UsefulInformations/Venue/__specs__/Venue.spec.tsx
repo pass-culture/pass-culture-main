@@ -130,7 +130,7 @@ describe('OfferIndividual section: venue', () => {
       props,
     })
 
-    const selectOfferer = await screen.getByLabelText('Structure')
+    const selectOfferer = screen.getByLabelText('Structure')
 
     expect(selectOfferer).toBeInTheDocument()
     expect(selectOfferer).toHaveValue(VENUE_DEFAULT_VALUES.offererId)
@@ -143,7 +143,7 @@ describe('OfferIndividual section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = await screen.getByLabelText('Lieu')
+    const selectVenue = screen.getByLabelText('Lieu')
 
     expect(selectVenue).toBeInTheDocument()
     expect(selectVenue).toHaveValue(VENUE_DEFAULT_VALUES.venueId)
@@ -238,14 +238,14 @@ describe('OfferIndividual section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = await screen.getByLabelText('Lieu')
-    const selectOfferer = await screen.getByLabelText('Structure')
+    const selectVenue = screen.getByLabelText('Lieu')
+    const selectOfferer = screen.getByLabelText('Structure')
 
     expect(
-      await screen.queryByText('Veuillez sélectionner une structure')
+      screen.queryByText('Veuillez sélectionner une structure')
     ).not.toBeInTheDocument()
     expect(
-      await screen.queryByText('Veuillez sélectionner un lieu')
+      screen.queryByText('Veuillez sélectionner un lieu')
     ).not.toBeInTheDocument()
 
     await userEvent.selectOptions(selectOfferer, 'Offerer CC')

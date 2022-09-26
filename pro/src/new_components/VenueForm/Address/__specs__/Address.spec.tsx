@@ -50,7 +50,7 @@ const renderAddress = async ({
   onSubmit: () => void
 }) => {
   const validationSchema = yup.object().shape(addressValidationSchema)
-  const rtlReturns = await render(
+  const rtlReturns = render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -98,7 +98,7 @@ describe('components | Address', () => {
       initialValues,
       onSubmit,
     })
-    const adressInput = await screen.getByLabelText('Adresse')
+    const adressInput = screen.getByLabelText('Adresse')
 
     await userEvent.type(adressInput, '12 rue ')
     const suggestion = await screen.findByText(
@@ -129,7 +129,7 @@ describe('components | Address', () => {
       initialValues,
       onSubmit,
     })
-    const adressInput = await screen.getByLabelText('Adresse')
+    const adressInput = screen.getByLabelText('Adresse')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
     await userEvent.click(buttonSubmit)
@@ -148,11 +148,11 @@ describe('components | Address', () => {
       initialValues,
       onSubmit,
     })
-    const adressInput = await screen.getByLabelText('Adresse')
+    const adressInput = screen.getByLabelText('Adresse')
 
     await userEvent.type(adressInput, '12 rue')
     expect(
-      await screen.queryByText('12 rue des tournesols 75003 Paris')
+      screen.queryByText('12 rue des tournesols 75003 Paris')
     ).not.toBeInTheDocument()
   })
 })

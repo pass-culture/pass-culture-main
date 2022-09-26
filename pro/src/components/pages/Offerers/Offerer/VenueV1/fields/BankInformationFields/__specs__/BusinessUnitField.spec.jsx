@@ -12,7 +12,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderBusinessUnitField = async props => {
-  const rtlReturn = await render(<BusinessUnitFields {...props} />)
+  const rtlReturn = render(<BusinessUnitFields {...props} />)
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
   await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())

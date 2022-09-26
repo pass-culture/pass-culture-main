@@ -41,7 +41,7 @@ const renderHomePage = async () => {
   })
 
   return await act(async () => {
-    await render(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Homepage />
@@ -172,7 +172,7 @@ describe('trackers creationLinks', () => {
     ]
     api.getOfferer.mockResolvedValue(baseOfferers[0])
     await renderHomePage()
-    const createOfferButton = await screen.queryByText('Créer une offre')
+    const createOfferButton = screen.queryByText('Créer une offre')
 
     await userEvent.click(createOfferButton)
 
@@ -201,7 +201,7 @@ describe('trackers creationLinks', () => {
     api.getOfferer.mockResolvedValue(baseOfferers[0])
     await renderHomePage()
 
-    const createVenueButton = await screen.queryByText('Créer un lieu')
+    const createVenueButton = screen.queryByText('Créer un lieu')
 
     await userEvent.click(createVenueButton)
 

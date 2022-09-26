@@ -184,7 +184,7 @@ describe('OfferIndividualForm', () => {
       )
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
-      expect(await screen.queryByText('+ Ajouter un lieu')).toBeInTheDocument()
+      expect(screen.queryByText('+ Ajouter un lieu')).toBeInTheDocument()
     })
 
     it('should not display venue banner when subcategory is virtual', async () => {
@@ -221,9 +221,7 @@ describe('OfferIndividualForm', () => {
       )
       await userEvent.selectOptions(subcategorySelect, 'virtual')
 
-      expect(
-        await screen.queryByText('+ Ajouter un lieu')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
     })
 
     it('should not display venue banner when subcategory is not virtual but both venue type exist', async () => {
@@ -242,9 +240,7 @@ describe('OfferIndividualForm', () => {
       )
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
-      expect(
-        await screen.queryByText('+ Ajouter un lieu')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
     })
   })
 })
