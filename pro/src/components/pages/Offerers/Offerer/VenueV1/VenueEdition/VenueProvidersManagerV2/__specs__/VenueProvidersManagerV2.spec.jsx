@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  render,
+  screen,
+  within,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -20,15 +26,15 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderVenueProvidersManager = async props => {
-  await act(async () => {
-    await render(
-      <Provider store={configureTestStore()}>
-        <MemoryRouter>
-          <VenueProvidersManagerV2 {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  render(
+    <Provider store={configureTestStore()}>
+      <MemoryRouter>
+        <VenueProvidersManagerV2 {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 describe('src | VenueProvidersManager', () => {
@@ -198,7 +204,7 @@ describe('src | VenueProvidersManager', () => {
       expect(deleteVenueProviderButton).toBeInTheDocument()
 
       // When
-      fireEvent.click(deleteVenueProviderButton)
+      await userEvent.click(deleteVenueProviderButton)
       expect(
         screen.queryByText(
           'Voulez-vous supprimer la synchronisation de vos offres ?'
@@ -208,7 +214,7 @@ describe('src | VenueProvidersManager', () => {
         'Supprimer la synchronisation'
       )
       expect(confirmDeleteButton).toBeInTheDocument()
-      fireEvent.click(confirmDeleteButton)
+      await userEvent.click(confirmDeleteButton)
 
       // Then
       expect(pcapi.deleteVenueProvider).toHaveBeenCalledTimes(1)
@@ -274,17 +280,18 @@ describe('src | VenueProvidersManager', () => {
       const editParametersButton = screen.getByText('Modifier les paramètres', {
         selector: 'button',
       })
-      fireEvent.click(editParametersButton)
+      await userEvent.click(editParametersButton)
 
       // Then
       const priceField = screen.getByLabelText('Prix de vente/place', {
         exact: false,
       })
-      fireEvent.change(priceField, { target: { value: 10 } })
+      await userEvent.clear(priceField)
+      await userEvent.type(priceField, '10')
       const saveEditionButton = screen.getByText('Modifier', {
         selector: 'button',
       })
-      fireEvent.click(saveEditionButton)
+      await userEvent.click(saveEditionButton)
 
       expect(pcapi.editVenueProvider).toBeCalledWith({
         isDuo: true,
@@ -317,19 +324,19 @@ describe('src | VenueProvidersManager', () => {
       const editParametersButton = screen.getByText('Modifier les paramètres', {
         selector: 'button',
       })
-      fireEvent.click(editParametersButton)
+      await userEvent.click(editParametersButton)
 
       // Then
       const isDuoCheckbox = screen.getByLabelText(
         'Accepter les réservations DUO'
       )
-      fireEvent.click(isDuoCheckbox)
+      await userEvent.click(isDuoCheckbox)
       const saveEditionButton = screen.getByText('Modifier', {
         selector: 'button',
       })
-      await act(async () => {
-        fireEvent.click(saveEditionButton)
-      })
+
+      await userEvent.click(saveEditionButton)
+
       expect(pcapi.editVenueProvider).toBeCalledWith({
         isDuo: true,
         venueId: 'venueId',
@@ -385,7 +392,7 @@ describe('src | VenueProvidersManager', () => {
       expect(pauseVenueProviderButton).toBeInTheDocument()
 
       // When
-      fireEvent.click(pauseVenueProviderButton)
+      await userEvent.click(pauseVenueProviderButton)
 
       expect(
         screen.queryByText(
@@ -396,7 +403,7 @@ describe('src | VenueProvidersManager', () => {
         'Mettre en pause la synchronisation'
       )
       expect(confirmPauseButton).toBeInTheDocument()
-      fireEvent.click(confirmPauseButton)
+      await userEvent.click(confirmPauseButton)
 
       // Then
       expect(pcapi.editVenueProvider).toHaveBeenCalledTimes(1)
@@ -425,7 +432,7 @@ describe('src | VenueProvidersManager', () => {
       expect(reactivateVenueProviderButton).toBeInTheDocument()
 
       // When
-      fireEvent.click(reactivateVenueProviderButton)
+      await userEvent.click(reactivateVenueProviderButton)
       expect(
         screen.queryByText(
           'Vous êtes sur le point de réactiver la synchronisation de vos offres.'
@@ -435,7 +442,7 @@ describe('src | VenueProvidersManager', () => {
         'Réactiver la synchronisation'
       )
       expect(confirmPauseButton).toBeInTheDocument()
-      fireEvent.click(confirmPauseButton)
+      await userEvent.click(confirmPauseButton)
 
       // Then
       expect(pcapi.editVenueProvider).toHaveBeenCalledTimes(1)
@@ -469,7 +476,7 @@ describe('src | VenueProvidersManager', () => {
       const importOffersButton = screen.getByText('Synchroniser des offres')
 
       // when
-      fireEvent.click(importOffersButton)
+      await userEvent.click(importOffersButton)
 
       // then
       const providersSelect = screen.getByRole('combobox')
@@ -486,7 +493,7 @@ describe('src | VenueProvidersManager', () => {
       const importOffersButton = screen.getByText('Synchroniser des offres')
 
       // when
-      fireEvent.click(importOffersButton)
+      await userEvent.click(importOffersButton)
 
       // then
       expect(screen.queryByText('Compte')).not.toBeInTheDocument()
@@ -506,13 +513,11 @@ describe('src | VenueProvidersManager', () => {
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Synchroniser des offres')
-        fireEvent.click(importOffersButton)
+        await userEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        fireEvent.change(providersSelect, {
-          target: { value: providers[0].id },
-        })
+        await userEvent.selectOptions(providersSelect, providers[0].id)
 
         // then
         expect(screen.getByText('Prix de vente/place')).toBeInTheDocument()
@@ -528,13 +533,11 @@ describe('src | VenueProvidersManager', () => {
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Synchroniser des offres')
-        fireEvent.click(importOffersButton)
+        await userEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        fireEvent.change(providersSelect, {
-          target: { value: providers[0].id },
-        })
+        await userEvent.selectOptions(providersSelect, providers[0].id)
 
         // then
         expect(screen.getByText('Compte')).toBeInTheDocument()
