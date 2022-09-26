@@ -95,9 +95,11 @@ const CollectiveOfferSummary = ({
               phone={offer.contactPhone}
               email={offer.contactEmail}
             />
-            <CollectiveOfferNotificationSection
-              bookingEmails={offer.bookingEmails}
-            />
+            {offer.bookingEmails.length > 0 && (
+              <CollectiveOfferNotificationSection
+                bookingEmails={offer.bookingEmails}
+              />
+            )}
           </SummaryLayout.Section>
           <SummaryLayout.Section title="Date & Prix" editLink={stockEditLink}>
             {isCollectiveOfferTemplate(offer) ? (
