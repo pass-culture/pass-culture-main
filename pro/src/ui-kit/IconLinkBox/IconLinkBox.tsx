@@ -19,6 +19,7 @@ export interface IIconLinkBoxProps {
       title?: string | undefined
     }
   >
+  onClick?: () => void
 }
 
 const IconLinkBox = ({
@@ -27,6 +28,7 @@ const IconLinkBox = ({
   IconLink,
   linkTitle,
   linkUrl,
+  onClick,
 }: IIconLinkBoxProps) => {
   return (
     <div className={styles['icon-link-box']}>
@@ -42,6 +44,7 @@ const IconLinkBox = ({
             to: linkUrl,
             isExternal: true,
           }}
+          onClick={onClick}
           Icon={IconLink}
           className={styles['icon-link-box-footer-link']}
         >
