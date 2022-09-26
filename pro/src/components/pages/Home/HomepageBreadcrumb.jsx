@@ -31,6 +31,7 @@ const HomepageBreadcrumb = ({
   }
   const jumpToStatsSection = e => {
     e.preventDefault()
+    logEvent?.(Events.CLICKED_BREADCRUMBS_OFFERER_STATS)
 
     statsRef?.current.scrollIntoView({
       behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
