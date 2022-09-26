@@ -14,7 +14,7 @@ describe('useOfferEditionURL', () => {
       isShowcase
     )
 
-    expect(urlResutl).toStrictEqual('/offre/offerID/collectif/edition')
+    expect(urlResutl).toStrictEqual('/offre/offerID/collectif/recapitulatif')
   })
 
   test('It should retrun right url when offer is educational and showcase', () => {
