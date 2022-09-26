@@ -7,9 +7,9 @@ import { Provider } from 'react-redux'
 import Notification from 'components/layout/Notification/Notification'
 import { configureTestStore } from 'store/testUtils'
 
-jest.mock('../_constants', () => ({
-  NOTIFICATION_SHOW_DURATION: 10,
+jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
+  NOTIFICATION_SHOW_DURATION: 10,
 }))
 
 describe('src | components | layout | Notification', () => {
