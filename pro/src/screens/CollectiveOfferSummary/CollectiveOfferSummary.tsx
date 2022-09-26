@@ -20,6 +20,7 @@ import CollectiveOfferContactSection from './components/CollectiveOfferContactSe
 import CollectiveOfferNotificationSection from './components/CollectiveOfferNotificationSection'
 import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
 import CollectiveOfferPracticalInformation from './components/CollectiveOfferPracticalInformation'
+import CollectiveOfferStockSection from './components/CollectiveOfferStockSection'
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 import { DEFAULT_RECAP_VALUE } from './components/constants'
@@ -58,9 +59,13 @@ const CollectiveOfferSummary = ({
     notify.error(response.message)
   }
 
-  const editLink = `/offre/${isCollectiveOfferTemplate(offer) ? 'T-' : ''}${
-    offer.id
-  }/collectif/edition`
+  const offerEditLink = `/offre/${
+    isCollectiveOfferTemplate(offer) ? 'T-' : ''
+  }${offer.id}/collectif/edition`
+
+  const stockEditLink = `/offre/${
+    isCollectiveOfferTemplate(offer) ? 'T-' : ''
+  }${offer.id}/collectif/stocks/edition`
 
   return (
     <>
@@ -74,7 +79,10 @@ const CollectiveOfferSummary = ({
       />
       <SummaryLayout>
         <SummaryLayout.Content fullWidth>
-          <SummaryLayout.Section title="Détails de l’offre" editLink={editLink}>
+          <SummaryLayout.Section
+            title="Détails de l’offre"
+            editLink={offerEditLink}
+          >
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
             <CollectiveOfferPracticalInformation offer={offer} />
@@ -88,10 +96,7 @@ const CollectiveOfferSummary = ({
               bookingEmails={offer.bookingEmails}
             />
           </SummaryLayout.Section>
-          <SummaryLayout.Section
-            title="Date & Prix"
-            editLink={`/offre/T-${offer.id}/collectif/stocks/edition`}
-          >
+          <SummaryLayout.Section title="Date & Prix" editLink={stockEditLink}>
             {isCollectiveOfferTemplate(offer) ? (
               <SummaryLayout.Row
                 title="Détails"
@@ -99,7 +104,12 @@ const CollectiveOfferSummary = ({
                   offer.educationalPriceDetail || DEFAULT_RECAP_VALUE
                 }
               />
-            ) : null}
+            ) : (
+              <CollectiveOfferStockSection
+                stock={offer.collectiveStock}
+                venueDepartmentCode={offer.venue.departementCode}
+              />
+            )}
           </SummaryLayout.Section>
         </SummaryLayout.Content>
       </SummaryLayout>
