@@ -85,7 +85,7 @@ describe('OfferIndividual section: Notifications', () => {
       await screen.findByText('Être notifié par email des réservations')
     ).toBeInTheDocument()
     expect(
-      await screen.queryByText('Email auquel envoyer les notifications :')
+      screen.queryByText('Email auquel envoyer les notifications :')
     ).not.toBeInTheDocument()
 
     await userEvent.click(
@@ -94,9 +94,7 @@ describe('OfferIndividual section: Notifications', () => {
     expect(
       await screen.findByText('Email auquel envoyer les notifications :')
     ).toBeInTheDocument()
-    expect(
-      await screen.getByDisplayValue('email@example.com')
-    ).toBeInTheDocument()
+    expect(screen.getByDisplayValue('email@example.com')).toBeInTheDocument()
   })
 
   it('should display errors when bookingEmail is empty or wrong email', async () => {

@@ -29,7 +29,7 @@ const renderVenue = async ({
   onSubmit: () => void
   venueProps: IVenueProps
 }) => {
-  const rtlReturn = await render(
+  const rtlReturn = render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}

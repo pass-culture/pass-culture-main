@@ -26,7 +26,7 @@ export const renderOffer = async (initialEntries, store) => {
   })
 
   await act(async () => {
-    await render(
+    render(
       <Provider store={store ? store : defaultStore}>
         <MemoryRouter initialEntries={[{ ...initialEntries }]}>
           <Route path={path}>

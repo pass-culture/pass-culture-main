@@ -70,7 +70,7 @@ describe('OfferIndividual section: OptionDuo', () => {
       onSubmit,
     })
 
-    const isDuoOption = await screen.getByLabelText(
+    const isDuoOption = screen.getByLabelText(
       'Accepter les réservations “duo“',
       {
         exact: false,

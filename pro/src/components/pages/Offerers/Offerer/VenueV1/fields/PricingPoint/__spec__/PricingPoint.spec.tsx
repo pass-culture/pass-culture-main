@@ -104,14 +104,14 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
     )
 
     const selectedValued = screen.queryByText(/test - 1000001111/)
-    const venueSiretButton = await screen.getByRole('button', {
+    const venueSiretButton = screen.getByRole('button', {
       name: /Valider la sélection/,
       exact: false,
     })
 
     await userEvent.click(venueSiretButton)
 
-    const confirmButton = await screen.getByRole('button', {
+    const confirmButton = screen.getByRole('button', {
       name: /Valider ma sélection/,
       exact: false,
     })

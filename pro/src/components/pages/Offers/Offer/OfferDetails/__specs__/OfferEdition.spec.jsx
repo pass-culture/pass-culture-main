@@ -1186,7 +1186,7 @@ describe('offerDetails - Edition', () => {
         await screen.findByText('Enregistrer les modifications')
       )
 
-      const modifyLinkList = await screen.getAllByRole('link', {
+      const modifyLinkList = screen.getAllByRole('link', {
         name: 'Modifier',
         exact: false,
       })

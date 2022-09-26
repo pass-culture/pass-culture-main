@@ -29,7 +29,7 @@ const renderSiretOrComment = async ({
   props: SiretOrCommentInterface
   validationSchema: any
 }) => {
-  const rtlReturns = await render(
+  const rtlReturns = render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -94,7 +94,7 @@ describe('components | SiretOrCommentFields', () => {
       validationSchema,
     })
 
-    const toggle = await screen.getByRole('button', {
+    const toggle = screen.getByRole('button', {
       name: 'Je veux créer un lieu avec SIRET',
     })
     await userEvent.click(toggle)
@@ -118,7 +118,7 @@ describe('components | SiretOrCommentFields', () => {
       validationSchema,
     })
 
-    const toggle = await screen.getByRole('button', {
+    const toggle = screen.getByRole('button', {
       name: 'Je veux créer un lieu avec SIRET',
     })
     expect(toggle).toBeDisabled()
@@ -152,7 +152,7 @@ describe('components | SiretOrCommentFields', () => {
       })
 
       expect(
-        await screen.queryByText('Veuillez renseigner un SIRET')
+        screen.queryByText('Veuillez renseigner un SIRET')
       ).not.toBeInTheDocument()
       await userEvent.click(buttonSubmit)
 

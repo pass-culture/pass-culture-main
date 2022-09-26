@@ -159,7 +159,7 @@ describe('Summary trackers', () => {
       renderSummary(props)
 
       // when
-      await userEvent.click(await screen.getAllByText('Modifier')[0])
+      await userEvent.click(screen.getAllByText('Modifier')[0])
 
       // then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -180,7 +180,7 @@ describe('Summary trackers', () => {
       renderSummary(props)
 
       // when
-      await userEvent.click(await screen.getAllByText('Modifier')[1])
+      await userEvent.click(screen.getAllByText('Modifier')[1])
 
       // then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -251,7 +251,7 @@ describe('Summary trackers', () => {
       renderSummary(props)
 
       // when
-      await userEvent.click(await screen.getAllByText('Modifier')[0])
+      await userEvent.click(screen.getAllByText('Modifier')[0])
 
       // then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -272,7 +272,7 @@ describe('Summary trackers', () => {
       renderSummary(props)
 
       // when
-      await userEvent.click(await screen.getAllByText('Modifier')[1])
+      await userEvent.click(screen.getAllByText('Modifier')[1])
 
       // then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)

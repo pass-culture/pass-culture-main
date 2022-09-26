@@ -250,7 +250,7 @@ describe('components | BookingsRecapTable', () => {
     renderBookingRecap(props)
 
     // Then
-    expect(await screen.queryByRole('row')).not.toBeInTheDocument()
+    expect(screen.queryByRole('row')).not.toBeInTheDocument()
   })
 
   it('should update currentPage when clicking on next page button', async () => {

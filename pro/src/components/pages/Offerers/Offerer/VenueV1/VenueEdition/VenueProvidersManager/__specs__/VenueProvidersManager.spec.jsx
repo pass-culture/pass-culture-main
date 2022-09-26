@@ -18,7 +18,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 const renderVenueProvidersManager = async props => {
   await act(async () => {
-    await render(
+    render(
       <Provider store={configureTestStore()}>
         <MemoryRouter>
           <VenueProvidersManager {...props} />

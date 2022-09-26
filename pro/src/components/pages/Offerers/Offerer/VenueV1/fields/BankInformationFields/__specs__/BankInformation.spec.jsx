@@ -12,7 +12,7 @@ jest.mock('utils/config', () => ({
 
 const renderBankInformation = async props => {
   return await act(async () => {
-    await render(<BankInformation {...props} />)
+    render(<BankInformation {...props} />)
   })
 }
 

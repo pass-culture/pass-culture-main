@@ -156,61 +156,43 @@ describe('Summary', () => {
       renderSummary(props)
 
       // then
-      expect(await screen.getAllByText('Modifier')).toHaveLength(2)
-      expect(await screen.getByText("Détails de l'offre")).toBeInTheDocument()
-      expect(await screen.getByText("Type d'offre")).toBeInTheDocument()
+      expect(screen.getAllByText('Modifier')).toHaveLength(2)
+      expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
+      expect(screen.getByText("Type d'offre")).toBeInTheDocument()
+      expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
+      expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
+      expect(screen.getByText('Accessibilité')).toBeInTheDocument()
       expect(
-        await screen.getByText('Informations artistiques')
+        screen.getByText('Notifications des réservations')
       ).toBeInTheDocument()
+      expect(screen.getByText('Stocks et prix')).toBeInTheDocument()
       expect(
-        await screen.getByText('Informations pratiques')
+        screen.getByText('URL d’accès à l’offre', { exact: false })
       ).toBeInTheDocument()
-      expect(await screen.getByText('Accessibilité')).toBeInTheDocument()
-      expect(
-        await screen.getByText('Notifications des réservations')
-      ).toBeInTheDocument()
-      expect(await screen.getByText('Stocks et prix')).toBeInTheDocument()
-      expect(
-        await screen.getByText('URL d’accès à l’offre', { exact: false })
-      ).toBeInTheDocument()
-      expect(
-        await screen.getByText('Lien pour le grand public')
-      ).toBeInTheDocument()
-      expect(await screen.getByText("Aperçu dans l'app")).toBeInTheDocument()
+      expect(screen.getByText('Lien pour le grand public')).toBeInTheDocument()
+      expect(screen.getByText("Aperçu dans l'app")).toBeInTheDocument()
 
+      expect(screen.getByText(props.offer.categoryName)).toBeInTheDocument()
+      expect(screen.getByText(props.offer.subCategoryName)).toBeInTheDocument()
+      expect(screen.getByText(props.offer.offererName)).toBeInTheDocument()
+      expect(screen.getByText(props.offer.venuePublicName)).toBeInTheDocument()
       expect(
-        await screen.getByText(props.offer.categoryName)
+        screen.getByText(props.offer.withdrawalDetails)
       ).toBeInTheDocument()
+      expect(screen.getByText(props.offer.url)).toBeInTheDocument()
       expect(
-        await screen.getByText(props.offer.subCategoryName)
+        screen.getByText(props.offer.externalTicketOfficeUrl)
       ).toBeInTheDocument()
+      expect(screen.getByText('Non accessible')).toBeInTheDocument()
+      expect(screen.getByText(props.offer.bookingEmail)).toBeInTheDocument()
+      expect(screen.getByText('0 €')).toBeInTheDocument()
+      expect(screen.getByText('Illimité')).toBeInTheDocument()
+      expect(screen.getAllByText(props.offer.name)).toHaveLength(2)
+      expect(screen.getAllByText(props.offer.description)).toHaveLength(2)
       expect(
-        await screen.getByText(props.offer.offererName)
+        screen.getByText('Retour à la liste des offres')
       ).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.venuePublicName)
-      ).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.withdrawalDetails)
-      ).toBeInTheDocument()
-      expect(await screen.getByText(props.offer.url)).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.externalTicketOfficeUrl)
-      ).toBeInTheDocument()
-      expect(await screen.getByText('Non accessible')).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.bookingEmail)
-      ).toBeInTheDocument()
-      expect(await screen.getByText('0 €')).toBeInTheDocument()
-      expect(await screen.getByText('Illimité')).toBeInTheDocument()
-      expect(await screen.getAllByText(props.offer.name)).toHaveLength(2)
-      expect(await screen.getAllByText(props.offer.description)).toHaveLength(2)
-      expect(
-        await screen.getByText('Retour à la liste des offres')
-      ).toBeInTheDocument()
-      expect(
-        await screen.getByText('Visualiser dans l’app')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
     })
   })
 
@@ -224,57 +206,41 @@ describe('Summary', () => {
       renderSummary(props)
 
       // then
-      expect(await screen.getAllByText('Modifier')).toHaveLength(2)
-      expect(await screen.getByText("Détails de l'offre")).toBeInTheDocument()
-      expect(await screen.getByText("Type d'offre")).toBeInTheDocument()
+      expect(screen.getAllByText('Modifier')).toHaveLength(2)
+      expect(screen.getByText("Détails de l'offre")).toBeInTheDocument()
+      expect(screen.getByText("Type d'offre")).toBeInTheDocument()
+      expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
+      expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
+      expect(screen.getByText('Accessibilité')).toBeInTheDocument()
       expect(
-        await screen.getByText('Informations artistiques')
+        screen.getByText('Notifications des réservations')
       ).toBeInTheDocument()
+      expect(screen.getByText('Stocks et prix')).toBeInTheDocument()
       expect(
-        await screen.getByText('Informations pratiques')
+        screen.getByText('URL d’accès à l’offre', { exact: false })
       ).toBeInTheDocument()
-      expect(await screen.getByText('Accessibilité')).toBeInTheDocument()
-      expect(
-        await screen.getByText('Notifications des réservations')
-      ).toBeInTheDocument()
-      expect(await screen.getByText('Stocks et prix')).toBeInTheDocument()
-      expect(
-        await screen.getByText('URL d’accès à l’offre', { exact: false })
-      ).toBeInTheDocument()
-      expect(
-        await screen.getByText('Lien pour le grand public')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Lien pour le grand public')).toBeInTheDocument()
 
-      expect(await screen.getByText("Aperçu dans l'app")).toBeInTheDocument()
+      expect(screen.getByText("Aperçu dans l'app")).toBeInTheDocument()
+      expect(screen.getByText(props.offer.categoryName)).toBeInTheDocument()
+      expect(screen.getByText(props.offer.subCategoryName)).toBeInTheDocument()
+      expect(screen.getByText(props.offer.offererName)).toBeInTheDocument()
+      expect(screen.getByText(props.offer.venuePublicName)).toBeInTheDocument()
       expect(
-        await screen.getByText(props.offer.categoryName)
+        screen.getByText(props.offer.withdrawalDetails)
       ).toBeInTheDocument()
+      expect(screen.getByText(props.offer.url)).toBeInTheDocument()
       expect(
-        await screen.getByText(props.offer.subCategoryName)
+        screen.getByText(props.offer.externalTicketOfficeUrl)
       ).toBeInTheDocument()
+      expect(screen.getByText('Non accessible')).toBeInTheDocument()
+      expect(screen.getByText(props.offer.bookingEmail)).toBeInTheDocument()
+      expect(screen.getByText('0 €')).toBeInTheDocument()
+      expect(screen.getByText('Illimité')).toBeInTheDocument()
+      expect(screen.getAllByText(props.offer.name)).toHaveLength(2)
+      expect(screen.getAllByText(props.offer.description)).toHaveLength(2)
       expect(
-        await screen.getByText(props.offer.offererName)
-      ).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.venuePublicName)
-      ).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.withdrawalDetails)
-      ).toBeInTheDocument()
-      expect(await screen.getByText(props.offer.url)).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.externalTicketOfficeUrl)
-      ).toBeInTheDocument()
-      expect(await screen.getByText('Non accessible')).toBeInTheDocument()
-      expect(
-        await screen.getByText(props.offer.bookingEmail)
-      ).toBeInTheDocument()
-      expect(await screen.getByText('0 €')).toBeInTheDocument()
-      expect(await screen.getByText('Illimité')).toBeInTheDocument()
-      expect(await screen.getAllByText(props.offer.name)).toHaveLength(2)
-      expect(await screen.getAllByText(props.offer.description)).toHaveLength(2)
-      expect(
-        await screen.queryByText('Visualiser dans l’app')
+        screen.queryByText('Visualiser dans l’app')
       ).not.toBeInTheDocument()
     })
 
@@ -284,8 +250,8 @@ describe('Summary', () => {
         renderSummary(props)
 
         // then
-        expect(await screen.getByText('Étape précédente')).toBeInTheDocument()
-        expect(await screen.getByText("Publier l'offre")).toBeInTheDocument()
+        expect(screen.getByText('Étape précédente')).toBeInTheDocument()
+        expect(screen.getByText("Publier l'offre")).toBeInTheDocument()
       })
     })
 
@@ -298,9 +264,9 @@ describe('Summary', () => {
         renderSummary(props)
 
         // then
-        expect(await screen.getByText('Précédent')).toBeInTheDocument()
-        expect(await screen.getByText('Suivant')).toBeInTheDocument()
-        expect(await screen.getByText('Annuler')).toBeInTheDocument()
+        expect(screen.getByText('Précédent')).toBeInTheDocument()
+        expect(screen.getByText('Suivant')).toBeInTheDocument()
+        expect(screen.getByText('Annuler')).toBeInTheDocument()
       })
     })
   })

@@ -33,7 +33,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
     it('should display breadcrumb for individual offer in creation', async () => {
       renderOfferBreadcrumb(props)
 
-      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+      expect(screen.getByTestId('stepper')).toBeInTheDocument()
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -48,7 +48,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
       props.isCreatingOffer = false
       renderOfferBreadcrumb(props)
 
-      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -82,7 +82,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
       props.isCreatingOffer = true
       renderOfferBreadcrumb(props)
 
-      expect(await screen.getByTestId('bc-default')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-default')).toBeInTheDocument()
 
       const listItems = await screen.findAllByRole('listitem')
 
@@ -97,7 +97,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
       props.isCreatingOffer = false
       renderOfferBreadcrumb(props)
 
-      expect(await screen.getByTestId('bc-tab')).toBeInTheDocument()
+      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
 
       const linkItems = await screen.findAllByRole('link')
 
