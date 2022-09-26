@@ -34,7 +34,10 @@ const OfferEducationalActions = ({
       {isModalOpen && cancelActiveBookings && (
         <CancelCollectiveBookingModal
           onDismiss={() => setIsModalOpen(false)}
-          onValidate={cancelActiveBookings}
+          onValidate={() => {
+            cancelActiveBookings()
+            setIsModalOpen(false)
+          }}
         />
       )}
       <div className={cn(style['actions'], className)}>
