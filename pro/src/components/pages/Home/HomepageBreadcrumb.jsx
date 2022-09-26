@@ -40,7 +40,7 @@ const HomepageBreadcrumb = ({
   const steps = {
     [STEP_ID_OFFERERS]: {
       id: STEP_ID_OFFERERS,
-      label: 'Structures',
+      label: 'Structures et lieux',
       hash: STEP_OFFERER_HASH,
       onClick: () => logEvent?.(Events.CLICKED_BREADCRUMBS_STRUCTURES),
     },
