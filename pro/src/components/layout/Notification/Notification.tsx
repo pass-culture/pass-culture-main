@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import useNotification from 'components/hooks/useNotification'
+import { NOTIFICATION_TRANSITION_DURATION } from 'core/Notification/constants'
 import { notificationSelector } from 'store/selectors/notificationSelector'
 
-import {
-  NOTIFICATION_SHOW_DURATION,
-  NOTIFICATION_TRANSITION_DURATION,
-} from './_constants'
 import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
 import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
@@ -23,10 +20,7 @@ const Notification = (): JSX.Element | null => {
     if (notification && notification.text) {
       setIsVisible(true)
       setIsInDom(true)
-      const timer = setTimeout(
-        () => setIsVisible(false),
-        NOTIFICATION_SHOW_DURATION
-      )
+      const timer = setTimeout(() => setIsVisible(false), notification.duration)
       return () => clearTimeout(timer)
     }
     return () => undefined

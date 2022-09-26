@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
+import { NOTIFICATION_SHOW_DURATION } from 'core/Notification/constants'
 import {
   closeNotification,
   showNotification,
@@ -9,10 +10,11 @@ import {
 const useNotification = () => {
   const dispatch = useDispatch()
   const dispatchNotification = useCallback(
-    (textMessage, type) => {
+    (textMessage, duration = NOTIFICATION_SHOW_DURATION, type) => {
       dispatch(
         showNotification({
           text: textMessage,
+          duration,
           type: type,
         })
       )
@@ -26,10 +28,13 @@ const useNotification = () => {
 
   return useMemo(
     () => ({
-      success: msg => dispatchNotification(msg, 'success'),
-      error: msg => dispatchNotification(msg, 'error'),
-      pending: msg => dispatchNotification(msg, 'pending'),
-      information: msg => dispatchNotification(msg, 'information'),
+      success: (msg, duration) =>
+        dispatchNotification(msg, duration, 'success'),
+      error: (msg, duration) => dispatchNotification(msg, duration, 'error'),
+      pending: (msg, duration) =>
+        dispatchNotification(msg, duration, 'pending'),
+      information: (msg, duration) =>
+        dispatchNotification(msg, duration, 'information'),
       close: () => dispatchCloseNotification(),
     }),
     [dispatchCloseNotification, dispatchNotification]

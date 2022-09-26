@@ -4,6 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import { CollectiveStockResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
+import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -96,10 +97,10 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     })
 
     if (!isOk) {
-      return notify.error(message)
+      return notify.error(message, NOTIFICATION_LONG_SHOW_DURATION)
     }
 
-    notify.success(message)
+    notify.success(message, NOTIFICATION_LONG_SHOW_DURATION)
     setIsReady(false)
   }
 
