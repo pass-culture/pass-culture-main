@@ -6,7 +6,9 @@ import {
 } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import {
+  cancelCollectiveBookingAdapter,
   EducationalCategories,
+  patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
@@ -39,16 +41,22 @@ interface ICollectiveOfferSummaryProps {
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
   categories: EducationalCategories
+  reloadCollectiveOffer?: () => void
 }
 
 const CollectiveOfferSummary = ({
   offer,
   categories,
+  reloadCollectiveOffer,
 }: ICollectiveOfferSummaryProps) => {
   const notify = useNotification()
 
   const setIsOfferActive = async () => {
-    const response = await patchIsTemplateOfferActiveAdapter({
+    const adapter = isCollectiveOfferTemplate(offer)
+      ? patchIsTemplateOfferActiveAdapter
+      : patchIsCollectiveOfferActiveAdapter
+
+    const response = await adapter({
       offerId: offer.id,
       isActive: !offer.isActive,
     })
@@ -58,6 +66,23 @@ const CollectiveOfferSummary = ({
     }
 
     notify.error(response.message)
+  }
+
+  const cancelActiveBookings = async () => {
+    if (isCollectiveOfferTemplate(offer)) {
+      return
+    }
+
+    const { isOk, message } = await cancelCollectiveBookingAdapter({
+      offerId: offer.id,
+    })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    notify.success(message)
+    reloadCollectiveOffer?.()
   }
 
   const offerEditLink = `/offre/${
@@ -73,9 +98,13 @@ const CollectiveOfferSummary = ({
   return (
     <>
       <OfferEducationalActions
-        cancelActiveBookings={undefined}
+        cancelActiveBookings={cancelActiveBookings}
         className={styles.actions}
-        isBooked={false}
+        isBooked={
+          isCollectiveOfferTemplate(offer)
+            ? false
+            : Boolean(offer.collectiveStock?.isBooked)
+        }
         isCancellable={offer.isCancellable}
         isOfferActive={offer.isActive}
         setIsOfferActive={setIsOfferActive}
