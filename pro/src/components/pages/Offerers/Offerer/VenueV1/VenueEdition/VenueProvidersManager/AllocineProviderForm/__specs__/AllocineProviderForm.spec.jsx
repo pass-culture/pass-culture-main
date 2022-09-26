@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -20,17 +25,16 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderVenueProvidersManager = async props => {
-  await act(async () => {
-    await render(
-      <Provider store={configureTestStore()}>
-        <MemoryRouter>
-          <VenueProvidersManager {...props} />
-          <Notification />
-          <ReactTooltip html />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  render(
+    <Provider store={configureTestStore()}>
+      <MemoryRouter>
+        <VenueProvidersManager {...props} />
+        <Notification />
+        <ReactTooltip html />
+      </MemoryRouter>
+    </Provider>
+  )
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 describe('components | AllocineProviderForm', () => {
@@ -61,9 +65,9 @@ describe('components | AllocineProviderForm', () => {
     await renderVenueProvidersManager(props)
 
     const importOffersButton = screen.getByText('Synchroniser des offres')
-    fireEvent.click(importOffersButton)
+    await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
-    fireEvent.change(providersSelect, { target: { value: provider.id } })
+    await userEvent.selectOptions(providersSelect, provider.id)
   }
 
   it('should display the price field with minimum value set to 0', async () => {
@@ -99,6 +103,7 @@ describe('components | AllocineProviderForm', () => {
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
+        nOffers: 0,
       }
       pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
     })
@@ -143,10 +148,10 @@ describe('components | AllocineProviderForm', () => {
       )
 
       // when
-      fireEvent.change(priceField, { target: { value: 10 } })
-      fireEvent.change(quantityField, { target: { value: 5 } })
-      fireEvent.click(isDuoCheckbox)
-      fireEvent.click(offerImportButton)
+      await userEvent.type(priceField, '10')
+      await userEvent.type(quantityField, '5')
+      await userEvent.click(isDuoCheckbox)
+      await userEvent.click(offerImportButton)
 
       // then
       expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
@@ -169,8 +174,8 @@ describe('components | AllocineProviderForm', () => {
       })
 
       // when
-      fireEvent.change(priceField, { target: { value: 0 } })
-      fireEvent.click(offerImportButton)
+      await userEvent.type(priceField, '0')
+      await userEvent.click(offerImportButton)
 
       // then
       expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
@@ -193,8 +198,8 @@ describe('components | AllocineProviderForm', () => {
       })
 
       // when
-      fireEvent.change(priceField, { target: { value: 0.42 } })
-      fireEvent.click(offerImportButton)
+      await userEvent.type(priceField, '0.42')
+      await userEvent.click(offerImportButton)
 
       // then
       expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
@@ -215,8 +220,8 @@ describe('components | AllocineProviderForm', () => {
       const quantityField = screen.getByLabelText('Nombre de places/séance')
 
       // when
-      fireEvent.change(quantityField, { target: { value: 10 } })
-      fireEvent.click(offerImportButton)
+      await userEvent.type(quantityField, '10')
+      await userEvent.click(offerImportButton)
 
       // then
       expect(pcapi.createVenueProvider).toHaveBeenCalledTimes(0)
@@ -231,10 +236,10 @@ describe('components | AllocineProviderForm', () => {
       const priceField = screen.getByLabelText('Prix de vente/place', {
         exact: false,
       })
-      fireEvent.change(priceField, { target: { value: 10 } })
+      await userEvent.type(priceField, '10')
 
       // when
-      fireEvent.click(offerImportButton)
+      await userEvent.click(offerImportButton)
 
       // then
       const successNotification = await screen.findByText(
@@ -259,8 +264,8 @@ describe('components | AllocineProviderForm', () => {
       })
 
       // when
-      fireEvent.change(priceField, { target: { value: -10 } })
-      await fireEvent.click(offerImportButton)
+      await userEvent.type(priceField, '-10')
+      await await userEvent.click(offerImportButton)
 
       // then
       const errorNotification = await screen.findByText(
@@ -281,6 +286,10 @@ describe('components | AllocineProviderForm', () => {
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
+        nOffers: 0,
+        price: 0,
+        quantity: 0,
+        isDuo: true,
       }
 
       pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
@@ -290,7 +299,7 @@ describe('components | AllocineProviderForm', () => {
       await renderVenueProvidersManager(props)
 
       const editProvider = screen.getByText('Modifier les paramètres')
-      fireEvent.click(editProvider)
+      await userEvent.click(editProvider)
     }
 
     it('should display modify and cancel button', async () => {
@@ -356,7 +365,7 @@ describe('components | AllocineProviderForm', () => {
       })
 
       // when
-      fireEvent.change(priceField, { target: { value: null } })
+      await userEvent.clear(priceField)
 
       // then
       expect(saveEditioProvider).toBeDisabled()
@@ -394,14 +403,13 @@ describe('components | AllocineProviderForm', () => {
       )
 
       // when
-      fireEvent.change(priceField, {
-        target: { value: editedAllocineProvider.price },
-      })
-      fireEvent.change(quantityField, {
-        target: { value: editedAllocineProvider.quantity },
-      })
-      fireEvent.click(isDuoCheckbox)
-      fireEvent.click(saveEditioProvider)
+      await userEvent.clear(priceField)
+      await userEvent.clear(quantityField)
+      await userEvent.type(priceField, `${editedAllocineProvider.price}`)
+      await userEvent.type(quantityField, `${editedAllocineProvider.quantity}`)
+
+      await userEvent.click(isDuoCheckbox)
+      await userEvent.click(saveEditioProvider)
 
       // then
       expect(pcapi.editVenueProvider).toHaveBeenCalledWith({
@@ -439,8 +447,8 @@ describe('components | AllocineProviderForm', () => {
       const quantityField = screen.getByLabelText('Nombre de places/séance')
 
       // when
-      fireEvent.change(quantityField, { target: { value: '' } })
-      fireEvent.click(saveEditioProvider)
+      await userEvent.clear(quantityField)
+      await userEvent.click(saveEditioProvider)
 
       // then
       expect(pcapi.editVenueProvider).toHaveBeenCalledWith({
@@ -477,10 +485,10 @@ describe('components | AllocineProviderForm', () => {
         exact: false,
       })
 
-      fireEvent.change(priceField, { target: { value: 10 } })
+      await userEvent.type(priceField, '10')
 
       // when
-      fireEvent.click(saveEditioProvider)
+      await userEvent.click(saveEditioProvider)
 
       // then
       const successNotification = await screen.findByText(
@@ -512,8 +520,9 @@ describe('components | AllocineProviderForm', () => {
       })
 
       // when
-      fireEvent.change(priceField, { target: { value: -10 } })
-      await fireEvent.click(saveEditioProvider)
+      await userEvent.clear(priceField)
+      await userEvent.type(priceField, '-10')
+      await userEvent.click(saveEditioProvider)
 
       // then
       const errorNotification = await screen.findByText(

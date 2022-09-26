@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -18,16 +23,16 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderVenueProvidersManager = async props => {
-  await act(async () => {
-    await render(
-      <Provider store={configureTestStore()}>
-        <MemoryRouter>
-          <VenueProvidersManager {...props} />
-          <Notification />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  render(
+    <Provider store={configureTestStore()}>
+      <MemoryRouter>
+        <VenueProvidersManager {...props} />
+        <Notification />
+      </MemoryRouter>
+    </Provider>
+  )
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 describe('src | StocksProviderForm', () => {
@@ -59,9 +64,9 @@ describe('src | StocksProviderForm', () => {
 
   const renderStocksProviderForm = async () => {
     const importOffersButton = screen.getByText('Synchroniser des offres')
-    fireEvent.click(importOffersButton)
+    await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
-    fireEvent.change(providersSelect, { target: { value: provider.id } })
+    await userEvent.selectOptions(providersSelect, provider.id)
   }
 
   it('should display an import button and the venue siret as provider identifier', async () => {
@@ -84,7 +89,7 @@ describe('src | StocksProviderForm', () => {
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
-      await fireEvent.click(submitButton)
+      await userEvent.click(submitButton)
 
       // then
       expect(
@@ -96,7 +101,7 @@ describe('src | StocksProviderForm', () => {
       const confirmImportButton = screen.getByRole('button', {
         name: 'Continuer',
       })
-      await fireEvent.click(confirmImportButton)
+      await userEvent.click(confirmImportButton)
 
       expect(
         screen.getByText('Vérification de votre rattachement')
@@ -117,13 +122,14 @@ describe('src | StocksProviderForm', () => {
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
+        nOffers: 0,
       }
       pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
-      await fireEvent.click(submitButton)
+      await userEvent.click(submitButton)
 
       // then
       expect(
@@ -135,7 +141,7 @@ describe('src | StocksProviderForm', () => {
       const confirmImportButton = screen.getByRole('button', {
         name: 'Continuer',
       })
-      await fireEvent.click(confirmImportButton)
+      await userEvent.click(confirmImportButton)
 
       const successNotification = await screen.findByText(
         'La synchronisation a bien été initiée.'
@@ -157,7 +163,7 @@ describe('src | StocksProviderForm', () => {
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
-      await fireEvent.click(submitButton)
+      await userEvent.click(submitButton)
 
       // then
       expect(
@@ -169,7 +175,7 @@ describe('src | StocksProviderForm', () => {
       const confirmImportButton = screen.getByRole('button', {
         name: 'Continuer',
       })
-      await fireEvent.click(confirmImportButton)
+      await userEvent.click(confirmImportButton)
 
       const errorNotification = await screen.findByText(
         apiError.errors.provider[0]

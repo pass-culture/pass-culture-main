@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -20,17 +25,17 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderVenueProvidersManager = async props => {
-  await act(async () => {
-    await render(
-      <Provider store={configureTestStore()}>
-        <MemoryRouter>
-          <VenueProvidersManager {...props} />
-          <Notification />
-          <ReactTooltip html />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  render(
+    <Provider store={configureTestStore()}>
+      <MemoryRouter>
+        <VenueProvidersManager {...props} />
+        <Notification />
+        <ReactTooltip html />
+      </MemoryRouter>
+    </Provider>
+  )
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 describe('components | CinemaProviderForm', () => {
@@ -61,9 +66,9 @@ describe('components | CinemaProviderForm', () => {
     await renderVenueProvidersManager(props)
 
     const importOffersButton = screen.getByText('Synchroniser des offres')
-    fireEvent.click(importOffersButton)
+    await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
-    fireEvent.change(providersSelect, { target: { value: provider.id } })
+    await userEvent.selectOptions(providersSelect, provider.id)
   }
 
   describe('import form cinema provider for the first time', () => {
@@ -75,6 +80,7 @@ describe('components | CinemaProviderForm', () => {
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
+        nOffers: 0,
       }
       pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
     })
@@ -111,7 +117,7 @@ describe('components | CinemaProviderForm', () => {
       })
 
       // when
-      fireEvent.click(offersImportButton)
+      await userEvent.click(offersImportButton)
 
       // then
       const successNotification = await screen.findByText(
@@ -134,7 +140,7 @@ describe('components | CinemaProviderForm', () => {
       })
 
       // when
-      await fireEvent.click(offerImportButton)
+      await userEvent.click(offerImportButton)
 
       // then
       const errorNotification = await screen.findByText(
@@ -155,6 +161,7 @@ describe('components | CinemaProviderForm', () => {
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
+        nOffers: 0,
       }
 
       pcapi.loadVenueProviders.mockResolvedValue([cinemaProvider])
@@ -164,7 +171,7 @@ describe('components | CinemaProviderForm', () => {
       await renderVenueProvidersManager(props)
 
       const editProvider = screen.getByText('Modifier les paramètres')
-      fireEvent.click(editProvider)
+      await userEvent.click(editProvider)
     }
 
     it('should display modify and cancel button', async () => {
@@ -222,10 +229,10 @@ describe('components | CinemaProviderForm', () => {
         'Accepter les réservations DUO'
       )
 
-      fireEvent.change(isDuoCheckbox, { target: { value: true } })
+      await userEvent.click(isDuoCheckbox)
 
       // when
-      fireEvent.click(saveEditionProvider)
+      await userEvent.click(saveEditionProvider)
 
       // then
       const successNotification = await screen.findByText(
