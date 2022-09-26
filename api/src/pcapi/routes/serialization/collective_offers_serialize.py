@@ -73,6 +73,7 @@ class CollectiveOfferResponseModel(BaseModel):
     venueId: str
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
+    templateId: str | None
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -94,6 +95,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
     institution = getattr(offer, "institution", None)
+    templateId = getattr(offer, "templateId", None)
 
     return CollectiveOfferResponseModel(
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
@@ -112,6 +114,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         offerId=humanize(offer.offerId),
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
         interventionArea=offer.interventionArea,
+        templateId=templateId,
     )
 
 
@@ -297,6 +300,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
     institution: EducationalInstitutionResponseModel | None
     isVisibilityEditable: bool
+    templateId: str | None
 
 
 class CollectiveOfferResponseIdModel(BaseModel):

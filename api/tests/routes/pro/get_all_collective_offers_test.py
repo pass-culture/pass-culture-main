@@ -100,6 +100,26 @@ class Returns200Test:
         assert response_json[1]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[1]["isShowcase"] == False
 
+    def test_one_collective_offer_with_template_id(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        template = educational_factories.CollectiveOfferTemplateFactory()
+        educational_factories.CollectiveOfferFactory(venue=venue, template=template)
+
+        # When
+        client = client.with_session_auth(email=user.email)
+        response = client.get("/collective/offers")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["templateId"] == str(template.id)
+
     @pytest.mark.skip(reason="Too long to be played each time")
     def test_max_offers_limit_mix_template(self, app):
         # Given
