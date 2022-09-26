@@ -533,23 +533,23 @@ describe('offererDetailsLegacy', () => {
       // Then
       expect(
         within(offerer).queryByText(offererWithNoPhysicalVenues.siren)
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
       expect(
         within(offerer).queryByText(offererWithNoPhysicalVenues.name, {
           selector: 'span',
         })
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
       expect(
         within(offerer).queryByText(offererWithNoPhysicalVenues.address, {
           exact: false,
         })
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
       expect(
         within(offerer).queryByText(
           `${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`,
           { exact: false }
         )
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
     })
 
     it('should hide offerer informations on click on hide button', async () => {
@@ -748,7 +748,7 @@ describe('offererDetailsLegacy', () => {
         screen.queryByText(
           'Le rattachement à votre structure est en cours de validation'
         )
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
     })
 
     it('should not allow user to view offerer informations', async () => {
