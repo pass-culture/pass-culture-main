@@ -159,20 +159,6 @@ class CommonFraudCheckTest:
 
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
-    def test_underage_user_validation_is_beneficiary(self):
-        user = users_factories.UnderageBeneficiaryFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            user=user,
-            resultContent=fraud_factories.EduconnectContentFactory(),
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-
-        fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
-        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
-        assert fraud_models.FraudReasonCode.ALREADY_HAS_ACTIVE_DEPOSIT in invalid_codes
-        assert fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in invalid_codes
-
     @pytest.mark.parametrize(
         "fraud_check_type",
         [fraud_models.FraudCheckType.DMS],
@@ -198,18 +184,6 @@ class CommonFraudCheckTest:
 
         invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
         assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
-
-    @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS])
-    def test_previously_validated_user_with_retry(self, fraud_check_type):
-        # The user is already beneficiary, and has already done all the checks but
-        # for any circumstances, someone is trying to redo the validation
-        # an error should be raised
-        user = users_factories.BeneficiaryGrant18Factory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
-        fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
-        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
-        assert fraud_models.FraudReasonCode.ALREADY_HAS_ACTIVE_DEPOSIT in invalid_codes
-        assert fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in invalid_codes
 
 
 @pytest.mark.usefixtures("db_session")
