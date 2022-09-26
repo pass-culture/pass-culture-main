@@ -63,7 +63,7 @@ const VenueProviderItemV2 = ({
           <div className={style['venue-id-at-offer-provider-container']}>
             <div className={style['last-synchronisation']}>
               <span>Dernière synchronisation :</span>
-              <span data-testId="last-sync-date">
+              <span data-testid="last-sync-date">
                 &nbsp;
                 {formatLocalTimeDateString(
                   lastSyncDate,

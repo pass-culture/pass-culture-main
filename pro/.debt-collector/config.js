@@ -104,7 +104,7 @@ module.exports = {
       debtScore: 0.25,
       tags: ['tests', 'new workshop rules'],
       matchGlob: ['**/*.spec.{ts,tsx,js,jsx}', '**/*.specs.{ts,tsx,js,jsx}'],
-      matchRule: ({ find }) => find('await act') + find('await render'),
+      matchRule: ({ find }) => find('await act') + find('await render('),
     },
     {
       title: 'should not use withQueryRouter or withRouter',
