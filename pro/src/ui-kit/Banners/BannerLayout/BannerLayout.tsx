@@ -2,6 +2,8 @@ import cn from 'classnames'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
+import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
+import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
 import { ReactComponent as CloseIcon } from 'icons/icons-close.svg'
 
@@ -27,7 +29,7 @@ const BannerLayout = ({
   className,
   linkNode,
 }: IBannerLayoutProps): JSX.Element => {
-  const isNewStyles = false
+  const isNewStyles = true
   const styles = isNewStyles ? newStyles : oldStyles
   return (
     <div
@@ -38,6 +40,8 @@ const BannerLayout = ({
         className
       )}
     >
+      {type === 'notification-info' && <BulbIcon className={styles['icon']} />}
+      {type === 'attention' && <AttentionIcon className={styles['icon']} />}
       <span className={styles['border-cut']}>
         {closable && (
           <button onClick={handleOnClick} type="button">
