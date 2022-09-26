@@ -356,8 +356,8 @@ class FraudReasonCode(enum.Enum):
     AGE_NOT_VALID = "age_is_not_valid"
     AGE_TOO_OLD = "age_too_old"
     AGE_TOO_YOUNG = "age_too_young"
-    ALREADY_BENEFICIARY = "already_beneficiary"
-    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
+    ALREADY_BENEFICIARY = "already_beneficiary"  # Deprecated but kept because of old data
+    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"  # Deprecated but kept because of old data
     BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
     DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
     DUPLICATE_INE = "duplicate_ine"
