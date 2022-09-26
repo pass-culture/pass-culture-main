@@ -1,6 +1,6 @@
 export const firebaseConfig = {
   apiKey:
-    process.env.REACT_APP_FIRBASE_API_KEY ||
+    process.env.REACT_APP_FIREBASE_PUBLIC_API_KEY ||
     'AIzaSyAhXSv-Wk5I3hHAga5KhCe_SUhdmY-2eyQ',
   authDomain:
     process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ||
