@@ -210,7 +210,7 @@ const OffererDetails = ({
         {isExpanded && (
           <>
             <div className="od-separator horizontal" />
-            {selectedOfferer.isValidated && !isUserOffererValidated && (
+            {!isUserOffererValidated && (
               <Banner
                 type="notification-info"
                 className="banner"
@@ -277,7 +277,7 @@ const OffererDetails = ({
                 </Banner>
               )}
 
-            {isUserOffererValidated && hasAtLeastOnePhysicalVenue && (
+            {selectedOfferer.isValidated && (
               <div className="h-card-cols">
                 <div className="h-card-col">
                   <h3 className="h-card-secondary-title">
