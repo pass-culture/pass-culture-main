@@ -6,6 +6,7 @@ import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
@@ -40,6 +41,8 @@ const OfferIndividualForm = ({
   const {
     values: { offererId, subcategoryId, venueId },
   } = useFormikContext<IOfferIndividualFormValues>()
+
+  useScrollToFirstErrorAfterSubmit()
 
   const filteredVenueList = useFilteredVenueList({
     subCategories,
