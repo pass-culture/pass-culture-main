@@ -198,6 +198,7 @@ def serialize_collective_booking_institution(
         postalCode=collective_booking.institutionPostalCode,
         city=collective_booking.institutionCity,
         phoneNumber=collective_booking.institutionPhoneNumber,
+        institutionId=collective_booking.institutionInstitutionId,
     )
 
 

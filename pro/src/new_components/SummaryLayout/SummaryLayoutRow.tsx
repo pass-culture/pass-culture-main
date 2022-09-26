@@ -5,7 +5,7 @@ import style from './SummaryLayout.module.scss'
 
 interface ISummaryLayoutRowProps {
   className?: string
-  description: string | number
+  description: string | number | React.ReactNode
   title?: string
 }
 

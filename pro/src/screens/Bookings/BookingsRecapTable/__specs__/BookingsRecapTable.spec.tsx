@@ -103,6 +103,7 @@ const collectiveBookingsRecap: CollectiveBookingResponseModel[] = [
       postalCode: '30100',
       city: 'Ales',
       phoneNumber: '',
+      institutionId: 'ABCDEF11',
     },
     booking_identifier: 'A1',
     booking_amount: 10,

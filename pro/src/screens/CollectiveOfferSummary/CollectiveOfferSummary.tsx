@@ -23,6 +23,7 @@ import CollectiveOfferPracticalInformation from './components/CollectiveOfferPra
 import CollectiveOfferStockSection from './components/CollectiveOfferStockSection'
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
+import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
 import { DEFAULT_RECAP_VALUE } from './components/constants'
 
 const isCollectiveOfferTemplate = (
@@ -66,6 +67,8 @@ const CollectiveOfferSummary = ({
   const stockEditLink = `/offre/${
     isCollectiveOfferTemplate(offer) ? 'T-' : ''
   }${offer.id}/collectif/stocks/edition`
+
+  const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 
   return (
     <>
@@ -111,6 +114,16 @@ const CollectiveOfferSummary = ({
               />
             )}
           </SummaryLayout.Section>
+          {!isCollectiveOfferTemplate(offer) && (
+            <SummaryLayout.Section
+              title="Visibilité"
+              editLink={visibilityEditLink}
+            >
+              <CollectiveOfferVisibilitySection
+                institution={offer.institution}
+              />
+            </SummaryLayout.Section>
+          )}
         </SummaryLayout.Content>
       </SummaryLayout>
       <ButtonLink

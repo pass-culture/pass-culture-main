@@ -37,6 +37,7 @@ Default.args = {
       city: 'Ambérieu-en-Buguey',
       id: 1,
       phoneNumber: '0672930477',
+      institutionId: 'ABCDEF11',
     },
     educationalRedactor: {
       firstName: 'Benoit',
