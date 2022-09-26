@@ -812,7 +812,7 @@ class DeleteDependentPricingsTest:
 
         # With the appropriate setting, don't raise and don't
         # delete the pricing.
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST=[booking.venue.siret]):
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[booking.venue.id]):
             api._delete_dependent_pricings(booking, "some log message", use_pricing_point=True)
         assert models.Pricing.query.one() == pricing
 
@@ -979,7 +979,7 @@ class LegacyDeleteDependentPricingsTest:
 
         # With the appropriate setting, don't raise and don't
         # delete the pricing.
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST=[booking.venue.siret]):
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[booking.venue.id]):
             api._delete_dependent_pricings(booking, "some log message", use_pricing_point=False)
         assert models.Pricing.query.one() == pricing
 
