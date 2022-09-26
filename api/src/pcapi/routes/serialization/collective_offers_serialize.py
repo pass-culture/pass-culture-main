@@ -228,6 +228,11 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: str
     isSoldOut: bool = Field(alias="isBooked")
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
+    price: float
+    numberOfTickets: int | None
+    priceDetail: str | None = Field(alias="educationalPriceDetail")
 
     _humanize_id = humanize_field("id")
 

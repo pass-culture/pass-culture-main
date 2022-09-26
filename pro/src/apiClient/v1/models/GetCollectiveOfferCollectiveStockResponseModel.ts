@@ -3,8 +3,13 @@
 /* eslint-disable */
 
 export type GetCollectiveOfferCollectiveStockResponseModel = {
+  beginningDatetime?: string | null;
+  bookingLimitDatetime?: string | null;
+  educationalPriceDetail?: string | null;
   id: string;
   isBooked: boolean;
   isCancellable: boolean;
+  numberOfTickets?: number | null;
+  price: number;
 };
 
