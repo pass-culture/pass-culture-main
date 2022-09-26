@@ -38,6 +38,7 @@ class Returns200Test:
                 "city": booking.educationalInstitution.city,
                 "postalCode": booking.educationalInstitution.postalCode,
                 "phoneNumber": booking.educationalInstitution.phoneNumber,
+                "institutionId": booking.educationalInstitution.institutionId,
             },
             "educationalRedactor": {
                 "id": booking.educationalRedactor.id,

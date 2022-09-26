@@ -33,6 +33,7 @@ describe('getCollectiveBookingAdapter', () => {
         name: 'NOM DU COLLEGE',
         postalCode: '75017',
         phoneNumber: '',
+        institutionId: 'ABCDEF11',
       },
       educationalRedactor: {
         civility: 'M',
