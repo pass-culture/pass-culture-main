@@ -4,19 +4,24 @@
 .bi-banner {
   &.attention , &.notification-info{
     position: relative;
-    &:before , &:after, .close-icon-banner {
+    margin: rem.torem(30px) 0 rem.torem(16px) 0;
+    &:before , .close-icon-banner {
       background: colors.$white;
       font-weight: 700;
       position: absolute;
     };
     &:before {
-      padding-right: rem.torem(8px);
+      padding: 0 rem.torem(8px) 0 rem.torem(40px);
       top: rem.torem(-10px);
-      left: rem.torem(55px);
+      left: rem.torem(14px);
+      background: colors.$white;
+      z-index: 1;
     }
-    &:after {
-      padding: 0 rem.torem(8px);
+    .icon {
+      position: absolute;
       top: rem.torem(-15px);
+      left: rem.torem(23px);
+      z-index: 1;
     }
     .close-icon-banner {
       top: rem.torem(-11px);
@@ -26,6 +31,11 @@
     }
     .bi-banner-text {
       color: colors.$black;
+    }
+    .bi-link {
+      display: flex;
+      align-items: flex-start;
+      justify-content: left;
     }
     &.is-minimal{
       border: none;
@@ -53,10 +63,7 @@
     &:before {
       content: 'IMPORTANT';
     }
-    &:after {
-      content: url(/icons/ico-attention.svg);
-    }
-    path {
+    svg {
       fill: colors.$primary;
     }
     .bi-link {
@@ -70,12 +77,13 @@
     &:before {
       content: 'À SAVOIR';
     }
-    &:after {
-      content: url(/icons/ico-bulb.svg);
-    }
-    path:nth-child(2) {
+    svg {
       fill: colors.$tertiary;
     }
+    .bi-link > svg{
+       fill: colors.$black;
+     }
+
   }
 
   &.light {
@@ -108,7 +116,7 @@
 
   border-radius: rem.torem(6px);
   margin: rem.torem(16px) 0;
-  padding: rem.torem(20px) rem.torem(16px);
+  padding: rem.torem(16px) rem.torem(16px) rem.torem(14px) rem.torem(14px);
 
   &-text {
     line-height: rem.torem(20px);
