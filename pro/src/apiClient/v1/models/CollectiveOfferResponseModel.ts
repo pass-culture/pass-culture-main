@@ -20,6 +20,7 @@ export type CollectiveOfferResponseModel = {
   status: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
+  templateId?: string | null;
   venue: ListOffersVenueResponseModel;
   venueId: string;
 };
