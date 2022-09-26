@@ -9,6 +9,7 @@ class EducationalInstitutionResponseModel(BaseModel):
     postalCode: str
     city: str
     phoneNumber: str
+    institutionId: str
 
     class Config:
         orm_mode = True

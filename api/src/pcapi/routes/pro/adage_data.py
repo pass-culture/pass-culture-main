@@ -41,6 +41,7 @@ def get_educational_institutions(
                 postalCode=institution.postalCode,
                 city=institution.city,
                 phoneNumber=institution.phoneNumber,
+                institutionId=institution.institutionId,
             )
             for institution in institutions
         ],

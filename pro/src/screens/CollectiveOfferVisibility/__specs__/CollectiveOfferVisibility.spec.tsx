@@ -36,6 +36,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
     city: 'Gif-sur-Yvette',
     institutionType: 'Collège',
     phoneNumber: '',
+    institutionId: 'ABCDEF11',
   },
   {
     id: 24,
@@ -43,6 +44,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
     postalCode: '75005',
     city: 'Paris',
     phoneNumber: '',
+    institutionId: 'ABCDEF12',
   },
   {
     id: 42,
@@ -50,6 +52,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
     postalCode: '33000',
     city: 'Bordeaux',
     phoneNumber: '',
+    institutionId: 'ABCDEF13',
   },
 ]
 

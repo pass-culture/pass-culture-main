@@ -267,6 +267,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           city: 'Alès',
           postalCode: '30100',
           phoneNumber: '',
+          institutionId: 'ABCDEF11',
         }
 
         // when

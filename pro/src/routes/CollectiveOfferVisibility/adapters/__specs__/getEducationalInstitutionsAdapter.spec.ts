@@ -17,6 +17,7 @@ describe('getEducationalInstitutionsAdapter', () => {
           postalCode: '91190',
           city: 'Gif-sur-Yvette',
           phoneNumber: '',
+          institutionId: 'ABCDED11',
         },
         {
           id: 24,
@@ -24,6 +25,7 @@ describe('getEducationalInstitutionsAdapter', () => {
           postalCode: '75005',
           city: 'Paris',
           phoneNumber: '',
+          institutionId: 'ABCDED12',
         },
         {
           id: 42,
@@ -31,6 +33,7 @@ describe('getEducationalInstitutionsAdapter', () => {
           postalCode: '33000',
           city: 'Bordeaux',
           phoneNumber: '',
+          institutionId: 'ABCDED13',
         },
       ],
     }

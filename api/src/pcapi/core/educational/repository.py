@@ -58,6 +58,7 @@ CollectiveBookingNamedTuple = namedtuple(
         "institutionPostalCode",
         "institutionCity",
         "institutionPhoneNumber",
+        "institutionInstitutionId",
         "offerName",
         "offerId",
         "stockBeginningDatetime",
@@ -600,6 +601,7 @@ def _get_filtered_collective_bookings_pro(
             educational_models.EducationalInstitution.city.label("institutionCity"),
             educational_models.EducationalInstitution.postalCode.label("institutionPostalCode"),
             educational_models.EducationalInstitution.phoneNumber.label("institutionPhoneNumber"),
+            educational_models.EducationalInstitution.institutionId.label("institutionInstitutionId"),
             educational_models.CollectiveOffer.name.label("offerName"),
             educational_models.CollectiveOffer.id.label("offerId"),
             educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
@@ -667,6 +669,7 @@ def find_collective_bookings_by_pro_user(
             institutionPostalCode=booking.institutionPostalCode,
             institutionCity=booking.institutionCity,
             institutionPhoneNumber=booking.institutionPhoneNumber,
+            institutionInstitutionId=booking.institutionInstitutionId,
             offerName=booking.offerName,
             offerId=booking.offerId,
             stockBeginningDatetime=convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
@@ -877,6 +880,7 @@ def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[t
         educational_models.EducationalInstitution.city,
         educational_models.EducationalInstitution.institutionType,
         educational_models.EducationalInstitution.phoneNumber,
+        educational_models.EducationalInstitution.institutionId,
     )
 
     if offset != 0:
