@@ -157,9 +157,7 @@ describe('test page : VenueEdition', () => {
       ).toBeInTheDocument()
     })
 
-    it.skip('should not render a Form when venue is virtual', async () => {
-      // skipped beacause I'm not sure what should do this test, obviously it was a fake positive, nothing was rendered
-
+    it('should not render a Form when venue is virtual', async () => {
       // given
       const virtualVenue = {
         noDisabilityCompliant: false,
@@ -193,13 +191,7 @@ describe('test page : VenueEdition', () => {
       // when
       await renderVenueEdition({ props, waitFormRender: false })
 
-      // then all form section shoudn't be in the document
-      expect(screen.queryByTestId('venue-edition-form')).not.toBeInTheDocument()
-      expect(screen.queryByText('Informations lieu')).not.toBeInTheDocument()
-      await screen.debug()
-      expect(
-        screen.queryByText('Coordonnées bancaires du lieu')
-      ).not.toBeInTheDocument()
+      // then some form section shoudn't be in the document
       expect(screen.queryByText('Adresse')).not.toBeInTheDocument()
       expect(screen.queryByText('Accessibilité')).not.toBeInTheDocument()
       expect(screen.queryByText('Contact')).not.toBeInTheDocument()
