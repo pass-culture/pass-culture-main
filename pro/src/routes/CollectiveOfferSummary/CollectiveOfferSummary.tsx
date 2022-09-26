@@ -24,6 +24,12 @@ const CollectiveOfferSummary = () => {
     null
   )
 
+  const reloadCollectiveOffer = () => {
+    getCollectiveOfferAdapter(offerId).then(response =>
+      setOffer(response.payload)
+    )
+  }
+
   useEffect(() => {
     const loadData = async () => {
       const [offerResponse, categoriesResponse] = await Promise.all([
@@ -48,7 +54,11 @@ const CollectiveOfferSummary = () => {
     <Spinner />
   ) : (
     <CollectiveOfferLayout title="Récapitulatif" subTitle={offer.name}>
-      <CollectiveOfferSummaryScreen offer={offer} categories={categories} />
+      <CollectiveOfferSummaryScreen
+        offer={offer}
+        categories={categories}
+        reloadCollectiveOffer={reloadCollectiveOffer}
+      />
     </CollectiveOfferLayout>
   )
 }
