@@ -215,7 +215,9 @@ describe('homepage', () => {
         doesUserPreferReducedMotion.mockReturnValue(true)
 
         // when
-        await userEvent.click(screen.getByRole('link', { name: 'Structures' }))
+        await userEvent.click(
+          screen.getByRole('link', { name: 'Structures et lieux' })
+        )
 
         // then
         expect(mockLogEvent).toHaveBeenNthCalledWith(

@@ -147,7 +147,7 @@
 
     > .h-card,
     > .h-section {
-      margin-top: rem.torem(24px); // in case it's just after section title
+      margin-top: rem.torem(16px); // in case it's just after section title
 
       &:first-child {
         margin-top: 0;

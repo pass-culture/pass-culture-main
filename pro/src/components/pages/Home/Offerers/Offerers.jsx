@@ -121,6 +121,7 @@ const Offerers = () => {
     <>
       {userHasOfferers && selectedOfferer && (
         <>
+          <h2 className="h-section-title">Structures et lieux</h2>
           <OffererDetails
             businessUnitList={businessUnitList}
             handleChangeOfferer={handleChangeOfferer}
