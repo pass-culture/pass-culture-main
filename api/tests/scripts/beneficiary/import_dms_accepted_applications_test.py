@@ -96,7 +96,7 @@ class RunTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
-    def test_application_with_known_email_and_already_beneficiary_are_saved_as_rejected(
+    def test_application_for_already_beneficiary_is_not_downgraded(
         self, activate_beneficiary_if_no_missing_step, get_applications_with_details
     ):
         # same user, but different
@@ -112,14 +112,9 @@ class RunTest:
         ).one()
         assert fraud_check.userId == user.id
         assert fraud_check.thirdPartyId == "123"
-        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
-        assert fraud_check.reason == (
-            "L’utilisateur est déjà bénéfiaire du pass AGE18 ; "
-            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. "
-            "Il ne peut pas prétendre au pass culture 18 ans"
-        )
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
-        activate_beneficiary_if_no_missing_step.assert_not_called()
+        activate_beneficiary_if_no_missing_step.assert_called_once()
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
@@ -816,7 +811,7 @@ class GraphQLSourceProcessApplicationTest:
         )
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
+    def test_reimport_same_user(self, get_applications_with_details):
         procedure_number = 42
         already_imported_user = users_factories.BeneficiaryGrant18Factory()
 
@@ -833,9 +828,5 @@ class GraphQLSourceProcessApplicationTest:
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.userId == already_imported_user.id,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-        ).first()
-        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
-        assert (
-            "L’utilisateur est déjà bénéfiaire du pass AGE18 ; "
-            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. Il ne peut pas prétendre au pass culture 18 ans"
-        ) in fraud_check.reason
+        ).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK

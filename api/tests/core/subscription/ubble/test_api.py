@@ -108,6 +108,31 @@ class UbbleWorkflowTest:
         assert ubble_content["status"] == status.value
         assert fraud_check.status == fraud_check_status
 
+    def test_concurrent_requests_leave_fraud_check_ok(
+        self,
+        ubble_mocker,
+    ):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT, user=user, status=fraud_models.FraudCheckStatus.OK
+        )
+        ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
+        ubble_response = UbbleIdentificationResponseFactory(identification_state=IdentificationState.VALID)
+
+        with ubble_mocker(
+            ubble_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(ubble_check)
+            ubble_subscription_api.update_ubble_workflow(ubble_check)
+
+        assert ubble_check.status == FraudCheckStatus.OK
+        assert user.has_beneficiary_role is True
+
     def test_ubble_workflow_processing_add_inapp_message(self, ubble_mocker):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(

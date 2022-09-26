@@ -143,7 +143,6 @@ def on_identity_fraud_check_result(
     else:
         fraud_items.append(_missing_data_fraud_item())
 
-    fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))  # type: ignore [arg-type]
     fraud_items.append(_check_user_email_is_validated(user))
 
     return validate_frauds(fraud_items, beneficiary_fraud_check)
@@ -288,21 +287,6 @@ def find_duplicate_ine_hash_user(ine_hash: str, excluded_user_id: int) -> users_
     ).first()
 
 
-def _check_user_has_no_active_deposit(
-    user: users_models.User, eligibility: users_models.EligibilityType
-) -> models.FraudItem:
-    if user.has_active_deposit:
-        return models.FraudItem(
-            status=models.FraudStatus.KO,
-            detail=(
-                "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. "
-                f"Il ne peut pas prétendre au pass culture {'15-17 ans' if eligibility == users_models.EligibilityType.UNDERAGE else '18 ans'}"
-            ),
-            reason_code=models.FraudReasonCode.ALREADY_HAS_ACTIVE_DEPOSIT,
-        )
-    return models.FraudItem(status=models.FraudStatus.OK, detail="L'utilisateur n'a pas déjà un deposit actif")
-
-
 def _check_user_eligibility(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.FraudItem:
@@ -311,13 +295,6 @@ def _check_user_eligibility(
             status=models.FraudStatus.KO,
             detail="L'âge indiqué dans le dossier indique que l'utilisateur n'est pas éligible",
             reason_code=models.FraudReasonCode.NOT_ELIGIBLE,
-        )
-
-    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
-        return models.FraudItem(
-            status=models.FraudStatus.KO,
-            detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name}"),
-            reason_code=models.FraudReasonCode.ALREADY_BENEFICIARY,
         )
 
     return models.FraudItem(
