@@ -8,6 +8,7 @@ import {
 } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
+import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
@@ -98,10 +99,10 @@ const OfferEducationalEdition = (): JSX.Element => {
     })
 
     if (!isOk) {
-      return notify.error(message)
+      return notify.error(message, NOTIFICATION_LONG_SHOW_DURATION)
     }
 
-    notify.success(message)
+    notify.success(message, NOTIFICATION_LONG_SHOW_DURATION)
     setIsReady(false)
   }
 

@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import useNotification from 'components/hooks/useNotification'
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
+import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { cancelCollectiveBookingAdapter } from 'core/OfferEducational'
 import { ReactComponent as BuildingIcon } from 'icons/building.svg'
 import { ReactComponent as CalendarIcon } from 'icons/ico-calendar.svg'
@@ -54,10 +55,10 @@ const CollectiveBookingDetails = ({
   const cancelBooking = async () => {
     const response = await cancelCollectiveBookingAdapter({ offerId })
     if (response.isOk) {
-      notify.success(response.message)
+      notify.success(response.message, NOTIFICATION_LONG_SHOW_DURATION)
       reloadBookings()
     } else {
-      notify.error(response.message)
+      notify.error(response.message, NOTIFICATION_LONG_SHOW_DURATION)
     }
   }
 
