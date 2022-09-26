@@ -10,7 +10,7 @@ const CollectiveOfferNotificationSection = ({
   bookingEmails,
 }: ICollectiveOfferNotificationSectionProps) => {
   return (
-    <SummaryLayout.SubSection title="Contact">
+    <SummaryLayout.SubSection title="Notifications des réservations">
       {bookingEmails.map(email => (
         <SummaryLayout.Row description={email} key={email} />
       ))}
