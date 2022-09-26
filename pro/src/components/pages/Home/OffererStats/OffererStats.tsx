@@ -1,6 +1,9 @@
 import React from 'react'
+import { useLocation } from 'react-router'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
+import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as CalendarIcon } from 'icons/ico-calendar-v2.svg'
 import { ReactComponent as EuroIcon } from 'icons/ico-euro-v2.svg'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
@@ -15,11 +18,20 @@ import styles from './OffererStats.module.scss'
 const OffererStats = () => {
   const offererStatsUrl = '/statistiques'
 
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
+
   const defaultIconLinkProps = {
     IconLink: () => <Icon svg="ico-eye-open-filled-black" />,
     linkUrl: offererStatsUrl,
     linkTitle: 'Voir le tableau',
+    onClick: () => {
+      logEvent?.(Events.CLICKED_VIEW_OFFERER_STATS, {
+        from: location.pathname,
+      })
+    },
   }
+
   return (
     <div id={STEP_STATS_HASH}>
       <h2 className="h-section-title">Statistiques</h2>
@@ -47,6 +59,11 @@ const OffererStats = () => {
           link={{
             to: offererStatsUrl,
             isExternal: false,
+          }}
+          onClick={() => {
+            logEvent?.(Events.CLICKED_VIEW_ALL_OFFERER_STATS, {
+              from: location.pathname,
+            })
           }}
         >
           Voir toutes les statistiques
