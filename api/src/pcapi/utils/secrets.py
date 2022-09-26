@@ -27,6 +27,17 @@ def get(key: str, default: str | None = None) -> str:
     return os.environ.get(key, default or "").strip()
 
 
+def getlist(key: str, separator: str = ",", type_: type = str) -> list:
+    """Return a secret as a (possibly empty) list.
+
+    See ``get`` for further details.
+    """
+    separated_values = get(key)
+    if not separated_values:
+        return []
+    return [type_(v) for v in separated_values.split(separator)]
+
+
 def dump_secret_keys() -> str:
     secrets = sorted(set(SECRET_KEYS))
     yaml_content = {"secrets": [{"name": secret} for secret in secrets]}
