@@ -139,6 +139,12 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
+    templateId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True)
+
+    template: Mapped["CollectiveOfferTemplate"] = sa.orm.relationship(
+        "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="collectiveOffers"
+    )
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
@@ -307,6 +313,8 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
     domains: list["EducationalDomain"] = relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
     )
+
+    collectiveOffers: Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="template")
 
     @property
     def isEducational(self) -> bool:
