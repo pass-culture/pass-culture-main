@@ -420,11 +420,18 @@ const OfferForm = ({
       const invalidElement = formRef.current.querySelector('.error')
       if (invalidElement && invalidElement.value === '') {
         const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
-        invalidElement.scrollIntoView({
-          behavior: scrollBehavior,
-          block: 'center',
-          inline: 'center',
-        })
+
+        // Without the setTimeout, the smooth behavior isn't working
+        // cf https://github.com/iamdustan/smoothscroll/issues/28#issuecomment-630722825
+        setTimeout(
+          () =>
+            invalidElement.scrollIntoView({
+              behavior: scrollBehavior,
+              block: 'center',
+              inline: 'center',
+            }),
+          0
+        )
       }
     }
   }, [formRef, formErrors])
