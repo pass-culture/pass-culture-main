@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import styles from './Button.module.scss'
-import { ButtonVariant, SharedButtonProps } from './types'
+import { ButtonVariant, IconPosition, SharedButtonProps } from './types'
 
 interface IButtonProps
   extends SharedButtonProps,
@@ -16,6 +16,7 @@ const Button = ({
   className,
   children,
   Icon,
+  iconPosition = IconPosition.LEFT,
   variant = ButtonVariant.PRIMARY,
   type = 'button',
   innerRef,
@@ -27,8 +28,15 @@ const Button = ({
     type={type}
     {...buttonAttrs}
   >
-    {Icon && <Icon className={styles['button-icon']} />}
+    {Icon && iconPosition === IconPosition.LEFT && (
+      <Icon className={cn(styles['button-icon'], styles['button-icon-left'])} />
+    )}
     {children}
+    {Icon && iconPosition === IconPosition.RIGHT && (
+      <Icon
+        className={cn(styles['button-icon'], styles['button-icon-right'])}
+      />
+    )}
   </button>
 )
 
