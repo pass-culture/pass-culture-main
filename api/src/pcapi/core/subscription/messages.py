@@ -1,5 +1,8 @@
 from pcapi import settings
+from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models
+from pcapi.core.users import models as users_models
 
 
 MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
@@ -37,4 +40,22 @@ def get_generic_ko_message(user_id: int) -> models.SubscriptionMessage:
         user_message="Ton inscription n'a pas pu aboutir. Contacte le support pour plus d'informations",
         call_to_action=compute_support_call_to_action(user_id),
         pop_over_icon=None,
+    )
+
+
+def build_duplicate_error_message(
+    user: users_models.User,
+    reason_code: fraud_models.FraudReasonCode,
+    application_content: fraud_models.DMSContent | None,
+) -> str:
+    if not application_content:
+        return "Contacte le support si tu penses qu'il s'agit d'une erreur."
+
+    anonymized_email = fraud_api.get_duplicate_beneficiary_anonymized_email(user, application_content, reason_code)
+
+    if anonymized_email is None:
+        return "Contacte le support si tu penses qu'il s'agit d'une erreur."
+
+    return (
+        f"Connecte-toi avec l'adresse {anonymized_email} ou contacte le support si tu penses qu'il s'agit d'une erreur."
     )
