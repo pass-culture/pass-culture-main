@@ -944,6 +944,8 @@ jobs:
                 helm rollback <<parameters.helm_environment>>
                 exit 1
               fi
+            else
+              exit $HELMFILE_EXIT_CODE;
             fi
       - run:
           name: Deploy pcapi
