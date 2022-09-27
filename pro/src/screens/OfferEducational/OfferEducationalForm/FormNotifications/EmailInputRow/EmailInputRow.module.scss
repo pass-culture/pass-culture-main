@@ -1,4 +1,5 @@
 @use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
 
 .notification-mail-input {
   width: 90%;
@@ -7,4 +8,7 @@
 .trash-icon {
   height: rem.torem(24px);
   width: rem.torem(24px);
+  &:hover {
+    fill: colors.$primary;
+  }
 }
