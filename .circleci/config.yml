@@ -934,7 +934,7 @@ jobs:
           name: Deploy new ExternalSecret only if needed
           command: |
             PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
-            PCAPI_VALUES_FILE=<(helm get values <<parameters.helm_environment>>) \
+            PCAPI_VALUES_FILE=<(helm -n <<parameters.helm_environment>> get values <<parameters.helm_environment>>) \
             PCAPI_SECRETS_FILE=/tmp/workspace/pcapi-secrets.yaml \
             helmfile -e <<parameters.helm_environment>> apply --detailed-exitcode || HELMFILE_EXIT_CODE=$?
             if [[ $HELMFILE_EXIT_CODE -eq 2 ]]; then
