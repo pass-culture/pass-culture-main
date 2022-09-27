@@ -60,6 +60,8 @@ const Informations = ({
     credit,
     cropParams,
   }: IOnImageUploadArgs) => {
+    // ImageUploader isn't display when we've no offerId
+    /* istanbul ignore next */
     if (!offerId) return
     const response = await createThumbnailAdapter({
       offerId,
@@ -67,6 +69,7 @@ const Informations = ({
       imageData,
       cropParams,
     })
+
     if (response.isOk) {
       setImageOffer({
         url: response.payload.url,
@@ -76,7 +79,10 @@ const Informations = ({
     }
     return Promise.reject()
   }
+
   const onImageDelete = async () => {
+    // ImageUploader isn't display when we've no offerId
+    /* istanbul ignore next */
     if (!offerId) return
     const response = await deleteThumbnailAdapter({ offerId })
     if (response.isOk) {

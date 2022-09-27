@@ -31,9 +31,9 @@ export interface IOfferIndividualFormProps {
   venueList: TOfferIndividualVenue[]
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
-  readOnlyFields: string[]
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
+  readOnlyFields?: string[]
   imageOffer?: IOfferIndividualImage
 }
 

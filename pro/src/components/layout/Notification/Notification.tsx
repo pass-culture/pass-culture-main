@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -54,9 +55,10 @@ const Notification = (): JSX.Element | null => {
   if (isInDom) {
     return (
       <div
-        className={`notification is-${type || 'info'} ${
-          isVisible ? 'show' : 'hide'
-        }`}
+        className={cn('notification', `is-${type || 'success'}`, {
+          show: isVisible,
+          hide: !isVisible,
+        })}
       >
         {iconComponent}
         {text}

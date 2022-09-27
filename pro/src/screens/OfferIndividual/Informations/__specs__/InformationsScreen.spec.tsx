@@ -1,12 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { api } from 'apiClient/api'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -33,6 +32,9 @@ jest.mock('apiClient/api', () => ({
     postOffer: jest.fn(),
   },
 }))
+jest.mock('repository/pcapi/pcapi', () => ({
+  postThumbnail: jest.fn(),
+}))
 
 const renderInformationsScreen = (
   props: IInformationsProps,
@@ -53,7 +55,7 @@ const renderInformationsScreen = (
 
 const scrollIntoViewMock = jest.fn()
 
-describe('screens:OfferCreation::Informations', () => {
+describe('screens:OfferIndividual::Informations', () => {
   let props: IInformationsProps
   let store: any
   let contextValue: IOfferIndividualContext
@@ -284,133 +286,6 @@ describe('screens:OfferCreation::Informations', () => {
       behavior: 'auto',
       block: 'center',
       inline: 'center',
-    })
-  })
-
-  describe('submit', () => {
-    beforeEach(async () => {
-      const venue: TOfferIndividualVenue = {
-        id: 'AA',
-        name: 'Lieu offline AA',
-        managingOffererId: 'A',
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-      }
-      contextValue.venueList = [
-        venue,
-        {
-          id: 'BB',
-          name: 'Lieu online BB',
-          managingOffererId: 'A',
-          isVirtual: true,
-          withdrawalDetails: '',
-          accessibility: {
-            visual: false,
-            mental: false,
-            audio: false,
-            motor: false,
-            none: true,
-          },
-        },
-      ]
-      contextValue.offererNames = [{ id: 'A', name: 'mon offerer A' }]
-      props = {
-        initialValues: FORM_DEFAULT_VALUES,
-      }
-    })
-    it('should submit minimal physical offer', async () => {
-      renderInformationsScreen(props, store, contextValue)
-
-      const categorySelect = await screen.findByLabelText(
-        'Choisir une catégorie'
-      )
-      await userEvent.selectOptions(categorySelect, 'A')
-      const subCategorySelect = screen.getByLabelText(
-        'Choisir une sous-catégorie'
-      )
-      await userEvent.selectOptions(subCategorySelect, 'physical')
-      const nameField = screen.getByLabelText("Titre de l'offre")
-      await userEvent.type(nameField, 'Le nom de mon offre')
-
-      await userEvent.click(await screen.findByText('Suivant'))
-
-      await waitFor(() => {
-        expect(api.postOffer).toHaveBeenCalledTimes(1)
-        expect(api.postOffer).toHaveBeenCalledWith({
-          audioDisabilityCompliant: false,
-          bookingEmail: null,
-          description: null,
-          durationMinutes: null,
-          externalTicketOfficeUrl: null,
-          extraData: {},
-          isDuo: true,
-          isEducational: false,
-          isNational: false,
-          mentalDisabilityCompliant: false,
-          motorDisabilityCompliant: false,
-          name: 'Le nom de mon offre',
-          offererId: 'A',
-          subcategoryId: 'physical',
-          url: null,
-          venueId: 'AA',
-          visualDisabilityCompliant: false,
-          withdrawalDelay: null,
-          withdrawalDetails: null,
-          withdrawalType: null,
-        })
-      })
-    })
-
-    it('should submit minimal virtual offer', async () => {
-      renderInformationsScreen(props, store, contextValue)
-
-      const categorySelect = await screen.findByLabelText(
-        'Choisir une catégorie'
-      )
-      await userEvent.selectOptions(categorySelect, 'A')
-      const subCategorySelect = screen.getByLabelText(
-        'Choisir une sous-catégorie'
-      )
-      await userEvent.selectOptions(subCategorySelect, 'virtual')
-      const nameField = screen.getByLabelText("Titre de l'offre")
-      await userEvent.type(nameField, 'Le nom de mon offre')
-
-      const urlField = await screen.findByLabelText('URL d’accès à l’offre')
-
-      await userEvent.type(urlField, 'http://example.com/')
-
-      await userEvent.click(await screen.findByText('Suivant'))
-
-      expect(api.postOffer).toHaveBeenCalledTimes(1)
-      expect(api.postOffer).toHaveBeenCalledWith({
-        audioDisabilityCompliant: false,
-        bookingEmail: null,
-        description: null,
-        durationMinutes: null,
-        externalTicketOfficeUrl: null,
-        extraData: {},
-        isDuo: false,
-        isEducational: false,
-        isNational: false,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: false,
-        name: 'Le nom de mon offre',
-        offererId: 'A',
-        subcategoryId: 'virtual',
-        url: 'http://example.com/',
-        venueId: 'BB',
-        visualDisabilityCompliant: false,
-        withdrawalDelay: null,
-        withdrawalDetails: null,
-        withdrawalType: null,
-      })
     })
   })
 })

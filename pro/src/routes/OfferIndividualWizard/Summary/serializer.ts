@@ -144,10 +144,14 @@ const serializerStockEventSectionProps = (
   return offer.stocks
     .sort((a, b) => {
       const aDate =
-        a.beginningDatetime !== null ? a.beginningDatetime : a.dateCreated
+        a.beginningDatetime !== null
+          ? new Date(a.beginningDatetime)
+          : a.dateCreated
       const bDate =
-        b.beginningDatetime !== null ? b.beginningDatetime : b.dateCreated
-      return new Date(aDate) < new Date(bDate) ? 1 : -1
+        b.beginningDatetime !== null
+          ? new Date(b.beginningDatetime)
+          : b.dateCreated
+      return aDate < bDate ? 1 : -1
     })
     .map(stock => ({
       quantity: stock.quantity,

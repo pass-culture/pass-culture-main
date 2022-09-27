@@ -25,22 +25,27 @@ describe('src | components | layout | Notification', () => {
     )
   }
 
-  it('should display given text with icon', () => {
-    // given
-    const sentNotification = {
-      text: 'Mon petit succès',
-      type: 'success',
-      version: 2,
+  const notificationTypes = ['', 'success', 'error', 'information', 'pending']
+  it.each(notificationTypes)(
+    'should display given %s text with icon',
+    async type => {
+      // given
+      const sentNotification = {
+        text: 'Mon petit succès',
+        type,
+        version: 2,
+      }
+
+      // when
+      renderNotification(sentNotification)
+
+      // then
+      const notification = screen.getByText(sentNotification.text)
+      expect(notification).toBeInTheDocument()
+      expect(notification).toHaveClass('show')
+      expect(notification).toHaveClass(`is-${type || 'success'}`)
     }
-
-    // when
-    renderNotification(sentNotification)
-
-    // then
-    const notification = screen.getByText(sentNotification.text)
-    expect(notification).toBeInTheDocument()
-    expect(notification).toHaveClass('show')
-  })
+  )
 
   it('should hide notification after fixed show duration', async () => {
     // given

@@ -11,6 +11,9 @@ export const getError = (error: ApiError): any => {
   return error.body
 }
 
+// FIXME: find a way to test this by mocking ReadableStream
+// in fetch response
+/* istanbul ignore next */
 export const getDataURLFromImageURL = async (
   imageURL: string
 ): Promise<File> => {
