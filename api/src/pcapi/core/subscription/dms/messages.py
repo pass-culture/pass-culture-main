@@ -4,6 +4,7 @@ from pcapi import settings
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models
+from pcapi.core.users import models as users_models
 
 
 MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
@@ -65,7 +66,7 @@ def get_error_updatable_message(
 
 
 def get_error_not_updatable_message(
-    user_id: int,
+    user: users_models.User,
     reason_codes: list[fraud_models.FraudReasonCode],
     application_content: fraud_models.DMSContent | None,
     birth_date_error: fraud_models.DmsFieldErrorDetails | None,
@@ -74,12 +75,21 @@ def get_error_not_updatable_message(
     user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé"
     pop_over_icon: models.PopOverIcon | None = models.PopOverIcon.ERROR
     call_to_action = None
-    if (
-        fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes
-        or fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes
-    ):
-        user_message += " : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
-        call_to_action = subscription_messages.compute_support_call_to_action(user_id)
+
+    if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+        user_message += " : il y a déjà un compte à ton nom sur le pass Culture. "
+        user_message += subscription_messages.build_duplicate_error_message(
+            user, fraud_models.FraudReasonCode.DUPLICATE_USER, application_content
+        )
+        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
+        pop_over_icon = None
+
+    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
+        user_message += " : il y a déjà un compte associé à ce numéro de pièce d'identité. "
+        user_message += subscription_messages.build_duplicate_error_message(
+            user, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, application_content
+        )
+        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
         pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:

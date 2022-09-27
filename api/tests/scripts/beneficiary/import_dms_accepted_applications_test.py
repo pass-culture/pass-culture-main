@@ -465,7 +465,7 @@ class RunIntegrationTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert (
             message.user_message
-            == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
+            == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Connecte-toi avec l'adresse joh***@example.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
         )
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
 
