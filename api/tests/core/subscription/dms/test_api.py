@@ -707,7 +707,9 @@ class DmsSubscriptionMessageTest:
         first_name = "Jean-Michel"
         last_name = "Doublon"
         birth_date = datetime.datetime.utcnow() - relativedelta(years=18, days=1)
-        users_factories.BeneficiaryGrant18Factory(firstName=first_name, lastName=last_name, dateOfBirth=birth_date)
+        users_factories.BeneficiaryGrant18Factory(
+            firstName=first_name, lastName=last_name, dateOfBirth=birth_date, email="jean-michel@doublon.com"
+        )
 
         applicant = users_factories.UserFactory(email=self.user_email)
         duplicate_application = make_parsed_graphql_application(
@@ -723,7 +725,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations.",
+            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Connecte-toi avec l'adresse jea***@doublon.com ou contacte le support si tu penses qu'il s'agit d'une erreur.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Contacter le support",
                 link=f"mailto:support@example.com?subject=%23{applicant.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",
