@@ -55,6 +55,7 @@ export const ImageVenueUploaderSection = ({
     imageUrl: venueImage || undefined,
     originalImageUrl: venueBanner?.original_image_url || undefined,
     cropParams,
+    credit: venueBanner?.image_credit,
   }
 
   const handleOnImageUpload = async ({
