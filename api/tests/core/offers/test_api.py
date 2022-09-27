@@ -14,6 +14,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
+import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -2004,3 +2005,23 @@ class DeleteUnwantedExistingProductTest:
         assert models.Product.query.one() == product
         assert not product.isGcuCompatible
         assert not product.isSynchronizationCompatible
+
+
+class DeleteDraftOffersTest:
+    def test_delete_draft_with_mediation_offer_criterion_activation_code_and_stocks(self, client):
+        criterion = criteria_factories.CriterionFactory()
+        draft_offer = factories.OfferFactory(validation=OfferValidationStatus.DRAFT, criteria=[criterion])
+        factories.MediationFactory(offer=draft_offer)
+        stock = factories.StockFactory(offer=draft_offer)
+        factories.ActivationCodeFactory(stock=stock)
+        other_draft_offer = factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
+
+        offer_ids = [draft_offer.id, other_draft_offer.id]
+
+        api.batch_delete_draft_offers(models.Offer.query.filter(models.Offer.id.in_(offer_ids)))
+
+        assert criteria_models.OfferCriterion.query.count() == 0
+        assert models.Mediation.query.count() == 0
+        assert models.Stock.query.count() == 0
+        assert models.Offer.query.count() == 0
+        assert models.ActivationCode.query.count() == 0
