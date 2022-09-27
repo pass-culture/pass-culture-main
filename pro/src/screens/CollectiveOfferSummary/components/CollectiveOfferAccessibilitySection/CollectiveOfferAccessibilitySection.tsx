@@ -1,11 +1,7 @@
 import React from 'react'
 
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
-import { AccessiblityEnum } from 'core/shared'
-import { SummaryLayout } from 'new_components/SummaryLayout'
-import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel'
-
-import styles from './CollectiveOfferAccessibilitySection.module.scss'
+import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
 
 interface ICollectiveOfferParticipantSectionProps {
   offer: GetCollectiveOfferTemplateResponseModel
@@ -21,35 +17,13 @@ const CollectiveOfferParticipantSection = ({
     !offer.visualDisabilityCompliant
 
   return (
-    <SummaryLayout.SubSection title="Accessibilité">
-      {noDisabilityCompliance && (
-        <SummaryLayout.Row description="Non accessible" />
-      )}
-      {offer.visualDisabilityCompliant && (
-        <AccessibilityLabel
-          className={styles['accessibility-row']}
-          name={AccessiblityEnum.VISUAL}
-        />
-      )}
-      {offer.mentalDisabilityCompliant && (
-        <AccessibilityLabel
-          className={styles['accessibility-row']}
-          name={AccessiblityEnum.MENTAL}
-        />
-      )}
-      {offer.motorDisabilityCompliant && (
-        <AccessibilityLabel
-          className={styles['accessibility-row']}
-          name={AccessiblityEnum.MOTOR}
-        />
-      )}
-      {offer.audioDisabilityCompliant && (
-        <AccessibilityLabel
-          className={styles['accessibility-row']}
-          name={AccessiblityEnum.AUDIO}
-        />
-      )}
-    </SummaryLayout.SubSection>
+    <AccessibilitySummarySection
+      noDisabilityCompliance={noDisabilityCompliance}
+      audioDisabilityCompliant={Boolean(offer.audioDisabilityCompliant)}
+      motorDisabilityCompliant={Boolean(offer.motorDisabilityCompliant)}
+      mentalDisabilityCompliant={Boolean(offer.mentalDisabilityCompliant)}
+      visualDisabilityCompliant={Boolean(offer.visualDisabilityCompliant)}
+    />
   )
 }
 
