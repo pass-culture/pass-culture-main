@@ -31,6 +31,7 @@ const buildInitialValues = (
     imageUrl: bannerUrl || undefined,
     originalImageUrl: bannerMeta?.original_image_url || undefined,
     cropParams,
+    credit: bannerMeta?.image_credit,
   }
 }
 
