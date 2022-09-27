@@ -50,7 +50,7 @@ describe('ImageUploader', () => {
   })
 
   it('should render image uploader for existing file', async () => {
-    await renderImageUploader({
+    renderImageUploader({
       props,
     })
     expect(
@@ -77,7 +77,7 @@ describe('ImageUploader', () => {
       onImageDelete: async () => {},
       mode: UploaderModeEnum.OFFER,
     }
-    await renderImageUploader({
+    renderImageUploader({
       props,
     })
     expect(

@@ -41,10 +41,26 @@ describe('useGetOfferIndividual', () => {
       motorDisabilityCompliant: false,
       nonHumanizedId: 192,
       visualDisabilityCompliant: false,
-      lastProvider: null,
-      lastProviderId: null,
+      lastProvider: {
+        enabledForPro: true,
+        isActive: true,
+        id: 'LP',
+        name: 'My Last Provider',
+      },
+      lastProviderId: 'LP',
       mediaUrls: [],
-      mediations: [],
+      mediations: [
+        {
+          thumbUrl: 'http://my.thumb.url',
+          credit: 'John Do',
+          dateCreated: '01-01-2000',
+          fieldsUpdated: [],
+          id: 'AA',
+          isActive: true,
+          offerId: 'YA',
+          thumbCount: 1,
+        },
+      ],
       name: 'Séance ciné duo',
       product: {
         ageMax: null,
@@ -177,7 +193,10 @@ describe('useGetOfferIndividual', () => {
       name: 'Séance ciné duo',
       isEvent: true,
       withdrawalType: null,
-      image: undefined,
+      image: {
+        url: 'http://my.thumb.url',
+        credit: 'John Do',
+      },
       musicSubType: '',
       musicType: '',
       nonHumanizedId: 192,
@@ -196,8 +215,12 @@ describe('useGetOfferIndividual', () => {
       visa: '',
       withdrawalDetails: '',
       withdrawalDelay: null,
-      lastProvider: null,
-      lastProviderName: null,
+      lastProvider: {
+        isActive: true,
+        id: 'LP',
+        name: 'My Last Provider',
+      },
+      lastProviderName: 'My Last Provider',
       stocks: [
         {
           beginningDatetime: '2022-05-23T08:25:31.009799Z',
