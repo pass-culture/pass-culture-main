@@ -35,6 +35,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
         FeatureToggle.APP_ENABLE_CATEGORY_FILTER_PAGE,
         FeatureToggle.APP_ENABLE_COOKIES_V2,
+        FeatureToggle.DISABLE_STORE_REVIEW,
     )
 
     return serializers.SettingsResponse(
@@ -65,4 +66,5 @@ def get_settings() -> serializers.SettingsResponse:
         pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
         account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
         app_enable_cookies_v2=features[FeatureToggle.APP_ENABLE_COOKIES_V2],
+        disable_store_review=features[FeatureToggle.DISABLE_STORE_REVIEW],
     )
