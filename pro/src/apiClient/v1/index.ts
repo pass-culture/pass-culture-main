@@ -50,6 +50,7 @@ export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
 export type { CulturalPartner } from './models/CulturalPartner';
+export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { EditVenueBodyModel } from './models/EditVenueBodyModel';
 export type { EditVenueCollectiveDataBodyModel } from './models/EditVenueCollectiveDataBodyModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
