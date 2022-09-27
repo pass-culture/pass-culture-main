@@ -788,3 +788,56 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
 
         with assert_num_queries(1):
             assert not list(fraud_api.get_suspended_upon_user_request_accounts_since(5))
+
+
+@pytest.mark.usefixtures("db_session")
+class DuplicateBeneficiaryEmailTest:
+    @pytest.mark.parametrize(
+        "input_email, anonymized_email",
+        [
+            ("anne-onime@me.com", "ann***@me.com"),
+            ("wrong_address.com", "***"),
+            ("yo@lo.com", "y***@lo.com"),
+            ("y@o.com", "***@o.com"),
+        ],
+    )
+    def test_anonymize(self, input_email, anonymized_email) -> None:
+        assert fraud_api._anonymize_email(input_email) == anonymized_email
+
+    def test_duplicate_user(self):
+        rejected_user = users_factories.UserFactory()
+        duplicater_user = users_factories.BeneficiaryGrant18Factory(email="shotgun@example.com")
+        identity_content = fraud_factories.UbbleContentFactory(
+            first_name=duplicater_user.firstName,
+            last_name=duplicater_user.lastName,
+            birth_date=duplicater_user.dateOfBirth.date().isoformat(),
+        )
+        assert (
+            fraud_api.get_duplicate_beneficiary_anonymized_email(
+                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+            )
+            == "sho***@example.com"
+        )
+        assert (
+            fraud_api.get_duplicate_beneficiary_anonymized_email(
+                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+            )
+            is None
+        )
+
+    def test_duplicate_id_piece_number(self):
+        rejected_user = users_factories.UserFactory()
+        users_factories.BeneficiaryGrant18Factory(email="shotgun@example.com", idPieceNumber="123")
+        identity_content = fraud_factories.UbbleContentFactory(id_document_number="123")
+        assert (
+            fraud_api.get_duplicate_beneficiary_anonymized_email(
+                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+            )
+            is None
+        )
+        assert (
+            fraud_api.get_duplicate_beneficiary_anonymized_email(
+                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+            )
+            == "sho***@example.com"
+        )

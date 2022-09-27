@@ -66,7 +66,7 @@ def _handle_validation_errors(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> None:
     if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:  # type: ignore [operator]
-        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
+        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
 
 
 def get_educonnect_subscription_item_status(

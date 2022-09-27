@@ -777,3 +777,53 @@ def invalidate_fraud_check_if_duplicate(fraud_check: models.BeneficiaryFraudChec
     fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user.id}"
 
     repository.save(fraud_check)
+
+
+def _anonymize_email(email: str) -> str:
+    try:
+        name, domain = email.split("@")
+    except ValueError:
+        logger.exception("User email %s format is wrong", email)
+        return "***"
+
+    if len(name) > 3:
+        hidden_name = name[:3]
+    elif len(name) > 1:
+        hidden_name = name[:1]
+    else:
+        hidden_name = ""
+
+    return f"{hidden_name}***@{domain}"
+
+
+def get_duplicate_beneficiary_anonymized_email(
+    rejected_user: users_models.User,
+    identity_content: IdentityCheckContent,
+    duplicate_reason_code: models.FraudReasonCode,
+) -> str | None:
+    duplicate_beneficiary = None
+
+    if duplicate_reason_code == models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
+        duplicate_beneficiary = find_duplicate_id_piece_number_user(
+            identity_content.get_id_piece_number(), rejected_user.id
+        )
+    elif duplicate_reason_code == models.FraudReasonCode.DUPLICATE_USER:
+        first_name = identity_content.get_first_name()
+        last_name = identity_content.get_last_name()
+        birth_date = identity_content.get_birth_date()
+        if first_name and last_name and birth_date:
+            duplicate_beneficiary = find_duplicate_beneficiary(
+                first_name,
+                last_name,
+                identity_content.get_married_name(),
+                birth_date,
+                rejected_user.id,
+            )
+
+    if not duplicate_beneficiary:
+        logger.error(
+            "No duplicate beneficiary found", extra={"user_id": rejected_user.id, "code": duplicate_reason_code}
+        )
+        return None
+
+    return _anonymize_email(duplicate_beneficiary.email)
