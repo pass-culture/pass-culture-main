@@ -5,7 +5,9 @@ from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -35,6 +37,7 @@ class Returns200Test:
         client = TestClient(app.test_client()).with_session_auth(email=admin.email)
         path = f"/offers?venueId={humanize(requested_venue.id)}"
         select_offers_nb_queries = 1
+        select_offers_nb_queries += 1  # Get OFFER_DRAFT_ENABLED FF value
 
         # when
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_offers_nb_queries):
@@ -78,6 +81,22 @@ class Returns200Test:
                 "isShowcase": None,
             }
         ]
+
+    @override_features(OFFER_DRAFT_ENABLED=True)
+    def should_return_draft_offers_when_feature_enabled(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        requested_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.ThingOfferFactory(venue=requested_venue, validation=OfferValidationStatus.DRAFT)
+        offers_factories.ThingOfferFactory(venue=requested_venue)
+        client = client.with_session_auth(pro.email)
+        response = client.get("/offers")
+
+        offers = response.json
+        assert response.status_code == 200
+        assert len(offers) == 2
+        assert "DRAFT" in [offers[1]["status"], offers[0]["status"]]
 
     def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(
         self, app, db_session
