@@ -8,3 +8,4 @@ def install_routes(app: Flask) -> None:
     from . import offerers
     from . import permissions
     from . import pro
+    from . import venues
