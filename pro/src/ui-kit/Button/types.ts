@@ -6,6 +6,11 @@ export enum ButtonVariant {
   TERNARY = 'ternary',
 }
 
+export enum IconPosition {
+  RIGHT = 'right',
+  LEFT = 'left',
+}
+
 export type SharedButtonProps = {
   Icon?: FunctionComponent<
     SVGProps<SVGSVGElement> & {
@@ -13,4 +18,5 @@ export type SharedButtonProps = {
     }
   >
   variant?: ButtonVariant
+  iconPosition?: IconPosition
 }
