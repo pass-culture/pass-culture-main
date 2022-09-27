@@ -52,11 +52,6 @@ def handle_educonnect_authentication(
             users_external.update_external_user(user)
     else:
         _handle_validation_errors(user, fraud_check)
-        logger.warning(
-            "Fraud suspicion after educonnect authentication with codes: %s",
-            (", ").join([code.value for code in fraud_check.reasonCodes]),  # type: ignore [union-attr]
-            extra={"user_id": user.id},
-        )
 
     return fraud_check.reasonCodes  # type: ignore [return-value]
 
