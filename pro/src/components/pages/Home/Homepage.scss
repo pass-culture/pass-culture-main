@@ -46,7 +46,6 @@
     }
 
     .h-card-inner {
-      border-left: rem.torem(8px) solid colors.$grey-medium;
       height: 100%;
       padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
       width: 100%;
@@ -74,16 +73,6 @@
       }
     }
 
-    &.h-card-secondary-hover {
-      &:focus,
-      &:hover {
-        border-color: colors.$secondary;
-
-        .h-card-inner {
-          border-color: colors.$secondary;
-        }
-      }
-    }
 
     .h-card-title {
       @include fonts.title4();
@@ -162,10 +151,6 @@
 
       &:first-child {
         margin-top: 0;
-      }
-
-      &.nested {
-        margin-left: rem.torem(14px);
       }
 
       .h-card {
