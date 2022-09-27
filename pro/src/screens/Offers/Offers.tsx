@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { UserRole } from 'apiClient/v1'
 import useAnalytics from 'components/hooks/useAnalytics'
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -31,7 +32,10 @@ import SearchFilters from './SearchFilters'
 
 export interface IOffersProps {
   currentPageNumber: number
-  currentUser: { isAdmin: boolean }
+  currentUser: {
+    roles: Array<UserRole>
+    isAdmin: boolean
+  }
   isLoading: boolean
   loadAndUpdateOffers: (filters: TSearchFilters) => Promise<void>
   offerer: Offerer | null
@@ -103,24 +107,24 @@ const Offers = ({
     },
     [urlSearchFilters]
   )
-
-  const actionLink = isAdmin ? null : (
-    <Link
-      className="primary-button with-icon"
-      onClick={() =>
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-          to: OFFER_FORM_HOMEPAGE,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_BUTTON,
-          isEdition: false,
-        })
-      }
-      to="/offre/creation"
-    >
-      <AddOfferSvg />
-      Créer une offre
-    </Link>
-  )
+  const actionLink =
+    isAdmin || !currentUser?.roles?.length ? null : (
+      <Link
+        className="primary-button with-icon"
+        onClick={() =>
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+            to: OFFER_FORM_HOMEPAGE,
+            used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_BUTTON,
+            isEdition: false,
+          })
+        }
+        to="/offre/creation"
+      >
+        <AddOfferSvg />
+        Créer une offre
+      </Link>
+    )
 
   const nbSelectedOffers = areAllOffersSelected
     ? offers.length

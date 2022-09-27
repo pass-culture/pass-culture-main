@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { UserRole } from 'apiClient/v1'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
@@ -36,6 +37,7 @@ describe('tracker screen Offers', () => {
       isLoading: false,
       currentUser: {
         isAdmin: false,
+        roles: [UserRole.PRO],
       },
       loadAndUpdateOffers: jest.fn(),
       offerer: offererFactory(),
