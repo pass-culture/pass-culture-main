@@ -22,6 +22,7 @@ import type { CollectiveStockIdResponseModel } from '../models/CollectiveStockId
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
+import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
 import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
 import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollectiveDataBodyModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
@@ -1128,6 +1129,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/categories',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * delete_draft_offers <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteDraftOffers(
+    requestBody?: DeleteOfferRequestBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/delete-draft',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

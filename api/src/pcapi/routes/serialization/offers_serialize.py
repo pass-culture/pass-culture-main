@@ -510,3 +510,7 @@ class ImageBodyModel(BaseModel):
 class CategoriesResponseModel(BaseModel):
     categories: list[CategoryResponseModel]
     subcategories: list[SubcategoryResponseModel]
+
+
+class DeleteOfferRequestBody(BaseModel):
+    ids: list[str | None]

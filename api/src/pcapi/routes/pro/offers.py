@@ -74,6 +74,25 @@ def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
+@private_api.route("/offers/delete-draft", methods=["POST"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
+    offer_ids = human_ids.dehumanize_ids_list(body.ids)
+    if not offer_ids:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+    query = offers_repository.get_offers_by_ids(current_user, offer_ids)  # type: ignore [arg-type]
+    offers_api.batch_delete_draft_offers(query)
+
+
 @private_api.route("/offers", methods=["POST"])
 @login_required
 @spectree_serialize(

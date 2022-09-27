@@ -3,6 +3,7 @@ import decimal
 import logging
 from typing import List
 
+from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
@@ -1118,3 +1119,21 @@ def delete_unwanted_existing_product(isbn: str) -> None:
     favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
     objects_to_delete = objects_to_delete + favorites
     repository.delete(*objects_to_delete)
+
+
+def batch_delete_draft_offers(query: BaseQuery) -> None:
+    offer_ids = [id_ for id_, in query.with_entities(Offer.id)]
+    filters = (Offer.validation == OfferValidationStatus.DRAFT, Offer.id.in_(offer_ids))
+    Mediation.query.filter(Mediation.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
+    criteria_models.OfferCriterion.query.filter(
+        criteria_models.OfferCriterion.offerId == Offer.id,
+        *filters,
+    ).delete(synchronize_session=False)
+    ActivationCode.query.filter(
+        ActivationCode.stockId == Stock.id,
+        Stock.offerId == Offer.id,
+        *filters,
+    ).delete(synchronize_session=False)
+    Stock.query.filter(Stock.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
+    Offer.query.filter(*filters).delete(synchronize_session=False)
+    db.session.commit()
