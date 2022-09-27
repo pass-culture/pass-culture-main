@@ -9,11 +9,10 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
 import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { AccessibilityLabel } from 'ui-kit'
 
-import styles from './OfferSummary.module.scss'
 import humanizeDelay from './utils'
 
 export interface IOfferSectionProps {
@@ -203,35 +202,13 @@ const OfferSummary = ({
         )}
       </SummaryLayout.SubSection>
 
-      <SummaryLayout.SubSection title="Accessibilité">
-        {offer.accessibility[AccessiblityEnum.NONE] && (
-          <SummaryLayout.Row description="Non accessible" />
-        )}
-        {offer.accessibility[AccessiblityEnum.VISUAL] && (
-          <AccessibilityLabel
-            className={styles['accessibility-row']}
-            name={AccessiblityEnum.VISUAL}
-          />
-        )}
-        {offer.accessibility[AccessiblityEnum.MENTAL] && (
-          <AccessibilityLabel
-            className={styles['accessibility-row']}
-            name={AccessiblityEnum.MENTAL}
-          />
-        )}
-        {offer.accessibility[AccessiblityEnum.MOTOR] && (
-          <AccessibilityLabel
-            className={styles['accessibility-row']}
-            name={AccessiblityEnum.MOTOR}
-          />
-        )}
-        {offer.accessibility[AccessiblityEnum.AUDIO] && (
-          <AccessibilityLabel
-            className={styles['accessibility-row']}
-            name={AccessiblityEnum.AUDIO}
-          />
-        )}
-      </SummaryLayout.SubSection>
+      <AccessibilitySummarySection
+        noDisabilityCompliance={offer.accessibility[AccessiblityEnum.NONE]}
+        visualDisabilityCompliant={offer.accessibility[AccessiblityEnum.VISUAL]}
+        mentalDisabilityCompliant={offer.accessibility[AccessiblityEnum.MENTAL]}
+        motorDisabilityCompliant={offer.accessibility[AccessiblityEnum.MOTOR]}
+        audioDisabilityCompliant={offer.accessibility[AccessiblityEnum.AUDIO]}
+      />
 
       {conditionalFields.includes('isDuo') && (
         <SummaryLayout.SubSection title="Autres caractéristiques">
