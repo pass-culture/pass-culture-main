@@ -120,11 +120,11 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
         transactional_mails.send_subscription_document_error_email(user.email, "not-authentic-document")
 
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
+        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         transactional_mails.send_duplicate_beneficiary_email(
-            user, fraud_check.source_data(), is_id_piece_number_duplicate=True  # type: ignore [arg-type]
+            user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER  # type: ignore [arg-type]
         )
 
 

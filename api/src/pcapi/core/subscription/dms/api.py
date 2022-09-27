@@ -478,9 +478,13 @@ def _handle_validation_errors(
     dms_content: fraud_models.DMSContent,
 ) -> None:
     if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        transactional_mails.send_duplicate_beneficiary_email(user, dms_content, False)
+        transactional_mails.send_duplicate_beneficiary_email(
+            user, dms_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+        )
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
-        transactional_mails.send_duplicate_beneficiary_email(user, dms_content, True)
+        transactional_mails.send_duplicate_beneficiary_email(
+            user, dms_content, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+        )
 
     reason = ", ".join([code.name for code in reason_codes])
 
