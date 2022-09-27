@@ -94,22 +94,27 @@ export const Menu = ({ dense = false }: MenuProps) => {
         {/*/>*/}
       </SubMenu>
       <Divider />
-      <SubMenu
-        handleToggle={() => handleToggle('menuPros')}
-        isOpen={state.menuPros}
-        name="menu.prosTitle"
-        dense={dense}
-        icon={<AccountBoxIcon />}
-      >
-        <MenuItemLink
-          to="/pro/search"
-          state={{ _scrollToTop: true }}
-          primaryText={translate('menu.pros', {
-            smart_count: 2,
-          })}
+      {!!searchPermission(
+        formattedPermissions,
+        PermissionsEnum.searchProAccount
+      ) && (
+        <SubMenu
+          handleToggle={() => handleToggle('menuPros')}
+          isOpen={state.menuPros}
+          name="menu.prosTitle"
           dense={dense}
-        />
-      </SubMenu>
+          icon={<AccountBoxIcon />}
+        >
+          <MenuItemLink
+            to="/pro/search"
+            state={{ _scrollToTop: true }}
+            primaryText={translate('menu.pros', {
+              smart_count: 2,
+            })}
+            dense={dense}
+          />
+        </SubMenu>
+      )}
       {/*  <MenuItemLink*/}
       {/*    to="/pros/categories"*/}
       {/*    state={{ _scrollToTop: true }}*/}

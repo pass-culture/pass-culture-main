@@ -18,9 +18,16 @@ import {
 } from '@mui/material'
 import { captureException } from '@sentry/react'
 import React, { ClassAttributes, HTMLAttributes, useState } from 'react'
-import { Form, TextInput, useAuthenticated, useNotify } from 'react-admin'
+import {
+  Form,
+  TextInput,
+  useAuthenticated,
+  useNotify,
+  usePermissions,
+} from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
+import { searchPermission } from '../../helpers/functions'
 import { Colors } from '../../layout/Colors'
 import {
   getErrorMessage,
@@ -30,6 +37,7 @@ import {
 import { apiProvider } from '../../providers/apiProvider'
 import { ProResult, SearchProRequest } from '../../TypesFromApi'
 import { CustomSearchIcon } from '../Icons/CustomSearchIcon'
+import { PermissionsEnum } from '../PublicUsers/types'
 
 import { ProTypeBadge } from './Components/ProTypeBadge'
 import {
@@ -162,6 +170,12 @@ export const ProSearch = () => {
   const [emptyResults, setEmptyResults] = useState(true)
   useAuthenticated()
   const notify = useNotify()
+  const { permissions } = usePermissions()
+  const formattedAuthorizations: PermissionsEnum[] = permissions
+  const permissionGranted = !!searchPermission(
+    formattedAuthorizations,
+    PermissionsEnum.searchProAccount
+  )
 
   async function searchProList(searchParameter: string, page: number) {
     try {
@@ -247,146 +261,173 @@ export const ProSearch = () => {
         alignItems="center"
         justifyContent="center"
       >
-        <Card
-          style={{
-            boxShadow: 'none',
-            width: '100%',
-            marginLeft: 0,
-            paddingTop: '20px',
-          }}
-        >
-          <CardContent>
-            <Typography
-              component="div"
-              textAlign={emptyResults ? 'center' : 'left'}
+        {permissionGranted && (
+          <>
+            <Card
               style={{
-                display: emptyResults ? 'block' : 'none',
-                paddingTop: '7rem',
+                boxShadow: 'none',
+                width: '100%',
+                marginLeft: 0,
+                paddingTop: '20px',
               }}
             >
-              <CustomSearchIcon />
-            </Typography>
-            <Typography
-              variant={'subtitle1'}
-              component={'div'}
-              mb={2}
-              sx={emptyResults ? { mx: 'auto' } : { mx: 1 }}
-              gutterBottom
-              textAlign={emptyResults ? 'center' : 'left'}
-              style={{
-                width: '30rem',
-                display: emptyResults ? 'block' : 'none',
-              }}
-            >
-              Retrouve une structure ou un lieu par raison sociale, SIREN,
-              SIRET, ou par l’identité du pro (nom prénom, email rattaché au
-              SIRET, numéro de tél )
-            </Typography>
-            <Grid container justifyContent={emptyResults ? 'center' : 'left'}>
-              <Box>
-                <Form onSubmit={formSubmit}>
-                  <Stack
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      textAlign: 'center',
-                    }}
-                    direction={emptyResults ? 'column' : 'row'}
-                  >
-                    <div style={{ marginBottom: 15 }}>
-                      <TextField
-                        id="outlined-select-currency"
-                        select
-                        label={emptyResults ? '' : 'Type'}
-                        variant={'outlined'}
-                        size={'small'}
-                        value={proResource}
-                        onChange={handleChangeProResource}
-                        helperText=""
-                        style={{
-                          marginLeft: 'auto',
-                          marginRight: 0,
-                          width: 'auto',
-                        }}
-                      >
-                        {proResources.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                      <TextInput
-                        helperText={false}
-                        source={'q'}
-                        name={'search'}
-                        type={'text'}
-                        label={emptyResults ? '' : 'Recherche'}
-                        variant={'outlined'}
-                        style={{
-                          marginLeft: 0,
-                          marginRight: 5,
-                          width: emptyResults ? '20rem' : 'auto',
-                        }}
-                        onKeyUp={stopTypingOnSearch}
-                        InputProps={
-                          !emptyResults
-                            ? {
-                                endAdornment: (
-                                  <InputAdornment position="start">
-                                    <IconButton
-                                      aria-label={
-                                        'Rechercher un acteur culturel'
-                                      }
-                                      onClick={clearSearch}
-                                    >
-                                      <ClearIcon />
-                                    </IconButton>
-                                  </InputAdornment>
-                                ),
-                              }
-                            : {}
-                        }
-                      />
-                    </div>
-                    <Button
-                      type={'submit'}
-                      variant="contained"
-                      style={{ height: '2.5rem', marginBottom: 20 }}
-                    >
-                      Chercher
-                    </Button>
-                  </Stack>
-                </Form>
-              </Box>
-            </Grid>
-            {!emptyResults && <div>{proDataState.total} résultat(s)</div>}
-            {!emptyResults && (
-              <Pagination
-                count={proDataState.totalPages}
-                onChange={onChangePage}
-              />
-            )}
-          </CardContent>
-        </Card>
-        <List>
-          <Grid container spacing={2} sx={{ marginTop: '1em', minWidth: 275 }}>
-            {!emptyResults &&
-              proDataState.proData.map(pro => (
-                <Grid
-                  key={pro['id']}
-                  sx={{ minWidth: 275 }}
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={4}
-                  xl={4}
-                  item
+              <CardContent>
+                <Typography
+                  component="div"
+                  textAlign={emptyResults ? 'center' : 'left'}
+                  style={{
+                    display: emptyResults ? 'block' : 'none',
+                    paddingTop: '7rem',
+                  }}
                 >
-                  <ProCard record={pro} />
+                  <CustomSearchIcon />
+                </Typography>
+                <Typography
+                  variant={'subtitle1'}
+                  component={'div'}
+                  mb={2}
+                  sx={emptyResults ? { mx: 'auto' } : { mx: 1 }}
+                  gutterBottom
+                  textAlign={emptyResults ? 'center' : 'left'}
+                  style={{
+                    width: '30rem',
+                    display: emptyResults ? 'block' : 'none',
+                  }}
+                >
+                  Retrouve une structure ou un lieu par raison sociale, SIREN,
+                  SIRET, ou par l’identité du pro (nom prénom, email rattaché au
+                  SIRET, numéro de tél )
+                </Typography>
+                <Grid
+                  container
+                  justifyContent={emptyResults ? 'center' : 'left'}
+                >
+                  <Box>
+                    <Form onSubmit={formSubmit}>
+                      <Stack
+                        style={{
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                        }}
+                        direction={emptyResults ? 'column' : 'row'}
+                      >
+                        <div style={{ marginBottom: 15 }}>
+                          <TextField
+                            id="outlined-select-currency"
+                            select
+                            label={emptyResults ? '' : 'Type'}
+                            variant={'outlined'}
+                            size={'small'}
+                            value={proResource}
+                            onChange={handleChangeProResource}
+                            helperText=""
+                            style={{
+                              marginLeft: 'auto',
+                              marginRight: 0,
+                              width: 'auto',
+                            }}
+                          >
+                            {proResources.map(option => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                          <TextInput
+                            helperText={false}
+                            source={'q'}
+                            name={'search'}
+                            type={'text'}
+                            label={emptyResults ? '' : 'Recherche'}
+                            variant={'outlined'}
+                            style={{
+                              marginLeft: 0,
+                              marginRight: 5,
+                              width: emptyResults ? '20rem' : 'auto',
+                            }}
+                            onKeyUp={stopTypingOnSearch}
+                            InputProps={
+                              !emptyResults
+                                ? {
+                                    endAdornment: (
+                                      <InputAdornment position="start">
+                                        <IconButton
+                                          aria-label={
+                                            'Rechercher un acteur culturel'
+                                          }
+                                          onClick={clearSearch}
+                                        >
+                                          <ClearIcon />
+                                        </IconButton>
+                                      </InputAdornment>
+                                    ),
+                                  }
+                                : {}
+                            }
+                          />
+                        </div>
+                        <Button
+                          type={'submit'}
+                          variant="contained"
+                          style={{ height: '2.5rem', marginBottom: 20 }}
+                        >
+                          Chercher
+                        </Button>
+                      </Stack>
+                    </Form>
+                  </Box>
                 </Grid>
-              ))}
-          </Grid>
-        </List>
+                {!emptyResults && <div>{proDataState.total} résultat(s)</div>}
+                {!emptyResults && (
+                  <Pagination
+                    count={proDataState.totalPages}
+                    onChange={onChangePage}
+                  />
+                )}
+              </CardContent>
+            </Card>
+            <List>
+              <Grid
+                container
+                spacing={2}
+                sx={{ marginTop: '1em', minWidth: 275 }}
+              >
+                {!emptyResults &&
+                  proDataState.proData.map(pro => (
+                    <Grid
+                      key={pro['id']}
+                      sx={{ minWidth: 275 }}
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      lg={4}
+                      xl={4}
+                      item
+                    >
+                      <ProCard record={pro} />
+                    </Grid>
+                  ))}
+              </Grid>
+            </List>
+          </>
+        )}
+        {!permissionGranted && (
+          <>
+            <Typography
+              variant={'h5'}
+              color={Colors.GREY}
+              sx={{ mb: 3, mt: 3 }}
+            >
+              Vous n'avez pas accès à cette page !
+            </Typography>
+            <div>
+              <Button variant={'outlined'} onClick={() => history.back()}>
+                Retour à la page précédente
+              </Button>
+            </div>
+          </>
+        )}
       </Grid>
     </>
   )
