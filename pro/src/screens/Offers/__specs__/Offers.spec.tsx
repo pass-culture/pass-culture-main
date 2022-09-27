@@ -9,6 +9,7 @@ import { MemoryRouter, Router } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
+import { UserRole } from 'apiClient/v1'
 import {
   ALL_CATEGORIES,
   ALL_EVENT_PERIODS,
@@ -99,6 +100,7 @@ describe('screen Offers', () => {
     isAdmin: boolean
     name: string
     publicName: string
+    roles: Array<UserRole>
   }
   let store: Store
   let offersRecap: Offer[]
@@ -109,6 +111,7 @@ describe('screen Offers', () => {
       isAdmin: false,
       name: 'Current User',
       publicName: 'USER',
+      roles: [UserRole.PRO],
     }
     store = configureTestStore({
       user: {
@@ -690,6 +693,21 @@ describe('screen Offers', () => {
         leafOnly: false,
       })
       expect(createLink).not.toBeNull()
+    })
+
+    it('should not be displayed when user is not yet validated', () => {
+      // Given
+      props.currentUser.roles = []
+
+      // When
+      renderOffers(props, store)
+
+      // Then
+      const createLink = queryByTextTrimHtml(screen, 'Créer une offre', {
+        selector: 'a',
+        leafOnly: false,
+      })
+      expect(createLink).not.toBeInTheDocument()
     })
   })
 
