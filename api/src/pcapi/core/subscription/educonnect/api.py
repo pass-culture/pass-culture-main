@@ -39,7 +39,7 @@ def handle_educonnect_authentication(
         logger.exception("Error on educonnect result", extra={"user_id": user.id})
         raise exceptions.EduconnectSubscriptionException()
 
-    subscription_api.update_user_birth_date_if_not_beneficiary(user, fraud_check.source_data().get_birth_date())  # type: ignore [union-attr]
+    subscription_api.update_user_birth_date_if_not_beneficiary(user, educonnect_content.get_birth_date())
 
     if fraud_check.status == fraud_models.FraudCheckStatus.OK:
         try:
@@ -51,17 +51,12 @@ def handle_educonnect_authentication(
         if not is_activated:
             users_external.update_external_user(user)
     else:
-        _handle_validation_errors(user, fraud_check)
+        if fraud_models.FraudReasonCode.DUPLICATE_USER in (fraud_check.reasonCodes or []):
+            transactional_mails.send_duplicate_beneficiary_email(
+                user, educonnect_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+            )
 
     return fraud_check.reasonCodes  # type: ignore [return-value]
-
-
-def _handle_validation_errors(
-    user: users_models.User,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
-) -> None:
-    if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:  # type: ignore [operator]
-        transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
 
 
 def get_educonnect_subscription_item_status(
