@@ -59,6 +59,8 @@ const Informations = ({
     credit,
     cropParams,
   }: IOnImageUploadArgs) => {
+    // ImageUploader isn't display when we've no offerId
+    /* istanbul ignore next */
     if (!offerId) return
     try {
       const response = await postThumbnail(
@@ -84,7 +86,10 @@ const Informations = ({
       return Promise.reject()
     }
   }
+
   const onImageDelete = async () => {
+    // ImageUploader isn't display when we've no offerId
+    /* istanbul ignore next */
     if (!offerId) return
     try {
       await api.deleteThumbnail(offerId)

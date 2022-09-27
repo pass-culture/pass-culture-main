@@ -13,7 +13,7 @@ import { ModalImageEdit } from './ModalImageEdit'
 import { IOnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
 import { IUploadImageValues } from './types'
 
-interface IButtonImageEdit {
+export interface IButtonImageEditProps {
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   initialValues?: IUploadImageValues
   mode: UploaderModeEnum
@@ -23,7 +23,7 @@ const ButtonImageEdit = ({
   mode,
   initialValues = {},
   onImageUpload,
-}: IButtonImageEdit): JSX.Element => {
+}: IButtonImageEditProps): JSX.Element => {
   const { visible, showModal, hideModal } = useModal()
   const { imageUrl, originalImageUrl } = initialValues
 

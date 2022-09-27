@@ -1,3 +1,6 @@
+// This file will be replace by apiClient
+/* istanbul ignore file */
+
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { ReimbursementPointsResponseModel } from 'core/Finances'

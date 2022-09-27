@@ -6,8 +6,11 @@ import { AccessiblityEnum } from 'core/shared'
 import setInitialFormValues from '../setInitialFormValues'
 
 describe('setFormReadOnlyFields', () => {
-  it('should fill initial form values from offer', () => {
-    const offer: IOfferIndividual = {
+  let offer: IOfferIndividual
+  let subCategoryList: IOfferSubCategory[]
+
+  beforeEach(() => {
+    offer = {
       id: 'AA',
       nonHumanizedId: 12,
       author: 'Offer author',
@@ -71,7 +74,7 @@ describe('setFormReadOnlyFields', () => {
       lastProvider: null,
       status: OFFER_STATUS_ACTIVE,
     }
-    const subCategoryList: IOfferSubCategory[] = [
+    subCategoryList = [
       {
         id: 'SCID',
         categoryId: 'CID',
@@ -85,6 +88,9 @@ describe('setFormReadOnlyFields', () => {
         isSelectable: true,
       },
     ]
+  })
+
+  it('should fill initial form values from offer', () => {
     const expectedResult = {
       accessibility: {
         [AccessiblityEnum.AUDIO]: true,
@@ -132,5 +138,11 @@ describe('setFormReadOnlyFields', () => {
 
     const initialFormValues = setInitialFormValues(offer, subCategoryList)
     expect(initialFormValues).toStrictEqual(expectedResult)
+  })
+
+  it("should throw error if sub category don't exist", () => {
+    expect(() => setInitialFormValues(offer, [])).toThrow(
+      "La categorie de l'offre est introuvable"
+    )
   })
 })
