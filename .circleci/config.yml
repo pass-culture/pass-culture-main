@@ -938,10 +938,10 @@ jobs:
             PCAPI_SECRETS_FILE=/tmp/workspace/pcapi-secrets.yaml \
             helmfile -e <<parameters.helm_environment>> apply --detailed-exitcode || HELMFILE_EXIT_CODE=$?
             if [[ $HELMFILE_EXIT_CODE -eq 2 ]]; then
-              STATUS=$(kubectl get externalsecret.external-secrets.io pcapi-<<parameters.helm_environment>> -o jsonpath={..status..status})
+              STATUS=$(kubectl -n <<parameters.helm_environment>> get externalsecret.external-secrets.io pcapi-<<parameters.helm_environment>> -o jsonpath={..status..status})
               if [[ $STATUS == "False" ]]; then
-                kubectl get events --field-selector involvedObject.name=pcapi-<<parameters.helm_environment>>,involvedObject.kind=ExternalSecret
-                helm rollback <<parameters.helm_environment>>
+                kubectl -n <<parameters.helm_environment>> get events --field-selector involvedObject.name=pcapi-<<parameters.helm_environment>>,involvedObject.kind=ExternalSecret
+                helm -n <<parameters.helm_environment>> rollback <<parameters.helm_environment>>
                 exit 1
               fi
             fi
