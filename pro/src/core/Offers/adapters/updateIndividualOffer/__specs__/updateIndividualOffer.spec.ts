@@ -73,6 +73,8 @@ describe('updateIndividualOffer', () => {
       withdrawalDetails: 'withdrawal description',
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
       durationMinutes: 140,
+      bookingEmail: 'test@email.com',
+      externalTicketOfficeUrl: 'https://example.com',
     }
 
     const offerId = 'AAAA'

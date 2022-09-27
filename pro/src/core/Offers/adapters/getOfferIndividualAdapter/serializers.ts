@@ -15,12 +15,10 @@ import { AccessiblityEnum } from 'core/shared'
 
 export const serializeOffererApi = (
   apiOffer: GetIndividualOfferResponseModel
-): IOfferIndividualOfferer => {
-  return {
-    id: apiOffer.venue.managingOfferer.id,
-    name: apiOffer.venue.managingOfferer.name,
-  }
-}
+): IOfferIndividualOfferer => ({
+  id: apiOffer.venue.managingOfferer.id,
+  name: apiOffer.venue.managingOfferer.name,
+})
 
 export const serializeVenueApi = (
   apiOffer: GetIndividualOfferResponseModel
@@ -52,40 +50,36 @@ export const serializeVenueApi = (
 
 export const serializeStockApi = (
   apiStock: GetOfferStockResponseModel
-): IOfferIndividualStock => {
-  return {
-    beginningDatetime: apiStock.beginningDatetime ?? null,
-    bookingLimitDatetime: apiStock.bookingLimitDatetime ?? null,
-    bookingsQuantity: apiStock.bookingsQuantity,
-    dateCreated: new Date(apiStock.dateCreated),
-    hasActivationCode: apiStock.hasActivationCode,
-    id: apiStock.id,
-    isEventDeletable: apiStock.isEventDeletable,
-    isEventExpired: apiStock.isEventExpired,
-    isSoftDeleted: apiStock.isSoftDeleted,
-    offerId: apiStock.offerId,
-    price: apiStock.price,
-    quantity: apiStock.quantity,
-    remainingQuantity: apiStock.remainingQuantity ?? 0,
-  }
-}
+): IOfferIndividualStock => ({
+  beginningDatetime: apiStock.beginningDatetime ?? null,
+  bookingLimitDatetime: apiStock.bookingLimitDatetime ?? null,
+  bookingsQuantity: apiStock.bookingsQuantity,
+  dateCreated: new Date(apiStock.dateCreated),
+  hasActivationCode: apiStock.hasActivationCode,
+  id: apiStock.id,
+  isEventDeletable: apiStock.isEventDeletable,
+  isEventExpired: apiStock.isEventExpired,
+  isSoftDeleted: apiStock.isSoftDeleted,
+  offerId: apiStock.offerId,
+  price: apiStock.price,
+  quantity: apiStock.quantity,
+  remainingQuantity: apiStock.remainingQuantity ?? 0,
+})
 
 export const serializeOfferApiExtraData = (
   apiOffer: GetIndividualOfferResponseModel
-) => {
-  return {
-    author: apiOffer.extraData?.author || '',
-    isbn: apiOffer.extraData?.isbn || '',
-    musicType: apiOffer.extraData?.musicType || '',
-    musicSubType: apiOffer.extraData?.musicSubType || '',
-    performer: apiOffer.extraData?.performer || '',
-    showType: apiOffer.extraData?.showType || '',
-    showSubType: apiOffer.extraData?.showSubType || '',
-    speaker: apiOffer.extraData?.speaker || '',
-    stageDirector: apiOffer.extraData?.stageDirector || '',
-    visa: apiOffer.extraData?.visa || '',
-  }
-}
+) => ({
+  author: apiOffer.extraData?.author || '',
+  isbn: apiOffer.extraData?.isbn || '',
+  musicType: apiOffer.extraData?.musicType || '',
+  musicSubType: apiOffer.extraData?.musicSubType || '',
+  performer: apiOffer.extraData?.performer || '',
+  showType: apiOffer.extraData?.showType || '',
+  showSubType: apiOffer.extraData?.showSubType || '',
+  speaker: apiOffer.extraData?.speaker || '',
+  stageDirector: apiOffer.extraData?.stageDirector || '',
+  visa: apiOffer.extraData?.visa || '',
+})
 
 export const serializeLastProvider = (
   apiVenueProvider: GetOfferLastProviderResponseModel | null
@@ -101,7 +95,7 @@ export const serializeLastProvider = (
   }
 }
 
-const serializeOfferApiImage = (
+export const serializeOfferApiImage = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualImage | undefined => {
   if (apiOffer.mediations?.length > 0) {
@@ -155,7 +149,7 @@ export const serializeOfferApi = (
     stocks: apiOffer.stocks.map(serializeStockApi),
     lastProviderName: apiOffer.lastProvider?.name || null,
     lastProvider: serializeLastProvider(apiOffer.lastProvider || null),
-    status: apiOffer.status || null,
+    status: apiOffer.status,
     ...serializeOfferApiExtraData(apiOffer),
   }
 

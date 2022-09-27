@@ -7,10 +7,18 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import {
+  IOfferIndividualContext,
+  OfferIndividualContext,
+} from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import {
+  IOfferCategory,
+  IOfferIndividual,
+  IOfferSubCategory,
+} from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { configureTestStore } from 'store/testUtils'
 import { SubmitButton } from 'ui-kit'
@@ -28,27 +36,41 @@ const renderOfferIndividualForm = ({
   initialValues,
   onSubmit = jest.fn(),
   props,
+  contextOverride = {},
 }: {
   initialValues: IOfferIndividualFormValues
   onSubmit: () => void
   props: IOfferIndividualFormProps
+  contextOverride?: Partial<IOfferIndividualContext>
 }) => {
   const store = configureTestStore({
     user: { currentUser: { publicName: 'François', isAdmin: false } },
   })
+  const contextValues: IOfferIndividualContext = {
+    offerId: null,
+    offer: null,
+    venueList: [],
+    offererNames: [],
+    categories: [],
+    subCategories: [],
+    reloadOffer: () => {},
+    ...contextOverride,
+  }
   return render(
     <Provider store={store}>
       <MemoryRouter>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={onSubmit}
-          validationSchema={validationSchema}
-        >
-          <Form>
-            <OfferIndividualForm {...props} />
-            <SubmitButton isLoading={false}>Submit</SubmitButton>
-          </Form>
-        </Formik>
+        <OfferIndividualContext.Provider value={contextValues}>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={onSubmit}
+            validationSchema={validationSchema}
+          >
+            <Form>
+              <OfferIndividualForm {...props} />
+              <SubmitButton isLoading={false}>Submit</SubmitButton>
+            </Form>
+          </Formik>
+        </OfferIndividualContext.Provider>
       </MemoryRouter>
     </Provider>
   )
@@ -149,7 +171,6 @@ describe('OfferIndividualForm', () => {
       subCategories,
       offererNames,
       venueList,
-      readOnlyFields: [],
       onImageUpload: jest.fn(),
       onImageDelete: jest.fn(),
     }
@@ -160,6 +181,25 @@ describe('OfferIndividualForm', () => {
       initialValues,
       onSubmit,
       props,
+    })
+    expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
+  })
+
+  it('should render image section when offer is given', async () => {
+    const offer: Partial<IOfferIndividual> = {
+      id: 'AA',
+      stocks: [],
+    }
+
+    const contextOverride: Partial<IOfferIndividualContext> = {
+      offer: offer as IOfferIndividual,
+    }
+
+    renderOfferIndividualForm({
+      initialValues,
+      onSubmit,
+      props,
+      contextOverride,
     })
     expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
   })
