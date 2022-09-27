@@ -280,17 +280,17 @@ class OffererBankInformationStatus(BaseModel):
     ok: int
 
 
-class OffererBaseOffersStats(BaseModel):
+class BaseOffersStats(BaseModel):
     individual: int
     collective: int
 
 
-class OffererOffersStats(BaseModel):
-    active: OffererBaseOffersStats
-    inactive: OffererBaseOffersStats
+class OffersStats(BaseModel):
+    active: BaseOffersStats
+    inactive: BaseOffersStats
 
 
-class OffererReimbursementsStats(BaseModel):
+class ReimbursementsStats(BaseModel):
     done: int
     pending: int
     upcoming: int
@@ -304,7 +304,33 @@ class OffererBasicInfo(BaseModel):
     region: str
     bankInformationStatus: OffererBankInformationStatus
     isCollectiveEligible: bool
-    dmsUrl: str | None
+
+
+class VenueDmsStats(BaseModel):
+    status: str
+    subscriptionDate: datetime.datetime
+    url: str
+
+
+class VenueBasicInfo(BaseModel):
+    id: int
+    name: str
+    siret: str
+    email: str | None
+    phoneNumber: str | None
+    region: str
+    hasBankInformation: bool
+    isCollectiveEligible: bool
+    dms: VenueDmsStats | None
+
+
+class LastOfferSyncStats(BaseModel):
+    date: datetime.datetime | None
+    provider: str | None
+
+
+class VenueOffersStats(OffersStats):
+    lastSync: LastOfferSyncStats
 
 
 class OffererTagItem(BaseModel):

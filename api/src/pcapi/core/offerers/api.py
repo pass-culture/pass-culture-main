@@ -17,6 +17,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.models as providers_models
 import pcapi.core.users.external as users_external
 from pcapi.core.users.external import zendesk_sell
 import pcapi.core.users.models as users_models
@@ -899,3 +900,141 @@ def get_offerer_offers_stats(offerer_id: int) -> sa.engine.Row:
     )
 
     return db.session.execute(offers_stats_query).one()
+
+
+def get_venue_basic_info(venue_id: int) -> sa.engine.Row:
+    dms_application_id_query = sa.select(finance_models.BankInformation.applicationId).filter(
+        finance_models.BankInformation.venueId == venue_id
+    )
+    has_bank_informations_query = sa.select(sa.func.count(offerers_models.VenueReimbursementPointLink.id)).filter(
+        offerers_models.VenueReimbursementPointLink.venueId == venue_id,
+        offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
+    )
+    venue_query = (
+        sa.select(
+            offerers_models.Venue.id,
+            offerers_models.Venue.publicName,
+            offerers_models.Venue.name,
+            offerers_models.Venue.siret,
+            offerers_models.VenueContact.email,
+            offerers_models.VenueContact.phone_number,
+            offerers_models.Venue.postalCode,
+            offerers_models.Venue.dmsToken,
+            offerers_models.Venue.venueEducationalStatusId,
+            dms_application_id_query.scalar_subquery().label("dms_application_id"),
+            has_bank_informations_query.scalar_subquery().label("has_bank_informations"),
+        )
+        .outerjoin(
+            offerers_models.VenueContact,
+        )
+        .filter(
+            offerers_models.Venue.id == venue_id,
+        )
+    )
+
+    venue = db.session.execute(venue_query).one_or_none()
+
+    return venue
+
+
+def get_venue_total_revenue(venue_id: int) -> float:
+    individual_revenue_query = sa.select(
+        sa.func.coalesce(
+            sa.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity),
+            0.0,
+        )
+    ).filter(
+        bookings_models.Booking.venueId == venue_id,
+        bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED.value,
+    )
+    collective_revenue_query = (
+        sa.select(
+            sa.func.coalesce(
+                sa.func.sum(educational_models.CollectiveStock.price),
+                0.0,
+            )
+        )
+        .select_from(
+            educational_models.CollectiveBooking,
+        )
+        .join(
+            educational_models.CollectiveStock,
+            onclause=educational_models.CollectiveStock.id == educational_models.CollectiveBooking.collectiveStockId,
+        )
+        .filter(
+            educational_models.CollectiveBooking.venueId == venue_id,
+            educational_models.CollectiveBooking.status != bookings_models.BookingStatus.CANCELLED.value,
+        )
+    )
+
+    total_revenue_query = sa.select(
+        individual_revenue_query.scalar_subquery() + collective_revenue_query.scalar_subquery()
+    )
+
+    return db.session.execute(total_revenue_query).scalar() or 0.0
+
+
+def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
+    individual_offers_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+        sa.select(
+            sa.case(
+                [
+                    (offers_models.Offer.isActive.is_(True), "active"),
+                    (offers_models.Offer.isActive.is_(False), "inactive"),
+                ]
+            ).label("status"),
+            sa.func.count(offers_models.Offer.id).label("number"),
+        )
+        .select_from(offerers_models.Venue)
+        .outerjoin(offers_models.Offer)
+        .filter(
+            offerers_models.Venue.id == venue_id,
+            offers_models.Offer.validation == offers_models.OfferValidationStatus.APPROVED.value,
+        )
+        .group_by(offers_models.Offer.isActive)
+        .subquery()
+    )
+    collective_offers_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+        sa.select(
+            sa.case(
+                [
+                    (educational_models.CollectiveOffer.isActive.is_(True), "active"),
+                    (educational_models.CollectiveOffer.isActive.is_(False), "inactive"),
+                ]
+            ).label("status"),
+            sa.func.count(educational_models.CollectiveOffer.id).label("number"),
+        )
+        .select_from(offerers_models.Venue)
+        .outerjoin(educational_models.CollectiveOffer)
+        .filter(
+            offerers_models.Venue.id == venue_id,
+            educational_models.CollectiveOffer.validation == offers_models.OfferValidationStatus.APPROVED.value,
+        )
+        .group_by(educational_models.CollectiveOffer.isActive)
+        .subquery()
+    )
+
+    offers_stats_query = (
+        sa.select(
+            providers_models.Provider.name,
+            providers_models.VenueProvider.lastSyncDate,
+            individual_offers_query.scalar_subquery().label("individual_offers"),
+            collective_offers_query.scalar_subquery().label("collective_offers"),
+        )
+        .select_from(
+            offerers_models.Venue,
+        )
+        .outerjoin(
+            providers_models.VenueProvider,
+            providers_models.VenueProvider.venueId == offerers_models.Venue.id,
+        )
+        .outerjoin(
+            providers_models.Provider,
+            providers_models.VenueProvider.providerId == providers_models.Provider.id,
+        )
+        .filter(
+            providers_models.Venue.id == venue_id,
+        )
+    )
+
+    return db.session.execute(offers_stats_query).one_or_none()
