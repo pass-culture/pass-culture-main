@@ -315,11 +315,11 @@ class VenueDmsStats(BaseModel):
 class VenueBasicInfo(BaseModel):
     id: int
     name: str
-    siret: str
+    siret: str | None
     email: str | None
     phoneNumber: str | None
     region: str
-    hasBankInformation: bool
+    hasReimbursementPoint: bool
     isCollectiveEligible: bool
     dms: VenueDmsStats | None
 
