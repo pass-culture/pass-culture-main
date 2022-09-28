@@ -101,7 +101,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         server_default="{}",
     )
 
-    description = sa.Column(sa.Text, nullable=True)
+    description = sa.Column(sa.Text, nullable=True, server_default="", default="")
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
@@ -287,7 +287,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 
     name: str = sa.Column(sa.String(140), nullable=False)
 
-    description = sa.Column(sa.Text, nullable=True)
+    description = sa.Column(sa.Text, nullable=True, server_default="", default="")
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
