@@ -13,43 +13,51 @@
  */
 
 import { exists, mapValues } from '../runtime'
-import { Role, RoleFromJSON, RoleFromJSONTyped, RoleToJSON } from './'
-
 /**
  *
  * @export
- * @interface ListRoleResponseModel
+ * @interface Comment
  */
-export interface ListRoleResponseModel {
+export interface Comment {
   /**
    *
-   * @type {Array<Role>}
-   * @memberof ListRoleResponseModel
+   * @type {string}
+   * @memberof Comment
    */
-  roles: Array<Role>
+  author?: string | null
+  /**
+   *
+   * @type {string}
+   * @memberof Comment
+   */
+  content: string
+  /**
+   *
+   * @type {Date}
+   * @memberof Comment
+   */
+  date: Date
 }
 
-export function ListRoleResponseModelFromJSON(
-  json: any
-): ListRoleResponseModel {
-  return ListRoleResponseModelFromJSONTyped(json, false)
+export function CommentFromJSON(json: any): Comment {
+  return CommentFromJSONTyped(json, false)
 }
 
-export function ListRoleResponseModelFromJSONTyped(
+export function CommentFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListRoleResponseModel {
+): Comment {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    roles: (json['roles'] as Array<any>).map(RoleFromJSON),
+    author: !exists(json, 'author') ? undefined : json['author'],
+    content: json['content'],
+    date: new Date(json['date']),
   }
 }
 
-export function ListRoleResponseModelToJSON(
-  value?: ListRoleResponseModel | null
-): any {
+export function CommentToJSON(value?: Comment | null): any {
   if (value === undefined) {
     return undefined
   }
@@ -57,6 +65,8 @@ export function ListRoleResponseModelToJSON(
     return null
   }
   return {
-    roles: (value.roles as Array<any>).map(RoleToJSON),
+    author: value.author,
+    content: value.content,
+    date: value.date.toISOString(),
   }
 }

@@ -18,7 +18,7 @@ import {
   PublicHistoryItemFromJSON,
   PublicHistoryItemFromJSONTyped,
   PublicHistoryItemToJSON,
-} from './index'
+} from './'
 
 /**
  *

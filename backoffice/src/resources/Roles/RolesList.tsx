@@ -31,13 +31,7 @@ import {
   PcApiHttpError,
 } from '../../providers/apiHelpers'
 import { apiProvider } from '../../providers/apiProvider'
-import {
-  Role,
-  Permission,
-  RoleRequestModel,
-  UpdateRoleRequest,
-  DeleteRoleRequest,
-} from '../../TypesFromApi'
+import { Role, Permission } from '../../TypesFromApi'
 import { PermissionsEnum } from '../PublicUsers/types'
 
 import { AddRoleModal } from './Components/AddRoleModal'
@@ -89,11 +83,11 @@ export const RolesList = () => {
 
   const deleteRole = async (roleId: Identifier) => {
     try {
-      const role = rolesList.find(role => (role.id as Identifier) == roleId)
+      const role = rolesList.find(role => role.id == roleId)
       if (role) {
         const response = await apiProvider().deleteRole({
           id: role.id as number,
-        } as DeleteRoleRequest)
+        })
 
         if (response) {
           refresh()
@@ -115,11 +109,9 @@ export const RolesList = () => {
         id: role.id,
         roleRequestModel: {
           name: role.name,
-          permissionIds: role.permissions.map(
-            permission => permission.id
-          ) as Array<number>,
-        } as RoleRequestModel,
-      } as UpdateRoleRequest)
+          permissionIds: role.permissions.map(permission => permission.id),
+        },
+      })
       if (response) {
         notify('La modification du rôle a été effectuée avec succès', {
           type: 'success',

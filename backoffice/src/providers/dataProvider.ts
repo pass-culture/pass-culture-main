@@ -5,12 +5,7 @@ import {
   UserApiResponse,
   UserManualReview,
 } from '../resources/PublicUsers/types'
-import {
-  GetBeneficiaryCreditRequest,
-  GetPublicAccountRequest,
-  GetUserSubscriptionHistoryRequest,
-  PublicAccount,
-} from '../TypesFromApi'
+import { OffererBasicInfoResponseModel, PublicAccount } from '../TypesFromApi'
 
 import { safeFetch } from './apiHelpers'
 import { apiProvider } from './apiProvider'
@@ -64,19 +59,19 @@ export const dataProvider: DataProvider = {
       case 'public_accounts': {
         const response = await apiProvider().getPublicAccount({
           userId: params.id,
-        } as GetPublicAccountRequest)
+        })
         const userBaseInfo: PublicAccount = response
 
         const creditInfo = async () => {
           return await apiProvider().getBeneficiaryCredit({
             userId: params.id,
-          } as GetBeneficiaryCreditRequest)
+          })
         }
 
         const historyInfo = async () => {
           return await apiProvider().getUserSubscriptionHistory({
             userId: params.id,
-          } as GetUserSubscriptionHistoryRequest)
+          })
         }
 
         const [userCreditResponse, userHistoryResponse] = await Promise.all([
@@ -91,6 +86,36 @@ export const dataProvider: DataProvider = {
         }
         return { data: dataUser }
       }
+      case 'offerer': {
+        const response: OffererBasicInfoResponseModel =
+          await apiProvider().getOffererBasicInfo({
+            offererId: params.id,
+          })
+
+        const stats = async () =>
+          await apiProvider().getOffererOffersStats({
+            offererId: params.id,
+          })
+
+        const revenue = async () =>
+          await apiProvider().getOffererTotalRevenue({
+            offererId: params.id,
+          })
+
+        const [offererStats, offererTotalRevenue] = await Promise.all([
+          stats(),
+          revenue(),
+        ])
+        const offererData = {
+          ...response.data,
+          stats: offererStats.data,
+          revenue: offererTotalRevenue.data,
+        }
+        return {
+          data: offererData,
+        }
+      }
+
       default:
         break
     }

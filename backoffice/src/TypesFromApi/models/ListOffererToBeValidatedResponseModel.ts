@@ -14,71 +14,71 @@
 
 import { exists, mapValues } from '../runtime'
 import {
-  PublicAccount,
-  PublicAccountFromJSON,
-  PublicAccountFromJSONTyped,
-  PublicAccountToJSON,
+  OffererToBeValidated,
+  OffererToBeValidatedFromJSON,
+  OffererToBeValidatedFromJSONTyped,
+  OffererToBeValidatedToJSON,
 } from './'
 
 /**
  *
  * @export
- * @interface ListPublicAccountsResponseModel
+ * @interface ListOffererToBeValidatedResponseModel
  */
-export interface ListPublicAccountsResponseModel {
+export interface ListOffererToBeValidatedResponseModel {
   /**
    *
-   * @type {Array<PublicAccount>}
-   * @memberof ListPublicAccountsResponseModel
+   * @type {Array<OffererToBeValidated>}
+   * @memberof ListOffererToBeValidatedResponseModel
    */
-  data: Array<PublicAccount>
+  data: Array<OffererToBeValidated>
   /**
    *
    * @type {number}
-   * @memberof ListPublicAccountsResponseModel
+   * @memberof ListOffererToBeValidatedResponseModel
    */
   page: number
   /**
    *
    * @type {number}
-   * @memberof ListPublicAccountsResponseModel
+   * @memberof ListOffererToBeValidatedResponseModel
    */
   pages: number
   /**
    *
    * @type {number}
-   * @memberof ListPublicAccountsResponseModel
+   * @memberof ListOffererToBeValidatedResponseModel
    */
   size: number
   /**
    *
    * @type {string}
-   * @memberof ListPublicAccountsResponseModel
+   * @memberof ListOffererToBeValidatedResponseModel
    */
   sort?: string | null
   /**
    *
    * @type {number}
-   * @memberof ListPublicAccountsResponseModel
+   * @memberof ListOffererToBeValidatedResponseModel
    */
   total: number
 }
 
-export function ListPublicAccountsResponseModelFromJSON(
+export function ListOffererToBeValidatedResponseModelFromJSON(
   json: any
-): ListPublicAccountsResponseModel {
-  return ListPublicAccountsResponseModelFromJSONTyped(json, false)
+): ListOffererToBeValidatedResponseModel {
+  return ListOffererToBeValidatedResponseModelFromJSONTyped(json, false)
 }
 
-export function ListPublicAccountsResponseModelFromJSONTyped(
+export function ListOffererToBeValidatedResponseModelFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListPublicAccountsResponseModel {
+): ListOffererToBeValidatedResponseModel {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    data: (json['data'] as Array<any>).map(PublicAccountFromJSON),
+    data: (json['data'] as Array<any>).map(OffererToBeValidatedFromJSON),
     page: json['page'],
     pages: json['pages'],
     size: json['size'],
@@ -87,8 +87,8 @@ export function ListPublicAccountsResponseModelFromJSONTyped(
   }
 }
 
-export function ListPublicAccountsResponseModelToJSON(
-  value?: ListPublicAccountsResponseModel | null
+export function ListOffererToBeValidatedResponseModelToJSON(
+  value?: ListOffererToBeValidatedResponseModel | null
 ): any {
   if (value === undefined) {
     return undefined
@@ -97,7 +97,7 @@ export function ListPublicAccountsResponseModelToJSON(
     return null
   }
   return {
-    data: (value.data as Array<any>).map(PublicAccountToJSON),
+    data: (value.data as Array<any>).map(OffererToBeValidatedToJSON),
     page: value.page,
     pages: value.pages,
     size: value.size,

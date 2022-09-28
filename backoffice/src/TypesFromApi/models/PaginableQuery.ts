@@ -13,58 +13,51 @@
  */
 
 import { exists, mapValues } from '../runtime'
-import {
-  Permission,
-  PermissionFromJSON,
-  PermissionFromJSONTyped,
-  PermissionToJSON,
-} from './'
-
 /**
  *
  * @export
- * @interface Role
+ * @interface PaginableQuery
  */
-export interface Role {
+export interface PaginableQuery {
   /**
    *
    * @type {number}
-   * @memberof Role
+   * @memberof PaginableQuery
    */
-  id: number
+  page?: number | null
+  /**
+   *
+   * @type {number}
+   * @memberof PaginableQuery
+   */
+  perPage?: number | null
   /**
    *
    * @type {string}
-   * @memberof Role
+   * @memberof PaginableQuery
    */
-  name: string
-  /**
-   *
-   * @type {Array<Permission>}
-   * @memberof Role
-   */
-  permissions: Array<Permission>
+  sort?: string | null
 }
 
-export function RoleFromJSON(json: any): Role {
-  return RoleFromJSONTyped(json, false)
+export function PaginableQueryFromJSON(json: any): PaginableQuery {
+  return PaginableQueryFromJSONTyped(json, false)
 }
 
-export function RoleFromJSONTyped(
+export function PaginableQueryFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): Role {
+): PaginableQuery {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    id: json['id'],
-    name: json['name'],
-    permissions: (json['permissions'] as Array<any>).map(PermissionFromJSON),
+    page: !exists(json, 'page') ? undefined : json['page'],
+    perPage: !exists(json, 'perPage') ? undefined : json['perPage'],
+    sort: !exists(json, 'sort') ? undefined : json['sort'],
   }
 }
 
-export function RoleToJSON(value?: Role | null): any {
+export function PaginableQueryToJSON(value?: PaginableQuery | null): any {
   if (value === undefined) {
     return undefined
   }
@@ -72,8 +65,8 @@ export function RoleToJSON(value?: Role | null): any {
     return null
   }
   return {
-    id: value.id,
-    name: value.name,
-    permissions: (value.permissions as Array<any>).map(PermissionToJSON),
+    page: value.page,
+    perPage: value.perPage,
+    sort: value.sort,
   }
 }

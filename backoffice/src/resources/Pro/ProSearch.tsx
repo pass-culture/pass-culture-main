@@ -139,7 +139,6 @@ const ProCard = ({ record }: { record: ProResult }) => {
           href={`/${resourceType}/${id}`}
           variant={'text'}
           color={'inherit'}
-          disabled
         >
           Consulter ce profil
         </Button>

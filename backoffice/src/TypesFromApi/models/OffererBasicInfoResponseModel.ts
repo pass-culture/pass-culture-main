@@ -14,46 +14,46 @@
 
 import { exists, mapValues } from '../runtime'
 import {
-  Permission,
-  PermissionFromJSON,
-  PermissionFromJSONTyped,
-  PermissionToJSON,
+  OffererBasicInfo,
+  OffererBasicInfoFromJSON,
+  OffererBasicInfoFromJSONTyped,
+  OffererBasicInfoToJSON,
 } from './'
 
 /**
  *
  * @export
- * @interface ListPermissionResponseModel
+ * @interface OffererBasicInfoResponseModel
  */
-export interface ListPermissionResponseModel {
+export interface OffererBasicInfoResponseModel {
   /**
    *
-   * @type {Array<Permission>}
-   * @memberof ListPermissionResponseModel
+   * @type {OffererBasicInfo}
+   * @memberof OffererBasicInfoResponseModel
    */
-  permissions: Array<Permission>
+  data: OffererBasicInfo
 }
 
-export function ListPermissionResponseModelFromJSON(
+export function OffererBasicInfoResponseModelFromJSON(
   json: any
-): ListPermissionResponseModel {
-  return ListPermissionResponseModelFromJSONTyped(json, false)
+): OffererBasicInfoResponseModel {
+  return OffererBasicInfoResponseModelFromJSONTyped(json, false)
 }
 
-export function ListPermissionResponseModelFromJSONTyped(
+export function OffererBasicInfoResponseModelFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListPermissionResponseModel {
+): OffererBasicInfoResponseModel {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    permissions: (json['permissions'] as Array<any>).map(PermissionFromJSON),
+    data: OffererBasicInfoFromJSON(json['data']),
   }
 }
 
-export function ListPermissionResponseModelToJSON(
-  value?: ListPermissionResponseModel | null
+export function OffererBasicInfoResponseModelToJSON(
+  value?: OffererBasicInfoResponseModel | null
 ): any {
   if (value === undefined) {
     return undefined
@@ -62,6 +62,6 @@ export function ListPermissionResponseModelToJSON(
     return null
   }
   return {
-    permissions: (value.permissions as Array<any>).map(PermissionToJSON),
+    data: OffererBasicInfoToJSON(value.data),
   }
 }

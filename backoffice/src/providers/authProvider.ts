@@ -5,13 +5,12 @@ import { AuthProvider } from 'react-admin'
 
 import { env } from '../libs/environment/env'
 import { eventMonitoring } from '../libs/monitoring/sentry'
-import { DefaultApi, GetAuthTokenRequest } from '../TypesFromApi'
+import { GetAuthTokenRequest } from '../TypesFromApi'
 
 import { getErrorMessage } from './apiHelpers'
+import { apiProvider } from './apiProvider'
 import { getProfileFromToken } from './getProfileFromToken'
 import { AuthToken, tokenApiPayload } from './types'
-
-const defaultApi = new DefaultApi()
 
 const userManager = new UserManager({
   authority: env.AUTH_ISSUER,
@@ -34,7 +33,7 @@ async function getTokenApiFromAuthToken() {
 
   const authToken = { token: JSON.parse(token) } as GetAuthTokenRequest
 
-  const tokenFromApi = await defaultApi.getAuthToken(authToken)
+  const tokenFromApi = await apiProvider().getAuthToken(authToken)
   localStorage.setItem('tokenApi', JSON.stringify(tokenFromApi.token))
 }
 

@@ -18,7 +18,7 @@ import {
   UserRoleFromJSON,
   UserRoleFromJSONTyped,
   UserRoleToJSON,
-} from './index'
+} from './'
 
 /**
  *

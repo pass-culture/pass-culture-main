@@ -8,6 +8,8 @@ from spectree import Response
 from spectree import SpecTree
 from spectree.utils import parse_code
 
+from pcapi import settings
+
 
 def get_model_key(model):  # type: ignore [no-untyped-def]
     return model.__name__
@@ -49,6 +51,7 @@ class ExtendedSpecTree(SpecTree):
                     path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
                     path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
                     spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
+                    spec["servers"] = [{"url": settings.API_URL}]
         return spec
 
     def _add_model(self, model) -> str:  # type: ignore [no-untyped-def]

@@ -29,6 +29,9 @@ import {
   GetUserSubscriptionHistoryResponseModel,
   GetUserSubscriptionHistoryResponseModelFromJSON,
   GetUserSubscriptionHistoryResponseModelToJSON,
+  ListOffererToBeValidatedResponseModel,
+  ListOffererToBeValidatedResponseModelFromJSON,
+  ListOffererToBeValidatedResponseModelToJSON,
   ListPermissionResponseModel,
   ListPermissionResponseModelFromJSON,
   ListPermissionResponseModelToJSON,
@@ -41,6 +44,18 @@ import {
   OffererAttachedUsersResponseModel,
   OffererAttachedUsersResponseModelFromJSON,
   OffererAttachedUsersResponseModelToJSON,
+  OffererBasicInfoResponseModel,
+  OffererBasicInfoResponseModelFromJSON,
+  OffererBasicInfoResponseModelToJSON,
+  OffererOfferStatsResponseModel,
+  OffererOfferStatsResponseModelFromJSON,
+  OffererOfferStatsResponseModelToJSON,
+  OffererTagsResponseModel,
+  OffererTagsResponseModelFromJSON,
+  OffererTagsResponseModelToJSON,
+  OffererTotalRevenueResponseModel,
+  OffererTotalRevenueResponseModelFromJSON,
+  OffererTotalRevenueResponseModelToJSON,
   PublicAccount,
   PublicAccountFromJSON,
   PublicAccountToJSON,
@@ -50,6 +65,9 @@ import {
   PublicHistoryResponseModel,
   PublicHistoryResponseModelFromJSON,
   PublicHistoryResponseModelToJSON,
+  Response,
+  ResponseFromJSON,
+  ResponseToJSON,
   Role,
   RoleFromJSON,
   RoleToJSON,
@@ -63,6 +81,11 @@ import {
   ValidationErrorElementFromJSON,
   ValidationErrorElementToJSON,
 } from '../models'
+
+export interface AddTagToOffererRequest {
+  offererId: number
+  tagName: string
+}
 
 export interface CreateRoleRequest {
   roleRequestModel?: RoleRequestModel
@@ -80,6 +103,18 @@ export interface GetBeneficiaryCreditRequest {
   userId: number
 }
 
+export interface GetOffererBasicInfoRequest {
+  offererId: number
+}
+
+export interface GetOffererOffersStatsRequest {
+  offererId: number
+}
+
+export interface GetOffererTotalRevenueRequest {
+  offererId: number
+}
+
 export interface GetOffererUsersRequest {
   offererId: number
 }
@@ -94,6 +129,29 @@ export interface GetPublicHistoryRequest {
 
 export interface GetUserSubscriptionHistoryRequest {
   userId: number
+}
+
+export interface GetVenueBasicInfoRequest {
+  venueId: number
+}
+
+export interface GetVenueOffersStatsRequest {
+  venueId: number
+}
+
+export interface GetVenueTotalRevenueRequest {
+  venueId: number
+}
+
+export interface ListOfferersToBeValidatedRequest {
+  page?: number | null
+  perPage?: number | null
+  sort?: string | null
+}
+
+export interface RemoveTagFromOffererRequest {
+  offererId: number
+  tagName: string
 }
 
 export interface ResendValidationEmailRequest {
@@ -138,10 +196,80 @@ export interface UpdateRoleRequest {
   roleRequestModel?: RoleRequestModel
 }
 
+export interface ValidateOffererRequest {
+  offererId: number
+}
+
 /**
  * no description
  */
 export class DefaultApi extends runtime.BaseAPI {
+  /**
+   * add_tag_to_offerer <POST>
+   */
+  async addTagToOffererRaw(
+    requestParameters: AddTagToOffererRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling addTagToOfferer.'
+      )
+    }
+
+    if (
+      requestParameters.tagName === null ||
+      requestParameters.tagName === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'tagName',
+        'Required parameter requestParameters.tagName was null or undefined when calling addTagToOfferer.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/tags/{tag_name}`
+        .replace(
+          `{${'offerer_id'}}`,
+          encodeURIComponent(String(requestParameters.offererId))
+        )
+        .replace(
+          `{${'tag_name'}}`,
+          encodeURIComponent(String(requestParameters.tagName))
+        ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * add_tag_to_offerer <POST>
+   */
+  async addTagToOfferer(
+    requestParameters: AddTagToOffererRequest
+  ): Promise<void> {
+    await this.addTagToOffererRaw(requestParameters)
+  }
+
   /**
    * create_role <POST>
    */
@@ -336,6 +464,168 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * get_offerer_basic_info <GET>
+   */
+  async getOffererBasicInfoRaw(
+    requestParameters: GetOffererBasicInfoRequest
+  ): Promise<runtime.ApiResponse<OffererBasicInfoResponseModel>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling getOffererBasicInfo.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      OffererBasicInfoResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_offerer_basic_info <GET>
+   */
+  async getOffererBasicInfo(
+    requestParameters: GetOffererBasicInfoRequest
+  ): Promise<OffererBasicInfoResponseModel> {
+    const response = await this.getOffererBasicInfoRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * get_offerer_offers_stats <GET>
+   */
+  async getOffererOffersStatsRaw(
+    requestParameters: GetOffererOffersStatsRequest
+  ): Promise<runtime.ApiResponse<OffererOfferStatsResponseModel>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling getOffererOffersStats.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/offers_stats`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      OffererOfferStatsResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_offerer_offers_stats <GET>
+   */
+  async getOffererOffersStats(
+    requestParameters: GetOffererOffersStatsRequest
+  ): Promise<OffererOfferStatsResponseModel> {
+    const response = await this.getOffererOffersStatsRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * get_offerer_total_revenue <GET>
+   */
+  async getOffererTotalRevenueRaw(
+    requestParameters: GetOffererTotalRevenueRequest
+  ): Promise<runtime.ApiResponse<OffererTotalRevenueResponseModel>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling getOffererTotalRevenue.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/total_revenue`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      OffererTotalRevenueResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_offerer_total_revenue <GET>
+   */
+  async getOffererTotalRevenue(
+    requestParameters: GetOffererTotalRevenueRequest
+  ): Promise<OffererTotalRevenueResponseModel> {
+    const response = await this.getOffererTotalRevenueRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
    * Get the list of all (pro) users attached to the offerer
    */
   async getOffererUsersRaw(
@@ -386,6 +676,45 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: GetOffererUsersRequest
   ): Promise<OffererAttachedUsersResponseModel> {
     const response = await this.getOffererUsersRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * get_offerers_tags_list <GET>
+   */
+  async getOfferersTagsListRaw(): Promise<
+    runtime.ApiResponse<OffererTagsResponseModel>
+  > {
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/tags`,
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      OffererTagsResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_offerers_tags_list <GET>
+   */
+  async getOfferersTagsList(): Promise<OffererTagsResponseModel> {
+    const response = await this.getOfferersTagsListRaw()
     return await response.value()
   }
 
@@ -552,6 +881,221 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * get_venue_basic_info <GET>
+   */
+  async getVenueBasicInfoRaw(
+    requestParameters: GetVenueBasicInfoRequest
+  ): Promise<runtime.ApiResponse<Response>> {
+    if (
+      requestParameters.venueId === null ||
+      requestParameters.venueId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'venueId',
+        'Required parameter requestParameters.venueId was null or undefined when calling getVenueBasicInfo.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/venues/{venue_id}`.replace(
+        `{${'venue_id'}}`,
+        encodeURIComponent(String(requestParameters.venueId))
+      ),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      ResponseFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_venue_basic_info <GET>
+   */
+  async getVenueBasicInfo(
+    requestParameters: GetVenueBasicInfoRequest
+  ): Promise<Response> {
+    const response = await this.getVenueBasicInfoRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * get_venue_offers_stats <GET>
+   */
+  async getVenueOffersStatsRaw(
+    requestParameters: GetVenueOffersStatsRequest
+  ): Promise<runtime.ApiResponse<Response>> {
+    if (
+      requestParameters.venueId === null ||
+      requestParameters.venueId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'venueId',
+        'Required parameter requestParameters.venueId was null or undefined when calling getVenueOffersStats.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/venues/{venue_id}/offers_stats`.replace(
+        `{${'venue_id'}}`,
+        encodeURIComponent(String(requestParameters.venueId))
+      ),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      ResponseFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_venue_offers_stats <GET>
+   */
+  async getVenueOffersStats(
+    requestParameters: GetVenueOffersStatsRequest
+  ): Promise<Response> {
+    const response = await this.getVenueOffersStatsRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * get_venue_total_revenue <GET>
+   */
+  async getVenueTotalRevenueRaw(
+    requestParameters: GetVenueTotalRevenueRequest
+  ): Promise<runtime.ApiResponse<Response>> {
+    if (
+      requestParameters.venueId === null ||
+      requestParameters.venueId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'venueId',
+        'Required parameter requestParameters.venueId was null or undefined when calling getVenueTotalRevenue.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/venues/{venue_id}/total_revenue`.replace(
+        `{${'venue_id'}}`,
+        encodeURIComponent(String(requestParameters.venueId))
+      ),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      ResponseFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_venue_total_revenue <GET>
+   */
+  async getVenueTotalRevenue(
+    requestParameters: GetVenueTotalRevenueRequest
+  ): Promise<Response> {
+    const response = await this.getVenueTotalRevenueRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * list_offerers_to_be_validated <GET>
+   */
+  async listOfferersToBeValidatedRaw(
+    requestParameters: ListOfferersToBeValidatedRequest
+  ): Promise<runtime.ApiResponse<ListOffererToBeValidatedResponseModel>> {
+    const queryParameters: runtime.HTTPQuery = {}
+
+    if (requestParameters.page !== undefined) {
+      queryParameters['page'] = requestParameters.page
+    }
+
+    if (requestParameters.perPage !== undefined) {
+      queryParameters['perPage'] = requestParameters.perPage
+    }
+
+    if (requestParameters.sort !== undefined) {
+      queryParameters['sort'] = requestParameters.sort
+    }
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/to_be_validated`,
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      ListOffererToBeValidatedResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * list_offerers_to_be_validated <GET>
+   */
+  async listOfferersToBeValidated(
+    requestParameters: ListOfferersToBeValidatedRequest
+  ): Promise<ListOffererToBeValidatedResponseModel> {
+    const response = await this.listOfferersToBeValidatedRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
    * list_permissions <GET>
    */
   async listPermissionsRaw(): Promise<
@@ -625,6 +1169,72 @@ export class DefaultApi extends runtime.BaseAPI {
   async listRoles(): Promise<ListRoleResponseModel> {
     const response = await this.listRolesRaw()
     return await response.value()
+  }
+
+  /**
+   * remove_tag_from_offerer <DELETE>
+   */
+  async removeTagFromOffererRaw(
+    requestParameters: RemoveTagFromOffererRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling removeTagFromOfferer.'
+      )
+    }
+
+    if (
+      requestParameters.tagName === null ||
+      requestParameters.tagName === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'tagName',
+        'Required parameter requestParameters.tagName was null or undefined when calling removeTagFromOfferer.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/tags/{tag_name}`
+        .replace(
+          `{${'offerer_id'}}`,
+          encodeURIComponent(String(requestParameters.offererId))
+        )
+        .replace(
+          `{${'tag_name'}}`,
+          encodeURIComponent(String(requestParameters.tagName))
+        ),
+      method: 'DELETE',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * remove_tag_from_offerer <DELETE>
+   */
+  async removeTagFromOfferer(
+    requestParameters: RemoveTagFromOffererRequest
+  ): Promise<void> {
+    await this.removeTagFromOffererRaw(requestParameters)
   }
 
   /**
@@ -1090,5 +1700,56 @@ export class DefaultApi extends runtime.BaseAPI {
   async updateRole(requestParameters: UpdateRoleRequest): Promise<Role> {
     const response = await this.updateRoleRaw(requestParameters)
     return await response.value()
+  }
+
+  /**
+   * validate_offerer <POST>
+   */
+  async validateOffererRaw(
+    requestParameters: ValidateOffererRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling validateOfferer.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/validate`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * validate_offerer <POST>
+   */
+  async validateOfferer(
+    requestParameters: ValidateOffererRequest
+  ): Promise<void> {
+    await this.validateOffererRaw(requestParameters)
   }
 }

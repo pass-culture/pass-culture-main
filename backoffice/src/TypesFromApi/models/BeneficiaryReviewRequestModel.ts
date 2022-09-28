@@ -18,7 +18,7 @@ import {
   FraudReviewStatusFromJSON,
   FraudReviewStatusFromJSONTyped,
   FraudReviewStatusToJSON,
-} from './index'
+} from './'
 
 /**
  *
