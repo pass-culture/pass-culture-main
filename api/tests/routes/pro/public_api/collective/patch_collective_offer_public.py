@@ -18,6 +18,7 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue)
@@ -26,6 +27,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
             "subcategoryId": "EVENEMENT_CINE",
+            "venueId": venue2.id,
             "bookingEmail": "offerer-email@example.com",
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
@@ -65,6 +67,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         assert offer.name == payload["name"]
         assert offer.description == payload["description"]
+        assert offer.venueId == venue2.id
         assert offer.subcategoryId == payload["subcategoryId"]
         assert offer.bookingEmail == payload["bookingEmail"]
         assert offer.contactEmail == payload["contactEmail"]

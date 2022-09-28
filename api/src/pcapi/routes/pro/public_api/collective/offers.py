@@ -2,6 +2,7 @@ from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import public_api_collective_offers_serialize
@@ -225,6 +226,7 @@ def patch_collective_offer_public(
     # checking data
     non_nullable_fields = [
         "name",
+        "venueId",
         "contactEmail",
         "contactPhone",
         "description",
@@ -277,6 +279,16 @@ def patch_collective_offer_public(
             },
             status_code=403,
         )
+
+    if new_values.get("venueId"):
+        venue = offerers_repository.find_venue_by_id(new_values["venueId"])
+        if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):  # type: ignore [attr-defined]
+            raise ApiErrors(
+                errors={
+                    "venueId": ["Ce lieu n'à pas été trouvée."],
+                },
+                status_code=404,
+            )
 
     # real edition
     try:

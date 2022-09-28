@@ -313,6 +313,11 @@ def test_public_api(client, app):
                 "PatchCollectiveOfferBodyModel": {
                     "additionalProperties": False,
                     "properties": {
+                        "audioDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Audiodisabilitycompliant",
+                            "type": "boolean",
+                        },
                         "beginningDatetime": {
                             "format": "date-time",
                             "nullable": True,
@@ -347,6 +352,16 @@ def test_public_api(client, app):
                             "title": "Interventionarea",
                             "type": "array",
                         },
+                        "mentalDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Mentaldisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "motorDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Motordisabilitycompliant",
+                            "type": "boolean",
+                        },
                         "name": {"nullable": True, "title": "Name", "type": "string"},
                         "numberOfTickets": {"nullable": True, "title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {
@@ -354,7 +369,6 @@ def test_public_api(client, app):
                             "nullable": True,
                             "title": "OfferVenueModel",
                         },
-                        "priceDetail": {"nullable": True, "title": "Pricedetail", "type": "string"},
                         "students": {
                             "items": {"$ref": "#/components/schemas/StudentLevels"},
                             "nullable": True,
@@ -362,6 +376,12 @@ def test_public_api(client, app):
                         },
                         "subcategoryId": {"nullable": True, "title": "Subcategoryid", "type": "string"},
                         "totalPrice": {"nullable": True, "title": "Totalprice", "type": "number"},
+                        "venueId": {"nullable": True, "title": "Venueid", "type": "integer"},
+                        "visualDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Visualdisabilitycompliant",
+                            "type": "boolean",
+                        },
                     },
                     "title": "PatchCollectiveOfferBodyModel",
                     "type": "object",
@@ -383,13 +403,18 @@ def test_public_api(client, app):
                         },
                         "contactEmail": {"title": "Contactemail", "type": "string"},
                         "contactPhone": {"title": "Contactphone", "type": "string"},
-                        "description": {"nullable": True, "title": "Description", "type": "string"},
+                        "description": {"title": "Description", "type": "string"},
                         "domains": {"items": {"type": "string"}, "title": "Domains", "type": "array"},
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
                         "educationalInstitutionId": {
                             "nullable": True,
                             "title": "Educationalinstitutionid",
                             "type": "integer",
+                        },
+                        "educationalPriceDetail": {
+                            "nullable": True,
+                            "title": "Educationalpricedetail",
+                            "type": "string",
                         },
                         "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
                         "mentalDisabilityCompliant": {
@@ -405,7 +430,6 @@ def test_public_api(client, app):
                         "name": {"title": "Name", "type": "string"},
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
-                        "priceDetail": {"nullable": True, "title": "Pricedetail", "type": "string"},
                         "students": {"items": {"$ref": "#/components/schemas/StudentLevels"}, "type": "array"},
                         "subcategoryId": {"title": "Subcategoryid", "type": "string"},
                         "totalPrice": {"title": "Totalprice", "type": "integer"},
@@ -419,6 +443,7 @@ def test_public_api(client, app):
                     "required": [
                         "venueId",
                         "name",
+                        "description",
                         "subcategoryId",
                         "contactEmail",
                         "contactPhone",
