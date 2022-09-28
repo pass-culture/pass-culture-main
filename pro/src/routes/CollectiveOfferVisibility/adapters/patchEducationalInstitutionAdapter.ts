@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { CollectiveOffer } from 'core/OfferEducational'
 
 export type PatchEducationalInstitutionAdapter = Adapter<
   {
@@ -7,7 +7,7 @@ export type PatchEducationalInstitutionAdapter = Adapter<
     institutionId: string | null
     isCreatingOffer: boolean
   },
-  GetCollectiveOfferResponseModel,
+  CollectiveOffer,
   null
 >
 
@@ -25,7 +25,7 @@ export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdap
         isOk: true,
         message:
           'Les paramètres de visibilité de votre offre ont bien été enregistrés',
-        payload: collectiveOffer,
+        payload: { ...collectiveOffer, isTemplate: false },
       }
     } catch (e) {
       return {

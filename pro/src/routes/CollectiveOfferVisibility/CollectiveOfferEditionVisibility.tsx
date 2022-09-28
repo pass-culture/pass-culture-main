@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import {
-  EducationalInstitutionResponseModel,
-  GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   Mode,
   extractOfferIdAndOfferTypeFromRouteParams,
+  CollectiveOffer,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
@@ -63,7 +61,7 @@ const CollectiveOfferVisibility = () => {
     payload,
   }: {
     message: string
-    payload: GetCollectiveOfferResponseModel
+    payload: CollectiveOffer
   }) => {
     setInstitution(payload.institution)
     notify.success(message)

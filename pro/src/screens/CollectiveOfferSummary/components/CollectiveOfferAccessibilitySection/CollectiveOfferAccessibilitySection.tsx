@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
 
 interface ICollectiveOfferParticipantSectionProps {
-  offer: GetCollectiveOfferTemplateResponseModel
+  offer: CollectiveOfferTemplate | CollectiveOffer
 }
 
 const CollectiveOfferParticipantSection = ({

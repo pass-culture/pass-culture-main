@@ -1,12 +1,10 @@
 import React from 'react'
 
-import {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import {
   cancelCollectiveBookingAdapter,
+  CollectiveOffer,
+  CollectiveOfferTemplate,
   EducationalCategories,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
@@ -28,18 +26,8 @@ import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSectio
 import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
 import { DEFAULT_RECAP_VALUE } from './components/constants'
 
-const isCollectiveOfferTemplate = (
-  offer:
-    | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel
-): offer is GetCollectiveOfferTemplateResponseModel => {
-  return !('collectiveStock' in offer)
-}
-
 interface ICollectiveOfferSummaryProps {
-  offer:
-    | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel
+  offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
   reloadCollectiveOffer?: () => void
 }
@@ -52,7 +40,7 @@ const CollectiveOfferSummary = ({
   const notify = useNotification()
 
   const setIsOfferActive = async () => {
-    const adapter = isCollectiveOfferTemplate(offer)
+    const adapter = offer.isTemplate
       ? patchIsTemplateOfferActiveAdapter
       : patchIsCollectiveOfferActiveAdapter
 
@@ -69,7 +57,7 @@ const CollectiveOfferSummary = ({
   }
 
   const cancelActiveBookings = async () => {
-    if (isCollectiveOfferTemplate(offer)) {
+    if (offer.isTemplate) {
       return
     }
 
@@ -85,13 +73,13 @@ const CollectiveOfferSummary = ({
     reloadCollectiveOffer?.()
   }
 
-  const offerEditLink = `/offre/${
-    isCollectiveOfferTemplate(offer) ? 'T-' : ''
-  }${offer.id}/collectif/edition`
+  const offerEditLink = `/offre/${offer.isTemplate ? 'T-' : ''}${
+    offer.id
+  }/collectif/edition`
 
-  const stockEditLink = `/offre/${
-    isCollectiveOfferTemplate(offer) ? 'T-' : ''
-  }${offer.id}/collectif/stocks/edition`
+  const stockEditLink = `/offre/${offer.isTemplate ? 'T-' : ''}${
+    offer.id
+  }/collectif/stocks/edition`
 
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 
@@ -101,9 +89,7 @@ const CollectiveOfferSummary = ({
         cancelActiveBookings={cancelActiveBookings}
         className={styles.actions}
         isBooked={
-          isCollectiveOfferTemplate(offer)
-            ? false
-            : Boolean(offer.collectiveStock?.isBooked)
+          offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
         }
         isCancellable={offer.isCancellable}
         isOfferActive={offer.isActive}
@@ -131,7 +117,7 @@ const CollectiveOfferSummary = ({
             )}
           </SummaryLayout.Section>
           <SummaryLayout.Section title="Date & Prix" editLink={stockEditLink}>
-            {isCollectiveOfferTemplate(offer) ? (
+            {offer.isTemplate ? (
               <SummaryLayout.Row
                 title="Détails"
                 description={
@@ -145,7 +131,7 @@ const CollectiveOfferSummary = ({
               />
             )}
           </SummaryLayout.Section>
-          {!isCollectiveOfferTemplate(offer) && (
+          {!offer.isTemplate && (
             <SummaryLayout.Section
               title="Visibilité"
               editLink={visibilityEditLink}
