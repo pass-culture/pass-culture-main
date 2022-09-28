@@ -13,43 +13,44 @@
  */
 
 import { exists, mapValues } from '../runtime'
-import { Role, RoleFromJSON, RoleFromJSONTyped, RoleToJSON } from './'
-
 /**
  *
  * @export
- * @interface ListRoleResponseModel
+ * @interface BaseOffersStats
  */
-export interface ListRoleResponseModel {
+export interface BaseOffersStats {
   /**
    *
-   * @type {Array<Role>}
-   * @memberof ListRoleResponseModel
+   * @type {number}
+   * @memberof BaseOffersStats
    */
-  roles: Array<Role>
+  collective: number
+  /**
+   *
+   * @type {number}
+   * @memberof BaseOffersStats
+   */
+  individual: number
 }
 
-export function ListRoleResponseModelFromJSON(
-  json: any
-): ListRoleResponseModel {
-  return ListRoleResponseModelFromJSONTyped(json, false)
+export function BaseOffersStatsFromJSON(json: any): BaseOffersStats {
+  return BaseOffersStatsFromJSONTyped(json, false)
 }
 
-export function ListRoleResponseModelFromJSONTyped(
+export function BaseOffersStatsFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListRoleResponseModel {
+): BaseOffersStats {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    roles: (json['roles'] as Array<any>).map(RoleFromJSON),
+    collective: json['collective'],
+    individual: json['individual'],
   }
 }
 
-export function ListRoleResponseModelToJSON(
-  value?: ListRoleResponseModel | null
-): any {
+export function BaseOffersStatsToJSON(value?: BaseOffersStats | null): any {
   if (value === undefined) {
     return undefined
   }
@@ -57,6 +58,7 @@ export function ListRoleResponseModelToJSON(
     return null
   }
   return {
-    roles: (value.roles as Array<any>).map(RoleToJSON),
+    collective: value.collective,
+    individual: value.individual,
   }
 }

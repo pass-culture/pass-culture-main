@@ -18,7 +18,7 @@ import {
   EligibilitySubscriptionHistoryModelFromJSON,
   EligibilitySubscriptionHistoryModelFromJSONTyped,
   EligibilitySubscriptionHistoryModelToJSON,
-} from './index'
+} from './'
 
 /**
  *

@@ -14,57 +14,50 @@
 
 import { exists, mapValues } from '../runtime'
 import {
-  Permission,
-  PermissionFromJSON,
-  PermissionFromJSONTyped,
-  PermissionToJSON,
+  BaseOffersStats,
+  BaseOffersStatsFromJSON,
+  BaseOffersStatsFromJSONTyped,
+  BaseOffersStatsToJSON,
 } from './'
 
 /**
  *
  * @export
- * @interface Role
+ * @interface OffersStats
  */
-export interface Role {
+export interface OffersStats {
   /**
    *
-   * @type {number}
-   * @memberof Role
+   * @type {BaseOffersStats}
+   * @memberof OffersStats
    */
-  id: number
+  active: BaseOffersStats
   /**
    *
-   * @type {string}
-   * @memberof Role
+   * @type {BaseOffersStats}
+   * @memberof OffersStats
    */
-  name: string
-  /**
-   *
-   * @type {Array<Permission>}
-   * @memberof Role
-   */
-  permissions: Array<Permission>
+  inactive: BaseOffersStats
 }
 
-export function RoleFromJSON(json: any): Role {
-  return RoleFromJSONTyped(json, false)
+export function OffersStatsFromJSON(json: any): OffersStats {
+  return OffersStatsFromJSONTyped(json, false)
 }
 
-export function RoleFromJSONTyped(
+export function OffersStatsFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): Role {
+): OffersStats {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    id: json['id'],
-    name: json['name'],
-    permissions: (json['permissions'] as Array<any>).map(PermissionFromJSON),
+    active: BaseOffersStatsFromJSON(json['active']),
+    inactive: BaseOffersStatsFromJSON(json['inactive']),
   }
 }
 
-export function RoleToJSON(value?: Role | null): any {
+export function OffersStatsToJSON(value?: OffersStats | null): any {
   if (value === undefined) {
     return undefined
   }
@@ -72,8 +65,7 @@ export function RoleToJSON(value?: Role | null): any {
     return null
   }
   return {
-    id: value.id,
-    name: value.name,
-    permissions: (value.permissions as Array<any>).map(PermissionToJSON),
+    active: BaseOffersStatsToJSON(value.active),
+    inactive: BaseOffersStatsToJSON(value.inactive),
   }
 }

@@ -34,7 +34,6 @@ import {
 import { apiProvider } from '../../providers/apiProvider'
 import {
   IdCheckItemModel,
-  ResendValidationEmailRequest,
   SubscriptionItemModel,
   UserRole,
 } from '../../TypesFromApi'
@@ -126,7 +125,7 @@ export const UserDetail = () => {
     try {
       const response = await apiProvider().resendValidationEmail({
         userId: userId,
-      } as ResendValidationEmailRequest)
+      })
       if (response !== undefined) {
         notify('La confirmation a été envoyée avec succès', { type: 'success' })
       }
@@ -185,7 +184,6 @@ export const UserDetail = () => {
       items: UNDERAGE.subscriptionItems,
     })
   }
-  console.log(typeof idsCheckHistory[0].items[0].dateCreated)
   return (
     <Grid
       container
@@ -195,6 +193,19 @@ export const UserDetail = () => {
       justifyContent="center"
       sx={{ maxWidth: '99vw', width: '100%' }}
     >
+      <Grid container spacing={1} sx={{ mt: 3, ml: 1 }}>
+        <Grid item xs={10}>
+          <Typography variant={'h5'} component={'div'} color={Colors.GREY}>
+            Jeunes bénéficiaires ou à venir
+          </Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <Button onClick={() => history.back()} variant={'text'}>
+            {' '}
+            &lt; Retour à la recherche
+          </Button>
+        </Grid>
+      </Grid>
       <Card style={cardStyle}>
         <Grid container spacing={1}>
           <Grid item xs={10}>
@@ -449,9 +460,7 @@ export const UserDetail = () => {
                   <div key={subscriptionItem.role}>
                     <UserHistoryCard
                       role={subscriptionItem.role}
-                      subscriptionItem={
-                        subscriptionItem.items as Array<SubscriptionItemModel>
-                      }
+                      subscriptionItem={subscriptionItem.items}
                     />
                   </div>
                 ))}

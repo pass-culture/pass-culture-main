@@ -22,7 +22,7 @@ import {
   SubscriptionStepFromJSON,
   SubscriptionStepFromJSONTyped,
   SubscriptionStepToJSON,
-} from './index'
+} from './'
 
 /**
  *

@@ -14,9 +14,6 @@ import { apiProvider } from '../../../providers/apiProvider'
 import {
   IdCheckItemModel,
   PublicAccount,
-  PublicAccountUpdateRequest,
-  SendPhoneValidationCodeRequest,
-  SkipPhoneValidationRequest,
   UpdatePublicAccountRequest,
 } from '../../../TypesFromApi'
 import { FraudCheckTechnicalDetails } from '../types'
@@ -34,7 +31,7 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
     try {
       const response = await apiProvider().skipPhoneValidation({
         userId: user.id,
-      } as SkipPhoneValidationRequest)
+      })
       if (response !== undefined) {
         notify('Le numéro de téléphone a été confirmé avec succès', {
           type: 'success',
@@ -54,7 +51,7 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
     try {
       const response = await apiProvider().sendPhoneValidationCode({
         userId: user.id,
-      } as SendPhoneValidationCodeRequest)
+      })
       if (response !== undefined) {
         notify('Le code de validation du téléphone a été envoyé avec succès', {
           type: 'success',
@@ -79,7 +76,6 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
   const submitForm = async (params: FieldValues) => {
     if (params && user.id) {
       try {
-        console.log(params)
         const request: UpdatePublicAccountRequest = {
           userId: user.id,
           publicAccountUpdateRequest: {
@@ -93,7 +89,7 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
             lastName: params.lastName,
             phoneNumber: params.phoneNumber,
             postalCode: params.postalCode,
-          } as PublicAccountUpdateRequest,
+          },
         }
         setEditable(false)
 

@@ -13,43 +13,51 @@
  */
 
 import { exists, mapValues } from '../runtime'
-import { Role, RoleFromJSON, RoleFromJSONTyped, RoleToJSON } from './'
-
 /**
  *
  * @export
- * @interface ListRoleResponseModel
+ * @interface OffererTagItem
  */
-export interface ListRoleResponseModel {
+export interface OffererTagItem {
   /**
    *
-   * @type {Array<Role>}
-   * @memberof ListRoleResponseModel
+   * @type {number}
+   * @memberof OffererTagItem
    */
-  roles: Array<Role>
+  id: number
+  /**
+   *
+   * @type {string}
+   * @memberof OffererTagItem
+   */
+  label?: string | null
+  /**
+   *
+   * @type {string}
+   * @memberof OffererTagItem
+   */
+  name: string
 }
 
-export function ListRoleResponseModelFromJSON(
-  json: any
-): ListRoleResponseModel {
-  return ListRoleResponseModelFromJSONTyped(json, false)
+export function OffererTagItemFromJSON(json: any): OffererTagItem {
+  return OffererTagItemFromJSONTyped(json, false)
 }
 
-export function ListRoleResponseModelFromJSONTyped(
+export function OffererTagItemFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListRoleResponseModel {
+): OffererTagItem {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    roles: (json['roles'] as Array<any>).map(RoleFromJSON),
+    id: json['id'],
+    label: !exists(json, 'label') ? undefined : json['label'],
+    name: json['name'],
   }
 }
 
-export function ListRoleResponseModelToJSON(
-  value?: ListRoleResponseModel | null
-): any {
+export function OffererTagItemToJSON(value?: OffererTagItem | null): any {
   if (value === undefined) {
     return undefined
   }
@@ -57,6 +65,8 @@ export function ListRoleResponseModelToJSON(
     return null
   }
   return {
-    roles: (value.roles as Array<any>).map(RoleToJSON),
+    id: value.id,
+    label: value.label,
+    name: value.name,
   }
 }
