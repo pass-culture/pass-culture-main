@@ -16,13 +16,23 @@ const isPhoneValid = (phone: string | undefined): boolean => {
   return Boolean(isValid)
 }
 
+const isNotEmpty = (description: string | undefined): boolean =>
+  description ? Boolean(description.trim().length > 0) : false
+
 export const validationSchema = yup.object().shape({
   category: yup.string().required('Veuillez sélectionner une catégorie'),
   subCategory: yup
     .string()
     .required('Veuillez sélectionner une sous-catégorie'),
   title: yup.string().max(90).required('Veuillez renseigner un titre'),
-  description: yup.string().max(1000),
+  description: yup
+    .string()
+    .test({
+      name: 'is-not-empty',
+      message: 'Veuillez renseigner une description',
+      test: isNotEmpty,
+    })
+    .max(1000),
   duration: yup
     .string()
     .matches(
