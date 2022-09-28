@@ -61,7 +61,7 @@ executors:
 
   helm:
     docker:
-      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.8.2
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.9.4
         auth:
           username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
