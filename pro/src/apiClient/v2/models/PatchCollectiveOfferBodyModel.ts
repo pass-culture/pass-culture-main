@@ -6,6 +6,7 @@ import type { OfferVenueModel } from './OfferVenueModel';
 import type { StudentLevels } from './StudentLevels';
 
 export type PatchCollectiveOfferBodyModel = {
+  audioDisabilityCompliant?: boolean | null;
   beginningDatetime?: string | null;
   bookingEmail?: string | null;
   bookingLimitDatetime?: string | null;
@@ -17,12 +18,15 @@ export type PatchCollectiveOfferBodyModel = {
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
   interventionArea?: Array<string> | null;
+  mentalDisabilityCompliant?: boolean | null;
+  motorDisabilityCompliant?: boolean | null;
   name?: string | null;
   numberOfTickets?: number | null;
   offerVenue?: OfferVenueModel | null;
-  priceDetail?: string | null;
   students?: Array<StudentLevels> | null;
   subcategoryId?: string | null;
   totalPrice?: number | null;
+  venueId?: number | null;
+  visualDisabilityCompliant?: boolean | null;
 };
 
