@@ -149,6 +149,7 @@ class VenueNApprovedOffersTest:
         for validation_status in offers_models.OfferValidationStatus:
             offers_factories.OfferFactory(venue=venue, validation=validation_status)
         assert venue.nApprovedOffers == 1
+        assert venue.has_approved_offers
 
     def test_venue_n_approved_offers_and_collective_offers(self):
         educational_factories.CollectiveOfferFactory()
@@ -162,6 +163,14 @@ class VenueNApprovedOffersTest:
         for validation_status in offers_models.OfferValidationStatus:
             offers_factories.OfferFactory(venue=venue, validation=validation_status)
         assert venue.nApprovedOffers == 3
+        assert venue.has_approved_offers
+
+    def test_venue_n_approved_offers_zero(self):
+        venue = factories.VenueFactory()
+        offers_factories.OfferFactory(venue=venue, validation=offers_models.OfferValidationStatus.PENDING)
+        educational_factories.CollectiveOfferFactory(venue=venue, validation=offers_models.OfferValidationStatus.DRAFT)
+        assert venue.nApprovedOffers == 0
+        assert not venue.has_approved_offers
 
 
 class OffererLegalCategoryTest:

@@ -137,7 +137,7 @@ def _get_venue_data(venue: offerers_models.Venue, parent_organization_id: int | 
     has_collective_offers = venue.has_collective_offers
 
     if venue.has_individual_offers or has_collective_offers:
-        if venue.nApprovedOffers > 0:
+        if venue.has_approved_offers:
             pc_pro_status = "Acteur Inscrit Actif"
         else:
             pc_pro_status = "Acteur Inscrit non Actif"
