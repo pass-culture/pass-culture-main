@@ -35,9 +35,9 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.finance.models import Deposit
+    from pcapi.core.finance.models import DepositType
     from pcapi.core.offerers.models import UserOfferer
-    from pcapi.core.payments.models import Deposit
-    from pcapi.core.payments.models import DepositType
 
 
 VOID_FIRST_NAME = ""

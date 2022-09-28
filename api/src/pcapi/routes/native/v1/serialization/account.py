@@ -18,9 +18,9 @@ from pcapi.connectors.user_profiling import AgentType
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.payments.models import DepositType
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -132,7 +132,7 @@ class UserProfileResponse(BaseModel):
     birth_date: datetime.date | None
     date_of_birth: datetime.date | None  # TODO: remove when all app clients use birth_date field
     deposit_expiration_date: datetime.datetime | None
-    deposit_type: DepositType | None
+    deposit_type: finance_models.DepositType | None
     deposit_version: int | None
     domains_credit: DomainsCredit | None
     eligibility: EligibilityType | None

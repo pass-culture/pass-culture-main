@@ -10,12 +10,11 @@ import pytest
 
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
+import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.payments.models import Deposit
-from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.models as subscription_models
@@ -213,8 +212,8 @@ class RunIntegrationTest:
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
         assert user.has_beneficiary_role
-        deposits = Deposit.query.filter_by(user=user).all()
-        age_18_deposit = next(deposit for deposit in deposits if deposit.type == DepositType.GRANT_18)
+        deposits = finance_models.Deposit.query.filter_by(user=user).all()
+        age_18_deposit = next(deposit for deposit in deposits if deposit.type == finance_models.DepositType.GRANT_18)
         assert len(deposits) == 2
         assert age_18_deposit.amount == 300
 

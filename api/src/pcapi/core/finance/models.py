@@ -23,11 +23,87 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
-from . import conf
-
 
 if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
+
+
+class DepositType(enum.Enum):
+    GRANT_15_17 = "GRANT_15_17"
+    GRANT_18 = "GRANT_18"
+
+
+class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+    amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=False)
+
+    userId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
+
+    user = sqla_orm.relationship("User", foreign_keys=[userId], backref="deposits")  # type: ignore [misc]
+
+    individual_bookings = sqla_orm.relationship("IndividualBooking", back_populates="deposit")  # type: ignore [misc]
+
+    source: str = sqla.Column(sqla.String(300), nullable=False)
+
+    dateCreated: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
+
+    dateUpdated = sqla.Column(sqla.DateTime, nullable=True, onupdate=sqla.func.now())
+
+    expirationDate = sqla.Column(sqla.DateTime, nullable=True)
+
+    version: int = sqla.Column(sqla.SmallInteger, nullable=False)
+
+    type: DepositType = sqla.Column(
+        sqla.Enum(DepositType, native_enum=False, create_constraint=False),
+        nullable=False,
+        server_default=DepositType.GRANT_18.value,
+    )
+
+    recredits = sqla_orm.relationship("Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit")  # type: ignore [misc]
+
+    __table_args__ = (
+        sqla.UniqueConstraint(
+            "userId",
+            "type",
+            name="unique_type_per_user",
+        ),
+    )
+
+    @property
+    def specific_caps(self):  # type: ignore [no-untyped-def]
+        from . import conf
+
+        return conf.SPECIFIC_CAPS[self.type][self.version]
+
+
+@dataclasses.dataclass
+class GrantedDeposit:
+    amount: decimal.Decimal
+    expiration_date: datetime.datetime
+    type: DepositType
+    version: int = 1
+
+
+class RecreditType(enum.Enum):
+    RECREDIT_16 = "Recredit16"
+    RECREDIT_17 = "Recredit17"
+    MANUAL_MODIFICATION = "ManualModification"
+
+
+class Recredit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+    depositId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("deposit.id"), nullable=False)
+
+    deposit = sqla_orm.relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")  # type: ignore [misc]
+
+    dateCreated: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
+
+    amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=False)
+
+    recreditType: RecreditType = sqla.Column(
+        sqla.Enum(RecreditType, native_enum=False, create_constraint=False),
+        nullable=False,
+    )
+
+    comment = sqla.Column(sqla.Text, nullable=True)
 
 
 class PricingStatus(enum.Enum):
@@ -354,6 +430,8 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [
 
     @property
     def group(self):  # type: ignore [no-untyped-def]
+        from . import conf
+
         return conf.RuleGroups.CUSTOM
 
 

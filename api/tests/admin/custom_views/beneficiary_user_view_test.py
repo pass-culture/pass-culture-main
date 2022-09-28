@@ -11,8 +11,8 @@ from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_a
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.payments.models import Deposit
 from pcapi.core.testing import override_settings
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
@@ -137,7 +137,7 @@ class BeneficiaryUserViewTest:
         assert response.status_code == 302
 
         filtered_users = User.query.filter_by(email="toto@example.com").all()
-        deposits = Deposit.query.all()
+        deposits = finance_models.Deposit.query.all()
         assert len(filtered_users) == 0
         assert len(deposits) == 0
         assert len(push_testing.requests) == 0

@@ -27,6 +27,7 @@ import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external_bookings.api import get_shows_stock
+import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -50,7 +51,6 @@ from pcapi.core.offers.validation import check_booking_limit_datetime
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.core.offers.validation import check_validation_config_parameters
-from pcapi.core.payments import conf as deposit_conf
 import pcapi.core.providers.models as providers_models
 from pcapi.core.users.external import update_external_pro
 import pcapi.core.users.models as users_models
@@ -787,7 +787,7 @@ def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
 def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
     domains = {ExpenseDomain.ALL.value}
 
-    for _deposit_type, versions in deposit_conf.SPECIFIC_CAPS.items():
+    for _deposit_type, versions in finance_conf.SPECIFIC_CAPS.items():
         for _version, specific_caps in versions.items():  # type: ignore [attr-defined]
             if specific_caps.digital_cap_applies(offer):
                 domains.add(ExpenseDomain.DIGITAL.value)

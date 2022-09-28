@@ -11,10 +11,10 @@ from flask import Blueprint
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
+import pcapi.core.finance.api as finance_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers.models import ValidationStatus
-import pcapi.core.payments.api as payments_api
 import pcapi.core.users.api as users_api
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
@@ -50,11 +50,11 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
     )
     user.validatedBirthDate = _get_birth_date(row)
     if role == UserRole.BENEFICIARY:
-        deposit = payments_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE18)
+        deposit = finance_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE18)
         repository.save(deposit)
         user.add_beneficiary_role()
     elif role == UserRole.UNDERAGE_BENEFICIARY:
-        deposit = payments_api.create_deposit(
+        deposit = finance_api.create_deposit(
             user, "import_test_users (csv)", eligibility=EligibilityType.UNDERAGE, age_at_registration=16
         )
         repository.save(deposit)

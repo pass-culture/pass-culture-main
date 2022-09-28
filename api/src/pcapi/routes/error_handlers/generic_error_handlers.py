@@ -12,8 +12,8 @@ from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors import sirene
+import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.offers.exceptions as offers_exceptions
-from pcapi.core.payments.exceptions import DepositTypeAlreadyGrantedException
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
@@ -99,8 +99,8 @@ def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
     return jsonify(api_errors.errors), 400
 
 
-@app.errorhandler(DepositTypeAlreadyGrantedException)
-def already_activated_exception(error: DepositTypeAlreadyGrantedException) -> ApiErrorResponse:
+@app.errorhandler(finance_exceptions.DepositTypeAlreadyGrantedException)
+def already_activated_exception(error: finance_exceptions.DepositTypeAlreadyGrantedException) -> ApiErrorResponse:
     logger.error(json.dumps(error.errors))
     return jsonify(error.errors), 405
 

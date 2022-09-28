@@ -10,9 +10,20 @@ from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
+import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 
+from . import conf
 from . import models
+
+
+class RecreditFactory(BaseFactory):
+    class Meta:
+        model = models.Recredit
+
+    deposit = factory.SubFactory(users_factories.DepositGrantFactory)
+    amount = factory.LazyAttribute(lambda recredit: conf.RECREDIT_TYPE_AMOUNT_MAPPING[recredit.recreditType])
+    recreditType = models.RecreditType.RECREDIT_16
 
 
 class BankInformationFactory(BaseFactory):

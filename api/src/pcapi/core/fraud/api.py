@@ -6,9 +6,9 @@ import sqlalchemy
 from sqlalchemy.orm import Query
 
 from pcapi import settings
+import pcapi.core.finance.exceptions as finance_exceptions
 from pcapi.core.fraud.utils import is_latin
 import pcapi.core.mails.transactional as transaction_mails
-from pcapi.core.payments import exceptions as payments_exceptions
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import models as subscription_models
@@ -660,12 +660,12 @@ def handle_ok_manual_review(
     except subscription_exceptions.CannotUpgradeBeneficiaryRole as err:
         raise EligibilityError(f"L'utilisateur ne peut pas être promu au rôle {eligibility.value}") from err
 
-    except payments_exceptions.UserHasAlreadyActiveDeposit as err:
+    except finance_exceptions.UserHasAlreadyActiveDeposit as err:
         raise EligibilityError(
             f"L'utilisateur bénéficie déjà d'un déposit non expiré du type '{eligibility.value}'"
         ) from err
 
-    except payments_exceptions.DepositTypeAlreadyGrantedException as err:
+    except finance_exceptions.DepositTypeAlreadyGrantedException as err:
         raise EligibilityError("Un déposit de ce type a déjà été créé") from err
 
 

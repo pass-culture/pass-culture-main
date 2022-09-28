@@ -9,10 +9,10 @@ from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.conf as finance_conf
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.payments.conf import GRANTED_DEPOSIT_AMOUNT_17
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.external import BookingsAttributes
@@ -300,7 +300,9 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
 
     if credit_spent:
         offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-        IndividualBookingFactory(individualBooking__user=user, amount=GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer)
+        IndividualBookingFactory(
+            individualBooking__user=user, amount=finance_conf.GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer
+        )
 
     # Before 18 years old
     user = User.query.get(user.id)

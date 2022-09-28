@@ -11,9 +11,9 @@ from factory.declarations import LazyAttribute
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
-import pcapi.core.payments.api as payments_api
-import pcapi.core.payments.models as payments_models
 from pcapi.core.testing import BaseFactory
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -236,7 +236,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
         if "dateCreated" not in kwargs:
             kwargs["dateCreated"] = obj.dateCreated
 
-        return DepositGrantFactory(user=obj, **kwargs, type=payments_models.DepositType.GRANT_15_17)
+        return DepositGrantFactory(user=obj, **kwargs, type=finance_models.DepositType.GRANT_15_17)
 
 
 class ProFactory(BaseFactory):
@@ -317,7 +317,7 @@ class FavoriteFactory(BaseFactory):
 # DepositFactory in users module to avoid import loops
 class DepositGrantFactory(BaseFactory):
     class Meta:
-        model = payments_models.Deposit
+        model = finance_models.Deposit
 
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
     user = factory.SubFactory(UserFactory)  # BeneficiaryGrant18Factory is already creating a deposit
@@ -331,7 +331,7 @@ class DepositGrantFactory(BaseFactory):
             if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
             else models.EligibilityType.AGE18
         )
-        granted_deposit = payments_api.get_granted_deposit(kwargs["user"], eligibility, age_at_registration=age)
+        granted_deposit = finance_api.get_granted_deposit(kwargs["user"], eligibility, age_at_registration=age)
 
         if "version" not in kwargs:
             kwargs["version"] = granted_deposit.version

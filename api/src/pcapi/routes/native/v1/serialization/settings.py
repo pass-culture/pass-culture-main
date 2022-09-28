@@ -1,14 +1,14 @@
-from pcapi.core.payments import conf as payments_conf
+import pcapi.core.finance.conf as finance_conf
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 
 class DepositAmountsByAge(BaseModel):
-    age_15 = convert_to_cent(payments_conf.GRANTED_DEPOSIT_AMOUNT_15)
-    age_16 = convert_to_cent(payments_conf.GRANTED_DEPOSIT_AMOUNT_16)
-    age_17 = convert_to_cent(payments_conf.GRANTED_DEPOSIT_AMOUNT_17)
-    age_18 = convert_to_cent(payments_conf.GRANTED_DEPOSIT_AMOUNT_18_v2)
+    age_15 = convert_to_cent(finance_conf.GRANTED_DEPOSIT_AMOUNT_15)
+    age_16 = convert_to_cent(finance_conf.GRANTED_DEPOSIT_AMOUNT_16)
+    age_17 = convert_to_cent(finance_conf.GRANTED_DEPOSIT_AMOUNT_17)
+    age_18 = convert_to_cent(finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v2)
 
 
 class SettingsResponse(BaseModel):

@@ -5,9 +5,9 @@ import typing
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 
+import pcapi.core.finance.conf as finance_conf
+import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.payments import models as payments_models
-import pcapi.core.payments.conf as deposit_conf
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import external as users_external
@@ -47,7 +47,7 @@ def has_been_recredited(user: users_models.User) -> bool:
         return False
 
     sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
-    return sorted_recredits[-1].recreditType == deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]  # type: ignore [index]
+    return sorted_recredits[-1].recreditType == finance_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]  # type: ignore [index]
 
 
 def recredit_underage_users() -> None:
@@ -74,7 +74,7 @@ def recredit_underage_users() -> None:
             users_models.User.query.filter(
                 users_models.User.id.in_(user_ids[start_index : start_index + RECREDIT_BATCH_SIZE])
             )
-            .options(joinedload(users_models.User.deposits).joinedload(payments_models.Deposit.recredits))
+            .options(joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits))
             .all()
         )
 
@@ -83,12 +83,12 @@ def recredit_underage_users() -> None:
         with transaction():
             for user in users_to_recredit:
                 try:
-                    recredit = payments_models.Recredit(
+                    recredit = finance_models.Recredit(
                         deposit=user.deposit,
-                        amount=deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[
-                            deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
+                        amount=finance_conf.RECREDIT_TYPE_AMOUNT_MAPPING[
+                            finance_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
                         ],
-                        recreditType=deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
+                        recreditType=finance_conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
                     )
                     users_and_recredit_amounts.append((user, recredit.amount))
                     recredit.deposit.amount += recredit.amount

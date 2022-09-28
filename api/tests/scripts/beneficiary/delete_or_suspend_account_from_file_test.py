@@ -1,7 +1,7 @@
 import pytest
 
+import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.factories as fraud_factories
-from pcapi.core.payments.models import Deposit
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.repository import repository
@@ -16,7 +16,7 @@ def test_delete_user_when_she_has_no_deposit():
     fraud_factories.BeneficiaryFraudCheckFactory(user=user_without_deposit)
     fraud_factories.BeneficiaryFraudReviewFactory(user=user_without_deposit, author=admin)
 
-    deposit = Deposit.query.all()
+    deposit = finance_models.Deposit.query.all()
     repository.delete(*deposit)
     suspend_or_delete_from_file(
         "tests/scripts/beneficiary/users_to_delete_fixture.txt",

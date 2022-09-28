@@ -17,8 +17,7 @@ from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import ResendValidationEmailMixin
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
-from pcapi.core.payments.models import Deposit
-from pcapi.core.payments.models import DepositType
+import pcapi.core.finance.models as finance_models
 import pcapi.core.users.api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import EligibilityType
@@ -34,11 +33,14 @@ def filter_email(value: str | None) -> str | None:
 
 class FilterByDepositTypeEqual(BaseSQLAFilter):
     def apply(self, query: Query, value: typing.Any, alias: str = None) -> Query:
-        aliased_deposit = aliased(Deposit)
+        aliased_deposit = aliased(finance_models.Deposit)
         current_deposit_by_user = (
-            Deposit.query.outerjoin(
+            finance_models.Deposit.query.outerjoin(
                 aliased_deposit,
-                and_(Deposit.userId == aliased_deposit.userId, Deposit.expirationDate < aliased_deposit.expirationDate),
+                and_(
+                    finance_models.Deposit.userId == aliased_deposit.userId,
+                    finance_models.Deposit.expirationDate < aliased_deposit.expirationDate,
+                ),
             )
             .filter(aliased_deposit.id.is_(None))
             .subquery()
@@ -49,16 +51,19 @@ class FilterByDepositTypeEqual(BaseSQLAFilter):
         return "equals"
 
     def get_options(self, view: BaseAdminView) -> list[tuple[str, str]]:
-        return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
+        return [(deposit_type.name, deposit_type.name) for deposit_type in finance_models.DepositType]
 
 
 class FilterByDepositTypeNotEqual(BaseSQLAFilter):
     def apply(self, query: Query, value: typing.Any, alias: str = None) -> Query:
-        aliased_deposit = aliased(Deposit)
+        aliased_deposit = aliased(finance_models.Deposit)
         current_deposit_by_user = (
-            Deposit.query.outerjoin(
+            finance_models.Deposit.query.outerjoin(
                 aliased_deposit,
-                and_(Deposit.userId == aliased_deposit.userId, Deposit.expirationDate < aliased_deposit.expirationDate),
+                and_(
+                    finance_models.Deposit.userId == aliased_deposit.userId,
+                    finance_models.Deposit.expirationDate < aliased_deposit.expirationDate,
+                ),
             )
             .filter(aliased_deposit.id.is_(None))
             .subquery()
@@ -69,13 +74,13 @@ class FilterByDepositTypeNotEqual(BaseSQLAFilter):
         return "not equal"
 
     def get_options(self, view: BaseAdminView) -> list[tuple[str, str]]:
-        return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
+        return [(deposit_type.name, deposit_type.name) for deposit_type in finance_models.DepositType]
 
 
 def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     colors = {
-        DepositType.GRANT_15_17: "#C7CEEA",
-        DepositType.GRANT_18: "#FF9AA2",
+        finance_models.DepositType.GRANT_15_17: "#C7CEEA",
+        finance_models.DepositType.GRANT_18: "#FF9AA2",
     }
     return Markup("""<span class="badge" style="background-color:{color}">{deposit_type_name}</span>""").format(
         color=colors.get(model.deposit_type, "#FFFFFF"),

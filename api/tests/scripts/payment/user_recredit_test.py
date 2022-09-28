@@ -4,10 +4,10 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.payments import factories as payments_factories
-from pcapi.core.payments import models as payments_models
 from pcapi.core.users import factories as user_factories
 from pcapi.core.users.models import EligibilityType
 from pcapi.scripts.payment.user_recredit import can_be_recredited
@@ -66,7 +66,7 @@ class UserRecreditTest:
 
             recredit_underage_users()
             assert user.deposit.amount == 50
-            assert user.deposit.recredits[0].recreditType == payments_models.RecreditType.RECREDIT_16
+            assert user.deposit.recredits[0].recreditType == finance_models.RecreditType.RECREDIT_16
             assert user.recreditAmountToShow == 30
             assert can_be_recredited(user) is False
 
@@ -76,7 +76,7 @@ class UserRecreditTest:
 
             recredit_underage_users()
             assert user.deposit.amount == 80
-            assert user.deposit.recredits[1].recreditType == payments_models.RecreditType.RECREDIT_17
+            assert user.deposit.recredits[1].recreditType == finance_models.RecreditType.RECREDIT_17
             assert user.recreditAmountToShow == 30
             assert can_be_recredited(user) is False
 
@@ -118,25 +118,25 @@ class UserRecreditTest:
             (17, [], False),
             (
                 16,
-                [{"type": payments_models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
+                [{"type": finance_models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
                 True,
             ),
             (
                 17,
-                [{"type": payments_models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
+                [{"type": finance_models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
                 False,
             ),
             (
                 17,
                 [
-                    {"type": payments_models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2019, 1, 1)},
-                    {"type": payments_models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)},
+                    {"type": finance_models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2019, 1, 1)},
+                    {"type": finance_models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)},
                 ],
                 True,
             ),
             (
                 17,
-                [{"type": payments_models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)}],
+                [{"type": finance_models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)}],
                 True,
             ),
         ],
@@ -154,7 +154,7 @@ class UserRecreditTest:
             )
 
         for recredit in user_recredits:
-            payments_factories.RecreditFactory(
+            finance_factories.RecreditFactory(
                 deposit=user.deposit, recreditType=recredit["type"], dateCreated=recredit["date_created"]
             )
         assert has_been_recredited(user) == expected_result
@@ -266,30 +266,30 @@ class UserRecreditTest:
             user_17_not_activated.add_underage_beneficiary_role()
 
             # Create the recredits that already happened
-            payments_factories.RecreditFactory(
-                deposit=user_16_already_recredited.deposit, recreditType=payments_models.RecreditType.RECREDIT_16
+            finance_factories.RecreditFactory(
+                deposit=user_16_already_recredited.deposit, recreditType=finance_models.RecreditType.RECREDIT_16
             )
-            payments_factories.RecreditFactory(
+            finance_factories.RecreditFactory(
                 deposit=user_17_only_recredited_at_16.deposit,
-                recreditType=payments_models.RecreditType.RECREDIT_16,
+                recreditType=finance_models.RecreditType.RECREDIT_16,
                 dateCreated=datetime.datetime(2020, 1, 1),
             )
-            payments_factories.RecreditFactory(
-                deposit=user_17_already_recredited.deposit, recreditType=payments_models.RecreditType.RECREDIT_17
+            finance_factories.RecreditFactory(
+                deposit=user_17_already_recredited.deposit, recreditType=finance_models.RecreditType.RECREDIT_17
             )
-            payments_factories.RecreditFactory(
+            finance_factories.RecreditFactory(
                 deposit=user_17_already_recredited_twice.deposit,
-                recreditType=payments_models.RecreditType.RECREDIT_16,
+                recreditType=finance_models.RecreditType.RECREDIT_16,
                 dateCreated=datetime.datetime(2019, 5, 1),
             )
-            payments_factories.RecreditFactory(
+            finance_factories.RecreditFactory(
                 deposit=user_17_already_recredited_twice.deposit,
-                recreditType=payments_models.RecreditType.RECREDIT_17,
+                recreditType=finance_models.RecreditType.RECREDIT_17,
                 dateCreated=datetime.datetime(2020, 5, 1),
             )
 
         # Check the initial conditions
-        assert payments_models.Recredit.query.count() == 5
+        assert finance_models.Recredit.query.count() == 5
 
         assert user_17_not_activated.deposit is None
 
@@ -315,13 +315,13 @@ class UserRecreditTest:
 
         # Check the results:
         # Assert we created new Recredits for user_16_not_recredited, user_17_not_recredited and user_17_only_recredited_at_16
-        assert payments_models.Recredit.query.count() == 8
+        assert finance_models.Recredit.query.count() == 8
         assert user_15.deposit.recredits == []
-        assert user_16_not_recredited.deposit.recredits[0].recreditType == payments_models.RecreditType.RECREDIT_16
-        assert user_17_not_recredited.deposit.recredits[0].recreditType == payments_models.RecreditType.RECREDIT_17
+        assert user_16_not_recredited.deposit.recredits[0].recreditType == finance_models.RecreditType.RECREDIT_16
+        assert user_17_not_recredited.deposit.recredits[0].recreditType == finance_models.RecreditType.RECREDIT_17
         assert len(user_17_only_recredited_at_16.deposit.recredits) == 2
         assert (
-            user_17_only_recredited_at_16.deposit.recredits[0].recreditType == payments_models.RecreditType.RECREDIT_17
+            user_17_only_recredited_at_16.deposit.recredits[0].recreditType == finance_models.RecreditType.RECREDIT_17
         )
 
         assert user_15.deposit.amount == 20

@@ -1,9 +1,9 @@
 import logging
 from typing import Iterable
 
+import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.payments.models import Deposit
 from pcapi.core.users import constants
 from pcapi.core.users.api import suspend_account
 from pcapi.core.users.models import Favorite
@@ -18,7 +18,10 @@ logger = logging.getLogger(__name__)
 
 def _find_users_to_suspend(user_ids: set) -> set:
     return set(
-        user_id[0] for user_id in Deposit.query.filter(Deposit.userId.in_(user_ids)).with_entities(Deposit.userId)
+        user_id[0]
+        for user_id in finance_models.Deposit.query.filter(finance_models.Deposit.userId.in_(user_ids)).with_entities(
+            finance_models.Deposit.userId
+        )
     )
 
 
