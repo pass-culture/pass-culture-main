@@ -402,14 +402,13 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     students: list[StudentLevels] | None
     offerVenue: OfferVenueModel | None
     interventionArea: list[str] | None
-    educationalPriceDetail: str | None
     durationMinutes: int | None
     # stock part
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     price: float | None = Field(alias="totalPrice")
+    educationalPriceDetail: str | None
     numberOfTickets: int | None
-    priceDetail: str | None
     # educational_institution
     educationalInstitutionId: int | None
 
@@ -417,7 +416,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     _validate_total_price = price_validator("price")
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
     _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
-    _validate_price_detail = price_detail_validator("priceDetail")
 
     @validator("domains")
     def validate_domains(  # pylint: disable=no-self-argument

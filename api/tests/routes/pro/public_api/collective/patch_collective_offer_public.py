@@ -43,7 +43,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingLimitDatetime": "2022-09-15T11:00",
             "totalPrice": 35621,
             "numberOfTickets": 30,
-            "priceDetail": "Justification du prix",
+            "educationalPriceDetail": "Justification du prix",
             # link to educational institution
             "educationalInstitutionId": educational_institution.id,
         }
@@ -78,7 +78,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
         assert offer.collectiveStock.price == payload["totalPrice"]
-        assert offer.collectiveStock.priceDetail == payload["priceDetail"]
+        assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
 
         assert offer.institutionId == educational_institution.id
 
@@ -137,7 +137,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingLimitDatetime": "2022-09-15T11:00",
             "totalPrice": 35621,
             "numberOfTickets": 30,
-            "priceDetail": "Justification du prix",
+            "educationalPriceDetail": "Justification du prix",
             # link to educational institution
             "educationalInstitutionId": educational_institution.id,
         }
@@ -180,7 +180,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingLimitDatetime": "2022-09-15T11:00",
             "totalPrice": 35621,
             "numberOfTickets": 30,
-            "priceDetail": "Justification du prix",
+            "educationalPriceDetail": "Justification du prix",
             # link to educational institution
             "educationalInstitutionId": educational_institution.id,
         }
@@ -224,7 +224,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingLimitDatetime": "2022-09-15T11:00",
             "totalPrice": 35621,
             "numberOfTickets": 30,
-            "priceDetail": "Justification du prix",
+            "educationalPriceDetail": "Justification du prix",
             # link to educational institution
             "educationalInstitutionId": educational_institution.id,
         }
