@@ -4,7 +4,8 @@ import {
   OfferStatus,
   StudentLevels,
   SubcategoryIdEnum,
-  GetOfferVenueResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
 
@@ -114,49 +115,14 @@ export enum EducationalOfferType {
   CLASSIC = 'CLASSIC',
 }
 
-type CollectiveOfferBaseResponseModel = {
-  id: string
-  bookingEmail?: string | null
-  dateCreated: Date
-  description?: string | null
-  durationMinutes?: number | null
-  students: StudentLevels[]
-  offerVenue: {
-    addressType: OfferAddressType
-    otherAddress: string
-    venueId: string
-  }
-  contactEmail: string
-  contactPhone: string
-  hasBookingLimitDatetimesPassed: boolean
-  isActive: boolean
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  visualDisabilityCompliant: boolean
-  nonHumanizedId: number
-  name: string
-  subcategoryId: string
-  venue: GetOfferVenueResponseModel
-  venueId: string
-  status: OfferStatus
-  offerId?: string | null
-  domains: EducationalDomain[]
-  institution?: EducationalInstitutionResponseModel | null
-  isEditable: boolean
+export type CollectiveOffer = GetCollectiveOfferResponseModel & {
+  isTemplate: false
 }
 
-export type CollectiveOfferResponseModel = CollectiveOfferBaseResponseModel & {
-  isBookable: boolean
-  collectiveStock: {
-    id: string
-    isBooked: boolean
+export type CollectiveOfferTemplate =
+  GetCollectiveOfferTemplateResponseModel & {
+    isTemplate: true
   }
-}
-
-export type CollectiveOffer = CollectiveOfferResponseModel & {
-  isBooked: boolean
-}
 
 export type EducationalDomain = {
   id: number

@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react'
 
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
-import { EducationalCategories } from 'core/OfferEducational'
+import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
+  EducationalCategories,
+} from 'core/OfferEducational'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
 import { formatDuration } from '../utils/formatDuration'
 
 interface ICollectiveOfferSummaryProps {
-  offer: GetCollectiveOfferTemplateResponseModel
+  offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
 }
 

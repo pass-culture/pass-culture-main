@@ -1,10 +1,11 @@
 import { api } from 'apiClient/api'
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+
+import { CollectiveOfferTemplate } from '../types'
 
 type IPayloadFailure = null
 type GetCollectiveOfferTemplateAdapter = Adapter<
   string,
-  GetCollectiveOfferTemplateResponseModel,
+  CollectiveOfferTemplate,
   IPayloadFailure
 >
 
@@ -22,7 +23,7 @@ const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
       return {
         isOk: true,
         message: '',
-        payload: { ...offer },
+        payload: { ...offer, isTemplate: true },
       }
     } catch (error) {
       return FAILING_RESPONSE
