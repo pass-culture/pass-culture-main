@@ -9,9 +9,9 @@ from sqlalchemy import func
 import sqlalchemy.exc
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.payments import api as payments_api
-from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.models import db
@@ -124,7 +124,7 @@ class SQLFunctionsTest:
             bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
             db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
-        payments_api.create_deposit(user, "test", user_models.EligibilityType.AGE18)
+        finance_api.create_deposit(user, "test", user_models.EligibilityType.AGE18)
 
         bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, amount=10)
         bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=1)
@@ -139,8 +139,8 @@ class SQLFunctionsTest:
 
     def test_wallet_balance_multiple_deposits(self):
         user = users_factories.UserFactory()
-        users_factories.DepositGrantFactory(user=user, type=DepositType.GRANT_15_17)
-        users_factories.DepositGrantFactory(user=user, type=DepositType.GRANT_18)
+        users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_15_17)
+        users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_18)
 
         with pytest.raises((psycog2_errors.CardinalityViolation, sqlalchemy.exc.ProgrammingError)) as exc:
             # pylint: disable=expression-not-assigned

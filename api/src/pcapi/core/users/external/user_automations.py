@@ -10,9 +10,9 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.core.payments.models import Deposit
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.external.sendinblue import add_contacts_to_list
 from pcapi.core.users.models import User
@@ -66,7 +66,7 @@ def get_users_beneficiary_credit_expiration_within_next_3_months() -> List[User]
         .join(User.deposits)
         .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
-            Deposit.expirationDate.between(
+            finance_models.Deposit.expirationDate.between(
                 datetime.combine(date.today(), datetime.min.time()),
                 datetime.combine(date.today() + relativedelta(days=90), datetime.max.time()),
             )
@@ -94,9 +94,9 @@ def get_users_ex_beneficiary() -> List[User]:
         .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
             sa.or_(
-                Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
+                finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
                 sa.and_(
-                    Deposit.expirationDate > datetime.combine(date.today(), datetime.min.time()),
+                    finance_models.Deposit.expirationDate > datetime.combine(date.today(), datetime.min.time()),
                     sa.func.get_wallet_balance(User.id, False) <= 0,
                 ),
             )
@@ -182,8 +182,9 @@ def get_users_whose_credit_expired_today() -> List[User]:
         .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
             sa.and_(
-                Deposit.expirationDate > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
-                Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
+                finance_models.Deposit.expirationDate
+                > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
+                finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
             )
         )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)

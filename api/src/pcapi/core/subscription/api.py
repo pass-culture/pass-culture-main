@@ -3,13 +3,13 @@ import logging
 import typing
 
 from pcapi import settings
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.fraud.api as fraud_api
-from pcapi.core.fraud.common import models as common_fraud_models
+import pcapi.core.fraud.common.models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.payments import api as payments_api
-from pcapi.core.payments import exceptions as payments_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
@@ -61,7 +61,7 @@ def activate_beneficiary_for_eligibility(
     else:
         raise exceptions.InvalidEligibilityTypeException()
 
-    deposit = payments_api.create_deposit(
+    deposit = finance_api.create_deposit(
         user,
         deposit_source=deposit_source,
         eligibility=eligibility,
@@ -535,7 +535,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
 
     try:
         activate_beneficiary_for_eligibility(user, activable_fraud_check.get_detailed_source(), activable_eligibility)
-    except (payments_exceptions.DepositTypeAlreadyGrantedException, payments_exceptions.UserHasAlreadyActiveDeposit):
+    except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
         # this error may happen on identity provider concurrent requests
         logger.info("A deposit already exists for user %s", user.id)
         return False

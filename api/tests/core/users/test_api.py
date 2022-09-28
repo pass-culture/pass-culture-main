@@ -10,10 +10,10 @@ import requests_mock
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.testing import override_features
@@ -668,7 +668,9 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        with freeze_time(datetime.datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, days=2)):
+        with freeze_time(
+            datetime.datetime.utcnow() + relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, days=2)
+        ):
             assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
                 all=users_models.Credit(initial=Decimal(300), remaining=Decimal(0)),
                 digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(0)),

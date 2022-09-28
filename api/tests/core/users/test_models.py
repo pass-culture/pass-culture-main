@@ -6,10 +6,10 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
@@ -30,7 +30,7 @@ class UserTest:
             yesterday = datetime.utcnow() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
-            assert user.deposit.type == DepositType.GRANT_18
+            assert user.deposit.type == finance_models.DepositType.GRANT_18
 
         def test_return_last_expired_deposit_if_only_expired_deposits_exists(self):
             with freeze_time(datetime.utcnow() - relativedelta(years=3)):
@@ -38,7 +38,7 @@ class UserTest:
 
             users_factories.DepositGrantFactory(user=user)
 
-            assert user.deposit.type == DepositType.GRANT_18
+            assert user.deposit.type == finance_models.DepositType.GRANT_18
 
     class UserRoleTest:
         def test_has_admin_role(self):

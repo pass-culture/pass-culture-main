@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.payments.models import Deposit
+import pcapi.core.finance.models as finance_models
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import create_industrial_app_users
@@ -11,7 +11,7 @@ class CreateIndustrialWebappUsersTest:
     def test_create_industrial_app_users(self):
         create_industrial_app_users()
         assert User.query.count() == 5 * 2 * 2 + 3 * 2 + 2 * 2 + 3 + 11
-        assert Deposit.query.count() == 5 * 2 * 2 * 2 + 3 * 2 + 8
+        assert finance_models.Deposit.query.count() == 5 * 2 * 2 * 2 + 3 * 2 + 8
 
         ex_underage = User.query.filter_by(email="exunderage_18@example.com").first()
         ex_beneficiary = User.query.filter_by(email="exbene_20@example.com").first()

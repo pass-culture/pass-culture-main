@@ -21,6 +21,15 @@ from . import models
 from . import utils
 
 
+def deposit_exists_for_beneficiary_and_type(beneficiary: users_models.User, deposit_type: models.DepositType) -> bool:
+    return db.session.query(
+        models.Deposit.query.filter_by(
+            userId=beneficiary.id,
+            type=deposit_type.value,
+        ).exists()
+    ).scalar()
+
+
 def get_business_units_query(
     user: users_models.User,
     offerer_id: int = None,

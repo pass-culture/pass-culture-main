@@ -11,9 +11,9 @@ from faker import Faker
 from freezegun import freeze_time
 
 from pcapi.core.bookings import factories as bookings_factory
+import pcapi.core.finance.conf as finance_conf
+import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
-from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import TokenType
@@ -80,7 +80,7 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             deposit__version=deposit_version,
         )
         users_factories.DepositGrantFactory(
-            user=user, expirationDate=datetime.utcnow(), source="sandbox", type=DepositType.GRANT_15_17
+            user=user, expirationDate=datetime.utcnow(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
         )
 
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
@@ -292,7 +292,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
     beneficiary_and_exunderage.remove_underage_beneficiary_role()
     users.append(beneficiary_and_exunderage)
 
-    with freeze_time(datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5)):
+    with freeze_time(datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)):
         users.append(
             users_factories.BeneficiaryGrant18Factory(
                 email="exbene_20@example.com",

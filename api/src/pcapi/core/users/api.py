@@ -14,6 +14,7 @@ import sqlalchemy as sa
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.finance.api as finance_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
@@ -22,7 +23,6 @@ import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.payments.api as payment_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.email.update as email_update
@@ -292,7 +292,7 @@ def fulfill_beneficiary_data(
 ) -> models.User:
     _generate_random_password(user)
 
-    deposit = payment_api.create_deposit(user, deposit_source, eligibility=eligibility)
+    deposit = finance_api.create_deposit(user, deposit_source, eligibility=eligibility)
     user.deposits = [deposit]
 
     return user
@@ -676,7 +676,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
     if settings.IS_INTEGRATION:
         new_pro_user.add_beneficiary_role()
         new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth
-        deposit = payment_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
+        deposit = finance_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
     return new_pro_user

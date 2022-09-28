@@ -42,6 +42,7 @@ import tempfile
 import typing
 import zipfile
 
+from dateutil.relativedelta import relativedelta
 from flask import render_template
 from flask_sqlalchemy import BaseQuery
 import pytz
@@ -65,8 +66,8 @@ from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
-import pcapi.core.payments.models as payments_models
 import pcapi.core.reference.models as reference_models
+import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
@@ -79,6 +80,7 @@ import pcapi.utils.pdf as pdf_utils
 from . import conf
 from . import exceptions
 from . import models
+from . import repository
 from . import utils
 from . import validation
 
@@ -1093,7 +1095,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .group_by(
             offerers_models.Venue.id,
             offerers_models.Venue.siret,
-            payments_models.Deposit.type,
+            models.Deposit.type,
         )
         .with_entities(
             offerers_models.Venue.id.label("reimbursement_point_id"),
@@ -1103,7 +1105,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
                 offerers_models.Venue.name,
             ).label("reimbursement_point_name"),
             sqla_func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity).label("booking_amount"),
-            payments_models.Deposit.type.label("deposit_type"),
+            models.Deposit.type.label("deposit_type"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
     )
@@ -1156,9 +1158,9 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
 def _payment_details_row_formatter(sql_row) -> tuple:  # type: ignore [no-untyped-def]
     if hasattr(sql_row, "ministry"):
         booking_type = "EACC"
-    elif sql_row.deposit_type == payments_models.DepositType.GRANT_15_17:
+    elif sql_row.deposit_type == models.DepositType.GRANT_15_17:
         booking_type = "EACI"
-    elif sql_row.deposit_type == payments_models.DepositType.GRANT_18:
+    elif sql_row.deposit_type == models.DepositType.GRANT_18:
         booking_type = "PC"
     else:
         raise ValueError("Unknown booking type (not educational nor individual)")
@@ -1854,3 +1856,70 @@ def edit_reimbursement_rule(rule, end_date):  # type: ignore [no-untyped-def]
     db.session.add(rule)
     db.session.commit()
     return rule
+
+
+def _compute_eighteenth_birthday(birth_date: datetime.date | None) -> datetime.datetime:
+    if not birth_date:
+        raise exceptions.UserNotGrantable("User has no validated birth date")
+    return datetime.datetime.combine(birth_date, datetime.time(0, 0)) + relativedelta(years=18)
+
+
+def get_granted_deposit(
+    beneficiary: users_models.User,
+    eligibility: users_models.EligibilityType,
+    age_at_registration: int | None = None,
+) -> models.GrantedDeposit | None:
+    if eligibility == users_models.EligibilityType.UNDERAGE:
+        if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
+            raise exceptions.UserNotGrantable("User is not eligible for underage deposit")
+
+        return models.GrantedDeposit(
+            amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[age_at_registration],
+            expiration_date=_compute_eighteenth_birthday(beneficiary.validatedBirthDate),
+            type=models.DepositType.GRANT_15_17,
+            version=1,
+        )
+
+    if eligibility == users_models.EligibilityType.AGE18 or settings.IS_INTEGRATION:
+        return models.GrantedDeposit(
+            amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[2],
+            expiration_date=datetime.datetime.utcnow() + relativedelta(years=conf.GRANT_18_VALIDITY_IN_YEARS),
+            type=models.DepositType.GRANT_18,
+            version=2,
+        )
+
+    return None
+
+
+def create_deposit(
+    beneficiary: users_models.User,
+    deposit_source: str,
+    eligibility: users_models.EligibilityType,
+    age_at_registration: int | None = None,
+) -> models.Deposit:
+    """Create a new deposit for the user if there is no deposit yet."""
+    granted_deposit = get_granted_deposit(
+        beneficiary,
+        eligibility,
+        age_at_registration=age_at_registration,
+    )
+
+    if not granted_deposit:
+        raise exceptions.UserNotGrantable()
+
+    if repository.deposit_exists_for_beneficiary_and_type(beneficiary, granted_deposit.type):
+        raise exceptions.DepositTypeAlreadyGrantedException(granted_deposit.type)
+
+    if beneficiary.has_active_deposit:
+        raise exceptions.UserHasAlreadyActiveDeposit()
+
+    deposit = models.Deposit(
+        version=granted_deposit.version,
+        type=granted_deposit.type,
+        amount=granted_deposit.amount,
+        source=deposit_source,
+        user=beneficiary,
+        expirationDate=granted_deposit.expiration_date,
+    )
+
+    return deposit
