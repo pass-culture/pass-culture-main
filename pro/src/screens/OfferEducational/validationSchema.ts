@@ -22,7 +22,10 @@ export const validationSchema = yup.object().shape({
     .string()
     .required('Veuillez sélectionner une sous-catégorie'),
   title: yup.string().max(90).required('Veuillez renseigner un titre'),
-  description: yup.string().max(1000),
+  description: yup
+    .string()
+    .required('Veuillez renseigner une description')
+    .max(1000),
   duration: yup
     .string()
     .matches(
