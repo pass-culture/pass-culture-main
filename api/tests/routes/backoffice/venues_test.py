@@ -42,7 +42,7 @@ class GetVenueBasicInfoTest:
         assert "email" in payload
         assert "phoneNumber" in payload
         assert "region" in payload
-        assert "hasBankInformation" in payload
+        assert "hasReimbursementPoint" in payload
         assert "isCollectiveEligible" in payload
         assert "dms" in payload
 
@@ -67,7 +67,7 @@ class GetVenueBasicInfoTest:
         assert payload["email"] == random_venue.contact.email
         assert payload["phoneNumber"] == random_venue.contact.phone_number
         assert payload["region"] == "Occitanie"
-        assert payload["hasBankInformation"] is False
+        assert payload["hasReimbursementPoint"] is False
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_venue_collective_eligibility(
@@ -90,7 +90,7 @@ class GetVenueBasicInfoTest:
         assert collective_eligibility is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_venue_with_no_contact(
+    def test_venue_with_booking_email_but_no_contact(
         self,
         client,
         venue_with_no_contact,
@@ -102,6 +102,26 @@ class GetVenueBasicInfoTest:
         # when
         response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_venue_basic_info", venue_id=venue_with_no_contact.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["data"]["email"] == venue_with_no_contact.bookingEmail
+        assert response.json["data"]["phoneNumber"] is None
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_venue_with_nor_booking_email_neither_contact(
+        self,
+        client,
+        venue_with_nor_contact_or_booking_email,
+    ):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_venue_basic_info", venue_id=venue_with_nor_contact_or_booking_email.id)
         )
 
         # then
@@ -128,7 +148,7 @@ class GetVenueBasicInfoTest:
 
         # then
         assert response.status_code == 200
-        assert response.json["data"]["hasBankInformation"] is True
+        assert response.json["data"]["hasReimbursementPoint"] is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_venue_with_accepted_reimbursement_point(
@@ -147,7 +167,7 @@ class GetVenueBasicInfoTest:
 
         # then
         assert response.status_code == 200
-        assert response.json["data"]["hasBankInformation"] is True
+        assert response.json["data"]["hasReimbursementPoint"] is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_venue_with_expired_reimbursement_point(
@@ -166,7 +186,7 @@ class GetVenueBasicInfoTest:
 
         # then
         assert response.status_code == 200
-        assert response.json["data"]["hasBankInformation"] is False
+        assert response.json["data"]["hasReimbursementPoint"] is False
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_venue_dms_stats(
@@ -199,7 +219,8 @@ class GetVenueBasicInfoTest:
             "2022-09-21T16:30:22+02:00"
         )
         assert dms_stats["url"] == (
-            "www.demarches-simplifiees.fr/dossiers/" f"{venue_with_draft_bank_info.bankInformation.applicationId}"
+            "https://www.demarches-simplifiees.fr/dossiers/"
+            f"{venue_with_draft_bank_info.bankInformation.applicationId}"
         )
 
     @override_features(ENABLE_BACKOFFICE_API=True)

@@ -906,23 +906,28 @@ def get_venue_basic_info(venue_id: int) -> sa.engine.Row:
     dms_application_id_query = sa.select(finance_models.BankInformation.applicationId).filter(
         finance_models.BankInformation.venueId == venue_id
     )
-    has_bank_informations_query = sa.select(sa.func.count(offerers_models.VenueReimbursementPointLink.id)).filter(
+    has_reimbursement_point_query = sa.select(sa.func.count(offerers_models.VenueReimbursementPointLink.id)).filter(
         offerers_models.VenueReimbursementPointLink.venueId == venue_id,
         offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
     )
     venue_query = (
         sa.select(
             offerers_models.Venue.id,
-            offerers_models.Venue.publicName,
-            offerers_models.Venue.name,
+            sa.func.coalesce(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ).label("name"),
             offerers_models.Venue.siret,
-            offerers_models.VenueContact.email,
+            sa.func.coalesce(
+                offerers_models.VenueContact.email,
+                offerers_models.Venue.bookingEmail,
+            ).label("email"),
             offerers_models.VenueContact.phone_number,
             offerers_models.Venue.postalCode,
             offerers_models.Venue.dmsToken,
             offerers_models.Venue.venueEducationalStatusId,
             dms_application_id_query.scalar_subquery().label("dms_application_id"),
-            has_bank_informations_query.scalar_subquery().label("has_bank_informations"),
+            has_reimbursement_point_query.scalar_subquery().label("has_reimbursement_point"),
         )
         .outerjoin(
             offerers_models.VenueContact,
@@ -954,13 +959,8 @@ def get_venue_total_revenue(venue_id: int) -> float:
                 0.0,
             )
         )
-        .select_from(
-            educational_models.CollectiveBooking,
-        )
-        .join(
-            educational_models.CollectiveStock,
-            onclause=educational_models.CollectiveStock.id == educational_models.CollectiveBooking.collectiveStockId,
-        )
+        .select_from(educational_models.CollectiveBooking)
+        .join(educational_models.CollectiveBooking.collectiveStock)
         .filter(
             educational_models.CollectiveBooking.venueId == venue_id,
             educational_models.CollectiveBooking.status != bookings_models.BookingStatus.CANCELLED.value,

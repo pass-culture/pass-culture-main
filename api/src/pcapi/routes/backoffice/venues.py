@@ -6,7 +6,7 @@ from pcapi.connectors.dms.api import DMSGraphQLClient
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
-from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.serialization.decorator import spectree_serialize
 import pcapi.utils.regions
 
@@ -26,7 +26,7 @@ def get_venue_basic_info(venue_id: int) -> serialization.Response:
     venue_basic_info = offerers_api.get_venue_basic_info(venue_id)
 
     if not venue_basic_info:
-        raise ApiErrors(errors={"offerer_id": "Le lieu n'existe pas"}, status_code=404)
+        raise ResourceNotFoundError(errors={"offerer_id": "Le lieu n'existe pas"})
 
     serialized_dms_stats = None
     if venue_basic_info.dms_application_id:
@@ -40,18 +40,18 @@ def get_venue_basic_info(venue_id: int) -> serialization.Response:
                 subscriptionDate=datetime.datetime.fromisoformat(
                     dms_stats["dossier"]["dateDepot"]  # pylint: disable=unsubscriptable-object
                 ),
-                url=f"www.demarches-simplifiees.fr/dossiers/{venue_basic_info.dms_application_id}",
+                url=f"https://www.demarches-simplifiees.fr/dossiers/{venue_basic_info.dms_application_id}",
             )
 
     return serialization.Response(
         data=serialization.VenueBasicInfo(
             id=venue_basic_info.id,
-            name=venue_basic_info.publicName or venue_basic_info.name,
+            name=venue_basic_info.name,
             siret=venue_basic_info.siret,
             email=venue_basic_info.email,
             phoneNumber=venue_basic_info.phone_number,
             region=pcapi.utils.regions.get_region_name_from_postal_code(venue_basic_info.postalCode),
-            hasBankInformation=bool(venue_basic_info.has_bank_informations),
+            hasReimbursementPoint=bool(venue_basic_info.has_reimbursement_point),
             isCollectiveEligible=venue_basic_info.venueEducationalStatusId is not None,
             dms=serialized_dms_stats,
         ),
@@ -85,7 +85,7 @@ def get_venue_offers_stats(venue_id: int) -> serialization.Response:
     offers_stats = offerers_api.get_venue_offers_stats(venue_id)
 
     if not offers_stats:
-        raise ApiErrors(errors={"offerer_id": "Le lieu n'existe pas"}, status_code=404)
+        raise ResourceNotFoundError(errors={"offerer_id": "Le lieu n'existe pas"})
 
     return serialization.Response(
         data=serialization.VenueOffersStats(

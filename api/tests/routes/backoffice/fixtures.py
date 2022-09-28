@@ -25,6 +25,7 @@ __all__ = (
     "venue_with_expired_reimbursement_point",
     "venue_with_educational_status",
     "venue_with_no_contact",
+    "venue_with_nor_contact_or_booking_email",
     "random_venue",
     "venue_provider_with_last_sync",
     "offerer_bank_info_with_application_id",
@@ -134,6 +135,12 @@ def venue_with_educational_status(offerer):
 @pytest.fixture
 def venue_with_no_contact():
     venue = offerers_factories.VenueFactory(contact=None)
+    return venue
+
+
+@pytest.fixture
+def venue_with_nor_contact_or_booking_email():
+    venue = offerers_factories.VenueFactory(contact=None, bookingEmail=None)
     return venue
 
 
