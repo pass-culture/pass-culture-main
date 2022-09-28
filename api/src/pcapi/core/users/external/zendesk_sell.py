@@ -133,6 +133,17 @@ def _query_api(method: str, path: str, body: str | dict | None, session: request
 
 
 def _get_venue_data(venue: offerers_models.Venue, parent_organization_id: int | None, created: bool = False) -> dict:
+    # Call once to avoid two db calls
+    has_collective_offers = venue.has_collective_offers
+
+    if venue.has_individual_offers or has_collective_offers:
+        if venue.nApprovedOffers > 0:
+            pc_pro_status = "Acteur Inscrit Actif"
+        else:
+            pc_pro_status = "Acteur Inscrit non Actif"
+    else:
+        pc_pro_status = "Acteur en cours d'inscription"
+
     social_medias = getattr(venue.contact, "social_medias", {})
     params: dict = {
         "data": {
@@ -156,9 +167,9 @@ def _get_venue_data(venue: offerers_models.Venue, parent_organization_id: int | 
                 ZendeskCustomFieldsNames.DEPARTEMENT.value: venue.departementCode,
                 ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: "Mis à jour par le produit le %s"
                 % (datetime.date.today().strftime("%d/%m/%Y")),
-                ZendeskCustomFieldsNames.HAS_PUBLISHED_COLLECTIVE_OFFERS.value: len(venue.collectiveOffers) > 0,
+                ZendeskCustomFieldsNames.HAS_PUBLISHED_COLLECTIVE_OFFERS.value: has_collective_offers,
                 ZendeskCustomFieldsNames.JURIDIC_NAME.value: venue.name,
-                ZendeskCustomFieldsNames.PC_PRO_STATUS.value: _get_venue_status(venue),
+                ZendeskCustomFieldsNames.PC_PRO_STATUS.value: pc_pro_status,
                 ZendeskCustomFieldsNames.PRODUCT_VENUE_ID.value: venue.id,
                 ZendeskCustomFieldsNames.SIRET.value: venue.siret,
                 ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(venue.departementCode).upper(),
@@ -410,14 +421,6 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
         return new_zendesk_offerer["id"]
     else:
         return zendesk_offerer["id"]
-
-
-def _get_venue_status(venue: offerers_models.Venue) -> str:
-    if venue.collectiveOffers or venue.offers:
-        if venue.nApprovedOffers > 0:
-            return "Acteur Inscrit Actif"
-        return "Acteur Inscrit non Actif"
-    return "Acteur en cours d'inscription"
 
 
 def zendesk_create_offerer(offerer: offerers_models.Offerer, session: requests.Session | None = None) -> dict:

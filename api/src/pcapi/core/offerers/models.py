@@ -313,6 +313,18 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
 
     @property
+    def has_individual_offers(self) -> bool:
+        from pcapi.core.offers.models import Offer
+
+        return db.session.query(Offer.query.filter(Offer.venueId == self.id).exists()).scalar()
+
+    @property
+    def has_collective_offers(self) -> bool:
+        from pcapi.core.educational.models import CollectiveOffer
+
+        return db.session.query(CollectiveOffer.query.filter(CollectiveOffer.venueId == self.id).exists()).scalar()
+
+    @property
     def nApprovedOffers(self) -> int:  # used in validation rule, do not remove
         from pcapi.core.educational.models import CollectiveOffer
         from pcapi.core.offers.models import Offer
