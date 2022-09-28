@@ -1,6 +1,8 @@
 import { api } from 'apiClient/api'
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import {
+  CollectiveOfferTemplate,
+  IOfferEducationalFormValues,
+} from 'core/OfferEducational'
 
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 
@@ -12,7 +14,7 @@ export type Params = {
 
 type patchCollectiveOfferTemplateAdapter = Adapter<
   Params,
-  GetCollectiveOfferTemplateResponseModel,
+  CollectiveOfferTemplate,
   null
 >
 
@@ -31,7 +33,7 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
       return {
         isOk: true,
         message: 'Votre offre a bien été modifiée.',
-        payload: updatedOffer,
+        payload: { ...updatedOffer, isTemplate: true },
       }
     } catch (error) {
       return {

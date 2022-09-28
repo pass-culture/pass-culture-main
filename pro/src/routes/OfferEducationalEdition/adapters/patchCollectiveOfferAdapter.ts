@@ -1,7 +1,9 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import {
+  CollectiveOffer,
+  IOfferEducationalFormValues,
+} from 'core/OfferEducational'
 
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 
@@ -11,11 +13,7 @@ type Params = {
   initialValues: IOfferEducationalFormValues
 }
 
-type PatchCollectiveOfferAdapter = Adapter<
-  Params,
-  GetCollectiveOfferResponseModel,
-  null
->
+type PatchCollectiveOfferAdapter = Adapter<Params, CollectiveOffer, null>
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -41,7 +39,7 @@ const patchCollectiveOfferAdapter: PatchCollectiveOfferAdapter = async ({
     return {
       isOk: true,
       message: 'Votre offre a bien été modifiée.',
-      payload: updatedOffer,
+      payload: { ...updatedOffer, isTemplate: false },
     }
   } catch (error) {
     if (isErrorAPIError(error) && error.status === 400) {

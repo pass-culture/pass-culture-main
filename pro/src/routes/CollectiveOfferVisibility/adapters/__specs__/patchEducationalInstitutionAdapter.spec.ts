@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { CollectiveOffer } from 'core/OfferEducational'
 
 import { patchEducationalInstitutionAdapter } from '../patchEducationalInstitutionAdapter'
 
@@ -22,7 +22,7 @@ describe('patchEducationalInstitutionAdapter', () => {
   it('should return a confirmation when the institutions is saved', async () => {
     jest
       .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
-      .mockResolvedValueOnce({} as GetCollectiveOfferResponseModel) // we do not test the content
+      .mockResolvedValueOnce({} as CollectiveOffer) // we do not test the content
     const response = await patchEducationalInstitutionAdapter({
       offerId: '12',
       institutionId: '24',

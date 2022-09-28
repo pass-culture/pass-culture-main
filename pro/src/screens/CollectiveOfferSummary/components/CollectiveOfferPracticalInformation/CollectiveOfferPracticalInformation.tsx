@@ -1,12 +1,12 @@
 import React from 'react'
 
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 
 import { formatOfferEventAddress } from '../utils/formatOfferEventAddress'
 
 interface ICollectiveOfferPracticalInformationSectionProps {
-  offer: GetCollectiveOfferTemplateResponseModel
+  offer: CollectiveOfferTemplate | CollectiveOffer
 }
 
 const CollectiveOfferPracticalInformationSection = ({

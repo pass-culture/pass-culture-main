@@ -1,11 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
+import { SubcategoryIdEnum } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
@@ -21,6 +17,8 @@ import {
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
   setInitialFormValues,
+  CollectiveOffer,
+  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
@@ -49,7 +47,7 @@ const OfferEducationalEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
   const [offer, setOffer] = useState<
-    GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel
+    CollectiveOffer | CollectiveOfferTemplate
   >()
   const notify = useNotification()
 
@@ -110,8 +108,8 @@ const OfferEducationalEdition = (): JSX.Element => {
     async (
       offerResponse:
         | AdapterFailure<null>
-        | AdapterSuccess<GetCollectiveOfferResponseModel>
-        | AdapterSuccess<GetCollectiveOfferTemplateResponseModel>
+        | AdapterSuccess<CollectiveOffer>
+        | AdapterSuccess<CollectiveOfferTemplate>
     ) => {
       if (!offerResponse.isOk) {
         return notify.error(offerResponse.message)

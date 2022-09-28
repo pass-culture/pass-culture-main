@@ -1,10 +1,7 @@
+import { SubcategoryIdEnum, StudentLevels } from 'apiClient/v1'
 import {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  SubcategoryIdEnum,
-  StudentLevels,
-} from 'apiClient/v1'
-import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
@@ -23,9 +20,7 @@ const computeDurationString = (
 }
 
 export const computeInitialValuesFromOffer = (
-  offer:
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel,
+  offer: CollectiveOffer | CollectiveOfferTemplate,
   category: string,
   subCategory: SubcategoryIdEnum
 ): Omit<IOfferEducationalFormValues, 'offererId' | 'venueId'> => {

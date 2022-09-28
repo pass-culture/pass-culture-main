@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   extractOfferIdAndOfferTypeFromRouteParams,
   getEducationalCategoriesAdapter,
   EducationalCategories,
+  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
@@ -21,8 +21,7 @@ const CollectiveOfferTemplateSummary = () => {
   const { offerId } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
-  const [offer, setOffer] =
-    useState<GetCollectiveOfferTemplateResponseModel | null>(null)
+  const [offer, setOffer] = useState<CollectiveOfferTemplate | null>(null)
   const [categories, setCategories] = useState<EducationalCategories | null>(
     null
   )

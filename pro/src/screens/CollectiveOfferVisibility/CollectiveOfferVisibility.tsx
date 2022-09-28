@@ -2,13 +2,14 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import {
-  EducationalInstitutionResponseModel,
-  GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { Mode, VisibilityFormValues } from 'core/OfferEducational'
+import {
+  CollectiveOffer,
+  Mode,
+  VisibilityFormValues,
+} from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { computeOffersUrl } from 'core/Offers/utils'
 import FormLayout from 'new_components/FormLayout'
@@ -30,7 +31,7 @@ export interface CollectiveOfferVisibilityProps {
   }: {
     offerId: string
     message: string
-    payload: GetCollectiveOfferResponseModel
+    payload: CollectiveOffer
   }) => void
   institutions: EducationalInstitutionResponseModel[]
   isLoadingInstitutions: boolean
