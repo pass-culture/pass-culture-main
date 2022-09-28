@@ -2,13 +2,13 @@
 
 Ces API peuvent être implémentées par les partenaires techniques du pass Culture qui souhaitent fournir des informations relatives à des évolutions de stocks ou places pour des objets ou événements de manière automatisée. Les différentes sections de l'API sont indépendantes et ne sont donc pas nécessairement toutes à implémenter.
 
-Ces API ont vocation à être appelées immédiatement lorsqu'un acteur culturel choisit un fournisseur dans le portail, puis une fois par nuit et par acteur par la suite.
+Ces API ont vocation à être appelées immédiatement lorsqu'un acteur culturel choisit un fournisseur dans le portail, puis une fois par heure et par acteur.
 
 Seule l'API pour les stocks de livre est à ce jour accessible.
 
 Avant de développer un interfaçage, merci de contacter contact.api@passculture.app afin d’être référencé comme fournisseur pass Culture.
 
-## Règles API Stocks (valable pour les livres)
+## Règles API Fournisseurs (valable pour les livres)
 
 Règles de mise à jour des données dans le pass Culture
 - si la requête reçoit une réponse, toutes les données précédentes sont effacées
