@@ -3,6 +3,8 @@ import { useField } from 'formik'
 import React, { createRef } from 'react'
 import { default as ReactDatePicker, registerLocale } from 'react-datepicker'
 
+import { FORMAT_DD_MM_YYYY } from 'utils/date'
+
 import { BaseInput, FieldLayout } from '../shared'
 
 import { ReactComponent as Calendar } from './assets/calendar.svg'
@@ -51,7 +53,7 @@ const DatePicker = ({
             ref={ref}
           />
         }
-        dateFormat="dd/MM/yyyy"
+        dateFormat={FORMAT_DD_MM_YYYY}
         disabled={disabled}
         dropdownMode="scroll"
         id={name}
