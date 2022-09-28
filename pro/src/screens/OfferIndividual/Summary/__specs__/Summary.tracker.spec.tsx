@@ -342,7 +342,7 @@ describe('Summary trackers', () => {
         renderSummary(props)
 
         // when
-        await userEvent.click(await screen.findByText('Précédent'))
+        await userEvent.click(await screen.findByText('Étape précédente'))
 
         // then
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -352,7 +352,7 @@ describe('Summary trackers', () => {
           {
             from: 'recapitulatif',
             isEdition: false,
-            to: 'THIS ONE?',
+            to: 'stocks',
             used: 'StickyButtons',
           }
         )
@@ -363,7 +363,7 @@ describe('Summary trackers', () => {
         renderSummary(props)
 
         // when
-        await userEvent.click(await screen.findByText('Suivant'))
+        await userEvent.click(await screen.findByText("Publier l'offre"))
 
         // then
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -377,17 +377,6 @@ describe('Summary trackers', () => {
             used: 'StickyButtons',
           }
         )
-      })
-
-      it('should track when clicking on return to cancel button', async () => {
-        // given
-        renderSummary(props)
-
-        // when
-        await userEvent.click(await screen.findByText('Annuler'))
-
-        // then
-        expect(mockLogEvent).toHaveBeenCalledTimes(0)
       })
     })
   })

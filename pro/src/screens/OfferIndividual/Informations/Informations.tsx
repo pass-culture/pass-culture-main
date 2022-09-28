@@ -11,7 +11,6 @@ import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdap
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
 import { IOfferIndividualImage } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import FormLayout from 'new_components/FormLayout'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import {
@@ -19,6 +18,7 @@ import {
   OfferIndividualForm,
   validationSchema,
 } from 'new_components/OfferIndividualForm'
+import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 
 import { ActionBar } from '../ActionBar'
@@ -49,7 +49,7 @@ const Informations = ({
     IOfferIndividualImage | undefined
   >(offer && offer.image ? offer.image : undefined)
 
-  const handleNextStep = async () => {
+  const handleNextStep = () => {
     formik.handleSubmit()
   }
 
@@ -140,9 +140,11 @@ const Informations = ({
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
           />
-          <ActionsBarSticky
-            isVisible
-            left={<ActionBar onClickNext={handleNextStep} />}
+          <ActionBar
+            onClickNext={handleNextStep}
+            onClickSaveDraft={() => {}}
+            isCreation={isCreation}
+            step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
           />
         </form>
       </FormLayout>

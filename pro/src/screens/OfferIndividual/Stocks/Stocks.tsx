@@ -3,7 +3,8 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { IOfferIndividual } from 'core/Offers/types'
-import ActionsBarSticky from 'new_components/ActionsBarSticky'
+import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
+import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 
 import { ActionBar } from '../ActionBar'
 
@@ -13,8 +14,13 @@ interface IStocksProps {
 
 const Stocks = ({ offer }: IStocksProps): JSX.Element => {
   const history = useHistory()
+  const isCreation = useIsCreation()
   const handleNextStep = () => {
+    formik.handleSubmit()
     history.push(`/offre/${offer.id}/v3/creation/individuelle/recapitulatif`)
+  }
+  const handleSaveDraft = () => {
+    formik.handleSubmit()
   }
   const handlePreviousStep = () => {
     history.push(`/offre/${offer.id}/v3/creation/individuelle/informations`)
@@ -39,14 +45,12 @@ const Stocks = ({ offer }: IStocksProps): JSX.Element => {
       <form onSubmit={formik.handleSubmit}>
         <p> TODO stock form </p>
 
-        <ActionsBarSticky
-          isVisible
-          left={
-            <ActionBar
-              onClickNext={handleNextStep}
-              onClickPrevious={handlePreviousStep}
-            />
-          }
+        <ActionBar
+          onClickNext={handleNextStep}
+          onClickSaveDraft={handleSaveDraft}
+          onClickPrevious={handlePreviousStep}
+          isCreation={isCreation}
+          step={OFFER_WIZARD_STEP_IDS.STOCKS}
         />
       </form>
     </FormikProvider>
