@@ -878,7 +878,7 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check, False
         ) == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations.",
+            user_message="Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Contacte le support si tu penses qu'il s'agit d'une erreur.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Contacter le support",
                 link=f"mailto:support@example.com?subject=%23{fraud_check.user.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",
