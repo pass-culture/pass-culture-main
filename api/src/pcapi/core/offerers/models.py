@@ -326,6 +326,25 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
         return db.session.query(CollectiveOffer.query.filter(CollectiveOffer.venueId == self.id).exists()).scalar()
 
     @property
+    def has_approved_offers(self) -> bool:
+        """Better performance than nApprovedOffers when we only want to check if there is at least one offer"""
+        from pcapi.core.educational.models import CollectiveOffer
+        from pcapi.core.offers.models import Offer
+        from pcapi.core.offers.models import OfferValidationStatus
+
+        query_offer = db.session.query(
+            Offer.query.filter(Offer.validation == OfferValidationStatus.APPROVED, Offer.venueId == self.id).exists()
+        )
+        query_collective = db.session.query(
+            CollectiveOffer.query.filter(
+                CollectiveOffer.validation == OfferValidationStatus.APPROVED, CollectiveOffer.venueId == self.id
+            ).exists()
+        )
+        results = query_offer.union(query_collective).all()
+
+        return any(result for result, in results)
+
+    @property
     def nApprovedOffers(self) -> int:  # used in validation rule, do not remove
         from pcapi.core.educational.models import CollectiveOffer
         from pcapi.core.offers.models import Offer
