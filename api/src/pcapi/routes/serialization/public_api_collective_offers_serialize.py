@@ -361,7 +361,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     booking_limit_datetime: datetime
     total_price: int
     number_of_tickets: int
-    price_detail: str | None
+    educational_price_detail: str | None
     # link to educational institution
     educational_institution_id: int | None
 
@@ -369,7 +369,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_total_price = price_validator("total_price")
     _validate_beginning_datetime = beginning_datetime_validator("beginning_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
-    _validate_price_detail = price_detail_validator("price_detail")
+    _validate_educational_price_detail = price_detail_validator("educational_price_detail")
 
     @validator("name", pre=True)
     def validate_name(cls: BaseModel, name: str) -> str:  # pylint: disable=no-self-argument
