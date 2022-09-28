@@ -14,6 +14,7 @@ from pcapi.core.users.external import zendesk_sell
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@override_settings(IS_PROD=True)
 def test_create_offerer():
     offerer = offerers_factories.OffererFactory(postalCode="95300")
 
@@ -41,6 +42,7 @@ def test_create_offerer():
     assert response["id"] == "test"
 
 
+@override_settings(IS_PROD=True)
 def test_update_offerer():
     zendesk_id = 12
     offerer = offerers_factories.OffererFactory(postalCode="20000")
@@ -72,6 +74,7 @@ def test_update_offerer():
     assert response["id"] == zendesk_id
 
 
+@override_settings(IS_PROD=True)
 def test_create_venue():
     zendesk_parent_id = 123
     venue = offerers_factories.VenueFactory(postalCode="97600")
@@ -115,6 +118,7 @@ def test_create_venue():
     assert response["id"] == "test"
 
 
+@override_settings(IS_PROD=True)
 def test_update_venue():
     zendesk_parent_id = 100
     zendesk_id = 200
@@ -161,6 +165,7 @@ def test_update_venue():
     assert response["id"] == zendesk_id
 
 
+@override_settings(IS_PROD=True)
 @override_features(ENABLE_ZENDESK_SELL_CREATION=False)
 def test_create_venue_without_parent_offerer():
     # Offerer is not found in Zendesk, but feature flag prevents from creating it
@@ -207,6 +212,7 @@ def test_create_venue_without_parent_offerer():
     assert response["id"] == ret_id
 
 
+@override_settings(IS_PROD=True)
 @override_features(ENABLE_ZENDESK_SELL_CREATION=True)
 def test_create_venue_and_parent_offerer():
     # Offerer is not found in Zendesk, create it before the venue
@@ -444,3 +450,80 @@ def test_update_venue_multiple_results_one_has_id():
 
     assert searched.call_count == 2  # venue and managing offerer
     assert put.call_count == 1
+
+
+@override_settings(IS_RUNNING_TESTS=False, IS_STAGING=True, ZENDESK_SELL_API_KEY="test")
+def test_update_offerer_from_staging():
+    offerer = offerers_factories.OffererFactory()
+
+    with requests_mock.Mocker() as mock:
+        searched = mock.post(
+            urllib.parse.urljoin(settings.ZENDESK_SELL_API_URL, "/v3/contacts/search"),
+            status_code=200,
+            json={
+                "items": [
+                    {
+                        "meta": {"total_count": 1},
+                        "items": [
+                            {
+                                "data": {
+                                    "id": 3,
+                                    "custom_fields": {
+                                        zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: str(offerer.id),
+                                        zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: offerer.siren,
+                                    },
+                                }
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        put = mock.put(
+            urllib.parse.urljoin(settings.ZENDESK_SELL_API_URL, "/v2/contacts/3"),
+            status_code=200,
+            json={"id": 3},
+        )
+        zendesk_sell.do_update_offerer(offerer.id)
+
+    assert searched.call_count == 1
+    assert put.call_count == 0  # Read-only on staging
+
+
+@override_settings(IS_RUNNING_TESTS=False, IS_STAGING=True, ZENDESK_SELL_API_KEY="test")
+def test_do_update_venue_from_staging():
+    venue = offerers_factories.VenueFactory()
+
+    with requests_mock.Mocker() as mock:
+        searched = mock.post(
+            urllib.parse.urljoin(settings.ZENDESK_SELL_API_URL, "/v3/contacts/search"),
+            status_code=200,
+            json={
+                "items": [
+                    {
+                        "meta": {"total_count": 1},
+                        "items": [
+                            {
+                                "data": {
+                                    "id": 4,
+                                    "custom_fields": {
+                                        zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: None,
+                                        zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: venue.siret,
+                                        zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: str(venue.id),
+                                    },
+                                }
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        put = mock.put(
+            urllib.parse.urljoin(settings.ZENDESK_SELL_API_URL, "/v2/contacts/4"),
+            status_code=200,
+            json={"id": 4},
+        )
+        zendesk_sell.do_update_venue(venue.id)
+
+    assert searched.call_count == 2  # venue and managing offerer
+    assert put.call_count == 0  # Read-only on staging
