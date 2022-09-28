@@ -589,7 +589,7 @@ def _create_collective_offer_template(
     educational_factories.CollectiveOfferTemplateFactory(
         name=offer_data.name,
         durationMinutes=60,
-        description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ?",
+        description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
         venue=venue,
         students=[
             educational_models.StudentLevels.CAP1,
