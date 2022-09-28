@@ -44,7 +44,7 @@ const renderInformationsScreen = (
   const store = configureTestStore(storeOverride)
   return render(
     <Provider store={store}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/creation']}>
         <OfferIndividualContext.Provider value={contextValue}>
           <InformationsScreen {...props} />
         </OfferIndividualContext.Provider>
@@ -279,7 +279,7 @@ describe('screens:OfferIndividual::Informations', () => {
     const categorySelect = await screen.findByLabelText('Choisir une catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
 
-    await userEvent.click(await screen.findByText('Suivant'))
+    await userEvent.click(await screen.findByText('Étape suivante'))
 
     expect(scrollIntoViewMock).toHaveBeenCalledTimes(1)
     expect(scrollIntoViewMock).toHaveBeenCalledWith({

@@ -8,60 +8,62 @@ import { ReactComponent as CloseDialogIcon } from 'icons/close-dialog.svg'
 import { ReactComponent as DropdownDisclosureDownBDisabledIcon } from 'icons/dropdown-disclosure-down-b-disabled.svg'
 import { ReactComponent as DropdownDisclosureDownBIcon } from 'icons/dropdown-disclosure-down-b.svg'
 import { ReactComponent as DropdownDisclosureDownSWIcon } from 'icons/dropdown-disclosure-down-s-w.svg'
-import { ReactComponent as IcoAlertGreyIcon } from 'icons/ico-alert-grey.svg'
-import { ReactComponent as IcoAttentionIcon } from 'icons/ico-attention.svg'
-import { ReactComponent as IcoBreadcrumbArrowRightIcon } from 'icons/ico-breadcrumb-arrow-right.svg'
-import { ReactComponent as IcoBulbIcon } from 'icons/ico-bulb.svg'
-import { ReactComponent as IcoCalendarDisabledIcon } from 'icons/ico-calendar-disabled.svg'
+import { ReactComponent as IcoAlertGrey } from 'icons/ico-alert-grey.svg'
+import { ReactComponent as IcoAttention } from 'icons/ico-attention.svg'
+import { ReactComponent as IcoBreadcrumbArrowRight } from 'icons/ico-breadcrumb-arrow-right.svg'
+import { ReactComponent as IcoBulb } from 'icons/ico-bulb.svg'
+import { ReactComponent as IcoCalendarDisabled } from 'icons/ico-calendar-disabled.svg'
 import { ReactComponent as IcoCalendarV2 } from 'icons/ico-calendar-v2.svg'
-import { ReactComponent as IcoCalendarIcon } from 'icons/ico-calendar.svg'
-import { ReactComponent as IcoCaretDownIcon } from 'icons/ico-caret-down.svg'
-import { ReactComponent as IcoCaretRightIcon } from 'icons/ico-caret-right.svg'
-import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
+import { ReactComponent as IcoCalendar } from 'icons/ico-calendar.svg'
+import { ReactComponent as IcoCaretDown } from 'icons/ico-caret-down.svg'
+import { ReactComponent as IcoCaretRight } from 'icons/ico-caret-right.svg'
+import { ReactComponent as IcoClear } from 'icons/ico-clear.svg'
 import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
-import { ReactComponent as IcoDownloadFilledIcon } from 'icons/ico-download-filled.svg'
-import { ReactComponent as IcoDownloadIcon } from 'icons/ico-download.svg'
-import { ReactComponent as IcoDuoIcon } from 'icons/ico-duo.svg'
-import { ReactComponent as IcoEuroGreyIcon } from 'icons/ico-euro-grey.svg'
+import { ReactComponent as IcoDownloadFilled } from 'icons/ico-download-filled.svg'
+import { ReactComponent as IcoDownload } from 'icons/ico-download.svg'
+import { ReactComponent as IcoDuo } from 'icons/ico-duo.svg'
+import { ReactComponent as IcoEuroGrey } from 'icons/ico-euro-grey.svg'
 import { ReactComponent as IcoEuroV2 } from 'icons/ico-euro-v2.svg'
-import { ReactComponent as IcoEuroIcon } from 'icons/ico-euro.svg'
-import { ReactComponent as IcoExternalSiteFilledWhiteIcon } from 'icons/ico-external-site-filled-white.svg'
-import { ReactComponent as IcoExternalSiteFilledIcon } from 'icons/ico-external-site-filled.svg'
-import { ReactComponent as IcoExternalSiteRedFilledIcon } from 'icons/ico-external-site-red-filled.svg'
-import { ReactComponent as IcoEyeCloseIcon } from 'icons/ico-eye-close.svg'
-import { ReactComponent as IcoEyeHiddenIcon } from 'icons/ico-eye-hidden.svg'
-import { ReactComponent as IcoEyeOpenIcon } from 'icons/ico-eye-open.svg'
+import { ReactComponent as IcoEuro } from 'icons/ico-euro.svg'
+import { ReactComponent as IcoExternalSiteFilledWhite } from 'icons/ico-external-site-filled-white.svg'
+import { ReactComponent as IcoExternalSiteFilled } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as IcoExternalSiteRedFilled } from 'icons/ico-external-site-red-filled.svg'
+import { ReactComponent as IcoEyeClose } from 'icons/ico-eye-close.svg'
+import { ReactComponent as IcoEyeHidden } from 'icons/ico-eye-hidden.svg'
+import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-open.svg'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
 import { ReactComponent as ListOffersIcon } from 'icons/ico-list-offers.svg'
-import { ReactComponent as IcoMailIcon } from 'icons/ico-mail.svg'
-import { ReactComponent as IcoMoreCircleIcon } from 'icons/ico-more-circle.svg'
-import { ReactComponent as IcoMoreHorizIcon } from 'icons/ico-more-horiz.svg'
+import { ReactComponent as IcoMail } from 'icons/ico-mail.svg'
+import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
+import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import { ReactComponent as IcoMoreCircle } from 'icons/ico-more-circle.svg'
+import { ReactComponent as IcoMoreHoriz } from 'icons/ico-more-horiz.svg'
 import { ReactComponent as IcoNext } from 'icons/ico-next-S.svg'
 import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
-import { ReactComponent as IcoOuterPenIcon } from 'icons/ico-outer-pen.svg'
-import { ReactComponent as IcoPasscultureIcon } from 'icons/ico-passculture.svg'
-import { ReactComponent as IcoPenBlackIcon } from 'icons/ico-pen-black.svg'
-import { ReactComponent as IcoPenIcon } from 'icons/ico-pen.svg'
+import { ReactComponent as IcoOuterPen } from 'icons/ico-outer-pen.svg'
+import { ReactComponent as IcoPassculture } from 'icons/ico-passculture.svg'
+import { ReactComponent as IcoPenBlack } from 'icons/ico-pen-black.svg'
+import { ReactComponent as IcoPen } from 'icons/ico-pen.svg'
 import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
-import { ReactComponent as IcoPlusIcon } from 'icons/ico-plus.svg'
-import { ReactComponent as IcoRightCircleArrowIcon } from 'icons/ico-right-circle-arrow.svg'
-import { ReactComponent as IcoSearchGrayIcon } from 'icons/ico-search-gray.svg'
+import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
+import { ReactComponent as IcoRightCircleArrow } from 'icons/ico-right-circle-arrow.svg'
+import { ReactComponent as IcoSearchGray } from 'icons/ico-search-gray.svg'
 import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
-import { ReactComponent as IcoStructureIcon } from 'icons/ico-structure.svg'
-import { ReactComponent as IcoTagIcon } from 'icons/ico-tag.svg'
+import { ReactComponent as IcoStructure } from 'icons/ico-structure.svg'
+import { ReactComponent as IcoTag } from 'icons/ico-tag.svg'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
-import { ReactComponent as IcoTrashIcon } from 'icons/ico-trash.svg'
+import { ReactComponent as IcoTrash } from 'icons/ico-trash.svg'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
-import { ReactComponent as IcoUnavailableGradientIcon } from 'icons/ico-unavailable-gradient.svg'
-import { ReactComponent as IcoUnavailablePageIcon } from 'icons/ico-unavailable-page.svg'
-import { ReactComponent as IcoValideCercleIcon } from 'icons/ico-valide-cercle.svg'
+import { ReactComponent as IcoUnavailableGradient } from 'icons/ico-unavailable-gradient.svg'
+import { ReactComponent as IcoUnavailablePage } from 'icons/ico-unavailable-page.svg'
+import { ReactComponent as IcoValideCercle } from 'icons/ico-valide-cercle.svg'
 import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
-import { ReactComponent as IconsCloseIcon } from 'icons/icons-close.svg'
+import { ReactComponent as IcoClose } from 'icons/icons-close.svg'
 import { ReactComponent as InfoPhoneIcon } from 'icons/info-phone.svg'
 import { ReactComponent as InfoIcon } from 'icons/info.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
@@ -132,37 +134,49 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
-          <IcoAlertGreyIcon />
+          <IcoAlertGrey />
         </td>
         <td>ico-alert-grey</td>
       </tr>
       <tr>
         <td>
-          <IcoAttentionIcon />
+          <IcoAttention />
         </td>
         <td>ico-attention</td>
       </tr>
       <tr>
         <td>
-          <IcoBreadcrumbArrowRightIcon />
+          <IcoBreadcrumbArrowRight />
         </td>
         <td>ico-breadcrumb-arrow-right</td>
       </tr>
       <tr>
+        <td className={styles['with-background']}>
+          <IcoMiniArrowRight />
+        </td>
+        <td>ico-mini-arrow-right-icon</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <IcoMiniArrowLeft />
+        </td>
+        <td>ico-mini-arrow-left-icon</td>
+      </tr>
+      <tr>
         <td>
-          <IcoBulbIcon />
+          <IcoBulb />
         </td>
         <td>ico-bulb</td>
       </tr>
       <tr>
         <td>
-          <IcoCalendarDisabledIcon />
+          <IcoCalendarDisabled />
         </td>
         <td>ico-calendar-disabled</td>
       </tr>
       <tr>
         <td>
-          <IcoCalendarIcon />
+          <IcoCalendar />
         </td>
         <td>ico-calendar</td>
       </tr>
@@ -174,49 +188,49 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
-          <IcoCaretDownIcon />
+          <IcoCaretDown />
         </td>
         <td>ico-caret-down</td>
       </tr>
       <tr>
         <td>
-          <IcoCaretRightIcon />
+          <IcoCaretRight />
         </td>
         <td>ico-caret-right</td>
       </tr>
       <tr>
         <td>
-          <IcoClearIcon />
+          <IcoClear />
         </td>
         <td>ico-clear</td>
       </tr>
       <tr>
         <td>
-          <IcoDownloadFilledIcon />
+          <IcoDownloadFilled />
         </td>
         <td>ico-download-filled</td>
       </tr>
       <tr>
         <td>
-          <IcoDownloadIcon />
+          <IcoDownload />
         </td>
         <td>ico-download</td>
       </tr>
       <tr>
         <td>
-          <IcoDuoIcon />
+          <IcoDuo />
         </td>
         <td>ico-duo</td>
       </tr>
       <tr>
         <td>
-          <IcoEuroGreyIcon />
+          <IcoEuroGrey />
         </td>
         <td>ico-euro-grey</td>
       </tr>
       <tr>
         <td>
-          <IcoEuroIcon />
+          <IcoEuro />
         </td>
         <td>ico-euro</td>
       </tr>
@@ -228,85 +242,85 @@ export const Icons = () => (
       </tr>
       <tr>
         <td className={styles['with-background']}>
-          <IcoExternalSiteFilledWhiteIcon />
+          <IcoExternalSiteFilledWhite />
         </td>
         <td>ico-external-site-filled-white</td>
       </tr>
       <tr>
         <td>
-          <IcoExternalSiteFilledIcon />
+          <IcoExternalSiteFilled />
         </td>
         <td>ico-external-site-filled</td>
       </tr>
       <tr>
         <td>
-          <IcoExternalSiteRedFilledIcon />
+          <IcoExternalSiteRedFilled />
         </td>
         <td>ico-external-site-red-filled</td>
       </tr>
       <tr>
         <td>
-          <IcoEyeCloseIcon />
+          <IcoEyeClose />
         </td>
         <td>ico-eye-close</td>
       </tr>
       <tr>
         <td>
-          <IcoEyeHiddenIcon />
+          <IcoEyeHidden />
         </td>
         <td>ico-eye-hidden</td>
       </tr>
       <tr>
         <td>
-          <IcoEyeOpenIcon />
+          <IcoEyeOpen />
         </td>
         <td>ico-eye-open</td>
       </tr>
       <tr>
         <td>
-          <IcoMailIcon />
+          <IcoMail />
         </td>
         <td>ico-mail</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
-          <IcoMoreCircleIcon />
+          <IcoMoreCircle />
         </td>
         <td>ico-more-circle</td>
       </tr>
       <tr>
         <td>
-          <IcoMoreHorizIcon />
+          <IcoMoreHoriz />
         </td>
         <td>ico-more-horiz</td>
       </tr>
       <tr>
         <td>
-          <IcoOuterPenIcon />
+          <IcoOuterPen />
         </td>
         <td>ico-outer-pen</td>
       </tr>
       <tr>
         <td>
-          <IcoPasscultureIcon />
+          <IcoPassculture />
         </td>
         <td>ico-passculture</td>
       </tr>
       <tr>
         <td>
-          <IcoPenBlackIcon />
+          <IcoPenBlack />
         </td>
         <td>ico-pen-black</td>
       </tr>
       <tr>
         <td>
-          <IcoPenIcon />
+          <IcoPen />
         </td>
         <td>ico-pen</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
-          <IcoPlusIcon />
+          <IcoPlus />
         </td>
         <td>ico-plus</td>
       </tr>
@@ -318,31 +332,31 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
-          <IcoRightCircleArrowIcon />
+          <IcoRightCircleArrow />
         </td>
         <td>ico-right-circle-arrow</td>
       </tr>
       <tr>
         <td>
-          <IcoSearchGrayIcon />
+          <IcoSearchGray />
         </td>
         <td>ico-search-gray</td>
       </tr>
       <tr>
         <td>
-          <IcoStructureIcon />
+          <IcoStructure />
         </td>
         <td>ico-structure</td>
       </tr>
       <tr>
         <td>
-          <IcoTagIcon />
+          <IcoTag />
         </td>
         <td>ico-tag</td>
       </tr>
       <tr>
         <td>
-          <IcoTrashIcon />
+          <IcoTrash />
         </td>
         <td>ico-trash</td>
       </tr>
@@ -354,25 +368,25 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
-          <IcoUnavailableGradientIcon />
+          <IcoUnavailableGradient />
         </td>
         <td>ico-unavailable-gradient</td>
       </tr>
       <tr>
         <td>
-          <IcoUnavailablePageIcon />
+          <IcoUnavailablePage />
         </td>
         <td>ico-unavailable-page</td>
       </tr>
       <tr>
         <td>
-          <IcoValideCercleIcon />
+          <IcoValideCercle />
         </td>
         <td>ico-valide-cercle</td>
       </tr>
       <tr>
         <td>
-          <IconsCloseIcon />
+          <IcoClose />
         </td>
         <td>icons-close</td>
       </tr>

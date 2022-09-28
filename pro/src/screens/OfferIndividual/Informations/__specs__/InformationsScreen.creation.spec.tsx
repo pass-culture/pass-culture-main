@@ -177,7 +177,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     const nameField = screen.getByLabelText("Titre de l'offre")
     await userEvent.type(nameField, 'Le nom de mon offre')
 
-    await userEvent.click(await screen.findByText('Suivant'))
+    await userEvent.click(await screen.findByText('Étape suivante'))
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(api.postOffer).toHaveBeenCalledWith({
@@ -234,7 +234,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         ''
       )
     )
-    await userEvent.click(await screen.findByText('Suivant'))
+    await userEvent.click(await screen.findByText('Étape suivante'))
 
     expect(screen.getByText('api wrong name')).toBeInTheDocument()
     expect(screen.getByText('api wrong venue')).toBeInTheDocument()
@@ -260,7 +260,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     await userEvent.type(urlField, 'http://example.com/')
 
-    await userEvent.click(await screen.findByText('Suivant'))
+    await userEvent.click(await screen.findByText('Étape suivante'))
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(api.postOffer).toHaveBeenCalledWith({

@@ -240,7 +240,9 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
 
-    await userEvent.click(await screen.findByText('Suivant'))
+    await userEvent.click(
+      await screen.findByText('Enregistrer les modifications')
+    )
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
     expect(api.patchOffer).toHaveBeenCalledWith('AA', {
@@ -298,7 +300,9 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
 
-    await userEvent.click(await screen.findByText('Suivant'))
+    await userEvent.click(
+      await screen.findByText('Enregistrer les modifications')
+    )
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
     expect(api.patchOffer).toHaveBeenCalledWith('AA', {
