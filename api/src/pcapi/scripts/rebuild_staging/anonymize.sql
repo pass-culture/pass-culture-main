@@ -78,6 +78,18 @@ SET "authToken" = 'anonymized, you may have to set it if you want to use this pr
 WHERE "authToken" IS NOT NULL
 ;
 
+UPDATE venue_booking_provider
+SET token = 'anonymized, you may have to set it if you want to use this provider'
+;
+
+UPDATE cds_cinema_details
+SET "cinemaApiToken" = 'anonymized, you may have to set it if you want to use this provider'
+;
+
+UPDATE external_booking
+SET barcode=ROUND(RANDOM() * 9999999999999)::VARCHAR(13)
+;
+
 UPDATE api_key SET secret = pg_temp.random_text(32)::bytea;
 
 UPDATE "user"
