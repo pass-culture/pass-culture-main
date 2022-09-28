@@ -403,6 +403,10 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     offerVenue: OfferVenueModel | None
     interventionArea: list[str] | None
     durationMinutes: int | None
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
     # stock part
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
