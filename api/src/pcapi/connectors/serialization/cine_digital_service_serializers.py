@@ -151,6 +151,7 @@ class TicketSaleCDS(BaseModel):
     seat_row: int | None = Field(alias="seatrow")
     seat_number: str | None = Field(alias="seatnumber")
     tariff: IdObjectCDS = Field(alias="tariffid")
+    voucher_type: str = Field(alias="vouchertype")
     show: IdObjectCDS = Field(alias="showid")
     disabled_person: bool = Field(alias="disabledperson")
 

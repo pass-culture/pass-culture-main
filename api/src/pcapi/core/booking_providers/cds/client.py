@@ -256,6 +256,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
                 seat_number=seats_to_book[i].seatNumber if bool(seats_to_book) else None,
                 tariff=cds_serializers.IdObjectCDS(id=show_voucher_type.tariff.id),
                 show=cds_serializers.IdObjectCDS(id=show.id),
+                voucher_type=cds_constants.PASS_CULTURE_VOUCHER_CODE,
                 disabled_person=False,
             )
             ticket_sale_list.append(ticket_sale)
