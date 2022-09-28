@@ -13,58 +13,48 @@
  */
 
 import { exists, mapValues } from '../runtime'
-import {
-  Permission,
-  PermissionFromJSON,
-  PermissionFromJSONTyped,
-  PermissionToJSON,
-} from './'
-
 /**
- *
+ * le nombre de lieux dont les infos permettent (ok), ou pas (ko), les remboursements
  * @export
- * @interface Role
+ * @interface OffererBankInformationStatus
  */
-export interface Role {
+export interface OffererBankInformationStatus {
   /**
    *
    * @type {number}
-   * @memberof Role
+   * @memberof OffererBankInformationStatus
    */
-  id: number
+  ko: number
   /**
    *
-   * @type {string}
-   * @memberof Role
+   * @type {number}
+   * @memberof OffererBankInformationStatus
    */
-  name: string
-  /**
-   *
-   * @type {Array<Permission>}
-   * @memberof Role
-   */
-  permissions: Array<Permission>
+  ok: number
 }
 
-export function RoleFromJSON(json: any): Role {
-  return RoleFromJSONTyped(json, false)
+export function OffererBankInformationStatusFromJSON(
+  json: any
+): OffererBankInformationStatus {
+  return OffererBankInformationStatusFromJSONTyped(json, false)
 }
 
-export function RoleFromJSONTyped(
+export function OffererBankInformationStatusFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): Role {
+): OffererBankInformationStatus {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    id: json['id'],
-    name: json['name'],
-    permissions: (json['permissions'] as Array<any>).map(PermissionFromJSON),
+    ko: json['ko'],
+    ok: json['ok'],
   }
 }
 
-export function RoleToJSON(value?: Role | null): any {
+export function OffererBankInformationStatusToJSON(
+  value?: OffererBankInformationStatus | null
+): any {
   if (value === undefined) {
     return undefined
   }
@@ -72,8 +62,7 @@ export function RoleToJSON(value?: Role | null): any {
     return null
   }
   return {
-    id: value.id,
-    name: value.name,
-    permissions: (value.permissions as Array<any>).map(PermissionToJSON),
+    ko: value.ko,
+    ok: value.ok,
   }
 }

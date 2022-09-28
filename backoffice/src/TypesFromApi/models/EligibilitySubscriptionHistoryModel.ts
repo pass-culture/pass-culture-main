@@ -22,7 +22,7 @@ import {
   SubscriptionItemModelFromJSON,
   SubscriptionItemModelFromJSONTyped,
   SubscriptionItemModelToJSON,
-} from './index'
+} from './'
 
 /**
  *

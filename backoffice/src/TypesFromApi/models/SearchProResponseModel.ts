@@ -18,7 +18,7 @@ import {
   ProResultFromJSON,
   ProResultFromJSONTyped,
   ProResultToJSON,
-} from './index'
+} from './'
 
 /**
  *

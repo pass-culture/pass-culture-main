@@ -13,6 +13,120 @@
       }
     }
   },
+  "getOfferersTagsList": {
+    "200": {
+      "data": [
+        {
+          "id": 0,
+          "label": "label",
+          "name": "name"
+        }
+      ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "listOfferersToBeValidated": {
+    "200": {
+      "data": [{}],
+      "page": 0,
+      "pages": 0,
+      "size": 0,
+      "sort": "sort",
+      "total": 0
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getOffererBasicInfo": {
+    "200": {
+      "data": {}
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getOffererOffersStats": {
+    "200": {
+      "data": {
+        "active": {
+          "collective": 0,
+          "individual": 0
+        },
+        "inactive": {
+          "collective": 0,
+          "individual": 0
+        }
+      }
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "removeTagFromOfferer": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "addTagToOfferer": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getOffererTotalRevenue": {
+    "200": {
+      "data": 0
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
   "getOffererUsers": {
     "200": {
       "data": [
@@ -24,6 +138,18 @@
         }
       ]
     },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "validateOfferer": {
+    "204": "No Content",
     "403": "Forbidden",
     "422": {
       "0": {
@@ -56,13 +182,7 @@
   },
   "searchPro": {
     "200": {
-      "data": [
-        {
-          "id": 0,
-          "payload": {},
-          "resourceType": "resourceType"
-        }
-      ],
+      "data": [{}],
       "page": 0,
       "pages": 0,
       "size": 0,
@@ -334,6 +454,48 @@
           "name": "name"
         }
       ]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getVenueBasicInfo": {
+    "200": {
+      "data": "data"
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getVenueOffersStats": {
+    "200": {
+      "data": "data"
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "getVenueTotalRevenue": {
+    "200": {
+      "data": "data"
     },
     "403": "Forbidden",
     "422": {

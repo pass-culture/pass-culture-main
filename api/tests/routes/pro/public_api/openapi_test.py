@@ -1,3 +1,6 @@
+from pcapi import settings
+
+
 def test_public_api(client, app):
     response = client.get("/v2/openapi.json")
     assert response.status_code == 200
@@ -1191,5 +1194,6 @@ def test_public_api(client, app):
             },
         },
         "security": [],
+        "servers": [{"url": settings.API_URL}],
         "tags": [{"name": "API offres collectives"}, {"name": "API Contremarque"}, {"name": "API Stocks"}],
     }

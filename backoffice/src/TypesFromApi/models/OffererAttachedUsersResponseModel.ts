@@ -18,7 +18,7 @@ import {
   OffererAttachedUserFromJSON,
   OffererAttachedUserFromJSONTyped,
   OffererAttachedUserToJSON,
-} from './index'
+} from './'
 
 /**
  *

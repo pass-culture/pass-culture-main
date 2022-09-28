@@ -26,7 +26,7 @@ import {
   FraudReasonCodeFromJSON,
   FraudReasonCodeFromJSONTyped,
   FraudReasonCodeToJSON,
-} from './index'
+} from './'
 
 /**
  *

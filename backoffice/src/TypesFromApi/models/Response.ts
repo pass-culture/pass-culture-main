@@ -13,43 +13,37 @@
  */
 
 import { exists, mapValues } from '../runtime'
-import { Role, RoleFromJSON, RoleFromJSONTyped, RoleToJSON } from './'
-
 /**
  *
  * @export
- * @interface ListRoleResponseModel
+ * @interface Response
  */
-export interface ListRoleResponseModel {
+export interface Response {
   /**
    *
-   * @type {Array<Role>}
-   * @memberof ListRoleResponseModel
+   * @type {object}
+   * @memberof Response
    */
-  roles: Array<Role>
+  data?: object | null
 }
 
-export function ListRoleResponseModelFromJSON(
-  json: any
-): ListRoleResponseModel {
-  return ListRoleResponseModelFromJSONTyped(json, false)
+export function ResponseFromJSON(json: any): Response {
+  return ResponseFromJSONTyped(json, false)
 }
 
-export function ListRoleResponseModelFromJSONTyped(
+export function ResponseFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListRoleResponseModel {
+): Response {
   if (json === undefined || json === null) {
     return json
   }
   return {
-    roles: (json['roles'] as Array<any>).map(RoleFromJSON),
+    data: !exists(json, 'data') ? undefined : json['data'],
   }
 }
 
-export function ListRoleResponseModelToJSON(
-  value?: ListRoleResponseModel | null
-): any {
+export function ResponseToJSON(value?: Response | null): any {
   if (value === undefined) {
     return undefined
   }
@@ -57,6 +51,6 @@ export function ListRoleResponseModelToJSON(
     return null
   }
   return {
-    roles: (value.roles as Array<any>).map(RoleToJSON),
+    data: value.data,
   }
 }
