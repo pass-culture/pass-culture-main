@@ -23,7 +23,7 @@ const CollectiveOfferStockSection = ({
         <br />
         {institution.postalCode} {institution.city}
         <br />
-        {institution.institutionId}
+        UAI : {institution.institutionId}
       </>
     )
   }
