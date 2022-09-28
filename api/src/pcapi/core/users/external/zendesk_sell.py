@@ -425,6 +425,11 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
 
 def zendesk_create_offerer(offerer: offerers_models.Offerer, session: requests.Session | None = None) -> dict:
     data = _get_offerer_data(offerer, created=True)
+
+    # Read-only on staging
+    if not settings.IS_PROD:
+        return {"id": None}
+
     return _query_api("POST", "/v2/contacts", body=data, session=session)
 
 
@@ -432,6 +437,11 @@ def zendesk_update_offerer(
     zendesk_id: int, offerer: offerers_models.Offerer, session: requests.Session | None = None
 ) -> dict:
     data = _get_offerer_data(offerer)
+
+    # Read-only on staging
+    if not settings.IS_PROD:
+        return {"id": None}
+
     return _query_api("PUT", f"/v2/contacts/{zendesk_id}", body=data, session=session)
 
 
@@ -442,6 +452,11 @@ def zendesk_create_venue(
         parent_organization_id = _get_parent_organization_id(venue)
 
     data = _get_venue_data(venue, parent_organization_id, created=True)
+
+    # Read-only on staging
+    if not settings.IS_PROD:
+        return {"id": None}
+
     return _query_api("POST", "/v2/contacts", body=data, session=session)
 
 
@@ -455,6 +470,11 @@ def zendesk_update_venue(
         parent_organization_id = _get_parent_organization_id(venue)
 
     data = _get_venue_data(venue, parent_organization_id)
+
+    # Read-only on staging
+    if not settings.IS_PROD:
+        return {"id": None}
+
     return _query_api("PUT", f"/v2/contacts/{zendesk_id}", body=data, session=session)
 
 
@@ -463,7 +483,7 @@ def _stub_in_test_env(action: str, data: offerers_models.Offerer | offerers_mode
         testing.zendesk_sell_requests.append({"action": action, "type": type(data).__name__, "id": data.id})
         return True
 
-    if not settings.IS_PROD:
+    if not (settings.IS_PROD or settings.IS_STAGING):
         logger.info("A request to Zendesk Sell API would be sent to %s %s %d", action, type(data).__name__, data.id)
         return True
 
