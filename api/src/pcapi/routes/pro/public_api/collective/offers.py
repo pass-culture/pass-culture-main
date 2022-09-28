@@ -227,6 +227,7 @@ def patch_collective_offer_public(
         "name",
         "contactEmail",
         "contactPhone",
+        "description",
         "domains",
         "students",
         "offerVenue",
