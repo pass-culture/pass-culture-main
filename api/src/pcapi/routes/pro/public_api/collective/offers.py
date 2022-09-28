@@ -234,6 +234,10 @@ def patch_collective_offer_public(
         "beginningDatetime",
         "totalPrice",
         "numberOfTickets",
+        "audioDisabilityCompliant",
+        "mentalDisabilityCompliant",
+        "motorDisabilityCompliant",
+        "visualDisabilityCompliant",
     ]
     for field in non_nullable_fields:
         if field in new_values and new_values[field] is None:

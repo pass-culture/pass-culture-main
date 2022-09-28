@@ -29,6 +29,10 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingEmail": "offerer-email@example.com",
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
             "domains": [domain.name],
             "durationMinutes": 183,
             "students": [educational_models.StudentLevels.COLLEGE4.value],
@@ -74,6 +78,10 @@ class CollectiveOffersPublicPatchOfferTest:
             "otherAddress": "",
         }
         assert offer.interventionArea == ["44"]
+        assert offer.audioDisabilityCompliant == True
+        assert offer.mentalDisabilityCompliant == True
+        assert offer.motorDisabilityCompliant == True
+        assert offer.visualDisabilityCompliant == True
 
         assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
