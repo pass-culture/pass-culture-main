@@ -342,7 +342,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # offer part
     venue_id: int
     name: str
-    description: str | None
+    description: str
     subcategory_id: str
     booking_email: str | None
     contact_email: str
