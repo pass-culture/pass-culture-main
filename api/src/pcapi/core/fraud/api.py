@@ -819,6 +819,10 @@ def get_duplicate_beneficiary_anonymized_email(
                 birth_date,
                 rejected_user.id,
             )
+    elif duplicate_reason_code == models.FraudReasonCode.DUPLICATE_INE:
+        ine_hash = identity_content.get_ine_hash()
+        if ine_hash:
+            duplicate_beneficiary = find_duplicate_ine_hash_user(ine_hash, rejected_user.id)
 
     if not duplicate_beneficiary:
         logger.error(

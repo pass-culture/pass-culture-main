@@ -346,9 +346,14 @@ class EduconnectTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "DUPLICATE_BENEFICIARY_EMAIL": "tit***@quartier-latin.com"
         }
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one().reasonCodes == [
-            fraud_models.FraudReasonCode.DUPLICATE_USER
-        ]
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one()
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
+
+        message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
+        assert (
+            message.user_message
+            == "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Connecte-toi avec l'adresse tit***@quartier-latin.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
+        )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_duplicate_ine(self, mock_get_educonnect_user, client, app):
@@ -356,7 +361,7 @@ class EduconnectTest:
         educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id, ine_hash="shotgun_ine")
         mock_get_educonnect_user.return_value = educonnect_user
 
-        users_factories.UserFactory(ineHash="shotgun_ine")
+        users_factories.UserFactory(ineHash="shotgun_ine", email="shotgun@ine.com")
 
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
@@ -365,9 +370,14 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=DuplicateINE"
         )
 
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one().reasonCodes == [
-            fraud_models.FraudReasonCode.DUPLICATE_INE
-        ]
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one()
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_INE]
+
+        message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
+        assert (
+            message.user_message
+            == "Ton dossier a été refusé : il y a déjà un compte associé aux identifiants ÉduConnect que tu as fournis. Connecte-toi avec l'adresse sho***@ine.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
+        )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @freezegun.freeze_time("2021-12-21")
