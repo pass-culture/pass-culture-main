@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
 
     env:
       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
@@ -94,7 +94,7 @@ jobs:
           context: api
           push: true
           target: pcapi
-          tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag }}
+          tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag_number }}
 
       - name: "Build and push pcapi-console image"
         uses: docker/build-push-action@v2
@@ -102,7 +102,7 @@ jobs:
           context: api
           push: true
           target: pcapi-console
-          tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag }}
+          tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag_number }}
 
       - name: Tag Release
         run: |

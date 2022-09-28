@@ -15,14 +15,16 @@ on:
 
 jobs:
   build-and-tag-version:
-    uses: ./.github/workflows/build-and-tag.yml
+    name: Build and tag version
+    uses: ./.github/workflows/reusable-build-and-tag.yml
     secrets: inherit
     with:
       base_ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
       tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
 
   create-maintenance-branch:
-    needs: tag-version
+    name: Create maintenance branch
+    needs: build-and-tag-version
     runs-on: ubuntu-latest
     env:
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
