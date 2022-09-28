@@ -394,6 +394,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 class PatchCollectiveOfferBodyModel(BaseModel):
     name: str | None
     description: str | None
+    venueId: int | None
     subcategoryId: str | None
     bookingEmail: str | None
     contactEmail: str | None
