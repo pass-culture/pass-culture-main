@@ -4,7 +4,7 @@ import React from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-
+import { FORMAT_DD_MM_YYYY } from 'utils/date'
 registerLocale('fr', fr)
 
 const DateInput = ({
@@ -28,7 +28,7 @@ const DateInput = ({
           }`}
         />
       }
-      dateFormat="dd/MM/yyyy"
+      dateFormat={FORMAT_DD_MM_YYYY}
       disabled={disabled}
       dropdownMode="scroll"
       locale="fr"

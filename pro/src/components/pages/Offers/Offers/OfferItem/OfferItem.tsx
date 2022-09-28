@@ -21,6 +21,7 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { computeVenueDisplayName } from 'repository/venuesService'
+import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -96,7 +97,7 @@ const OfferItem = ({
       ? formatLocalTimeDateString(
           stocks[0].beginningDatetime,
           venue.departementCode,
-          'dd/MM/yyyy HH:mm'
+          FORMAT_DD_MM_YYYY_HH_mm
         )
       : pluralize(stockSize, 'date')
   }

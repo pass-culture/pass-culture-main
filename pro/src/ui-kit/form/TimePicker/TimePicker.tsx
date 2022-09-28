@@ -3,6 +3,8 @@ import { useField } from 'formik'
 import React, { createRef } from 'react'
 import ReactDatePicker, { registerLocale } from 'react-datepicker'
 
+import { FORMAT_HH_mm } from 'utils/date'
+
 import { BaseInput, FieldLayout } from '../shared'
 
 registerLocale('fr', fr)
@@ -40,7 +42,7 @@ const TimePicker = ({
         customInput={
           <BaseInput hasError={meta.touched && !!meta.error} ref={ref} />
         }
-        dateFormat="HH:mm"
+        dateFormat={FORMAT_HH_mm}
         disabled={disabled}
         dropdownMode="scroll"
         locale="fr"
@@ -53,7 +55,7 @@ const TimePicker = ({
         showTimeSelect
         showTimeSelectOnly
         timeCaption="Horaire"
-        timeFormat="HH:mm"
+        timeFormat={FORMAT_HH_mm}
         timeIntervals={15}
       />
     </FieldLayout>
