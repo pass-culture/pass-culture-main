@@ -1,6 +1,8 @@
 import datetime
+import typing
 
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 
@@ -53,8 +55,14 @@ def get_ubble_retryable_message(
 
 
 def get_ubble_not_retryable_message(
-    reason_codes: list[fraud_models.FraudReasonCode], user_id: int, updated_at: datetime.datetime | None
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> subscription_models.SubscriptionMessage:
+    reason_codes = fraud_check.reasonCodes or []
+    if fraud_check.resultContent:
+        identity_content = typing.cast(common_fraud_models.IdentityCheckContent, fraud_check.source_data())
+    else:
+        identity_content = None
+
     call_to_action = None
     pop_over_icon = None
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
@@ -73,12 +81,19 @@ def get_ubble_not_retryable_message(
         user_message = "Ton document d'identité est expiré. Rends-toi sur le site demarches-simplifiees.fr avec un document en cours de validité pour renouveler ta demande."
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
-    elif (
-        fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes
-        or fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes
-    ):
-        user_message = "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
-        call_to_action = subscription_messages.compute_support_call_to_action(user_id)
+    elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+        user_message = "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. "
+        user_message += subscription_messages.build_duplicate_error_message(
+            fraud_check.user, fraud_models.FraudReasonCode.DUPLICATE_USER, identity_content
+        )
+        call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
+
+    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
+        user_message = "Ton dossier a été refusé : il y a déjà un compte associé à ce numéro de pièce d’identité. "
+        user_message += subscription_messages.build_duplicate_error_message(
+            fraud_check.user, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, identity_content
+        )
+        call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
     elif fraud_models.FraudReasonCode.AGE_TOO_YOUNG in reason_codes:
         user_message = "Ton dossier a été refusé : tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit."
@@ -94,7 +109,7 @@ def get_ubble_not_retryable_message(
 
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
         user_message = "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support pour plus d'informations."
-        call_to_action = subscription_messages.compute_support_call_to_action(user_id)
+        call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
         user_message = (
@@ -107,5 +122,8 @@ def get_ubble_not_retryable_message(
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     return subscription_models.SubscriptionMessage(
-        user_message=user_message, call_to_action=call_to_action, pop_over_icon=pop_over_icon, updated_at=updated_at
+        user_message=user_message,
+        call_to_action=call_to_action,
+        pop_over_icon=pop_over_icon,
+        updated_at=fraud_check.updatedAt,
     )

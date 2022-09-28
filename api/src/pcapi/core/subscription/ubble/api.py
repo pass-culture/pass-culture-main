@@ -277,8 +277,6 @@ def get_ubble_subscription_message(
     ):
         if is_retryable:
             return messages.get_ubble_retryable_message(ubble_fraud_check.reasonCodes or [], updated_at)
-        return messages.get_ubble_not_retryable_message(
-            ubble_fraud_check.reasonCodes or [], ubble_fraud_check.user.id, updated_at
-        )
+        return messages.get_ubble_not_retryable_message(ubble_fraud_check)
 
     return None

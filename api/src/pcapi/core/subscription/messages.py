@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import models
 from pcapi.core.users import models as users_models
 
@@ -46,7 +47,7 @@ def get_generic_ko_message(user_id: int) -> models.SubscriptionMessage:
 def build_duplicate_error_message(
     user: users_models.User,
     reason_code: fraud_models.FraudReasonCode,
-    application_content: fraud_models.DMSContent | None,
+    application_content: common_fraud_models.IdentityCheckContent | None,
 ) -> str:
     if not application_content:
         return "Contacte le support si tu penses qu'il s'agit d'une erreur."
