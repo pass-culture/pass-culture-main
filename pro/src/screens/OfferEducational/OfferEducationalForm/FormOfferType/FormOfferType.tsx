@@ -126,7 +126,6 @@ const FormOfferType = ({
       <FormLayout.Row>
         <TextArea
           countCharacters
-          isOptional
           label={DESCRIPTION_LABEL}
           maxLength={1000}
           name="description"
