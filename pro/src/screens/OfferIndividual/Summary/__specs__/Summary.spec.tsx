@@ -264,9 +264,11 @@ describe('Summary', () => {
         renderSummary(props)
 
         // then
-        expect(screen.getByText('Précédent')).toBeInTheDocument()
-        expect(screen.getByText('Suivant')).toBeInTheDocument()
-        expect(screen.getByText('Annuler')).toBeInTheDocument()
+        expect(screen.getByText('Étape précédente')).toBeInTheDocument()
+        expect(
+          screen.getByText('Sauvegarder le brouillon et quitter')
+        ).toBeInTheDocument()
+        expect(screen.getByText("Publier l'offre")).toBeInTheDocument()
       })
     })
   })

@@ -2,26 +2,26 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .bi-banner {
-  &.attention , &.notification-info{
+  &.attention,
+  &.notification-info {
     position: relative;
     margin: rem.torem(30px) 0 rem.torem(16px) 0;
-    &:before , .close-icon-banner {
+    &:before,
+    .close-icon-banner {
       background: colors.$white;
       font-weight: 700;
       position: absolute;
-    };
+    }
     &:before {
       padding: 0 rem.torem(8px) 0 rem.torem(40px);
       top: rem.torem(-10px);
       left: rem.torem(14px);
       background: colors.$white;
-      z-index: 1;
     }
     .icon {
       position: absolute;
       top: rem.torem(-15px);
       left: rem.torem(23px);
-      z-index: 1;
     }
     .close-icon-banner {
       top: rem.torem(-11px);
@@ -37,7 +37,7 @@
       align-items: flex-start;
       justify-content: left;
     }
-    &.is-minimal{
+    &.is-minimal {
       border: none;
       border-radius: 0;
       border-top: 2px solid;
@@ -69,7 +69,6 @@
     a , .bi-link{
       color: colors.$primary;
     }
-
   }
   &.notification-info {
     border: rem.torem(1px) solid colors.$tertiary;
@@ -80,10 +79,9 @@
     svg {
       fill: colors.$tertiary;
     }
-    .bi-link > svg{
-       fill: colors.$black;
-     }
-
+    .bi-link > svg {
+      fill: colors.$black;
+    }
   }
 
   &.light {
@@ -105,11 +103,13 @@
       margin-top: rem.torem(8px);
     }
 
-    a , .bi-link {
+    a,
+    .bi-link {
       color: colors.$white;
     }
 
-    .close-icon, path {
+    .close-icon,
+    path {
       fill: colors.$white;
     }
   }

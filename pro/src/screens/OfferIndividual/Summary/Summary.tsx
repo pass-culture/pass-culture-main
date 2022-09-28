@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -14,19 +13,16 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { computeOffersUrl } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
-import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import { BannerSummary } from 'new_components/Banner'
 import {
   IOfferAppPreviewProps,
   OfferAppPreview,
 } from 'new_components/OfferAppPreview'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { RootState } from 'store/reducers'
-import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
@@ -99,10 +95,11 @@ const Summary = ({
     })
     history.push(`/offre/${offerId}/v3/creation/individuelle/confirmation`)
   }
+
   const handlePreviousStep = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
-      to: 'THIS ONE?',
+      to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: !isCreation,
     })
@@ -125,14 +122,6 @@ const Summary = ({
   ]
 
   const isDisabledOffer = isOfferDisabled(offerStatus)
-
-  const offersSearchFilters = useSelector(
-    (state: RootState) => state.offers.searchFilters
-  )
-  const offersPageNumber = useSelector(
-    (state: RootState) => state.offers.pageNumber
-  )
-  const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
 
   return (
     <>
@@ -181,23 +170,13 @@ const Summary = ({
               publishOffer={publishOffer}
               disablePublish={isDisabled}
             />
-          ) : isCreation ? (
-            <ActionsBarSticky
-              isVisible
-              left={
-                <ActionBar
-                  onClickNext={handleNextStep}
-                  onClickPrevious={handlePreviousStep}
-                />
-              }
-            />
           ) : (
-            <ButtonLink
-              link={{ to: backOfferUrl, isExternal: false }}
-              variant={ButtonVariant.PRIMARY}
-            >
-              Retour à la liste des offres
-            </ButtonLink>
+            <ActionBar
+              onClickNext={handleNextStep}
+              onClickPrevious={handlePreviousStep}
+              isCreation={isCreation}
+              step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+            />
           )}
         </SummaryLayout.Content>
 

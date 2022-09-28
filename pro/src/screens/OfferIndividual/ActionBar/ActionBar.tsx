@@ -1,53 +1,121 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
+import { computeOffersUrl } from 'core/Offers'
+import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
+import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import ActionsBarSticky from 'new_components/ActionsBarSticky'
+import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
+import { RootState } from 'store/reducers'
 import { Button, ButtonLink } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPosition } from 'ui-kit/Button/types'
 
-import style from './ActionBar.module.scss'
-
-interface IActionBarProps {
+export interface IActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
-  disablePrevious?: boolean
-  disableNext?: boolean
+  onClickSaveDraft?: () => void
+  isCreation: boolean
+  step: OFFER_WIZARD_STEP_IDS
 }
 
 const ActionBar = ({
-  onClickPrevious,
   onClickNext,
-  disablePrevious = false,
-  disableNext = false,
-}: IActionBarProps) => (
-  <div className={style['action-bar']}>
-    <div className={style['actions-group']}>
-      {onClickPrevious && (
-        <Button
-          className={style['action']}
-          disabled={disablePrevious}
-          onClick={onClickPrevious}
-        >
-          Précédent
-        </Button>
-      )}
-      <ButtonLink
-        className={style['action']}
-        link={{ to: '/offres', isExternal: false }}
-        variant={ButtonVariant.SECONDARY}
-      >
-        Annuler
-      </ButtonLink>
-    </div>
-    {onClickNext && (
-      <Button
-        className={style['action']}
-        disabled={disableNext}
-        onClick={onClickNext}
-        style={{ justifySelf: 'flex-end' }}
-      >
-        Suivant
-      </Button>
-    )}
-  </div>
-)
+  onClickPrevious,
+  onClickSaveDraft,
+  isCreation,
+  step,
+}: IActionBarProps) => {
+  const offersSearchFilters = useSelector(
+    (state: RootState) => state.offers.searchFilters
+  )
+  const offersPageNumber = useSelector(
+    (state: RootState) => state.offers.pageNumber
+  )
+  const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
+
+  const Left = () => {
+    if (isCreation)
+      return (
+        <>
+          {step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
+            <ButtonLink
+              link={{ to: '/offres', isExternal: false }}
+              variant={ButtonVariant.SECONDARY}
+            >
+              Annuler et quitter
+            </ButtonLink>
+          ) : (
+            <Button
+              Icon={IcoMiniArrowLeft}
+              onClick={onClickPrevious}
+              variant={ButtonVariant.SECONDARY}
+            >
+              Étape précédente
+            </Button>
+          )}
+        </>
+      )
+    return (
+      <>
+        {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
+          <ButtonLink
+            link={{ to: backOfferUrl, isExternal: false }}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Retour à la liste des offres
+          </ButtonLink>
+        ) : (
+          <>
+            <ButtonLink
+              link={{ to: backOfferUrl, isExternal: false }}
+              variant={ButtonVariant.SECONDARY}
+            >
+              Annuler et quitter
+            </ButtonLink>
+            <Button onClick={onClickNext}>Enregistrer les modifications</Button>
+          </>
+        )}
+      </>
+    )
+  }
+
+  const Right = () => {
+    if (isCreation)
+      return (
+        <>
+          {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
+            <>
+              <ButtonLink
+                link={{ to: '/offres', isExternal: false }}
+                variant={ButtonVariant.SECONDARY}
+              >
+                Sauvegarder le brouillon et quitter
+              </ButtonLink>
+              <Button onClick={onClickNext}>Publier l'offre</Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={onClickSaveDraft}
+                variant={ButtonVariant.SECONDARY}
+              >
+                Sauvegarder le brouillon
+              </Button>
+              <Button
+                Icon={IcoMiniArrowRight}
+                iconPosition={IconPosition.RIGHT}
+                onClick={onClickNext}
+              >
+                Étape suivante
+              </Button>
+            </>
+          )}
+        </>
+      )
+    return undefined
+  }
+
+  return <ActionsBarSticky isVisible left={Left()} right={Right()} />
+}
 
 export default ActionBar
