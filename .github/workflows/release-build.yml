@@ -1,0 +1,37 @@
+name: Create a release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseCandidateVersion:
+        description: "Numéro de la RC sans le .0.0 (ex: 2150)"
+        required: true
+        type: string
+
+      releaseNumber:
+        description: "Numéro de l'itération (ex: 199)"
+        required: true
+        type: string
+
+jobs:
+  build-and-tag-version:
+    uses: ./.github/workflows/build-and-tag.yml
+    secrets: inherit
+    with:
+      base_ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
+      tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
+
+  create-maintenance-branch:
+    needs: tag-version
+    runs-on: ubuntu-latest
+    env:
+      MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
+    steps:
+      - name: Checkout new tag
+        uses: actions/checkout@v3
+        with:
+          ref: v${{ github.event.inputs.releaseNumber }}.0.0
+      - name: Create maintenance branch
+        run: |
+          git checkout -b "$MAINTENANCE_BRANCH"
+          git push origin "$MAINTENANCE_BRANCH"
