@@ -4,7 +4,7 @@ import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
 import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
-import { getToday } from 'utils/date'
+import { FORMAT_DD_MM_YYYY, getToday } from 'utils/date'
 
 registerLocale('fr', fr)
 
@@ -46,7 +46,7 @@ const FilterByEventDate = ({
               customClass={`field-date-only${isDisabled ? ' disabled' : ''}`}
             />
           }
-          dateFormat="dd/MM/yyyy"
+          dateFormat={FORMAT_DD_MM_YYYY}
           disabled={isDisabled}
           dropdownMode="select"
           id="select-filter-date"

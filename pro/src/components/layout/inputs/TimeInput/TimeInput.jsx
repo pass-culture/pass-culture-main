@@ -4,6 +4,7 @@ import React from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
+import { FORMAT_HH_mm } from 'utils/date'
 
 registerLocale('fr', fr)
 
@@ -19,7 +20,7 @@ const TimeInput = ({ ariaLabel, disabled, inError, onChange, dateTime }) => {
           }${inError ? ' error' : ''}`}
         />
       }
-      dateFormat="HH:mm"
+      dateFormat={FORMAT_HH_mm}
       disabled={disabled}
       dropdownMode="scroll"
       locale="fr"
@@ -29,7 +30,7 @@ const TimeInput = ({ ariaLabel, disabled, inError, onChange, dateTime }) => {
       showTimeSelect
       showTimeSelectOnly
       timeCaption="Horaire"
-      timeFormat="HH:mm"
+      timeFormat={FORMAT_HH_mm}
       timeIntervals={15}
     />
   )

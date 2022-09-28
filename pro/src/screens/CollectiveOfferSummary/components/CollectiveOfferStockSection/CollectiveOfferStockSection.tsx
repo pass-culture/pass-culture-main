@@ -3,6 +3,7 @@ import React from 'react'
 
 import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
@@ -30,7 +31,7 @@ const CollectiveOfferStockSection = ({
         title="Date"
         description={
           (beginningDateTimeFromUTC &&
-            format(beginningDateTimeFromUTC, 'dd/MM/yyyy')) ||
+            format(beginningDateTimeFromUTC, FORMAT_DD_MM_YYYY)) ||
           DEFAULT_RECAP_VALUE
         }
       />
@@ -38,7 +39,7 @@ const CollectiveOfferStockSection = ({
         title="Horaire"
         description={
           (beginningDateTimeFromUTC &&
-            format(beginningDateTimeFromUTC, 'HH:mm')) ||
+            format(beginningDateTimeFromUTC, FORMAT_HH_mm)) ||
           DEFAULT_RECAP_VALUE
         }
       />
@@ -51,7 +52,7 @@ const CollectiveOfferStockSection = ({
         title="Date limite de réservation"
         description={
           (bookingLimitDateTimeFromUTC &&
-            format(bookingLimitDateTimeFromUTC, 'dd/MM/yyyy')) ||
+            format(bookingLimitDateTimeFromUTC, FORMAT_DD_MM_YYYY)) ||
           DEFAULT_RECAP_VALUE
         }
       />
