@@ -144,7 +144,7 @@ const VenueEdition = () => {
     const handleInitialRequest = async () => {
       const offererRequest = api.getOfferer(offererId)
       const venueRequest = api.getVenue(venueId)
-      const venueTypesRequest = pcapi.getVenueTypes().then(venueTypes => {
+      const venueTypesRequest = api.getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
       })
       const venueLabelsRequest = pcapi
