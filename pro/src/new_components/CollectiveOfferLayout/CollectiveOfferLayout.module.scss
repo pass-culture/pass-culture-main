@@ -3,13 +3,13 @@
 .eac-layout {
   position: relative;
 
-  &-heading {
-    margin-bottom: rem.torem(4px);
+  &-headings {
+    margin-bottom: rem.torem(32px);
   }
 
   &-sub-heading {
-    margin-bottom: rem.torem(32px);
     max-width: rem.torem(588px);
+    margin-top: rem.torem(4px);
   }
 
   &-breadcrumb {
