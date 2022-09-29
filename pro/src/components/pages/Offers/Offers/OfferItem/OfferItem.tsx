@@ -8,7 +8,6 @@ import {
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
 import Icon from 'components/layout/Icon'
-import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import {
@@ -24,6 +23,8 @@ import { computeVenueDisplayName } from 'repository/venuesService'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
+
+import ThumbCell from './Cells/ThumbCell'
 
 export type OfferItemProps = {
   disabled?: boolean
@@ -120,26 +121,7 @@ const OfferItem = ({
         />
       </td>
       {audience === Audience.INDIVIDUAL && (
-        <td className="thumb-column">
-          <Link
-            className="name"
-            title={`${offer.name} - éditer l'offre`}
-            onClick={() =>
-              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-                to: OfferBreadcrumbStep.SUMMARY,
-                used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
-                isEdition: true,
-              })
-            }
-            to={editionOfferLink}
-          >
-            <Thumb
-              alt={`${offer.name} - éditer l'offre`}
-              url={offer.thumbUrl}
-            />
-          </Link>
-        </td>
+        <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
       )}
       <td className="title-column">
         <Link
