@@ -1038,3 +1038,7 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
     )
 
     return db.session.execute(offers_stats_query).one_or_none()
+
+
+def list_offerers_to_be_validated() -> sa.orm.Query:
+    return offerers_models.Offerer.query.filter(offerers_models.Offerer.isValidated == False)
