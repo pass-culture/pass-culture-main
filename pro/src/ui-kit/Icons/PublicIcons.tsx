@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
@@ -291,12 +292,6 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
-          <Icon svg="ico-next-S" />
-        </td>
-        <td>public/icons/ico-next-S</td>
-      </tr>
-      <tr>
-        <td>
           <Icon svg="ico-no-bookings" />
         </td>
         <td>public/icons/ico-no-bookings</td>
@@ -510,12 +505,6 @@ export const PublicIcons = () => (
           <Icon svg="ico-validate-purple" />
         </td>
         <td>public/icons/ico-validate-purple</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-venue-r" />
-        </td>
-        <td>public/icons/ico-venue-r</td>
       </tr>
       <tr>
         <td>

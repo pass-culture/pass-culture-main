@@ -72,14 +72,5 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
         )
       })
     })
-
-    describe('see venue details link', () => {
-      it('should redirect to venue details page', () => {
-        renderVenueItem()
-        const navLink = screen.getAllByRole('link')[2]
-        // then
-        expect(navLink).toHaveAttribute('href', '/structures/ABC/lieux/AAA')
-      })
-    })
   })
 })
