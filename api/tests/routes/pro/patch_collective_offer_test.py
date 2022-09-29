@@ -50,6 +50,7 @@ class Returns200Test:
         data = {
             "name": "New name",
             "mentalDisabilityCompliant": True,
+            "description": "Ma super description",
             "contactEmail": "toto@example.com",
             "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
             "subcategoryId": "CONCERT",
@@ -71,6 +72,7 @@ class Returns200Test:
         assert response.json["subcategoryId"] == "CONCERT"
         assert response.json["students"] == ["Collège - 4e"]
         assert response.json["interventionArea"] == ["01", "2A"]
+        assert response.json["description"] == "Ma super description"
 
         updated_offer = CollectiveOffer.query.get(offer.id)
         assert updated_offer.name == "New name"
@@ -82,6 +84,7 @@ class Returns200Test:
         assert updated_offer.students == [StudentLevels.COLLEGE4]
         assert updated_offer.domains == [domain]
         assert updated_offer.interventionArea == ["01", "2A"]
+        assert updated_offer.description == "Ma super description"
 
         expected_payload = EducationalBookingEdition(
             **serialize_collective_booking(booking).dict(),
@@ -95,6 +98,7 @@ class Returns200Test:
                     "mentalDisabilityCompliant",
                     "subcategoryId",
                     "domains",
+                    "description",
                 ]
             ),
         )

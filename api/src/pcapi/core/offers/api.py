@@ -334,6 +334,11 @@ def _update_collective_offer(
             offer.domains = domains
             continue
 
+        if key == "description":
+            # ignore description set to NULL
+            offer.description = offer.description if value is None else value
+            continue
+
         setattr(offer, key, value)
     db.session.add(offer)
     db.session.commit()

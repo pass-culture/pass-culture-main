@@ -26,6 +26,7 @@ class Returns200Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
             "durationMinutes": 60,
@@ -77,6 +78,7 @@ class Returns200Test:
         assert offer.students[1].value == "Lycée - Première"
         assert len(offer.domains) == 2
         assert set(offer.domains) == {educational_domain1, educational_domain2}
+        assert offer.description == "Ma super description"
         assert offer.templateId == template.id
 
     def test_create_collective_offer_empty_intervention_area(self, client):
@@ -91,6 +93,7 @@ class Returns200Test:
             "venueId": humanize(venue.id),
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain.id],
+            "description": "Ma super description",
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
@@ -129,6 +132,7 @@ class Returns403Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "domains": [educational_factories.EducationalDomainFactory().id],
@@ -169,6 +173,7 @@ class Returns403Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "domains": [educational_factories.EducationalDomainFactory().id],
@@ -212,6 +217,7 @@ class Returns400Test:
             "venueId": humanize(venue.id),
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
+            "description": "Ma super description",
             "name": "La pièce de théâtre",
             "subcategoryId": "Pouet",
             "contactEmail": "pouet@example.com",
@@ -247,6 +253,7 @@ class Returns400Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
@@ -284,6 +291,7 @@ class Returns400Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
@@ -321,6 +329,7 @@ class Returns400Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "domains": [],
@@ -363,6 +372,7 @@ class Returns404Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [0, educational_domain1.id, educational_domain2.id],
             "durationMinutes": 60,
