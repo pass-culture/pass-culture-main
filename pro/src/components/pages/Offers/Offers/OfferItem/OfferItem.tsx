@@ -1,23 +1,15 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
-import Icon from 'components/layout/Icon'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 
+import EditOfferCell from './Cells/EditOfferCell'
 import EditStocksCell from './Cells/EditStocksCell'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
 import OfferNameCell from './Cells/OfferNameCell'
@@ -42,7 +34,6 @@ const OfferItem = ({
   audience,
 }: OfferItemProps) => {
   const { venue, id, isEducational, isShowcase } = offer
-  const { logEvent } = useAnalytics()
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const editionOfferLink = useOfferEditionURL(
     isEducational,
@@ -97,24 +88,11 @@ const OfferItem = ({
       )}
       <OfferStatusCell status={offer.status} />
       <EditStocksCell editionStockLink={editionStockLink} />
-      <td className="edit-column">
-        {isOfferEditable && (
-          <Link
-            className="secondary-link"
-            onClick={() =>
-              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-                to: OfferBreadcrumbStep.SUMMARY,
-                used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_PEN,
-                isEdition: true,
-              })
-            }
-            to={editionOfferLink}
-          >
-            <Icon alt={`${offer.name} - éditer l'offre`} svg="ico-pen" />
-          </Link>
-        )}
-      </td>
+      <EditOfferCell
+        isOfferEditable={Boolean(isOfferEditable)}
+        name={offer.name}
+        editionOfferLink={editionOfferLink}
+      />
     </tr>
   )
 }
