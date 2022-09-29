@@ -436,6 +436,14 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         check_offer_name_length_is_valid(name)
         return name
 
+    @validator("description", allow_reuse=True)
+    def validate_description(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferBodyModel", description: str | None
+    ) -> str | None:
+        if description is None:
+            raise ValueError("Description cannot be NULL.")
+        return description
+
     @validator("domains")
     def validate_domains_collective_offer_edition(  # pylint: disable=no-self-argument
         cls: "PatchCollectiveOfferBodyModel",
