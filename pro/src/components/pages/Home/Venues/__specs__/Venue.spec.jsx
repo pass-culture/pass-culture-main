@@ -6,10 +6,16 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import Venue from 'components/pages/Home/Venues/Venue'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getVenueStats: jest.fn().mockResolvedValue({}),
+  },
+}))
 
 const renderVenue = async (props, store) => {
   return await act(async () => {
@@ -50,7 +56,7 @@ describe('venues', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
-    expect(pcapi.getVenueStats).toHaveBeenCalledWith(props.id)
+    expect(api.getVenueStats).toHaveBeenCalledWith(props.id)
 
     const [
       activeOffersStat,

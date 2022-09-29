@@ -25,9 +25,6 @@ export const createVenue = venue => client.post(`/venues`, venue)
 export const editVenue = (venueId, body) =>
   client.patch(`/venues/${venueId}`, body)
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
-export const getVenueStats = venueId => client.get(`/venues/${venueId}/stats`)
-
 export const getVenueTypes = () => client.get(`/venue-types`)
 
 export const getVenueLabels = () => client.get(`/venue-labels`)
