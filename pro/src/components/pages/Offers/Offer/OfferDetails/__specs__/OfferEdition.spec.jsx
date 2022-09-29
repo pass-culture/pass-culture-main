@@ -27,7 +27,6 @@ import {
 Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenue: jest.fn(),
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
@@ -39,6 +38,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getVenue: jest.fn(),
   },
 }))
 
@@ -199,7 +199,7 @@ describe('offerDetails - Edition', () => {
       .mockResolvedValue({ venues: [editedOfferVenue] })
 
     pcapi.loadCategories.mockResolvedValue(categories)
-    pcapi.getVenue.mockReturnValue(Promise.resolve())
+    api.getVenue.mockReturnValue(Promise.resolve())
     pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
   })
 

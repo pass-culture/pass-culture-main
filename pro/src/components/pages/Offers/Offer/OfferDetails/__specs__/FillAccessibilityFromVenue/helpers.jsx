@@ -30,7 +30,6 @@ import {
 } from './mocks'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenue: jest.fn(),
   loadCategories: jest.fn(),
 }))
 
@@ -40,6 +39,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getVenue: jest.fn(),
   },
 }))
 
@@ -158,7 +158,7 @@ export const initialize = async ({
   let rtlRenderReturn
   if (offer) {
     jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
-    pcapi.getVenue.mockReturnValue(offer.venue)
+    api.getVenue.mockReturnValue(offer.venue)
     rtlRenderReturn = await renderOfferEdition({
       props: {},
       store,
@@ -177,7 +177,7 @@ export const initialize = async ({
       category => category.id === selectedSubcategory.categoryId
     )
 
-    pcapi.getVenue.mockReturnValue(
+    api.getVenue.mockReturnValue(
       selectedVenue ? selectedVenue : selectedVenueFromUrl
     )
 
