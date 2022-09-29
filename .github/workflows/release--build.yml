@@ -16,7 +16,7 @@ on:
 jobs:
   build-and-tag-version:
     name: Build and tag version
-    uses: ./.github/workflows/reusable-build-and-tag.yml
+    uses: ./.github/workflows/reusable--build-and-tag.yml
     secrets: inherit
     with:
       base_ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
