@@ -48,13 +48,13 @@ test.skip('je peux créer un lieu avec un SIRET valide', async t => {
 
   await t
     .click(newVenueButton)
+    .typeText(siretInput, siret, { paste: true })
     .click(venueType)
     .click(venueTypeOption.withText('Festival'))
-    .typeText(siretInput, siret, { paste: true })
     .typeText(descriptionInput, description, { paste: true })
     .click(audioDisabilityCompliant)
     .expect(nameInput.value)
-    .eql(venueName)
+    .eql(venueName, { timeout: 5000 }) // 5s
     .expect(addressInput.value)
     .eql(address)
     .expect(postalCodeInput.value)
@@ -68,7 +68,7 @@ test.skip('je peux créer un lieu avec un SIRET valide', async t => {
   await navigateAfterVenueSubmit('creation')(t)
 })
 
-test.skip('je peux créer un lieu sans SIRET avec une description', async t => {
+test('je peux créer un lieu sans SIRET avec une description', async t => {
   const { offerer, user } = await fetchSandbox(
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
@@ -87,7 +87,9 @@ test.skip('je peux créer un lieu sans SIRET avec une description', async t => {
     .typeText(commentInput, 'Test sans SIRET', { paste: true })
     .click(venueType)
     .click(venueTypeOption.withText('Festival'))
-    .typeText(addressInput, '1 place du trocadéro Paris')
+    .typeText(addressInput, '1 place du trocadéro Paris', { paste: true })
+    .expect(addressSuggestion.innerText)
+    .match(/^(?!\s*$).+/, { timeout: 5000 }) // 5s
     .click(addressSuggestion)
     .click(audioDisabilityCompliant)
     .expect(postalCodeInput.value)
