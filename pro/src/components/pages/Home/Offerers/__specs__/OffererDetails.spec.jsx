@@ -33,7 +33,6 @@ jest.mock('utils/config', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenueStats: jest.fn(),
   getBusinessUnits: jest.fn(),
 }))
 
@@ -41,6 +40,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
+    getVenueStats: jest.fn(),
   },
 }))
 
@@ -205,7 +205,7 @@ describe('offererDetailsLegacy', () => {
       offerersNames: baseOfferersNames,
     })
     api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
-    pcapi.getVenueStats.mockResolvedValue({
+    api.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
