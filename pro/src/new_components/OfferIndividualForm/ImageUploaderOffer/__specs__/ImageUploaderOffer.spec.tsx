@@ -34,14 +34,17 @@ describe('test ImageUploaderOffer', () => {
   })
 
   it('should render when no image is given', async () => {
-    await renderImageUploaderOffer(props)
+    renderImageUploaderOffer(props)
 
     expect(
       await screen.findByRole('heading', {
         name: /Image de l'offre/,
       })
     ).toBeInTheDocument()
-    // jest.spyOn(imageUploaderOfferUtils, 'buildInitialValues')
+    const infoBox = screen.getByText(
+      'Les offres avec une image ont 4 fois plus de chance d’être consultées que celles qui n’en ont pas.'
+    )
+    expect(infoBox).toBeInTheDocument()
     expect(imageUploaderOfferUtils.buildInitialValues).toHaveBeenCalledWith(
       undefined,
       undefined
@@ -52,7 +55,7 @@ describe('test ImageUploaderOffer', () => {
       url: 'http://test.url',
       credit: 'John Do',
     }
-    await renderImageUploaderOffer(props)
+    renderImageUploaderOffer(props)
 
     expect(
       await screen.findByRole('heading', {

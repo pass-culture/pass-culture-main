@@ -1586,9 +1586,7 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           expect(
-            screen.getByText(
-              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
-            )
+            screen.getByText('Cette offre numérique ne sera pas remboursée.')
           ).toBeInTheDocument()
         })
 
@@ -1601,7 +1599,7 @@ describe('offerDetails - Creation - pro user', () => {
           })
 
           const NotRefundableBanner = await screen.findByText(
-            'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
+            'Cette offre numérique ne sera pas remboursée.'
           )
           expect(NotRefundableBanner).toBeInTheDocument()
 
@@ -1628,9 +1626,7 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           expect(
-            screen.getByText(
-              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
-            )
+            screen.getByText('Cette offre numérique ne sera pas remboursée.')
           ).toBeInTheDocument()
         })
 
@@ -1770,7 +1766,7 @@ describe('offerDetails - Creation - pro user', () => {
           )
           const withdrawalModalitiesReminder =
             informationsPratiquesSection.getByText(
-              'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
+              'La livraison d’article est interdite. Pour plus d’informations, veuillez consulter nos CGU.'
             )
           expect(withdrawalModalitiesReminder).toBeInTheDocument()
         })

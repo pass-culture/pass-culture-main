@@ -1,22 +1,20 @@
 import React from 'react'
 
 import { Banner } from 'ui-kit'
-import { CGU_URL } from 'utils/config'
 
 const OfferRefundWarning = () => {
   return (
     <Banner
       links={[
         {
-          href: CGU_URL,
-          linkTitle: "Consulter les Conditions Générales d'Utilisation",
+          href: 'https://aide.passculture.app/hc/fr/articles/6043184068252',
+          linkTitle:
+            'Quelles sont les offres numériques éligibles au remboursement ?',
         },
       ]}
       type="attention"
     >
-      Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus
-      d’informations sur les catégories éligibles au remboursement, merci de
-      consulter les CGU.
+      Cette offre numérique ne sera pas remboursée.
     </Banner>
   )
 }

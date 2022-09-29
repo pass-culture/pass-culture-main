@@ -1,30 +1,29 @@
 import cn from 'classnames'
-import type { LocationDescriptor } from 'history'
 import React from 'react'
 
 import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
 import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ButtonLink } from 'ui-kit/Button'
+import type {
+  InternalLinkProps,
+  ExternalLinkProps,
+} from 'ui-kit/Button/ButtonLink'
 
 import styles from './InfoBox.module.scss'
 
-type InternalLinkProps = {
-  isExternal: false
-  to: LocationDescriptor
+interface TInternalLink extends InternalLinkProps {
   text: string
 }
 
-type ExternalLinkProps = {
-  isExternal: true
-  to: string
+interface TExternalLink extends ExternalLinkProps {
   text: string
 }
 
 export interface IInfoBoxProps {
   type: 'info' | 'important'
   text: string
-  link?: InternalLinkProps | ExternalLinkProps
+  link?: TInternalLink | TExternalLink
 }
 
 const InfoBox = ({ type, text, link }: IInfoBoxProps): JSX.Element => {

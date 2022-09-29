@@ -7,7 +7,7 @@ import { IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
-import { Checkbox, TextArea, TextInput } from 'ui-kit'
+import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
 
 import { IOfferIndividualFormValues } from '../types'
 
@@ -67,7 +67,24 @@ const UsefulInformations = ({
         <TicketWithdrawal readOnlyFields={readOnlyFields} />
       )}
 
-      <FormLayout.Row>
+      <FormLayout.Row
+        sideComponent={
+          <InfoBox
+            type="info"
+            text={
+              isVenueVirtual
+                ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
+                : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
+            }
+            link={{
+              isExternal: true,
+              to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
+              text: 'En savoir plus',
+              'aria-label': 'en savoir plus sur les modalités de retrait',
+            }}
+          />
+        }
+      >
         <TextArea
           countCharacters
           isOptional
@@ -75,10 +92,22 @@ const UsefulInformations = ({
           name="withdrawalDetails"
           maxLength={500}
           disabled={readOnlyFields.includes('withdrawalDetails')}
+          placeholder={
+            'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par e-mail...'
+          }
         />
       </FormLayout.Row>
       {isVenueVirtual && (
-        <FormLayout.Row>
+        <FormLayout.Row
+          sideComponent={
+            <InfoBox
+              type="info"
+              text={
+                "Lien vers lequel seront renvoyés les bénéficiaires ayant réservé votre offre sur l'application pass Culture."
+              }
+            />
+          }
+        >
           <TextInput
             label="URL d’accès à l’offre"
             name="url"

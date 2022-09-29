@@ -18,7 +18,7 @@ import UsefulInformations, {
 } from '../UsefulInformations'
 import validationSchema from '../validationSchema'
 
-const renderUsefulInformations = ({
+const renderUsefulInformations = async ({
   initialValues,
   onSubmit = jest.fn(),
   props,
@@ -27,7 +27,7 @@ const renderUsefulInformations = ({
   onSubmit: () => void
   props: IUsefulInformationsProps
 }) => {
-  return render(
+  render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -39,6 +39,8 @@ const renderUsefulInformations = ({
       </Form>
     </Formik>
   )
+
+  await screen.findByRole('heading', { name: 'Informations pratiques' })
 }
 
 describe('OfferIndividual section: UsefulInformations', () => {
@@ -103,13 +105,13 @@ describe('OfferIndividual section: UsefulInformations', () => {
   })
 
   it('should render the component', async () => {
-    renderUsefulInformations({
+    await renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
     })
     expect(
-      await screen.findByRole('heading', { name: 'Informations pratiques' })
+      screen.getByRole('heading', { name: 'Informations pratiques' })
     ).toBeInTheDocument()
     expect(
       screen.queryByLabelText('Rayonnement national')
@@ -119,7 +121,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
   it('should submit valid form', async () => {
     initialValues.subcategoryId = 'CONCERT'
     initialValues.subCategoryFields = ['withdrawalType']
-    renderUsefulInformations({
+    await renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -159,25 +161,23 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
   it('should contain isNational when user is admin', async () => {
     props.isUserAdmin = true
-    renderUsefulInformations({
+    await renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
     })
-    await screen.findByRole('heading', { name: 'Informations pratiques' })
+
     expect(screen.getByLabelText('Rayonnement national')).toBeInTheDocument()
   })
 
   it('should contain withdrawal ticket informations when subcategory is from specific subCategory', async () => {
     initialValues.subcategoryId = 'CONCERT'
     initialValues.subCategoryFields = ['withdrawalType']
-    renderUsefulInformations({
+    await renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
     })
-
-    await screen.findByRole('heading', { name: 'Informations pratiques' })
 
     expect(
       screen.getByText('Comment les billets, places seront-ils transmis ?')
@@ -186,13 +186,11 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
   it('should not contain withdrawal ticket informations when subcategory is not from specific subCategory', async () => {
     initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-    renderUsefulInformations({
+    await renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
     })
-
-    await screen.findByRole('heading', { name: 'Informations pratiques' })
 
     expect(
       screen.queryByText('Comment les billets, places seront-ils transmis ?')
@@ -219,7 +217,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     })
 
     it('should submit valid form', async () => {
-      renderUsefulInformations({
+      await renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
@@ -263,13 +261,11 @@ describe('OfferIndividual section: UsefulInformations', () => {
     })
 
     it('should display url field with errors if needed', async () => {
-      renderUsefulInformations({
+      await renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
       })
-
-      await screen.findByRole('heading', { name: 'Informations pratiques' })
 
       const offererSelect = screen.getByLabelText('Structure')
       await userEvent.selectOptions(offererSelect, 'AA')
@@ -321,19 +317,23 @@ describe('OfferIndividual section: UsefulInformations', () => {
         reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
         isSelectable: true,
       }
-      renderUsefulInformations({
+      await renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
       })
 
-      await screen.findByRole('heading', { name: 'Informations pratiques' })
-
+      expect(
+        screen.queryByText('Cette offre numérique ne sera pas remboursée.')
+      ).toBeInTheDocument()
       expect(
         screen.queryByText(
-          'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
+          'Quelles sont les offres numériques éligibles au remboursement ?'
         )
-      ).toBeInTheDocument()
+      ).toHaveAttribute(
+        'href',
+        'https://aide.passculture.app/hc/fr/articles/6043184068252'
+      )
     })
 
     it('should not display not reimbursment banner when subcategory is reimbursed', async () => {
@@ -350,13 +350,11 @@ describe('OfferIndividual section: UsefulInformations', () => {
         reimbursementRule: REIMBURSEMENT_RULES.BOOK,
         isSelectable: true,
       }
-      renderUsefulInformations({
+      await renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
       })
-
-      await screen.findByRole('heading', { name: 'Informations pratiques' })
 
       expect(
         screen.queryByText(
@@ -380,19 +378,20 @@ describe('OfferIndividual section: UsefulInformations', () => {
         isSelectable: true,
       }
       props.isVenueVirtual = false
-      renderUsefulInformations({
+      await renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
       })
 
-      await screen.findByRole('heading', { name: 'Informations pratiques' })
-
       expect(
         screen.queryByText(
-          'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
+          'La livraison d’article est interdite. Pour plus d’informations, veuillez consulter nos CGU.'
         )
       ).toBeInTheDocument()
+      expect(
+        screen.queryByText("Consulter les Conditions Générales d'Utilisation")
+      ).toHaveAttribute('href', 'https://pass.culture.fr/cgu-professionnels/')
     })
 
     it('should not display withdrawal banner when subcategory is an event', async () => {
@@ -410,19 +409,64 @@ describe('OfferIndividual section: UsefulInformations', () => {
         isSelectable: true,
       }
       props.isVenueVirtual = false
-      renderUsefulInformations({
+      await renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
       })
-
-      await screen.findByRole('heading', { name: 'Informations pratiques' })
 
       expect(
         screen.queryByText(
           'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
         )
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('infobox', () => {
+    describe('for not virtual offers', () => {
+      it('should render the component', async () => {
+        await renderUsefulInformations({
+          initialValues,
+          onSubmit,
+          props,
+        })
+
+        const infoBox = screen.getByText(
+          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
+        )
+        const infoLink = screen.getByText('En savoir plus')
+        expect(infoBox).toBeInTheDocument()
+        expect(infoLink).toHaveAttribute(
+          'href',
+          'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-'
+        )
+      })
+    })
+    describe('for virtual offers', () => {
+      it('should render the component', async () => {
+        props.isVenueVirtual = true
+
+        await renderUsefulInformations({
+          initialValues,
+          onSubmit,
+          props,
+        })
+
+        const infoBoxWithdrawal = screen.getByText(
+          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
+        )
+        const infoLinkWithdrawal = screen.getByText('En savoir plus')
+        expect(infoBoxWithdrawal).toBeInTheDocument()
+        expect(infoLinkWithdrawal).toHaveAttribute(
+          'href',
+          'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-'
+        )
+        const infoBoxUrl = screen.getByText(
+          "Lien vers lequel seront renvoyés les bénéficiaires ayant réservé votre offre sur l'application pass Culture."
+        )
+        expect(infoBoxUrl).toBeInTheDocument()
+      })
     })
   })
 })

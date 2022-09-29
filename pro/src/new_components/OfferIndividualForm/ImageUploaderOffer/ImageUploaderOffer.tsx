@@ -5,6 +5,7 @@ import FormLayout from 'new_components/FormLayout'
 import { ImageUploader } from 'new_components/ImageUploader'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
+import { InfoBox } from 'ui-kit'
 
 import { buildInitialValues } from './utils'
 
@@ -23,7 +24,14 @@ const ImageUploaderOffer = ({
 
   return (
     <FormLayout.Section title="Image de l'offre">
-      <FormLayout.Row>
+      <FormLayout.Row
+        sideComponent={
+          <InfoBox
+            type="info"
+            text="Les offres avec une image ont 4 fois plus de chance d’être consultées que celles qui n’en ont pas."
+          />
+        }
+      >
         <ImageUploader
           onImageUpload={onImageUpload}
           onImageDelete={onImageDelete}
@@ -31,6 +39,7 @@ const ImageUploaderOffer = ({
           mode={UploaderModeEnum.OFFER}
         />
       </FormLayout.Row>
+      )
     </FormLayout.Section>
   )
 }
