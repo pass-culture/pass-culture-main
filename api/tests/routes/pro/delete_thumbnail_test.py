@@ -20,7 +20,7 @@ class OfferMediationTest:
             offerer=offer.venue.managingOfferer,
         )
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete(f"/offers/thumbnails/{offer.id}")
+        response = client.delete(f"/offers/thumbnails/{humanize(offer.id)}")
 
         expected_thumb_path = f"{mediation.thumb_path_component}/{humanize(mediation.id)}"
         assert Mediation.query.all() == []
@@ -38,7 +38,7 @@ class OfferMediationTest:
             offerer=offer.venue.managingOfferer,
         )
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete(f"/offers/thumbnails/{offer.id}")
+        response = client.delete(f"/offers/thumbnails/{humanize(offer.id)}")
 
         assert response.status_code == 204
         mock_delete_public_object.assert_not_called()
@@ -48,7 +48,7 @@ class OfferMediationTest:
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         client = client.with_session_auth(email="user@example.com")
-        response = client.delete(f"/offers/thumbnails/{offer.id}")
+        response = client.delete(f"/offers/thumbnails/{humanize(offer.id)}")
 
         assert response.status_code == 403
 
