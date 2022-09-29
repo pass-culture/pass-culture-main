@@ -52,6 +52,7 @@ from pcapi.utils import rest
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -699,6 +700,9 @@ def create_collective_offer(
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOffer:
 
+    if offer_data.template_id is not None:
+        template = get_collective_offer_template_by_id(dehumanize_or_raise(offer_data.template_id))
+        rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     venue: offerers_models.Venue = rest.load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
@@ -723,6 +727,7 @@ def create_collective_offer(
         motorDisabilityCompliant=offer_data.motor_disability_compliant,
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
+        templateId=dehumanize(offer_data.template_id) if offer_data.template_id else None,
     )
     collective_offer.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer)

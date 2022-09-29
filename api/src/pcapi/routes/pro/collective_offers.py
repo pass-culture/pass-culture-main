@@ -164,6 +164,15 @@ def create_collective_offer(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
+    except educational_exceptions.CollectiveOfferTemplateNotFound as error:
+        logger.info(
+            "Could not create offer: collective offer template not found.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},
+        )
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"},
+            status_code=404,
+        )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
