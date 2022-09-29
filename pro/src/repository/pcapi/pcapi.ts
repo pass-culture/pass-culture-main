@@ -64,11 +64,6 @@ export const postImageToVenue = async ({
   )
 }
 
-// @ts-expect-error ts-migrate(7031) FIXME: Binding element 'venueId' implicitly has an 'any' ... Remove this comment to see the full error message
-export const deleteVenueImage = async ({ venueId }) => {
-  return await client.delete(`/venues/${venueId}/banner`)
-}
-
 //
 // categories
 //

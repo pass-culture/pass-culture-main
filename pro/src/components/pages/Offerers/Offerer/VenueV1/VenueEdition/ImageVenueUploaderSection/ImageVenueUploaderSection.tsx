@@ -1,9 +1,10 @@
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { ImageUploader } from 'new_components/ImageUploader'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
-import { postImageToVenue, deleteVenueImage } from 'repository/pcapi/pcapi'
+import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import styles from './ImageVenueUploaderSection.module.scss'
 
@@ -82,7 +83,7 @@ export const ImageVenueUploaderSection = ({
 
   const handleOnImageDelete = async () => {
     try {
-      await deleteVenueImage({ venueId })
+      await api.deleteVenueBanner(venueId)
       onDeleteImage()
       return Promise.resolve()
     } catch {
