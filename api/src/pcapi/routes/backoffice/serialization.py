@@ -356,3 +356,28 @@ class OffererTotalRevenueResponseModel(Response):
 
 class OffererOfferStatsResponseModel(Response):
     data: OffersStats
+
+
+class Comment(BaseModel):
+    date: datetime.datetime
+    author: str
+    content: str
+
+
+class OffererToBeValidated(BaseModel):
+    id: int
+    name: str
+    status: str | None
+    step: str | None
+    siren: str
+    address: str
+    postalCode: str
+    city: str
+    owner: str
+    phoneNumber: str | None
+    email: str
+    lastComment: Comment | None
+
+
+class ListOffererToBeValidatedResponseModel(PaginatedResponse):
+    data: list[OffererToBeValidated]

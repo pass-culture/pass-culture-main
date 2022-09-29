@@ -1,3 +1,5 @@
+import typing
+
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -6,10 +8,12 @@ from pcapi.core.permissions import utils as perm_utils
 from pcapi.models import api_errors
 from pcapi.repository import repository
 from pcapi.serialization.decorator import spectree_serialize
-import pcapi.utils.regions
+from pcapi.utils import db as db_utils
+from pcapi.utils import regions as regions_utils
 
 from . import blueprint
 from . import serialization
+from . import utils
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/users", methods=["GET"])
@@ -54,7 +58,7 @@ def get_offerer_basic_info(offerer_id: int) -> serialization.OffererBasicInfoRes
             name=offerer_basic_info.name,
             isActive=offerer_basic_info.isActive,
             siren=offerer_basic_info.siren,
-            region=pcapi.utils.regions.get_region_name_from_postal_code(offerer_basic_info.postalCode),
+            region=regions_utils.get_region_name_from_postal_code(offerer_basic_info.postalCode),
             bankInformationStatus=serialization.OffererBankInformationStatus(
                 **{stat: (offerer_basic_info.bank_informations or {}).get(stat, 0) for stat in ("ko", "ok")}
             ),
@@ -152,3 +156,51 @@ def remove_tag_from_offerer(offerer_id: int, tag_name: str) -> None:
         raise api_errors.ResourceNotFoundError(errors={"tag_name": "L'association structure - tag n'existe pas"})
 
     repository.delete(mapping_to_delete)
+
+
+@blueprint.backoffice_blueprint.route("offerers/to_be_validated", methods=["GET"])
+@spectree_serialize(
+    response_model=serialization.Response,
+    on_success_status=200,
+    api=blueprint.api,
+)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def list_offerers_to_be_validated(query: serialization.PaginableQuery) -> serialization.PaginatedResponse:
+    offerers = offerers_api.list_offerers_to_be_validated()
+
+    sorts = query.sort.split(",") if query.sort else []
+    sorted_offerers = utils.sort_query(offerers, db_utils.get_ordering_clauses(offerers_models.Offerer, sorts))
+    paginated_offerers = sorted_offerers.paginate(
+        page=query.page,
+        per_page=query.perPage,
+    )
+
+    response = typing.cast(
+        serialization.ListOffererToBeValidatedResponseModel,
+        utils.build_paginated_response(
+            response_model=serialization.ListOffererToBeValidatedResponseModel,
+            pages=paginated_offerers.pages,
+            total=paginated_offerers.total,
+            page=paginated_offerers.page,
+            sort=query.sort,
+            data=[
+                serialization.OffererToBeValidated(
+                    id=offerer.id,
+                    name=offerer.name,
+                    status="",  # TODO
+                    step="",  # TODO
+                    siren=offerer.siren,
+                    address=offerer.address,
+                    postalCode=offerer.postalCode,
+                    city=offerer.city,
+                    owner=f"{offerer.UserOfferers[0].user.firstName} {offerer.UserOfferers[0].user.lastName}",
+                    phoneNumber=offerer.UserOfferers[0].user.phoneNumber,
+                    email=offerer.UserOfferers[0].user.email,
+                    lastComment=None,  # TODO
+                )
+                for offerer in paginated_offerers.items
+            ],
+        ),
+    )
+
+    return response
