@@ -18,6 +18,7 @@ export type SharedCurrentUserResponseModel = {
   externalIds?: any;
   firstName?: string | null;
   hasPhysicalVenues?: boolean | null;
+  hasSeenOfferDuplicationModal: boolean;
   hasSeenProRgs?: boolean | null;
   hasSeenProTutorials?: boolean | null;
   id: string;

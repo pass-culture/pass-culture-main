@@ -1432,6 +1432,22 @@ export class DefaultService {
   }
 
   /**
+   * patch_user_offer_duplication_modal_seen <PATCH>
+   * @returns void
+   * @throws ApiError
+   */
+  public patchUserOfferDuplicationModalSeen(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/users/offer-duplication-modal-seen',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * post_change_password <POST>
    * @param requestBody
    * @returns void
