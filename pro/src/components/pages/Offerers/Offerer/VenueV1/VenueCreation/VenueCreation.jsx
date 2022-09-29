@@ -13,7 +13,7 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import { unhumanizeSiret } from 'core/Venue/utils'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import GoBackLink from 'new_components/GoBackLink'
-import { createVenue, getVenueLabels } from 'repository/pcapi/pcapi'
+import { createVenue } from 'repository/pcapi/pcapi'
 import { getCanSubmit, parseSubmitErrors } from 'utils/react-final-form'
 import { sortByLabel } from 'utils/strings'
 
@@ -71,9 +71,9 @@ const VenueCreation = () => {
       const venueTypesRequest = api.getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
       })
-      const venueLabelsRequest = getVenueLabels().then(labels =>
-        sortByLabel(labels)
-      )
+      const venueLabelsRequest = api
+        .fetchVenueLabels()
+        .then(labels => sortByLabel(labels))
       const canOffererCreateCollectiveOfferRequest =
         canOffererCreateCollectiveOfferAdapter(offererId).then(
           ({ payload }) => payload.isOffererEligibleToEducationalOffer

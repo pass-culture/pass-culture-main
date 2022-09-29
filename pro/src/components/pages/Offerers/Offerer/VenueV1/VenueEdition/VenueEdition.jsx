@@ -147,8 +147,8 @@ const VenueEdition = () => {
       const venueTypesRequest = api.getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
       })
-      const venueLabelsRequest = pcapi
-        .getVenueLabels()
+      const venueLabelsRequest = api
+        .fetchVenueLabels()
         .then(labels => sortByLabel(labels))
       const canOffererCreateCollectiveOfferRequest =
         canOffererCreateCollectiveOfferAdapter(offererId)

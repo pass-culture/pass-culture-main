@@ -25,8 +25,6 @@ export const createVenue = venue => client.post(`/venues`, venue)
 export const editVenue = (venueId, body) =>
   client.patch(`/venues/${venueId}`, body)
 
-export const getVenueLabels = () => client.get(`/venue-labels`)
-
 export const postImageToVenue = async ({
   // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'venueId' implicitly has an 'any' ... Remove this comment to see the full error message
   venueId,
