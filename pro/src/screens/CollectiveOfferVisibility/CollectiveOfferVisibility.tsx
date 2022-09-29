@@ -41,6 +41,7 @@ interface InstitutionOption extends SelectOption {
   city?: string
   name: string
   institutionType?: string
+  institutionId: string
 }
 
 const CollectiveOfferVisibility = ({
@@ -94,14 +95,19 @@ const CollectiveOfferVisibility = ({
 
   useEffect(() => {
     setInstitutionsOptions(
-      institutions.map(({ name, id, city, postalCode, institutionType }) => ({
-        label: `${institutionType ?? ''} ${name} - ${city}`.trim(),
-        value: String(id),
-        city,
-        postalCode,
-        name,
-        institutionType: institutionType ?? '',
-      }))
+      institutions.map(
+        ({ name, id, city, postalCode, institutionType, institutionId }) => ({
+          label: `${
+            institutionType ?? ''
+          } ${name} - ${city} - ${institutionId}`.trim(),
+          value: String(id),
+          city,
+          postalCode,
+          name,
+          institutionType: institutionType ?? '',
+          institutionId: institutionId,
+        })
+      )
     )
   }, [institutions])
 
@@ -179,6 +185,8 @@ const CollectiveOfferVisibility = ({
                         {`${selectedInstitution.institutionType} ${selectedInstitution.name}`.trim()}
                         <br />
                         {`${selectedInstitution.postalCode} ${selectedInstitution.city}`}
+                        <br />
+                        {selectedInstitution.institutionId}
                       </Banner>
                     )}
                   </>
