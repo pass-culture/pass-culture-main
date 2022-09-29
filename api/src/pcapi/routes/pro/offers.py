@@ -21,14 +21,13 @@ from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyM
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import human_ids
+from pcapi.utils import rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint
 
 
 logger = logging.getLogger(__name__)
-from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import load_or_404
 
 
 @private_api.route("/offers", methods=["GET"])
@@ -70,7 +69,7 @@ def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel
             },
             status_code=404,
         )
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -109,7 +108,7 @@ def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> No
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
 
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    rest.check_user_has_access_to_offerer(current_user, offerer.id)
     offers_api.publish_offer(body.id, current_user)
 
 
@@ -163,8 +162,8 @@ def patch_all_offers_active_status(
     api=blueprint.pro_private_schema,
 )
 def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
-    offer = load_or_404(Offer, human_id=offer_id)
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)  # type: ignore [attr-defined]
+    offer = rest.load_or_404(Offer, human_id=offer_id)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)  # type: ignore [attr-defined]
 
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
@@ -188,7 +187,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
             },
             status_code=404,
         )
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
 
@@ -211,7 +210,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 )
 def delete_thumbnail(offer_id: str) -> None:
     try:
-        offer: Offer = load_or_404(Offer, human_id=offer_id)
+        offer: Offer = rest.load_or_raise_error(Offer, human_id=offer_id)
     except human_ids.NonDehumanizableId:
         raise ApiErrors(
             errors={
@@ -219,7 +218,7 @@ def delete_thumbnail(offer_id: str) -> None:
             },
             status_code=404,
         )
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     offers_api.delete_mediation(offer=offer)
 
