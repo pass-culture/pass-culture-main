@@ -19,7 +19,9 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 
+import OfferInstitutionCell from './Cells/OfferInstitutionCell'
 import OfferNameCell from './Cells/OfferNameCell'
+import OfferRemainingStockCell from './Cells/OfferRemainingStockCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
 import ThumbCell from './Cells/ThumbCell'
 
@@ -38,7 +40,7 @@ const OfferItem = ({
   selectOffer,
   audience,
 }: OfferItemProps) => {
-  const { venue, stocks, id, isEducational, isShowcase } = offer
+  const { venue, id, isEducational, isShowcase } = offer
   const { logEvent } = useAnalytics()
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const editionOfferLink = useOfferEditionURL(
@@ -55,24 +57,6 @@ const OfferItem = ({
 
   function handleOnChangeSelected() {
     selectOffer(offer.id, !isSelected, !!isShowcase)
-  }
-
-  const computeRemainingStockOrEducationalInstitutionValue = (
-    stocks: Offer['stocks']
-  ) => {
-    if (audience === Audience.COLLECTIVE) {
-      return offer.educationalInstitution?.name ?? 'Tous les établissements'
-    }
-
-    let totalRemainingStock = 0
-    for (const stock of stocks) {
-      if (stock.remainingQuantity === 'unlimited') {
-        return 'Illimité'
-      }
-      totalRemainingStock += Number(stock.remainingQuantity)
-    }
-
-    return totalRemainingStock
   }
 
   const isOfferEditable = offer ? offer.isEditable : null
@@ -103,9 +87,13 @@ const OfferItem = ({
       )}
       <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
       <OfferVenueCell venue={venue} />
-      <td className="stock-column">
-        {computeRemainingStockOrEducationalInstitutionValue(stocks)}
-      </td>
+      {audience === Audience.INDIVIDUAL ? (
+        <OfferRemainingStockCell stocks={offer.stocks} />
+      ) : (
+        <OfferInstitutionCell
+          educationalInstitution={offer.educationalInstitution}
+        />
+      )}
       <td className="status-column">
         <StatusLabel status={offer.status} />
       </td>
