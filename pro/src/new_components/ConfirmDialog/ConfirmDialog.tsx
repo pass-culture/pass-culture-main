@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
 import DialogBox from 'new_components/DialogBox/DialogBox'
-import { SubmitButton } from 'ui-kit'
+import { Button, SubmitButton } from 'ui-kit'
 
 import styles from './ConfirmDialog.module.scss'
 
@@ -49,13 +49,19 @@ const ConfirmDialog = ({
       </div>
       <div className={styles['confirm-dialog-explanation']}>{children}</div>
       <div className={styles['confirm-dialog-actions']}>
-        <button className="secondary-button" onClick={onCancel} type="submit">
+        <Button
+          className="secondary-button"
+          onClick={onCancel}
+          type="submit"
+          data-testid="confirm-dialog-button-cancel"
+        >
           {cancelText}
-        </button>
+        </Button>
         <SubmitButton
           className="primary-button"
           isLoading={isLoading}
           onClick={onConfirm}
+          testId="confirm-dialog-button-confirm"
         >
           {confirmText}
         </SubmitButton>
