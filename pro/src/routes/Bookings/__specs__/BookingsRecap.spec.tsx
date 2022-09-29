@@ -834,7 +834,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      await screen.findByText(venue.publicName)
+      venue.publicName ?? venue.name
     )
 
     // Then
@@ -849,7 +849,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
     userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      await screen.findByText(venue.publicName)
+      venue.publicName ?? venue.name
     )
 
     // When
@@ -872,7 +872,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      await screen.findByText(venue.publicName)
+      venue.publicName ?? venue.name
     )
 
     // Then

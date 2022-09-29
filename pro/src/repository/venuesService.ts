@@ -1,4 +1,5 @@
 import { VenueListItemResponseModel } from 'apiClient/v1'
+import { Venue } from 'core/Offers/types'
 
 type VenueItem = {
   id: string
@@ -6,7 +7,7 @@ type VenueItem = {
 }
 
 export const computeVenueDisplayName = (
-  venue: VenueListItemResponseModel
+  venue: VenueListItemResponseModel | Venue
 ): string => {
   if (venue.isVirtual) {
     return `${venue.offererName} - Offre numérique`

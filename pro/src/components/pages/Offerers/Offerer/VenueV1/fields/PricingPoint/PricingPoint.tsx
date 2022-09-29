@@ -133,7 +133,7 @@ const PricingPoint = ({
               defaultValue={venue.pricingPoint?.id}
             >
               <option value="">Sélectionner un lieu dans la liste</option>
-              {offerer.managedVenues.map(
+              {offerer.managedVenues?.map(
                 venue =>
                   venue?.siret && (
                     <option

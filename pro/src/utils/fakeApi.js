@@ -25,7 +25,7 @@ export const failToGenerateOffererApiKey = () =>
   jest.spyOn(api, 'generateApiKeyRoute').mockRejectedValue(null)
 
 export const loadFakeApiVenue = venue => {
-  jest.spyOn(pcapi, 'getVenue').mockResolvedValueOnce(venue)
+  jest.spyOn(api, 'getVenue').mockResolvedValueOnce(venue)
 
   return {
     resolvingVenuePromise: Promise.resolve(venue),
