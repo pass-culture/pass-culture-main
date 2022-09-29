@@ -1,4 +1,4 @@
-name: '[Deployment] Deploy a release'
+name: "[Deployment] Deploy a release"
 
 on:
   workflow_dispatch:
@@ -13,8 +13,21 @@ on:
           - integration
 
 jobs:
+  check-worflow-ref:
+    name: Check worflow ref
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check worflow ref
+        run: |
+          echo "Deploying to ${{ github.event.inputs.target_environment }} from ref: ${{ github.ref }}"
+          if ! [[ ${{ github.ref }} == refs\/tags\/v* ]]; then
+              echo "This workflow can only be triggered from a tag (starting with a 'v')"
+              exit 1
+          fi
+
   deploy:
     runs-on: ubuntu-latest
+    needs: check-worflow-ref
     environment:
       name: ${{ github.event.inputs.target_environment }}
       url: https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=${{ github.event.inputs.target_environment }}
