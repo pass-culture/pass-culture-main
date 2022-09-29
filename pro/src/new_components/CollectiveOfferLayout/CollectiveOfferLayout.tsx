@@ -28,14 +28,14 @@ const CollectiveOfferLayout = ({
 }: ICollectiveOfferLayout): JSX.Element => {
   return (
     <div className={styles['eac-layout']}>
-      <Title className={styles['eac-layout-heading']} level={1}>
-        {title}
-      </Title>
-      {subTitle && (
-        <Title level={4} className={styles['eac-layout-sub-heading']}>
-          {subTitle}
-        </Title>
-      )}
+      <div className={styles['eac-layout-headings']}>
+        <Title level={1}>{title}</Title>
+        {subTitle && (
+          <Title level={4} className={styles['eac-layout-sub-heading']}>
+            {subTitle}
+          </Title>
+        )}
+      </div>
       {breadCrumpProps && (
         <OfferBreadcrumb
           activeStep={breadCrumpProps.activeStep}
