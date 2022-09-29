@@ -18,6 +18,7 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 
+import EditStocksCell from './Cells/EditStocksCell'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
 import OfferNameCell from './Cells/OfferNameCell'
 import OfferRemainingStockCell from './Cells/OfferRemainingStockCell'
@@ -95,23 +96,7 @@ const OfferItem = ({
         />
       )}
       <OfferStatusCell status={offer.status} />
-      <td className="switch-column">
-        <Link
-          className="secondary-link with-icon"
-          onClick={() =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-              to: OfferBreadcrumbStep.STOCKS,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
-              isEdition: true,
-            })
-          }
-          to={editionStockLink}
-        >
-          <Icon svg="ico-guichet-full" />
-          Stocks
-        </Link>
-      </td>
+      <EditStocksCell editionStockLink={editionStockLink} />
       <td className="edit-column">
         {isOfferEditable && (
           <Link

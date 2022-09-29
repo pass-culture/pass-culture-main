@@ -31,6 +31,7 @@ import { ReactComponent as IcoExternalSiteRedFilledIcon } from 'icons/ico-extern
 import { ReactComponent as IcoEyeCloseIcon } from 'icons/ico-eye-close.svg'
 import { ReactComponent as IcoEyeHiddenIcon } from 'icons/ico-eye-hidden.svg'
 import { ReactComponent as IcoEyeOpenIcon } from 'icons/ico-eye-open.svg'
+import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
 import { ReactComponent as IcoMailIcon } from 'icons/ico-mail.svg'
 import { ReactComponent as IcoMoreCircleIcon } from 'icons/ico-more-circle.svg'
@@ -504,6 +505,12 @@ export const Icons = () => (
           <WarningStocksIcon />
         </td>
         <td>ico-warning-stocks</td>
+      </tr>
+      <tr>
+        <td>
+          <GuichetFullIcon />
+        </td>
+        <td>ico-guichet-full</td>
       </tr>
     </body>
   </table>
