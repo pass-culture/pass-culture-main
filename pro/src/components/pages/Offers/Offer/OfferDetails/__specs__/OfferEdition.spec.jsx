@@ -27,7 +27,6 @@ import {
 Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),

@@ -77,7 +77,6 @@ const proVenues = [
 
 jest.mock('repository/venuesService', () => ({
   ...jest.requireActual('repository/venuesService'),
-  fetchAllVenuesByProUser: jest.fn().mockResolvedValue(proVenues),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -85,6 +84,7 @@ jest.mock('apiClient/api', () => ({
     getCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
     listOffers: jest.fn(),
     getOfferer: jest.fn(),
+    getVenues: jest.fn().mockResolvedValue({ venues: proVenues }),
   },
 }))
 

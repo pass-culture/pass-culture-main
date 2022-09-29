@@ -12,10 +12,8 @@ import { useQuerySearchFilters } from 'core/Offers/hooks'
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import {
-  fetchAllVenuesByProUser,
-  formatAndOrderVenues,
-} from 'repository/venuesService'
+import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { sortByDisplayName } from 'utils/strings'
@@ -153,8 +151,9 @@ const Offers = (): JSX.Element => {
 
   useEffect(() => {
     const loadAllVenuesByProUser = () =>
-      fetchAllVenuesByProUser(offerer?.id).then(venues =>
-        setVenues(formatAndOrderVenues(venues))
+      getVenuesForOffererAdapter({ offererId: offerer?.id }).then(
+        venuesResponse =>
+          setVenues(formatAndOrderVenues(venuesResponse.payload))
       )
 
     loadAllVenuesByProUser()

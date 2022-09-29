@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from 'react'
 
+import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Icon from 'components/layout/Icon'
-import { IAPIOfferer } from 'core/Offerers/types'
-import { IAPIVenue } from 'core/Venue/types'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
@@ -12,10 +11,10 @@ import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
 import styles from './ReimbursementFields.module.scss'
 
 export interface ReimbursementInterface {
-  offerer: IAPIOfferer
+  offerer: GetOffererResponseModel
   readOnly: boolean
   scrollToSection?: boolean
-  venue: IAPIVenue
+  venue: GetVenueResponseModel
 }
 
 const ReimbursementFields = ({

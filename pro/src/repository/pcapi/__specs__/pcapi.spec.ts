@@ -1,8 +1,6 @@
-import { ALL_OFFERERS } from 'core/Offers/constants'
 import {
   getFilteredBookingsCSV,
   getVenueStats,
-  getVenuesForOfferer,
   signout,
   updateUserInformations,
   deleteStock,
@@ -109,61 +107,6 @@ describe('pcapi', () => {
 
       // then
       expect(client.patch).toHaveBeenCalledWith('/users/current', body)
-    })
-  })
-
-  describe('getVenuesForOfferer', () => {
-    beforeEach(() => {
-      const returnedResponse = {
-        venues: [
-          {
-            id: 'AE',
-            name: 'Librairie Kléber',
-            isVirtual: false,
-          },
-        ],
-      }
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mockResolvedValue' does not exist on typ... Remove this comment to see the full error message
-      client.get.mockResolvedValue(returnedResponse)
-    })
-
-    it('should return venues value', async () => {
-      // When
-      const venues = await getVenuesForOfferer()
-
-      // Then
-      expect(venues).toHaveLength(1)
-      expect(venues[0]).toStrictEqual({
-        id: 'AE',
-        name: 'Librairie Kléber',
-        isVirtual: false,
-      })
-    })
-
-    it('should call api with offererId in query params when given', async () => {
-      // When
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'null | un... Remove this comment to see the full error message
-      await getVenuesForOfferer({ offererId: 'A4' })
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/venues?offererId=A4')
-    })
-
-    it('should call api with validadedForUser as true when no offererId was given', async () => {
-      // When
-      await getVenuesForOfferer()
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/venues?validatedForUser=true')
-    })
-
-    it('should not add offererId in query params when offererId value is ALL_OFFERERS', async () => {
-      // When
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'null | un... Remove this comment to see the full error message
-      await getVenuesForOfferer({ offererId: ALL_OFFERERS })
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/venues')
     })
   })
 

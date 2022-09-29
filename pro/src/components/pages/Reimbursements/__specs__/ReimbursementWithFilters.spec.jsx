@@ -13,6 +13,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -26,10 +27,15 @@ jest.mock('utils/date', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenuesForOfferer: jest.fn(),
   getInvoices: jest.fn(),
   getBusinessUnits: jest.fn(),
   getReimbursementPoints: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getVenues: jest.fn(),
+  },
 }))
 
 const renderReimbursements = (storeOverride = {}) => {
@@ -155,7 +161,7 @@ describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
     venues = BASE_VENUES
     invoices = BASE_INVOICES
-    pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+    api.getVenues.mockResolvedValue({ venues })
     pcapi.getInvoices.mockResolvedValue(invoices)
     pcapi.getBusinessUnits.mockResolvedValue([
       { id: 1, name: 'Point de remboursement 1' },
@@ -344,7 +350,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display no refunds message when user has no associated venues', async () => {
     // given
-    pcapi.getVenuesForOfferer.mockResolvedValue([])
+    api.getVenues.mockResolvedValue({ venues: [] })
     await renderReimbursements(storeOverride)
 
     // when

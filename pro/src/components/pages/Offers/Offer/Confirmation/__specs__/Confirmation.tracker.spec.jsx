@@ -22,7 +22,6 @@ jest.mock('utils/config', () => {
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadCategories: jest.fn(),
-  getVenuesForOfferer: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -31,6 +30,7 @@ jest.mock('apiClient/api', () => ({
     patchOffersActiveStatus: jest.fn(),
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
+    getVenues: jest.fn(),
   },
 }))
 
@@ -78,9 +78,9 @@ describe('confirmation page', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    pcapi.getVenuesForOfferer.mockResolvedValue([
-      { id: 'AB', publicName: 'venue', name: 'venue' },
-    ])
+    api.getVenues.mockResolvedValue({
+      venues: [{ id: 'AB', publicName: 'venue', name: 'venue' }],
+    })
     api.listOfferersNames.mockResolvedValue({ offerersNames: [] })
   })
 

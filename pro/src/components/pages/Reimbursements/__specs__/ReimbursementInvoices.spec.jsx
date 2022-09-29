@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -19,10 +20,15 @@ jest.mock('utils/date', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenuesForOfferer: jest.fn(),
   getInvoices: jest.fn(),
   getBusinessUnits: jest.fn(),
   getReimbursementPoints: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getVenues: jest.fn(),
+  },
 }))
 
 const initialStore = {
@@ -105,7 +111,7 @@ describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
     store = configureTestStore(initialStore)
     props = { currentUser: { isAdmin: false } }
-    jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue(BASE_VENUES)
+    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
     jest.spyOn(pcapi, 'getInvoices').mockResolvedValue(BASE_INVOICES)
     jest.spyOn(pcapi, 'getBusinessUnits').mockResolvedValue([])
     jest.spyOn(pcapi, 'getReimbursementPoints').mockResolvedValue([])
