@@ -191,6 +191,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     )
     firstName = sa.Column(sa.String(128), nullable=True)
     sa.Index("idx_user_trgm_first_name", firstName, postgresql_using="gin")
+    hasSeenOfferDuplicationModal: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     hasSeenProTutorials: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     hasSeenProRgs: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)

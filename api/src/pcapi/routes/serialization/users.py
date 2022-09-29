@@ -132,6 +132,7 @@ class SharedLoginUserResponseModel(BaseModel):
     email: str
     firstName: str | None
     hasPhysicalVenues: bool | None
+    hasSeenOfferDuplicationModal: bool
     hasSeenProTutorials: bool | None
     # FIXME (mageoffray, 2022-04-04): Optional can be removed after
     # post-deploy migrations have been done
@@ -179,6 +180,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     externalIds: typing.Dict | None
     firstName: str | None
     hasPhysicalVenues: bool | None
+    hasSeenOfferDuplicationModal: bool
     hasSeenProTutorials: bool | None
     hasSeenProRgs: bool | None
     id: str

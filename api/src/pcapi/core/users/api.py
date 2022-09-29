@@ -689,6 +689,11 @@ def _set_offerer_departement_code(new_user: models.User, offerer: offerers_model
     return new_user
 
 
+def set_offer_duplication_modal_as_seen(user: models.User) -> None:
+    user.hasSeenOfferDuplicationModal = True
+    repository.save(user)
+
+
 def set_pro_tuto_as_seen(user: models.User) -> None:
     user.hasSeenProTutorials = True
     repository.save(user)

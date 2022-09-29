@@ -90,6 +90,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         model.publicName = f"{model.firstName} {model.lastName}"
         model.add_admin_role()
+        model.hasSeenOfferDuplicationModal = True
         model.hasSeenProTutorials = True
         model.hasSeenProRgs = True
         model.needsToFillCulturalSurvey = False

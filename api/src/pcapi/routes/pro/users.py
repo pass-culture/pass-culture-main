@@ -27,6 +27,14 @@ from pcapi.utils.rate_limiting import ip_rate_limiter
 from . import blueprint
 
 
+@blueprint.pro_private_api.route("/users/offer-duplication-modal-seen", methods=["PATCH"])
+@login_required
+@spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
+def patch_user_offer_duplication_modal_seen() -> None:
+    user = current_user._get_current_object()  # get underlying User object from proxy
+    users_api.set_offer_duplication_modal_as_seen(user)
+
+
 @blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)

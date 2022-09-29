@@ -46,6 +46,7 @@ class Returns200Test:
             "email": "user@example.com",
             "firstName": "Jean",
             "hasPhysicalVenues": False,
+            "hasSeenOfferDuplicationModal": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "id": humanize(user.id),

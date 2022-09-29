@@ -61,6 +61,7 @@ class UserFactory(BaseFactory):
     publicName = "Jean Neige"
     isEmailValidated = True
     roles = []  # type: ignore [var-annotated]
+    hasSeenOfferDuplicationModal = False
     hasSeenProTutorials = True
     postalCode = factory.Faker("postcode")
 
@@ -94,6 +95,7 @@ class AdminFactory(BaseFactory):
     publicName = "Frank Columbo"
     isEmailValidated = True
     roles = [users_models.UserRole.ADMIN]
+    hasSeenOfferDuplicationModal = False
     hasSeenProTutorials = True
 
     @classmethod
@@ -129,6 +131,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     lastName = "Doux"
     isEmailValidated = True
     roles = [users_models.UserRole.BENEFICIARY]
+    hasSeenOfferDuplicationModal = False
     hasSeenProTutorials = True
     hasSeenProRgs = False
 
@@ -250,6 +253,7 @@ class ProFactory(BaseFactory):
     publicName = "René Coty"
     isEmailValidated = True
     roles = [users_models.UserRole.PRO]
+    hasSeenOfferDuplicationModal = False
     hasSeenProTutorials = True
 
     @classmethod
