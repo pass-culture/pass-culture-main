@@ -18,6 +18,13 @@ jest.mock(
   'components/layout/form/fields/SiretField/validators/siretApiValidate'
 )
 
+jest.mock('apiClient/api', () => ({
+  api: {
+    getSiretInfo: jest.fn(),
+    getDataFromAddress: jest.fn(),
+  },
+}))
+
 const renderSiretOrComment = async ({
   initialValues,
   onSubmit = jest.fn(),
@@ -46,9 +53,11 @@ const renderSiretOrComment = async ({
 
   return {
     ...rtlReturns,
-    buttonSubmit: screen.getByRole('button', {
-      name: 'Submit',
-    }),
+    buttonSubmit: await waitFor(() =>
+      screen.getByRole('button', {
+        name: 'Submit',
+      })
+    ),
   }
 }
 
@@ -63,7 +72,7 @@ describe('components | SiretOrCommentFields', () => {
     const setIsFieldNameFrozen = jest.fn()
     const updateIsSiretValued = jest.fn()
     validationSchema = generateSiretValidationSchema('012345678', true)
-    initialValues = {}
+    initialValues = { comment: '', siret: '' }
     props = {
       isCreatedEntity: true,
       setIsFieldNameFrozen: setIsFieldNameFrozen,
@@ -139,9 +148,7 @@ describe('components | SiretOrCommentFields', () => {
       await userEvent.type(siretInput, '01234567800000')
       await userEvent.click(buttonSubmit)
 
-      await waitFor(() => {
-        expect(onSubmit).toHaveBeenCalledTimes(1)
-      })
+      expect(onSubmit).toHaveBeenCalledTimes(1)
     })
     it('should display required message if siret is empty', async () => {
       const { buttonSubmit } = await renderSiretOrComment({
@@ -156,10 +163,8 @@ describe('components | SiretOrCommentFields', () => {
       ).not.toBeInTheDocument()
       await userEvent.click(buttonSubmit)
 
-      await waitFor(() => {
-        expect(screen.findByText('Veuillez renseigner un SIRET'))
-          .toBeInTheDocument
-      })
+      expect(await screen.findByText('Veuillez renseigner un SIRET'))
+        .toBeInTheDocument
     })
     it('should display too short message if siret is not 14 characters', async () => {
       const { buttonSubmit } = await renderSiretOrComment({

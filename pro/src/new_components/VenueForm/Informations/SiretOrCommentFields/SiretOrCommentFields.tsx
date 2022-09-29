@@ -42,7 +42,7 @@ const SiretOrCommentFields = ({
   const formatSiret = async (siret: string): Promise<void> => {
     // remove character when when it's not a number
     // this way we're sure that this field only accept number
-    if ((siret && Number(unhumanizeSiret(siret))) || !siret) {
+    if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
       setFieldValue('siret', humanizeSiret(siret))
     }
   }
