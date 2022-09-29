@@ -249,7 +249,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     id: str
     bookingEmails: list[str]
     dateCreated: datetime
-    description: str | None
+    description: str
     durationMinutes: int | None
     students: list[StudentLevels]
     offerVenue: CollectiveOfferOfferVenueResponseModel
@@ -345,7 +345,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     subcategory_id: str
     name: str
     booking_emails: list[str]
-    description: str | None
+    description: str
     domains: list[int]
     duration_minutes: int | None
     audio_disability_compliant: bool = False
