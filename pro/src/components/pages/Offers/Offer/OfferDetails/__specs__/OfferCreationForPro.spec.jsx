@@ -29,7 +29,6 @@ Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  getVenue: jest.fn(),
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
@@ -41,6 +40,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getVenue: jest.fn(),
   },
 }))
 
@@ -162,7 +162,7 @@ describe('offerDetails - Creation - pro user', () => {
 
     api.listOfferersNames.mockResolvedValue({ offerersNames: offerers })
     api.getVenues.mockResolvedValue({ venues })
-    pcapi.getVenue.mockReturnValue(Promise.resolve())
+    api.getVenue.mockReturnValue(Promise.resolve())
     api.postOffer.mockResolvedValue({})
     loadFakeApiCategories()
     jest.spyOn(window, 'scrollTo').mockImplementation()
@@ -403,7 +403,7 @@ describe('offerDetails - Creation - pro user', () => {
             },
           ]
           api.getVenues.mockResolvedValue({ venues })
-          pcapi.getVenue.mockResolvedValue(venues[0])
+          api.getVenue.mockResolvedValue(venues[0])
           await renderOffers(props)
 
           // When
@@ -539,7 +539,7 @@ describe('offerDetails - Creation - pro user', () => {
               await renderOffers(props)
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
-              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              api.getVenue.mockResolvedValue(physicalVenue)
               await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
               await setOfferValues({ subcategoryId: 'CONCERT' })
               await setOfferValues({
@@ -570,7 +570,7 @@ describe('offerDetails - Creation - pro user', () => {
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
               physicalVenue.publicName = 'Le petit nom du lieu'
-              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              api.getVenue.mockResolvedValue(physicalVenue)
               await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
               await setOfferValues({ subcategoryId: 'CONCERT' })
               await setOfferValues({
@@ -603,7 +603,7 @@ describe('offerDetails - Creation - pro user', () => {
               await renderOffers(props)
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
-              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              api.getVenue.mockResolvedValue(physicalVenue)
               await userEvent.selectOptions(
                 await screen.findByLabelText(/Catégorie/),
                 'MUSIQUE_LIVE'
@@ -641,7 +641,7 @@ describe('offerDetails - Creation - pro user', () => {
               physicalVenue.address = "34 avenue de l'Opéra"
               physicalVenue.postalCode = '75002'
               physicalVenue.city = 'Paris'
-              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              api.getVenue.mockResolvedValue(physicalVenue)
               await userEvent.selectOptions(
                 await screen.findByLabelText(/Catégorie/),
                 'MUSIQUE_LIVE'
@@ -677,7 +677,7 @@ describe('offerDetails - Creation - pro user', () => {
               await renderOffers(props)
               const offererWithMultipleVenues = offerers[1]
               const virtualVenue = venues[2]
-              pcapi.getVenue.mockResolvedValue(virtualVenue)
+              api.getVenue.mockResolvedValue(virtualVenue)
               await userEvent.selectOptions(
                 await screen.findByLabelText(/Catégorie/),
                 'JEU'
@@ -724,14 +724,14 @@ describe('offerDetails - Creation - pro user', () => {
                 'CONCERT'
               )
 
-              pcapi.getVenue.mockReturnValue(venues[0])
+              api.getVenue.mockReturnValue(venues[0])
               await userEvent.selectOptions(
                 await screen.findByLabelText(/Structure/),
                 offererWithMultipleVenues.id
               )
 
               // When
-              pcapi.getVenue.mockReturnValue(physicalVenue)
+              api.getVenue.mockReturnValue(physicalVenue)
               await userEvent.selectOptions(
                 await screen.findByLabelText(/Lieu/),
                 physicalVenue.id
@@ -864,7 +864,7 @@ describe('offerDetails - Creation - pro user', () => {
       it('should display email notification input errors when email is wrong or missing', async () => {
         // Given
         const queryParams = `?structure=${offerers[1].id}&lieu=${venues[1].id}`
-        pcapi.getVenue.mockResolvedValue(venues[1])
+        api.getVenue.mockResolvedValue(venues[1])
         await renderOffers(props, queryParams)
         await userEvent.selectOptions(
           await screen.findByLabelText(/Catégorie/),
@@ -968,7 +968,7 @@ describe('offerDetails - Creation - pro user', () => {
 
         it('should have offerer selected when given as queryParam and filter venues', async () => {
           // Given
-          pcapi.getVenue.mockResolvedValue(venues[0])
+          api.getVenue.mockResolvedValue(venues[0])
           await renderOffers(props, `?structure=${offerers[0].id}`)
 
           // When
@@ -1016,7 +1016,7 @@ describe('offerDetails - Creation - pro user', () => {
 
         it('should have venue selected when given as queryParam', async () => {
           // Given
-          pcapi.getVenue.mockResolvedValue(venues[0])
+          api.getVenue.mockResolvedValue(venues[0])
           await renderOffers(
             props,
             `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`
@@ -1040,7 +1040,7 @@ describe('offerDetails - Creation - pro user', () => {
         it('should select venue when there is only one option', async () => {
           // Given
           api.getVenues.mockResolvedValue({ venues: [venues[0]] })
-          pcapi.getVenue.mockResolvedValue(venues[0])
+          api.getVenue.mockResolvedValue(venues[0])
           await renderOffers(props)
 
           // When
@@ -1061,7 +1061,7 @@ describe('offerDetails - Creation - pro user', () => {
         it('should select virtual venue and disable the input when offer subcategory is online only', async () => {
           // Given
           api.getVenues.mockResolvedValue({ venues: [venues[2]] })
-          pcapi.getVenue.mockResolvedValue(venues[2])
+          api.getVenue.mockResolvedValue(venues[2])
           await renderOffers(props)
 
           // When
@@ -1126,7 +1126,7 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props)
 
           // When
-          pcapi.getVenue.mockReturnValue(venues[0])
+          api.getVenue.mockReturnValue(venues[0])
           await setOfferValues({
             categoryId: 'MUSIQUE_LIVE',
             subcategoryId: 'CONCERT',
@@ -1159,7 +1159,7 @@ describe('offerDetails - Creation - pro user', () => {
             await screen.findByLabelText(/Sous-catégorie/),
             'FESTIVAL_MUSIQUE'
           )
-          pcapi.getVenue.mockReturnValue(venues[0])
+          api.getVenue.mockReturnValue(venues[0])
 
           await userEvent.selectOptions(
             await screen.findByLabelText(/Structure/),
@@ -1182,7 +1182,7 @@ describe('offerDetails - Creation - pro user', () => {
           await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // When
-          pcapi.getVenue.mockReturnValue(venues[0])
+          api.getVenue.mockReturnValue(venues[0])
           await setOfferValues({ venueId: venues[0].id })
           await sidebarDisplayed()
 
@@ -1564,7 +1564,7 @@ describe('offerDetails - Creation - pro user', () => {
           await setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
 
           // When
-          pcapi.getVenue.mockResolvedValue(venues[2])
+          api.getVenue.mockResolvedValue(venues[2])
           await setOfferValues({ venueId: venues[2].id })
           await sidebarDisplayed()
 
@@ -1580,7 +1580,7 @@ describe('offerDetails - Creation - pro user', () => {
           await setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
 
           // When
-          pcapi.getVenue.mockResolvedValue(venues[2])
+          api.getVenue.mockResolvedValue(venues[2])
           await setOfferValues({ venueId: venues[2].id })
           await sidebarDisplayed()
 
@@ -1622,7 +1622,7 @@ describe('offerDetails - Creation - pro user', () => {
           await setOfferValues({ subcategoryId: 'VOD' })
 
           // When
-          pcapi.getVenue.mockResolvedValue(venues[2])
+          api.getVenue.mockResolvedValue(venues[2])
           await setOfferValues({ venueId: venues[2].id })
           await sidebarDisplayed()
 
@@ -1760,7 +1760,7 @@ describe('offerDetails - Creation - pro user', () => {
           // When
           await setOfferValues({ categoryId: 'LIVRE' })
           await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
-          pcapi.getVenue.mockResolvedValue(venues[0])
+          api.getVenue.mockResolvedValue(venues[0])
           await setOfferValues({ venueId: venues[0].id })
           await sidebarDisplayed()
 
@@ -1818,7 +1818,7 @@ describe('offerDetails - Creation - pro user', () => {
         await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
 
         // When
-        pcapi.getVenue.mockResolvedValue(venues[1])
+        api.getVenue.mockResolvedValue(venues[1])
         await setOfferValues({ venueId: venues[1].id })
         await sidebarDisplayed()
 
@@ -1841,7 +1841,7 @@ describe('offerDetails - Creation - pro user', () => {
 
     it('should call API with offer data', async () => {
       // Given
-      pcapi.getVenue.mockReturnValue(venues[0])
+      api.getVenue.mockReturnValue(venues[0])
       await renderOffers(props)
       await userEvent.selectOptions(
         await screen.findByLabelText(/Catégorie/),
@@ -1944,7 +1944,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
       await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
-      pcapi.getVenue.mockResolvedValue(venues[2])
+      api.getVenue.mockResolvedValue(venues[2])
       await setOfferValues(offerValues)
       await sidebarDisplayed()
 
@@ -1994,7 +1994,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
       await setOfferValues({ subcategoryId: offerValues.subcategoryId })
-      pcapi.getVenue.mockResolvedValue(createdOffer.venue)
+      api.getVenue.mockResolvedValue(createdOffer.venue)
       await setOfferValues(offerValues)
       await sidebarDisplayed()
 
@@ -2217,7 +2217,7 @@ describe('offerDetails - Creation - pro user', () => {
         await screen.findByLabelText(/Évènement sans billet/)
       )
 
-      pcapi.getVenue.mockResolvedValue(venues[0])
+      api.getVenue.mockResolvedValue(venues[0])
       await setOfferValues(offerValues)
       await sidebarDisplayed()
 
@@ -2261,7 +2261,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       await setOfferValues({ categoryId: 'LIVRE' })
       await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
-      pcapi.getVenue.mockResolvedValue(venues[0])
+      api.getVenue.mockResolvedValue(venues[0])
       await setOfferValues(offerValues)
       await sidebarDisplayed()
 

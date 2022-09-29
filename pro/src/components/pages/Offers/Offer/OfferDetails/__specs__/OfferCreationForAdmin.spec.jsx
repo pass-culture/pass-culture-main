@@ -15,7 +15,6 @@ import OfferLayout from '../../OfferLayout'
 import { setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenue: jest.fn(),
   loadCategories: jest.fn(),
 }))
 
@@ -24,6 +23,7 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn(),
     postOffer: jest.fn(),
     getVenues: jest.fn(),
+    getVenue: jest.fn(),
   },
 }))
 
@@ -119,7 +119,7 @@ describe('offerDetails - Creation - admin user', () => {
 
     pcapi.loadCategories.mockResolvedValue(categories)
     api.getOfferer.mockResolvedValue(offerer)
-    pcapi.getVenue.mockReturnValue(Promise.resolve())
+    api.getVenue.mockReturnValue(Promise.resolve())
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 

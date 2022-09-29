@@ -17,7 +17,6 @@ import { getOfferInputForField } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  getVenue: jest.fn(),
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
@@ -29,6 +28,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getVenue: jest.fn(),
   },
 }))
 
@@ -249,7 +249,7 @@ describe('offerCreation - navigate backward', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
     api.listOfferersNames.mockResolvedValue({ offerersNames: offerers })
     api.getVenues.mockResolvedValue({ venues })
-    pcapi.getVenue.mockReturnValue(Promise.resolve())
+    api.getVenue.mockReturnValue(Promise.resolve())
     pcapi.loadCategories.mockResolvedValue(categories)
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })

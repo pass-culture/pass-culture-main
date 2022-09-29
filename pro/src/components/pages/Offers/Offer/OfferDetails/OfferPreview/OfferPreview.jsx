@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { VenueDetails } from 'components/pages/Offers/Offer/OfferDetails/OfferPreview/VenueDetails'
 import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { ReactComponent as PassCultureSvg } from 'icons/ico-passculture.svg'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const PREVIEW_TEXT_MAX_LENGTH = 300
 
@@ -21,7 +21,7 @@ const OfferPreview = ({ offerPreviewData }) => {
 
   useEffect(() => {
     async function changeVenue() {
-      setVenue(await pcapi.getVenue(offerPreviewData.venueId))
+      setVenue(await api.getVenue(offerPreviewData.venueId))
     }
     offerPreviewData.venueId ? changeVenue() : setVenue(null)
   }, [offerPreviewData.venueId])
