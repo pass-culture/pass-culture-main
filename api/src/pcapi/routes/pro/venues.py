@@ -224,7 +224,7 @@ def upsert_venue_banner(venue_id: str) -> venues_serialize.GetVenueResponseModel
 
 @private_api.route("/venues/<venue_id>/banner", methods=["DELETE"])
 @login_required
-@spectree_serialize(on_success_status=204)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_banner(venue_id: str) -> None:
     venue = load_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
