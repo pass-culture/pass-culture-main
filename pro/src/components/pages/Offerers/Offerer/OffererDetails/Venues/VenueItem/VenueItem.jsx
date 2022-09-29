@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
-import { Link } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
-import Icon from 'components/layout/Icon'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
+import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
+import { ButtonLink } from 'ui-kit'
+
+import styles from './VenueItem.module.scss'
 
 const buildLinkIdFromVenue = ({ publicName, name }) => {
   const nameToFormat = publicName || name
@@ -25,20 +27,32 @@ const VenueItem = ({ venue }) => {
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
 
   return (
-    <li className="venue-item">
-      <div className="picto">
-        <Icon svg="ico-venue" />
-      </div>
+    <li>
+      <IcoVenue className={styles['picto']} />
       <div className="list-content">
-        <p className="name">
-          <Link id={`a-${buildLinkIdFromVenue(venue)}`} to={showPath}>
-            {publicName || name}
-          </Link>
-        </p>
-        <ul className="actions">
+        <ButtonLink
+          id={`a-${buildLinkIdFromVenue(venue)}`}
+          className="name"
+          link={{
+            to: showPath,
+            isExternal: false,
+          }}
+        >
+          {publicName || name}
+        </ButtonLink>
+        <ul>
           <li>
-            <Link
-              className="has-text-primary"
+            <Dotdotdot clamp={2} className="has-text-grey">
+              {`${address} ${postalCode} ${city}`}
+            </Dotdotdot>
+          </li>
+          <li>
+            <ButtonLink
+              className={styles['create-offer-button']}
+              link={{
+                to: `/offre/creation?lieu=${id}&structure=${managingOffererId}`,
+                isExternal: false,
+              }}
               onClick={() =>
                 logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                   from: OFFER_FORM_NAVIGATION_IN.OFFERER,
@@ -47,23 +61,12 @@ const VenueItem = ({ venue }) => {
                   isEdition: false,
                 })
               }
-              to={`/offre/creation?lieu=${id}&structure=${managingOffererId}`}
+              Icon={PlusCircleIcon}
             >
-              <AddOfferSvg />
               {' Créer une offre'}
-            </Link>
-          </li>
-          <li>
-            <Dotdotdot clamp={2} className="has-text-grey">
-              {`${address} ${postalCode} ${city}`}
-            </Dotdotdot>
+            </ButtonLink>
           </li>
         </ul>
-      </div>
-      <div className="caret">
-        <Link to={showPath}>
-          <Icon svg="ico-next-S" />
-        </Link>
       </div>
     </li>
   )

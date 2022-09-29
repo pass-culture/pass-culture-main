@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
+import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
+import { ButtonLink } from 'ui-kit'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import VenueItem from './VenueItem/VenueItem'
@@ -25,17 +26,20 @@ const Venues = ({ venues, offererId }) => {
         ))}
       </ul>
       <div className="has-text-centered">
-        <Link
-          className="tertiary-link"
-          to={venueCreationUrl}
+        <ButtonLink
+          link={{
+            to: venueCreationUrl,
+            isExternal: false,
+          }}
           onClick={() => {
             logEvent?.(Events.CLICKED_ADD_VENUE_IN_OFFERER, {
               from: location.pathname,
             })
           }}
+          Icon={PlusCircleIcon}
         >
-          + Ajouter un lieu
-        </Link>
+          Ajouter un lieu
+        </ButtonLink>
       </div>
     </div>
   )

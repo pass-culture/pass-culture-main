@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import Icon from 'components/layout/Icon'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
+import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
+import { ButtonLink } from 'ui-kit'
 import { pluralize } from 'utils/pluralize'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -31,57 +31,79 @@ const OffererItem = ({ offerer }) => {
   return (
     <li className="offerer-item">
       <div className="list-content">
-        <p className="name">
-          <Link to={detailsPath}>{name}</Link>
-        </p>
+        <ButtonLink
+          className="name"
+          link={{
+            to: detailsPath,
+            isExternal: false,
+          }}
+        >
+          {name}
+        </ButtonLink>
 
         <ul className="actions">
           <li id="create-offer-action">
-            <Link className="has-text-primary" to={createOfferLink}>
-              <AddOfferSvg />
+            <ButtonLink
+              className="has-text-primary"
+              link={{
+                to: createOfferLink,
+                isExternal: false,
+              }}
+              Icon={PlusCircleIcon}
+            >
               Nouvelle offre
               {canCreateOnlyVirtualOffer && ' numérique'}
-            </Link>
+            </ButtonLink>
           </li>
 
           {nOffers !== 0 ? (
             <li className="count-offers-action">
-              <Link
+              <ButtonLink
                 className="has-text-primary"
-                to={`/offres?structure=${offererId}`}
+                link={{
+                  to: `/offres?structure=${offererId}`,
+                  isExternal: false,
+                }}
               >
-                <IconOffers className="counter-offers-icon" />
+                <IconOffers className="counter-offers-icon" />{' '}
                 {
                   // Count is negative if offerer has too much venues and
                   // probably too much offers to count.
                   nOffers > 0 ? pluralize(nOffers, 'offres') : `offres`
                 }
                 {nOffers >= 100 ? '+' : ''}
-              </Link>
+              </ButtonLink>
             </li>
           ) : (
             <li className="count-offers-action">0 offre</li>
           )}
 
           <li id="count-venues-action">
-            <Link className="has-text-primary" to={`/structures/${offererId}/`}>
-              <Icon svg="ico-venue" />
+            <ButtonLink
+              className="has-text-primary"
+              link={{
+                to: `/structures/${offererId}/`,
+                isExternal: false,
+              }}
+              Icon={IcoVenue}
+            >
               {pluralize(physicalVenues.length, 'lieux')}
-            </Link>
+            </ButtonLink>
           </li>
 
           <li id="create-venue-action">
-            <Link className="has-text-primary" to={venueCreationUrl}>
-              <Icon svg="ico-venue-r" />
+            <ButtonLink
+              className="has-text-primary"
+              link={{
+                to: venueCreationUrl,
+                isExternal: false,
+              }}
+              Icon={IcoVenue}
+            >
               Nouveau lieu
-            </Link>
+            </ButtonLink>
           </li>
         </ul>
-      </div>
-      <div className="caret">
-        <Link to={detailsPath}>
-          <Icon svg="ico-next-S" />
-        </Link>
       </div>
     </li>
   )

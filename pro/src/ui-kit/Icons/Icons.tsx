@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React from 'react'
 
 import { ReactComponent as AudioDisabilityIcon } from 'icons/audio-disability.svg'
@@ -34,6 +35,7 @@ import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
 import { ReactComponent as IcoMailIcon } from 'icons/ico-mail.svg'
 import { ReactComponent as IcoMoreCircleIcon } from 'icons/ico-more-circle.svg'
 import { ReactComponent as IcoMoreHorizIcon } from 'icons/ico-more-horiz.svg'
+import { ReactComponent as IcoNext } from 'icons/ico-next-S.svg'
 import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
 import { ReactComponent as IcoOuterPenIcon } from 'icons/ico-outer-pen.svg'
 import { ReactComponent as IcoPasscultureIcon } from 'icons/ico-passculture.svg'
@@ -53,6 +55,7 @@ import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import { ReactComponent as IcoUnavailableGradientIcon } from 'icons/ico-unavailable-gradient.svg'
 import { ReactComponent as IcoUnavailablePageIcon } from 'icons/ico-unavailable-page.svg'
 import { ReactComponent as IcoValideCercleIcon } from 'icons/ico-valide-cercle.svg'
+import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
 import { ReactComponent as IconsCloseIcon } from 'icons/icons-close.svg'
 import { ReactComponent as InfoPhoneIcon } from 'icons/info-phone.svg'
 import { ReactComponent as InfoIcon } from 'icons/info.svg'
@@ -79,6 +82,12 @@ export const Icons = () => (
           <BuildingIcon />
         </td>
         <td>building</td>
+      </tr>
+      <tr>
+        <td>
+          <IcoVenue />
+        </td>
+        <td>ico-venue</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
@@ -109,6 +118,12 @@ export const Icons = () => (
           <DropdownDisclosureDownSWIcon />
         </td>
         <td>dropdown-disclosure-down-s-w</td>
+      </tr>
+      <tr>
+        <td>
+          <IcoNext />
+        </td>
+        <td>ico-next</td>
       </tr>
       <tr>
         <td>
