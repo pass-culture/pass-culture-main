@@ -9,7 +9,6 @@ import {
 } from 'components/hooks/useOfferEditionURL'
 import Icon from 'components/layout/Icon'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -22,6 +21,7 @@ import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
 import OfferNameCell from './Cells/OfferNameCell'
 import OfferRemainingStockCell from './Cells/OfferRemainingStockCell'
+import OfferStatusCell from './Cells/OfferStatusCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
 import ThumbCell from './Cells/ThumbCell'
 
@@ -94,9 +94,7 @@ const OfferItem = ({
           educationalInstitution={offer.educationalInstitution}
         />
       )}
-      <td className="status-column">
-        <StatusLabel status={offer.status} />
-      </td>
+      <OfferStatusCell status={offer.status} />
       <td className="switch-column">
         <Link
           className="secondary-link with-icon"
