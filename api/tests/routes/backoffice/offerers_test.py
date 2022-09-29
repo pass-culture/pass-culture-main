@@ -1,4 +1,6 @@
 # pylint: disable=redefined-outer-name
+import datetime
+
 from flask import url_for
 import pytest
 
@@ -791,3 +793,162 @@ class RemoveOffererTagTest:
         offerer_tag_mapping = offerers_models.OffererTagMapping.query.all()
         assert len(offerer_tag_mapping) == 1
         assert offerer_tag_mapping[0].id == mapping.id
+
+
+class ListOfferersToBeValidatedTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_list_only_offerers_to_be_validated(self, client):
+        # given
+        _validated_offerers = [
+            offerers_factories.UserOffererFactory(offerer__validationToken=None).offerer for _ in range(3)
+        ]
+        to_be_validated_offerers = [
+            offerers_factories.UserOffererFactory(offerer__validationToken=f"{i:_>27}").offerer for i in range(4)
+        ]
+
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 200
+        data = response.json["data"]
+        assert sorted(d["id"] for d in data) == sorted(o.id for o in to_be_validated_offerers)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_payload_content(self, client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory(offerer__validationToken="0" * 27)
+
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 200
+        payload = response.json["data"][0]
+        assert payload["id"] == user_offerer.offerer.id
+        assert payload["name"] == user_offerer.offerer.name
+        # assert payload["status"] == ...  # TODO
+        # assert payload["step"] == ...  # TODO
+        assert payload["siren"] == user_offerer.offerer.siren
+        assert payload["address"] == user_offerer.offerer.address
+        assert payload["postalCode"] == user_offerer.offerer.postalCode
+        assert payload["city"] == user_offerer.offerer.city
+        assert payload["owner"] == " ".join(
+            (
+                user_offerer.offerer.UserOfferers[0].user.firstName,
+                user_offerer.offerer.UserOfferers[0].user.lastName,
+            )
+        )
+        assert payload["phoneNumber"] == user_offerer.offerer.UserOfferers[0].user.phoneNumber
+        assert payload["email"] == user_offerer.offerer.UserOfferers[0].user.email
+        # assert payload["lastComment"] == ...  # TODO
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    @pytest.mark.parametrize(
+        "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
+        (
+            (10, {"perPage": 3}, 4, 1, 3),
+            (10, {"perPage": 3, "page": 1}, 4, 1, 3),
+            (10, {"perPage": 3, "page": 3}, 4, 3, 3),
+            (10, {"perPage": 3, "page": 4}, 4, 4, 1),
+            (10, {"perPage": 5, "page": 1}, 2, 1, 5),
+            (10, {"page": 1}, 1, 1, 10),
+            (10, {"perPage": 20, "page": 1}, 1, 1, 10),
+        ),
+    )
+    def test_list_pagination(
+        self, client, total_items, pagination_config, expected_total_pages, expected_page, expected_items
+    ):
+        # given
+        _validated_offerers = [
+            offerers_factories.UserOffererFactory(offerer__validationToken=f"{i:_>27}").offerer
+            for i in range(total_items)
+        ]
+
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", **pagination_config)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["data"]) == expected_items
+        assert response.json["pages"] == expected_total_pages
+        assert response.json["total"] == total_items
+        assert response.json["page"] == expected_page
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_list_sorting(self, client):
+        # given
+        offerer_1 = offerers_factories.UserOffererFactory(
+            offerer__validationToken="1" * 27,
+            offerer__name="A",
+            offerer__dateCreated=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+        ).offerer
+        offerer_2 = offerers_factories.UserOffererFactory(
+            offerer__validationToken="2" * 27, offerer__name="B", offerer__dateCreated=datetime.datetime.utcnow()
+        ).offerer
+        offerer_3 = offerers_factories.UserOffererFactory(
+            offerer__validationToken="3" * 27,
+            offerer__name="C",
+            offerer__dateCreated=datetime.datetime.utcnow() - datetime.timedelta(hours=2),
+        ).offerer
+
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        name_asc = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", sort="name")
+        )
+        creation_date_desc = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", sort="-dateCreated")
+        )
+
+        # then
+        assert name_asc.status_code == 200
+        assert [o["id"] for o in name_asc.json["data"]] == [o.id for o in (offerer_1, offerer_2, offerer_3)]
+        assert creation_date_desc.status_code == 200
+        assert [o["id"] for o in creation_date_desc.json["data"]] == [o.id for o in (offerer_2, offerer_1, offerer_3)]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_list_without_permission(self, client):
+        # given
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_list_as_anonymous(self, client):
+        # given
+        offerers_factories.UserOffererFactory(offerer__validationToken="0" * 27)
+
+        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 403
