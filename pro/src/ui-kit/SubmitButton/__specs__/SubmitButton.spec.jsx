@@ -12,7 +12,6 @@ describe('submit button', () => {
   it('should display the text value of the button when is not loading and the button should be enabled', () => {
     // Given
     const props = {
-      isLoading: false,
       children: 'Enregistrer',
     }
 

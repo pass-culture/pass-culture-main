@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import React, { FC, ForwardedRef } from 'react'
+import React, { ForwardedRef } from 'react'
 
 import { ReactComponent as SpinnerIcon } from './assets/loader.svg'
 import styles from './SubmitButton.module.scss'
@@ -7,20 +7,22 @@ import styles from './SubmitButton.module.scss'
 interface ISubmitButtonProps {
   className?: string
   disabled?: boolean
-  isLoading: boolean
+  isLoading?: boolean
   buttonRef?: ForwardedRef<HTMLButtonElement | null>
   onClick?(): void
   children?: React.ReactNode
+  testId?: string
 }
 
-const SubmitButton: FC<ISubmitButtonProps> = ({
+const SubmitButton = ({
   children = 'Enregistrer',
   className,
   disabled = false,
   isLoading = false,
   buttonRef,
   onClick,
-}) => (
+  testId,
+}: ISubmitButtonProps): JSX.Element => (
   <button
     className={cx(
       'primary-button',
@@ -32,6 +34,7 @@ const SubmitButton: FC<ISubmitButtonProps> = ({
     onClick={onClick}
     ref={buttonRef}
     type="submit"
+    data-testid={testId ?? null}
   >
     {isLoading ? <SpinnerIcon /> : children}
   </button>
