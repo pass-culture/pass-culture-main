@@ -16,6 +16,7 @@ from pcapi.local_providers.install import install_local_providers
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 
 
@@ -97,6 +98,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     educational_models.EducationalInstitution.query.delete()
     educational_models.EducationalYear.query.delete()
     educational_models.EducationalRedactor.query.delete()
+    Feature.query.delete()
     db.session.execute(f"DELETE FROM {perm_models.role_permission_table.name};")
     perm_models.Permission.query.delete()
     perm_models.Role.query.delete()
