@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 import { Redirect, Route, Switch } from 'react-router'
 
@@ -6,32 +6,18 @@ import AppLayout from 'app/AppLayout'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import { Logout } from 'routes/Logout'
-import routes, { IRoute, routesWithoutLayout } from 'routes/routes_map'
+import routes, { routesWithoutLayout } from 'routes/routes_map'
 import { selectActiveFeatures } from 'store/features/selectors'
 
 const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
-  const [activeRoutes, setActiveRoutes] = useState<IRoute[]>([])
-  const [activeRoutesWithoutLayout, setActiveRoutesWithoutLayout] = useState<
-    IRoute[]
-  >([])
+  const activeRoutes = routes.filter(
+    route => !route.featureName || activeFeatures.includes(route.featureName)
+  )
+  const activeRoutesWithoutLayout = routesWithoutLayout.filter(
+    route => !route.featureName || activeFeatures.includes(route.featureName)
+  )
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
-
-  useEffect(() => {
-    setActiveRoutes(
-      routes.filter(
-        route =>
-          !route.featureName || activeFeatures.includes(route.featureName)
-      )
-    )
-
-    setActiveRoutesWithoutLayout(
-      routesWithoutLayout.filter(
-        route =>
-          !route.featureName || activeFeatures.includes(route.featureName)
-      )
-    )
-  }, [activeFeatures])
 
   return (
     <Switch>
