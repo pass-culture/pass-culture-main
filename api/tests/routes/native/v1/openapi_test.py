@@ -709,6 +709,7 @@ def test_public_api(client):
                         "EVENEMENT_JEU",
                         "EVENEMENT_MUSIQUE",
                         "EVENEMENT_PATRIMOINE",
+                        "FESTIVAL_ART_VISUEL",
                         "FESTIVAL_CINE",
                         "FESTIVAL_LIVRE",
                         "FESTIVAL_MUSIQUE",
