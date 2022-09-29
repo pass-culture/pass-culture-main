@@ -796,6 +796,24 @@ MUSEE_VENTE_DISTANCE = Subcategory(
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     is_bookable_by_underage_when_not_free=True,
 )
+FESTIVAL_ART_VISUEL = Subcategory(
+    id="FESTIVAL_ART_VISUEL",
+    category=categories.MUSEE,
+    pro_label="Festival d'arts visuels / arts numériques",
+    app_label="Festival d'arts visuels / arts numériques",
+    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    homepage_label_name=HomepageLabels.FESTIVAL.name,
+    is_event=True,
+    conditional_fields=["author", "performer"],
+    can_expire=False,
+    can_be_duo=True,
+    can_be_educational=True,
+    online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=False,
+    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    can_be_withdrawable=True,
+)
 # endregion
 # region MUSIQUE_LIVE
 
@@ -1183,8 +1201,8 @@ LIVESTREAM_EVENEMENT = Subcategory(
 FESTIVAL_SPECTACLE = Subcategory(
     id="FESTIVAL_SPECTACLE",
     category=categories.SPECTACLE,
-    pro_label="Festival",
-    app_label="Festival",
+    pro_label="Festival de spectacle vivant",
+    app_label="Festival de spectacle vivant",
     search_group_name=SearchGroups.SPECTACLES.name,
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=True,
@@ -1439,6 +1457,7 @@ ALL_SUBCATEGORIES = (
     EVENEMENT_JEU,
     EVENEMENT_MUSIQUE,
     EVENEMENT_PATRIMOINE,
+    FESTIVAL_ART_VISUEL,
     FESTIVAL_CINE,
     FESTIVAL_LIVRE,
     FESTIVAL_MUSIQUE,
