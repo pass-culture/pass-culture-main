@@ -1,4 +1,4 @@
-name: Tag
+name: '[Deprecated] Tag'
 
 # This reusable workflow should be called by another workflow.
 # It tags the release so it's ready to deploy.

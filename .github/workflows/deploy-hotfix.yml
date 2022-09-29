@@ -1,4 +1,4 @@
-name: Tag a hotfix branch and deploy it to staging and/or production
+name: '[Deprecated] Tag a hotfix branch and deploy it to staging and/or production'
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Deploy a tag to integration
+name: '[Deprecated] Deploy a tag to integration'
 
 on:
   workflow_dispatch:

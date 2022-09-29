@@ -1,4 +1,4 @@
-name: 'Build and push docker images to Artifact Registry'
+name: '[Deprecated] Build and push docker images to Artifact Registry'
 on:
   workflow_call:
     inputs:
