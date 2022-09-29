@@ -18,9 +18,9 @@ import {
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { computeVenueDisplayName } from 'repository/venuesService'
 
 import OfferNameCell from './Cells/OfferNameCell'
+import OfferVenueCell from './Cells/OfferVenueCell'
 import ThumbCell from './Cells/ThumbCell'
 
 export type OfferItemProps = {
@@ -102,9 +102,7 @@ const OfferItem = ({
         <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
       )}
       <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
-      <td className="venue-column">
-        {venue && computeVenueDisplayName(venue)}
-      </td>
+      <OfferVenueCell venue={venue} />
       <td className="stock-column">
         {computeRemainingStockOrEducationalInstitutionValue(stocks)}
       </td>
