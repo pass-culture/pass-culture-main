@@ -908,9 +908,7 @@ def search_educational_institution(
 ) -> educational_models.EducationalInstitution:
     filters = []
     if educational_institution_id is not None:
-        filters.append(
-            sa.func.unaccent(educational_models.EducationalInstitution.id).ilike(f"%{id}%"),
-        )
+        filters.append(educational_models.EducationalInstitution.id == educational_institution_id)
 
     if name is not None:
         name = name.replace(" ", "%")
