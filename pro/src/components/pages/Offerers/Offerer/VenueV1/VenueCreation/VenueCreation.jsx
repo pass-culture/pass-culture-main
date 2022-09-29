@@ -13,11 +13,7 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import { unhumanizeSiret } from 'core/Venue/utils'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import GoBackLink from 'new_components/GoBackLink'
-import {
-  createVenue,
-  getVenueLabels,
-  getVenueTypes,
-} from 'repository/pcapi/pcapi'
+import { createVenue, getVenueLabels } from 'repository/pcapi/pcapi'
 import { getCanSubmit, parseSubmitErrors } from 'utils/react-final-form'
 import { sortByLabel } from 'utils/strings'
 
@@ -72,7 +68,7 @@ const VenueCreation = () => {
   useEffect(() => {
     const handleInitialRequest = async () => {
       const offererRequest = api.getOfferer(offererId)
-      const venueTypesRequest = getVenueTypes().then(venueTypes => {
+      const venueTypesRequest = api.getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
       })
       const venueLabelsRequest = getVenueLabels().then(labels =>

@@ -21,6 +21,7 @@ jest.mock('apiClient/api', () => ({
     getProfile: jest.fn(),
     getOfferer: jest.fn(),
     canOffererCreateEducationalOffer: jest.fn(),
+    getVenueTypes: jest.fn(),
   },
 }))
 
@@ -86,7 +87,7 @@ describe('venue form', () => {
       id: 'BQ',
       name: 'Maison du chocolat',
     })
-    pcapi.getVenueTypes.mockResolvedValue([
+    api.getVenueTypes.mockResolvedValue([
       new VenueType({
         id: 'VISUAL_ARTS',
         label: 'Arts visuels, arts plastiques et galeries',
