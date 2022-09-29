@@ -28,7 +28,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn().mockResolvedValue([]),
   loadProviders: jest.fn().mockResolvedValue([]),
   loadVenueProviders: jest.fn().mockResolvedValue([]),
-  getVenueLabels: jest.fn().mockResolvedValue([]),
   editVenue: jest.fn(),
 }))
 
@@ -38,6 +37,7 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn().mockResolvedValue({}),
     getVenue: jest.fn(),
     getVenueTypes: jest.fn().mockResolvedValue([]),
+    fetchVenueLabels: jest.fn().mockResolvedValue([]),
   },
 }))
 

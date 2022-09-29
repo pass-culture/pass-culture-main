@@ -22,6 +22,7 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn(),
     canOffererCreateEducationalOffer: jest.fn(),
     getVenueTypes: jest.fn(),
+    fetchVenueLabels: jest.fn(),
   },
 }))
 
@@ -93,7 +94,7 @@ describe('venue form', () => {
         label: 'Arts visuels, arts plastiques et galeries',
       }),
     ])
-    pcapi.getVenueLabels.mockResolvedValue([])
+    api.fetchVenueLabels.mockResolvedValue([])
     pcapi.getBusinessUnits.mockResolvedValue([])
     jest
       .spyOn(api, 'getProfile')
