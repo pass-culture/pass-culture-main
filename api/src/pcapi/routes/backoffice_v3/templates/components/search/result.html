@@ -1,0 +1,43 @@
+{% macro result_card_switch(row, result_type="public_account") %}
+    {% if result_type == "offerer" %}
+        {% include 'components/search/result_card_offerer.html' %}
+    {% elif result_type == "venue" %}
+        {% include 'components/search/result_card_venue.html' %}
+    {% else %}
+        {% include 'components/search/result_card.html' %}
+    {% endif %}
+{% endmacro %}
+
+<div>
+    <div>
+        <p class="lead">{{ rows.total }} résultats</p>
+
+        <div class="">
+            <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for row in rows.items %}
+                    <div class="col">
+                        {{ result_card_switch(row, result_type) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if rows.pages > 1 %}
+        <nav aria-label="Page navigation example" class="my-5">
+            <ul class="pagination">
+                {% for page_idx, next_page_url in next_pages_urls %}
+                    <li class="page-item">
+
+                    {% if page_idx == rows.page %}
+                        <a class="page-link active" href={{ next_page_url }}>{{ page_idx }}</a>
+                    {% else %}
+                        <a class="page-link" href={{ next_page_url }}>{{ page_idx }}</a>
+                    {% endif %}
+
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>

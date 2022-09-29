@@ -1,0 +1,108 @@
+<div class="card my-4">
+    <div class="card-body">
+        <h5 class="card-title text-bold fs-2 m-3">
+            Détails utilisateur
+        </h5>
+
+        <div class="card-body">
+
+            <div class="row py-3">
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Nom </h6>
+                    <p>{{ user.lastName | upper | escape }} </h6>
+                </div>
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Prénom </h6>
+                    <p>{{ user.firstName | escape }} </h6>
+                </div>
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Email </h6>
+                    <p>{{ user.email | escape }} </h6>
+
+                    <form action={{ url_for(".resend_validation_email", user_id=user.id) }} method="POST">
+                        {{ resend_email_validation_form.csrf_token }}
+
+                        <button class="btn btn-outline-primary lead fw-bold mt-2">
+                            Renvoyer l'email de validation
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="row py-3">
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Numéro de téléphone </h6>
+                    <p>{{ user.phoneNumber | format_phone_number | escape }} </p>
+
+                    <form action={{ url_for(".send_validation_code", user_id=user.id) }} method="POST">
+                        {{ send_validation_code_form.csrf_token }}
+
+                        <button class="btn btn-outline-primary lead fw-bold mt-2">
+                            Envoyer un code de validation
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Date de naissance </h6>
+                    {% if user.birth_date %}
+                        <p>{{ user.birth_date | format_date }}  ({{ user.age | empty_string_if_null }} ans) </p>
+                    {% endif %}
+                </div>
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Date de création de compte </h6>
+                    <p>{{ user.dateCreated | format_date }} </p>
+                </div>
+
+            </div>
+
+            <div class="row py-3">
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Numéro de la pièce d'identité</h6>
+                    <p>{{ user.idPieceNumber }} </p>
+                </div>
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Adresse</h6>
+                    <p>{{ user.address }}</p>
+                </div>
+
+                <div class="col-4">
+                    <h6 class="fs-6 fw-bold">Ville (code postal)</h6>
+                    <p>{{ user.city }}
+                        {% if user.postalCode %}
+                            ({{ user.postalCode | empty_string_if_null }})
+                        {% endif %}
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="row py-3">
+
+                <div class="col-4">
+                </div>
+
+                <div class="col-4">
+                </div>
+
+                <div class="col-4">
+                    <a href={{ url_for(".edit_public_account", user_id=user.id) }} class="">
+                        <button class="btn btn-outline-primary lead fw-bold mt-2">
+                            Modifier les informations
+                        </button>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

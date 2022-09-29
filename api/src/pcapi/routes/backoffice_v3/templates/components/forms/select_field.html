@@ -1,0 +1,11 @@
+<div class="form-floating my-3">
+    <select class="form-select" id="{{ field.name }}" name="{{ field.name }}" aria-label={{ field.name }}>
+        {% for choice_value, choice_label in field.choices %}
+            <option value="{{ choice_value }}">
+                {{ choice_label | i18n_public_account }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for={{ field.name }}>{{ field.label }}</label>
+</div>

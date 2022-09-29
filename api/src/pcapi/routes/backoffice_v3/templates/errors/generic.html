@@ -1,0 +1,21 @@
+{% extends "layouts/error.html" %}
+
+{% block error %}
+<h1 class="display-1 fw-bold">Erreur</h1>
+<p class="fs-3"> <span class="text-danger">Woops !</span> Quelque chose s'est mal passé.</p>
+<p class="lead">
+    Un peu de détail :
+</p>
+
+<!-- this frame wrap errors in case the error call was made inside a turbo frame -->
+<turbo-frame id={{ turbo_frame_id }}>
+
+    {% for error_key, error_details in errors.items() %}
+        {% for error_detail in error_details %}
+            <p>[{{ error_key }}] {{ error_detail }}</p>
+        {% endfor %}
+    {% endfor %}
+
+</turbo-frame>
+
+{% endblock %}

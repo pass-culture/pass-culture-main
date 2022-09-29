@@ -11,6 +11,7 @@ import flask.wrappers
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from flask_login import current_user
+from flask_wtf.csrf import CSRFProtect
 import redis
 import sentry_sdk
 from sqlalchemy import orm
@@ -151,6 +152,8 @@ oauth.register(
 jwt = JWTManager(app)
 
 rate_limiter.init_app(app)
+
+csrf = CSRFProtect(app)
 
 
 @app.teardown_request  # type: ignore [arg-type]

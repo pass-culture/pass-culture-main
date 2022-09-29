@@ -1,0 +1,47 @@
+<div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ user.firstName }} {{ user.lastName | upper }}
+
+                    <span class="ms-5 me-2 badge rounded-pill text-bg-primary align-middle">
+                        {{ user.isActive | format_state }}
+                    </span>
+                        {% for role in user.roles %}
+                            <span class="badge rounded-pill text-bg-secondary align-middle">
+                                {{ role | format_role }}
+                            </span>
+                        {% endfor %}
+                </h5>
+
+                <h6 class="card-subtitle text-muted">
+                    User ID : {{ user.id }}
+                </h6>
+                <div class="row pt-3">
+
+                    <div class="col-4">
+
+
+                        <div class="fs-6">
+                            <p class="mb-1"><span class="fw-bold">email:</span> {{ user.email }} </p>
+                            <p class="mb-1"><span class="fw-bold">tel:</span> {{ user.phoneNumber | format_phone_number }} </p>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <p><span class="fw-bold">compte crédit le:</span> {{ user.deposit_activation_date | format_date }} </p>
+                    </div>
+
+                    <div class="col-4">
+                        <a href={{ url_for(".edit_public_account_review", user_id=user.id) }} class="card-link">
+                            <button class="btn btn-outline-primary lead fw-bold mt-2">
+                                Confirmer manuellement
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

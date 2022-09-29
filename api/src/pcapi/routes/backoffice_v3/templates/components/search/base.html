@@ -1,0 +1,40 @@
+{% macro build_base_search() %}
+    <div class="row">
+        <div class="col-3">
+        </div>
+
+        <div class="col-6 mt-5">
+            <div class="mt-5 text-center">
+                <p class="text-center fs-1 text-primary">
+                    <i class="bi bi-search"></i>
+                </p>
+
+                <p>
+                    {{ caller() }}
+                </p>
+
+                <div class="w-100 my-4">
+                    {% for form_field in form %}
+                        {% for error in form_field.errors %}
+                            <p class="text-warning lead">{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+
+                <form action={{ dst }} method="GET">
+                    {% for form_field in form %}
+                        {{ form_field }}
+                    {% endfor %}
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Chercher</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="col-3">
+        </div>
+    </div>
+{% endmacro %}

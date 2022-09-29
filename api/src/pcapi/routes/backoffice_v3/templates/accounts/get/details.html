@@ -1,0 +1,89 @@
+<div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link"
+                            id="history-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#history-tab-pane"
+                            type="button"
+                            role="tab"
+                            aria-controls="history-tab-pane"
+                            aria-selected="true"
+                        >
+                            Historique du compte
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link active"
+                            id="personal-informations-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#personal-informations-tab-pane"
+                            type="button"
+                            role="tab"
+                            aria-controls="personal-informations-tab-pane"
+                            aria-selected="false"
+                        >
+                            Informations personnelles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link"
+                            id="bookings-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#bookings-tab-pane"
+                            type="button"
+                            role="tab"
+                            aria-controls="bookings-tab-pane"
+                            aria-selected="false"
+                        >
+                            Suivi des réservations
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="myTabContent">
+                    <div
+                        class="tab-pane fade"
+                        id="history-tab-pane"
+                        role="tabpanel"
+                        aria-labelledby="history-tab"
+                        tabindex="0"
+                    >
+                        {% include "accounts/get/details/history.html" %}
+                    </div>
+
+                    <div
+                        class="tab-pane fade show active"
+                        id="personal-informations-tab-pane"
+                        role="tabpanel"
+                        aria-labelledby="personal-informations-tab"
+                        tabindex="0"
+                    >
+                        {% include "accounts/get/details/personal_informations_user_details.html" %}
+                        {% for history_type, history in eligibility_history.items() %}
+                            {% include "accounts/get/details/personal_informations_registration.html" %}
+                        {% endfor %}
+                    </div>
+
+                    <div
+                        class="tab-pane fade"
+                        id="bookings-tab-pane"
+                        role="tabpanel"
+                        aria-labelledby="bookings-tab"
+                        tabindex="0"
+                    >
+                        ...
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
