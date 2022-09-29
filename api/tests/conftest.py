@@ -12,6 +12,7 @@ import urllib.parse
 from alembic import command
 from alembic.config import Config
 from flask import Flask
+from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
 import pytest
@@ -24,7 +25,6 @@ from pcapi import settings
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
-from pcapi.core.permissions.models import sync_db_permissions
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
 from pcapi.core.users import testing as users_testing
@@ -79,7 +79,6 @@ def app_fixture():
         run_migrations()
         install_feature_flags()
         install_local_providers()
-        sync_db_permissions(db.session)
 
         install_all_routes(app)
 
@@ -147,6 +146,7 @@ def _db(app):
     database connection.
     """
     mock_db = db
+
     mock_db.init_app(app)
     install_database_extensions()
     run_migrations()
@@ -162,6 +162,10 @@ pcapi.core.testing.register_event_for_assert_num_queries()
 
 @pytest.fixture(name="client")
 def client_fixture(app: Flask):
+    # for some reason, it seams that keeping the csrf token causes some
+    # trouble during tests (backoffice only, api routes do not have the
+    # the csrf protection enabled during tests)
+    g.pop("csrf_token", default=None)
     return TestClient(app.test_client())
 
 
@@ -378,16 +382,27 @@ class TestClient:
         self,
         route: str,
         json: dict = None,
+        form: dict = None,
         headers: dict = None,
         follow_redirects: bool = False,
     ):
         headers = headers or {}
-        result = self.client.patch(
-            route,
-            json=json,
-            headers={**self.auth_header, **headers},
-            follow_redirects=follow_redirects,
-        )
+
+        if form:
+            result = self.client.patch(
+                route,
+                data=form,
+                headers={**self.auth_header, **headers},
+                follow_redirects=follow_redirects,
+            )
+        else:
+            result = self.client.patch(
+                route,
+                json=json,
+                headers={**self.auth_header, **headers},
+                follow_redirects=follow_redirects,
+            )
+
         self._print_spec("PATCH", route, json, result)
         return result
 

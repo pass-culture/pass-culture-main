@@ -1,0 +1,35 @@
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="card-title mb-3">
+            <span class="badge rounded-pill text-bg-primary">
+                {{ row.isActive | format_state }}
+            </span>
+            <span class="badge rounded-pill text-bg-secondary">
+                Lieu permanent
+            </span>
+        </h5>
+
+        <h5 class="card-title">
+            {{ row.name | upper }}
+        </h5>
+
+        <h6 class="card-subtitle mt-4 mb-3 text-muted">
+            Offerer ID : {{ row.managingOffererId | empty_string_if_null }}
+        </h6>
+
+        <h6 class="card-subtitle mb-4 text-muted">
+            SIRET : {{ row.siret | empty_string_if_null }}
+        </h6>
+
+        <div class="fs-6">
+            <p class="mb-1"><span class="fw-bold">mail:</span> {{ row.contact.email | empty_string_if_null }} </p>
+            <p><span class="fw-bold">tel:</span> {{ row.contact.phone_number | format_phone_number }} </p>
+        </div>
+
+        <a href={{ get_link_to_detail(row.id) }} class="card-link">
+            <button class="btn lead px-0 fw-bold mt-1">
+                CONSULTER CE PROFIL
+            </button>
+        </a>
+    </div>
+</div>

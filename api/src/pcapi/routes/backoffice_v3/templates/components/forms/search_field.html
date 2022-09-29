@@ -1,0 +1,9 @@
+<div class="col-12">
+    <div class="input-group col-12 my-1">
+        <div class="input-group-text bg-white">
+            <i class="bi bi-search"></i>
+        </div>
+
+        <input type="text" class="form-control border-start-0" id="{{ field.id }}" name="{{ field.name }}" value="{{ field.data | empty_string_if_null }}" />
+    </div>
+</div>

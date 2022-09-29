@@ -47,3 +47,8 @@ def delete_role(id_: int) -> tuple[int, str, list[perm_models.Permission]]:
     role.permissions = []
     repository.delete(role)
     return role_id, role_name, role_permission
+
+
+def get_concrete_roles(roles: typing.Collection[perm_models.Roles]) -> typing.Collection[perm_models.Role]:
+    names = [role.value for role in roles]
+    return perm_models.Role.query.filter(perm_models.Role.name.in_(names)).all()

@@ -1,0 +1,95 @@
+<div class="row row-cols-xl-3 row-cols-md-2 row-cols-sm-1 g-4 py-3">
+    <div class="col">
+        <div class="card">
+            {% if credit is not none %}
+                <div class="card-body">
+                    <h5 class="card-title fs-1 mb-3">
+                        {{ credit.all.remaining.to_integral() }}
+                    </h5>
+
+                    <div class="d-flex">
+                        <h6 class="card-subtitle text-muted me-auto">
+                            Crédit restant
+                        </h6>
+
+                        <h6 class="card-subtitle text-muted ms-auto">
+                            {{ credit.all.initial.to_integral() }}
+                        </h6>
+                    </div>
+
+                    <div class="progress mt-2">
+                        {% set progress_value = ( credit.all.remaining / credit.all.initial ) * 100 %}
+
+                        <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style="width: {{ progress_value }}%"
+                            aria-label="Crédit restant"
+                            aria-valuenow="{{ progress_value }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card">
+            {% if credit is not none %}
+                <div class="card-body">
+                    <h5 class="card-title fs-1 mb-3">
+                        {{ credit.digital.remaining.to_integral() }}
+                    </h5>
+
+                    <div class="d-flex">
+                        <h6 class="card-subtitle text-muted me-auto">
+                            Crédit restant numérique
+                        </h6>
+
+                        <h6 class="card-subtitle text-muted ms-auto">
+                            {{ credit.digital.initial.to_integral() }}
+                        </h6>
+                    </div>
+
+                    <div class="progress mt-2">
+                        {% set progress_value = ( credit.digital.remaining / credit.digital.initial ) * 100 %}
+
+                        <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style="width: {{ progress_value }}%"
+                            aria-label="Crédit restant"
+                            aria-valuenow="{{ progress_value }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Dossier DMS (ou Ubble) importé le</h5>
+
+                <h6 class="card-subtitle text-muted me-auto">
+                    {{ user.deposit.dateCreated | format_date("%d/%m/%Y à %Hh%M") }}
+                </h6>
+
+                <a href="#" class="card-link">
+                    <button class="btn lead px-0 fw-bold mt-2">
+                        Accéder au dossier DMS
+                    </button>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+

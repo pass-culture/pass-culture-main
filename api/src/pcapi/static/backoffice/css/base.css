@@ -1,0 +1,11 @@
+#pc-header-top {
+    background: linear-gradient(to right, rgb(235, 0, 85), rgb(50, 0, 150));
+}
+
+:root {
+    --bs-body-bg: #f9f9f9;
+}
+
+.nav-pills {
+    --bs-nav-pills-link-active-bg: rgb(219 218 218);
+}

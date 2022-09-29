@@ -936,6 +936,10 @@ def search_pro_account(search_query: str, order_by: list[str] | None = None) -> 
     return _filter_user_accounts(pro_accounts, search_query, order_by=order_by)
 
 
+def get_pro_account_base_query(pro_id: int) -> BaseQuery:
+    return models.User.query.join(offerers_models.UserOfferer).filter(models.User.id == pro_id)
+
+
 def skip_phone_validation_step(user: models.User) -> None:
     if user.phoneValidationStatus == models.PhoneValidationStatusType.VALIDATED:
         raise phone_validation_exceptions.UserPhoneNumberAlreadyValidated()
@@ -1015,11 +1019,12 @@ def public_account_history(user: models.User) -> list[dict]:
         for review in reviews
     ]
 
+    default_public_name = lambda author: author.publicName if author else ""
     imports_history = [
         {
             "action": f"import {import_.source}",
             "datetime": status.date,
-            "message": f"par {status.author.publicName}: {status.status.value} ({status.detail})",
+            "message": f"par {default_public_name(status.author)}: {status.status.value} ({status.detail})",
         }
         for import_ in imports
         for status in import_.statuses

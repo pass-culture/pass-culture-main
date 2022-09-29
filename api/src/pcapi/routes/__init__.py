@@ -1,5 +1,8 @@
 from flask import Flask
 
+from pcapi import settings
+from pcapi.flask_app import csrf
+
 
 def install_all_routes(app: Flask) -> None:
     from pcapi.admin.install import install_admin
@@ -11,6 +14,7 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.apis import private_api
     from pcapi.routes.apis import public_api
     from pcapi.routes.backoffice.blueprint import backoffice_blueprint
+    from pcapi.routes.backoffice_v3.blueprint import backoffice_v3_web
     from pcapi.routes.native.v1.blueprint import native_v1 as native_v1_blueprint
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.pro.blueprint import pro_public_api_v1 as pro_public_api_v1_blueprint
@@ -22,6 +26,7 @@ def install_all_routes(app: Flask) -> None:
     from . import adage
     from . import adage_iframe
     from . import backoffice
+    from . import backoffice_v3
     from . import error_handlers  # pylint: disable=unused-import
     from . import external
     from . import internal
@@ -45,6 +50,7 @@ def install_all_routes(app: Flask) -> None:
     pcapi.tasks.install_handlers(app)
     install_admin_template_filters(app)
     backoffice.install_routes(app)
+    backoffice_v3.install_routes(app)
 
     app.register_blueprint(adage_v1_blueprint, url_prefix="/adage/v1")
     app.register_blueprint(native_v1_blueprint, url_prefix="/native/v1")
@@ -57,3 +63,30 @@ def install_all_routes(app: Flask) -> None:
     app.register_blueprint(private_api)
     app.register_blueprint(public_api)
     app.register_blueprint(backoffice_blueprint, url_prefix="/backoffice")
+    app.register_blueprint(backoffice_v3_web, url_prefix="/backofficev3")
+
+    if settings.IS_RUNNING_TESTS:
+        # When running tests, FlaskAdmin already uses mocks to ignore
+        # CSRF protection. Therefore the only blueprint that needs it
+        # are the backoffice ones.
+        for name, blueprint in app.blueprints.items():
+            if not name.startswith(backoffice_v3_web.name):
+                csrf.exempt(blueprint)
+    else:
+        # Only backoffice_v3_web blueprint needs CSRF protection.
+        # It seems the only way is to exempt blueprints instead of
+        # enabling this protection for one blueprint only.
+        # And since FlaskAdmin dynamically creates its blueprints, it
+        # is very difficult to find out which one is a FlaskAdmin one
+        # and therefore should not be exempted
+        csrf.exempt(adage_v1_blueprint)
+        csrf.exempt(native_v1_blueprint)
+        csrf.exempt(pro_public_api_v1_blueprint)
+        csrf.exempt(pro_public_api_v2_blueprint)
+        csrf.exempt(pro_private_api_blueprint)
+        csrf.exempt(adage_iframe_blueprint)
+        csrf.exempt(saml_blueprint_blueprint)
+        csrf.exempt(cloud_task_api)
+        csrf.exempt(private_api)
+        csrf.exempt(public_api)
+        csrf.exempt(backoffice_blueprint)

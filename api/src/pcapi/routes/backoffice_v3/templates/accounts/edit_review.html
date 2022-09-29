@@ -1,0 +1,37 @@
+{% extends "layouts/accounts.html" %}
+
+{% block accounts_main_content %}
+    <div class="row">
+        <div class="col-3">
+        </div>
+
+        <div class="col-6 mt-5">
+            <h5 class="lead fs-1 my-4">Revue manuelle</h5>
+
+            <div class="mt-5 text-center">
+                <form action="{{ url_for(".review_public_account", user_id=user.id) }}" method="POST">
+                    {% for form_field in form %}
+                        <div class="w-100 my-4">
+                            {% for error in form_field.errors %}
+                                <p class="text-warning lead">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        {{ form_field }}
+                    {% endfor %}
+
+                    <div class="col-12 text-start py-4">
+                        <button type="submit" class="btn btn-primary">
+                            Modifier le statut
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="col-3">
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,6 +1,12 @@
 import datetime
 import typing
 
+from flask import Response
+from flask import jsonify
+from flask import make_response
+from flask import render_template
+from flask import request
+
 
 def _format_statement_value(value: typing.Any) -> typing.Any:
     if isinstance(value, int):
@@ -23,3 +29,13 @@ def format_sql_statement_params(params: dict | None) -> dict | None:
     if params is None:
         return None
     return {key: _format_statement_value(value) for key, value in params.items()}
+
+
+def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
+    if request.path.startswith("/backofficev3"):
+        # If the error happens inside a turbo-frame, it's id is reused to insert the error in the correct place
+        turbo_frame_id = request.headers.get("Turbo-Frame")
+        content = render_template(backoffice_template_name, errors=errors, turbo_frame_id=turbo_frame_id)
+        return make_response(content)
+
+    return jsonify(errors)
