@@ -20,7 +20,7 @@ const renderExternalLink = ({
   initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
-  return render(
+  render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -42,19 +42,22 @@ describe('OfferIndividual section: ExternalLink', () => {
     initialValues = { ...EXTERNAL_LINK_DEFAULT_VALUES }
   })
 
-  it('should render the component', async () => {
+  it('should render the component', () => {
     renderExternalLink({
       initialValues,
       onSubmit,
     })
+    expect(screen.getByText('Lien pour le grand public')).toBeInTheDocument()
     expect(
-      await screen.findByText('Lien pour le grand public')
-    ).toBeInTheDocument()
-    expect(
-      await screen.findByLabelText('URL de votre site ou billetterie', {
+      screen.getByLabelText('URL de votre site ou billetterie', {
         exact: false,
       })
     ).toBeInTheDocument()
+
+    const infoBox = screen.getByText(
+      'Ce lien sera affiché au public souhaitant réserver l’offre mais ne disposant pas ou plus de crédit sur l’application.'
+    )
+    expect(infoBox).toBeInTheDocument()
   })
 
   it('should submit valid form', async () => {
@@ -62,15 +65,12 @@ describe('OfferIndividual section: ExternalLink', () => {
       initialValues,
       onSubmit,
     })
-    const urlInput = await screen.findByLabelText(
-      'URL de votre site ou billetterie',
-      {
-        exact: false,
-      }
-    )
+    const urlInput = screen.getByLabelText('URL de votre site ou billetterie', {
+      exact: false,
+    })
 
     await userEvent.type(urlInput, 'https://example.com')
-    await userEvent.click(await screen.findByText('Submit'))
+    await userEvent.click(screen.getByText('Submit'))
 
     expect(onSubmit).toHaveBeenCalledWith(
       { externalTicketOfficeUrl: 'https://example.com' },
@@ -84,7 +84,7 @@ describe('OfferIndividual section: ExternalLink', () => {
       onSubmit,
     })
 
-    await userEvent.click(await screen.findByText('Submit'))
+    await userEvent.click(screen.getByText('Submit'))
 
     expect(onSubmit).toHaveBeenCalledWith(
       { externalTicketOfficeUrl: '' },
@@ -97,17 +97,14 @@ describe('OfferIndividual section: ExternalLink', () => {
       initialValues,
       onSubmit,
     })
-    const urlInput = await screen.findByLabelText(
-      'URL de votre site ou billetterie',
-      {
-        exact: false,
-      }
-    )
+    const urlInput = screen.getByLabelText('URL de votre site ou billetterie', {
+      exact: false,
+    })
 
     await userEvent.type(urlInput, 'fake url')
     await userEvent.tab()
 
-    const errorMessage = await screen.findByText(
+    const errorMessage = screen.getByText(
       'Veuillez renseigner une URL valide. Ex : https://exemple.com'
     )
     expect(errorMessage).toBeInTheDocument()

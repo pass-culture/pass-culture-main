@@ -25,7 +25,7 @@ const renderCategories = ({
   onSubmit: () => void
   props: ICategoriesProps
 }) => {
-  return render(
+  render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -112,9 +112,16 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    expect(
-      await screen.findByLabelText('Choisir une catégorie')
-    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Choisir une catégorie')).toBeInTheDocument()
+    const infoBox = screen.getByText(
+      'Une sélection précise de vos catégories permettra au grand public de facilement trouver votre offre. Une fois validées, vous ne pourrez pas les modifier.'
+    )
+    const infoLink = screen.getByText('Quelles catégories choisir ?')
+    expect(infoBox).toBeInTheDocument()
+    expect(infoLink).toHaveAttribute(
+      'href',
+      'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-'
+    )
   })
 
   it('should submit valid form', async () => {
@@ -123,7 +130,7 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Choisir une catégorie')
     await userEvent.selectOptions(categorySelect, 'C')
     const subCategorySelect = screen.getByLabelText(
       'Choisir une sous-catégorie'
@@ -134,7 +141,7 @@ describe('OfferIndividual section: Categories', () => {
     const subShowSelect = screen.getByLabelText('Choisir un sous type')
     await userEvent.selectOptions(subShowSelect, '101')
 
-    await userEvent.click(await screen.findByText('Submit'))
+    await userEvent.click(screen.getByText('Submit'))
 
     expect(onSubmit).toHaveBeenCalledWith(
       {
@@ -167,10 +174,10 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Choisir une catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
     expect(
-      await screen.findByLabelText('Choisir une sous-catégorie')
+      screen.getByLabelText('Choisir une sous-catégorie')
     ).toBeInTheDocument()
 
     expect(
@@ -193,15 +200,15 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Choisir une catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = await screen.findByLabelText(
+    const subCategorySelect = screen.getByLabelText(
       'Choisir une sous-catégorie'
     )
     await userEvent.selectOptions(subCategorySelect, 'A-A')
 
     expect(
-      await screen.findByLabelText('Choisir une sous-catégorie')
+      screen.getByLabelText('Choisir une sous-catégorie')
     ).toBeInTheDocument()
 
     expect(
@@ -224,7 +231,7 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Choisir une catégorie')
     await userEvent.selectOptions(categorySelect, 'B')
     const subCategorySelect = screen.getByLabelText(
       'Choisir une sous-catégorie'
@@ -261,7 +268,7 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Choisir une catégorie')
     await userEvent.selectOptions(categorySelect, 'C')
     const subCategorySelect = screen.getByLabelText(
       'Choisir une sous-catégorie'
