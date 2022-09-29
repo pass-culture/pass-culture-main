@@ -1,13 +1,14 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import FormLayout from 'new_components/FormLayout'
 import { ImageUploader } from 'new_components/ImageUploader'
 import { IUploadImageValues } from 'new_components/ImageUploader/ButtonImageEdit'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
-import { deleteVenueImage, postImageToVenue } from 'repository/pcapi/pcapi'
+import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { IVenueFormValues } from '../types'
 
@@ -68,7 +69,7 @@ const ImageUploaderVenue = () => {
 
   const handleOnImageDelete = async () => {
     try {
-      await deleteVenueImage({ venueId })
+      await api.deleteVenueBanner(venueId)
 
       setFieldValue('bannerUrl', undefined)
       setFieldValue('bannerMeta', undefined)

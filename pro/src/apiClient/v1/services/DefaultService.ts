@@ -1850,6 +1850,28 @@ export class DefaultService {
   }
 
   /**
+   * delete_venue_banner <DELETE>
+   * @param venueId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteVenueBanner(
+    venueId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/venues/{venue_id}/banner',
+      path: {
+        'venue_id': venueId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_venue_collective_data <GET>
    * @param venueId
    * @returns GetCollectiveVenueResponseModel OK
