@@ -47,7 +47,7 @@ class Returns200Test:
                     "motorDisabilityCompliant": None,
                     "visualDisabilityCompliant": None,
                     "domains": [],
-                    "interventionArea": None,
+                    "interventionArea": [],
                     "network": None,
                     "statusId": None,
                 }
