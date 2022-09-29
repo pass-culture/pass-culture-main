@@ -69,19 +69,207 @@ class CollectiveOffersGetEducationalInstitutionTest:
             },
         ]
 
-    def test_search_educational_institutions(self, client):
+    def test_search_educational_institutions_postal_code(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.ApiKeyFactory(offerer=offerer)
         educational_institution1 = educational_factories.EducationalInstitutionFactory(postalCode="44100")
         educational_factories.EducationalInstitutionFactory()
 
-        # When
+        # complete postal code
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/v2/collective/educational-institutions/?postalCode={educational_institution1.postalCode}"
         )
 
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+        # partial postal code
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/v2/collective/educational-institutions/?postalCode=41"
+        )
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+    def test_search_educational_institutions_id(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        educational_institution1 = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalInstitutionFactory()
+
+        # When
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/v2/collective/educational-institutions/?id={educational_institution1.id}"
+        )
+
         # Then
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+    def test_search_educational_institutions_name(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        educational_institution1 = educational_factories.EducationalInstitutionFactory(name="pouet")
+        educational_factories.EducationalInstitutionFactory()
+
+        # test complete name
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/v2/collective/educational-institutions/?name={educational_institution1.name}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+        # test incomplete name
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/v2/collective/educational-institutions/?name=oue"
+        )
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+    def test_search_educational_institutions_city(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        educational_institution1 = educational_factories.EducationalInstitutionFactory(city="pouet")
+        educational_factories.EducationalInstitutionFactory()
+
+        # test complete city
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/v2/collective/educational-institutions/?city={educational_institution1.city}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+        # test incomplete city
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/v2/collective/educational-institutions/?city=oue"
+        )
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+    def test_search_educational_institutions_institution_type(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        educational_institution1 = educational_factories.EducationalInstitutionFactory(institutionType="pouet")
+        educational_factories.EducationalInstitutionFactory()
+
+        # test complete city
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/v2/collective/educational-institutions/?institutionType={educational_institution1.institutionType}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+        # test incomplete city
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/v2/collective/educational-institutions/?institutionType=oue"
+        )
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "id": educational_institution1.id,
+                "name": educational_institution1.name,
+                "postalCode": educational_institution1.postalCode,
+                "city": educational_institution1.city,
+                "institutionType": educational_institution1.institutionType,
+            },
+        ]
+
+    def test_search_educational_institutions_multiple_filters(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        educational_institution1 = educational_factories.EducationalInstitutionFactory(
+            name="tralala",
+            postalCode="44100",
+            city="plouf",
+            institutionType="pouet",
+        )
+        educational_factories.EducationalInstitutionFactory(institutionType="pouet")
+        educational_factories.EducationalInstitutionFactory(name="tralala")
+        educational_factories.EducationalInstitutionFactory(postalCode="44100")
+        educational_factories.EducationalInstitutionFactory(city="plouf")
+        educational_factories.EducationalInstitutionFactory()
+
+        # test incomplete city
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/v2/collective/educational-institutions/?institutionType=oue&name=rala&postalCode=41&city=lou"
+        )
+
         assert response.status_code == 200
         assert response.json == [
             {
