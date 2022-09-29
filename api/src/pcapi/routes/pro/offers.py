@@ -20,6 +20,7 @@ from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_r
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.human_ids import NonDehumanizableId
 from pcapi.utils.human_ids import dehumanize
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -209,10 +210,10 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
-def delete_thumbnail(offer_id: int) -> None:
+def delete_thumbnail(offer_id: str) -> None:
     try:
-        offer = offers_repository.get_offer_by_id(offer_id)
-    except exceptions.OfferNotFound:
+        offer: Offer = load_or_404(Offer, human_id=offer_id)
+    except NonDehumanizableId:
         raise ApiErrors(
             errors={
                 "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
