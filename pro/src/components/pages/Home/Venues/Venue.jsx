@@ -1,6 +1,7 @@
 import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import Spinner from 'components/layout/Spinner'
@@ -16,7 +17,6 @@ import { ReactComponent as DownIcon } from 'icons/ico-caret-down.svg'
 import { ReactComponent as RightIcon } from 'icons/ico-caret-right.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -90,7 +90,7 @@ const Venue = ({
 
   useEffect(() => {
     async function updateStats() {
-      const stats = await pcapi.getVenueStats(id)
+      const stats = await api.getVenueStats(id)
       setStats({
         activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
         activeOffersCount: stats.activeOffersCount.toString(),

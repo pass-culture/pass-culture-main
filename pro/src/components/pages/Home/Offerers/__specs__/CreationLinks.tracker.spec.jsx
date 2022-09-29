@@ -9,19 +9,19 @@ import { MemoryRouter } from 'react-router'
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import Homepage from '../../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenueStats: jest.fn(),
+  getBusinessUnits: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
+    getVenueStats: jest.fn(),
   },
 }))
 
@@ -149,7 +149,7 @@ describe('trackers creationLinks', () => {
     api.listOfferersNames.mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
-    pcapi.getVenueStats.mockResolvedValue({
+    api.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
       soldOutOffersCount: 3,

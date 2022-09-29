@@ -1,6 +1,5 @@
 import {
   getFilteredBookingsCSV,
-  getVenueStats,
   signout,
   updateUserInformations,
   deleteStock,
@@ -28,16 +27,6 @@ jest.mock('utils/date', () => {
 })
 
 describe('pcapi', () => {
-  describe('getVenueStats', () => {
-    it('should get stats for given venue', () => {
-      // When
-      getVenueStats('3F')
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/venues/3F/stats')
-    })
-  })
-
   describe('deleteStock', () => {
     it('should delete stock given its id', () => {
       // When
