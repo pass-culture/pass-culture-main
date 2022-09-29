@@ -1,4 +1,4 @@
-name: Create a hotfix release
+name: '[Deployment] Create a hotfix release'
 
 on:
   workflow_dispatch:
