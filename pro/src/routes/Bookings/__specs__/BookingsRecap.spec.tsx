@@ -13,7 +13,10 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import {
+  SharedCurrentUserResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -28,7 +31,6 @@ import { getNthCallNthArg } from 'utils/testHelpers'
 import BookingsRecapContainer, { BookingsRouterState } from '../Bookings'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenuesForOfferer: jest.fn(),
   getFilteredBookingsCSV: jest.fn(),
   getUserHasBookings: jest.fn(),
 }))
@@ -37,6 +39,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn(),
     getBookingsPro: jest.fn(),
+    getVenues: jest.fn(),
   },
 }))
 
@@ -108,7 +111,7 @@ const renderBookingsRecap = async (
 
 describe('components | BookingsRecap | Pro user', () => {
   let store: any
-  let venue: { id: string; name: string; publicName: string }
+  let venue: VenueListItemResponseModel
   let user
 
   beforeEach(() => {
@@ -132,7 +135,7 @@ describe('components | BookingsRecap | Pro user', () => {
     }
     jest.spyOn(api, 'getProfile').mockResolvedValue(user)
     venue = venueFactory()
-    jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue([venue])
+    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
     jest
       .spyOn(pcapi, 'getUserHasBookings')
       .mockResolvedValue({ hasBookings: true })
@@ -723,8 +726,8 @@ describe('components | BookingsRecap | Pro user', () => {
     const otherVenueBooking = bookingRecapFactory()
     const otherVenue = venueFactory()
     jest
-      .spyOn(pcapi, 'getVenuesForOfferer')
-      .mockResolvedValue([venue, otherVenue])
+      .spyOn(api, 'getVenues')
+      .mockResolvedValue({ venues: [venue, otherVenue] })
     const paginatedBookingRecapReturned = {
       page: 1,
       pages: 1,

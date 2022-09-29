@@ -15,7 +15,6 @@ import OfferLayout from '../OfferLayout'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadCategories: jest.fn(),
-  getVenuesForOfferer: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -24,6 +23,7 @@ jest.mock('apiClient/api', () => ({
     patchOffersActiveStatus: jest.fn(),
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
+    getVenues: jest.fn(),
   },
 }))
 
@@ -285,9 +285,9 @@ describe('offerLayout', () => {
 
   describe('render when creating a new offer', () => {
     it('should have title "Créer une offre"', async () => {
-      pcapi.getVenuesForOfferer.mockResolvedValue([
-        { id: 'AB', publicName: 'venue', name: 'venue' },
-      ])
+      api.getVenues.mockResolvedValue({
+        venues: [{ id: 'AB', publicName: 'venue', name: 'venue' }],
+      })
       api.listOfferersNames.mockResolvedValue({ offerersNames: [] })
 
       // When

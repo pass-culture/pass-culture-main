@@ -18,8 +18,8 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getVenuesForOfferer: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: { getVenues: jest.fn() },
 }))
 
 const renderPreFilters = (props: IPreFiltersProps, store: Store) => {

@@ -9,6 +9,7 @@ import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { BannerReimbursementsInfo } from 'new_components/Banner'
 import { ReimbursementsBreadcrumb } from 'new_components/ReimbursementsBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -42,18 +43,12 @@ const Reimbursements = () => {
   const match = useRouteMatch()
 
   const loadVenues = useCallback(async () => {
-    try {
-      const venuesResponse = await pcapi.getVenuesForOfferer({
-        activeOfferersOnly: true,
-      })
-      const selectOptions = buildAndSortVenueFilterOptions(venuesResponse)
-      setVenuesOptions(selectOptions)
-      setIsLoading(false)
-    } catch (err) {
-      // FIX ME
-      // eslint-disable-next-line
-      console.error(err)
-    }
+    const venuesResponse = await getVenuesForOffererAdapter({
+      activeOfferersOnly: true,
+    })
+    const selectOptions = buildAndSortVenueFilterOptions(venuesResponse.payload)
+    setVenuesOptions(selectOptions)
+    setIsLoading(false)
   }, [setVenuesOptions])
 
   const loadReimbursementPoints = useCallback(async () => {

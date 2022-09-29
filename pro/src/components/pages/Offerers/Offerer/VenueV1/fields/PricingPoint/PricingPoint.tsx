@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Field, useField } from 'react-final-form'
 
 import { api } from 'apiClient/api'
+import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Icon from 'components/layout/Icon'
-import { IAPIOfferer } from 'core/Offerers/types'
-import { IAPIVenue } from 'core/Venue/types'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
@@ -15,8 +14,8 @@ import styles from './PricingPoint.module.scss'
 
 export interface IPricingPointProps {
   readOnly: boolean
-  offerer: IAPIOfferer
-  venue: IAPIVenue
+  offerer: GetOffererResponseModel
+  venue: GetVenueResponseModel
   setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
 }
 
@@ -135,7 +134,7 @@ const PricingPoint = ({
             >
               <option value="">Sélectionner un lieu dans la liste</option>
               {offerer.managedVenues.map(
-                (venue: IAPIVenue) =>
+                venue =>
                   venue?.siret && (
                     <option
                       key={`venue-type-${venue.siret}`}

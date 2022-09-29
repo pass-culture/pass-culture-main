@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
 const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {
@@ -11,12 +11,17 @@ const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {
 
 export const getVenuesAdapter: GetVenuesAdapter = async () => {
   try {
-    const venuesForOfferer = await pcapi.getVenuesForOfferer()
+    const venuesForOfferer = await api.getVenues(
+      true,
+      undefined,
+      false,
+      undefined
+    )
 
     return {
       isOk: true,
       message: null,
-      payload: { venues: formatAndOrderVenues(venuesForOfferer) },
+      payload: { venues: formatAndOrderVenues(venuesForOfferer.venues) },
     }
   } catch (e) {
     return FAILING_RESPONSE
