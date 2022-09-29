@@ -25,7 +25,7 @@ const audioDisabilityCompliant = Selector(
 
 fixture('En étant sur la page de création d’un lieu,')
 
-test('je peux créer un lieu avec un SIRET valide', async t => {
+test.skip('je peux créer un lieu avec un SIRET valide', async t => {
   const { offerer, user } = await fetchSandbox(
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
@@ -68,7 +68,7 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
   await navigateAfterVenueSubmit('creation')(t)
 })
 
-test('je peux créer un lieu sans SIRET avec une description', async t => {
+test.skip('je peux créer un lieu sans SIRET avec une description', async t => {
   const { offerer, user } = await fetchSandbox(
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
