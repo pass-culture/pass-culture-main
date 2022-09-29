@@ -514,12 +514,6 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
-          <Icon svg="ico-warning-stocks" />
-        </td>
-        <td>public/icons/ico-warning-stocks</td>
-      </tr>
-      <tr>
-        <td>
           <Icon svg="icons-close" />
         </td>
         <td>public/icons/icons-close</td>

@@ -56,6 +56,7 @@ import { ReactComponent as IcoUnavailableGradientIcon } from 'icons/ico-unavaila
 import { ReactComponent as IcoUnavailablePageIcon } from 'icons/ico-unavailable-page.svg'
 import { ReactComponent as IcoValideCercleIcon } from 'icons/ico-valide-cercle.svg'
 import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
+import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
 import { ReactComponent as IconsCloseIcon } from 'icons/icons-close.svg'
 import { ReactComponent as InfoPhoneIcon } from 'icons/info-phone.svg'
 import { ReactComponent as InfoIcon } from 'icons/info.svg'
@@ -497,6 +498,12 @@ export const Icons = () => (
           <StatsIcon />
         </td>
         <td>ico-stats</td>
+      </tr>
+      <tr>
+        <td>
+          <WarningStocksIcon />
+        </td>
+        <td>ico-warning-stocks</td>
       </tr>
     </body>
   </table>
