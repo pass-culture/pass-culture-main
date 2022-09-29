@@ -414,6 +414,7 @@ class Returns404Test:
         data = {
             "venueId": humanize(venue.id),
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+            "description": "Ma super description",
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
             "durationMinutes": 60,
             "name": "La pièce de théâtre",

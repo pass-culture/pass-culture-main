@@ -313,6 +313,27 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
+    def test_patch_offer_with_none_description(self, client):
+        # Given
+        offer = CollectiveOfferFactory(
+            educational_domains=None,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "description": None,
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+
 
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
