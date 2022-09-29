@@ -52,11 +52,21 @@ class OfferMediationTest:
 
         assert response.status_code == 403
 
-    def test_unkown_offer(self, client):
+    def test_number_id_offer(self, client):
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         client = client.with_session_auth(email="user@example.com")
         response = client.delete("/offers/thumbnails/123445678")
+
+        assert response.status_code == 404
+        expected_error = ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
+        assert response.json["global"] == expected_error
+
+    def test_unkown_offer(self, client):
+        offer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+
+        client = client.with_session_auth(email="user@example.com")
+        response = client.delete(f"/offers/thumbnails/{humanize(offer.id + 1)}")
 
         assert response.status_code == 404
         expected_error = ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
