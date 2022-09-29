@@ -70,6 +70,10 @@
       color: colors.$white;
       background-color: colors.$primary-dark;
       border-color: colors.$primary-dark;
+
+      .button-icon {
+        fill: colors.$white;
+      }
     }
 
     &:disabled,

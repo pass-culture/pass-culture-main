@@ -1,0 +1,16 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+.button {
+  .edit-icon {
+    min-width: rem.torem(20px);
+    min-height: rem.torem(20px);
+    fill: colors.$primary;
+  }
+  &:hover,
+  &:focus {
+    .edit-icon {
+      fill: colors.$white;
+    }
+  }
+}
