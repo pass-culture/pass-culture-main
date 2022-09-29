@@ -1,4 +1,4 @@
-name: Deploy a tag to production
+name: '[Deprecated] Deploy a tag to production'
 
 on:
   workflow_dispatch:
