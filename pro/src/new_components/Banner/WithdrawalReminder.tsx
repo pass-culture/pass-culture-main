@@ -14,8 +14,8 @@ const WithdrawalReminder = () => {
       ]}
       type="notification-info"
     >
-      La livraison d’article n’est pas autorisée. Pour plus d’informations,
-      veuillez consulter nos CGU.
+      La livraison d’article est interdite. Pour plus d’informations, veuillez
+      consulter nos CGU.
     </Banner>
   )
 }

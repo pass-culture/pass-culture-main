@@ -6,12 +6,15 @@ import { Link } from 'react-router-dom'
 import styles from './Button.module.scss'
 import { ButtonVariant, SharedButtonProps } from './types'
 
-type InternalLinkProps = Omit<HTMLProps<HTMLLinkElement>, 'onClick'> & {
+export type InternalLinkProps = Omit<HTMLProps<HTMLLinkElement>, 'onClick'> & {
   isExternal: false
   to: LocationDescriptor
 }
 
-type ExternalLinkProps = Omit<HTMLProps<HTMLAnchorElement>, 'onClick'> & {
+export type ExternalLinkProps = Omit<
+  HTMLProps<HTMLAnchorElement>,
+  'onClick'
+> & {
   isExternal: true
   to: string
 }

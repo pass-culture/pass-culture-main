@@ -7,7 +7,7 @@ import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
 } from 'new_components/OfferIndividualForm'
-import { Select } from 'ui-kit'
+import { InfoBox, Select } from 'ui-kit'
 
 import { MusicTypes } from './MusicTypes'
 import { SelectSubCategory } from './SelectSubCategory'
@@ -54,7 +54,20 @@ const Categories = ({
       title="Type d’offre"
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux dans l’application."
     >
-      <FormLayout.Row smSpaceAfter={true}>
+      <FormLayout.Row
+        smSpaceAfter={true}
+        sideComponent={
+          <InfoBox
+            type="info"
+            text="Une sélection précise de vos catégories permettra au grand public de facilement trouver votre offre. Une fois validées, vous ne pourrez pas les modifier."
+            link={{
+              isExternal: true,
+              to: 'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-',
+              text: 'Quelles catégories choisir ?',
+            }}
+          />
+        }
+      >
         <Select
           label="Choisir une catégorie"
           name="categoryId"
