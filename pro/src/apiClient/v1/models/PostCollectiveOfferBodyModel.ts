@@ -21,6 +21,7 @@ export type PostCollectiveOfferBodyModel = {
   offererId: string;
   students: Array<StudentLevels>;
   subcategoryId: string;
+  templateId?: string | null;
   venueId: string;
   visualDisabilityCompliant?: boolean;
 };

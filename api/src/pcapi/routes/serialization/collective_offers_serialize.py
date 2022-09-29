@@ -357,6 +357,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     contact_email: str
     contact_phone: str
     intervention_area: list[str] | None
+    template_id: str | None
 
     @validator("name", pre=True)
     def validate_name(cls: BaseModel, name: str) -> str:  # pylint: disable=no-self-argument

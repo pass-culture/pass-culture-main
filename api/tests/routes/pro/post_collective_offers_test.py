@@ -17,6 +17,7 @@ class Returns200Test:
     def test_create_collective_offer(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         educational_domain1 = educational_factories.EducationalDomainFactory()
@@ -44,6 +45,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": humanize(template.id),
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -75,6 +77,7 @@ class Returns200Test:
         assert offer.students[1].value == "Lycée - Première"
         assert len(offer.domains) == 2
         assert set(offer.domains) == {educational_domain1, educational_domain2}
+        assert offer.templateId == template.id
 
     def test_create_collective_offer_empty_intervention_area(self, client):
         # Given
@@ -105,6 +108,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": [],
+            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -144,6 +148,7 @@ class Returns403Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -183,6 +188,7 @@ class Returns403Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -222,6 +228,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -258,6 +265,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -294,6 +302,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -331,6 +340,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -372,6 +382,7 @@ class Returns404Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
+            "templateId": None,
         }
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
@@ -380,3 +391,43 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}
+
+    def test_create_collective_offer_with_no_collective_offer_template(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        educational_domain1 = educational_factories.EducationalDomainFactory()
+        educational_domain2 = educational_factories.EducationalDomainFactory()
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "contactEmail": "pouet@example.com",
+            "contactPhone": "01 99 00 25 68",
+            "offerVenue": {
+                "addressType": "school",
+                "venueId": humanize(venue.id),
+                "otherAddress": "17 rue aléatoire",
+            },
+            "students": ["Lycée - Seconde", "Lycée - Première"],
+            "offererId": humanize(offerer.id),
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
+            "templateId": humanize(1234567890),
+        }
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 404
+        assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
