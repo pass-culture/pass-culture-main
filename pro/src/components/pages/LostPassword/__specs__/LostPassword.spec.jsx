@@ -6,7 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import configureStore from 'store'
+import { configureTestStore } from 'store/testUtils'
 
 import LostPassword from '../LostPassword'
 
@@ -26,11 +26,11 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderLostPassword = url => {
-  const store = configureStore({
+  const store = configureTestStore({
     user: {
       currentUser: { id: 'CMOI' },
     },
-  }).store
+  })
 
   render(
     <Provider store={store}>

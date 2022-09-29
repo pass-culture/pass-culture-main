@@ -7,7 +7,7 @@ import {
   SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
 import Spinner from 'components/layout/Spinner'
-import configureStore from 'store'
+import createStore from 'store'
 import { RootState } from 'store/reducers'
 
 interface IStoreProvider {
@@ -57,7 +57,7 @@ const StoreProvider = ({ children, isDev = false }: IStoreProvider) => {
       </main>
     )
 
-  const { store } = configureStore(initialState)
+  const { store } = createStore(initialState)
   return <Provider store={store}>{children}</Provider>
 }
 
