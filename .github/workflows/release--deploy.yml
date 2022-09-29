@@ -1,0 +1,25 @@
+name: Deploy a release
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        type: choice
+        description: Environnement cible
+        options:
+        - staging
+        - production
+        - integration
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.target_environment }}
+      url: https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=${{ github.event.inputs.target_environment }}
+    steps:
+      - name: Checkout Release
+        uses: actions/checkout@v3
+      - name: Deploy Release to ${{ github.event.inputs.target_environment }}
+        run: |
+          git push -f origin HEAD:${{ github.event.inputs.target_environment }}
