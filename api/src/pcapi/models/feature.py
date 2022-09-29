@@ -124,6 +124,7 @@ class FeatureToggle(enum.Enum):
         "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
     )
     WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION = "Active l'écran carrefour sur la page de choix du type d’offre à créer, afin de pouvoir créer une offre collective vitrine dès le départ"
+    WIP_ENABLE_BACKOFFICE_V3 = "Autorise l'accès au nouveau back-office (v3)"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
 
     def is_active(self) -> bool:
@@ -189,6 +190,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER,
     FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
     FeatureToggle.WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION,
+    FeatureToggle.WIP_ENABLE_BACKOFFICE_V3,
 )
 
 

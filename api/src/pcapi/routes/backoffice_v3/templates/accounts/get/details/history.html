@@ -1,0 +1,17 @@
+<a href="#" class="">
+    <button class="btn btn-primary lead fw-bold p-2 my-4">
+        Ajouter un commentaire
+    </button>
+</a>
+
+<table class="table mb-4">
+  <tbody>
+    {% for event in history %}
+        <tr>
+          <th scope="row"></th>
+          <td>{{ event.action }}</td>
+          <td class="text-muted">{{ event.datetime | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+          <td>{{ event.message }}</td>
+        </tr>
+    {% endfor %}
+</table>

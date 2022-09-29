@@ -1,12 +1,12 @@
 import logging
 
 from flask import current_app as app
-from flask import jsonify
 
 from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.offers.exceptions import ImageTooSmall
 from pcapi.core.offers.exceptions import MissingImage
 from pcapi.core.offers.exceptions import UnacceptedFileType
+from pcapi.routes.error_handlers.utils import generate_error_response
 
 
 logger = logging.getLogger(__name__)
@@ -18,4 +18,4 @@ logger = logging.getLogger(__name__)
 @app.errorhandler(MissingImage)
 def handle_create_a_thumbnail(exception):  # type: ignore [no-untyped-def]
     logger.info("When creating the offer thumbnail, this error was encountered: %s", exception.__class__.__name__)
-    return jsonify({"errors": [exception.args[0]]}), 400
+    return generate_error_response({"errors": [exception.args[0]]}), 400

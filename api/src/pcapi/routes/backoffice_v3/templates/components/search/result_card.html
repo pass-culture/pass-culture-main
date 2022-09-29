@@ -1,0 +1,35 @@
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="card-title mb-3">
+            <span class="badge rounded-pill text-bg-primary">
+                {{ row.isActive | format_state }}
+            </span>
+            {% for role in row.roles %}
+                <span class="badge rounded-pill text-bg-secondary">
+                    {{ role | format_role }}
+                </span>
+            {% endfor %}
+        </h5>
+
+        <h5 class="card-title">
+            {{ row.firstName }} {{ row.lastName }}
+        </h5>
+
+        <h6 class="card-subtitle mb-4 text-muted">
+            User ID : {{ row.id }}
+        </h6>
+
+        <div class="fs-6">
+            <p class="mb-1"><span class="fw-bold">email:</span> {{ row.email }} </p>
+            {% if row.phoneNumber %}
+                <p><span class="fw-bold">tel:</span> {{ row.phoneNumber | format_phone_number }} </p>
+            {% endif %}
+        </div>
+
+        <a href={{ get_link_to_detail(row.id) }} class="card-link">
+            <button class="btn lead px-0 fw-bold mt-1">
+                CONSULTER CE PROFIL
+            </button>
+        </a>
+    </div>
+</div>

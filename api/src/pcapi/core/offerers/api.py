@@ -950,6 +950,10 @@ def search_offerer(search_query: str, order_by: list[str] | None = None) -> Base
     return offerers
 
 
+def get_offerer_base_query(offerer_id: int) -> BaseQuery:
+    return models.Offerer.query.filter(models.Offerer.id == offerer_id)
+
+
 def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
     venues = models.Venue.query.outerjoin(offerers_models.VenueContact)
     terms = search_query.split()
@@ -1021,6 +1025,10 @@ def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQu
         venues = venues.order_by(models.Venue.id)
 
     return venues
+
+
+def get_venue_base_query(venue_id: int) -> BaseQuery:
+    return models.Venue.query.outerjoin(offerers_models.VenueContact).filter(models.Venue.id == venue_id)
 
 
 def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:

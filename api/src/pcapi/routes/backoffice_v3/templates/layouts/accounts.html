@@ -1,0 +1,14 @@
+{% extends "layouts/connected.html" %}
+
+{% from "layouts/connected.html" import MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
+{% set CURRENT_PATH = MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
+
+{% block page %}
+    <div class="py-4 px-5">
+        <h1 class="text-muted mx-3">Jeunes bénéficiaires ou à venir</h1>
+
+        <div class="container-fluid">
+            {% block accounts_main_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

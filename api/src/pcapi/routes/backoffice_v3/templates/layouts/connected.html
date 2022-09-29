@@ -1,0 +1,111 @@
+{% extends "layouts/base.html" %}
+
+{% macro subMenuHeader(name) %}
+    <hr class="mdc-deprecated-list-divider">
+    <h6 class="mdc-deprecated-list-group__subheader">{{ name }}</h6>
+{% endmacro %}
+
+{% macro menuItem(label, url) %}
+    <a
+        href={{ url }}
+        class="mdc-deprecated-list-item {{ "mdc-deprecated-list-item--activated" if url == request.path else "" }}"
+    >
+        <span class="mdc-deprecated-list-item__ripple"></span>
+        <span class="mdc-deprecated-list-item__text">{{ label }}</span>
+    </a>
+{% endmacro %}
+
+{% macro menu_section(title) %}
+    <p class="m-3 lead">{{ title }}</p>
+
+    <nav class="nav nav-pills flex-column">
+        {{ caller() }}
+    </nav>
+{% endmacro %}
+
+{% macro menu_section_item(title, path) %}
+    {% set url = url_for(path) %}
+    {% set is_active = "active" if request.path == url else "" %}
+
+    <a class="nav-link ps-5 g-0 {{ is_active }} rounded-0 text-reset" href={{ url }}>
+        {{ title }}
+    </a>
+{% endmacro %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3 bg-white g-0 shadow border-end border-1">
+                <div class="d-flex flex-column align-items-center text-black min-vh-100">
+                    <a href="/" class="w-100 p-3 text-black text-decoration-none border-bottom">
+                        <span class="fs-5">Menu</span>
+                    </a>
+
+                    <nav id="navbar-example3" class="h-100 w-100 flex-column align-items-stretch py-2">
+                        <nav class="nav nav-pills flex-column">
+
+                            {% call menu_section("Jeunes et grand public") %}
+                                {{ menu_section_item("Jeune bénéficiaires ou à venir", "backoffice_v3_web.search_public_accounts") }}
+                                {{ menu_section_item("Utilisateurs grand public", "backoffice_v3_web.home") }}
+                                {{ menu_section_item("Feature flipping", "backoffice_v3_web.home") }}
+                                {{ menu_section_item("Catégories et sous-catégories", "backoffice_v3_web.home") }}
+                            {% endcall %}
+
+                        </nav>
+
+                        <hr>
+
+                        <nav class="nav nav-pills flex-column">
+
+                            {% call menu_section("Acteurs culturels") %}
+                                {{ menu_section_item("Liste des acteurs culturels", "backoffice_v3_web.search_pro") }}
+                                {{ menu_section_item("Feature flipping", "backoffice_v3_web.home") }}
+                                {{ menu_section_item("Catégories et sous-catégories d'offres", "backoffice_v3_web.home") }}
+                                {{ menu_section_item("Rechercher des offres", "backoffice_v3_web.home") }}
+                            {% endcall %}
+
+                        </nav>
+
+                        <hr>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="col g-0 bg-light">
+                <div class="navbar text-bg-primary p-3" id="pc-header-top">
+                    <p class="my-0 ms-5 lead">
+                        Backoffice
+                    </p>
+
+                    <form action="{{ url_for("backoffice_v3_web.logout") }}" method="POST">
+                        {{ logout_csrf_token }}
+
+                        <button type="submit" class="btn btn-link text-white">
+                            <i class="bi bi-box-arrow-right fs-5 me-2"></i>
+                        </button>
+                    </form>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div
+                                class="alert alert-{{ category }} alert-dismissible fade show mb-3 px-5 rounded-0"
+                                role="alert">
+                                <p class="mx-3 mb-0">{{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                    </button>
+                                </p>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    {% block page %}
+                    {% endblock %}
+                </div>
+
+            </div>
+    </div>
+
+{% endblock %}

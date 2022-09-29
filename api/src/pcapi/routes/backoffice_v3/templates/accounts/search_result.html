@@ -1,0 +1,17 @@
+{% extends "layouts/accounts.html" %}
+
+{% block accounts_main_content %}
+
+    <form action={{ dst }} method="GET" class="row row-cols-lg-auto g-3 align-items-center mb-5">
+        {% for form_field in form %}
+            {{ form_field }}
+        {% endfor %}
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Chercher</button>
+        </div>
+
+    </form>
+
+    {% include "components/search/result.html" %}
+{% endblock %}

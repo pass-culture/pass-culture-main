@@ -1,5 +1,6 @@
 import enum
 import logging
+import typing
 from typing import Type
 
 import sqlalchemy as sa
@@ -89,6 +90,32 @@ class Permission(PcObject, Base, Model):
     )
 
 
+class Roles(enum.Enum):
+    """
+    This enum is synced with the permission table in DB, thanks to the
+    sync_enum_with_db_field function which is called when the app is deployed
+    """
+
+    ADMIN = "admin"
+    SUPPORT_N1 = "support-N1"
+    SUPPORT_N2 = "support-N2"
+    SUPPORT_PRO = "support-PRO"
+    FRAUDE_CONFORMITE = "fraude-conformite"
+    DAF = "daf"
+    BIZDEV = "bizdev"
+    PROGRAMMATION = "programmation"
+    PRODUCT_MANAGEMENT = "product-management"
+
+
+role_backoffice_profile_table = sa.Table(
+    "role_backoffice_profile",
+    Base.metadata,
+    sa.Column("roleId", sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=False),
+    sa.Column("profileId", sa.ForeignKey("backoffice_user_profile.id", ondelete="CASCADE"), nullable=False),
+    sa.UniqueConstraint("roleId", "profileId"),
+)
+
+
 class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
@@ -96,3 +123,20 @@ class Role(PcObject, Base, Model):
     permissions = sa.orm.relationship(  # type: ignore [misc]
         Permission, secondary=role_permission_table, back_populates="roles"
     )
+    profiles = sa.orm.relationship("BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles")  # type: ignore
+
+
+class BackOfficeUserProfile(Base, Model):
+    __tablename__ = "backoffice_user_profile"
+
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+
+    userId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
+    user = sa.orm.relationship("User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile")  # type: ignore
+    roles = sa.orm.relationship("Role", secondary=role_backoffice_profile_table, back_populates="profiles")  # type: ignore
+
+    @property
+    def permissions(self) -> typing.Collection[Permissions]:
+        return [Permissions[perm.name] for role in self.roles for perm in role.permissions]

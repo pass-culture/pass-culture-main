@@ -4,9 +4,11 @@ import flask
 from flask import current_app as app
 import werkzeug.datastructures
 
+import pcapi.core.users.backoffice.api as backoffice_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.backoffice_v3.blueprint import backoffice_v3_web
 
 
 def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
@@ -22,12 +24,19 @@ def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
 
 
 @app.login_manager.user_loader  # type: ignore [attr-defined]
-def get_user_with_id(user_id: int) -> None:
+def get_user_with_id(user_id: int) -> users_models.User | None:
     flask.session.permanent = True
     session_uuid = flask.session.get("session_uuid")
-    if users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid).one_or_none():
-        return users_models.User.query.get(user_id)
-    return None
+    if not users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid).one_or_none():
+        return None
+
+    try:
+        if flask.request.blueprint.startswith(backoffice_v3_web.name):  # type: ignore
+            return backoffice_api.fetch_user_with_profile(user_id)
+    except AttributeError:
+        pass
+
+    return users_models.User.query.get(user_id)
 
 
 @app.login_manager.unauthorized_handler  # type: ignore [attr-defined]
