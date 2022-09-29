@@ -1,0 +1,21 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    <h1>Backoffice pass Culture</h1>
+{% endblock %}
+
+{% block header %}
+    {% if current_user and not current_user.is_anonymous %}
+        <p>{{ current_user.email }}</p>
+
+        <form action={{ url_for("poc_backoffice_web.logout") }} method="post">
+            <div class="form-example">
+                <input type="submit" value="logout">
+            </div>
+        </form>
+
+        <a href={{ url_for("poc_backoffice_web.search") }}>Page de recherche</a>
+    {% else %}
+        <a href={{ url_for("poc_backoffice_web.login") }}>Se connecter via Google</a>
+    {% endif %}
+{% endblock %}

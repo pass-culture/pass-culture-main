@@ -1,0 +1,24 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    <h1>Backoffice pass Culture</h1>
+{% endblock %}
+
+{% block header %}
+    <h2>Search</h2>
+
+    <form action={{ url_for("poc_backoffice_web.search") }} method="POST">
+        <input type="text" id="search_query" name="query" />
+
+        <label for="order_by">Sort by column</label>
+        <select id="search_order_by" name="order_by">
+            {% for field in order_by_options %}
+                <option value={{ field }}>{{ field }}</option>
+            {% endfor %}
+        </select>
+
+        <br />
+
+        <button type="submit">Search</button>
+    </form>
+{% endblock %}
