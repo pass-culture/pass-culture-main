@@ -1,4 +1,4 @@
-name: Tag a RC and deploy to staging
+name: '[Deprecated] Tag a RC and deploy to staging'
 
 on:
   workflow_dispatch:
