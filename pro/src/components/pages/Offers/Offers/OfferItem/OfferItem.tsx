@@ -15,15 +15,12 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { computeVenueDisplayName } from 'repository/venuesService'
-import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
-import { pluralize } from 'utils/pluralize'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
+import OfferNameCell from './Cells/OfferNameCell'
 import ThumbCell from './Cells/ThumbCell'
 
 export type OfferItemProps = {
@@ -60,9 +57,6 @@ const OfferItem = ({
     selectOffer(offer.id, !isSelected, !!isShowcase)
   }
 
-  const computeNumberOfSoldOutStocks = () =>
-    stocks.filter(stock => stock.remainingQuantity === 0).length
-
   const computeRemainingStockOrEducationalInstitutionValue = (
     stocks: Offer['stocks']
   ) => {
@@ -81,27 +75,11 @@ const OfferItem = ({
     return totalRemainingStock
   }
 
-  const stockSize = stocks ? stocks.length : 0
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
     !offer.isActive ||
     offer.hasBookingLimitDatetimesPassed ||
     isOfferDisabled(offer.status)
-  const shouldShowSoldOutWarning =
-    computeNumberOfSoldOutStocks() > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
-
-  const getDateInformations = () => {
-    if (isShowcase) {
-      return 'Date et prix à définir'
-    }
-    return stockSize === 1
-      ? formatLocalTimeDateString(
-          stocks[0].beginningDatetime,
-          venue.departementCode,
-          FORMAT_DD_MM_YYYY_HH_mm
-        )
-      : pluralize(stockSize, 'date')
-  }
 
   return (
     <tr
@@ -123,43 +101,7 @@ const OfferItem = ({
       {audience === Audience.INDIVIDUAL && (
         <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
       )}
-      <td className="title-column">
-        <Link
-          className="name"
-          title={`${offer.name} - éditer l'offre`}
-          onClick={() =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-              to: OfferBreadcrumbStep.SUMMARY,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
-              isEdition: true,
-            })
-          }
-          to={editionOfferLink}
-        >
-          {offer.name}
-        </Link>
-        {offer.isEvent && (
-          <span className="stocks">
-            {getDateInformations()}
-            {shouldShowSoldOutWarning && (
-              <div>
-                <Icon
-                  alt=""
-                  className="sold-out-icon"
-                  svg="ico-warning-stocks"
-                  tabIndex={0}
-                />
-                <span className="sold-out-dates">
-                  <Icon alt="" svg="ico-warning-stocks" />
-                  {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
-                </span>
-              </div>
-            )}
-          </span>
-        )}
-        {offer.productIsbn && <div className="isbn">{offer.productIsbn}</div>}
-      </td>
+      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
       <td className="venue-column">
         {venue && computeVenueDisplayName(venue)}
       </td>

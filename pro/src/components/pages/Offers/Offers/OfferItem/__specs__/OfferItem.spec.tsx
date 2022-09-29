@@ -354,10 +354,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const numberOfStocks = screen.getByText('1 date épuisée', {
           selector: 'span',
         })
-        expect(within(numberOfStocks).queryByRole('img')).toHaveAttribute(
-          'src',
-          expect.stringContaining('ico-warning-stocks')
-        )
+        expect(numberOfStocks).toBeInTheDocument()
       })
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
