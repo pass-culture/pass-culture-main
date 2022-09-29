@@ -20,7 +20,7 @@ export type ExternalLinkProps = Omit<
 }
 interface IButtonProps extends SharedButtonProps {
   link: InternalLinkProps | ExternalLinkProps
-  children: React.ReactNode | React.ReactNode[]
+  children?: React.ReactNode | React.ReactNode[]
   className?: string
   isDisabled?: boolean
   onClick?: MouseEventHandler<HTMLAnchorElement>
