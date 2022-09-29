@@ -42,7 +42,7 @@ class BaseVenueModel(BaseModel):
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
     domains: list[VenueDomain]
-    interventionArea: list[str] | None
+    interventionArea: list[str]
     network: list[str] | None
     statusId: int | None
 
@@ -66,11 +66,9 @@ class BaseVenueModel(BaseModel):
             venue.phoneNumber = contact.phone_number
 
         venue.domains = venue.collectiveDomains
-        venue.interventionArea = (
-            [intervention_area.zfill(3) for intervention_area in venue.collectiveInterventionArea]
-            if venue.collectiveInterventionArea
-            else None
-        )
+        venue.interventionArea = [
+            intervention_area.zfill(3) for intervention_area in venue.collectiveInterventionArea or []
+        ]
         venue.network = venue.collectiveNetwork
         venue.statusId = venue.venueEducationalStatusId
 
