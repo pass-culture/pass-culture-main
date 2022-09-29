@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import Spinner from 'components/layout/Spinner'
+import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import * as pcapi from 'repository/pcapi/pcapi'
 import BusinessUnitListScreen from 'screens/BusinessUnitList'
 import {
@@ -17,31 +18,6 @@ interface IAPIBusinessUnitListItem {
   iban: string
   name: string
   siret: string | null
-}
-
-interface IAPIVenue {
-  address: string | null
-  bookingEmail: string | null
-  businessUnitId: number | null
-  city: string | null
-  comment: string | null
-  departementCode: string | null
-  id: string
-  isValidated: boolean
-  isVirtual: boolean
-  managingOffererId: string
-  name: string
-  postalCode: string | null
-  publicName: string
-  venueLabelId: string | null
-  venueTypeCode: string | null
-  withdrawalDetails: string | null
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  visualDisabilityCompliant: boolean
-  siret: string | null
-  isBusinessUnitMainVenue: boolean | null
 }
 
 const BusinessUnitList = (): JSX.Element => {
@@ -83,26 +59,22 @@ const BusinessUnitList = (): JSX.Element => {
     }
 
     async function loadVenues(offererId: string) {
-      const venuesForOffererResponse: IAPIVenue[] =
-        await pcapi.getVenuesForOfferer({
-          // @ts-expect-error string is not assignable to type null | undefined
-          offererId,
-        })
+      const venuesForOffererResponse = await getVenuesForOffererAdapter({
+        offererId,
+      })
       const serializedVenueList: IBusinessUnitVenue[] =
-        venuesForOffererResponse.map(
-          (apiVenue: IAPIVenue): IBusinessUnitVenue => {
-            return {
-              id: apiVenue.id,
-              name: apiVenue.name,
-              publicName: apiVenue.publicName,
-              siret: apiVenue.siret,
-              businessUnitId: apiVenue.businessUnitId,
-              managingOffererId: apiVenue.managingOffererId,
-              isBusinessUnitMainVenue: apiVenue.isBusinessUnitMainVenue,
-              isVirtual: apiVenue.isVirtual,
-            }
-          }
-        )
+        venuesForOffererResponse.payload.map((apiVenue): IBusinessUnitVenue => {
+          return {
+            id: apiVenue.id,
+            name: apiVenue.name,
+            publicName: apiVenue.publicName,
+            siret: apiVenue.siret,
+            businessUnitId: apiVenue.businessUnitId,
+            managingOffererId: apiVenue.managingOffererId,
+            isBusinessUnitMainVenue: apiVenue.isBusinessUnitMainVenue,
+            isVirtual: apiVenue.isVirtual,
+          } as IBusinessUnitVenue // FIXME: (MathildeDuboille - 2022-09-29) types does not match with IBusinessUnitVenue
+        })
 
       setVenues(serializedVenueList)
     }

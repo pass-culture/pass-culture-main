@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'core/Offers/utils'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
-import * as pcapi from 'repository/pcapi/pcapi'
+import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 
 import OfferForm from '../OfferForm'
 
@@ -51,16 +51,16 @@ const OfferCreation = ({
         const offerersResponse = await getUserValidatedOfferersNamesAdapter()
         offerersNames.current = offerersResponse.payload
 
-        const venuesResponse = await pcapi.getVenuesForOfferer({
+        const venuesResponse = await getVenuesForOffererAdapter({
           activeOfferersOnly: true,
         })
-        venues.current = venuesResponse
+        venues.current = venuesResponse.payload
 
         const venuesToDisplay = initialValues.offererId
-          ? venuesResponse.filter(
+          ? venuesResponse.payload.filter(
               venue => venue.managingOffererId === initialValues.offererId
             )
-          : venuesResponse
+          : venuesResponse.payload
 
         setDisplayedVenues(venuesToDisplay)
       }

@@ -2,7 +2,6 @@ import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_const
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { ReimbursementPointsResponseModel } from 'core/Finances'
 import { EducationalDomain } from 'core/OfferEducational'
-import { ALL_OFFERERS } from 'core/Offers/constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -18,25 +17,6 @@ export const loadFeatures = async () => {
 //
 // venues
 //
-export const getVenuesForOfferer = ({
-  offererId = null,
-  activeOfferersOnly = false,
-} = {}) => {
-  const request = {}
-  if (offererId) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'offererId' does not exist on type '{}'.
-    if (offererId !== ALL_OFFERERS) request.offererId = offererId
-  } else {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'validatedForUser' does not exist on type... Remove this comment to see the full error message
-    request.validatedForUser = true
-  }
-
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'activeOfferersOnly' does not exist on ty... Remove this comment to see the full error message
-  if (activeOfferersOnly) request.activeOfferersOnly = true
-  const queryParams = stringify(request)
-  const url = queryParams !== '' ? `/venues?${queryParams}` : '/venues'
-  return client.get(url).then(response => response.venues)
-}
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
 export const getVenue = venueId => client.get(`/venues/${venueId}`)

@@ -19,7 +19,6 @@ window.open = jest.fn()
 const mockLogEvent = jest.fn()
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadCategories: jest.fn(),
   loadStocks: jest.fn(),
@@ -30,6 +29,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     patchOffer: jest.fn(),
     getOffer: jest.fn(),
+    getVenues: jest.fn(),
   },
 }))
 

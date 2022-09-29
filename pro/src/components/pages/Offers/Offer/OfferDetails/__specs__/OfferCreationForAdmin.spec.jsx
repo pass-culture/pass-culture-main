@@ -15,7 +15,6 @@ import OfferLayout from '../../OfferLayout'
 import { setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadCategories: jest.fn(),
 }))
@@ -24,6 +23,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
     postOffer: jest.fn(),
+    getVenues: jest.fn(),
   },
 }))
 
@@ -137,7 +137,7 @@ describe('offerDetails - Creation - admin user', () => {
       await renderOffers(props, store, `?structure=${offerer.id}`)
 
       // Then
-      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledTimes(0)
+      expect(api.getVenues).toHaveBeenCalledTimes(0)
     })
 
     describe('when selecting an offer type', () => {

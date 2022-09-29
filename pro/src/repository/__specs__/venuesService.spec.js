@@ -1,65 +1,6 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import {
-  computeVenueDisplayName,
-  fetchAllVenuesByProUser,
-  formatAndOrderVenues,
-} from '../venuesService'
+import { computeVenueDisplayName, formatAndOrderVenues } from '../venuesService'
 
 describe('venuesService', () => {
-  let mockJsonPromise
-
-  describe('fetchAllVenuesByProUser', () => {
-    beforeEach(() => {
-      mockJsonPromise = Promise.resolve([
-        {
-          id: 'AE',
-          name: 'Librairie Kléber',
-          isVirtual: false,
-        },
-      ])
-      jest
-        .spyOn(pcapi, 'getVenuesForOfferer')
-        .mockImplementation(() => mockJsonPromise)
-    })
-
-    it('should return list of venues', async () => {
-      // When
-      const venues = await fetchAllVenuesByProUser()
-      // Then
-      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({
-        offererId: undefined,
-      })
-      expect(venues).toHaveLength(1)
-      expect(venues[0]).toStrictEqual({
-        id: 'AE',
-        name: 'Librairie Kléber',
-        isVirtual: false,
-      })
-    })
-
-    it('should call api with offererId in query params when given', async () => {
-      // When
-      await fetchAllVenuesByProUser('A4')
-
-      // Then
-      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({
-        offererId: 'A4',
-      })
-    })
-
-    it('should return empty paginatedBookingsRecap when an error occurred', async () => {
-      // Given
-      mockJsonPromise = Promise.reject('An error occured')
-
-      // When
-      const venues = await fetchAllVenuesByProUser()
-
-      // Then
-      expect(venues).toHaveLength(0)
-    })
-  })
-
   describe('formatAndOrderVenues', () => {
     it('should sort venues alphabetically', () => {
       // given
