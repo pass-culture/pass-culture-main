@@ -36,19 +36,19 @@ def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResp
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>", methods=["GET"])
 @spectree_serialize(
-    response_model=serialization.Response,
+    response_model=serialization.OffererBasicInfoResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
 @perm_utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
-def get_offerer_basic_info(offerer_id: int) -> serialization.Response:
+def get_offerer_basic_info(offerer_id: int) -> serialization.OffererBasicInfoResponseModel:
 
     offerer_basic_info = offerers_api.get_offerer_basic_info(offerer_id)
 
     if not offerer_basic_info:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
 
-    return serialization.Response(
+    return serialization.OffererBasicInfoResponseModel(
         data=serialization.OffererBasicInfo(
             id=offerer_basic_info.id,
             name=offerer_basic_info.name,
@@ -65,31 +65,31 @@ def get_offerer_basic_info(offerer_id: int) -> serialization.Response:
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/total_revenue", methods=["GET"])
 @spectree_serialize(
-    response_model=serialization.Response,
+    response_model=serialization.OffererTotalRevenueResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
 @perm_utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
-def get_offerer_total_revenue(offerer_id: int) -> serialization.Response:
+def get_offerer_total_revenue(offerer_id: int) -> serialization.OffererTotalRevenueResponseModel:
     total_revenue = offerers_api.get_offerer_total_revenue(offerer_id)
 
-    return serialization.Response(data=total_revenue)
+    return serialization.OffererTotalRevenueResponseModel(data=total_revenue)
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/offers_stats", methods=["GET"])
 @spectree_serialize(
-    response_model=serialization.Response,
+    response_model=serialization.OffererOfferStatsResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
 @perm_utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
-def get_offerer_offers_stats(offerer_id: int) -> serialization.Response:
+def get_offerer_offers_stats(offerer_id: int) -> serialization.OffererOfferStatsResponseModel:
     # TODO: réduire de le timeout de requête SQL pour ce endpoint
     #  (peu d'intérêt pour des grosses structures pour qui le requête va prendre
     #  de toute façon trop de temps, alors autant ne pas bourriner la DB pour rien)
     offers_stats = offerers_api.get_offerer_offers_stats(offerer_id)
 
-    return serialization.Response(
+    return serialization.OffererOfferStatsResponseModel(
         data=serialization.OffersStats(
             active=serialization.BaseOffersStats(
                 individual=offers_stats.individual_offers["active"] if offers_stats.individual_offers else 0,
