@@ -206,6 +206,9 @@ class UbbleEndToEndTest:
         assert fraud_check.source_data().processed_datetime == datetime.datetime(
             2018, 1, 1, 8, 41, 2, 504663, tzinfo=datetime.timezone.utc
         )
+        assert fraud_check.source_data().status_updated_at == datetime.datetime(
+            2018, 1, 1, 8, 41, 2, 504682, tzinfo=datetime.timezone.utc
+        )
 
         assert user.is_beneficiary
         assert user.has_active_deposit

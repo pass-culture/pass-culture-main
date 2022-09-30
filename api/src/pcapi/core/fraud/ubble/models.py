@@ -50,6 +50,7 @@ class UbbleContent(IdentityCheckContent):
     processed_datetime: datetime.datetime | None
     score: float | None
     status: UbbleIdentificationStatus | None
+    status_updated_at: datetime.datetime | None
     supported: float | None
     signed_image_front_url: pydantic.HttpUrl | None
     signed_image_back_url: pydantic.HttpUrl | None
