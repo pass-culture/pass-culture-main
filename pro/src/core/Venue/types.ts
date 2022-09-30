@@ -1,4 +1,5 @@
 import {
+  GetVenueManagingOffererResponseModel,
   GetVenueDomainResponseModel,
   GetVenueResponseModel,
   LegalStatusResponseModel,
@@ -30,6 +31,12 @@ export type VenueCollectiveInformation = Pick<
 >
 
 export interface IVenue {
+  collectiveDomains: Array<GetVenueDomainResponseModel>
+  dateCreated: string
+  fieldsUpdated: Array<string>
+  isValidated: boolean
+  isVirtual: boolean
+  managingOffererId: string
   accessibility: IAccessibiltyFormValues
   address: string
   bannerMeta: IVenueBannerMetaProps | null | undefined
@@ -43,6 +50,7 @@ export interface IVenue {
   }
   description: string
   departmentCode: string
+  dmsToken: string
   id: string
   isPermanent: boolean
   isVenueVirtual: boolean
@@ -50,15 +58,22 @@ export interface IVenue {
   longitude: number
   mail: string
   name: string
+  managingOfferer: GetVenueManagingOffererResponseModel
+  nonHumanizedId: number
+  pricingPoint: {
+    id: number
+    siret: string
+    venueName: string
+  } | null
   postalCode: string
   publicName: string
   siret: string
   venueType: string
   venueLabel: string
+  reimbursementPointId: number
   withdrawalDetails: string
   collectiveAccessInformation: string
   collectiveDescription: string
-  collectiveDomains: Array<GetVenueDomainResponseModel>
   collectiveEmail: string
   collectiveInterventionArea: Array<string>
   collectiveLegalStatus: LegalStatusResponseModel | null

@@ -1,12 +1,13 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import ReimbursementFields from 'components/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
+import { IVenueProviderApi } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/CinemaProviderItem/types'
+import { IOfferer } from 'core/Offerers/types'
+import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
-
-import { IVenueProviderApi } from '../../components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/CinemaProviderItem/types'
-import { IProviders, IVenue } from '../../core/Venue/types'
 
 import { Accessibility } from './Accessibility'
 import { Address } from './Address'
@@ -22,6 +23,7 @@ import { IVenueFormValues } from '.'
 
 interface IVenueForm {
   isCreatingVenue: boolean
+  offerer: IOfferer
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
@@ -32,6 +34,7 @@ interface IVenueForm {
 
 const VenueForm = ({
   isCreatingVenue,
+  offerer,
   updateIsSiretValued,
   venueTypes,
   venueLabels,
@@ -76,6 +79,14 @@ const VenueForm = ({
         <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
         <Contact />
         <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
+        {!isCreatingVenue && venue && (
+          <ReimbursementFields
+            offerer={offerer}
+            readOnly={false}
+            scrollToSection={false}
+            venue={venue}
+          />
+        )}
         <SubmitButton isLoading={isSubmitting}>Valider</SubmitButton>
       </FormLayout>
     </div>
