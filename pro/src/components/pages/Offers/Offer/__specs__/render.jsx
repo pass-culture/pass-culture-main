@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react'
+import { screen, render, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -25,15 +25,17 @@ export const renderOffer = async (initialEntries, store) => {
     }
   })
 
-  await act(async () => {
-    render(
-      <Provider store={store ? store : defaultStore}>
-        <MemoryRouter initialEntries={[{ ...initialEntries }]}>
-          <Route path={path}>
-            <OfferLayout />
-          </Route>
-        </MemoryRouter>
-      </Provider>
-    )
+  render(
+    <Provider store={store ? store : defaultStore}>
+      <MemoryRouter initialEntries={[{ ...initialEntries }]}>
+        <Route path={path}>
+          <OfferLayout />
+        </Route>
+      </MemoryRouter>
+    </Provider>
+  )
+
+  await waitFor(() => {
+    expect(screen.getByTestId('offer-page')).toBeInTheDocument()
   })
 }

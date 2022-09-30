@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { act, render, screen, within } from '@testing-library/react'
+import {
+  render,
+  screen,
+  within,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -11,7 +16,7 @@ import { configureTestStore } from 'store/testUtils'
 import Homepage from '../../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn(),
+  getBusinessUnits: jest.fn().mockResolvedValue([{}]),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -36,15 +41,15 @@ const renderHomePage = async () => {
     },
   })
 
-  return await act(async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Homepage />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <Homepage />
+      </MemoryRouter>
+    </Provider>
+  )
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 describe('creationLinks', () => {
   let baseOfferers

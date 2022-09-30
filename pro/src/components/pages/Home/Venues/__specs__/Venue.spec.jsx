@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -17,16 +17,14 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderVenue = async (props, store) => {
-  return await act(async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Venue {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+const renderVenue = (props, store) => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <Venue {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
 }
 
 describe('venues', () => {
@@ -51,7 +49,7 @@ describe('venues', () => {
 
   it('should display stats tiles', async () => {
     // When
-    await renderVenue(props, store)
+    renderVenue(props, store)
 
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
@@ -65,9 +63,7 @@ describe('venues', () => {
       outOfStockOffersStat,
     ] = screen.getAllByTestId('venue-stat')
 
-    await waitFor(() =>
-      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-    )
+    expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
     expect(
       within(activeOffersStat).getByText('Offres publiées')
@@ -91,12 +87,10 @@ describe('venues', () => {
 
   it('should contain a link for each stats', async () => {
     // When
-    await renderVenue(props, store)
+    renderVenue(props, store)
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-    await waitFor(() =>
-      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-    )
+    expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
     // Then
     expect(screen.getAllByRole('link', { name: 'Voir' })).toHaveLength(4)
@@ -104,7 +98,7 @@ describe('venues', () => {
 
   it('should redirect to filtered bookings when clicking on link', async () => {
     // When
-    await renderVenue(props, store)
+    renderVenue(props, store)
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     // Then
     const [
@@ -114,9 +108,7 @@ describe('venues', () => {
       outOfStockOffersStat,
     ] = screen.getAllByTestId('venue-stat')
 
-    await waitFor(() =>
-      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-    )
+    expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
     expect(
       within(activeOffersStat).getByRole('link', { name: 'Voir' })
@@ -142,12 +134,10 @@ describe('venues', () => {
       props.isVirtual = true
 
       // When
-      await renderVenue(props, store)
+      renderVenue(props, store)
       await userEvent.click(screen.getByTitle('Afficher'))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      await waitFor(() =>
-        expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-      )
+      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
       // Then
       expect(
@@ -162,12 +152,10 @@ describe('venues', () => {
       props.isVirtual = false
 
       // When
-      await renderVenue(props, store)
+      renderVenue(props, store)
       await userEvent.click(screen.getByTitle('Afficher'))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      await waitFor(() =>
-        expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-      )
+      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
       // Then
       expect(
@@ -180,12 +168,10 @@ describe('venues', () => {
       props.isVirtual = false
 
       // When
-      await renderVenue(props, store)
+      renderVenue(props, store)
       await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      await waitFor(() =>
-        expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-      )
+      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
       // Then
       expect(screen.getByRole('link', { name: 'Modifier' }).href).toBe(
@@ -193,7 +179,7 @@ describe('venues', () => {
       )
     })
 
-    it('should display add bank information when venue does not have a business unit', async () => {
+    it('should display add bank information when venue does not have a business unit', () => {
       // Given
       props.hasBusinessUnit = false
       const storeOverrides = configureTestStore({
@@ -205,7 +191,7 @@ describe('venues', () => {
       })
 
       // When
-      await renderVenue(props, storeOverrides)
+      renderVenue(props, storeOverrides)
 
       // Then
       expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(
@@ -213,7 +199,7 @@ describe('venues', () => {
       )
     })
 
-    it('should display add bank information when venue does not have a reimbursement point', async () => {
+    it('should display add bank information when venue does not have a reimbursement point', () => {
       // Given
       props.hasMissingReimbursementPoint = true
       const storeOverrides = configureTestStore({
@@ -228,7 +214,7 @@ describe('venues', () => {
       })
 
       // When
-      await renderVenue(props, storeOverrides)
+      renderVenue(props, storeOverrides)
 
       // Then
       expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(

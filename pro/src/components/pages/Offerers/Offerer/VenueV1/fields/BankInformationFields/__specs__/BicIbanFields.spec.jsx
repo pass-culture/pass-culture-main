@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { act, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { BicIbanFields } from '../BicIbanFields'
@@ -10,20 +10,18 @@ jest.mock('utils/config', () => ({
     'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
-const renderBicIbanFields = async props => {
-  return await act(async () => {
-    render(<BicIbanFields {...props} />)
-  })
+const renderBicIbanFields = props => {
+  render(<BicIbanFields {...props} />)
 }
 
 describe('src | Venue | BicIbanFields', () => {
-  it('should display bank informations', async () => {
+  it('should display bank informations', () => {
     // Given
     const props = {
       bic: '123 456 789',
       iban: 'FRBICAVECUNEVALEURPARDEFAUT',
     }
-    await renderBicIbanFields(props)
+    renderBicIbanFields(props)
 
     // then
     expect(
