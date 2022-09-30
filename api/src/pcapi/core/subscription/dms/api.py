@@ -506,15 +506,21 @@ def get_dms_subscription_message(
 
     if dms_fraud_check.status == fraud_models.FraudCheckStatus.STARTED:
         if dms_fraud_check.reasonCodes:
-            return messages.get_error_updatable_message(application_content, birth_date_error)
-        return messages.get_application_received_message(dms_fraud_check.dateCreated)
+            return messages.get_error_updatable_message(
+                application_content, birth_date_error, dms_fraud_check.updatedAt
+            )
+        return messages.get_application_received_message(dms_fraud_check)
 
     if dms_fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
         if dms_fraud_check.reasonCodes:
             return messages.get_error_not_updatable_message(
-                dms_fraud_check.user.id, dms_fraud_check.reasonCodes or [], application_content, birth_date_error
+                dms_fraud_check.user.id,
+                dms_fraud_check.reasonCodes or [],
+                application_content,
+                birth_date_error,
+                dms_fraud_check.updatedAt,
             )
-        return messages.get_application_received_message(dms_fraud_check.dateCreated)
+        return messages.get_application_received_message(dms_fraud_check)
 
     if dms_fraud_check.status == fraud_models.FraudCheckStatus.OK:
         return None
@@ -525,7 +531,11 @@ def get_dms_subscription_message(
         fraud_models.FraudCheckStatus.ERROR,
     ):
         return messages.get_error_not_updatable_message(
-            dms_fraud_check.user.id, dms_fraud_check.reasonCodes or [], application_content, birth_date_error
+            dms_fraud_check.user.id,
+            dms_fraud_check.reasonCodes or [],
+            application_content,
+            birth_date_error,
+            dms_fraud_check.updatedAt,
         )
 
     if dms_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED:
