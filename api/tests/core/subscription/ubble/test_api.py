@@ -792,7 +792,9 @@ class SubscriptionMessageTest:
 
     def test_pending(self):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE, status=FraudCheckStatus.PENDING
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=FraudCheckStatus.PENDING,
+            updatedAt=datetime.datetime(2021, 1, 1),
         )
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check, False
@@ -800,6 +802,7 @@ class SubscriptionMessageTest:
             user_message="Ton document d'identité est en cours de vérification.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.CLOCK,
+            updated_at=datetime.datetime(2021, 1, 1),
         )
 
     def test_ok(self):
@@ -849,6 +852,7 @@ class SubscriptionMessageTest:
                 icon=subscription_models.CallToActionIcon.RETRY,
             ),
             pop_over_icon=None,
+            updated_at=fraud_check.updatedAt,
         )
 
     def test_not_retryable_ask_support(self):
@@ -867,6 +871,7 @@ class SubscriptionMessageTest:
                 icon=subscription_models.CallToActionIcon.EMAIL,
             ),
             pop_over_icon=None,
+            updated_at=fraud_check.updatedAt,
         )
 
     @pytest.mark.parametrize(
@@ -902,6 +907,7 @@ class SubscriptionMessageTest:
                 icon=subscription_models.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
+            updated_at=fraud_check.updatedAt,
         )
 
     def test_not_eligible(self):
@@ -909,6 +915,7 @@ class SubscriptionMessageTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=FraudCheckStatus.SUSPICIOUS,
             reasonCodes=[fraud_models.FraudReasonCode.AGE_TOO_OLD],
+            updatedAt=datetime.datetime(2022, 10, 3),
         )
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check, False
@@ -916,4 +923,5 @@ class SubscriptionMessageTest:
             user_message="Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=datetime.datetime(2022, 10, 3),
         )
