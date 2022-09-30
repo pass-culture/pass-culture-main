@@ -11,11 +11,13 @@ import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import styles from '../../OfferItem.module.scss'
+
 const EditStocksCell = ({ editionStockLink }: { editionStockLink: string }) => {
   const { logEvent } = useAnalytics()
 
   return (
-    <td className="switch-column">
+    <td className={styles['switch-column']}>
       <ButtonLink
         variant={ButtonVariant.SECONDARY}
         onClick={() =>

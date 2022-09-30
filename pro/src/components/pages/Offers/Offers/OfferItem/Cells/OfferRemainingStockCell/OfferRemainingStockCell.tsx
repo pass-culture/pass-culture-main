@@ -2,6 +2,8 @@ import React from 'react'
 
 import { Stock } from 'core/Offers/types'
 
+import styles from '../../OfferItem.module.scss'
+
 const OfferRemainingStockCell = ({ stocks }: { stocks: Stock[] }) => {
   const computeRemainingStockValue = (stocks: Stock[]) => {
     let totalRemainingStock = 0
@@ -16,7 +18,11 @@ const OfferRemainingStockCell = ({ stocks }: { stocks: Stock[] }) => {
     return totalRemainingStock
   }
 
-  return <td className="stock-column">{computeRemainingStockValue(stocks)}</td>
+  return (
+    <td className={styles['stock-column']}>
+      {computeRemainingStockValue(stocks)}
+    </td>
+  )
 }
 
 export default OfferRemainingStockCell
