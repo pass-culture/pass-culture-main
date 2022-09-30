@@ -1,4 +1,6 @@
 from datetime import datetime
+import random
+import string
 
 import click
 import google.auth
@@ -36,6 +38,10 @@ def get_google_workspace_group_members(workspace_group_address: str) -> dict:
     return response
 
 
+def _generate_random_string(string_length: int = 18) -> str:
+    return "".join(random.choices(string.ascii_uppercase + string.digits + string.ascii_lowercase, k=string_length))
+
+
 def create_backoffice_users_from_google_group(workspace_group_address: str | None) -> None:
     if not settings.BACKOFFICE_ALLOW_USER_CREATION:
         return
@@ -52,8 +58,11 @@ def create_backoffice_users_from_google_group(workspace_group_address: str | Non
         if not existing_user:
             users_api.create_account(
                 email=member["email"],
-                password="some-temporary-string",
+                password=_generate_random_string(),
                 birthdate=datetime.fromisoformat("2000-01-01"),
+                is_email_validated=True,
+                send_activation_mail=False,
+                remote_updates=False,
             )
 
 
