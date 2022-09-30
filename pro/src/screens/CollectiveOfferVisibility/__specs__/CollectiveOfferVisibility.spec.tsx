@@ -91,7 +91,9 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByLabelText(/Un établissement en particulier/)
     ).toBeDisabled()
     expect(
-      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     ).toBeDisabled()
     expect(screen.getByText(/Valider et enregistrer l’offre/)).toBeDisabled()
   })
@@ -114,13 +116,17 @@ describe('CollectiveOfferVisibility', () => {
     )
 
     await userEvent.click(
-      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
     await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
 
     await userEvent.click(
-      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
     await userEvent.click(await screen.findByLabelText(/Institution 2/))
     expect(await screen.findByText(/75005 Paris/)).toBeInTheDocument()
@@ -133,7 +139,9 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByLabelText(/Un établissement en particulier/)
     )
     await userEvent.click(
-      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
     await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     await userEvent.click(
@@ -157,7 +165,9 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByLabelText(/Un établissement en particulier/)
     )
     await userEvent.click(
-      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
     await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     await userEvent.click(
@@ -173,7 +183,9 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByLabelText(/Un établissement en particulier/)
     )
     await userEvent.click(
-      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
     expect(
       await screen.findByLabelText(/Collège Institution 1 - Gif-sur-Yvette/)
