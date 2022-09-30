@@ -68,8 +68,8 @@ class Return200Test:
 
     def test_get_educational_institutions_limit(self, client: Any) -> None:
         # Given
-        institution1 = EducationalInstitutionFactory()
-        EducationalInstitutionFactory()
+        institution1 = EducationalInstitutionFactory(name="Collège A")
+        EducationalInstitutionFactory(name="Collège B")
         pro_user = users_factories.ProFactory()
 
         client.with_session_auth(pro_user.email)
