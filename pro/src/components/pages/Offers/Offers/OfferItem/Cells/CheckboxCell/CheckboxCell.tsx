@@ -24,10 +24,9 @@ const CheckboxCell = ({
   }
 
   return (
-    <td className="select-column">
+    <td>
       <input
         checked={isSelected}
-        className="select-offer-checkbox"
         data-testid={`select-offer-${offerId}`}
         disabled={disabled || isOfferDisabled(status)}
         id={`select-offer-${offerId}`}

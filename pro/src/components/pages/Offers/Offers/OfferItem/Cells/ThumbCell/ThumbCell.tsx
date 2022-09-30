@@ -32,9 +32,9 @@ const ThumbCell = ({
   }
 
   return (
-    <td className="thumb-column">
+    <td className={styles['thumb-column']}>
       <Link
-        className="name"
+        className={styles['name']}
         title={`${offer.name} - éditer l'offre`}
         onClick={onThumbClick}
         to={editionOfferLink}
