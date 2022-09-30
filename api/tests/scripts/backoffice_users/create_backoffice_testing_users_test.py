@@ -4,6 +4,8 @@ from unittest import mock
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.users.exceptions import UserAlreadyExistsException
+from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.scripts.backoffice_users.create_backoffice_users import create_backoffice_users_from_google_group
 
@@ -54,3 +56,21 @@ class RunTest:
 
         group_user_not_created = User.query.filter_by(email="some-group@example.com").one_or_none()
         assert group_user_not_created is None
+
+    @pytest.mark.usefixtures("db_session")
+    @mock.patch("pcapi.scripts.backoffice_users.create_backoffice_users.get_google_workspace_group_members")
+    @testing.override_settings(BACKOFFICE_ALLOW_USER_CREATION=True)
+    def test_should_not_create_user_when_user_already_exists(
+        self,
+        get_google_workspace_group_members,
+    ):
+        # given
+        google_group_address = "dev@example.com"
+        get_google_workspace_group_members.return_value = json.loads(google_response)
+        UserFactory(email="john.doe@example.com")
+
+        # when
+        try:
+            create_backoffice_users_from_google_group(google_group_address)
+        except UserAlreadyExistsException:
+            pytest.fail("Unexpected UserAlreadyExistsException ..")
