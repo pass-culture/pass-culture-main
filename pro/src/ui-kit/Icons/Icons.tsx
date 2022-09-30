@@ -33,6 +33,7 @@ import { ReactComponent as IcoEyeHiddenIcon } from 'icons/ico-eye-hidden.svg'
 import { ReactComponent as IcoEyeOpenIcon } from 'icons/ico-eye-open.svg'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { ReactComponent as HomeIcon } from 'icons/ico-home.svg'
+import { ReactComponent as ListOffersIcon } from 'icons/ico-list-offers.svg'
 import { ReactComponent as IcoMailIcon } from 'icons/ico-mail.svg'
 import { ReactComponent as IcoMoreCircleIcon } from 'icons/ico-more-circle.svg'
 import { ReactComponent as IcoMoreHorizIcon } from 'icons/ico-more-horiz.svg'
@@ -493,6 +494,12 @@ export const Icons = () => (
           <OffersIcon />
         </td>
         <td>ico-offers</td>
+      </tr>
+      <tr>
+        <td>
+          <ListOffersIcon />
+        </td>
+        <td>ico-list-offers</td>
       </tr>
       <tr>
         <td>
