@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { act, render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -28,23 +28,24 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderOffers = async (props, store, queryParams = null) => {
-  await act(async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter
-          initialEntries={[
-            { pathname: '/offre/creation/individuel', search: queryParams },
-          ]}
-        >
-          <Route path="/offre/">
-            <>
-              <OfferLayout {...props} />
-              <Notification />
-            </>
-          </Route>
-        </MemoryRouter>
-      </Provider>
-    )
+  render(
+    <Provider store={store}>
+      <MemoryRouter
+        initialEntries={[
+          { pathname: '/offre/creation/individuel', search: queryParams },
+        ]}
+      >
+        <Route path="/offre/">
+          <>
+            <OfferLayout {...props} />
+            <Notification />
+          </>
+        </Route>
+      </MemoryRouter>
+    </Provider>
+  )
+  await waitFor(() => {
+    expect(screen.getByTestId('offer-page')).toBeInTheDocument()
   })
 }
 

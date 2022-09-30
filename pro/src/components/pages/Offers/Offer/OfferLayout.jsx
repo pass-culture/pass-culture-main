@@ -101,7 +101,7 @@ const OfferLayout = () => {
   }
 
   return (
-    <div className="offer-page">
+    <div className="offer-page" data-testid="offer-page">
       <div
         className={cn('title-section', {
           'without-name': !offer?.name,

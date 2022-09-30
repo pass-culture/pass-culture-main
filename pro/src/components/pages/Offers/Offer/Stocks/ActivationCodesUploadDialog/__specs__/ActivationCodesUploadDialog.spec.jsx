@@ -1,20 +1,14 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Provider } from 'react-redux'
 
 import ActivationCodesUploadDialog from 'components/pages/Offers/Offer/Stocks/ActivationCodesUploadDialog/ActivationCodesUploadDialog'
 import { configureTestStore } from 'store/testUtils'
 
-const renderActivationCodesUploadDialog = async (store, props = {}) => {
-  return await act(async () => {
-    return render(
-      <Provider store={store}>
-        <ActivationCodesUploadDialog {...props} />
-      </Provider>
-    )
-  })
+const renderActivationCodesUploadDialog = (store, props = {}) => {
+  render(<ActivationCodesUploadDialog {...props} />)
 }
 
 describe('activationCodesUploadDialog', () => {
@@ -44,7 +38,7 @@ describe('activationCodesUploadDialog', () => {
       }
 
       // When
-      await renderActivationCodesUploadDialog(store, props)
+      renderActivationCodesUploadDialog(store, props)
 
       const uploadButton = screen.getByLabelText(
         'Importer un fichier .csv depuis l’ordinateur'
@@ -61,27 +55,21 @@ describe('activationCodesUploadDialog', () => {
         screen.getByTestId('activation-codes-upload-icon-id')
       ).toBeInTheDocument()
 
-      fireEvent.change(uploadButton, {
-        target: {
-          files: [file],
-        },
-      })
+      await userEvent.upload(uploadButton, file)
 
       // Then
-      waitFor(() =>
-        expect(
-          screen.getByText(
-            'Une erreur s’est produite lors de l’import de votre fichier',
-            { exact: false }
-          )
-        ).toBeInTheDocument()
-      )
+      expect(
+        screen.getByText(
+          'Une erreur s’est produite lors de l’import de votre fichier',
+          { exact: false }
+        )
+      ).toBeInTheDocument()
 
-      await expect(
-        screen.findByText(
+      expect(
+        screen.getByText(
           'Plusieurs codes identiques ont été trouvés dans le fichier : JHB, CEG.'
         )
-      ).resolves.toBeInTheDocument()
+      ).toBeInTheDocument()
 
       expect(
         screen.getByTestId('activation-codes-upload-error-icon-id')

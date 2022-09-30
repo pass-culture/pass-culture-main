@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import type { History } from 'history'
 import { createBrowserHistory } from 'history'
 import React from 'react'
@@ -34,14 +35,12 @@ const renderRouteLeavingGuard = async (
   props: IRouteLeavingGuardProps,
   history: History
 ) => {
-  act(() => {
-    render(
-      <Router history={history}>
-        <MiniAppTest />
-        <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
-      </Router>
-    )
-  })
+  render(
+    <Router history={history}>
+      <MiniAppTest />
+      <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
+    </Router>
+  )
 }
 
 describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', () => {
@@ -55,17 +54,17 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
       shouldBlockNavigation: () => shouldBlockReturnValue,
       when: true,
       children: 'Voulez-vous quitter la page actuelle ?',
-      dialogTitle: '',
+      dialogTitle: 'title',
     }
   })
 
   it('should always display the confirmation modal before redirection', async () => {
     // Given
-    await renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props, history)
 
     // When
     const aboutPageLink = screen.getByText('About')
-    await fireEvent.click(aboutPageLink)
+    await userEvent.click(aboutPageLink)
 
     // Then
     expect(
@@ -78,9 +77,9 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
     props.when = false
 
     //When
-    await renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props, history)
     const aboutPageLink = screen.getByText('About')
-    fireEvent.click(aboutPageLink)
+    await userEvent.click(aboutPageLink)
 
     //Then
     expect(
@@ -91,13 +90,13 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
 
   it('should be redirected after confirm on dialog', async () => {
     //Given
-    await renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props, history)
 
     // When
     const aboutPageLink = screen.getByText('About')
-    fireEvent.click(aboutPageLink)
+    await userEvent.click(aboutPageLink)
     const confirmRedirectionButton = screen.getByText('Quitter')
-    fireEvent.click(confirmRedirectionButton)
+    await userEvent.click(confirmRedirectionButton)
 
     // Then
     expect(screen.queryByText('Home page')).not.toBeInTheDocument()
@@ -106,12 +105,12 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
 
   it('should not be redirected after cancel on dialog', async () => {
     //Given
-    await renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props, history)
     // When
     const aboutPageLink = screen.getByText('About')
-    fireEvent.click(aboutPageLink)
+    await userEvent.click(aboutPageLink)
     const cancelRedirectionButton = screen.getByText('Annuler')
-    fireEvent.click(cancelRedirectionButton)
+    await userEvent.click(cancelRedirectionButton)
 
     // Then
     expect(screen.queryByText('Home page')).toBeInTheDocument()
@@ -129,9 +128,9 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
     }
 
     // When
-    await renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props, history)
     const contactPageLink = screen.getByText('Contact')
-    fireEvent.click(contactPageLink)
+    await userEvent.click(contactPageLink)
 
     // Then
     expect(screen.queryByText('Home page')).not.toBeInTheDocument()
@@ -139,7 +138,7 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
 
     // When
     const aboutPageLink = screen.getByText('About')
-    fireEvent.click(aboutPageLink)
+    await userEvent.click(aboutPageLink)
 
     // Then
     expect(
