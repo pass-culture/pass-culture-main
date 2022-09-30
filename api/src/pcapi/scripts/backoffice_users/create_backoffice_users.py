@@ -8,6 +8,7 @@ from pcapi import settings
 from pcapi.core.auth.api import BACKOFFICE_SERVICE_ACCOUNT_SCOPES
 from pcapi.core.auth.api import delegate_credentials
 import pcapi.core.users.api as users_api
+from pcapi.core.users.models import User
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -47,11 +48,13 @@ def create_backoffice_users_from_google_group(workspace_group_address: str | Non
         if member["type"] != "USER":
             continue
 
-        users_api.create_account(
-            email=member["email"],
-            password="some-temporary-string",
-            birthdate=datetime.fromisoformat("2000-01-01"),
-        )
+        existing_user = User.query.filter_by(email=member["email"]).one_or_none()
+        if not existing_user:
+            users_api.create_account(
+                email=member["email"],
+                password="some-temporary-string",
+                birthdate=datetime.fromisoformat("2000-01-01"),
+            )
 
 
 @blueprint.cli.command("create_backoffice_users")
