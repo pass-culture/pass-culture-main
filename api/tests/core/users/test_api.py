@@ -814,7 +814,7 @@ class BeneficiaryInformationUpdateTest:
 
     def test_update_id_piece_number(self):
         user = users_factories.UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
-        dms_data = fraud_factories.DMSContentFactory(id_piece_number="140767100016")
+        dms_data = fraud_factories.DMSContentFactory(id_piece_number="140 767100 016")
 
         users_api.update_user_information_from_external_source(user, dms_data)
         assert user.idPieceNumber == "140767100016"

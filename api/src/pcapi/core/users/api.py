@@ -14,6 +14,7 @@ import sqlalchemy as sa
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -206,7 +207,7 @@ def update_user_information(
     if civility is not None:
         user.civility = civility
     if id_piece_number is not None:
-        user.idPieceNumber = id_piece_number
+        user.idPieceNumber = fraud_api.format_id_piece_number(id_piece_number)
     if ine_hash is not None:
         user.ineHash = ine_hash
     if married_name is not None:
