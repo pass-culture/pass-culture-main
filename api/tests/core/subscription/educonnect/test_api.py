@@ -79,6 +79,7 @@ class SubscriptionMessageTest:
                 link="passculture://verification-identite",
                 icon=subscription_models.CallToActionIcon.RETRY,
             ),
+            updated_at=fraud_check.updatedAt,
         )
 
     @freezegun.freeze_time("2022-09-05")
@@ -97,4 +98,5 @@ class SubscriptionMessageTest:
                 link="passculture://verification-identite",
                 icon=subscription_models.CallToActionIcon.RETRY,
             ),
+            updated_at=fraud_check.updatedAt,
         )

@@ -15,7 +15,7 @@ RETRY_CALL_TO_ACTION = subscription_models.CallToActionMessage(
 
 
 def get_educonnect_failure_subscription_message(
-    reason_codes: list[fraud_models.FraudReasonCode], birth_date: datetime.date | None, user_id: int
+    reason_codes: list[fraud_models.FraudReasonCode], birth_date: datetime.date | None, updated_at: datetime.datetime
 ) -> subscription_models.SubscriptionMessage:
     if (
         fraud_models.FraudReasonCode.AGE_NOT_VALID in reason_codes
@@ -33,6 +33,5 @@ def get_educonnect_failure_subscription_message(
         user_message = "La vérification de ton identité a échoué. Tu peux réessayer."
 
     return subscription_models.SubscriptionMessage(
-        user_message=user_message,
-        call_to_action=RETRY_CALL_TO_ACTION,
+        user_message=user_message, call_to_action=RETRY_CALL_TO_ACTION, updated_at=updated_at
     )

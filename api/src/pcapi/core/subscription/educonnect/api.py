@@ -102,5 +102,7 @@ def get_educonnect_subscription_message(
         birth_date = content.get_birth_date()
 
     return messages.get_educonnect_failure_subscription_message(
-        educonnect_fraud_check.reasonCodes or [], birth_date, educonnect_fraud_check.user.id
+        educonnect_fraud_check.reasonCodes or [],
+        birth_date,
+        educonnect_fraud_check.updatedAt,
     )
