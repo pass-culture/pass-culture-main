@@ -360,7 +360,7 @@ class OffererOfferStatsResponseModel(Response):
 
 class Comment(BaseModel):
     date: datetime.datetime
-    author: str
+    author: str | None
     content: str
 
 
@@ -373,9 +373,9 @@ class OffererToBeValidated(BaseModel):
     address: str
     postalCode: str
     city: str
-    owner: str
+    owner: str | None
     phoneNumber: str | None
-    email: str
+    email: str | None
     lastComment: Comment | None
 
 

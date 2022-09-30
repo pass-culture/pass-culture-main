@@ -19,7 +19,8 @@ def get_user_or_error(user_id: int, error_code: int = 400) -> users_models.User:
 
 
 def sort_query(
-    query: BaseQuery, ordering_clauses: list[sa.sql.ColumnElement | sa.sql.elements.UnaryExpression]
+    query: BaseQuery,
+    ordering_clauses: list[sa.sql.ColumnElement | sa.sql.elements.UnaryExpression],
 ) -> BaseQuery:
     if ordering_clauses:
         sorted_query = query.order_by(*ordering_clauses)
