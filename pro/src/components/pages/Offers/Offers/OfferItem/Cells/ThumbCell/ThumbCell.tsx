@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
-import Thumb from 'components/layout/Thumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -10,6 +9,9 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import Thumb from 'ui-kit/Thumb'
+
+import styles from '../../OfferItem.module.scss'
 
 const ThumbCell = ({
   offer,
@@ -37,7 +39,11 @@ const ThumbCell = ({
         onClick={onThumbClick}
         to={editionOfferLink}
       >
-        <Thumb alt={`${offer.name} - éditer l'offre`} url={offer.thumbUrl} />
+        <Thumb
+          alt={`${offer.name} - éditer l'offre`}
+          url={offer.thumbUrl}
+          className={styles['offer-thumb']}
+        />
       </Link>
     </td>
   )

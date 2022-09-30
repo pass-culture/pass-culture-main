@@ -82,8 +82,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         expect(
-          screen.getAllByRole('img', { name: /éditer l'offre/ })[0]
-        ).toHaveAttribute('src')
+          screen.getAllByTitle(`${eventOffer.name} - éditer l'offre`)[0]
+        ).toBeInTheDocument()
       })
     })
 
