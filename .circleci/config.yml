@@ -972,7 +972,7 @@ jobs:
           when: on_fail
 
   deploy-pro:
-    executor: node-gcp-14
+    executor: node-gcp-16
     parameters:
       app_environment:
         type: string
@@ -1021,7 +1021,7 @@ jobs:
                 when: on_fail
 
   deploy-adage-front:
-    executor: node-gcp-14
+    executor: node-gcp-16
     parameters:
       app_environment:
         type: string
