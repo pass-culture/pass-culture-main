@@ -120,6 +120,18 @@ class CollectiveOfferTemplateFactory(BaseFactory):
                 domains.append(domain)
             self.domains = domains
 
+    @factory.post_generation
+    def template(
+        self, create: bool, extracted: models.CollectiveOfferTemplate, **kwargs: dict
+    ) -> models.CollectiveOfferTemplate | None:
+        if not create:
+            return None
+        template = extracted
+        if not template:
+            return None
+        self.venue = template.venue
+        return CollectiveOfferTemplateFactory()
+
 
 class CollectiveStockFactory(BaseFactory):
     class Meta:
