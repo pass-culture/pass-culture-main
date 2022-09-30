@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import {
   createImageFile,
@@ -37,16 +38,18 @@ describe('when the user is on the preview step', () => {
     // Given
     renderThumbnail()
     const file = createImageFile()
-    fireEvent.change(
+    await userEvent.upload(
       screen.getByLabelText('Importer une image depuis l’ordinateur'),
-      {
-        target: { files: [file] },
-      }
+      file
     )
-    fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+    await userEvent.click(
+      await screen.findByText('Suivant', { selector: 'button' })
+    )
 
     // When
-    fireEvent.click(screen.getByText('Prévisualiser', { selector: 'button' }))
+    await userEvent.click(
+      screen.getByText('Prévisualiser', { selector: 'button' })
+    )
 
     // Then
     expect(
@@ -68,17 +71,19 @@ describe('when the user is on the preview step', () => {
     // Given
     renderThumbnail()
     const file = createImageFile()
-    fireEvent.change(
+    await userEvent.upload(
       screen.getByLabelText('Importer une image depuis l’ordinateur'),
-      {
-        target: { files: [file] },
-      }
+      file
     )
-    fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
-    fireEvent.click(screen.getByText('Prévisualiser', { selector: 'button' }))
+    await userEvent.click(
+      await screen.findByText('Suivant', { selector: 'button' })
+    )
+    await userEvent.click(
+      screen.getByText('Prévisualiser', { selector: 'button' })
+    )
 
     // When
-    fireEvent.click(screen.getByText('Retour', { selector: 'button' }))
+    await userEvent.click(screen.getByText('Retour', { selector: 'button' }))
 
     // Then
     expect(screen.getByText('Recadrer votre image')).toBeInTheDocument()
@@ -94,22 +99,25 @@ describe('when the user is on the preview step', () => {
     })
 
     const file = createImageFile()
-    fireEvent.change(
+    await userEvent.upload(
       screen.getByLabelText('Importer une image depuis l’ordinateur'),
-      {
-        target: { files: [file] },
-      }
+      file
     )
 
-    fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
-      target: { value: 'Mon crédit' },
-    })
-    fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+    await userEvent.type(
+      await screen.findByPlaceholderText('Photographe...'),
+      'Mon crédit'
+    )
+    await userEvent.click(
+      await screen.findByText('Suivant', { selector: 'button' })
+    )
 
-    fireEvent.click(screen.getByText('Prévisualiser', { selector: 'button' }))
+    await userEvent.click(
+      screen.getByText('Prévisualiser', { selector: 'button' })
+    )
 
     // When
-    fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+    await userEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
     // Then
     await waitFor(() => {

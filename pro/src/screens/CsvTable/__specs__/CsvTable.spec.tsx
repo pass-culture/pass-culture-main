@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -93,7 +94,7 @@ describe('src | components | layout | CsvTable', () => {
       renderCsvTable({ props })
 
       jest.spyOn(global, 'print').mockImplementation()
-      fireEvent.click(await screen.findByText('Imprimer'))
+      await userEvent.click(await screen.findByText('Imprimer'))
 
       expect(global.print).toHaveBeenCalledTimes(1)
     })

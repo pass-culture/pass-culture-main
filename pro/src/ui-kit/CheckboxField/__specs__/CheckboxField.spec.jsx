@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Form } from 'react-final-form'
 
@@ -79,13 +79,13 @@ describe('components | CheckboxField', () => {
     expect(checkbox.disabled).toStrictEqual(props.disabled)
   })
 
-  it('should change value on click', () => {
+  it('should change value on click', async () => {
     const initialValues = { ...defaultInitialValues }
     const props = { ...defaultProps }
     renderCheckboxField(props, initialValues)
 
     const checkbox = screen.getByLabelText('Checkbox label')
-    fireEvent.click(checkbox)
+    await userEvent.click(checkbox)
 
     expect(checkbox.checked).toStrictEqual(!initialValues[props.name])
   })

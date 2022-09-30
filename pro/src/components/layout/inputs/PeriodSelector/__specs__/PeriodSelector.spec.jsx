@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, within, render, screen } from '@testing-library/react'
+import { within, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -10,7 +10,7 @@ describe('components | PeriodSelector', () => {
   const mockChangePeriodBeginningDateValue = jest.fn()
   const mockChangePeriodEndingDateValue = jest.fn()
   const renderPeriodSelector = () => {
-    return render(
+    render(
       <PeriodSelector
         changePeriodBeginningDateValue={mockChangePeriodBeginningDateValue}
         changePeriodEndingDateValue={mockChangePeriodEndingDateValue}
@@ -32,14 +32,14 @@ describe('components | PeriodSelector', () => {
     const endDateWrapper = screen.getByTestId('period-filter-end-picker')
     const beginCalendar = startingDateWrapper.children[1]
 
-    fireEvent.click(
+    await userEvent.click(
       within(beginCalendar).getByLabelText('Choose jeudi 21 octobre 2021')
     )
     expect(endDateWrapper.children).toHaveLength(2)
 
     const endCalendar = endDateWrapper.children[1]
 
-    fireEvent.click(
+    await userEvent.click(
       within(endCalendar).getByLabelText('Choose samedi 30 octobre 2021')
     )
     expect(endDateWrapper.children).toHaveLength(1)
@@ -55,13 +55,13 @@ describe('components | PeriodSelector', () => {
     const beginCalendar = startingDateWrapper.children[1]
     const endDateWrapper = screen.getByTestId('period-filter-end-picker')
 
-    fireEvent.click(
+    await userEvent.click(
       within(beginCalendar).getByLabelText('Choose jeudi 21 octobre 2021')
     )
 
     const endCalendar = endDateWrapper.children[1]
 
-    fireEvent.click(
+    await userEvent.click(
       within(endCalendar).getByLabelText('Choose samedi 30 octobre 2021')
     )
     expect(mockChangePeriodBeginningDateValue).toHaveBeenCalledTimes(1)

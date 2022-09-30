@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { getOfferInputForField, setOfferValues } from '../helpers'
 
@@ -23,21 +24,21 @@ describe('should initialize creation form with venue accessibility from query pa
       selectedSubcategoryId: 'ID_SUB_CATEGORY_1_ONLINE_OR_OFFLINE',
     })
 
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 
   it('should have venue accessibilty when venue have accessibility set.', async () => {
@@ -46,21 +47,21 @@ describe('should initialize creation form with venue accessibility from query pa
       selectedSubcategoryId: 'ID_SUB_CATEGORY_1_ONLINE_OR_OFFLINE',
     })
 
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 })
 
@@ -70,21 +71,21 @@ describe('should initialize edition form', () => {
       offer: offerAccessible,
     })
 
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 
   it("should have venue accessibilty venue have accessibility and offer don't.", async () => {
@@ -92,21 +93,21 @@ describe('should initialize edition form', () => {
       offer: offerUndefinedAccessibilityVenueAccessible,
     })
 
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 
   it('should be empty if neither offer and venue have accessibility.', async () => {
@@ -114,21 +115,21 @@ describe('should initialize edition form', () => {
       offer: offerUndefinedAccessibility,
     })
 
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 })
 
@@ -140,39 +141,39 @@ describe('test creation form venue edition', () => {
     })
     await setOfferValues({ venueId: venuePhysicalAccessible.id })
 
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
 
     // virtual venues have all accessibility values as null
     await setOfferValues({ venueId: venueVirtual.id })
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 
   it('should set venue accessibility when subCategory change.', async () => {
@@ -183,21 +184,21 @@ describe('test creation form venue edition', () => {
 
     await setOfferValues({ subcategoryId: 'ID_SUB_CATEGORY_1_ONLINE' })
 
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.not.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).not.toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 })
 
@@ -214,21 +215,21 @@ describe('test creation form offerer edition', () => {
     })
 
     await screen.findByDisplayValue(offerer2VenuePhysicalAccessible.name)
-    await expect(
-      getOfferInputForField('audioDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('mentalDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('motorDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('visualDisabilityCompliant')
-    ).resolves.toBeChecked()
-    await expect(
-      getOfferInputForField('noDisabilityCompliant')
-    ).resolves.not.toBeChecked()
+    expect(
+      await getOfferInputForField('audioDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('mentalDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('motorDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('visualDisabilityCompliant')
+    ).toBeChecked()
+    expect(
+      await getOfferInputForField('noDisabilityCompliant')
+    ).not.toBeChecked()
   })
 })
 
@@ -265,7 +266,7 @@ describe('test accessibily checkbox click', () => {
     expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
 
     // one accessibility true, other falses
-    await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
+    await userEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
     expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
     expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
@@ -273,7 +274,7 @@ describe('test accessibily checkbox click', () => {
     expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
 
     // all accessibility false, noDisabilityCompliant should be true
-    await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
+    await userEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
     expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
@@ -281,7 +282,7 @@ describe('test accessibily checkbox click', () => {
     expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
 
     // again, one accessibility true, other falses
-    await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
+    await userEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
     expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
     expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
@@ -289,7 +290,7 @@ describe('test accessibily checkbox click', () => {
     expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
 
     // click on noDisabilityCompliant should change other accessibility to false
-    await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
+    await userEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
     expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
@@ -297,7 +298,7 @@ describe('test accessibily checkbox click', () => {
     expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
 
     // a second click on noDisabilityCompliant shouldn't change values
-    await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
+    await userEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
     expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
     expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()

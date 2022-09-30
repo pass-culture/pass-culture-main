@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import {
   createFile,
@@ -39,7 +40,7 @@ describe('thumbnail edition', () => {
         value: () => Promise.resolve({}),
       })
 
-      it('should display information for importing', async () => {
+      it('should display information for importing', () => {
         // When
         renderThumbnail()
 
@@ -74,12 +75,12 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
-      it('should display advices for a good image', () => {
+      it('should display advices for a good image', async () => {
         // Given
         renderThumbnail()
 
         // When
-        fireEvent.click(
+        await userEvent.click(
           screen.getByText('Conseils pour votre image', { selector: 'button' })
         )
 
@@ -125,31 +126,27 @@ describe('thumbnail edition', () => {
           const file = createImageFile()
 
           // When
-          fireEvent.change(
+          await userEvent.upload(
             screen.getByLabelText('Importer une image depuis l’ordinateur'),
-            {
-              target: { files: [file] },
-            }
+            file
           )
 
           // Then
-          await waitFor(() => {
-            expect(
-              screen.queryByText('Formats supportés : JPG, PNG', {
-                selector: 'strong',
-              })
-            ).not.toBeInTheDocument()
-            expect(
-              screen.queryByText('Poids maximal du fichier : 10 Mo', {
-                selector: 'strong',
-              })
-            ).not.toBeInTheDocument()
-            expect(
-              screen.queryByText('Largeur minimale de l’image : 400 px', {
-                selector: 'strong',
-              })
-            ).not.toBeInTheDocument()
-          })
+          expect(
+            screen.queryByText('Formats supportés : JPG, PNG', {
+              selector: 'strong',
+            })
+          ).not.toBeInTheDocument()
+          expect(
+            screen.queryByText('Poids maximal du fichier : 10 Mo', {
+              selector: 'strong',
+            })
+          ).not.toBeInTheDocument()
+          expect(
+            screen.queryByText('Largeur minimale de l’image : 400 px', {
+              selector: 'strong',
+            })
+          ).not.toBeInTheDocument()
         })
 
         it('should not import a file other than png or jpg', async () => {
@@ -158,19 +155,15 @@ describe('thumbnail edition', () => {
           const file = createFile()
 
           // When
-          fireEvent.change(
+          await userEvent.upload(
             screen.getByLabelText('Importer une image depuis l’ordinateur'),
-            {
-              target: { files: [file] },
-            }
+            file
           )
 
           // Then
-          await expect(
-            screen.findByText('Formats supportés : JPG, PNG', {
-              selector: 'strong',
-            })
-          ).resolves.toBeInTheDocument()
+          expect(
+            screen.getByText('Formats supportés : JPG, PNG')
+          ).toBeInTheDocument()
         })
 
         it('should display all the encountered validation errors', async () => {
@@ -179,26 +172,18 @@ describe('thumbnail edition', () => {
           const file = createFile({ sizeInMB: 50 })
 
           // When
-          fireEvent.change(
+          await userEvent.upload(
             screen.getByLabelText('Importer une image depuis l’ordinateur'),
-            {
-              target: { files: [file] },
-            }
+            file
           )
 
           // Then
-          await waitFor(() => {
-            expect(
-              screen.getByText('Formats supportés : JPG, PNG', {
-                selector: 'strong',
-              })
-            ).toBeInTheDocument()
-            expect(
-              screen.queryByText('Poids maximal du fichier : 10 Mo', {
-                selector: 'strong',
-              })
-            ).toBeInTheDocument()
-          })
+          expect(
+            screen.getByText('Formats supportés : JPG, PNG')
+          ).toBeInTheDocument()
+          expect(
+            screen.queryByText('Poids maximal du fichier : 10 Mo')
+          ).toBeInTheDocument()
         })
 
         it('should not import an image which exceeds maximum size', async () => {
@@ -207,19 +192,17 @@ describe('thumbnail edition', () => {
           const bigFile = createImageFile({ sizeInMB: 10 })
 
           // When
-          fireEvent.change(
+          await userEvent.upload(
             screen.getByLabelText('Importer une image depuis l’ordinateur'),
-            {
-              target: { files: [bigFile] },
-            }
+            bigFile
           )
 
           // Then
-          await expect(
-            screen.findByText('Poids maximal du fichier : 10 Mo', {
+          expect(
+            screen.getByText('Poids maximal du fichier : 10 Mo', {
               selector: 'strong',
             })
-          ).resolves.toBeInTheDocument()
+          ).toBeInTheDocument()
         })
 
         it('should not import an image whose width is below minimum', async () => {
@@ -228,19 +211,17 @@ describe('thumbnail edition', () => {
           const file = createImageFile({ width: 200 })
 
           // When
-          fireEvent.change(
+          await userEvent.upload(
             screen.getByLabelText('Importer une image depuis l’ordinateur'),
-            {
-              target: { files: [file] },
-            }
+            file
           )
 
           // Then
-          await expect(
-            screen.findByText('Largeur minimale de l’image : 400 px', {
+          expect(
+            screen.getByText('Largeur minimale de l’image : 400 px', {
               selector: 'strong',
             })
-          ).resolves.toBeInTheDocument()
+          ).toBeInTheDocument()
         })
       })
     })
@@ -252,49 +233,43 @@ describe('thumbnail edition', () => {
         const file = createImageFile()
 
         // When
-        fireEvent.change(
+        await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
-          {
-            target: { files: [file] },
-          }
+          file
         )
 
         // Then
-        await expect(
-          screen.findByText('Crédit image et droits d’utilisation')
-        ).resolves.toBeInTheDocument()
-        await expect(
-          screen.findByText('Crédit image')
-        ).resolves.toBeInTheDocument()
-        const inputCredit = await screen.findByPlaceholderText('Photographe...')
+        expect(
+          screen.getByText('Crédit image et droits d’utilisation')
+        ).toBeInTheDocument()
+        expect(screen.getByText('Crédit image')).toBeInTheDocument()
+        const inputCredit = screen.getByPlaceholderText('Photographe...')
         expect(inputCredit.maxLength).toBe(255)
-        await expect(
-          screen.findByText(
+        expect(
+          screen.getByText(
             'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci'
           )
-        ).resolves.toBeInTheDocument()
-        await expect(
-          screen.findByText('Retour', { selector: 'button' })
-        ).resolves.toBeInTheDocument()
-        await expect(
-          screen.findByText('Suivant', { selector: 'button' })
-        ).resolves.toBeInTheDocument()
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText('Retour', { selector: 'button' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText('Suivant', { selector: 'button' })
+        ).toBeInTheDocument()
       })
 
       it('should return to the previous page if the return button is clicked', async () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        fireEvent.change(
+        await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
-          {
-            target: { files: [file] },
-          }
+          file
         )
 
         // When
-        fireEvent.click(
-          await screen.findByText('Retour', { selector: 'button' })
+        await userEvent.click(
+          screen.getByText('Retour', { selector: 'button' })
         )
 
         // Then
@@ -309,16 +284,14 @@ describe('thumbnail edition', () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        fireEvent.change(
+        await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
-          {
-            target: { files: [file] },
-          }
+          file
         )
 
         // When
-        fireEvent.click(
-          await screen.findByText('Suivant', { selector: 'button' })
+        await userEvent.click(
+          screen.getByText('Suivant', { selector: 'button' })
         )
 
         // Then
@@ -339,21 +312,22 @@ describe('thumbnail edition', () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        fireEvent.change(
+        await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
-          {
-            target: { files: [file] },
-          }
+          file
         )
-        fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
-          target: { value: 'A fake credit' },
-        })
-        fireEvent.click(
-          await screen.findByText('Suivant', { selector: 'button' })
+        await userEvent.type(
+          screen.getByPlaceholderText('Photographe...'),
+          'A fake credit'
+        )
+        await userEvent.click(
+          screen.getByText('Suivant', { selector: 'button' })
         )
 
         // When
-        fireEvent.click(screen.getByText('Retour', { selector: 'button' }))
+        await userEvent.click(
+          screen.getByText('Retour', { selector: 'button' })
+        )
 
         // Then
         expect(screen.getByDisplayValue('A fake credit')).toBeInTheDocument()
@@ -363,20 +337,21 @@ describe('thumbnail edition', () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        fireEvent.change(
+        await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
-          {
-            target: { files: [file] },
-          }
+          file
         )
-        fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
-          target: { value: 'A fake credit' },
-        })
-        fireEvent.click(
-          await screen.findByText('Suivant', { selector: 'button' })
+        await userEvent.type(
+          screen.getByPlaceholderText('Photographe...'),
+          'A fake credit'
+        )
+        await userEvent.click(
+          screen.getByText('Suivant', { selector: 'button' })
         )
 
         // When
+        // we need fireEvent here to avoid a warning with value in the slider
+        // Warning: Received NaN for the `value` attribute. If this is expected, cast the value to a string.
         fireEvent.change(screen.getByRole('slider'), { target: { value: 2.3 } })
 
         // Then

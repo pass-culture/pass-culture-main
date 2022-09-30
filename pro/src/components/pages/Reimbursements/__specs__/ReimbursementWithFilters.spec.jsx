@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 
 import {
-  fireEvent,
   render,
   screen,
   waitFor,
@@ -75,9 +74,11 @@ const renderReimbursements = (storeOverride = {}) => {
 
   const expectFilters = filters => {
     const checkValues = async (venue, perdiodStart, periodEnd) => {
-      await waitFor(() => expect(filters.venue).toHaveValue(venue))
-      await waitFor(() => expect(filters.periodStart).toHaveValue(perdiodStart))
-      await waitFor(() => expect(filters.periodEnd).toHaveValue(periodEnd))
+      await waitFor(() => {
+        expect(filters.venue).toHaveValue(venue)
+        expect(filters.periodStart).toHaveValue(perdiodStart)
+        expect(filters.periodEnd).toHaveValue(periodEnd)
+      })
     }
 
     return {
@@ -88,9 +89,11 @@ const renderReimbursements = (storeOverride = {}) => {
     }
   }
 
-  const setPeriodFilters = (filters, startValue, endValue) => {
-    fireEvent.change(filters.periodStart, { target: { value: startValue } })
-    fireEvent.change(filters.periodEnd, { target: { value: endValue } })
+  const setPeriodFilters = async (filters, startValue, endValue) => {
+    await userEvent.clear(filters.periodStart)
+    await userEvent.clear(filters.periodEnd)
+    startValue && (await userEvent.type(filters.periodStart, startValue))
+    endValue && (await userEvent.type(filters.periodEnd, endValue))
   }
 
   const getElementsOnLoadingComplete = async () => {
@@ -227,7 +230,7 @@ describe('reimbursementsWithFilters', () => {
       await getElementsOnLoadingComplete()
 
     // when
-    setPeriodFilters('', '')
+    await setPeriodFilters('', '')
 
     // then
     await expectFilters.toHaveValues('allVenues', '', '')
@@ -238,7 +241,7 @@ describe('reimbursementsWithFilters', () => {
     )
 
     // when
-    setPeriodFilters('12/11/2020', '')
+    await setPeriodFilters('12/11/2020', '')
 
     // then
     await expectFilters.toHaveValues('allVenues', '12/11/2020', '')
@@ -249,7 +252,7 @@ describe('reimbursementsWithFilters', () => {
     )
 
     // when
-    setPeriodFilters('12/11/2020', '12/12/2020')
+    await setPeriodFilters('12/11/2020', '12/12/2020')
 
     // then
     await expectFilters.toHaveValues('allVenues', '12/11/2020', '12/12/2020')
@@ -293,7 +296,7 @@ describe('reimbursementsWithFilters', () => {
 
     // when
     const options = await within(filters.venue).findAllByRole('option')
-    setPeriodFilters('12/11/1998', '12/12/1999')
+    await setPeriodFilters('12/11/1998', '12/12/1999')
     await userEvent.selectOptions(filters.venue, [options[1].value])
 
     // then
@@ -302,6 +305,7 @@ describe('reimbursementsWithFilters', () => {
       '12/11/1998',
       '12/12/1999'
     )
+
     expect(buttons.resetFilters).toBeEnabled()
 
     // when

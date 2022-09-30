@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import * as useNotification from 'components/hooks/useNotification'
@@ -25,9 +25,7 @@ jest.mock('react-router-dom', () => ({
 const renderStatusToggleButton = (offer, store) => {
   render(
     <Provider store={configureTestStore(store)}>
-      <MemoryRouter>
-        <StatusToggleButton offer={offer} reloadOffer={jest.fn()} />
-      </MemoryRouter>
+      <StatusToggleButton offer={offer} reloadOffer={jest.fn()} />
     </Provider>
   )
 }
@@ -55,18 +53,17 @@ describe('StatusToggleButton', () => {
     renderStatusToggleButton(offer)
 
     // then
-    fireEvent.click(screen.getByRole('button', { name: /Désactiver/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Désactiver/ }))
 
     expect(toggle).toHaveBeenCalledTimes(1)
     expect(toggle).toHaveBeenNthCalledWith(1, {
       ids: ['AG3A'],
       isActive: false,
     })
-    await waitFor(() =>
-      expect(notifySuccess).toHaveBeenNthCalledWith(
-        1,
-        'L’offre a bien été désactivée.'
-      )
+
+    expect(notifySuccess).toHaveBeenNthCalledWith(
+      1,
+      'L’offre a bien été désactivée.'
     )
   })
   it('should activate an offer and confirm', async () => {
@@ -86,17 +83,15 @@ describe('StatusToggleButton', () => {
     })
 
     // then
-    fireEvent.click(screen.getByText(/Publier/))
+    await userEvent.click(screen.getByText(/Publier/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
     expect(toggleFunction).toHaveBeenNthCalledWith(1, {
       ids: ['AG3A'],
       isActive: true,
     })
-    await waitFor(() =>
-      expect(notifySuccess).toHaveBeenNthCalledWith(
-        1,
-        'L’offre a bien été publiée.'
-      )
+    expect(notifySuccess).toHaveBeenNthCalledWith(
+      1,
+      'L’offre a bien été publiée.'
     )
   })
   it('should display error', async () => {
@@ -112,13 +107,11 @@ describe('StatusToggleButton', () => {
     renderStatusToggleButton(offer)
 
     // then
-    fireEvent.click(screen.getByText(/Désactiver/))
+    await userEvent.click(screen.getByText(/Désactiver/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
-    await waitFor(() =>
-      expect(notifyError).toHaveBeenNthCalledWith(
-        1,
-        'Une erreur est survenue, veuillez réessayer ultérieurement.'
-      )
+    expect(notifyError).toHaveBeenNthCalledWith(
+      1,
+      'Une erreur est survenue, veuillez réessayer ultérieurement.'
     )
   })
 })

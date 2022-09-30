@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -67,10 +68,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     pcapi.loadProviders.mockResolvedValue([allocineProvider])
   })
 
-  afterEach(() => {
-    jest.resetAllMocks()
-  })
-
   it('should show synchronization modalities when venue provider is allocine', async () => {
     // given
     pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
@@ -126,7 +123,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     expect(editAllocineProviderButton).toBeInTheDocument()
 
     // when
-    fireEvent.click(editAllocineProviderButton)
+    await userEvent.click(editAllocineProviderButton)
 
     // then
     expect(

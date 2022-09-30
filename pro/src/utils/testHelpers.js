@@ -1,4 +1,3 @@
-import { fireEvent } from '@testing-library/react'
 import omit from 'lodash.omit'
 
 export const queryCallbacks = {
@@ -37,6 +36,3 @@ export function queryByTextTrimHtml(screen, searchString, options = {}) {
 
 export const getNthCallNthArg = (mockedFunction, nthCall, nthArg = 1) =>
   mockedFunction.mock.calls[nthCall - 1][nthArg - 1]
-
-export const clearInputText = input =>
-  fireEvent.change(input, { target: { value: '' } })
