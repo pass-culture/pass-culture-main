@@ -5,6 +5,7 @@ import { Constraint, getValidatorErrors } from './imageConstraints'
 type UseCheckAndSetImage = (args: {
   constraints: Constraint[]
   onSetImage: (file: string) => void
+  mountedRef: React.RefObject<boolean>
 }) => {
   errors: string[]
   checkAndSetImage: React.ChangeEventHandler<HTMLInputElement>
@@ -13,6 +14,7 @@ type UseCheckAndSetImage = (args: {
 export const useCheckAndSetImage: UseCheckAndSetImage = ({
   constraints,
   onSetImage,
+  mountedRef,
 }) => {
   const [errors, setErrors] = useState<string[]>([])
 
@@ -31,8 +33,9 @@ export const useCheckAndSetImage: UseCheckAndSetImage = ({
         // FIX ME: don't cast
         onSetImage(currentFile as unknown as string)
       }
-
-      setErrors(validatorErrors)
+      if (mountedRef.current) {
+        setErrors(validatorErrors)
+      }
     },
     [constraints, onSetImage]
   )

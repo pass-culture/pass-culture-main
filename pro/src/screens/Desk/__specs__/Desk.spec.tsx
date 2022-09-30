@@ -1,20 +1,20 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
 import { DeskScreen, IDeskProps } from '..'
 
-const renderDeskScreen = async (props: IDeskProps) => {
+const renderDeskScreen = (props: IDeskProps) => {
   const rtlReturns = render(
     <MemoryRouter>
       <DeskScreen {...props} />
     </MemoryRouter>
   )
 
-  const pageTitle = await screen.findByRole('heading', { name: 'Guichet' })
+  const pageTitle = screen.getByRole('heading', { name: 'Guichet' })
 
   return {
     ...rtlReturns,
@@ -49,7 +49,7 @@ describe('src | components | Desk', () => {
   it('test form render', async () => {
     // when
     const { pageTitle, inputToken, buttonSubmitValidated } =
-      await renderDeskScreen(props)
+      renderDeskScreen(props)
 
     expect(pageTitle).toBeInTheDocument()
     expect(inputToken).toBeInTheDocument()
@@ -71,7 +71,7 @@ describe('src | components | Desk', () => {
       tooLong: 'La contremarque ne peut pas faire plus de 6 caractères',
     }
     const getBooking = jest.fn()
-    const { messageContainer, inputToken } = await renderDeskScreen({
+    const { messageContainer, inputToken } = renderDeskScreen({
       ...props,
       getBooking,
     })
@@ -94,7 +94,7 @@ describe('src | components | Desk', () => {
   })
 
   it('test valid token and booking details display', async () => {
-    const { inputToken, buttonSubmitValidated } = await renderDeskScreen(props)
+    const { inputToken, buttonSubmitValidated } = renderDeskScreen(props)
 
     await userEvent.type(inputToken, 'AAAAAA')
 
@@ -123,7 +123,7 @@ describe('src | components | Desk', () => {
         error: alreadyValidatedErrorMessage,
       }),
     }
-    const { inputToken, buttonSubmitValidated } = await renderDeskScreen(props)
+    const { inputToken, buttonSubmitValidated } = renderDeskScreen(props)
 
     await userEvent.type(inputToken, 'AAAAAA')
 
@@ -143,7 +143,7 @@ describe('src | components | Desk', () => {
     const submitValidate = jest
       .fn()
       .mockImplementation(() => Promise.resolve({}))
-    const { inputToken, buttonSubmitValidated } = await renderDeskScreen({
+    const { inputToken, buttonSubmitValidated } = renderDeskScreen({
       ...props,
       submitValidate,
     })
@@ -154,10 +154,10 @@ describe('src | components | Desk', () => {
       'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
     )
 
+    // I don't know how to test this without fireEvent
     fireEvent.click(screen.getByText('Valider la contremarque'))
-    expect(
-      await screen.findByText('Validation en cours...')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Validation en cours...')).toBeInTheDocument()
+
     expect(
       await screen.findByText('Contremarque validée !')
     ).toBeInTheDocument()
@@ -178,14 +178,12 @@ describe('src | components | Desk', () => {
       }),
     }
     const { messageContainer, inputToken, buttonSubmitValidated } =
-      await renderDeskScreen(props)
+      renderDeskScreen(props)
 
     await userEvent.type(inputToken, 'AAAAAA')
-    await waitFor(() => {
-      expect(messageContainer.textContent).toBe(
-        alreadyValidatedErrorMessage.message
-      )
-    })
+    expect(messageContainer.textContent).toBe(
+      alreadyValidatedErrorMessage.message
+    )
     expect(props.getBooking).toHaveBeenCalledWith('AAAAAA')
 
     expect(buttonSubmitValidated).not.toBeInTheDocument()
@@ -214,13 +212,11 @@ describe('src | components | Desk', () => {
       }),
       submitInvalidate: jest.fn().mockImplementation(() => Promise.resolve({})),
     }
-    const { inputToken, buttonSubmitValidated } = await renderDeskScreen(props)
+    const { inputToken, buttonSubmitValidated } = renderDeskScreen(props)
     await userEvent.clear(inputToken)
     await userEvent.type(inputToken, 'AAAAAA')
-    await waitFor(() =>
-      expect(screen.getByTestId('desk-message')).toHaveTextContent(
-        alreadyValidatedErrorMessage.message
-      )
+    expect(screen.getByTestId('desk-message')).toHaveTextContent(
+      alreadyValidatedErrorMessage.message
     )
     const buttonSubmitInvalidated = await screen.findByText(
       'Invalider la contremarque'

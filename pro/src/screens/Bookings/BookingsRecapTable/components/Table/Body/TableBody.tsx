@@ -37,12 +37,16 @@ const TableBody = <
 }: ITableBodyProps<T>) => {
   return (
     <tbody className="bookings-body" {...tableBodyProps}>
-      {page.map(row => {
+      {page.map((row, index) => {
         prepareRow(row)
         return isCollectiveRow(row, audience) ? (
-          <CollectiveTableRow row={row} reloadBookings={reloadBookings} />
+          <CollectiveTableRow
+            key={index}
+            row={row}
+            reloadBookings={reloadBookings}
+          />
         ) : (
-          <IndividualTableRow row={row} />
+          <IndividualTableRow key={index} row={row} />
         )
       })}
     </tbody>

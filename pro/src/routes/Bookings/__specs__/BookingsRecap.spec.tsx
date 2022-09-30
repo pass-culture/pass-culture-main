@@ -1,12 +1,6 @@
 import '@testing-library/jest-dom'
 
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -28,7 +22,7 @@ import {
 } from 'utils/date'
 import { getNthCallNthArg } from 'utils/testHelpers'
 
-import BookingsRecapContainer, { BookingsRouterState } from '../Bookings'
+import BookingsRecapContainer from '../Bookings'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getFilteredBookingsCSV: jest.fn(),
@@ -65,14 +59,12 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
 
 const renderBookingsRecap = async (
   store: any,
-  routerState?: BookingsRouterState,
+  initialEntries = '/reservations',
   waitDomReady?: boolean
 ) => {
   const rtlReturn = render(
     <Provider store={configureTestStore(store)}>
-      <MemoryRouter
-        initialEntries={[{ pathname: '/reservations', state: routerState }]}
-      >
+      <MemoryRouter initialEntries={[initialEntries]}>
         <BookingsRecapContainer />
         <Notification />
       </MemoryRouter>
@@ -86,8 +78,7 @@ const renderBookingsRecap = async (
   })
 
   const submitFilters = async () => {
-    fireEvent.click(displayBookingsButton)
-    await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
+    await userEvent.click(displayBookingsButton)
   }
   const submitDownloadFilters = async () => {
     await userEvent.click(downloadBookingsCsvButton)
@@ -141,10 +132,6 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValue({ hasBookings: true })
   })
 
-  afterEach(() => {
-    jest.spyOn(api, 'getBookingsPro').mockReset()
-  })
-
   it('should show a pre-filter section', async () => {
     // When
     await renderBookingsRecap(store)
@@ -179,7 +166,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -224,14 +210,12 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [],
     })
     const { submitFilters } = await renderBookingsRecap(store)
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     await submitFilters()
 
     // When
-    const resetButton = await screen.findByText(
-      'réinitialiser tous les filtres.'
-    )
-    fireEvent.click(resetButton)
+    const resetButton = screen.getByText('réinitialiser tous les filtres.')
+    await userEvent.click(resetButton)
 
     // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(
@@ -246,7 +230,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -267,18 +250,17 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     const defaultBookingPeriodBeginningDateInput = '16/05/2020'
     const defaultBookingPeriodEndingDateInput = '15/06/2020'
     const bookingPeriodBeginningDateInput = screen.getByDisplayValue(
       defaultBookingPeriodBeginningDateInput
     )
-    fireEvent.click(bookingPeriodBeginningDateInput)
-    fireEvent.click(screen.getAllByText('5')[0])
+    await userEvent.click(bookingPeriodBeginningDateInput)
+    await userEvent.click(screen.getAllByText('5')[0])
     const bookingPeriodEndingDateInput = screen.getByDisplayValue(
       defaultBookingPeriodEndingDateInput
     )
@@ -288,7 +270,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
-    fireEvent.click(resetButton)
+    await userEvent.click(resetButton)
 
     // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(
@@ -309,7 +291,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -318,7 +299,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
-    fireEvent.click(resetButton)
+    await userEvent.click(resetButton)
 
     // Then
     expect(
@@ -429,9 +410,9 @@ describe('components | BookingsRecap | Pro user', () => {
     }
     jest
       .spyOn(api, 'getBookingsPro')
-      // @ts-ignore FIX ME
+
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
-      // @ts-ignore FIX ME
+
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -469,14 +450,13 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
-    fireEvent.click(screen.getByLabelText('Date de l’évènement'))
-    fireEvent.click(screen.getByText('8'))
+    await userEvent.click(screen.getByLabelText('Date de l’évènement'))
+    await userEvent.click(screen.getByText('8'))
     await submitFilters()
 
     // Then
@@ -502,14 +482,13 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
-    fireEvent.click(screen.getByLabelText('Date de l’évènement'))
-    fireEvent.click(screen.getByText('8'))
+    await userEvent.click(screen.getByLabelText('Date de l’évènement'))
+    await userEvent.click(screen.getByText('8'))
     await submitFilters()
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -537,7 +516,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -570,7 +548,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -580,10 +557,10 @@ describe('components | BookingsRecap | Pro user', () => {
       within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
 
     // When
-    fireEvent.click(beginningPeriodInput)
-    fireEvent.click(screen.getByText('10'))
-    fireEvent.click(endingPeriodInput)
-    fireEvent.click(screen.getAllByText('5')[0])
+    await userEvent.click(beginningPeriodInput)
+    await userEvent.click(screen.getByText('10'))
+    await userEvent.click(endingPeriodInput)
+    await userEvent.click(screen.getAllByText('5')[0])
     await submitFilters()
 
     // Then
@@ -621,7 +598,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -629,11 +605,11 @@ describe('components | BookingsRecap | Pro user', () => {
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] =
       within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
-    fireEvent.click(endingPeriodInput)
-    fireEvent.click(screen.getByText('12'))
+    await userEvent.click(endingPeriodInput)
+    await userEvent.click(screen.getByText('12'))
 
     // When
-    fireEvent.change(beginningPeriodInput, { target: { value: '' } })
+    await userEvent.clear(beginningPeriodInput)
     await submitFilters()
 
     // Then
@@ -658,7 +634,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -666,11 +641,11 @@ describe('components | BookingsRecap | Pro user', () => {
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] =
       within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
-    fireEvent.click(beginningPeriodInput)
-    fireEvent.click(screen.getByText('10'))
+    await userEvent.click(beginningPeriodInput)
+    await userEvent.click(screen.getByText('10'))
 
     // When
-    fireEvent.change(endingPeriodInput, { target: { value: '' } })
+    await userEvent.clear(endingPeriodInput)
     await submitFilters()
 
     // Then
@@ -695,7 +670,6 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -705,8 +679,8 @@ describe('components | BookingsRecap | Pro user', () => {
       within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')[1]
 
     // When
-    fireEvent.click(endingPeriodInput)
-    fireEvent.click(screen.getByText('16'))
+    await userEvent.click(endingPeriodInput)
+    await userEvent.click(screen.getByText('16'))
     await submitFilters()
 
     // Then
@@ -742,18 +716,18 @@ describe('components | BookingsRecap | Pro user', () => {
     }
     jest
       .spyOn(api, 'getBookingsPro')
-      // @ts-ignore FIX ME
+
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
-      // @ts-ignore FIX ME
+
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(store)
 
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)
     await submitFilters()
     await screen.findAllByText(otherVenueBooking.stock.offer_name)
 
     // When
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     await submitFilters()
 
     // Then
@@ -786,7 +760,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // when
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then
@@ -815,11 +789,11 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // when
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then
-    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(5))
+    expect(api.getBookingsPro).toHaveBeenCalledTimes(5)
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
@@ -832,7 +806,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // When
-    userEvent.selectOptions(
+    await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.publicName ?? venue.name
     )
@@ -847,13 +821,13 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not inform the user when the selected filter is the same than the actual filter', async () => {
     // Given
     await renderBookingsRecap(store)
-    userEvent.selectOptions(
+    await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.publicName ?? venue.name
     )
 
     // When
-    userEvent.selectOptions(
+    await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       screen.getByText('Tous les lieux')
     )
@@ -870,7 +844,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // When
-    userEvent.selectOptions(
+    await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.publicName ?? venue.name
     )

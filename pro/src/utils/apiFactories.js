@@ -1,3 +1,5 @@
+import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
+
 let offerId = 1
 let venueId = 1
 let offererId = 1
@@ -114,9 +116,7 @@ export const stockFactory = (customStock = {}) => {
 }
 
 export const bookingRecapFactory = (customBookingRecap = {}) => {
-  const offerer = offererFactory()
   const offer = offerFactory()
-  const venue = venueFactory()
 
   return {
     beneficiary: {
@@ -128,26 +128,19 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
     booking_amount: 0,
     booking_date: '2020-04-12T19:31:12Z',
     booking_is_duo: false,
-    booking_status: 'booked',
+    booking_status: BookingRecapStatus.BOOKED,
     booking_status_history: [
       {
         date: '2020-04-12T19:31:12Z',
-        status: 'booked',
+        status: BookingRecapStatus.BOOKED,
       },
     ],
     booking_token: `TOKEN${bookingId++}`,
-    offerer: {
-      name: offerer.name,
-    },
     stock: {
       offer_identifier: offer.id,
       offer_name: offer.name,
-      type: 'thing',
-    },
-    venue: {
-      venue_identifier: venue.id,
-      is_virtual: venue.isVirtual,
-      name: venue.name,
+      offer_is_educational: false,
+      stock_identifier: offer.stocks[0].id,
     },
     ...customBookingRecap,
   }

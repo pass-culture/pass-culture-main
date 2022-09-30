@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch from 'jest-fetch-mock'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -20,28 +20,28 @@ const renderButtonDownloadCSV = async ({ props, storeOverrides }) => {
 describe('src | components | Layout | ButtonDownloadCSV', () => {
   describe('render', () => {
     it('should disable button during download', async () => {
-      await new Promise(resolve => {
-        fetch.mockResponse(JSON.stringify({}), { status: 200 })
+      // await new Promise(resolve => {
+      fetch.mockResponse(JSON.stringify({}), { status: 200 })
 
-        const props = {
-          filename: 'test-csv',
-          href: 'http://test.com',
-          mimeType: 'text/csv',
-          isDisabled: false,
-        }
+      const props = {
+        filename: 'test-csv',
+        href: 'http://test.com',
+        mimeType: 'text/csv',
+        isDisabled: false,
+      }
 
-        renderButtonDownloadCSV({ props })
+      renderButtonDownloadCSV({ props })
 
-        const button = screen.getByText('Fake Title')
+      const button = await screen.findByText('Fake Title')
+      expect(button).toBeEnabled()
+
+      // maybe we need fireEvent here
+      fireEvent.click(button)
+      expect(button).toBeDisabled()
+
+      // then
+      waitFor(() => {
         expect(button).toBeEnabled()
-        fireEvent.click(button)
-        expect(button).toBeDisabled()
-
-        setTimeout(() => {
-          // then
-          expect(button).toBeEnabled()
-          resolve()
-        })
       })
     })
   })

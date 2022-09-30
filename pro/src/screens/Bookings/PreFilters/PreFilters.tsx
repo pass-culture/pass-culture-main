@@ -78,8 +78,21 @@ const PreFilters = ({
     let key: keyof TPreFilters
     let hasFilters = false
     for (key in selectedPreFilters) {
-      if (selectedPreFilters[key] !== DEFAULT_PRE_FILTERS[key])
+      if (
+        key.includes('Date') &&
+        selectedPreFilters[key] instanceof Date &&
+        DEFAULT_PRE_FILTERS[key] instanceof Date
+      ) {
+        if (
+          // @ts-ignore
+          selectedPreFilters[key].getTime() !==
+          // @ts-ignore
+          DEFAULT_PRE_FILTERS[key].getTime()
+        )
+          hasFilters = true
+      } else if (selectedPreFilters[key] !== DEFAULT_PRE_FILTERS[key]) {
         hasFilters = true
+      }
     }
     setHasPreFilters(hasFilters)
   }, [selectedPreFilters])

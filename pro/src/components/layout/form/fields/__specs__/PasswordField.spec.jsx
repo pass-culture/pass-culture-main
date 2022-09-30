@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Form } from 'react-final-form'
 
@@ -26,7 +27,7 @@ describe('component | PasswordField', () => {
       label: 'labelTest',
       name: 'nameTest',
     }
-    it('should display custom error message when backend error starts with "ton mot de passe"', () => {
+    it('should display custom error message when backend error starts with "ton mot de passe"', async () => {
       // Given
       render(
         <Form onSubmit={jest.fn}>
@@ -40,7 +41,7 @@ describe('component | PasswordField', () => {
           )}
         </Form>
       )
-      fireEvent.click(
+      await userEvent.click(
         screen.getByRole('button', { name: 'Afficher le mot de passe' })
       )
 
@@ -48,9 +49,7 @@ describe('component | PasswordField', () => {
       const input = screen.getByRole('textbox', {
         name: 'labelTest Cacher le mot de passe',
       })
-      fireEvent.change(input, {
-        target: { value: 'tutu' },
-      })
+      await userEvent.type(input, 'tutu')
 
       // Then
       expect(
@@ -60,7 +59,7 @@ describe('component | PasswordField', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display backned error message when backend error does not start with "ton mot de passe"', () => {
+    it('should display backned error message when backend error does not start with "ton mot de passe"', async () => {
       // Given
       render(
         <Form onSubmit={jest.fn}>
@@ -71,7 +70,7 @@ describe('component | PasswordField', () => {
           )}
         </Form>
       )
-      fireEvent.click(
+      await userEvent.click(
         screen.getByRole('button', { name: 'Afficher le mot de passe' })
       )
 
@@ -79,9 +78,7 @@ describe('component | PasswordField', () => {
       const input = screen.getByRole('textbox', {
         name: 'labelTest Cacher le mot de passe',
       })
-      fireEvent.change(input, {
-        target: { value: 'tutu' },
-      })
+      await userEvent.type(input, 'tutu')
 
       // Then
       expect(screen.getByText('An error')).toBeInTheDocument()

@@ -1,5 +1,11 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import React, {
+  Fragment,
+  useRef,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
@@ -61,16 +67,25 @@ const ThingStocks = ({ offer, reloadOffer }) => {
     : `/offre/${offer.id}/individuel/recapitulatif`
   const offersSearchFilters = useSelector(searchFiltersSelector)
   const offersPageNumber = useSelector(searchPageNumberSelector)
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
   const loadStocks = useCallback(() => {
     return pcapi.loadStocks(offerId).then(receivedStocks => {
-      if (!receivedStocks.stocks.length) {
-        setStock(null)
-      } else {
-        setStock(
-          formatStock(receivedStocks.stocks[0], offer.venue.departementCode)
-        )
+      if (mountedRef.current) {
+        if (!receivedStocks.stocks.length) {
+          setStock(null)
+        } else {
+          setStock(
+            formatStock(receivedStocks.stocks[0], offer.venue.departementCode)
+          )
+        }
+        setIsLoading(false)
       }
-      setIsLoading(false)
     })
   }, [offerId, offer.venue.departementCode])
 
@@ -211,7 +226,11 @@ const ThingStocks = ({ offer, reloadOffer }) => {
             'Une ou plusieurs erreurs sont présentes dans le formulaire.'
           )
         )
-        .finally(() => setEnableSubmitButtonSpinner(false))
+        .finally(() => {
+          if (mountedRef.current) {
+            setEnableSubmitButtonSpinner(false)
+          }
+        })
     }
   }, [
     stock,

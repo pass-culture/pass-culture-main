@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -36,7 +36,7 @@ const renderOffers = async (
   pathname = '/offre/AG3A/individuel/stocks'
 ) => {
   const store = configureTestStore(storeOverrides)
-  return render(
+  render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[{ pathname: pathname }]}>
         <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
@@ -46,6 +46,10 @@ const renderOffers = async (
       <Notification />
     </Provider>
   )
+
+  await waitFor(() => {
+    expect(screen.getAllByTestId('offer-page')).toBeInTheDocument
+  })
 }
 
 describe('stocks page', () => {
@@ -691,9 +695,7 @@ describe('stocks page', () => {
       await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
       await userEvent.click(screen.getByText('20:00'))
 
-      fireEvent.change(screen.getByLabelText('Prix'), {
-        target: { value: '10' },
-      })
+      await userEvent.type(screen.getByLabelText('Prix'), '10')
 
       // When
       await userEvent.click(screen.getByText('Enregistrer les modifications'))
@@ -714,9 +716,7 @@ describe('stocks page', () => {
       await userEvent.click(screen.getByLabelText('Date de l’évènement'))
       await userEvent.click(screen.getByText('26'))
 
-      fireEvent.change(screen.getByLabelText('Prix'), {
-        target: { value: '10' },
-      })
+      await userEvent.type(screen.getByLabelText('Prix'), '10')
 
       // When
       await userEvent.click(screen.getByText('Enregistrer les modifications'))
