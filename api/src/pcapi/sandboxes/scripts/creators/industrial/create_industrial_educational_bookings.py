@@ -483,14 +483,24 @@ def create_industrial_educational_bookings() -> None:
     next_year_stocks: list[educational_models.CollectiveStock] = []
 
     for stock_data, venue in zip(FAKE_STOCK_DATA, cycle(venues)):
-        stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=False)[0])
+        stocks.append(_create_collective_stock(stock_data, now, venue, number_of_stocks=2, is_passed=False)[0])
 
     for stock_data, venue in zip(PASSED_STOCK_DATA, cycle(venues)):
-        passed_stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=True)[0])
+        passed_stocks.append(_create_collective_stock(stock_data, now, venue, number_of_stocks=2, is_passed=True)[0])
 
     for stock_data, venue in zip(FAKE_STOCK_DATA, cycle(venues)):
         next_year_stocks.append(
-            _create_collective_stock(stock_data, educational_next_year.beginningDate, venue, 2, is_passed=False)[0]
+            _create_collective_stock(
+                stock_data, educational_next_year.beginningDate, venue, number_of_stocks=2, is_passed=False
+            )[0]
+        )
+
+    for stock_data, venue in zip(FAKE_STOCK_DATA, cycle(venues)):
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            educational_domains=[get_educational_domain()], venue=venue
+        )
+        stocks.append(
+            _create_collective_stock(stock_data, now, venue, number_of_stocks=2, is_passed=False, parent=template)[0]
         )
 
     for stock, educational_institution in zip(stocks, cycle(educational_institutions)):
@@ -538,6 +548,7 @@ def _create_collective_stock(
     venue: offerers_models.Venue,
     number_of_stocks: int = 2,
     is_passed: bool = False,
+    parent: educational_models.CollectiveOfferTemplate | None = None,
 ) -> list[educational_models.CollectiveStock]:
     timedelta = int(stock_data.timedelta)
 
@@ -579,6 +590,7 @@ def _create_collective_stock(
         collectiveOffer__interventionArea=stock_data.interventionArea,
         collectiveOffer__institution=educational_institution,
         collectiveOffer__educational_domains=[get_educational_domain()],
+        collectiveOffer__template=parent,
     )
 
 
