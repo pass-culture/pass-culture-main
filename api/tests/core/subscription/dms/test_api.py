@@ -245,6 +245,7 @@ class HandleDmsApplicationTest:
             user_message="Il semblerait que le champ ‘numéro de pièce d'identité’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
+            updated_at=fraud_check.updatedAt,
         )
 
         send_dms_message_mock.assert_called_once()
@@ -287,6 +288,7 @@ class HandleDmsApplicationTest:
             user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=fraud_check.updatedAt,
         )
 
         send_dms_message_mock.assert_not_called()
@@ -321,6 +323,7 @@ class HandleDmsApplicationTest:
             user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=fraud_check.updatedAt,
         )
 
         send_dms_message_mock.assert_not_called()
@@ -361,6 +364,7 @@ class HandleDmsApplicationTest:
             user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=fraud_check.updatedAt,
         )
 
     @override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
@@ -579,6 +583,7 @@ class DmsSubscriptionMessageTest:
             user_message=f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.FILE,
+            updated_at=fraud_check.updatedAt,
         )
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
@@ -598,6 +603,7 @@ class DmsSubscriptionMessageTest:
             user_message="Il semblerait que le champ ‘date de naissance’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
+            updated_at=fraud_check.updatedAt,
         )
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
@@ -618,6 +624,7 @@ class DmsSubscriptionMessageTest:
             user_message="Il semblerait que les champs ‘numéro de pièce d'identité, date de naissance’ soient invalides. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
+            updated_at=fraud_check.updatedAt,
         )
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
@@ -638,6 +645,7 @@ class DmsSubscriptionMessageTest:
             user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=fraud_check.updatedAt,
         )
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
@@ -658,6 +666,7 @@ class DmsSubscriptionMessageTest:
             user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=fraud_check.updatedAt,
         )
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
@@ -690,6 +699,7 @@ class DmsSubscriptionMessageTest:
             user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n'es malheureusement pas éligible au pass Culture.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=fraud_check.updatedAt,
         )
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
@@ -720,6 +730,7 @@ class DmsSubscriptionMessageTest:
                 icon=subscription_models.CallToActionIcon.EMAIL,
             ),
             pop_over_icon=None,
+            updated_at=fraud_check.updatedAt,
         )
 
     def test_ko_no_info(self):
@@ -736,6 +747,7 @@ class DmsSubscriptionMessageTest:
             user_message="Ton dossier déposé sur le site Démarches-Simplifiées a été refusé.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            updated_at=fraud_check.updatedAt,
         )
 
 
