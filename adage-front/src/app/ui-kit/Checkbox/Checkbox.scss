@@ -1,6 +1,5 @@
 @import 'sass-rem';
 @import 'styles';
-@use 'styles/variables/_size.scss' as size;
 
 .base-checkbox {
   display: inline-flex;
@@ -17,7 +16,7 @@
   }
 
   &-icon {
-    margin-right: size.$checkbox-icon-margin;
+    margin-right: rem(8px);
     color: $input-text-color;
 
     :disabled + & {
