@@ -51,7 +51,7 @@ class UserPhoneBodyModel(BaseModel):
     phone_number: str
 
     @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+    def validate_phone_number(cls, phone_number: str) -> str:
         if phone_number is None:
             return phone_number
 
@@ -94,7 +94,7 @@ class ProUserCreationBodyModel(BaseModel):
     contact_ok: bool
 
     @validator("password")
-    def validate_password_strength(cls, password: str) -> str:  # typing: ignore # pylint: disable=no-self-argument
+    def validate_password_strength(cls, password: str) -> str:  # typing: ignore
         check_password_strength("password", password)
         return password
 
@@ -104,9 +104,7 @@ class ProUserCreationBodyModel(BaseModel):
     # require this validator. It may be a bug in the frontend. Revisit
     # this when we have switched the frontend from "pcapi" to "apiClient".
     @validator("contact_ok", pre=True, always=True)
-    def cast_contact_ok_to_bool(  # typing: ignore # pylint: disable=no-self-argument
-        cls, contact_ok: bool | None
-    ) -> bool:
+    def cast_contact_ok_to_bool(cls, contact_ok: bool | None) -> bool:  # typing: ignore
         return bool(contact_ok)
 
     _validate_phone_number_format = validate_phone_number_format("phone_number")

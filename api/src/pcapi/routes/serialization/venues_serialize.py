@@ -56,7 +56,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         extra = "forbid"
 
     @validator("latitude", pre=True)
-    def validate_latitude(cls, raw_latitude):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_latitude(cls, raw_latitude):  # type: ignore [no-untyped-def]
         try:
             latitude = Decimal(raw_latitude)
         except InvalidOperation:
@@ -67,7 +67,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return raw_latitude
 
     @validator("longitude", pre=True)
-    def validate_longitude(cls, raw_longitude):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_longitude(cls, raw_longitude):  # type: ignore [no-untyped-def]
         try:
             longitude = Decimal(raw_longitude)
         except InvalidOperation:
@@ -78,7 +78,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return raw_longitude
 
     @validator("siret", always=True)
-    def requires_siret_xor_comment(cls, siret, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def requires_siret_xor_comment(cls, siret, values):  # type: ignore [no-untyped-def]
         """siret is defined after comment, so the validator can access the previously validated value of comment"""
         comment = values.get("comment")
         if (comment and siret) or (not comment and not siret):

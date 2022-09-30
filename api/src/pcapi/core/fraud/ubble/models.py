@@ -115,15 +115,15 @@ class UbbleIdentificationData(pydantic.BaseModel):
 
 class UbbleIdentificationDocuments(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#documents
-    birth_date: str = pydantic.Field(None, alias="birth-date")
-    document_number: str = pydantic.Field(None, alias="document-number")
-    document_type: str = pydantic.Field(None, alias="document-type")
-    first_name: str = pydantic.Field(None, alias="first-name")
-    gender: str = pydantic.Field(None)
-    last_name: str = pydantic.Field(None, alias="last-name")
-    married_name: str = pydantic.Field(None, alias="married-name")
-    signed_image_front_url: str = pydantic.Field(None, alias="signed-image-front-url")
-    signed_image_back_url: str = pydantic.Field(None, alias="signed-image-back-url")
+    birth_date: str = pydantic.Field(None, alias="birth-date")  # type: ignore [assignment]
+    document_number: str = pydantic.Field(None, alias="document-number")  # type: ignore [assignment]
+    document_type: str = pydantic.Field(None, alias="document-type")  # type: ignore [assignment]
+    first_name: str = pydantic.Field(None, alias="first-name")  # type: ignore [assignment]
+    gender: str = pydantic.Field(None)  # type: ignore [assignment]
+    last_name: str = pydantic.Field(None, alias="last-name")  # type: ignore [assignment]
+    married_name: str = pydantic.Field(None, alias="married-name")  # type: ignore [assignment]
+    signed_image_front_url: str = pydantic.Field(None, alias="signed-image-front-url")  # type: ignore [assignment]
+    signed_image_back_url: str = pydantic.Field(None, alias="signed-image-back-url")  # type: ignore [assignment]
 
 
 class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):

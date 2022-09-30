@@ -94,13 +94,13 @@ class PostOfferBodyModel(BaseModel):
     offererId: str | None
 
     @validator("name", pre=True)
-    def validate_name(cls, name, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_name(cls, name, values):  # type: ignore [no-untyped-def]
         if not values["product_id"]:
             check_offer_name_length_is_valid(name)
         return name
 
     @validator("extra_data", pre=True)
-    def validate_isbn(cls, extra_data_field, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_isbn(cls, extra_data_field, values):  # type: ignore [no-untyped-def]
         if (
             FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
             and not values["product_id"]
@@ -142,7 +142,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     productId: str | None
 
     @validator("name", pre=True, allow_reuse=True)
-    def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_name(cls, name):  # type: ignore [no-untyped-def]
         if name:
             check_offer_name_length_is_valid(name)
         return name
@@ -218,7 +218,7 @@ class ListOffersStockResponseModel(BaseModel):
     beginningDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
-    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def]
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
         return remainingQuantity
@@ -334,7 +334,7 @@ class GetOfferStockResponseModel(BaseModel):
         return super().from_orm(stock)
 
     @validator("cancellationLimitDate", pre=True, always=True)
-    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # type: ignore [no-untyped-def]
         return compute_cancellation_limit_date(values.get("beginningDatetime"), datetime.utcnow())
 
     class Config:

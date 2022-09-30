@@ -121,7 +121,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("bookingLimitDatetime")
-    def validate_booking_limit_datetime(  # pylint: disable=no-self-argument
+    def validate_booking_limit_datetime(
         cls, booking_limit_datetime: datetime | None, values: Dict[str, Any]
     ) -> datetime | None:
         if (
@@ -135,9 +135,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("beginningDatetime", pre=True)
-    def validate_beginning_limit_datetime(  # pylint: disable=no-self-argument
-        cls, beginningDatetime: datetime | None
-    ) -> datetime | None:
+    def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
         if beginningDatetime is None:
             raise ValueError("La date de début de l'événement ne peut pas être nulle.")
         return beginningDatetime

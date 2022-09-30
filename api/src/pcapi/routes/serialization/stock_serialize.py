@@ -132,14 +132,14 @@ class UpdateVenueStockBodyModel(BaseModel):
     )
 
     @validator("price", pre=True)
-    def empty_string_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def empty_string_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def]
         # Performed before Pydantic validators to catch empty strings but will not get "0"
         if not v:
             return None
         return v
 
     @validator("price")
-    def zero_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def zero_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def]
         # Performed before Pydantic validators to catch empty strings but will not get "0"
         if not v:
             return None
