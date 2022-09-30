@@ -1041,4 +1041,6 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
 
 
 def list_offerers_to_be_validated() -> sa.orm.Query:
-    return offerers_models.Offerer.query.filter(offerers_models.Offerer.isValidated == False)
+    return offerers_models.Offerer.query.filter(offerers_models.Offerer.isValidated == False).options(
+        sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
+    )
