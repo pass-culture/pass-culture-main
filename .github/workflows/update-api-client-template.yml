@@ -56,7 +56,7 @@ jobs:
       - uses: actions/setup-node@v2
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
-          node-version: "14"
+          node-version: "16"
 
       - name: Install dockerize
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
@@ -87,10 +87,10 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           path: pro/node_modules
-          key: ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
+          key: ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
-            ${{ runner.os }}-node-14-yarn-
+            ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
+            ${{ runner.os }}-node-16-yarn-
 
       - name: Update permission ADAGE FRONT
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
@@ -100,10 +100,10 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           path: adage-front/node_modules
-          key: ${{ runner.os }}-adage-node-14-yarn-${{ hashFiles('adage-front/yarn.lock') }}
+          key: ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-adage-node-14-yarn-${{ hashFiles('adage-front/yarn.lock') }}
-            ${{ runner.os }}-adage-node-14-yarn-
+            ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
+            ${{ runner.os }}-adage-node-16-yarn-
 
       - name: Install dependencies PRO
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
