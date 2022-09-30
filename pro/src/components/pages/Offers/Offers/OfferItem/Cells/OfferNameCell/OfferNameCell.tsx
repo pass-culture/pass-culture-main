@@ -15,6 +15,8 @@ import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
+import styles from '../../OfferItem.module.scss'
+
 interface OfferNameCellProps {
   offer: Offer
   editionOfferLink: string
@@ -53,35 +55,37 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
     computeNumberOfSoldOutStocks() > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
 
   return (
-    <td className="title-column">
+    <td className={styles['title-column']}>
       <Link
-        className="name"
-        title={`${name} - éditer l'offre`}
+        className={styles['name']}
+        title={`${offer.name} - éditer l'offre`}
         onClick={onOfferNameClick}
         to={editionOfferLink}
       >
         {offer.name}
       </Link>
       {offer.isEvent && (
-        <span className="stocks">
+        <span className={styles['stocks']}>
           {getDateInformations()}
           {shouldShowSoldOutWarning && (
             <div>
               <WarningStocksIcon
                 title=""
-                className="sold-out-icon"
+                className={styles['sold-out-icon']}
                 tabIndex={0}
               />
 
-              <span className="sold-out-dates">
-                <WarningStocksIcon title="" className="ico-warning-stocks" />
+              <span className={styles['sold-out-dates']}>
+                <WarningStocksIcon title="" />
                 {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
               </span>
             </div>
           )}
         </span>
       )}
-      {offer.productIsbn && <div className="isbn">{offer.productIsbn}</div>}
+      {offer.productIsbn && (
+        <div className={styles['isbn']}>{offer.productIsbn}</div>
+      )}
     </td>
   )
 }

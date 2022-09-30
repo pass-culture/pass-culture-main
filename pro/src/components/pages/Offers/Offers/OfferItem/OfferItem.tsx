@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -18,6 +19,7 @@ import OfferRemainingStockCell from './Cells/OfferRemainingStockCell'
 import OfferStatusCell from './Cells/OfferStatusCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
 import ThumbCell from './Cells/ThumbCell'
+import styles from './OfferItem.module.scss'
 
 export type OfferItemProps = {
   disabled?: boolean
@@ -56,9 +58,9 @@ const OfferItem = ({
 
   return (
     <tr
-      className={`offer-item ${
-        isOfferInactiveOrExpiredOrDisabled ? 'inactive' : ''
-      } offer-row`}
+      className={cn(styles['offer-item'], {
+        [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
+      })}
     >
       <CheckboxCell
         offerId={offer.id}

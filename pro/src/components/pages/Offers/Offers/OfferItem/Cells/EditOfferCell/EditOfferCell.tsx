@@ -11,7 +11,7 @@ import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import styles from './EditOfferCell.module.scss'
+import styles from '../../OfferItem.module.scss'
 
 const EditOfferCell = ({
   isOfferEditable,
@@ -24,7 +24,7 @@ const EditOfferCell = ({
 }) => {
   const { logEvent } = useAnalytics()
   return (
-    <td className="edit-column">
+    <td className={styles['edit-column']}>
       {isOfferEditable && (
         <ButtonLink
           variant={ButtonVariant.SECONDARY}
