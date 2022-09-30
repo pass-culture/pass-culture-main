@@ -10,15 +10,8 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
-import CheckboxCell from './Cells/CheckboxCell'
-import EditOfferCell from './Cells/EditOfferCell'
-import EditStocksCell from './Cells/EditStocksCell'
-import OfferInstitutionCell from './Cells/OfferInstitutionCell'
-import OfferNameCell from './Cells/OfferNameCell'
-import OfferRemainingStockCell from './Cells/OfferRemainingStockCell'
-import OfferStatusCell from './Cells/OfferStatusCell'
-import OfferVenueCell from './Cells/OfferVenueCell'
-import ThumbCell from './Cells/ThumbCell'
+import CollectiveOfferItem from './CollectiveOfferItem'
+import IndividualOfferItem from './IndividualOfferItem'
 import styles from './OfferItem.module.scss'
 
 export type OfferItemProps = {
@@ -62,33 +55,29 @@ const OfferItem = ({
         [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
       })}
     >
-      <CheckboxCell
-        offerId={offer.id}
-        status={offer.status}
-        disabled={disabled}
-        isSelected={isSelected}
-        selectOffer={selectOffer}
-        isShowcase={Boolean(offer.isShowcase)}
-      />
-      {audience === Audience.INDIVIDUAL && (
-        <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
-      )}
-      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
-      <OfferVenueCell venue={venue} />
       {audience === Audience.INDIVIDUAL ? (
-        <OfferRemainingStockCell stocks={offer.stocks} />
+        <IndividualOfferItem
+          disabled={disabled}
+          offer={offer}
+          isSelected={isSelected}
+          selectOffer={selectOffer}
+          editionOfferLink={editionOfferLink}
+          editionStockLink={editionStockLink}
+          venue={venue}
+          isOfferEditable={Boolean(isOfferEditable)}
+        />
       ) : (
-        <OfferInstitutionCell
-          educationalInstitution={offer.educationalInstitution}
+        <CollectiveOfferItem
+          disabled={disabled}
+          offer={offer}
+          isSelected={isSelected}
+          selectOffer={selectOffer}
+          editionOfferLink={editionOfferLink}
+          editionStockLink={editionStockLink}
+          venue={venue}
+          isOfferEditable={Boolean(isOfferEditable)}
         />
       )}
-      <OfferStatusCell status={offer.status} />
-      <EditStocksCell editionStockLink={editionStockLink} />
-      <EditOfferCell
-        isOfferEditable={Boolean(isOfferEditable)}
-        name={offer.name}
-        editionOfferLink={editionOfferLink}
-      />
     </tr>
   )
 }
