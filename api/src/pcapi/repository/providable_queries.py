@@ -29,7 +29,7 @@ def update_chunk(chunk_to_update: dict):  # type: ignore [no-untyped-def]
 
 def _filter_matching_pc_object_in_chunk(model_in_chunk: Model, chunk_to_update: dict) -> list[Model]:  # type: ignore [valid-type]
     return list(
-        filter(lambda item: _extract_model_name_from_chunk_key(item[0]) == model_in_chunk, chunk_to_update.items())  # type: ignore [index]
+        filter(lambda item: _extract_model_name_from_chunk_key(item[0]) == model_in_chunk, chunk_to_update.items())  # type: ignore
     )
 
 

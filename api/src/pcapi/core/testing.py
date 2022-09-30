@@ -300,7 +300,7 @@ def clean_temporary_files(test_function: typing.Callable) -> typing.Callable:
         paths.append(pathlib.Path(path))
         return path
 
-    def patched_mkstemp(*args: typing.Any, **kwargs: typing.Any) -> tuple[int, str]:
+    def patched_mkstemp(*args: typing.Any, **kwargs: typing.Any) -> tuple[typing.Any, ...]:
         res = original_mkstemp(*args, **kwargs)
         paths.append(pathlib.Path(res[1]))
         return res
