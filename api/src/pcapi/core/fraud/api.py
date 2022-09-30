@@ -253,6 +253,10 @@ def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_numbe
     return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée")
 
 
+def format_id_piece_number(id_piece_number: str) -> str:
+    return id_piece_number.replace(" ", "")
+
+
 def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_user_id: int) -> users_models.User | None:
     if not id_piece_number:
         return None
@@ -264,7 +268,7 @@ def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_us
             " ",
             "",
         )
-        == id_piece_number.replace(" ", ""),
+        == format_id_piece_number(id_piece_number),
     ).first()
 
 
