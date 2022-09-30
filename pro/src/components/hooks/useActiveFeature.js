@@ -18,7 +18,7 @@ const useActiveFeature = featureName => {
   const dispatch = useDispatch()
   useEffect(() => {
     if (!isFeaturesInitialized) {
-      dispatch(loadFeatures())
+      dispatch(loadFeatures)
     }
   }, [dispatch, isFeaturesInitialized])
 

@@ -1,9 +1,9 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
 
 import { setFeatures, setIsInitialized } from './actions'
 
 export const loadFeatures = () => dispatch => {
-  pcapi.loadFeatures().then(features => {
+  api.listFeatures().then(features => {
     dispatch(setFeatures(features))
     dispatch(setIsInitialized())
   })
