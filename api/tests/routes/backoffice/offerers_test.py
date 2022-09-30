@@ -837,8 +837,8 @@ class ListOfferersToBeValidatedTest:
         payload = response.json["data"][0]
         assert payload["id"] == user_offerer.offerer.id
         assert payload["name"] == user_offerer.offerer.name
-        # assert payload["status"] == ...  # TODO
-        # assert payload["step"] == ...  # TODO
+        assert payload["status"] is None  # TODO
+        assert payload["step"] is None  # TODO
         assert payload["siren"] == user_offerer.offerer.siren
         assert payload["address"] == user_offerer.offerer.address
         assert payload["postalCode"] == user_offerer.offerer.postalCode
@@ -851,7 +851,7 @@ class ListOfferersToBeValidatedTest:
         )
         assert payload["phoneNumber"] == user_offerer.offerer.UserOfferers[0].user.phoneNumber
         assert payload["email"] == user_offerer.offerer.UserOfferers[0].user.email
-        # assert payload["lastComment"] == ...  # TODO
+        assert payload["lastComment"] is None  # TODO
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(

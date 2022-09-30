@@ -160,15 +160,17 @@ def remove_tag_from_offerer(offerer_id: int, tag_name: str) -> None:
 
 @blueprint.backoffice_blueprint.route("offerers/to_be_validated", methods=["GET"])
 @spectree_serialize(
-    response_model=serialization.Response,
+    response_model=serialization.ListOffererToBeValidatedResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def list_offerers_to_be_validated(query: serialization.PaginableQuery) -> serialization.PaginatedResponse:
+def list_offerers_to_be_validated(
+    query: serialization.PaginableQuery,
+) -> serialization.ListOffererToBeValidatedResponseModel:
     offerers = offerers_api.list_offerers_to_be_validated()
 
-    sorts = query.sort.split(",") if query.sort else []
+    sorts = query.sort.split(",") if query.sort else ["-id"]
     sorted_offerers = utils.sort_query(offerers, db_utils.get_ordering_clauses(offerers_models.Offerer, sorts))
     paginated_offerers = sorted_offerers.paginate(
         page=query.page,
@@ -187,15 +189,19 @@ def list_offerers_to_be_validated(query: serialization.PaginableQuery) -> serial
                 serialization.OffererToBeValidated(
                     id=offerer.id,
                     name=offerer.name,
-                    status="",  # TODO
-                    step="",  # TODO
+                    status=None,  # TODO
+                    step=None,  # TODO
                     siren=offerer.siren,
                     address=offerer.address,
                     postalCode=offerer.postalCode,
                     city=offerer.city,
-                    owner=f"{offerer.UserOfferers[0].user.firstName} {offerer.UserOfferers[0].user.lastName}",
-                    phoneNumber=offerer.UserOfferers[0].user.phoneNumber,
-                    email=offerer.UserOfferers[0].user.email,
+                    owner=(
+                        f"{offerer.UserOfferers[0].user.firstName} {offerer.UserOfferers[0].user.lastName}"
+                        if offerer.UserOfferers
+                        else None
+                    ),
+                    phoneNumber=(offerer.UserOfferers[0].user.phoneNumber if offerer.UserOfferers else None),
+                    email=(offerer.UserOfferers[0].user.email if offerer.UserOfferers else None),
                     lastComment=None,  # TODO
                 )
                 for offerer in paginated_offerers.items
