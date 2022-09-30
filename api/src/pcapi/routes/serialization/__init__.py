@@ -19,7 +19,7 @@ __all__ = ("as_dict", "serialize")
 
 class BaseModel(PydanticBaseModel):
     @validator("*")
-    def do_not_allow_nan(cls, v, field):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def do_not_allow_nan(cls, v, field):  # type: ignore [no-untyped-def]
         if field.allow_none and v is None:
             return v
 
