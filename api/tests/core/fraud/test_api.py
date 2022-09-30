@@ -46,6 +46,7 @@ class CommonTest:
             "040211-5703",  # ID Suédoise
             "339546T",  # Titre de séjour Français
             "32363144 4 ZZ7",  # ID Portugaise
+            "323631444ZZ7",  # ID Portugaise
         ],
     )
     def test_id_piece_number_valid_format(self, id_piece_number):
