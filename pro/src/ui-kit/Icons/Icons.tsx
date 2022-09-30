@@ -59,6 +59,7 @@ import { ReactComponent as IcoTrash } from 'icons/ico-trash.svg'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import { ReactComponent as IcoUnavailableGradient } from 'icons/ico-unavailable-gradient.svg'
 import { ReactComponent as IcoUnavailablePage } from 'icons/ico-unavailable-page.svg'
+import { ReactComponent as ValidCircleIcon } from 'icons/ico-valid.svg'
 import { ReactComponent as IcoValideCercle } from 'icons/ico-valide-cercle.svg'
 import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
@@ -376,6 +377,12 @@ export const Icons = () => (
           <IcoValideCercle />
         </td>
         <td>ico-valide-cercle</td>
+      </tr>
+      <tr>
+        <td>
+          <ValidCircleIcon />
+        </td>
+        <td>ico-valid</td>
       </tr>
       <tr>
         <td>

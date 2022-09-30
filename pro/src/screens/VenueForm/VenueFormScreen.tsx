@@ -39,7 +39,7 @@ const VenueFormScreen = ({
     alert('todo submit form !')
   }
 
-  const [isSiretValued, setIsSiretValued] = useState(true)
+  const [isSiretValued, setIsSiretValued] = useState(false)
 
   const generateSiretOrCommentValidationSchema: any = useMemo(
     () => generateSiretValidationSchema(offerer.siren, isSiretValued),
@@ -77,6 +77,7 @@ const VenueFormScreen = ({
             venueProvider={venueProviders}
             provider={providers}
             venue={venue}
+            offerer={offerer}
           />
         </form>
       </FormikProvider>

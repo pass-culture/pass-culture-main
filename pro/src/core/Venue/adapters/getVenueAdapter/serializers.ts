@@ -12,6 +12,10 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
   }
   /* istanbul ignore next: DEBT, TO FIX */
   return {
+    managingOfferer: venue.managingOfferer || [],
+    reimbursementPointId: venue.reimbursementPointId || 0,
+    nonHumanizedId: venue.nonHumanizedId || 0,
+    pricingPoint: venue.pricingPoint || null,
     accessibility: {
       ...venueAccessibility,
       [AccessiblityEnum.NONE]:
@@ -31,6 +35,13 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     },
     departmentCode: venue.departementCode || '',
     description: venue.description || '',
+    collectiveDomains: venue.collectiveDomains || [],
+    dateCreated: venue.dateCreated || '',
+    fieldsUpdated: venue.fieldsUpdated || '',
+    isValidated: venue.isValidated || false,
+    isVirtual: venue.isVirtual || false,
+    managingOffererId: venue.managingOffererId || '',
+    dmsToken: venue.dmsToken || '',
     id: venue.id,
     isPermanent: venue.isPermanent || false,
     isVenueVirtual: venue.isVirtual,
