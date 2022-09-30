@@ -68,6 +68,7 @@ def _extract_useful_content_from_response(
     processed_at = _get_data_attribute(response, "ended-at")
     score = _get_data_attribute(response, "score")
     status = _get_data_attribute(response, "status")
+    status_updated_at = _get_data_attribute(response, "status-updated-at")
 
     content = ubble_fraud_models.UbbleContent(
         birth_date=getattr(documents, "birth_date", None),
@@ -87,6 +88,7 @@ def _extract_useful_content_from_response(
         processed_datetime=processed_at,
         score=score,
         status=status,
+        status_updated_at=status_updated_at,
         supported=getattr(document_checks, "supported", None),
         signed_image_front_url=getattr(documents, "signed_image_front_url", None),
         signed_image_back_url=getattr(documents, "signed_image_back_url", None),
