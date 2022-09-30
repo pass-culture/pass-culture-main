@@ -64,6 +64,7 @@ extension-pkg-whitelist = [
 load-plugins = [
     "pcapi.utils.pylint",
     "pylint_strict_informational",
+    "pylint_pydantic",
 ]
 
 [tool.pylint."MESSAGES CONTROL"]

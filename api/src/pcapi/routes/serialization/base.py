@@ -27,7 +27,7 @@ class VenueContactModel(BaseModel):
     social_medias: SocialMedias | None
 
     @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+    def validate_phone_number(cls, phone_number: str) -> str:
         if phone_number is None:
             return phone_number
 
@@ -37,7 +37,7 @@ class VenueContactModel(BaseModel):
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
 
     @validator("website")
-    def validate_website_url(cls, website: str) -> str:  # pylint: disable=no-self-argument
+    def validate_website_url(cls, website: str) -> str:
         pattern = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$"
         if website is None or re.match(pattern, website, re.IGNORECASE):
             return website

@@ -47,9 +47,7 @@ class OfferVenueModel(BaseModel):
         extra = "forbid"
 
     @validator("venueId")
-    def validate_venueId(  # pylint: disable=no-self-argument
-        cls: "OfferVenueModel", venueId: int | None, values: dict
-    ) -> int | None:
+    def validate_venueId(cls, venueId: int | None, values: dict) -> int | None:
         if values["addressType"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE and venueId is None:
             raise ValueError(
                 f"Ce champ est obligatoire si 'addressType' vaut '{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
@@ -62,9 +60,7 @@ class OfferVenueModel(BaseModel):
         return venueId
 
     @validator("otherAddress")
-    def validate_otherAddress(  # pylint: disable=no-self-argument
-        cls: "OfferVenueModel", otherAddress: str | None, values: dict
-    ) -> str | None:
+    def validate_otherAddress(cls, otherAddress: str | None, values: dict) -> str | None:
         if values["addressType"] == collective_offers_serialize.OfferAddressType.OTHER and not otherAddress:
             raise ValueError(
                 f"Ce champ est obligatoire si 'addressType' vaut '{collective_offers_serialize.OfferAddressType.OTHER.value}'"
@@ -236,9 +232,7 @@ class GetListEducationalInstitutionsQueryModel(BaseModel):
     limit: int = MAX_LIMIT_EDUCATIONAL_INSTITUTION
 
     @validator("limit")
-    def validate_limit(  # pylint: disable=no-self-argument
-        cls: "GetListEducationalInstitutionsQueryModel", limit: int
-    ) -> int:
+    def validate_limit(cls, limit: int) -> int:
         limit = min(limit, MAX_LIMIT_EDUCATIONAL_INSTITUTION)
         return limit
 
@@ -372,13 +366,13 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
 
     @validator("name", pre=True)
-    def validate_name(cls: BaseModel, name: str) -> str:  # pylint: disable=no-self-argument
+    def validate_name(cls, name: str) -> str:
         check_offer_name_length_is_valid(name)
         return name
 
     @validator("domains", pre=True)
-    def validate_domains(  # pylint: disable=no-self-argument
-        cls: "PostCollectiveOfferBodyModel",
+    def validate_domains(
+        cls,
         domains: list[str],
     ) -> list[str]:
         if len(domains) == 0:
@@ -423,8 +417,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
 
     @validator("domains")
-    def validate_domains(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferBodyModel",
+    def validate_domains(
+        cls,
         domains: list[str],
     ) -> list[str]:
         if len(domains) == 0:
@@ -433,25 +427,20 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return domains
 
     @validator("name", allow_reuse=True)
-    def validate_name(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferBodyModel", name: str | None
-    ) -> str | None:
+    def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
         check_offer_name_length_is_valid(name)
         return name
 
     @validator("domains")
-    def validate_domains_collective_offer_edition(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferBodyModel",
-        domains: list[int] | None,
-    ) -> list[int] | None:
+    def validate_domains_collective_offer_edition(cls, domains: list[int] | None) -> list[int] | None:
         if domains is None or (domains is not None and len(domains) == 0):
             raise ValueError("domains must have at least one value")
 
         return domains
 
     @validator("bookingLimitDatetime")
-    def validate_booking_limit_datetime(  # pylint: disable=no-self-argument
+    def validate_booking_limit_datetime(
         cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
     ) -> datetime | None:
         if (
@@ -463,9 +452,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return booking_limit_datetime
 
     @validator("beginningDatetime", pre=True)
-    def validate_beginning_limit_datetime(  # pylint: disable=no-self-argument
-        cls, beginningDatetime: datetime | None
-    ) -> datetime | None:
+    def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
         if beginningDatetime is None:
             raise ValueError("La date de début de l'événement ne peut pas être nulle.")
         return beginningDatetime

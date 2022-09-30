@@ -10,7 +10,7 @@ class ResetPasswordBodyModel(BaseModel):
     token: str
 
     @validator("email")
-    def validate_email_not_empty(cls, email: str) -> str | None:  # typing: ignore # pylint: disable=no-self-argument
+    def validate_email_not_empty(cls, email: str) -> str | None:  # typing: ignore
         if not email or email.isspace():
             errors = ApiErrors()
             errors.add_error("email", "L'email renseigné est vide")

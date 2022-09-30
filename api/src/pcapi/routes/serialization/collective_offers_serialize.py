@@ -1,6 +1,5 @@
 from datetime import datetime
 import enum
-from typing import Dict
 
 from pydantic import Field
 from pydantic import validator
@@ -52,7 +51,7 @@ class CollectiveOffersStockResponseModel(BaseModel):
     beginningDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
-    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def]
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
         return remainingQuantity
@@ -360,13 +359,13 @@ class PostCollectiveOfferBodyModel(BaseModel):
     template_id: str | None
 
     @validator("name", pre=True)
-    def validate_name(cls: BaseModel, name: str) -> str:  # pylint: disable=no-self-argument
+    def validate_name(cls, name: str) -> str:
         check_offer_name_length_is_valid(name)
         return name
 
     @validator("domains", pre=True)
-    def validate_domains(  # pylint: disable=no-self-argument
-        cls: "PostCollectiveOfferBodyModel",
+    def validate_domains(
+        cls,
         domains: list[str],
     ) -> list[str]:
         if len(domains) == 0:
@@ -375,10 +374,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
         return domains
 
     @validator("intervention_area")
-    def validate_intervention_area(  # pylint: disable=no-self-argument
-        cls: "PostCollectiveOfferBodyModel",
+    def validate_intervention_area(
+        cls,
         intervention_area: list[str] | None,
-        values: Dict,
+        values: dict,
     ) -> list[str] | None:
         if not is_intervention_area_valid(intervention_area, values.get("offer_venue", None)):
             raise ValueError("intervention_area must have at least one value")
@@ -394,7 +393,7 @@ class CollectiveOfferTemplateBodyModel(BaseModel):
     price_detail: str | None = Field(alias="educationalPriceDetail")
 
     @validator("price_detail")
-    def validate_price_detail(cls, price_detail: str | None) -> str | None:  # pylint: disable=no-self-argument
+    def validate_price_detail(cls, price_detail: str | None) -> str | None:
         if price_detail and len(price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return price_detail
@@ -429,24 +428,20 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     interventionArea: list[str] | None
 
     @validator("name", allow_reuse=True)
-    def validate_name(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferBodyModel", name: str | None
-    ) -> str | None:
+    def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
         check_offer_name_length_is_valid(name)
         return name
 
     @validator("description", allow_reuse=True)
-    def validate_description(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferBodyModel", description: str | None
-    ) -> str | None:
+    def validate_description(cls, description: str | None) -> str | None:
         if description is None:
             raise ValueError("Description cannot be NULL.")
         return description
 
     @validator("domains")
-    def validate_domains_collective_offer_edition(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferBodyModel",
+    def validate_domains_collective_offer_edition(
+        cls,
         domains: list[int] | None,
     ) -> list[int] | None:
         if domains is None or (domains is not None and len(domains) == 0):
@@ -455,10 +450,10 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return domains
 
     @validator("interventionArea")
-    def validate_intervention_area_not_empty_when_specified(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferBodyModel",
+    def validate_intervention_area_not_empty_when_specified(
+        cls,
         intervention_area: list[str] | None,
-        values: Dict,
+        values: dict,
     ) -> list[str] | None:
         if not is_intervention_area_valid(intervention_area, values.get("offerVenue", None)):
             raise ValueError("interventionArea must have at least one value")
@@ -475,14 +470,14 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     domains: list[int] | None
 
     @validator("priceDetail")
-    def validate_price_detail(cls, price_detail: str | None) -> str | None:  # pylint: disable=no-self-argument
+    def validate_price_detail(cls, price_detail: str | None) -> str | None:
         if price_detail and len(price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return price_detail
 
     @validator("domains")
-    def validate_domains_collective_offer_template_edition(  # pylint: disable=no-self-argument
-        cls: "PatchCollectiveOfferTemplateBodyModel",
+    def validate_domains_collective_offer_template_edition(
+        cls,
         domains: list[int] | None,
     ) -> list[int] | None:
         if domains is not None and len(domains) == 0:
