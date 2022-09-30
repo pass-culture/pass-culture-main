@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom'
 
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  render,
+  screen,
+  within,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -17,15 +23,15 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderVenueProvidersManager = async props => {
-  await act(async () => {
-    render(
-      <Provider store={configureTestStore()}>
-        <MemoryRouter>
-          <VenueProvidersManager {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  render(
+    <Provider store={configureTestStore()}>
+      <MemoryRouter>
+        <VenueProvidersManager {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 describe('src | VenueProvidersManager', () => {
@@ -159,7 +165,7 @@ describe('src | VenueProvidersManager', () => {
       const importOffersButton = screen.getByText('Synchroniser des offres')
 
       // when
-      fireEvent.click(importOffersButton)
+      await userEvent.click(importOffersButton)
 
       // then
       const providersSelect = screen.getByRole('combobox')
@@ -176,7 +182,7 @@ describe('src | VenueProvidersManager', () => {
       const importOffersButton = screen.getByText('Synchroniser des offres')
 
       // when
-      fireEvent.click(importOffersButton)
+      await userEvent.click(importOffersButton)
 
       // then
       expect(screen.queryByText('Compte')).not.toBeInTheDocument()
@@ -196,13 +202,11 @@ describe('src | VenueProvidersManager', () => {
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Synchroniser des offres')
-        fireEvent.click(importOffersButton)
+        await userEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        fireEvent.change(providersSelect, {
-          target: { value: providers[0].id },
-        })
+        await userEvent.selectOptions(providersSelect, providers[0].id)
 
         // then
         expect(screen.getByText('Prix de vente/place')).toBeInTheDocument()
@@ -218,13 +222,11 @@ describe('src | VenueProvidersManager', () => {
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Synchroniser des offres')
-        fireEvent.click(importOffersButton)
+        await userEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        fireEvent.change(providersSelect, {
-          target: { value: providers[0].id },
-        })
+        await userEvent.selectOptions(providersSelect, providers[0].id)
 
         // then
         expect(screen.getByText('Compte')).toBeInTheDocument()

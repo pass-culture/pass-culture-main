@@ -26,10 +26,6 @@ export const failToGenerateOffererApiKey = () =>
 
 export const loadFakeApiVenue = venue => {
   jest.spyOn(api, 'getVenue').mockResolvedValueOnce(venue)
-
-  return {
-    resolvingVenuePromise: Promise.resolve(venue),
-  }
 }
 
 export const loadFakeApiCategories = () => {

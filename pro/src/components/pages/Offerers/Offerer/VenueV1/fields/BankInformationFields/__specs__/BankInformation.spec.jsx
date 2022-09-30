@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { act, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import BankInformation from '../BankInformationFields'
@@ -10,10 +10,8 @@ jest.mock('utils/config', () => ({
     'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
-const renderBankInformation = async props => {
-  return await act(async () => {
-    render(<BankInformation {...props} />)
-  })
+const renderBankInformation = props => {
+  render(<BankInformation {...props} />)
 }
 
 describe('src | Venue | BankInformation', () => {
@@ -33,7 +31,7 @@ describe('src | Venue | BankInformation', () => {
 
   describe('when no application has been made or application has been refused', () => {
     describe('when the offerer has no bank information', () => {
-      it('should render instruction block', async () => {
+      it('should render instruction block', () => {
         // Given
         props = {
           ...props,
@@ -45,7 +43,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        await renderBankInformation(props)
+        renderBankInformation(props)
 
         // then
         expect(
@@ -78,7 +76,7 @@ describe('src | Venue | BankInformation', () => {
     })
 
     describe('when the offerer has bank information', () => {
-      it('should render offerer information', async () => {
+      it('should render offerer information', () => {
         // Given
         props = {
           ...props,
@@ -95,7 +93,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        await renderBankInformation(props)
+        renderBankInformation(props)
 
         // then
         expect(screen.getByText(props.offerer.bic)).toBeInTheDocument()
@@ -106,7 +104,7 @@ describe('src | Venue | BankInformation', () => {
 
   describe('when application has been validated', () => {
     describe('when venue and offerer banking information are both provided', () => {
-      it('should render venue informations', async () => {
+      it('should render venue informations', () => {
         // Given
         props = {
           ...props,
@@ -123,7 +121,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        await renderBankInformation(props)
+        renderBankInformation(props)
 
         // then
         expect(screen.getByText(props.venue.bic)).toBeInTheDocument()
@@ -134,7 +132,7 @@ describe('src | Venue | BankInformation', () => {
 
   describe('when application is in construction or in instruction', () => {
     describe('when offerer has no bank informations', () => {
-      it('should render current application detail', async () => {
+      it('should render current application detail', () => {
         // Given
         props = {
           ...props,
@@ -147,7 +145,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        await renderBankInformation(props)
+        renderBankInformation(props)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
@@ -158,7 +156,7 @@ describe('src | Venue | BankInformation', () => {
     })
 
     describe('when offerer has bank informations', () => {
-      it('should render current application detail and offerer bank informations', async () => {
+      it('should render current application detail and offerer bank informations', () => {
         // Given
         props = {
           ...props,
@@ -176,7 +174,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        await renderBankInformation(props)
+        renderBankInformation(props)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
@@ -188,7 +186,7 @@ describe('src | Venue | BankInformation', () => {
         expect(screen.getByText(props.offerer.iban)).toBeInTheDocument()
       })
 
-      it('should render current application detail when demarchesSimplifieesApplicationId is provided', async () => {
+      it('should render current application detail when demarchesSimplifieesApplicationId is provided', () => {
         // Given
         props = {
           ...props,
@@ -201,7 +199,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        await renderBankInformation(props)
+        renderBankInformation(props)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
@@ -213,7 +211,7 @@ describe('src | Venue | BankInformation', () => {
         expect(screen.queryByText('IBAN')).not.toBeInTheDocument()
       })
 
-      it('should render current application detail and offerer bank informations when both presents in props', async () => {
+      it('should render current application detail and offerer bank informations when both presents in props', () => {
         // Given
         props = {
           ...props,
@@ -231,7 +229,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        await renderBankInformation(props)
+        renderBankInformation(props)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`

@@ -1,10 +1,9 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { act } from 'react-dom/test-utils'
 import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router'
 
@@ -52,7 +51,7 @@ describe('src | components | pages | SetPassword', () => {
     expect(historyPushSpy).toHaveBeenCalledWith('/accueil')
   })
 
-  it('should render the default page without redirect', async () => {
+  it('should render the default page without redirect', () => {
     // Given
     renderSetPassword(store, history)
 
@@ -101,9 +100,7 @@ describe('src | components | pages | SetPassword', () => {
     await userEvent.click(submitButton)
 
     // Then
-    await waitFor(() => {
-      expect(pcapi.setPassword).toHaveBeenCalledWith('fakeToken', 'password1')
-    })
+    expect(pcapi.setPassword).toHaveBeenCalledWith('fakeToken', 'password1')
   })
 
   it('should display the success message and redirect to login page', async () => {
@@ -119,14 +116,12 @@ describe('src | components | pages | SetPassword', () => {
     // When
     userEvent.type(passwordInput, 'password1')
     userEvent.type(confirmationPasswordInput, 'password1')
-    await act(async () => userEvent.click(submitButton))
+    await userEvent.click(submitButton)
 
     // Then
-    await waitFor(() => {
-      expect(history.push).toHaveBeenCalledWith(
-        '/creation-de-mot-de-passe-confirmation'
-      )
-    })
+    expect(history.push).toHaveBeenCalledWith(
+      '/creation-de-mot-de-passe-confirmation'
+    )
   })
 
   it('should display the form error', async () => {
@@ -145,21 +140,19 @@ describe('src | components | pages | SetPassword', () => {
     // When
     userEvent.type(passwordInput, 'password1')
     userEvent.type(confirmationPasswordInput, 'password1')
-    await act(async () => userEvent.click(submitButton))
+    await userEvent.click(submitButton)
 
     // Then
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Une erreur s'est produite, veuillez corriger le formulaire."
-        )
-      ).toBeVisible()
-      expect(
-        screen.getByText(
-          'Votre mot de passe doit contenir au moins : - 12 caractères - Un chiffre - Une majuscule et une minuscule - Un caractère spécial'
-        )
-      ).toBeVisible()
-    })
+    expect(
+      screen.getByText(
+        "Une erreur s'est produite, veuillez corriger le formulaire."
+      )
+    ).toBeVisible()
+    expect(
+      screen.getByText(
+        'Votre mot de passe doit contenir au moins : - 12 caractères - Un chiffre - Une majuscule et une minuscule - Un caractère spécial'
+      )
+    ).toBeVisible()
   })
 
   it('should display the token error', async () => {
@@ -177,14 +170,12 @@ describe('src | components | pages | SetPassword', () => {
     // When
     userEvent.type(passwordInput, 'password1')
     userEvent.type(confirmationPasswordInput, 'password1')
-    await act(async () => userEvent.click(submitButton))
+    await userEvent.click(submitButton)
 
     // Then
-    await waitFor(() => {
-      expect(history.push).toHaveBeenCalledWith(
-        '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
-      )
-    })
+    expect(history.push).toHaveBeenCalledWith(
+      '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
+    )
   })
 
   it('should display the unknown error', async () => {
@@ -202,16 +193,14 @@ describe('src | components | pages | SetPassword', () => {
     // When
     userEvent.type(passwordInput, 'password1')
     userEvent.type(confirmationPasswordInput, 'password1')
-    await act(async () => userEvent.click(submitButton))
+    await userEvent.click(submitButton)
 
     // Then
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Une erreur s'est produite, veuillez contacter le support."
-        )
-      ).toBeVisible()
-    })
+    expect(
+      screen.getByText(
+        "Une erreur s'est produite, veuillez contacter le support."
+      )
+    ).toBeVisible()
   })
 
   it('should redirect the user to reset password page with a toaster when no token', async () => {
