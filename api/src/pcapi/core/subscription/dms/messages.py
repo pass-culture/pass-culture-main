@@ -30,17 +30,19 @@ def _generate_form_field_error(
     return user_message
 
 
-def get_application_received_message(reception_datetime: datetime.datetime) -> models.SubscriptionMessage:
+def get_application_received_message(fraud_check: fraud_models.BeneficiaryFraudCheck) -> models.SubscriptionMessage:
     return models.SubscriptionMessage(
-        user_message=f"Nous avons bien reçu ton dossier le {reception_datetime.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel.",
+        user_message=f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel.",
         pop_over_icon=models.PopOverIcon.FILE,
         call_to_action=None,
+        updated_at=fraud_check.updatedAt,
     )
 
 
 def get_error_updatable_message(
     application_content: fraud_models.DMSContent | None,
     birth_date_error: fraud_models.DmsFieldErrorDetails | None,
+    updated_at: datetime.datetime | None,
 ) -> models.SubscriptionMessage:
     if not application_content or not (application_content.field_errors or birth_date_error):
         user_message = "Ton dossier déposé sur le site Démarches-Simplifiées contient des erreurs. Tu peux te rendre sur le site pour le rectifier."
@@ -58,6 +60,7 @@ def get_error_updatable_message(
         user_message=user_message,
         pop_over_icon=None,
         call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
+        updated_at=updated_at,
     )
 
 
@@ -66,6 +69,7 @@ def get_error_not_updatable_message(
     reason_codes: list[fraud_models.FraudReasonCode],
     application_content: fraud_models.DMSContent | None,
     birth_date_error: fraud_models.DmsFieldErrorDetails | None,
+    updated_at: datetime.datetime | None,
 ) -> models.SubscriptionMessage:
     user_message = "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé"
     pop_over_icon: models.PopOverIcon | None = models.PopOverIcon.ERROR
@@ -103,4 +107,5 @@ def get_error_not_updatable_message(
         user_message=user_message,
         pop_over_icon=pop_over_icon,
         call_to_action=call_to_action,
+        updated_at=updated_at,
     )
