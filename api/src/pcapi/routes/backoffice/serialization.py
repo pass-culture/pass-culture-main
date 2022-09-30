@@ -344,3 +344,15 @@ class OffererTagItem(BaseModel):
 
 class OffererTagsResponseModel(BaseModel):
     data: list[OffererTagItem]
+
+
+class OffererBasicInfoResponseModel(Response):
+    data: OffererBasicInfo
+
+
+class OffererTotalRevenueResponseModel(Response):
+    data: float
+
+
+class OffererOfferStatsResponseModel(Response):
+    data: OffersStats
