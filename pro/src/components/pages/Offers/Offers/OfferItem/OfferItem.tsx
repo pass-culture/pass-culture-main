@@ -9,6 +9,7 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
+import CheckboxCell from './Cells/CheckboxCell'
 import EditOfferCell from './Cells/EditOfferCell'
 import EditStocksCell from './Cells/EditStocksCell'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
@@ -47,10 +48,6 @@ const OfferItem = ({
     !!isShowcase
   )
 
-  function handleOnChangeSelected() {
-    selectOffer(offer.id, !isSelected, !!isShowcase)
-  }
-
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
     !offer.isActive ||
@@ -63,17 +60,14 @@ const OfferItem = ({
         isOfferInactiveOrExpiredOrDisabled ? 'inactive' : ''
       } offer-row`}
     >
-      <td className="select-column">
-        <input
-          checked={isSelected}
-          className="select-offer-checkbox"
-          data-testid={`select-offer-${offer.id}`}
-          disabled={disabled || isOfferDisabled(offer.status)}
-          id={`select-offer-${offer.id}`}
-          onChange={handleOnChangeSelected}
-          type="checkbox"
-        />
-      </td>
+      <CheckboxCell
+        offerId={offer.id}
+        status={offer.status}
+        disabled={disabled}
+        isSelected={isSelected}
+        selectOffer={selectOffer}
+        isShowcase={Boolean(offer.isShowcase)}
+      />
       {audience === Audience.INDIVIDUAL && (
         <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
       )}
