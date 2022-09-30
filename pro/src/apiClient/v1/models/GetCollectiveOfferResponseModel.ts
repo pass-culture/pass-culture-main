@@ -18,7 +18,7 @@ export type GetCollectiveOfferResponseModel = {
   contactEmail: string;
   contactPhone: string;
   dateCreated: string;
-  description?: string | null;
+  description: string;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   hasBookingLimitDatetimesPassed: boolean;

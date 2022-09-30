@@ -15,7 +15,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   contactEmail: string;
   contactPhone: string;
   dateCreated: string;
-  description?: string | null;
+  description: string;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;
