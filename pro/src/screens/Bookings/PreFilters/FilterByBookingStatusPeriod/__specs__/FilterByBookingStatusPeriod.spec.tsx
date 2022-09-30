@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import type { Store } from 'redux'
@@ -23,7 +24,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderPreFilters = (props: IPreFiltersProps, store: Store) => {
-  return render(
+  render(
     <Provider store={store}>
       <PreFilters {...props} />
     </Provider>
@@ -55,24 +56,20 @@ describe('filter bookings by bookings period', () => {
     store = configureTestStore()
   })
 
-  it('should select 30 days before today as period beginning date by default', async () => {
+  it('should select 30 days before today as period beginning date by default', () => {
     // When
     renderPreFilters(props, store)
 
     // Then
-    await expect(
-      screen.findByDisplayValue('15/11/2020')
-    ).resolves.toBeInTheDocument()
+    expect(screen.getByDisplayValue('15/11/2020')).toBeInTheDocument()
   })
 
-  it('should select today as period ending date by default', async () => {
+  it('should select today as period ending date by default', () => {
     // When
     renderPreFilters(props, store)
 
     // Then
-    await expect(
-      screen.findByDisplayValue('15/12/2020')
-    ).resolves.toBeInTheDocument()
+    expect(screen.getByDisplayValue('15/12/2020')).toBeInTheDocument()
   })
 
   it('should allow to select period ending date before today', async () => {
@@ -81,13 +78,11 @@ describe('filter bookings by bookings period', () => {
     const periodEndingDateInput = screen.getByDisplayValue('15/12/2020')
 
     // When
-    fireEvent.click(periodEndingDateInput)
-    fireEvent.click(screen.getByText('14'))
+    await userEvent.click(periodEndingDateInput)
+    await userEvent.click(screen.getByText('14'))
 
     // Then
-    await expect(
-      screen.findByDisplayValue('14/12/2020')
-    ).resolves.toBeInTheDocument()
+    expect(screen.getByDisplayValue('14/12/2020')).toBeInTheDocument()
   })
 
   it('should not allow to select period ending date after today', async () => {
@@ -95,9 +90,9 @@ describe('filter bookings by bookings period', () => {
     renderPreFilters(props, store)
 
     // When
-    const periodEndingDateInput = await screen.findByDisplayValue('15/12/2020')
-    fireEvent.click(periodEndingDateInput)
-    fireEvent.click(screen.getByText('16'))
+    const periodEndingDateInput = await screen.getByDisplayValue('15/12/2020')
+    await userEvent.click(periodEndingDateInput)
+    await userEvent.click(screen.getByText('16'))
 
     // Then
     expect(screen.queryByDisplayValue('16/12/2020')).not.toBeInTheDocument()
@@ -109,9 +104,9 @@ describe('filter bookings by bookings period', () => {
     const periodEndingDateInput = screen.getByDisplayValue('15/12/2020')
 
     // When
-    fireEvent.click(periodEndingDateInput)
-    fireEvent.click(screen.getByLabelText('Previous Month'))
-    fireEvent.click(screen.getByText('13'))
+    await userEvent.click(periodEndingDateInput)
+    await userEvent.click(screen.getByLabelText('Previous Month'))
+    await userEvent.click(screen.getByText('13'))
 
     // Then
     expect(screen.queryByDisplayValue('13/12/2020')).not.toBeInTheDocument()
@@ -123,13 +118,11 @@ describe('filter bookings by bookings period', () => {
     const periodBeginningDateInput = screen.getByDisplayValue('15/11/2020')
 
     // When
-    fireEvent.click(periodBeginningDateInput)
-    fireEvent.click(screen.getByText('14'))
+    await userEvent.click(periodBeginningDateInput)
+    await userEvent.click(screen.getByText('14'))
 
     // Then
-    await expect(
-      screen.findByDisplayValue('14/11/2020')
-    ).resolves.toBeInTheDocument()
+    expect(screen.getByDisplayValue('14/11/2020')).toBeInTheDocument()
   })
 
   it('should not allow to select period beginning date after ending date', async () => {
@@ -138,14 +131,14 @@ describe('filter bookings by bookings period', () => {
 
     // When
     const periodBeginningDateInput = screen.getByDisplayValue('15/11/2020')
-    fireEvent.click(periodBeginningDateInput)
-    fireEvent.click(screen.getByText('16'))
+    await userEvent.click(periodBeginningDateInput)
+    await userEvent.click(screen.getByText('16'))
 
     // Then
     expect(screen.queryByDisplayValue('16/12/2020')).not.toBeInTheDocument()
   })
 
-  it('should select booked status as booking status filter by default', async () => {
+  it('should select booked status as booking status filter by default', () => {
     props.isBookingFiltersActive = true
     // Given
     renderPreFilters(props, store)
@@ -165,8 +158,8 @@ describe('filter bookings by bookings period', () => {
     )
 
     // When
-    fireEvent.click(bookingStatusFilterInput)
-    fireEvent.click(screen.getByText('Période de validation'))
+    await userEvent.click(bookingStatusFilterInput)
+    await userEvent.click(screen.getByText('Période de validation'))
 
     // Then
     expect(screen.queryByText('Période de validation')).toBeInTheDocument()

@@ -2,7 +2,11 @@ import '@testing-library/jest-dom'
 
 import { parse } from 'querystring'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import React from 'react'
@@ -13,7 +17,6 @@ import type { Store } from 'redux'
 import { api } from 'apiClient/api'
 import {
   ALL_CATEGORIES_OPTION,
-  ALL_OFFERS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   DEFAULT_PAGE,
@@ -26,7 +29,7 @@ import { collectiveOfferFactory } from 'utils/apiFactories'
 
 import CollectiveOffers from '../CollectiveOffers'
 
-const renderOffers = (
+const renderOffers = async (
   store: Store,
   filters: Partial<TSearchFilters> & {
     page?: number
@@ -35,14 +38,17 @@ const renderOffers = (
   const history = createMemoryHistory()
   const route = computeCollectiveOffersUrl(filters)
   history.push(route)
+  render(
+    <Provider store={store}>
+      <Router history={history}>
+        <CollectiveOffers />
+      </Router>
+    </Provider>
+  )
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
   return {
-    ...render(
-      <Provider store={store}>
-        <Router history={history}>
-          <CollectiveOffers />
-        </Router>
-      </Provider>
-    ),
     history,
   }
 }
@@ -149,33 +155,31 @@ describe('route CollectiveOffers', () => {
     describe('filters', () => {
       it('should display only selectable categories eligible for EAC on filters', async () => {
         // When
-        renderOffers(store)
-        await screen.findByText('Lancer la recherche')
+        await renderOffers(store)
+        screen.getByText('Lancer la recherche')
 
         // Then
-        await expect(
-          screen.findByRole('option', { name: 'Cinéma' })
-        ).resolves.toBeInTheDocument()
-        await expect(
-          screen.findByRole('option', { name: 'Jeux' })
-        ).rejects.toBeTruthy()
-        await expect(
-          screen.findByRole('option', { name: 'Technique' })
-        ).rejects.toBeTruthy()
+        expect(
+          screen.getByRole('option', { name: 'Cinéma' })
+        ).toBeInTheDocument()
+        expect(
+          screen.queryByRole('option', { name: 'Jeux' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('option', { name: 'Technique' })
+        ).not.toBeInTheDocument()
       })
 
       describe('status filters', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           // Given
-          renderOffers(store)
-          fireEvent.click(
-            await screen.findByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
+          await renderOffers(store)
+          await userEvent.click(
+            screen.getByAltText('Afficher ou masquer le filtre par statut')
           )
-          fireEvent.click(screen.getByLabelText('Expirée'))
+          await userEvent.click(screen.getByLabelText('Expirée'))
           // When
-          fireEvent.click(screen.getByText('Appliquer'))
+          await userEvent.click(screen.getByText('Appliquer'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -196,17 +200,15 @@ describe('route CollectiveOffers', () => {
             // @ts-ignore FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
-          renderOffers(store)
+          await renderOffers(store)
           // When
-          fireEvent.click(
-            await screen.findByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
+          await userEvent.click(
+            screen.getByAltText('Afficher ou masquer le filtre par statut')
           )
-          fireEvent.click(screen.getByLabelText('Expirée'))
-          fireEvent.click(screen.getByText('Appliquer'))
+          await userEvent.click(screen.getByLabelText('Expirée'))
+          await userEvent.click(screen.getByText('Appliquer'))
           // Then
-          const noOffersForSearchFiltersText = await screen.findByText(
+          const noOffersForSearchFiltersText = screen.getByText(
             'Aucune offre trouvée pour votre recherche'
           )
           expect(noOffersForSearchFiltersText).toBeInTheDocument()
@@ -216,7 +218,7 @@ describe('route CollectiveOffers', () => {
           // Given
           jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
           // When
-          renderOffers(store)
+          await renderOffers(store)
 
           // Then
           expect(screen.queryByText('Lieu', { selector: 'th' })).toBeNull()
@@ -244,17 +246,15 @@ describe('route CollectiveOffers', () => {
               venueId: venueId,
               status: 'inactive',
             }
-            renderOffers(store, filters)
-            await waitFor(() =>
-              expect(screen.getByDisplayValue(venueName)).toBeInTheDocument()
+            await renderOffers(store, filters)
+            await userEvent.selectOptions(
+              screen.getByDisplayValue(venueName),
+              ALL_VENUES
             )
-            fireEvent.change(screen.getByDisplayValue(venueName), {
-              target: { value: ALL_VENUES },
-            })
             // When
-            fireEvent.click(screen.getByText('Lancer la recherche'))
+            await userEvent.click(screen.getByText('Lancer la recherche'))
             // Then
-            const statusFiltersIcon = await screen.findByAltText(
+            const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
@@ -278,14 +278,15 @@ describe('route CollectiveOffers', () => {
               status: 'INACTIVE',
               offererId: 'EF',
             }
-            renderOffers(store, filters)
-            fireEvent.change(await screen.findByDisplayValue(venueName), {
-              target: { value: ALL_VENUES },
-            })
+            await renderOffers(store, filters)
+            await userEvent.selectOptions(
+              screen.getByDisplayValue(venueName),
+              ALL_VENUES
+            )
             // When
-            fireEvent.click(screen.getByText('Lancer la recherche'))
+            await userEvent.click(screen.getByText('Lancer la recherche'))
             // Then
-            const statusFiltersIcon = await screen.findByAltText(
+            const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
@@ -310,13 +311,13 @@ describe('route CollectiveOffers', () => {
               offererId: offerer.id,
               status: 'INACTIVE',
             }
-            renderOffers(store, filters)
+            await renderOffers(store, filters)
             // When
-            fireEvent.click(
-              await screen.findByAltText('Supprimer le filtre par structure')
+            await userEvent.click(
+              screen.getByAltText('Supprimer le filtre par structure')
             )
             // Then
-            const statusFiltersIcon = await screen.findByAltText(
+            const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
@@ -343,13 +344,13 @@ describe('route CollectiveOffers', () => {
               status: 'INACTIVE',
               offererId: offerer.id,
             }
-            renderOffers(store, filters)
+            await renderOffers(store, filters)
             // When
-            fireEvent.click(
-              await screen.findByAltText('Supprimer le filtre par structure')
+            await userEvent.click(
+              screen.getByAltText('Supprimer le filtre par structure')
             )
             // Then
-            const statusFiltersIcon = await screen.findByAltText(
+            const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
@@ -369,9 +370,9 @@ describe('route CollectiveOffers', () => {
             // Given
             const filters = { venueId: 'IJ' }
             // When
-            renderOffers(store, filters)
+            await renderOffers(store, filters)
             // Then
-            const statusFiltersIcon = await screen.findByAltText(
+            const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
@@ -381,9 +382,9 @@ describe('route CollectiveOffers', () => {
             // Given
             const filters = { offererId: 'A4' }
             // When
-            renderOffers(store, filters)
+            await renderOffers(store, filters)
             // Then
-            const statusFiltersIcon = await screen.findByAltText(
+            const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
@@ -394,15 +395,13 @@ describe('route CollectiveOffers', () => {
       describe('on click on search button', () => {
         it('should load offers with written offer name filter', async () => {
           // Given
-          renderOffers(store)
-          fireEvent.change(
-            await screen.findByPlaceholderText('Rechercher par nom d’offre'),
-            {
-              target: { value: 'Any word' },
-            }
+          await renderOffers(store)
+          await userEvent.type(
+            screen.getByPlaceholderText('Rechercher par nom d’offre'),
+            'Any word'
           )
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
@@ -418,14 +417,14 @@ describe('route CollectiveOffers', () => {
 
         it('should load offers with selected venue filter', async () => {
           // Given
-          renderOffers(store)
-          const firstVenueOption = await screen.findByRole('option', {
+          await renderOffers(store)
+          const firstVenueOption = screen.getByRole('option', {
             name: proVenues[0].name,
           })
           const venueSelect = screen.getByLabelText('Lieu')
           await userEvent.selectOptions(venueSelect, firstVenueOption)
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
@@ -441,8 +440,8 @@ describe('route CollectiveOffers', () => {
 
         it('should load offers with selected type filter', async () => {
           // Given
-          renderOffers(store)
-          const firstTypeOption = await screen.findByRole('option', {
+          await renderOffers(store)
+          const firstTypeOption = screen.getByRole('option', {
             name: 'Cinéma',
           })
           const typeSelect = screen.getByDisplayValue(
@@ -466,7 +465,7 @@ describe('route CollectiveOffers', () => {
 
         it('should load offers with selected period beginning date', async () => {
           // Given
-          renderOffers(store)
+          await renderOffers(store)
           await userEvent.click(
             (
               await screen.findAllByPlaceholderText('JJ/MM/AAAA')
@@ -490,13 +489,15 @@ describe('route CollectiveOffers', () => {
 
         it('should load offers with selected period ending date', async () => {
           // Given
-          renderOffers(store)
-          fireEvent.click(
-            (await screen.findAllByPlaceholderText('JJ/MM/AAAA'))[1]
+          await renderOffers(store)
+          await userEvent.click(
+            (
+              await screen.findAllByPlaceholderText('JJ/MM/AAAA')
+            )[1]
           )
-          fireEvent.click(screen.getByText('27'))
+          await userEvent.click(screen.getByText('27'))
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -523,10 +524,10 @@ describe('route CollectiveOffers', () => {
         .spyOn(api, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
-      const { history } = renderOffers(store)
-      const nextPageIcon = await screen.findByAltText('page suivante')
+      const { history } = await renderOffers(store)
+      const nextPageIcon = screen.getByAltText('page suivante')
       // When
-      fireEvent.click(nextPageIcon)
+      await userEvent.click(nextPageIcon)
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -536,15 +537,13 @@ describe('route CollectiveOffers', () => {
 
     it('should have offer name value when name search value is not an empty string', async () => {
       // Given
-      const { history } = renderOffers(store)
+      const { history } = await renderOffers(store)
       // When
-      fireEvent.change(
-        await screen.findByPlaceholderText('Rechercher par nom d’offre'),
-        {
-          target: { value: 'AnyWord' },
-        }
+      await userEvent.type(
+        screen.getByPlaceholderText('Rechercher par nom d’offre'),
+        'AnyWord'
       )
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -554,13 +553,13 @@ describe('route CollectiveOffers', () => {
 
     it('should store search value', async () => {
       // Given
-      renderOffers(store)
-      const searchInput = await screen.findByPlaceholderText(
+      await renderOffers(store)
+      const searchInput = screen.getByPlaceholderText(
         'Rechercher par nom d’offre'
       )
       // When
-      fireEvent.change(searchInput, { target: { value: 'search string' } })
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.type(searchInput, 'search string')
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       // Then
       expect(api.getCollectiveOffers).toHaveBeenCalledWith(
         'search string',
@@ -576,15 +575,12 @@ describe('route CollectiveOffers', () => {
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
       // Given
-      const { history } = renderOffers(store)
+      const { history } = await renderOffers(store)
       // When
-      fireEvent.change(
-        await screen.findByPlaceholderText('Rechercher par nom d’offre'),
-        {
-          target: { value: ALL_OFFERS },
-        }
+      await userEvent.clear(
+        screen.getByPlaceholderText('Rechercher par nom d’offre')
       )
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({})
@@ -592,14 +588,14 @@ describe('route CollectiveOffers', () => {
 
     it('should have venue value when user filters by venue', async () => {
       // Given
-      const { history } = renderOffers(store)
-      const firstVenueOption = await screen.findByRole('option', {
+      const { history } = await renderOffers(store)
+      const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
       const venueSelect = screen.getByLabelText('Lieu')
       // When
       await userEvent.selectOptions(venueSelect, firstVenueOption)
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -639,8 +635,8 @@ describe('route CollectiveOffers', () => {
           },
         ],
       })
-      const { history } = renderOffers(store)
-      const firstTypeOption = await screen.findByRole('option', {
+      const { history } = await renderOffers(store)
+      const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
       const typeSelect = screen.getByDisplayValue(
@@ -648,14 +644,12 @@ describe('route CollectiveOffers', () => {
       )
       // When
       await userEvent.selectOptions(typeSelect, firstTypeOption)
-      fireEvent.click(screen.getByText('Lancer la recherche'))
-      await waitFor(() => {
-        const urlSearchParams = parse(history.location.search.substring(1))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
-        // Then
-        expect(urlSearchParams).toMatchObject({
-          categorie: 'test_id_1',
-        })
+      // Then
+      expect(urlSearchParams).toMatchObject({
+        categorie: 'test_id_1',
       })
     })
 
@@ -673,13 +667,13 @@ describe('route CollectiveOffers', () => {
           null
         ),
       ])
-      const { history } = renderOffers(store)
-      fireEvent.click(
-        await screen.findByAltText('Afficher ou masquer le filtre par statut')
+      const { history } = await renderOffers(store)
+      await userEvent.click(
+        screen.getByAltText('Afficher ou masquer le filtre par statut')
       )
-      fireEvent.click(screen.getByLabelText('Épuisée'))
+      await userEvent.click(screen.getByLabelText('Épuisée'))
       // When
-      fireEvent.click(screen.getByText('Appliquer'))
+      await userEvent.click(screen.getByText('Appliquer'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -701,13 +695,13 @@ describe('route CollectiveOffers', () => {
           null
         ),
       ])
-      const { history } = renderOffers(store)
-      fireEvent.click(
-        await screen.findByAltText('Afficher ou masquer le filtre par statut')
+      const { history } = await renderOffers(store)
+      await userEvent.click(
+        screen.getByAltText('Afficher ou masquer le filtre par statut')
       )
-      fireEvent.click(screen.getByLabelText('Tous'))
+      await userEvent.click(screen.getByLabelText('Tous'))
       // When
-      fireEvent.click(screen.getByText('Appliquer'))
+      await userEvent.click(screen.getByText('Appliquer'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({})
@@ -721,9 +715,9 @@ describe('route CollectiveOffers', () => {
         name: 'La structure',
       })
       // When
-      renderOffers(store, filters)
+      await renderOffers(store, filters)
       // Then
-      const offererFilter = await screen.findByText('La structure')
+      const offererFilter = screen.getByText('La structure')
       expect(offererFilter).toBeInTheDocument()
     })
 
@@ -734,10 +728,10 @@ describe('route CollectiveOffers', () => {
       jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
-      renderOffers(store, filters)
+      await renderOffers(store, filters)
       // When
-      fireEvent.click(
-        await screen.findByAltText('Supprimer le filtre par structure')
+      await userEvent.click(
+        screen.getByAltText('Supprimer le filtre par structure')
       )
       // Then
       expect(screen.queryByText('La structure')).not.toBeInTheDocument()
@@ -752,19 +746,17 @@ describe('route CollectiveOffers', () => {
         // @ts-ignore FIX ME
         offersRecap
       )
-      const { history } = renderOffers(store)
-      await screen.findByText('Lancer la recherche')
+      const { history } = await renderOffers(store)
+      screen.getByText('Lancer la recherche')
       const individualAudienceLink = screen.getByText('Offres individuelles', {
         selector: 'span',
       })
 
       // When
-      fireEvent.click(individualAudienceLink)
+      await userEvent.click(individualAudienceLink)
 
       // Then
-      await waitFor(() => {
-        expect(history.location.pathname).toBe('/offres')
-      })
+      expect(history.location.pathname).toBe('/offres')
 
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
@@ -785,15 +777,13 @@ describe('route CollectiveOffers', () => {
         .spyOn(api, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offers)
-      renderOffers(store)
-      const nextIcon = await screen.findByAltText('page suivante')
+      await renderOffers(store)
+      const nextIcon = screen.getByAltText('page suivante')
       // When
-      fireEvent.click(nextIcon)
+      await userEvent.click(nextIcon)
       // Then
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      await expect(
-        screen.findByText(offers[10].name)
-      ).resolves.toBeInTheDocument()
+      expect(screen.getByText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
@@ -804,17 +794,15 @@ describe('route CollectiveOffers', () => {
         .spyOn(api, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offers)
-      renderOffers(store)
-      const nextIcon = await screen.findByAltText('page suivante')
-      const previousIcon = await screen.findByAltText('page précédente')
-      fireEvent.click(nextIcon)
+      await renderOffers(store)
+      const nextIcon = screen.getByAltText('page suivante')
+      const previousIcon = screen.getByAltText('page précédente')
+      await userEvent.click(nextIcon)
       // When
-      fireEvent.click(previousIcon)
+      await userEvent.click(previousIcon)
       // Then
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      await expect(
-        screen.findByText(offers[0].name)
-      ).resolves.toBeInTheDocument()
+      expect(screen.getByText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
@@ -822,9 +810,9 @@ describe('route CollectiveOffers', () => {
       // Given
       const filters = { page: DEFAULT_PAGE }
       // When
-      renderOffers(store, filters)
+      await renderOffers(store, filters)
       // Then
-      const previousIcon = await screen.findByAltText('page précédente')
+      const previousIcon = screen.getByAltText('page précédente')
       expect(previousIcon.closest('button')).toBeDisabled()
     })
 
@@ -835,9 +823,9 @@ describe('route CollectiveOffers', () => {
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
       // When
-      renderOffers(store)
+      await renderOffers(store)
       // Then
-      const nextIcon = await screen.findByAltText('page suivante')
+      const nextIcon = screen.getByAltText('page suivante')
       expect(nextIcon.closest('button')).toBeDisabled()
     })
 
@@ -855,11 +843,9 @@ describe('route CollectiveOffers', () => {
           // @ts-ignore FIX ME
           .mockResolvedValueOnce(offersRecap)
         // When
-        renderOffers(store)
+        await renderOffers(store)
         // Then
-        await expect(
-          screen.findByText('Page 1/50')
-        ).resolves.toBeInTheDocument()
+        expect(screen.getByText('Page 1/50')).toBeInTheDocument()
       })
 
       it('should not display the 501st offer', async () => {
@@ -868,11 +854,11 @@ describe('route CollectiveOffers', () => {
           .spyOn(api, 'getCollectiveOffers')
           // @ts-ignore FIX ME
           .mockResolvedValueOnce(offersRecap)
-        renderOffers(store)
-        const nextIcon = await screen.findByAltText('page suivante')
+        await renderOffers(store)
+        const nextIcon = screen.getByAltText('page suivante')
         // When
         for (let i = 1; i < 51; i++) {
-          fireEvent.click(nextIcon)
+          await userEvent.click(nextIcon)
         }
         // Then
         expect(screen.getByText(offersRecap[499].name)).toBeInTheDocument()
@@ -890,9 +876,9 @@ describe('route CollectiveOffers', () => {
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
-      renderOffers(store)
+      await renderOffers(store)
 
-      const firstVenueOption = await screen.findByRole('option', {
+      const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
 
@@ -915,7 +901,7 @@ describe('route CollectiveOffers', () => {
         undefined
       )
 
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -930,9 +916,9 @@ describe('route CollectiveOffers', () => {
         undefined
       )
 
-      await screen.findByText('Aucune offre trouvée pour votre recherche')
+      screen.getByText('Aucune offre trouvée pour votre recherche')
 
-      fireEvent.click(screen.getByText('afficher toutes les offres'))
+      await userEvent.click(screen.getByText('afficher toutes les offres'))
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -955,9 +941,9 @@ describe('route CollectiveOffers', () => {
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 
-      renderOffers(store)
+      await renderOffers(store)
 
-      const venueOptionToSelect = await screen.findByRole('option', {
+      const venueOptionToSelect = screen.getByRole('option', {
         name: proVenues[0].name,
       })
 
@@ -980,7 +966,7 @@ describe('route CollectiveOffers', () => {
         undefined
       )
 
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,

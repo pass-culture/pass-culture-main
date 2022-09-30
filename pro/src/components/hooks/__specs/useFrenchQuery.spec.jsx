@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
@@ -24,7 +25,7 @@ describe('useFrenchQuery', () => {
     expect(screen.getByText('venueId: BC')).toBeInTheDocument()
   })
 
-  it('should allow update on french query params from english', () => {
+  it('should allow update on french query params from english', async () => {
     // Given
     render(
       <MemoryRouter
@@ -37,13 +38,11 @@ describe('useFrenchQuery', () => {
     )
 
     // When
-    fireEvent.change(screen.getByLabelText('offererId'), {
-      target: { value: 'DE' },
-    })
-    fireEvent.change(screen.getByLabelText('venueId'), {
-      target: { value: 'FG' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Update query params' }))
+    await userEvent.type(screen.getByLabelText('offererId'), 'DE')
+    await userEvent.type(screen.getByLabelText('venueId'), 'FG')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Update query params' })
+    )
 
     // Then
     expect(screen.queryByText('offererId: AY')).not.toBeInTheDocument()

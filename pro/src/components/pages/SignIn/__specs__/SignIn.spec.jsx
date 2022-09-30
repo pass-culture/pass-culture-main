@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -93,14 +93,14 @@ describe('src | components | pages | SignIn', () => {
       })
 
       // Then
-      fireEvent.click(eyePasswordButton)
+      await userEvent.click(eyePasswordButton)
 
       const password = screen.getByLabelText('Mot de passe')
       expect(password.type).toBe('text')
     })
 
     describe('when user re-click on eye', () => {
-      it('should hide password', () => {
+      it('should hide password', async () => {
         // Given
         renderSignIn(store)
         const eyePasswordButton = screen.getByRole('button', {
@@ -108,8 +108,8 @@ describe('src | components | pages | SignIn', () => {
         })
 
         // When
-        fireEvent.click(eyePasswordButton)
-        fireEvent.click(eyePasswordButton)
+        await userEvent.click(eyePasswordButton)
+        await userEvent.click(eyePasswordButton)
 
         //then
         const password = screen.getByLabelText('Mot de passe')
@@ -170,10 +170,10 @@ describe('src | components | pages | SignIn', () => {
       renderSignIn(store)
 
       const email = screen.getByLabelText('Adresse e-mail')
-      fireEvent.change(email, { target: { value: 'MonPetitEmail' } })
+      await userEvent.type(email, 'MonPetitEmail')
       const password = screen.getByLabelText('Mot de passe')
-      fireEvent.change(password, { target: { value: 'MCSolar85' } })
-      fireEvent.click(
+      await userEvent.type(password, 'MCSolar85')
+      await userEvent.click(
         screen.getByRole('button', {
           name: 'Se connecter',
         })
@@ -196,9 +196,9 @@ describe('src | components | pages | SignIn', () => {
         }
 
         renderSignIn(store)
-        await expect(
-          screen.findByText("I'm logged admin redirect route")
-        ).resolves.toBeInTheDocument()
+        expect(
+          screen.getByText("I'm logged admin redirect route")
+        ).toBeInTheDocument()
       })
       it('should redirect to offerers page if user is not admin', async () => {
         store.user = {
@@ -211,9 +211,9 @@ describe('src | components | pages | SignIn', () => {
         }
 
         renderSignIn(store)
-        await expect(
-          screen.findByText("I'm logged standard user redirect route")
-        ).resolves.toBeInTheDocument()
+        expect(
+          screen.getByText("I'm logged standard user redirect route")
+        ).toBeInTheDocument()
       })
     })
 
@@ -222,9 +222,9 @@ describe('src | components | pages | SignIn', () => {
         renderSignIn(store)
 
         const email = screen.getByLabelText('Adresse e-mail')
-        fireEvent.change(email, { target: { value: 'MonPetitEmail' } })
+        await userEvent.type(email, 'MonPetitEmail')
         const password = screen.getByLabelText('Mot de passe')
-        fireEvent.change(password, { target: { value: 'MCSolar85' } })
+        await userEvent.type(password, 'MCSolar85')
 
         api.signin.mockRejectedValue(
           new ApiError(
@@ -236,15 +236,15 @@ describe('src | components | pages | SignIn', () => {
             }
           )
         )
-        fireEvent.click(
+        await userEvent.click(
           screen.getByRole('button', {
             name: 'Se connecter',
           })
         )
 
-        await expect(
-          screen.findByText('Identifiant ou mot de passe incorrect.')
-        ).resolves.toBeInTheDocument()
+        expect(
+          screen.getByText('Identifiant ou mot de passe incorrect.')
+        ).toBeInTheDocument()
       })
     })
 
@@ -253,9 +253,9 @@ describe('src | components | pages | SignIn', () => {
         renderSignIn(store)
 
         const email = screen.getByLabelText('Adresse e-mail')
-        fireEvent.change(email, { target: { value: 'MonPetitEmail' } })
+        await userEvent.type(email, 'MonPetitEmail')
         const password = screen.getByLabelText('Mot de passe')
-        fireEvent.change(password, { target: { value: 'MCSolar85' } })
+        await userEvent.type(password, 'MCSolar85')
 
         api.signin.mockRejectedValue(
           new ApiError(
@@ -270,17 +270,17 @@ describe('src | components | pages | SignIn', () => {
             }
           )
         )
-        fireEvent.click(
+        await userEvent.click(
           screen.getByRole('button', {
             name: 'Se connecter',
           })
         )
 
-        await expect(
-          screen.findByText(
+        expect(
+          screen.getByText(
             'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
           )
-        ).resolves.toBeInTheDocument()
+        ).toBeInTheDocument()
       })
     })
   })

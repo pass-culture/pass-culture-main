@@ -1,11 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Router } from 'react-router'
+import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
@@ -30,17 +29,13 @@ import { queryByTextTrimHtml } from 'utils/testHelpers'
 import Offers, { IOffersProps } from '../Offers'
 
 const renderOffers = (props: IOffersProps, store: Store) => {
-  const history = createMemoryHistory()
-  return {
-    ...render(
-      <Provider store={store}>
-        <Router history={history}>
-          <Offers {...props} />
-        </Router>
-      </Provider>
-    ),
-    history,
-  }
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <Offers {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
 }
 
 const categoriesAndSubcategories = {
@@ -169,9 +164,7 @@ describe('screen Offers', () => {
       renderOffers(props, store)
 
       // Then
-      await expect(
-        screen.findByText('Lieu', { selector: 'th' })
-      ).resolves.toBeInTheDocument()
+      expect(screen.getByText('Lieu', { selector: 'th' })).toBeInTheDocument()
       expect(screen.getByText('Stocks', { selector: 'th' })).toBeInTheDocument()
     })
 
@@ -190,7 +183,7 @@ describe('screen Offers', () => {
       )
 
       // Then
-      const firstOfferLine = await screen.findByText(firstOffer.name)
+      const firstOfferLine = screen.getByText(firstOffer.name)
       expect(firstOfferLine).toBeInTheDocument()
       expect(screen.getByText(secondOffer.name)).toBeInTheDocument()
     })
@@ -211,7 +204,7 @@ describe('screen Offers', () => {
       )
 
       // Then
-      await screen.findByText(firstOffer.name)
+      screen.getByText(firstOffer.name)
       const selectAllOffersCheckbox =
         screen.queryByLabelText('Tout sélectionner')
       expect(selectAllOffersCheckbox).toBeInTheDocument()
@@ -231,7 +224,7 @@ describe('screen Offers', () => {
         )
 
         // Then
-        await screen.findByText(offersRecap[0].name)
+        screen.getByText(offersRecap[0].name)
         expect(queryByTextTrimHtml(screen, '2 offres')).toBeInTheDocument()
       })
 
@@ -240,7 +233,7 @@ describe('screen Offers', () => {
         renderOffers({ ...props, offers: offersRecap }, store)
 
         // Then
-        await screen.findByText(offersRecap[0].name)
+        screen.getByText(offersRecap[0].name)
         expect(queryByTextTrimHtml(screen, '1 offre')).toBeInTheDocument()
       })
 
@@ -252,7 +245,7 @@ describe('screen Offers', () => {
         renderOffers({ ...props, offers: offersRecap }, store)
 
         // Then
-        await screen.findByText(offersRecap[0].name)
+        screen.getByText(offersRecap[0].name)
         expect(queryByTextTrimHtml(screen, '500\\+ offres')).toBeInTheDocument()
       })
     })
@@ -278,12 +271,12 @@ describe('screen Offers', () => {
         )
         expect(defaultOption).toBeInTheDocument()
 
-        const firstVenueOption = await screen.findByRole('option', {
+        const firstVenueOption = screen.getByRole('option', {
           name: expectedSelectOptions[1].value,
         })
         expect(firstVenueOption).toBeInTheDocument()
 
-        const secondVenueOption = await screen.findByRole('option', {
+        const secondVenueOption = screen.getByRole('option', {
           name: expectedSelectOptions[2].value,
         })
         expect(secondVenueOption).toBeInTheDocument()
@@ -300,7 +293,7 @@ describe('screen Offers', () => {
         renderOffers({ ...props, initialSearchFilters: filters }, store)
 
         // Then
-        const venueSelect = await screen.findByDisplayValue(
+        const venueSelect = screen.getByDisplayValue(
           expectedSelectOptions[0].value
         )
         expect(venueSelect).toBeInTheDocument()
@@ -337,21 +330,19 @@ describe('screen Offers', () => {
         const creationModeSelect = screen.getByLabelText('Mode de création')
 
         // When
-        userEvent.selectOptions(creationModeSelect, 'Manuelle')
+        await userEvent.selectOptions(creationModeSelect, 'Manuelle')
 
         // Then
-        await waitFor(() =>
-          expect(screen.getByDisplayValue('Manuelle')).toBeInTheDocument()
-        )
+        expect(screen.getByDisplayValue('Manuelle')).toBeInTheDocument()
       })
 
-      it('should allow user to select imported creation mode filter', () => {
+      it('should allow user to select imported creation mode filter', async () => {
         // Given
         renderOffers(props, store)
         const creationModeSelect = screen.getByDisplayValue('Tous')
 
         // When
-        fireEvent.change(creationModeSelect, { target: { value: 'imported' } })
+        await userEvent.selectOptions(creationModeSelect, 'imported')
 
         // Then
         expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
@@ -371,7 +362,7 @@ describe('screen Offers', () => {
           // When
           renderOffers(props, store)
           // Then
-          await expect(screen.findByText('Statut')).resolves.toBeInTheDocument()
+          expect(screen.getByText('Statut')).toBeInTheDocument()
           expect(
             screen.queryByText('Afficher les statuts')
           ).not.toBeInTheDocument()
@@ -391,10 +382,8 @@ describe('screen Offers', () => {
           // Given
           renderOffers(props, store)
           // When
-          fireEvent.click(
-            await screen.findByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
+          await userEvent.click(
+            screen.getByAltText('Afficher ou masquer le filtre par statut')
           )
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
@@ -416,9 +405,7 @@ describe('screen Offers', () => {
           // Given
           renderOffers(props, store)
           await userEvent.click(
-            await screen.findByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
+            screen.getByAltText('Afficher ou masquer le filtre par statut')
           )
           // When
           await userEvent.click(
@@ -435,7 +422,7 @@ describe('screen Offers', () => {
           // When
           renderOffers({ ...props, offers: [] }, store)
           // Then
-          const noOffersText = await screen.findByText(
+          const noOffersText = screen.getByText(
             'Vous n’avez pas encore créé d’offre.'
           )
           expect(noOffersText).toBeInTheDocument()
@@ -451,7 +438,7 @@ describe('screen Offers', () => {
             // When
             renderOffers(props, store)
             // Then
-            const statusFiltersIcon = await screen.findByAltText(
+            const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
@@ -470,9 +457,10 @@ describe('screen Offers', () => {
               store
             )
             // When
-            fireEvent.change(await screen.findByDisplayValue('Ma venue'), {
-              target: { value: 'all' },
-            })
+            await userEvent.selectOptions(
+              screen.getByDisplayValue('Ma venue'),
+              'all'
+            )
             // Then
             const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
@@ -483,7 +471,7 @@ describe('screen Offers', () => {
           it('should enable status filters when venue is selected but filter is not applied', async () => {
             // Given
             renderOffers(props, store)
-            const venueOptionToSelect = await screen.findByRole('option', {
+            const venueOptionToSelect = screen.getByRole('option', {
               name: proVenues[0].name,
             })
             // When
@@ -503,9 +491,8 @@ describe('screen Offers', () => {
             // When
             renderOffers(props, store)
             // Then
-            const selectAllOffersCheckbox = await screen.findByLabelText(
-              'Tout sélectionner'
-            )
+            const selectAllOffersCheckbox =
+              screen.getByLabelText('Tout sélectionner')
             expect(selectAllOffersCheckbox).toBeDisabled()
           })
 
@@ -530,9 +517,10 @@ describe('screen Offers', () => {
               })
             )
             // When
-            fireEvent.change(await screen.findByDisplayValue('Ma venue'), {
-              target: { value: 'all' },
-            })
+            await userEvent.selectOptions(
+              screen.getByDisplayValue('Ma venue'),
+              'all'
+            )
             // Then
             const selectAllOffersCheckbox =
               screen.getByLabelText('Tout sélectionner')
@@ -543,11 +531,9 @@ describe('screen Offers', () => {
             // Given
             renderOffers(props, store)
             // When
-            fireEvent.change(
-              await screen.findByDisplayValue('Tous les lieux'),
-              {
-                target: { value: 'JI' },
-              }
+            await userEvent.selectOptions(
+              screen.getByDisplayValue('Tous les lieux'),
+              'JI'
             )
             // Then
             const selectAllOffersCheckbox =
@@ -576,9 +562,8 @@ describe('screen Offers', () => {
               })
             )
             // Then
-            const selectAllOffersCheckbox = await screen.findByLabelText(
-              'Tout sélectionner'
-            )
+            const selectAllOffersCheckbox =
+              screen.getByLabelText('Tout sélectionner')
             expect(selectAllOffersCheckbox).not.toBeDisabled()
           })
           it('should enable select all checkbox when offerer filter is applied', async () => {
@@ -602,9 +587,8 @@ describe('screen Offers', () => {
               })
             )
             // Then
-            const selectAllOffersCheckbox = await screen.findByLabelText(
-              'Tout sélectionner'
-            )
+            const selectAllOffersCheckbox =
+              screen.getByLabelText('Tout sélectionner')
             expect(selectAllOffersCheckbox).not.toBeDisabled()
           })
         })
@@ -634,7 +618,7 @@ describe('screen Offers', () => {
         renderOffers({ ...props, offers }, store)
 
         // Then
-        await screen.findByText(offers[0].name)
+        screen.getByText(offers[0].name)
         expect(
           screen.queryByTestId(`select-offer-${offers[0].id}`)
         ).toBeDisabled()
@@ -653,7 +637,7 @@ describe('screen Offers', () => {
       // Given
       renderOffers(props, store)
       // When
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       // Then
       expect(props.loadAndUpdateOffers).toHaveBeenCalledWith({
         nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
@@ -723,9 +707,7 @@ describe('screen Offers', () => {
       )
 
       // When
-      const checkbox = await screen.findByTestId(
-        `select-offer-${offersRecap[0].id}`
-      )
+      const checkbox = screen.getByTestId(`select-offer-${offersRecap[0].id}`)
       await userEvent.click(checkbox)
 
       // Then
@@ -745,7 +727,7 @@ describe('screen Offers', () => {
         renderOffers(props, store)
 
         // When
-        fireEvent.click(await screen.findByLabelText('Tout sélectionner'))
+        await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // Then
         expect(
@@ -771,21 +753,21 @@ describe('screen Offers', () => {
 
         renderOffers({ ...props, offers }, store)
 
-        const firstOfferCheckbox = await screen.findByTestId(
+        const firstOfferCheckbox = screen.getByTestId(
           `select-offer-${offers[0].id}`
         )
-        const secondOfferCheckbox = await screen.findByTestId(
+        const secondOfferCheckbox = screen.getByTestId(
           `select-offer-${offers[1].id}`
         )
-        const thirdOfferCheckbox = await screen.findByTestId(
+        const thirdOfferCheckbox = screen.getByTestId(
           `select-offer-${offers[2].id}`
         )
-        const fourthOfferCheckbox = await screen.findByTestId(
+        const fourthOfferCheckbox = screen.getByTestId(
           `select-offer-${offers[3].id}`
         )
 
         // When
-        fireEvent.click(screen.getByLabelText('Tout sélectionner'))
+        await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // Then
         expect(firstOfferCheckbox).toBeChecked()
@@ -794,7 +776,7 @@ describe('screen Offers', () => {
         expect(fourthOfferCheckbox).not.toBeChecked()
 
         // When
-        fireEvent.click(screen.getByLabelText('Tout désélectionner'))
+        await userEvent.click(screen.getByLabelText('Tout désélectionner'))
 
         // Then
         expect(firstOfferCheckbox).not.toBeChecked()

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { EMPTY_FILTER_VALUE } from 'core/Bookings'
@@ -32,7 +33,8 @@ describe('components | FilterByEventDate', () => {
     const offerDateInput = screen.getByPlaceholderText('JJ/MM/AAAA')
 
     // When
-    fireEvent.change(offerDateInput, { target: { value: selectedDate } })
+    await userEvent.type(offerDateInput, selectedDate.toISOString())
+
     // Then
     expect(props.updateFilters).toHaveBeenCalledWith({
       offerEventDate: selectedDate,

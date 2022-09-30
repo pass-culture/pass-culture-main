@@ -56,8 +56,6 @@ const DeleteStockDialog = ({ isEvent, onDelete, setIsDeleting, stockId }) => {
 
 DeleteStockDialog.propTypes = {
   isEvent: PropTypes.bool.isRequired,
-  notifyDeletionError: PropTypes.func.isRequired,
-  notifyDeletionSuccess: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   setIsDeleting: PropTypes.func.isRequired,
   stockId: PropTypes.string.isRequired,

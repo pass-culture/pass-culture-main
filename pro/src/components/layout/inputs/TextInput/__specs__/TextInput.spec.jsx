@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import TextInput from '../TextInput'
@@ -39,10 +39,10 @@ describe('src | components | layout | form | TextInput', () => {
     const newValue = 'My new value'
 
     // when
-    fireEvent.change(offerTypeInput, { target: { value: newValue } })
+    await userEvent.type(offerTypeInput, newValue)
 
     // then
-    expect(props.onChange).toHaveBeenCalledTimes(1)
+    expect(props.onChange).toHaveBeenCalledTimes(12)
   })
 
   it('should not display a length count when input has only a max length', () => {

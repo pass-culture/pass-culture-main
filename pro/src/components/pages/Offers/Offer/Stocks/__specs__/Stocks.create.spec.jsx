@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -29,13 +29,13 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderOffers = async (
+const renderOffers = (
   props,
   storeOverrides,
   pathname = '/offre/AG3A/individuel/stocks'
 ) => {
   const store = configureTestStore(storeOverrides)
-  return render(
+  render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[{ pathname: pathname }]}>
         <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
@@ -152,7 +152,7 @@ describe('stocks page', () => {
   describe('create', () => {
     it('should not display offer status', async () => {
       // Given / When
-      await renderOffers(props, store)
+      renderOffers(props, store)
       await screen.findByRole('heading', { name: 'Stocks et prix' })
 
       // Then
@@ -163,12 +163,10 @@ describe('stocks page', () => {
       // Given
       pcapi.bulkCreateOrEditStock.mockResolvedValue({})
 
-      await renderOffers(props, store)
+      renderOffers(props, store)
 
       await userEvent.click(await screen.findByText('Ajouter un stock'))
-      fireEvent.change(screen.getByLabelText('Prix'), {
-        target: { value: '15' },
-      })
+      await userEvent.type(screen.getByLabelText('Prix'), '15')
 
       // When
       await userEvent.click(screen.getByText('Étape suivante'))
@@ -192,7 +190,7 @@ describe('stocks page', () => {
 
       it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -204,7 +202,7 @@ describe('stocks page', () => {
 
       it('should cancel new stock addition when clicking on cancel button', async () => {
         // Given
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         // When
@@ -224,7 +222,7 @@ describe('stocks page', () => {
           beginningDatetime: '2020-12-20T22:00:00Z',
         }
         pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         // when
@@ -240,7 +238,7 @@ describe('stocks page', () => {
 
       it('should have date, hour, price, limit datetime and quantity fields emptied by default', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -257,7 +255,7 @@ describe('stocks page', () => {
 
       it('should not have remaining stocks and bookings columns', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -270,7 +268,7 @@ describe('stocks page', () => {
 
       it('should have a cancel button to cancel new stock', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -309,7 +307,7 @@ describe('stocks page', () => {
         pcapi.loadStocks
           .mockResolvedValueOnce({ stocks: [] })
           .mockResolvedValueOnce({ stocks: createdStocks })
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
@@ -323,18 +321,14 @@ describe('stocks page', () => {
         )
         await userEvent.click(screen.getByText('20:00'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '15' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '15')
 
         await userEvent.click(
           screen.getAllByLabelText('Date limite de réservation')[0]
         )
         await userEvent.click(screen.getByText('22'))
 
-        fireEvent.change(screen.getByLabelText('Quantité'), {
-          target: { value: '15' },
-        })
+        await userEvent.type(screen.getByLabelText('Quantité'), '15')
 
         await userEvent.click(screen.getByText('Ajouter une date'))
 
@@ -348,9 +342,7 @@ describe('stocks page', () => {
         )
         await userEvent.click(screen.getByText('20:00'))
 
-        fireEvent.change(screen.getAllByLabelText('Prix')[0], {
-          target: { value: '0' },
-        })
+        await userEvent.type(screen.getAllByLabelText('Prix')[0], '0')
 
         await userEvent.click(
           screen.getAllByLabelText('Date limite de réservation')[0]
@@ -382,7 +374,7 @@ describe('stocks page', () => {
 
       it('should be able to add second stock while first one is not validated', async () => {
         // Given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // When
         await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -393,7 +385,7 @@ describe('stocks page', () => {
 
       it('should not display price error when the price is above 300 euros and offer is not educational', async () => {
         // Given
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         await userEvent.click(screen.getByLabelText('Date de l’évènement'))
@@ -403,9 +395,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('20:00'))
 
         // When
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '301' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '301')
         await userEvent.click(screen.getByText('Étape suivante'))
 
         // Then
@@ -431,7 +421,7 @@ describe('stocks page', () => {
             quantity: 'La quantité est invalide.',
           },
         })
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         await userEvent.click(screen.getByLabelText('Date de l’évènement'))
@@ -440,9 +430,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '10' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '10')
 
         // When
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -456,7 +444,7 @@ describe('stocks page', () => {
 
       it('should display error message on pre-submit error', async () => {
         // Given
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         await userEvent.click(screen.getByLabelText('Date de l’évènement'))
@@ -465,12 +453,8 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '-10' },
-        })
-        fireEvent.change(screen.getByLabelText('Quantité'), {
-          target: { value: '-20' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '-10')
+        await userEvent.type(screen.getByLabelText('Quantité'), '-20')
 
         // When
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -488,7 +472,7 @@ describe('stocks page', () => {
       it('should redirect to summary page after submitting stock', async () => {
         // Given
         pcapi.bulkCreateOrEditStock.mockResolvedValueOnce({})
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         await userEvent.click(screen.getByLabelText('Date de l’évènement'))
@@ -497,9 +481,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '10' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '10')
 
         // When
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -525,7 +507,7 @@ describe('stocks page', () => {
 
       it('should not display add activation codes option when not digital', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -538,12 +520,10 @@ describe('stocks page', () => {
 
       it('should display price error when the price is above 300 euros and offer is not educational', async () => {
         // Given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         await userEvent.click(await screen.findByText('Ajouter un stock'))
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '301' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '301')
 
         // When
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -565,12 +545,10 @@ describe('stocks page', () => {
             quantity: 'La quantité est invalide.',
           },
         })
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter un stock'))
 
-        fireEvent.change(screen.getByLabelText('Quantité'), {
-          target: { value: '15' },
-        })
+        await userEvent.type(screen.getByLabelText('Quantité'), '15')
 
         // When
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -584,15 +562,12 @@ describe('stocks page', () => {
 
       it('should display error message on pre-submit error', async () => {
         // Given
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter un stock'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '-10' },
-        })
-        fireEvent.change(screen.getByLabelText('Quantité'), {
-          target: { value: '-20' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '-10')
+
+        await userEvent.type(screen.getByLabelText('Quantité'), '-20')
 
         // When
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -610,15 +585,11 @@ describe('stocks page', () => {
       it('should redirect to summary page after submitting stock', async () => {
         // Given
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter un stock'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '15' },
-        })
-        fireEvent.change(screen.getByLabelText('Quantité'), {
-          target: { value: '15' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '15')
+        await userEvent.type(screen.getByLabelText('Quantité'), '15')
 
         // When
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -630,7 +601,7 @@ describe('stocks page', () => {
 
       it('should cancel new stock addition when clicking on cancel button', async () => {
         // Given
-        await renderOffers(props, store)
+        renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter un stock'))
 
         // When
@@ -649,7 +620,7 @@ describe('stocks page', () => {
           stocks: [],
         }
         jest.spyOn(api, 'getOffer').mockResolvedValue(thingOffer)
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -667,7 +638,7 @@ describe('stocks page', () => {
           stocks: [],
         }
         jest.spyOn(api, 'getOffer').mockResolvedValue(thingOffer)
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -678,7 +649,7 @@ describe('stocks page', () => {
 
       it('should have price, limit datetime and quantity fields emptied by default', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -693,7 +664,7 @@ describe('stocks page', () => {
 
       it('should not have remaining stocks and bookings columns', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -705,7 +676,7 @@ describe('stocks page', () => {
 
       it('should have a cancel button to cancel new stock', async () => {
         // given
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // when
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -717,22 +688,18 @@ describe('stocks page', () => {
       it('should add new stock to stocks and remove new empty stock line when clicking on validate button', async () => {
         // given
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         await userEvent.click(await screen.findByText('Ajouter un stock'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '15' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '15')
 
         await userEvent.click(
           screen.getByLabelText('Date limite de réservation')
         )
         await userEvent.click(screen.getByText('22'))
 
-        fireEvent.change(screen.getByLabelText('Quantité'), {
-          target: { value: '15' },
-        })
+        await userEvent.type(screen.getByLabelText('Quantité'), '15')
 
         // when
         await userEvent.click(screen.getByText('Étape suivante'))
@@ -763,7 +730,7 @@ describe('stocks page', () => {
 
         it('should allow the user to add activation codes when offer is digital', async () => {
           // given
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           // when
           await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -786,7 +753,7 @@ describe('stocks page', () => {
           }
           jest.spyOn(api, 'getOffer').mockResolvedValue(eventOffer)
           // given
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           // when
           await userEvent.click(await screen.findByText('Ajouter une date'))
@@ -799,7 +766,7 @@ describe('stocks page', () => {
 
         it('should display number of activation codes to be added', async () => {
           // Given
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           const activationCodeButton = screen
@@ -814,11 +781,7 @@ describe('stocks page', () => {
           })
 
           // When
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           // Then
           await expect(
@@ -830,7 +793,7 @@ describe('stocks page', () => {
 
         it('should not change step when file is null', async () => {
           // Given
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           const activationCodeButton = screen
@@ -840,13 +803,12 @@ describe('stocks page', () => {
           const uploadButton = screen.getByLabelText(
             'Importer un fichier .csv depuis l’ordinateur'
           )
+          const file = new File([null], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
 
           // When
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [null],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           // Then
           await waitFor(() => {
@@ -865,7 +827,7 @@ describe('stocks page', () => {
 
         it('should allow user to go back', async () => {
           // Given
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           const activationCodeButton = screen
@@ -880,11 +842,7 @@ describe('stocks page', () => {
           })
 
           // When
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           await userEvent.click(await screen.findByText('Retour'))
 
@@ -899,7 +857,7 @@ describe('stocks page', () => {
         it('should save changes done to stock with activation codes and readjust bookingLimitDatetime according to activationCodesExpirationDatetime', async () => {
           // Given
           pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           const activationCodeButton = screen
@@ -914,11 +872,7 @@ describe('stocks page', () => {
           })
 
           // When
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           await userEvent.click(
             await screen.findByLabelText('Date limite de validité')
@@ -927,8 +881,8 @@ describe('stocks page', () => {
           await userEvent.click(screen.getByText('Valider'))
 
           const priceField = screen.getByLabelText('Prix')
-          fireEvent.change(priceField, { target: { value: null } })
-          fireEvent.change(priceField, { target: { value: '14.01' } })
+          await userEvent.clear(priceField)
+          await userEvent.type(priceField, '14.01')
 
           await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -951,7 +905,7 @@ describe('stocks page', () => {
         it('should save changes done to stock with activation codes and no activationCodesExpirationDatetime', async () => {
           // Given
           pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           const activationCodeButton = screen
@@ -966,17 +920,13 @@ describe('stocks page', () => {
           })
 
           // When
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           await userEvent.click(await screen.findByText('Valider'))
 
           const priceField = screen.getByLabelText('Prix')
-          fireEvent.change(priceField, { target: { value: null } })
-          fireEvent.change(priceField, { target: { value: '14.01' } })
+          await userEvent.clear(priceField)
+          await userEvent.type(priceField, '14.01')
 
           await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -998,7 +948,7 @@ describe('stocks page', () => {
 
         it('should change stock quantity and disable activation codes button on upload', async () => {
           // Given
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           const activationCodeButton = screen
@@ -1013,11 +963,7 @@ describe('stocks page', () => {
           })
 
           // When
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
           await userEvent.click(await screen.findByText('Valider'))
 
           // Then
@@ -1031,7 +977,7 @@ describe('stocks page', () => {
 
         it('should limit expiration datetime when booking limit datetime is set and vice versa', async () => {
           // Given
-          await renderOffers(props, store)
+          renderOffers(props, store)
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           await userEvent.click(
             screen.getByLabelText('Date limite de réservation')
@@ -1048,11 +994,7 @@ describe('stocks page', () => {
           const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           await userEvent.click(
             await screen.findByLabelText('Date limite de validité')
@@ -1096,7 +1038,7 @@ describe('stocks page', () => {
 
         it('should set booking limit datetime on expiration datetime change', async () => {
           // Given
-          await renderOffers(props, store)
+          renderOffers(props, store)
           await userEvent.click(await screen.findByText('Ajouter un stock'))
 
           const activationCodeButton = screen
@@ -1109,11 +1051,7 @@ describe('stocks page', () => {
           const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           await userEvent.click(
             await screen.findByLabelText('Date limite de validité')
@@ -1134,7 +1072,7 @@ describe('stocks page', () => {
 
         it('should discard activation codes and expiration datetime and close modal on close button click', async () => {
           // Given
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
           const activationCodeButton = screen
@@ -1147,11 +1085,7 @@ describe('stocks page', () => {
           const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
-          fireEvent.change(uploadButton, {
-            target: {
-              files: [file],
-            },
-          })
+          await userEvent.upload(uploadButton, file)
 
           await userEvent.click(
             await screen.findByLabelText('Date limite de validité')
@@ -1196,7 +1130,7 @@ describe('stocks page', () => {
           pcapi.loadStocks.mockResolvedValueOnce({ stocks: [createdStock] })
 
           // when
-          await renderOffers(props, store)
+          renderOffers(props, store)
 
           // then
           await expect(

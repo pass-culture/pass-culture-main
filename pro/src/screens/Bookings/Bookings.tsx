@@ -1,3 +1,4 @@
+import { startOfDay } from 'date-fns'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
@@ -148,18 +149,18 @@ const Bookings = <
       ? params.has('offerEventDate')
         ? null
         : DEFAULT_PRE_FILTERS.bookingBeginningDate
-      : new Date(params.get('bookingBeginningDate') as string)
+      : startOfDay(new Date(params.get('bookingBeginningDate') as string))
     const paramBookingEndingDate: Date | null = !params.has('bookingEndingDate')
       ? params.has('offerEventDate')
         ? null
         : DEFAULT_PRE_FILTERS.bookingEndingDate
-      : new Date(params.get('bookingEndingDate') as string)
+      : startOfDay(new Date(params.get('bookingEndingDate') as string))
     const paramOfferType: string =
       params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType
     const paramOfferEventDate: string | Date = params.has('offerEventDate')
       ? params.get('offerEventDate') === 'all'
         ? 'all'
-        : new Date(params.get('offerEventDate') as string)
+        : startOfDay(new Date(params.get('offerEventDate') as string))
       : DEFAULT_PRE_FILTERS.offerEventDate
 
     if (
