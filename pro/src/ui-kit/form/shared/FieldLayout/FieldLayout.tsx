@@ -18,6 +18,7 @@ interface IFieldLayoutProps {
   smallLabel?: boolean
   hideFooter?: boolean
   inline?: boolean
+  classNameFooter?: string
 }
 
 const FieldLayout = ({
@@ -33,6 +34,7 @@ const FieldLayout = ({
   smallLabel,
   hideFooter = false,
   inline = false,
+  classNameFooter,
 }: IFieldLayoutProps): JSX.Element => (
   <div
     className={cn(styles['field-layout'], className, {
@@ -52,7 +54,7 @@ const FieldLayout = ({
       <div>{children}</div>
 
       {!hideFooter && (
-        <div className={styles['field-layout-footer']}>
+        <div className={cn(classNameFooter, styles['field-layout-footer'])}>
           {showError && !!error && (
             <div className={styles['field-layout-error']}>
               <FieldError name={name}>{error}</FieldError>
