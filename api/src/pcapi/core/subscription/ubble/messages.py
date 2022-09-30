@@ -1,19 +1,24 @@
+import datetime
+
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 
 
-PENDING_UBBLE_SUBSCRIPTION_MESSAGE = subscription_models.SubscriptionMessage(
-    user_message="Ton document d'identité est en cours de vérification.",
-    call_to_action=None,
-    pop_over_icon=subscription_models.PopOverIcon.CLOCK,
-)
-
 REDIRECT_TO_IDENTIFICATION_LINK = "passculture://verification-identite/identification"
 
 
+def get_application_pending_message(updated_at: datetime.datetime | None) -> subscription_models.SubscriptionMessage:
+    return subscription_models.SubscriptionMessage(
+        user_message="Ton document d'identité est en cours de vérification.",
+        call_to_action=None,
+        pop_over_icon=subscription_models.PopOverIcon.CLOCK,
+        updated_at=updated_at,
+    )
+
+
 def get_ubble_retryable_message(
-    reason_codes: list[fraud_models.FraudReasonCode],
+    reason_codes: list[fraud_models.FraudReasonCode], updated_at: datetime.datetime | None
 ) -> subscription_models.SubscriptionMessage:
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
         user_message = "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé."
@@ -34,11 +39,12 @@ def get_ubble_retryable_message(
             icon=subscription_models.CallToActionIcon.RETRY,
         ),
         pop_over_icon=None,
+        updated_at=updated_at,
     )
 
 
 def get_ubble_not_retryable_message(
-    reason_codes: list[fraud_models.FraudReasonCode], user_id: int
+    reason_codes: list[fraud_models.FraudReasonCode], user_id: int, updated_at: datetime.datetime | None
 ) -> subscription_models.SubscriptionMessage:
     call_to_action = None
     pop_over_icon = None
@@ -92,7 +98,5 @@ def get_ubble_not_retryable_message(
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     return subscription_models.SubscriptionMessage(
-        user_message=user_message,
-        call_to_action=call_to_action,
-        pop_over_icon=pop_over_icon,
+        user_message=user_message, call_to_action=call_to_action, pop_over_icon=pop_over_icon, updated_at=updated_at
     )
