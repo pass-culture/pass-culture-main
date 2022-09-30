@@ -10,7 +10,7 @@ export type PostCollectiveOfferBodyModel = {
   bookingEmails: Array<string>;
   contactEmail: string;
   contactPhone: string;
-  description?: string | null;
+  description: string;
   domains: Array<number>;
   durationMinutes?: number | null;
   interventionArea?: Array<string> | null;
