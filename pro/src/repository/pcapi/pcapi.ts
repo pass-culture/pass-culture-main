@@ -12,11 +12,6 @@ import {
 } from 'utils/date'
 import { stringify } from 'utils/query-string'
 
-export const loadFeatures = async () => {
-  client.get('/features')
-  return client.get('/features')
-}
-
 //
 // venues
 //

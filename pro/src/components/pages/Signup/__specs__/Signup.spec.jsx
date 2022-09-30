@@ -5,19 +5,17 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import Signup from '../Signup'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  loadFeatures: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn().mockResolvedValue({}),
+    listFeatures: jest.fn(),
   },
 }))
 
@@ -32,7 +30,7 @@ describe('src | components | pages | Signup', () => {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
     })
-    pcapi.loadFeatures.mockResolvedValue([])
+    api.listFeatures.mockResolvedValue([])
   })
   afterEach(jest.resetAllMocks)
 
@@ -112,7 +110,7 @@ describe('src | components | pages | Signup', () => {
 
   it('should call media campaign tracker on mount only', async () => {
     // given
-    pcapi.loadFeatures.mockResolvedValue([
+    api.listFeatures.mockResolvedValue([
       {
         isActive: true,
         nameKey: 'ENABLE_PRO_ACCOUNT_CREATION',
