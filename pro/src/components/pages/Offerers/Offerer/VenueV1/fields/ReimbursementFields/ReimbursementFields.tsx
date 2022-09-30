@@ -1,14 +1,15 @@
 import React, { useCallback, useState } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
-import Icon from 'components/layout/Icon'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
+import FormLayout from 'new_components/FormLayout'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint/PricingPoint'
+import PricingPointV2 from '../PricingPointV2'
 import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
-
-import styles from './ReimbursementFields.module.scss'
+import ReimbursementPointV2 from '../ReimbursementPointV2/ReimbursementPointV2'
 
 export interface ReimbursementInterface {
   offerer: GetOffererResponseModel
@@ -37,49 +38,57 @@ const ReimbursementFields = ({
       }, 200)
     }
   }, [])
+  const isVenueFormV2 = useActiveFeature('VENUE_FORM_V2')
   return (
     <>
-      <div className="section" ref={scrollToReimbursementSection}>
-        <h2 className="main-list-title">
-          Remboursement
-          <a
-            className={styles['reimbursement-hint']}
-            href="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Icon svg={'ico-external-site-filled'} />
-            En savoir plus sur les remboursements
-          </a>
-        </h2>
-        {!venueHaveSiret && !offererHaveVenueWithSiret ? (
-          <InternalBanner
-            to={createVenuePath}
-            Icon={ExternalSiteIcon}
-            linkTitle="Créer un lieu avec SIRET"
-          >
-            Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
-            devez avoir, au minimum, un lieu rattaché à un SIRET.
-          </InternalBanner>
-        ) : (
-          <>
-            {!venueHaveSiret && (
-              <PricingPoint
-                readOnly={readOnly}
-                offerer={offerer}
-                venue={venue}
-                setVenueHasPricingPoint={setVenueHasPricingPoint}
-              />
-            )}
+      <div ref={scrollToReimbursementSection}>
+        <FormLayout.Section title="Remboursement">
+          {!venueHaveSiret && !offererHaveVenueWithSiret ? (
+            <InternalBanner
+              to={createVenuePath}
+              Icon={ExternalSiteIcon}
+              linkTitle="Créer un lieu avec SIRET"
+            >
+              Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
+              devez avoir, au minimum, un lieu rattaché à un SIRET.
+            </InternalBanner>
+          ) : (
+            <>
+              {!venueHaveSiret &&
+                (isVenueFormV2 ? (
+                  <PricingPointV2
+                    readOnly={readOnly}
+                    offerer={offerer}
+                    venue={venue}
+                    setVenueHasPricingPoint={setVenueHasPricingPoint}
+                  />
+                ) : (
+                  <PricingPoint
+                    readOnly={readOnly}
+                    offerer={offerer}
+                    venue={venue}
+                    setVenueHasPricingPoint={setVenueHasPricingPoint}
+                  />
+                ))}
 
-            <ReimbursementPoint
-              offerer={offerer}
-              readOnly={readOnly}
-              initialVenue={venue}
-              venueHasPricingPoint={venueHasPricingPoint}
-            />
-          </>
-        )}
+              {isVenueFormV2 ? (
+                <ReimbursementPointV2
+                  offerer={offerer}
+                  readOnly={readOnly}
+                  initialVenue={venue}
+                  venueHasPricingPoint={venueHasPricingPoint}
+                />
+              ) : (
+                <ReimbursementPoint
+                  offerer={offerer}
+                  readOnly={readOnly}
+                  initialVenue={venue}
+                  venueHasPricingPoint={venueHasPricingPoint}
+                />
+              )}
+            </>
+          )}
+        </FormLayout.Section>
       </div>
     </>
   )

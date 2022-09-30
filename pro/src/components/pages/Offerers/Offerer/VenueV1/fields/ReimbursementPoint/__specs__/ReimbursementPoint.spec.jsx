@@ -9,7 +9,6 @@ import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Form } from 'react-final-form'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
@@ -28,9 +27,13 @@ const mockLogEvent = jest.fn()
 
 const renderReimbursementPoint = async props => {
   const rtlReturn = render(
-    <MemoryRouter path={'/structures'}>
-      <Form onSubmit={() => {}}>{() => <ReimbursementPoint {...props} />}</Form>
-    </MemoryRouter>
+    <Form onSubmit={jest.fn}>
+      {({ handleSubmit }) => (
+        <form onSubmit={handleSubmit}>
+          <ReimbursementPoint {...props} />
+        </form>
+      )}
+    </Form>
   )
 
   await waitForElementToBeRemoved(() => screen.getByText('Chargement en cours'))
