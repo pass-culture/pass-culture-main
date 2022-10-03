@@ -394,7 +394,7 @@ test('j’ai accès à l’ensemble de mes offres', async t => {
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
   )
-  const offerItem = Selector('.offer-item')
+  const offerItem = Selector('.offers-list tr')
   await navigateToOffersAs(createUserRole(user))(t)
 
   await t.expect(getPathname()).eql('/offres').expect(offerItem.count).gt(0)
