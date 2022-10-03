@@ -3,6 +3,7 @@ from flask import url_for
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqla import filters as fa_filters
 from flask_admin.contrib.sqla import tools
+from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from jinja2.runtime import Context
 from markupsafe import Markup
@@ -12,6 +13,8 @@ from wtforms import Form
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.repository import offerer_has_ongoing_bookings
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
 import pcapi.core.offerers.repository as offerers_repository
@@ -108,6 +111,11 @@ class OffererView(BaseAdminView):
                     "error",
                 )
                 return False
+
+            history_api.log_action(history_models.ActionType.OFFERER_SUSPENDED, current_user, offerer=offerer)
+
+        elif not offerer.isActive and form.isActive.data:
+            history_api.log_action(history_models.ActionType.OFFERER_UNSUSPENDED, current_user, offerer=offerer)
 
         result = super().update_model(form, offerer)
 

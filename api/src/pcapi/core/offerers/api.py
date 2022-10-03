@@ -14,6 +14,8 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 import pcapi.core.finance.models as finance_models
+import pcapi.core.history.api as history_api
+import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -388,7 +390,10 @@ def create_offerer(
         offerer.generate_validation_token()
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
-        repository.save(offerer, digital_venue, user_offerer)
+        action = history_api.log_action(
+            history_models.ActionType.OFFERER_NEW, user, user=user, offerer=offerer, save=False
+        )
+        repository.save(offerer, digital_venue, user_offerer, action)
 
     if not admin_emails.maybe_send_offerer_validation_email(offerer, user_offerer):
         logger.warning(
@@ -424,7 +429,8 @@ def validate_offerer_attachment(token: str) -> None:
         )
 
 
-def _validate_offerer(offerer: models.Offerer) -> None:
+# TODO: author_user should not be None, remove None option when validation by token is no longer used
+def _validate_offerer(offerer: models.Offerer, author_user: users_models.User | None) -> None:
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationToken = None
     offerer.dateValidated = datetime.utcnow()
@@ -432,7 +438,15 @@ def _validate_offerer(offerer: models.Offerer) -> None:
         applicant.add_pro_role()
     managed_venues = offerer.managedVenues
 
-    repository.save(offerer, *applicants)
+    action = history_api.log_action(
+        history_models.ActionType.OFFERER_VALIDATED,
+        author_user,
+        offerer=offerer,
+        user=applicants[0] if applicants else None,  # before validation we should have only one applicant
+        save=False,
+    )
+
+    repository.save(offerer, action, *applicants)
     search.async_index_offers_of_venue_ids([venue.id for venue in managed_venues])
 
     for applicant in applicants:
@@ -452,15 +466,23 @@ def validate_offerer_by_token(token: str) -> None:
     if offerer is None:
         raise exceptions.ValidationTokenNotFoundError()
 
-    _validate_offerer(offerer)
+    _validate_offerer(offerer, None)
 
 
-def validate_offerer_by_id(offerer_id: int) -> None:
+def validate_offerer_by_id(offerer_id: int, author_user: users_models.User) -> None:
     offerer = offerers_repository.find_offerer_by_id(offerer_id)
     if offerer is None:
         raise exceptions.OffererNotFoundException()
 
-    _validate_offerer(offerer)
+    _validate_offerer(offerer, author_user)
+
+
+def add_comment_to_offerer(offerer_id: int, author_user: users_models.User, comment: str) -> None:
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
+        raise exceptions.OffererNotFoundException()
+
+    history_api.log_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
 
 
 def get_timestamp_from_url(image_url: str) -> str:

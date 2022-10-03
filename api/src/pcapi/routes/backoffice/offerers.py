@@ -1,5 +1,6 @@
 import typing
 
+from pcapi.core.auth.utils import get_current_user
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -111,8 +112,20 @@ def get_offerer_offers_stats(offerer_id: int) -> serialization.OffererOfferStats
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_offerer(offerer_id: int) -> None:
+    author_user = get_current_user()
     try:
-        offerers_api.validate_offerer_by_id(offerer_id)
+        offerers_api.validate_offerer_by_id(offerer_id, author_user)
+    except offerers_exceptions.OffererNotFoundException:
+        raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+
+
+@blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/comment", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def comment_offerer(offerer_id: int, body: serialization.CommentRequest) -> None:
+    author_user = get_current_user()
+    try:
+        offerers_api.add_comment_to_offerer(offerer_id, author_user, comment=body.comment)
     except offerers_exceptions.OffererNotFoundException:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
 
@@ -156,6 +169,20 @@ def remove_tag_from_offerer(offerer_id: int, tag_name: str) -> None:
         raise api_errors.ResourceNotFoundError(errors={"tag_name": "L'association structure - tag n'existe pas"})
 
     repository.delete(mapping_to_delete)
+
+
+def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer) -> serialization.Comment | None:
+    if offerer.action_history:
+        actions_with_comment = filter(lambda a: bool(a.comment), offerer.action_history)
+        if actions_with_comment:
+            last = sorted(actions_with_comment, key=lambda a: a.actionDate, reverse=True)[0]
+            return serialization.Comment(
+                date=last.actionDate,
+                author=f"{last.authorUser.firstName} {last.authorUser.lastName}" if last.authorUser else None,
+                content=last.comment,
+            )
+
+    return None
 
 
 @blueprint.backoffice_blueprint.route("offerers/to_be_validated", methods=["GET"])
@@ -202,7 +229,7 @@ def list_offerers_to_be_validated(
                     ),
                     phoneNumber=(offerer.UserOfferers[0].user.phoneNumber if offerer.UserOfferers else None),
                     email=(offerer.UserOfferers[0].user.email if offerer.UserOfferers else None),
-                    lastComment=None,  # TODO
+                    lastComment=_get_serialized_offerer_last_comment(offerer),
                 )
                 for offerer in paginated_offerers.items
             ],
