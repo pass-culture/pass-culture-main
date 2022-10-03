@@ -512,6 +512,9 @@ def _has_completed_other_steps(user: users_models.User, activable_eligibility: u
 
 
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
+    if fraud_repository.has_admin_ko_review(user):
+        return False
+
     activable_fraud_check_and_eligibility = _get_activable_identity_check(user)
 
     if not activable_fraud_check_and_eligibility:
