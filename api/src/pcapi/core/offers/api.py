@@ -15,7 +15,6 @@ from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
-from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_cancellation_limit_dates
@@ -52,6 +51,7 @@ from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.payments import conf as deposit_conf
+import pcapi.core.providers.models as providers_models
 from pcapi.core.users.external import update_external_pro
 import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ExpenseDomain
@@ -1059,10 +1059,10 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: str | Non
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
-def update_stock_quantity_to_match_booking_provider_remaining_place(
-    offer: Offer, venue_booking_provider: VenueBookingProvider
+def update_stock_quantity_to_match_cinemma_venue_provider_remaining_place(
+    offer: Offer, venue_provider: providers_models.VenueProvider
 ) -> None:
-    sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider.bookingProvider.name.value)
+    sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
 
     shows_id = [
         int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders
@@ -1073,9 +1073,9 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(
 
     logger.info(
         "Getting up-to-date show stock from booking provider on offer view",
-        extra={"offer": offer.id, "venue_booking_provider": venue_booking_provider.id},
+        extra={"offer": offer.id, "venue_provider": venue_provider.id},
     )
-    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
+    shows_remaining_places = get_shows_stock(offer.venue, shows_id)
 
     for show_id, remaining_places in shows_remaining_places.items():
         stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))

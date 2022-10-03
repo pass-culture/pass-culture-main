@@ -101,6 +101,12 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):  
         exists(select([Provider.id]).where(and_(Provider.id == providerId, Provider.localClass == "AllocineStocks")))
     )
 
+    isFromCinemaProvider = column_property(  # type: ignore [misc]
+        exists(select(Provider.id)).where(
+            and_(Provider.id == providerId, Provider.localClass.in_(provider_constants.CINEMA_PROVIDER_NAMES))
+        )
+    )
+
     __mapper_args__ = {
         "polymorphic_on": case(
             [
