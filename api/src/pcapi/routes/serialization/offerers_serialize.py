@@ -279,3 +279,7 @@ class ReimbursementPointResponseModel(BaseModel):
 
 class ReimbursementPointListResponseModel(BaseModel):
     __root__: list[ReimbursementPointResponseModel]
+
+
+class OffererStatsResponseModel(BaseModel):
+    dashboardUrl: str
