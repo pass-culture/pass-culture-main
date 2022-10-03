@@ -699,7 +699,7 @@ def validate_beneficiary(
     if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
         raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
 
-    review = models.BeneficiaryFraudReview(user=user, author=reviewer, reason=reason, review=review.value)  # type: ignore [arg-type]
+    review = models.BeneficiaryFraudReview(user=user, author=reviewer, reason=reason, review=review)
 
     if review.review is not None:
         handler = REVIEW_HANDLERS.get(models.FraudReviewStatus(review.review))
