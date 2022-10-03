@@ -14,8 +14,6 @@ import sqlalchemy.exc
 from sqlalchemy.sql import text
 
 from pcapi.core.booking_providers.factories import ExternalBookingFactory
-from pcapi.core.booking_providers.factories import VenueBookingProviderFactory
-from pcapi.core.booking_providers.models import Ticket
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as booking_factories
@@ -27,13 +25,15 @@ from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.providers.factories import CinemaProviderPivotFactory
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
@@ -394,9 +394,11 @@ class BookOfferTest:
             mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
 
             # Given
+
             beneficiary = users_factories.BeneficiaryGrant18Factory()
-            venue_provider = VenueBookingProviderFactory()
-            cinema_provider_pivot = CinemaProviderPivotFactory(venue=venue_provider.venue)
+            cds_provider = get_provider_by_local_class("CDSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
             offer_solo = offers_factories.EventOfferFactory(
                 name="Séance ciné solo",
                 venue=venue_provider.venue,
@@ -422,8 +424,9 @@ class BookOfferTest:
             ]
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
-            venue_provider = VenueBookingProviderFactory()
-            cinema_provider_pivot = CinemaProviderPivotFactory(venue=venue_provider.venue)
+            cds_provider = get_provider_by_local_class("CDSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
             offer_duo = offers_factories.EventOfferFactory(
                 name="Séance ciné duo",
                 venue=venue_provider.venue,
@@ -444,17 +447,23 @@ class BookOfferTest:
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-        def should_not_create_external_booking_when_venue_booking_provider_is_not_active(
+        def should_not_create_external_booking_when_cinema_venue_provider_is_not_active(
             self,
             mocked_book_ticket,
         ):
             mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
 
             # Given
+            cds_provider = get_provider_by_local_class("CDSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
+            providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue, provider=cds_provider)
             beneficiary = users_factories.BeneficiaryGrant18Factory()
-            venue_provider = VenueBookingProviderFactory(isActive=False)
+
             offer_solo = offers_factories.EventOfferFactory(
-                name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
+                name="Séance ciné solo",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cds_provider.id,
             )
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
 
@@ -595,9 +604,8 @@ class CancelByBeneficiaryTest:
 
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        venue_provider = VenueBookingProviderFactory()
         offer_solo = offers_factories.EventOfferFactory(
-            name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
+            name="Séance ciné solo", subcategoryId=subcategories.SEANCE_CINE.id
         )
         stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
         booking = booking_factories.IndividualBookingFactory(stock=stock_solo, individualBooking__user=beneficiary)

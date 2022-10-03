@@ -1,7 +1,5 @@
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.booking_providers.models import BookingProviderName
-from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.mails.transactional as transactional_mails
@@ -13,6 +11,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
+import pcapi.core.providers.models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
@@ -46,21 +45,18 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         feature.FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
         and offer.subcategory.id == subcategories.SEANCE_CINE.id
     ):
-        venue_booking_provider = (
-            VenueBookingProvider.query.filter(
-                VenueBookingProvider.venueId == offer.venueId,
-                VenueBookingProvider.isActive,
-            )
-            .options(joinedload(VenueBookingProvider.bookingProvider, innerjoin=True))
-            .one_or_none()
-        )
+        cinema_venue_provider = providers_models.VenueProvider.query.filter(
+            providers_models.VenueProvider.venueId == offer.venueId,
+            providers_models.VenueProvider.isActive,
+            providers_models.VenueProvider.isFromCinemaProvider,
+        ).one_or_none()
 
         if (
-            venue_booking_provider
-            and venue_booking_provider.bookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE
+            cinema_venue_provider
+            and cinema_venue_provider.provider.localClass == "CDSStocks"
             and check_offer_is_from_current_cinema_provider(offer)
         ):
-            api.update_stock_quantity_to_match_booking_provider_remaining_place(offer, venue_booking_provider)
+            api.update_stock_quantity_to_match_cinemma_venue_provider_remaining_place(offer, cinema_venue_provider)
 
     return serializers.OfferResponse.from_orm(offer)
 

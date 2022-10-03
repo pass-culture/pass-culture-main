@@ -7,7 +7,6 @@ import sentry_sdk
 from sqlalchemy.orm import Query
 
 from pcapi.core import search
-from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -21,7 +20,6 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.external_bookings.api as external_bookings_api
-from pcapi.core.external_bookings.api import _get_venue_booking_provider
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -30,6 +28,7 @@ from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
+import pcapi.core.providers.models as providers_models
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
@@ -151,20 +150,22 @@ def book_offer(
 
 
 def _book_external_offer(booking: Booking, stock: Stock) -> None:
-    is_active_venue_booking_provider = db.session.query(
-        VenueBookingProvider.query.filter(
-            VenueBookingProvider.venueId == stock.offer.venueId, VenueBookingProvider.isActive
+    is_active_cinema_venue_provider = db.session.query(
+        providers_models.VenueProvider.query.filter(
+            providers_models.VenueProvider.venueId == stock.offer.venueId,
+            providers_models.VenueProvider.isActive,
+            providers_models.VenueProvider.isFromCinemaProvider,
         ).exists()
     ).scalar()
 
     if (
         FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
         and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
-        and is_active_venue_booking_provider
+        and is_active_cinema_venue_provider
         and check_offer_is_from_current_cinema_provider(stock.offer)
     ):
-        venue_booking_provider_name = _get_venue_booking_provider(stock.offer.venueId).bookingProvider.name.value
-        sentry_sdk.set_tag("venue-booking-provider", venue_booking_provider_name)
+        venue_provider_name = external_bookings_api.get_cinema_venue_provider(stock.offer.venueId).provider.localClass
+        sentry_sdk.set_tag("cinema-venue-provider", venue_provider_name)
 
         if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():
             show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))
