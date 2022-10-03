@@ -202,12 +202,15 @@ export const hasStockBeenUpdated = (originalStock, updatedStock) => {
 export const formatStock = (stock, departementCode) => {
   const formattedStock = {
     ...stock,
-    bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
-      stock.bookingLimitDatetime,
-      departementCode
-    ),
+    bookingLimitDatetime: stock.bookingLimitDatetime
+      ? getLocalDepartementDateTimeFromUtc(
+          stock.bookingLimitDatetime,
+          departementCode
+        )
+      : null,
     key: stock.id,
   }
+
   if (stock.beginningDatetime) {
     formattedStock['beginningDatetime'] = getLocalDepartementDateTimeFromUtc(
       stock.beginningDatetime,
