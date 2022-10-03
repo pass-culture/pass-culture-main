@@ -366,6 +366,13 @@ MUSEE_VENTE_DISTANCE = Subcategory.from_new(
         "homepage_label_name": HomepageLabels.VISITE.name,
     },
 )
+FESTIVAL_ART_VISUEL = Subcategory.from_new(
+    subcategories_v2.FESTIVAL_ART_VISUEL,
+    {
+        "search_group_name": SearchGroups.VISITE.name,
+        "homepage_label_name": HomepageLabels.VISITE.name,
+    },
+)
 # endregion
 # region MUSIQUE_LIVE
 
@@ -654,6 +661,7 @@ ALL_SUBCATEGORIES = (
     EVENEMENT_JEU,
     EVENEMENT_MUSIQUE,
     EVENEMENT_PATRIMOINE,
+    FESTIVAL_ART_VISUEL,
     FESTIVAL_CINE,
     FESTIVAL_LIVRE,
     FESTIVAL_MUSIQUE,
