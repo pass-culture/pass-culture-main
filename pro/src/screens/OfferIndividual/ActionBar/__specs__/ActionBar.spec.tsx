@@ -9,7 +9,8 @@ import { MemoryRouter } from 'react-router'
 import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 import { configureTestStore } from 'store/testUtils'
 
-import { ActionBar, IActionBarProps } from '..'
+import { ActionBar } from '..'
+import { IActionBarProps } from '../ActionBar'
 
 const renderActionBar = (props: IActionBarProps) => {
   return render(

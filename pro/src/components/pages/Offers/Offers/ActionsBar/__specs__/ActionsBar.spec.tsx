@@ -16,12 +16,12 @@ import { configureTestStore } from 'store/testUtils'
 
 import ActionsBar, { IActionBarProps } from '../ActionsBar'
 
-interface IrenderActionsBar {
+interface IRenderActionsBar {
   props: IActionBarProps
   store: Store
 }
 
-const renderActionsBar = ({ props, store }: IrenderActionsBar) =>
+const renderActionsBar = ({ props, store }: IRenderActionsBar) =>
   render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/offres']}>
@@ -59,7 +59,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       nbSelectedOffers: 2,
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,
-      isVisible: true,
     }
     store = configureTestStore({
       offers: {

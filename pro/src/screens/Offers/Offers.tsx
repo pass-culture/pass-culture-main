@@ -262,16 +262,17 @@ const Offers = ({
           urlSearchFilters={urlSearchFilters}
         />
       )}
-      <ActionsBar
-        areAllOffersSelected={areAllOffersSelected}
-        clearSelectedOfferIds={clearSelectedOfferIds}
-        nbSelectedOffers={nbSelectedOffers}
-        refreshOffers={refreshOffers}
-        selectedOfferIds={selectedOfferIds}
-        toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-        audience={audience}
-        isVisible={nbSelectedOffers > 0}
-      />
+      {nbSelectedOffers > 0 && (
+        <ActionsBar
+          areAllOffersSelected={areAllOffersSelected}
+          clearSelectedOfferIds={clearSelectedOfferIds}
+          nbSelectedOffers={nbSelectedOffers}
+          refreshOffers={refreshOffers}
+          selectedOfferIds={selectedOfferIds}
+          toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+          audience={audience}
+        />
+      )}
     </div>
   )
 }

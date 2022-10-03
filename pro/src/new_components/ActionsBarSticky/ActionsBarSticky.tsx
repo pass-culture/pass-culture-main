@@ -2,28 +2,24 @@ import classnames from 'classnames'
 import React from 'react'
 
 import style from './ActionsBarSticky.module.scss'
+import Left from './ActionsBarStickyLeft'
+import Right from './ActionsBarStickyRight'
 
 export interface IActionsBarStickyProps {
-  isVisible?: boolean
-  left?: JSX.Element
-  right?: JSX.Element
+  children: React.ReactNode
 }
 
 const ActionsBarSticky = ({
-  isVisible = false,
-  left,
-  right,
+  children,
 }: IActionsBarStickyProps): JSX.Element => {
-  if (!isVisible) return <></>
-
   return (
     <div className={classnames(style['actions-bar'])} data-testid="actions-bar">
-      <div className={style['actions-bar-content']}>
-        <div className={style['left']}>{left}</div>
-        {right && <div className={style['right']}>{right}</div>}
-      </div>
+      <div className={style['actions-bar-content']}>{children}</div>
     </div>
   )
 }
+
+ActionsBarSticky.Left = Left
+ActionsBarSticky.Right = Right
 
 export default ActionsBarSticky
