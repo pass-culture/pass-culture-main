@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -424,6 +424,28 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass(
         'inactive'
       )
+    })
+
+    describe('when audience is COLLECTIVE', () => {
+      it('should display a tag when offer is template', () => {
+        props.audience = Audience.COLLECTIVE
+        props.offer.isShowcase = true
+        renderOfferItem(props, store)
+
+        expect(
+          within(screen.getAllByRole('cell')[1]).getByText('Offre vitrine')
+        ).toBeInTheDocument()
+      })
+
+      it('should not display a tag when offer is not template', () => {
+        props.audience = Audience.COLLECTIVE
+        props.offer.isShowcase = false
+        renderOfferItem(props, store)
+
+        expect(
+          within(screen.getAllByRole('cell')[1]).queryByText('Offre vitrine')
+        ).not.toBeInTheDocument()
+      })
     })
   })
 })

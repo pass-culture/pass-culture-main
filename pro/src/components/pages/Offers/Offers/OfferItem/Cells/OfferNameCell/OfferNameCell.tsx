@@ -11,6 +11,7 @@ import { OFFER_STATUS_SOLD_OUT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { Tag } from 'ui-kit'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -56,6 +57,9 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
 
   return (
     <td className={styles['title-column']}>
+      {offer.isShowcase && (
+        <Tag label="Offre vitrine" className={styles['offer-template-tag']} />
+      )}
       <Link
         className={styles['name']}
         title={`${offer.name} - éditer l'offre`}
