@@ -5,6 +5,7 @@ from unittest.mock import patch
 from wtforms.form import Form
 
 from pcapi.admin.custom_views.pro_user_view import ProUserView
+from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -22,7 +23,7 @@ class ProUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_pro_user_creation(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.AdminFactory(email="USER@example.com")
+        bo_user = users_factories.AdminFactory(email="USER@example.com")
         offerers_factories.VirtualVenueTypeFactory()
 
         data = dict(
@@ -67,6 +68,7 @@ class ProUserViewTest:
         assert offerer_created.name == "Les films du plat pays"
         assert offerer_created.postalCode == "93000"
         assert offerer_created.city == "Nantes"
+        assert offerer_created.isValidated
 
         user_offerers_filtered = UserOfferer.query.filter_by(
             userId=user_created.id,
@@ -78,6 +80,13 @@ class ProUserViewTest:
         assert token.type == TokenType.RESET_PASSWORD
         assert token.expirationDate > datetime.utcnow() + timedelta(days=29)
         assert token.expirationDate < datetime.utcnow() + timedelta(days=31)
+
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_VALIDATED
+        assert actions_list[0].authorUser == bo_user
+        assert actions_list[0].user == users_filtered[0]
+        assert actions_list[0].offerer == offerer_created
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

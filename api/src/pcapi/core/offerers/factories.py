@@ -22,6 +22,10 @@ class OffererFactory(BaseFactory):
     isActive = True
 
 
+class NotValidatedOffererFactory(OffererFactory):
+    validationToken = factory.Sequence(lambda n: f"offerer-not-validated-{n}")
+
+
 class CollectiveOffererFactory(OffererFactory):
     name = factory.Sequence("[EAC] La structure de Moz'Art {}".format)
 
@@ -169,6 +173,14 @@ class UserOffererFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.ProFactory)
     offerer = factory.SubFactory(OffererFactory)
+
+
+class UserNotValidatedOffererFactory(BaseFactory):
+    class Meta:
+        model = models.UserOfferer
+
+    user = factory.SubFactory(users_factories.UserFactory)
+    offerer = factory.SubFactory(NotValidatedOffererFactory)
 
 
 class VirtualVenueTypeFactory(BaseFactory):

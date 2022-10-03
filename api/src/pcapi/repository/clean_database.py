@@ -6,6 +6,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
@@ -102,6 +103,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     db.session.execute(f"DELETE FROM {perm_models.role_permission_table.name};")
     perm_models.Permission.query.delete()
     perm_models.Role.query.delete()
+    history_models.ActionHistory.query.delete()
 
     # Dans le cadre du projet EAC, notre partenaire Adage requête notre api sur le endpoint get_pre_bookings.
     # Ils récupèrent les pré-réservations EAC liées à un utilisateur EAC et stockent les ids en base.

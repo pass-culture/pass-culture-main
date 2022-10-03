@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import testing as external_testing
@@ -45,6 +46,8 @@ class OffererViewTest:
 
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
 
+        assert history_models.ActionHistory.query.count() == 0
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_offerer_remove_tags(self, mocked_validate_csrf_token, client):
@@ -77,6 +80,8 @@ class OffererViewTest:
         assert len(offerer.tags) == 0
 
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
+
+        assert history_models.ActionHistory.query.count() == 0
 
     @pytest.mark.parametrize(
         "booking_status", [None, BookingStatus.USED, BookingStatus.CANCELLED, BookingStatus.REIMBURSED]
@@ -115,6 +120,14 @@ class OffererViewTest:
         assert {req["email"] for req in external_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
 
+        assert history_models.ActionHistory.query.count() == 1
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_SUSPENDED
+        assert actions_list[0].authorUser == admin
+        assert actions_list[0].user is None
+        assert actions_list[0].offerer == offerer
+
     @pytest.mark.parametrize("booking_status", [BookingStatus.PENDING, BookingStatus.CONFIRMED])
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -149,6 +162,7 @@ class OffererViewTest:
 
         assert offerer.isActive
         assert len(external_testing.sendinblue_requests) == 0
+        assert history_models.ActionHistory.query.count() == 0
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -181,6 +195,14 @@ class OffererViewTest:
         assert len(external_testing.sendinblue_requests) == 2
         assert {req["email"] for req in external_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Offerer", "id": offerer.id}]
+
+        assert history_models.ActionHistory.query.count() == 1
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_UNSUSPENDED
+        assert actions_list[0].authorUser == admin
+        assert actions_list[0].user is None
+        assert actions_list[0].offerer == offerer
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

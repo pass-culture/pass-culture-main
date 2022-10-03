@@ -1,9 +1,11 @@
 import pytest
 
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
+from pcapi.utils.human_ids import dehumanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -120,3 +122,28 @@ def test_new_user_offerer_has_validation_token(client):
     offerer = offerers_models.Offerer.query.one()
     created_user_offerer = offerers_models.UserOfferer.query.filter_by(offerer=offerer, user=pro).one()
     assert created_user_offerer.validationToken is not None
+
+
+def test_create_offerer_action_is_logged(client):
+    # given
+    user = users_factories.UserFactory()
+
+    body = {
+        "name": "Test Offerer",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+    }
+
+    # when
+    client = client.with_session_auth(user.email)
+    response = client.post("/offerers", json=body)
+
+    # then
+    assert response.status_code == 201
+    action = history_models.ActionHistory.query.one()
+    assert action.actionType == history_models.ActionType.OFFERER_NEW
+    assert action.authorUser == user
+    assert action.user == user
+    assert action.offererId == dehumanize(response.json["id"])
