@@ -222,7 +222,7 @@ def filter_query_where_user_is_user_offerer_and_is_validated(query, user):  # ty
 
 
 def find_venue_by_id(venue_id: int) -> models.Venue | None:
-    return models.Venue.query.filter_by(id=venue_id).one_or_none()
+    return models.Venue.query.filter_by(id=venue_id).options(sqla.orm.joinedload(models.Venue.venueLabel)).one_or_none()
 
 
 def find_venue_by_siret(siret: str) -> models.Venue | None:

@@ -4,6 +4,7 @@ from pydantic import PositiveInt
 
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
+from pcapi.core.offerers.models import VenueLabel
 from pcapi.routes.serialization import BaseModel
 
 
@@ -18,6 +19,19 @@ if TYPE_CHECKING:
 class VenueDomain(BaseModel):
     id: int
     name: str
+
+    class Config:
+        orm_mode = True
+
+
+class VenueLabelModel(BaseModel):
+    id: int
+    name: str
+
+    @classmethod
+    def from_orm(cls, venue_label: VenueLabel) -> "VenueLabelModel":
+        venue_label.name = venue_label.label
+        return super().from_orm(venue_label)
 
     class Config:
         orm_mode = True
@@ -45,6 +59,7 @@ class BaseVenueModel(BaseModel):
     interventionArea: list[str]
     network: list[str] | None
     statusId: int | None
+    label: VenueLabelModel | None
 
     @classmethod
     def from_orm(cls: "Type[VenueModel]", venue: Venue) -> "VenueModel":
@@ -71,6 +86,8 @@ class BaseVenueModel(BaseModel):
         ]
         venue.network = venue.collectiveNetwork
         venue.statusId = venue.venueEducationalStatusId
+
+        venue.label = venue.venueLabel
 
         return super().from_orm(venue)
 
