@@ -681,6 +681,9 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
         # in this case the user is not supposed to need any information and can proceed with the subscription
         return None
 
+    if fraud_repository.has_admin_ko_review(user):
+        return subscription_messages.get_generic_ko_message(user.id)
+
     if next_step == models.SubscriptionStep.MAINTENANCE:
         return subscription_messages.MAINTENANCE_PAGE_MESSAGE
 
@@ -725,6 +728,6 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
         None,
     )
     if user_profiling_ko_check is not None:
-        return subscription_messages.get_user_profiling_ko_message(user.id)
+        return subscription_messages.get_generic_ko_message(user.id)
 
     return None
