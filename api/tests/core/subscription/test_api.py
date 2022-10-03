@@ -1259,6 +1259,53 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
+    def test_admin_review_ko(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName="profile-firstname",
+            lastName="profile-lastname",
+        )
+        identity_firstname = "Yolan"
+        identity_lastname = "Mac Doumy"
+        identity_birth_date = date.today() - relativedelta(years=18, months=3, days=1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            resultContent=fraud_factories.UbbleContentFactory(
+                first_name=identity_firstname,
+                last_name=identity_lastname,
+                birth_date=identity_birth_date.isoformat(),
+            ),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=fraud_models.FraudReviewStatus.KO)
+
+        is_success = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert not is_success
+        assert not user.is_beneficiary
+
     def test_missing_step(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18),
