@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import styles from './Button.module.scss'
-import { ButtonVariant, IconPosition, SharedButtonProps } from './types'
+import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 interface IButtonProps
   extends SharedButtonProps,
@@ -16,7 +16,7 @@ const Button = ({
   className,
   children,
   Icon,
-  iconPosition = IconPosition.LEFT,
+  iconPosition = IconPositionEnum.LEFT,
   variant = ButtonVariant.PRIMARY,
   type = 'button',
   innerRef,
@@ -28,11 +28,11 @@ const Button = ({
     type={type}
     {...buttonAttrs}
   >
-    {Icon && iconPosition === IconPosition.LEFT && (
+    {Icon && iconPosition === IconPositionEnum.LEFT && (
       <Icon className={cn(styles['button-icon'], styles['button-icon-left'])} />
     )}
     {children}
-    {Icon && iconPosition === IconPosition.RIGHT && (
+    {Icon && iconPosition === IconPositionEnum.RIGHT && (
       <Icon
         className={cn(styles['button-icon'], styles['button-icon-right'])}
       />

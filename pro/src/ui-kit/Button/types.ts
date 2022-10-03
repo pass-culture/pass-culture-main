@@ -6,7 +6,7 @@ export enum ButtonVariant {
   TERNARY = 'ternary',
 }
 
-export enum IconPosition {
+export enum IconPositionEnum {
   RIGHT = 'right',
   LEFT = 'left',
 }
@@ -18,5 +18,5 @@ export type SharedButtonProps = {
     }
   >
   variant?: ButtonVariant
-  iconPosition?: IconPosition
+  iconPosition?: IconPositionEnum
 }

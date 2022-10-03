@@ -8,7 +8,7 @@ import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 import { RootState } from 'store/reducers'
 import { Button, ButtonLink } from 'ui-kit'
-import { ButtonVariant, IconPosition } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 export interface IActionBarProps {
   onClickNext?: () => void
@@ -33,7 +33,7 @@ const ActionBar = ({
   )
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
 
-  const Left = () => {
+  const Left = (): JSX.Element => {
     if (isCreation)
       return (
         <>
@@ -79,7 +79,7 @@ const ActionBar = ({
     )
   }
 
-  const Right = () => {
+  const Right = (): JSX.Element | null => {
     if (isCreation)
       return (
         <>
@@ -103,7 +103,7 @@ const ActionBar = ({
               </Button>
               <Button
                 Icon={IcoMiniArrowRight}
-                iconPosition={IconPosition.RIGHT}
+                iconPosition={IconPositionEnum.RIGHT}
                 onClick={onClickNext}
               >
                 Étape suivante
@@ -112,10 +112,15 @@ const ActionBar = ({
           )}
         </>
       )
-    return undefined
+    return null
   }
 
-  return <ActionsBarSticky isVisible left={Left()} right={Right()} />
+  return (
+    <ActionsBarSticky>
+      <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
+      <ActionsBarSticky.Right>{Right()}</ActionsBarSticky.Right>
+    </ActionsBarSticky>
+  )
 }
 
 export default ActionBar

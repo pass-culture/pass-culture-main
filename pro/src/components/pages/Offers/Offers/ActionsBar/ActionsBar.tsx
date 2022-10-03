@@ -30,7 +30,6 @@ export interface IActionBarProps {
   selectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
-  isVisible: boolean
 }
 
 const getUpdateActiveStatusAdapter = (
@@ -77,7 +76,6 @@ const ActionsBar = ({
   areAllOffersSelected,
   nbSelectedOffers,
   audience,
-  isVisible,
 }: IActionBarProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const searchFilters = useSelector(searchFiltersSelector)
@@ -196,11 +194,14 @@ const ActionsBar = ({
             : 'Dans ce cas, elles ne seront plus visibles sur l’application pass Culture.'}
         </ConfirmDialog>
       )}
-      <ActionsBarSticky
-        isVisible={isVisible}
-        left={<Left />}
-        right={<Right />}
-      />
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <Left />
+        </ActionsBarSticky.Left>
+        <ActionsBarSticky.Right>
+          <Right />
+        </ActionsBarSticky.Right>
+      </ActionsBarSticky>
     </>
   )
 }

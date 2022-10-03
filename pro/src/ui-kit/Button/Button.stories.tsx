@@ -6,7 +6,7 @@ import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
-import { ButtonVariant, IconPosition, SharedButtonProps } from './types'
+import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 import { Button, ButtonLink } from './index'
 
@@ -30,7 +30,7 @@ const Template: Story<{
   disabled: boolean
   variant: ButtonVariant
   Icon?: SharedButtonProps['Icon']
-  iconPosition?: IconPosition
+  iconPosition?: IconPositionEnum
 }> = args => <Button {...args}>{args.children}</Button>
 
 const TemplateLink: Story<{
@@ -50,7 +50,7 @@ DefaultButton.args = {
   children: 'Hello world',
   disabled: false,
   variant: ButtonVariant.PRIMARY,
-  iconPosition: IconPosition.LEFT,
+  iconPosition: IconPositionEnum.LEFT,
 }
 
 export const DefaultButtonWithIcon = Template.bind({})

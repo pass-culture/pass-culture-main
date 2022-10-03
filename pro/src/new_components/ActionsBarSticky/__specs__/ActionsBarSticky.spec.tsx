@@ -3,27 +3,25 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import ActionsBarSticky, { IActionsBarStickyProps } from '../ActionsBarSticky'
+import ActionsBarSticky from '../ActionsBarSticky'
 
-const renderActionsBar = (props: IActionsBarStickyProps) => {
+const renderActionsBar = () => {
   render(
-    <ActionsBarSticky
-      {...props}
-      left={<div>left content</div>}
-      right={<div>right content</div>}
-    />
+    <ActionsBarSticky>
+      <ActionsBarSticky.Left>
+        <div>left content</div>
+      </ActionsBarSticky.Left>
+
+      <ActionsBarSticky.Right>
+        <div>right content</div>
+      </ActionsBarSticky.Right>
+    </ActionsBarSticky>
   )
 }
 
 describe('ActionsBarSticky', () => {
-  it('should not be visible by default', () => {
-    renderActionsBar({})
-
-    expect(screen.queryByText('actionsBar content')).not.toBeInTheDocument()
-  })
-
-  it('should be visible if isVisible is True', () => {
-    renderActionsBar({ isVisible: true })
+  it('should render contents', () => {
+    renderActionsBar()
 
     expect(screen.queryByText('left content')).toBeInTheDocument()
     expect(screen.queryByText('right content')).toBeInTheDocument()

@@ -11,33 +11,37 @@ export default {
   component: ActionsBarSticky,
 }
 
-const Left = (): JSX.Element => <Button>Bouton Gauche</Button>
-
-const Right = (): JSX.Element => (
-  <>
-    <Button>Bouton Droite</Button>
-    <Button>Autre bouton</Button>
-    <Button variant={ButtonVariant.SECONDARY}>Encore un</Button>
-  </>
-)
-
-const Template: ComponentStory<typeof ActionsBarSticky> = args => (
+const Template: ComponentStory<typeof ActionsBarSticky> = () => (
   <div
     style={{
-      width: '874px',
-      height: '1500px',
-      backgroundColor: 'lightblue',
-      margin: 'auto',
+      position: 'fixed',
+      left: '0',
+      right: '0',
     }}
   >
-    <ActionsBarSticky {...args} />
+    <div
+      style={{
+        width: '874px',
+        height: '1500px',
+        backgroundColor: 'lightblue',
+        margin: 'auto',
+      }}
+    >
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <Button>Bouton Gauche</Button>
+        </ActionsBarSticky.Left>
+
+        <ActionsBarSticky.Right>
+          <Button>Bouton Droite</Button>
+          <Button>Autre bouton</Button>
+          <Button variant={ButtonVariant.SECONDARY}>Encore un</Button>
+        </ActionsBarSticky.Right>
+      </ActionsBarSticky>
+    </div>
   </div>
 )
 
 export const Default = Template.bind({})
 
-Default.args = {
-  isVisible: true,
-  left: <Left />,
-  right: <Right />,
-}
+Default.args = {}
