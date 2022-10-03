@@ -388,6 +388,7 @@ def create_offerer(
         offerer.postalCode = offerer_informations.postalCode
         offerer.siren = offerer_informations.siren
         offerer.generate_validation_token()
+        offerer.validationStatus = offerers_models.ValidationStatus.NEW
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
         action = history_api.log_action(
@@ -429,9 +430,10 @@ def validate_offerer_attachment(token: str) -> None:
         )
 
 
-# TODO: author_user should not be None, remove None option when validation by token is no longer used
+# TODO (prouzet): author_user should not be None, remove None option when validation by token is no longer used
 def _validate_offerer(offerer: models.Offerer, author_user: users_models.User | None) -> None:
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
+    offerer.validationStatus = models.ValidationStatus.VALIDATED
     offerer.validationToken = None
     offerer.dateValidated = datetime.utcnow()
     for applicant in applicants:
@@ -475,6 +477,18 @@ def validate_offerer_by_id(offerer_id: int, author_user: users_models.User) -> N
         raise exceptions.OffererNotFoundException()
 
     _validate_offerer(offerer, author_user)
+
+
+def set_offerer_pending(offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
+        raise exceptions.OffererNotFoundException()
+
+    offerer.validationStatus = models.ValidationStatus.PENDING
+    action = history_api.log_action(
+        history_models.ActionType.OFFERER_PENDING, author_user, offerer=offerer, comment=comment, save=False
+    )
+    repository.save(offerer, action)
 
 
 def add_comment_to_offerer(offerer_id: int, author_user: users_models.User, comment: str) -> None:

@@ -185,6 +185,14 @@ def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer) -> se
     return None
 
 
+def _get_offerer_status(offerer: offerers_models.Offerer) -> str:
+    if offerer.validationStatus is not None:
+        return offerer.validationStatus.value
+    if offerer.validationToken is None:
+        return offerers_models.ValidationStatus.VALIDATED.value
+    return offerers_models.ValidationStatus.NEW.value
+
+
 @blueprint.backoffice_blueprint.route("offerers/to_be_validated", methods=["GET"])
 @spectree_serialize(
     response_model=serialization.ListOffererToBeValidatedResponseModel,
@@ -216,7 +224,7 @@ def list_offerers_to_be_validated(
                 serialization.OffererToBeValidated(
                     id=offerer.id,
                     name=offerer.name,
-                    status=None,  # TODO
+                    status=_get_offerer_status(offerer),
                     step=None,  # TODO
                     siren=offerer.siren,
                     address=offerer.address,

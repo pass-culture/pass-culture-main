@@ -693,6 +693,7 @@ class ValidateOffererByIdTest:
         # Then
         assert user_offerer.offerer.isValidated
         assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
+        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
@@ -774,6 +775,7 @@ class ValidateOffererByIdTest:
         # Then
         assert not user_offerer.user.has_pro_role
         assert not user_offerer.offerer.isValidated
+        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.NEW
         assert history_models.ActionHistory.query.count() == 0
 
 

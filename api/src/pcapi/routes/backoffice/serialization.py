@@ -367,7 +367,7 @@ class Comment(BaseModel):
 class OffererToBeValidated(BaseModel):
     id: int
     name: str
-    status: str | None
+    status: str
     step: str | None
     siren: str
     address: str

@@ -26,7 +26,7 @@ class Permissions(enum.Enum):
     SEARCH_PRO_ACCOUNT = "rechercher un acteur culturel"
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
-    VALIDATE_OFFERER = "valider une structure"
+    VALIDATE_OFFERER = "gérer la validation des structures"
 
     @classmethod
     def exists(cls, name: str) -> bool:

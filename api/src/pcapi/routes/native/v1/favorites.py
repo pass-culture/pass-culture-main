@@ -126,7 +126,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             joinedload(Favorite.offer)
             .joinedload(Offer.venue)
             .joinedload(Venue.managingOfferer)
-            .load_only(Offerer.validationToken, Offerer.isActive)
+            .load_only(Offerer.validationToken, Offerer.validationStatus, Offerer.isActive)
         )
         .options(
             joinedload(Favorite.offer)
