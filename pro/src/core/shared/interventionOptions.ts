@@ -113,7 +113,7 @@ export const MAINLAND_OPTION_VALUE = 'mainland'
 export const CULTURAL_PARTNER_OPTION_VALUE = 'culturalPartner'
 export const ALL_FRANCE_OPTION_LABEL = 'France métropolitaine et d’outre-mer'
 export const MAINLAND_OPTION_LABEL = 'France métropolitaine'
-export const CULTURAL_PARTNER_OPTION_LABEL = 'Uniquement dans mon lieu'
+export const CULTURAL_PARTNER_OPTION_LABEL = 'Dans mon lieu'
 
 export const otherInterventionOptions: SelectOption[] = [
   {
