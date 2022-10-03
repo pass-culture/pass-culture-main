@@ -80,7 +80,7 @@ def get_error_not_updatable_message(
     ):
         user_message += " : il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
         call_to_action = subscription_messages.compute_support_call_to_action(user_id)
-        pop_over_icon = None  # TODO: viconnex: ask frontend if we need to override with null value
+        pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:
         user_message += " : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans."
