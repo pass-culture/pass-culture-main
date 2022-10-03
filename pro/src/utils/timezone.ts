@@ -1,10 +1,10 @@
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
 export const formatLocalTimeDateString = (
-  dateIsoString,
-  departementCode,
+  dateIsoString: string | number | Date,
+  departementCode?: string | null,
   dateFormat = 'EEEE dd/MM/yyyy à HH:mm'
-) => {
+): string => {
   const zonedDate = getLocalDepartementDateTimeFromUtc(
     dateIsoString,
     departementCode
@@ -14,24 +14,29 @@ export const formatLocalTimeDateString = (
   })
 }
 
-export const getLocalDepartementDateTimeFromUtc = (date, departementCode) => {
-  if (date) {
-    return utcToZonedTime(date, getDepartmentTimezone(departementCode))
-  } else {
-    return null
-  }
-}
+type TGetLocalDepartementDateTimeFromUtc = (
+  date: string | number | Date,
+  departementCode?: string | null
+) => Date
+export const getLocalDepartementDateTimeFromUtc: TGetLocalDepartementDateTimeFromUtc =
+  (date, departementCode) =>
+    utcToZonedTime(date, getDepartmentTimezone(departementCode))
 
-export const getUtcDateTimeFromLocalDepartement = (
-  zonedDate,
-  departementCode
-) => zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))
+type TGetUtcDateTimeFromLocalDepartement = (
+  zonedDate: Date,
+  departementCode?: string | null
+) => Date
+export const getUtcDateTimeFromLocalDepartement: TGetUtcDateTimeFromLocalDepartement =
+  (zonedDate, departementCode) =>
+    zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))
 
 // Cayenne              UTC          Paris                St Denis
 //    | ---------------- | ----------- | --------------------|
 //   9:00 ------------ 12:00 ------- 14:00 --------------- 16:00
 
-export const getDepartmentTimezone = departementCode => {
+export const getDepartmentTimezone = (
+  departementCode?: string | null
+): string => {
   // This mapping is also defined in the backend. Make
   // sure that all are synchronized.
   switch (departementCode) {

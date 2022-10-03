@@ -17,29 +17,29 @@ const CollectiveOfferStockSection = ({
   stock,
   venueDepartmentCode,
 }: ICollectiveOfferStockSectionProps) => {
-  const beginningDateTimeFromUTC = getLocalDepartementDateTimeFromUtc(
-    stock?.beginningDatetime,
-    venueDepartmentCode
-  )
-  const bookingLimitDateTimeFromUTC = getLocalDepartementDateTimeFromUtc(
-    stock?.bookingLimitDatetime,
-    venueDepartmentCode
-  )
+  const formatDateTime = (date: string, dateFormat: string) =>
+    format(
+      getLocalDepartementDateTimeFromUtc(
+        date,
+        venueDepartmentCode || undefined
+      ),
+      dateFormat
+    )
   return (
     <>
       <SummaryLayout.Row
         title="Date"
         description={
-          (beginningDateTimeFromUTC &&
-            format(beginningDateTimeFromUTC, FORMAT_DD_MM_YYYY)) ||
+          (stock?.beginningDatetime &&
+            formatDateTime(stock.beginningDatetime, FORMAT_DD_MM_YYYY)) ||
           DEFAULT_RECAP_VALUE
         }
       />
       <SummaryLayout.Row
         title="Horaire"
         description={
-          (beginningDateTimeFromUTC &&
-            format(beginningDateTimeFromUTC, FORMAT_HH_mm)) ||
+          (stock?.bookingLimitDatetime &&
+            formatDateTime(stock.bookingLimitDatetime, FORMAT_HH_mm)) ||
           DEFAULT_RECAP_VALUE
         }
       />
@@ -51,8 +51,8 @@ const CollectiveOfferStockSection = ({
       <SummaryLayout.Row
         title="Date limite de réservation"
         description={
-          (bookingLimitDateTimeFromUTC &&
-            format(bookingLimitDateTimeFromUTC, FORMAT_DD_MM_YYYY)) ||
+          (stock?.bookingLimitDatetime &&
+            formatDateTime(stock.bookingLimitDatetime, FORMAT_DD_MM_YYYY)) ||
           DEFAULT_RECAP_VALUE
         }
       />
