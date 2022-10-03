@@ -29,10 +29,11 @@
 
   .pellet {
     align-items: center;
-    background-color: colors.$primary;
+    background-color: colors.$grey-light;
     border-radius: rem.torem(100px);
     box-sizing: border-box;
-    color: colors.$white;
+    color: colors.$black;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     font-size: rem.torem(9px);
