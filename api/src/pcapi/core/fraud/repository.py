@@ -24,3 +24,9 @@ def has_failed_phone_validation(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.type == models.FraudCheckType.PHONE_VALIDATION,
         ).exists()
     ).scalar()
+
+
+def has_admin_ko_review(user: users_models.User) -> bool:
+    return db.session.query(
+        models.BeneficiaryFraudReview.query.filter_by(userId=user.id, review=models.FraudReviewStatus.KO).exists()
+    ).scalar()
