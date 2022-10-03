@@ -425,6 +425,9 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
     status = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
     thirdPartyId: str = sa.Column(sa.TEXT(), nullable=False)
     type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
+    updatedAt: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
+    )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")  # type: ignore [misc]
 
