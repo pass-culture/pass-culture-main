@@ -22,6 +22,7 @@ from sqlalchemy.sql.functions import func
 
 from pcapi import settings
 from pcapi.core.users import utils as users_utils
+from pcapi.core.permissions import models as permissions_models
 from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.models import Base
@@ -170,6 +171,24 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
+class UserBackOfficePermission(Base, Model):  # type: ignore[valid-type, misc]
+    __tablename__ = "user_back_office_permission"
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+
+    userId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    permissionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"), nullable=False)
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "userId",
+            "permissionId",
+            name="unique_user_back_office_permission",
+        ),
+    )
+
+
 class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "user"
 
@@ -221,6 +240,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
+    backoffice_permissions = sa.orm.relationship(  # type: ignore [misc]
+        permissions_models.Permission, secondary="user_back_office_permission"
+    )
 
     def _add_role(self, role: UserRole) -> None:
         from pcapi.core.users.exceptions import InvalidUserRoleException
