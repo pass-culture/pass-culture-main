@@ -318,6 +318,7 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = (
         offerers_models.Venue.query.filter_by(siret=siret, isVirtual=False)
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
+        .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
         .one()
     )
     return [venue]
@@ -333,6 +334,7 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
         .offset((page - 1) * per_page)
         .limit(per_page)
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
+        .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
         .all()
     )
 
@@ -350,6 +352,7 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
         )
         .filter(offerers_models.Venue.isVirtual.is_(False))
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
+        .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
         .all()
     )
     return venues

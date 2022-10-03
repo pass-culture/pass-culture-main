@@ -81,6 +81,7 @@ class Returns200Test:
                     "interventionArea": ["mainland"],
                     "network": ["1"],
                     "statusId": None,
+                    "label": None,
                 }
             ]
         }
