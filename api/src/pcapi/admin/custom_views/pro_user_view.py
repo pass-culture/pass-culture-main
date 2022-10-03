@@ -17,6 +17,8 @@ from wtforms.validators import ValidationError
 from pcapi.admin.base_configuration import BaseAdminView
 import pcapi.admin.rules as pcapi_rules
 from pcapi.admin.validators import PhoneNumberValidator
+import pcapi.core.history.api as history_api
+import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
@@ -180,6 +182,12 @@ class ProUserView(SuspensionMixin, BaseAdminView):
             offerers_api.create_digital_venue(offerer)
             user_offerer = create_user_offerer(user=model, offerer=offerer)
             model.userOfferers = [user_offerer]
+            # Saving action before calling parent method would create offerer, then cause duplicate key error
+            model.action_history = [
+                history_api.log_action(
+                    history_models.ActionType.OFFERER_VALIDATED, current_user, user=model, offerer=offerer, save=False
+                )
+            ]
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:

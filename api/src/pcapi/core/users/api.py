@@ -17,6 +17,8 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.history.api as history_api
+import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
@@ -623,7 +625,10 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
         offerer = _generate_offerer(pro_user.dict(by_alias=True))
         user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
         digital_venue = offerers_api.create_digital_venue(offerer)
-        objects_to_save.extend([digital_venue, offerer, user_offerer])
+        action = history_api.log_action(
+            history_models.ActionType.OFFERER_NEW, new_pro_user, user=new_pro_user, offerer=offerer, save=False
+        )
+        objects_to_save.extend([digital_venue, offerer, user_offerer, action])
     objects_to_save.append(user_offerer)
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 

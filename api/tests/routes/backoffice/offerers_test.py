@@ -5,6 +5,8 @@ from flask import url_for
 import pytest
 
 from pcapi.core.auth.api import generate_token
+from pcapi.core.history import factories as history_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions.models import Permissions
@@ -487,10 +489,9 @@ class ValidateOffererTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_validate_offerer(self, client):
         # given
-        user_offerer = offerers_factories.UserOffererFactory(
-            user=users_factories.UserFactory(), offerer__validationToken="TOKEN"
-        )
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -502,6 +503,14 @@ class ValidateOffererTest:
         db.session.refresh(user_offerer)
         assert user_offerer.offerer.isValidated
         assert user_offerer.user.has_pro_role
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user_offerer.user.id
+        assert action.offererId == user_offerer.offerer.id
+        assert action.venueId is None
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_validate_offerer_returns_404_if_offerer_is_not_found(self, client):
@@ -519,9 +528,7 @@ class ValidateOffererTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_validate_offerer_without_permission(self, client):
         # given
-        user_offerer = offerers_factories.UserOffererFactory(
-            user=users_factories.UserFactory(), offerer__validationToken="TOKEN"
-        )
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
 
         # when
@@ -534,13 +541,12 @@ class ValidateOffererTest:
         db.session.refresh(user_offerer)
         assert not user_offerer.offerer.isValidated
         assert not user_offerer.user.has_pro_role
+        assert history_models.ActionHistory.query.count() == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_validate_offerer_as_anonymous(self, client):
         # given
-        user_offerer = offerers_factories.UserOffererFactory(
-            user=users_factories.UserFactory(), offerer__validationToken="TOKEN"
-        )
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # when
         response = client.post(url_for("backoffice_blueprint.validate_offerer", offerer_id=user_offerer.offerer.id))
@@ -550,6 +556,64 @@ class ValidateOffererTest:
         db.session.refresh(user_offerer)
         assert not user_offerer.offerer.isValidated
         assert not user_offerer.user.has_pro_role
+        assert history_models.ActionHistory.query.count() == 0
+
+
+class CommentOffererTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_comment_offerer(self, client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.comment_offerer", offerer_id=offerer.id),
+            json={"comment": "Code APE non éligible"},
+        )
+
+        # then
+        assert response.status_code == 204
+        db.session.refresh(offerer)
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.COMMENT
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId is None
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+        assert action.comment == "Code APE non éligible"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_comment_offerer_without_permission(self, client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.comment_offerer", offerer_id=offerer.id),
+            json={"comment": "Test"},
+        )
+
+        # then
+        assert response.status_code == 403
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_comment_offerer_as_anonymous(self, client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.comment_offerer", offerer_id=offerer.id), json={"comment": "Test"}
+        )
+
+        # then
+        assert response.status_code == 403
+        assert history_models.ActionHistory.query.count() == 0
 
 
 class GetOfferersTagsTest:
@@ -823,6 +887,28 @@ class ListOfferersToBeValidatedTest:
     def test_payload_content(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory(offerer__validationToken="0" * 27)
+        commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 13, 1),
+            actionType=history_models.ActionType.COMMENT,
+            authorUser=commenter,
+            offerer=user_offerer.offerer,
+            comment="Bla blabla",
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 14, 2),
+            actionType=history_models.ActionType.OFFERER_PENDING,
+            authorUser=commenter,
+            offerer=user_offerer.offerer,
+            comment="Houlala",
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 15, 3),
+            actionType=history_models.ActionType.USER_OFFERER_VALIDATED,
+            authorUser=commenter,
+            offerer=user_offerer.offerer,
+            comment=None,
+        )
 
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -851,7 +937,11 @@ class ListOfferersToBeValidatedTest:
         )
         assert payload["phoneNumber"] == user_offerer.offerer.UserOfferers[0].user.phoneNumber
         assert payload["email"] == user_offerer.offerer.UserOfferers[0].user.email
-        assert payload["lastComment"] is None  # TODO
+        assert payload["lastComment"] == {
+            "author": "Inspecteur Validateur",
+            "content": "Houlala",
+            "date": "2022-10-03T14:02:00",
+        }
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(
