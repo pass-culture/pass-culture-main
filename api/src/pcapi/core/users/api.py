@@ -855,7 +855,7 @@ def _filter_user_accounts(
         filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
     # each result must match all terms in any column
-    accounts = accounts.filter(*filters)
+    accounts = accounts.filter(*filters).from_self()
 
     if order_by:
         try:
@@ -896,14 +896,13 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
             )
         )
         .distinct(models.User.id)
-        .from_self()
     )
     return _filter_user_accounts(public_accounts, terms, order_by=order_by)
 
 
 def search_pro_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
     # Any account which is associated with at least one offerer
-    pro_accounts = models.User.query.join(offerers_models.UserOfferer).distinct(models.User.id).from_self()
+    pro_accounts = models.User.query.join(offerers_models.UserOfferer).distinct(models.User.id)
     return _filter_user_accounts(pro_accounts, terms, order_by=order_by)
 
 
