@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.categories import subcategories
+import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
@@ -51,6 +52,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "EVENT_DATE": "20 octobre 2021",
             "EVENT_HOUR": "14h48",
             "OFFER_PRICE": f"{booking.total_amount} €" if booking.stock.price > 0 else "Gratuit",
+            "OFFER_TAGS": "",
             "OFFER_TOKEN": booking.token,
             "OFFER_CATEGORY": booking.stock.offer.category.id,
             "OFFER_SUBCATEGORY": booking.stock.offer.subcategoryId,
@@ -177,6 +179,27 @@ def test_should_return_withdrawal_details_when_available_sendinblue():
         mediation,
         OFFER_WITHDRAWAL_DETAILS=withdrawal_details,
         **{key: value for key, value in email_data.params.items() if key != "OFFER_WITHDRAWAL_DETAILS"},
+    )
+    assert email_data == expected
+
+
+@freeze_time("2021-10-15 12:48:00")
+def test_should_return_offer_tags():
+    booking = IndividualBookingFactory(
+        dateCreated=datetime.utcnow(),
+        stock__offer__criteria=[
+            criteria_factories.CriterionFactory(name="Tagged_offer"),
+        ],
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+
+    expected = get_expected_base_sendinblue_email_data(
+        booking,
+        mediation,
+        OFFER_TAGS="Tagged_offer",
+        **{key: value for key, value in email_data.params.items() if key != "OFFER_TAGS"},
     )
     assert email_data == expected
 
