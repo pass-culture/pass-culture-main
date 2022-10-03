@@ -27,7 +27,7 @@ def compute_support_call_to_action(user_id: int) -> models.CallToActionMessage:
     )
 
 
-def get_user_profiling_ko_message(user_id: int) -> models.SubscriptionMessage:
+def get_generic_ko_message(user_id: int) -> models.SubscriptionMessage:
     return models.SubscriptionMessage(
         user_message="Ton inscription n'a pas pu aboutir. Contacte le support pour plus d'informations",
         call_to_action=compute_support_call_to_action(user_id),

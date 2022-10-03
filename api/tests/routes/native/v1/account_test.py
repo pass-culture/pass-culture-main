@@ -314,12 +314,14 @@ class AccountTest:
 
         n_queries = 1  # get user
         n_queries += 1  # get bookings
+        n_queries += 1  # has beneficiary_fraud_review (from get_next_subsciption_step)
         n_queries += 1  # get user_profiling fraud_check
         n_queries += 1  # get feature enable_user_profiling
         n_queries += 1  # get profile completion fraud_check
         n_queries += 1  # get feature allow_id_check_registration
         n_queries += 1  # get feature enable_ubble
         n_queries += 1  # get feature enable_subscription_limitatin
+        n_queries += 1  # has beneficiary_fraud_review (from get_subscription_message)
         n_queries += 1  # get feature enable_native_cultural_survey
 
         with testing.assert_num_queries(n_queries):
