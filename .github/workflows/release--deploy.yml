@@ -1,5 +1,7 @@
 name: "[Deployment] Deploy a release"
 
+run-name: Deploy ${{ github.ref }} to ${{ github.event.inputs.target_environment }}
+
 on:
   workflow_dispatch:
     inputs:
