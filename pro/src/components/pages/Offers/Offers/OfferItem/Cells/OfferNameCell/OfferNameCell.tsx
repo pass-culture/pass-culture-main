@@ -36,14 +36,23 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
   }
 
   const getDateInformations = () => {
+    const {
+      stocks,
+      venue: { departementCode },
+    } = offer
+    const { beginningDatetime } = stocks[0] || {}
     if (offer.isShowcase) {
       return 'Date et prix à définir'
     }
+    if (!beginningDatetime || !departementCode) {
+      return null
+    }
+
     const stockSize = offer.stocks ? offer.stocks.length : 0
     return stockSize === 1
       ? formatLocalTimeDateString(
-          offer.stocks[0].beginningDatetime,
-          offer.venue.departementCode,
+          beginningDatetime,
+          departementCode,
           FORMAT_DD_MM_YYYY_HH_mm
         )
       : pluralize(stockSize, 'date')

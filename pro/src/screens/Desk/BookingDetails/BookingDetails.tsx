@@ -20,7 +20,7 @@ const BookingDetails = ({
       ? 'Permanent'
       : formatLocalTimeDateString(
           booking.datetime,
-          booking.venueDepartmentCode,
+          booking.venueDepartmentCode || undefined,
           "dd/MM/yyyy - HH'h'mm"
         )
   }
