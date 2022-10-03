@@ -39,6 +39,7 @@ class Returns200Test:
             "interventionArea": ["075", "092"],
             "network": None,
             "statusId": None,
+            "label": None,
         }
 
 

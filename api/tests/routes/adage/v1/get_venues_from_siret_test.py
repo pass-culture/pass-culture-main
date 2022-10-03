@@ -50,6 +50,59 @@ class Returns200Test:
                     "interventionArea": [],
                     "network": None,
                     "statusId": None,
+                    "label": None,
+                }
+            ]
+        }
+
+    def test_get_venues_from_siret_with_label(self, client) -> None:
+
+        venue = offerer_factories.VenueFactory(
+            siret="12345678912345",
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+            collectiveStudents=None,
+            collectiveDomains=[],
+            collectiveInterventionArea=None,
+            collectiveNetwork=None,
+            venueLabel=offerer_factories.VenueLabelFactory(),
+        )
+
+        client.with_eac_token()
+        response = client.get("/adage/v1/venues/12345678912345")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "venues": [
+                {
+                    "id": venue.id,
+                    "adageId": venue.adageId,
+                    "name": venue.name,
+                    "address": venue.address,
+                    "latitude": float(venue.latitude),
+                    "longitude": float(venue.longitude),
+                    "city": venue.city,
+                    "siret": venue.siret,
+                    "publicName": venue.publicName,
+                    "description": venue.description,
+                    "collectiveDescription": venue.collectiveDescription,
+                    "phoneNumber": venue.contact.phone_number,
+                    "email": venue.contact.email,
+                    "website": venue.contact.website,
+                    "audioDisabilityCompliant": None,
+                    "mentalDisabilityCompliant": None,
+                    "motorDisabilityCompliant": None,
+                    "visualDisabilityCompliant": None,
+                    "domains": [],
+                    "interventionArea": [],
+                    "network": None,
+                    "statusId": None,
+                    "label": {
+                        "name": venue.venueLabel.name,
+                        "id": venue.venueLabel.id,
+                    },
                 }
             ]
         }
@@ -102,6 +155,7 @@ class Returns200Test:
                     "interventionArea": ["075", "092", "971"],
                     "network": ["1"],
                     "statusId": None,
+                    "label": None,
                 }
             ]
         }
