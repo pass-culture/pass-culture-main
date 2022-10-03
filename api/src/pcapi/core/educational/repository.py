@@ -807,6 +807,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
             .load_only(
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.validationToken,
+                offerers_models.Offerer.validationStatus,
                 offerers_models.Offerer.isActive,
             )
         )
@@ -826,6 +827,7 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
             .load_only(
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.validationToken,
+                offerers_models.Offerer.validationStatus,
                 offerers_models.Offerer.isActive,
             )
         )

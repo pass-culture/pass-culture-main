@@ -50,6 +50,7 @@ def create_offerer(form: Form) -> offerers_models.Offerer:
     offerer.name = form.offererName.data
     offerer.postalCode = form.offererPostalCode.data
     offerer.city = form.offererCity.data
+    offerer.validationStatus = offerers_models.ValidationStatus.VALIDATED
 
     return offerer
 

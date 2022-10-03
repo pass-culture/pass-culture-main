@@ -34,7 +34,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         .options(
             joinedload(Offer.venue)
             .joinedload(Venue.managingOfferer)
-            .load_only(Offerer.name, Offerer.validationToken, Offerer.isActive)
+            .load_only(Offerer.name, Offerer.validationToken, Offerer.validationStatus, Offerer.isActive)
         )
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
