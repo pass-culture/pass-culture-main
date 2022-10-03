@@ -559,6 +559,66 @@ class ValidateOffererTest:
         assert history_models.ActionHistory.query.count() == 0
 
 
+class SetOffererPendingTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_set_offerer_pending(self, client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.set_offerer_pending", offerer_id=offerer.id),
+            json={"comment": "En attente de documents"},
+        )
+
+        # then
+        assert response.status_code == 204
+        db.session.refresh(offerer)
+        assert not offerer.isValidated
+        assert offerer.validationStatus == offerers_models.ValidationStatus.PENDING
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_PENDING
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId is None
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+        assert action.comment == "En attente de documents"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_set_offerer_pending_without_permission(self, client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.set_offerer_pending", offerer_id=offerer.id), json={"comment": "Test"}
+        )
+
+        # then
+        assert response.status_code == 403
+        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_set_offerer_pending_as_anonymous(self, client):
+        # given
+        offerer = offerers_factories.NotValidatedOffererFactory()
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.set_offerer_pending", offerer_id=offerer.id), json={"comment": "Test"}
+        )
+
+        # then
+        assert response.status_code == 403
+        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert history_models.ActionHistory.query.count() == 0
+
+
 class CommentOffererTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_comment_offerer(self, client):
@@ -883,10 +943,20 @@ class ListOfferersToBeValidatedTest:
         data = response.json["data"]
         assert sorted(d["id"] for d in data) == sorted(o.id for o in to_be_validated_offerers)
 
+    @pytest.mark.parametrize(
+        "validation_status,expected_status",
+        [
+            (None, offerers_models.ValidationStatus.NEW.value),
+            (offerers_models.ValidationStatus.NEW, offerers_models.ValidationStatus.NEW.value),
+            (offerers_models.ValidationStatus.PENDING, offerers_models.ValidationStatus.PENDING.value),
+        ],
+    )
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_payload_content(self, client):
+    def test_payload_content(self, client, validation_status, expected_status):
         # given
-        user_offerer = offerers_factories.UserOffererFactory(offerer__validationToken="0" * 27)
+        user_offerer = offerers_factories.UserOffererFactory(
+            offerer__validationToken="0" * 27, offerer__validationStatus=validation_status
+        )
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
@@ -923,7 +993,7 @@ class ListOfferersToBeValidatedTest:
         payload = response.json["data"][0]
         assert payload["id"] == user_offerer.offerer.id
         assert payload["name"] == user_offerer.offerer.name
-        assert payload["status"] is None  # TODO
+        assert payload["status"] == expected_status
         assert payload["step"] is None  # TODO
         assert payload["siren"] == user_offerer.offerer.siren
         assert payload["address"] == user_offerer.offerer.address

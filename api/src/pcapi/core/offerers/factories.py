@@ -24,6 +24,7 @@ class OffererFactory(BaseFactory):
 
 class NotValidatedOffererFactory(OffererFactory):
     validationToken = factory.Sequence(lambda n: f"offerer-not-validated-{n}")
+    validationStatus = models.ValidationStatus.NEW
 
 
 class CollectiveOffererFactory(OffererFactory):

@@ -72,6 +72,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
             offerers_models.Offerer.name,
             offerers_models.Offerer.siren,
             offerers_models.Offerer.validationToken,
+            offerers_models.Offerer.validationStatus,
         ),
     )
 

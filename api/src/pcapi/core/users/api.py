@@ -684,6 +684,10 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
 
     if not settings.IS_INTEGRATION:
         offerer.generate_validation_token()
+        offerer.validationStatus = offerers_models.ValidationStatus.NEW
+    else:
+        offerer.validationStatus = offerers_models.ValidationStatus.VALIDATED
+
     return offerer
 
 

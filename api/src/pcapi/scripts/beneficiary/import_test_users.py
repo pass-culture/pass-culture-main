@@ -11,6 +11,9 @@ from flask import Blueprint
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.offerers.models import ValidationStatus
 import pcapi.core.payments.api as payments_api
 import pcapi.core.users.api as users_api
 from pcapi.core.users.models import EligibilityType
@@ -79,8 +82,17 @@ def _create_pro_user(row: dict) -> User:
     # Validate offerer
     offerer = user.UserOfferers[0].offerer
     offerer.validationToken = None
+    offerer.validationStatus = ValidationStatus.VALIDATED
     offerer.dateValidated = datetime.utcnow()
-    repository.save(offerer)
+    action = history_api.log_action(
+        history_models.ActionType.OFFERER_VALIDATED,
+        None,
+        user=user,
+        offerer=offerer,
+        comment="Validée automatiquement par le script de création",
+        save=False,
+    )
+    repository.save(offerer, action)
 
     user.validationToken = None
     user.isEmailValidated = True

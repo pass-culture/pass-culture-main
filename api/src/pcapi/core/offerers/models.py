@@ -32,6 +32,7 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
+from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.sqltypes import CHAR
 from sqlalchemy.sql.sqltypes import LargeBinary
@@ -51,6 +52,8 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
+from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -584,7 +587,8 @@ class Offerer(
     HasThumbMixin,
     HasAddressMixin,
     ProvidableMixin,
-    NeedsValidationMixin,
+    NeedsValidationMixin,  # TODO (prouzet): remove when validation by token is stopped and data is migrated
+    ValidationStatusMixin,
     DeactivableMixin,
 ):
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -657,6 +661,23 @@ class Offerer(
         else:
             code = label = "Donnée indisponible"
         return {"code": code, "label": label}
+
+    @hybrid_property
+    def isValidated(self) -> bool:
+        # Keep compatibility with validation by token until production data has been migrated
+        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
+        return (
+            self.validationStatus is None and self.validationToken is None
+        ) or self.validationStatus == ValidationStatus.VALIDATED
+
+    @isValidated.expression  # type: ignore [no-redef]
+    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument # type: ignore[no-redef]
+        # Keep compatibility with validation by token until production data has been migrated
+        # TODO (prouzet): remove this overriden property when validation token is no longer used and data is migrated
+        return sa.or_(
+            sa.and_(cls.validationStatus.is_(None), cls.validationToken.is_(None)),
+            cls.validationStatus == ValidationStatus.VALIDATED,
+        ).is_(True)
 
 
 offerer_ts_indexes = [
