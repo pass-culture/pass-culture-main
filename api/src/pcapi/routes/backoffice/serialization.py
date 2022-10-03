@@ -383,5 +383,9 @@ class ListOffererToBeValidatedResponseModel(PaginatedResponse):
     data: list[OffererToBeValidated]
 
 
+class OptionalCommentRequest(BaseModel):
+    comment: str | None
+
+
 class CommentRequest(BaseModel):
     comment: str
