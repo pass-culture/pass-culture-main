@@ -297,6 +297,9 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
     if not user.eligibility or not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         return None
 
+    if fraud_repository.has_admin_ko_review(user):
+        return None
+
     if _should_validate_phone(user, user.eligibility):
         return models.SubscriptionStep.PHONE_VALIDATION
 

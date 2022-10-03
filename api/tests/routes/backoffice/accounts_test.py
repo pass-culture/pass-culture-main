@@ -10,6 +10,7 @@ import pytest
 from pcapi.core.auth.api import generate_token
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import repository as fraud_repository
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -1229,6 +1230,8 @@ class PostManualReviewTest:
         assert review.author == reviewer
         assert review.review == fraud_models.FraudReviewStatus.KO
         assert user.has_beneficiary_role is False
+
+        assert fraud_repository.has_admin_ko_review(user) is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_with_unknown_data(self, client):

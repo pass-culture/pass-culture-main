@@ -134,6 +134,12 @@ class NextSubscriptionStepTest:
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
+    def test_no_step_after_ko_admin_review(self):
+        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
+        fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=fraud_models.FraudReviewStatus.KO)
+
+        assert subscription_api.get_next_subscription_step(user) is None
+
     def test_next_subscription_step_phone_validation_skipped(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago, phoneValidationStatus=PhoneValidationStatusType.SKIPPED_BY_SUPPORT
