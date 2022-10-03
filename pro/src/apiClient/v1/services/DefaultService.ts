@@ -45,6 +45,7 @@ import type { ListFeatureResponseModel } from '../models/ListFeatureResponseMode
 import type { ListOffersResponseModel } from '../models/ListOffersResponseModel';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
+import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferResponseIdModel } from '../models/OfferResponseIdModel';
 import type { OfferType } from '../models/OfferType';
 import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
@@ -980,6 +981,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/reimbursement-points',
+      path: {
+        'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_offerer_stats_dashboard_url <GET>
+   * @param offererId
+   * @returns OffererStatsResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererStatsDashboardUrl(
+    offererId: string,
+  ): CancelablePromise<OffererStatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/stats',
       path: {
         'offerer_id': offererId,
       },
