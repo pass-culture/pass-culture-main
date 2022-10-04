@@ -28,6 +28,15 @@ class Permissions(enum.Enum):
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     VALIDATE_OFFERER = "valider une structure"
 
+    @classmethod
+    def exists(cls, name: str) -> bool:
+        try:
+            cls[name]
+        except KeyError:
+            return False
+        else:
+            return True
+
 
 def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:
     db_values = set(p.name for p in session.query(db_field).all())
