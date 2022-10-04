@@ -8,5 +8,6 @@ class BaseBackend:
         self,
         recipients: Iterable,
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
+        bcc_recipients: Iterable = None,
     ) -> models.MailResult:
         raise NotImplementedError()
