@@ -390,7 +390,9 @@ class NotifyOfferersOfExpiredBookingsTest:
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com, test2@mail.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
+        assert mails_testing.outbox[0].sent_data["Bcc"] == "test2@mail.com"
+
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": "Ma première offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
@@ -405,7 +407,8 @@ class NotifyOfferersOfExpiredBookingsTest:
         }
 
         second_educational_institution = second_expired_booking.educationalInstitution
-        assert mails_testing.outbox[1].sent_data["To"] == "new_test@mail.com, newer_test@mail.com"
+        assert mails_testing.outbox[1].sent_data["To"] == "new_test@mail.com"
+        assert mails_testing.outbox[1].sent_data["Bcc"] == "newer_test@mail.com"
         assert mails_testing.outbox[1].sent_data["params"] == {
             "OFFER_NAME": "Ma deuxième offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,
