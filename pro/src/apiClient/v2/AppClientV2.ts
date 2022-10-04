@@ -21,7 +21,7 @@ export class AppClientV2 {
 
   constructor(config?: Partial<OpenAPIConfig>, HttpRequest: HttpRequestConstructor = FetchHttpRequest) {
     this.request = new HttpRequest({
-      BASE: config?.BASE ?? '',
+      BASE: config?.BASE ?? 'http://localhost:5001',
       VERSION: config?.VERSION ?? '2',
       WITH_CREDENTIALS: config?.WITH_CREDENTIALS ?? false,
       CREDENTIALS: config?.CREDENTIALS ?? 'include',
