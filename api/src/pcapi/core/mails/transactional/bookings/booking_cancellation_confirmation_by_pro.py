@@ -73,4 +73,5 @@ def send_collective_booking_cancellation_confirmation_by_pro_email(booking: Coll
     if not offerer_booking_emails:
         return True
     data = get_collective_booking_cancellation_confirmation_by_pro_email_data(booking)
-    return mails.send(recipients=offerer_booking_emails, data=data)
+    main_recipient, bcc_recipients = [offerer_booking_emails[0]], offerer_booking_emails[1:]
+    return mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)

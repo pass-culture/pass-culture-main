@@ -59,7 +59,9 @@ class Returns200Test:
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "test_collective@mail.com, test2_collective@mail.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "test_collective@mail.com"
+        assert mails_testing.outbox[0].sent_data["Bcc"] == "test2_collective@mail.com"
+
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": collective_offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": educational_institution.name,

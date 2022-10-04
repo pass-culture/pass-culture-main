@@ -33,4 +33,5 @@ def send_education_booking_cancellation_by_institution_email(booking: Collective
     if not booking_emails:
         return True
     data = get_education_booking_cancellation_by_institution_email_data(booking)
-    return mails.send(recipients=booking_emails, data=data)
+    main_recipient, bcc_recipients = [booking_emails[0]], booking_emails[1:]
+    return mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
