@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
     to = [{"email": email} for email in payload.recipients]
+    bcc = [{"email": email} for email in payload.bcc_recipients] if payload.bcc_recipients else None
     sender = payload.sender
     reply_to = payload.reply_to
 
@@ -24,7 +25,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
         "reply_to": payload.reply_to,
     }
 
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, sender=sender, reply_to=reply_to)
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, bcc=bcc, sender=sender, reply_to=reply_to)
 
     # Can send email with: to, sender, template_id, tags, params
 

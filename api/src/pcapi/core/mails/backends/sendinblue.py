@@ -20,10 +20,12 @@ class SendinblueBackend(BaseBackend):
         self,
         recipients: Iterable,
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
+        bcc_recipients: Iterable[str] = None,
     ) -> models.MailResult:
         if isinstance(data, models.TransactionalEmailData):
             payload = SendTransactionalEmailRequest(
                 recipients=list(recipients),
+                bcc_recipients=list(bcc_recipients) if bcc_recipients else None,
                 template_id=data.template.id,
                 params=data.params,
                 tags=data.template.tags,
@@ -41,6 +43,7 @@ class SendinblueBackend(BaseBackend):
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
             payload = SendTransactionalEmailRequest(
                 recipients=list(recipients),
+                bcc_recipients=list(bcc_recipients) if bcc_recipients else None,
                 sender=asdict(data.sender.value),
                 subject=data.subject,
                 html_content=data.html_content,
@@ -63,16 +66,21 @@ class ToDevSendinblueBackend(SendinblueBackend):
         self,
         recipients: Iterable,
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
+        bcc_recipients: Iterable[str] = None,
     ) -> models.MailResult:
+        whitelisted_recipients = self._get_whitelisted_recipients(recipients)
+        whitelisted_bcc_recipients = self._get_whitelisted_recipients(bcc_recipients) if bcc_recipients else []
+
+        recipients = list(whitelisted_recipients) or [settings.DEV_EMAIL_ADDRESS]
+        bcc_recipients = list(whitelisted_bcc_recipients)
+
+        return super().send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
+
+    def _get_whitelisted_recipients(self, recipient_list: Iterable) -> list:
         whitelisted_recipients = set()
-        for recipient in recipients:
+        for recipient in recipient_list:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
             user = find_user_by_email(recipient)
             if (user and user.has_test_role) or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS:
                 whitelisted_recipients.add(recipient)
-
-        if whitelisted_recipients:
-            recipients = list(whitelisted_recipients)
-        else:
-            recipients = [settings.DEV_EMAIL_ADDRESS]
-        return super().send_mail(recipients=recipients, data=data)
+        return list(whitelisted_recipients)
