@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import useNotification from 'components/hooks/useNotification'
 import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
@@ -37,10 +38,11 @@ const OfferEducationalForm = ({
   categories,
   userOfferers,
   getIsOffererEligible,
-  notify,
   mode,
   domainsOptions,
 }: IOfferEducationalFormProps): JSX.Element => {
+  const notify = useNotification()
+
   const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
   const [currentOfferer, setCurrentOfferer] =
     useState<GetEducationalOffererResponseModel | null>(null)
