@@ -466,7 +466,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         const duplicateButton = screen.getByTitle(
-          'Créer une offre collective à partir d’une offre vitrine'
+          'Créer une offre réservable pour un établissement'
         )
         await userEvent.click(duplicateButton)
 
@@ -494,7 +494,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         const duplicateButton = screen.getByTitle(
-          'Créer une offre collective à partir d’une offre vitrine'
+          'Créer une offre réservable pour un établissement'
         )
         await userEvent.click(duplicateButton)
 
