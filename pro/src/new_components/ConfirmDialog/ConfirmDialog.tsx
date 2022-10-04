@@ -3,6 +3,7 @@ import React from 'react'
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import { Button, SubmitButton } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ConfirmDialog.module.scss'
 
@@ -54,6 +55,7 @@ const ConfirmDialog = ({
           onClick={onCancel}
           type="submit"
           data-testid="confirm-dialog-button-cancel"
+          variant={ButtonVariant.SECONDARY}
         >
           {cancelText}
         </Button>
