@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -8,6 +9,7 @@ import type { Store } from 'redux'
 
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'
@@ -29,7 +31,7 @@ const renderOfferItem = (props: OfferItemProps, store: Store) => {
 describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
   let eventOffer: Offer
-  let store: Store
+  let store: Store<RootState>
 
   beforeEach(() => {
     store = configureTestStore({})
@@ -445,6 +447,61 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(
           within(screen.getAllByRole('cell')[1]).queryByText('Offre vitrine')
         ).not.toBeInTheDocument()
+      })
+
+      it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
+        props.audience = Audience.COLLECTIVE
+        props.offer.isShowcase = true
+        const store = configureTestStore({
+          features: {
+            list: [
+              {
+                isActive: true,
+                nameKey: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
+              },
+            ],
+          },
+        })
+
+        renderOfferItem(props, store)
+
+        const duplicateButton = screen.getByTitle(
+          'Créer une offre collective à partir d’une offre vitrine'
+        )
+        await userEvent.click(duplicateButton)
+
+        const modalTitle = screen.getByText(
+          'Créer une offre réservable pour un établissement scolaire'
+        )
+        expect(modalTitle).toBeInTheDocument()
+      })
+
+      it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
+        props.audience = Audience.COLLECTIVE
+        props.offer.isShowcase = true
+        Storage.prototype.getItem = jest.fn(() => 'true')
+        const store = configureTestStore({
+          features: {
+            list: [
+              {
+                isActive: true,
+                nameKey: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
+              },
+            ],
+          },
+        })
+
+        renderOfferItem(props, store)
+
+        const duplicateButton = screen.getByTitle(
+          'Créer une offre collective à partir d’une offre vitrine'
+        )
+        await userEvent.click(duplicateButton)
+
+        const modalTitle = screen.queryByText(
+          'Créer une offre réservable pour un établissement scolaire'
+        )
+        expect(modalTitle).not.toBeInTheDocument()
       })
     })
   })

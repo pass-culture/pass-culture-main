@@ -19,6 +19,7 @@ const DuplicateOfferCell = ({ isTemplate }: { isTemplate: boolean }) => {
     if (shouldNotDisplayModalAgain) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
+    setIsModalOpen(false)
   }
 
   return (
@@ -30,7 +31,10 @@ const DuplicateOfferCell = ({ isTemplate }: { isTemplate: boolean }) => {
             className={styles['button']}
             onClick={() => setIsModalOpen(true)}
           >
-            <PlusIcon className={styles['button-icon']} />
+            <PlusIcon
+              className={styles['button-icon']}
+              title="Créer une offre collective à partir d’une offre vitrine"
+            />
           </Button>
         ) : null}
       </td>
