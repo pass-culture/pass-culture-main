@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 
-import AutocompleteList from '../shared/AutocompleteList'
 import BaseCheckbox from '../shared/BaseCheckbox'
 import { BaseInput } from '../shared'
 import FieldLayout from '../shared/FieldLayout'
+import Icon from 'components/layout/Icon'
 import { SelectOption } from 'custom_types/form'
 import Tag from 'ui-kit/Tag'
 import cx from 'classnames'
@@ -27,6 +27,7 @@ export interface SelectAutocompleteProps {
   disabled?: boolean
   placeholder?: string
   inline?: boolean
+  hideArrow?: boolean
 }
 
 const SelectAutocomplete = ({
@@ -45,6 +46,7 @@ const SelectAutocomplete = ({
   disabled = false,
   placeholder,
   inline,
+  hideArrow,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, handleChange, setFieldTouched } =
     useFormikContext<any>()
@@ -106,6 +108,21 @@ const SelectAutocomplete = ({
     setFieldTouched(fieldName, true)
   }
 
+  const renderOption = ({ value, label }) => (
+    <BaseCheckbox
+      label={label}
+      key={`${fieldName}-${value}`}
+      value={value}
+      name={fieldName}
+      onChange={e => {
+        setFieldTouched(`search-${fieldName}`, true)
+        handleChange(e)
+        onChange?.(e)
+      }}
+      checked={field.value.includes(value)}
+    />
+  )
+
   return (
     <FieldLayout
       className={className}
@@ -143,43 +160,48 @@ const SelectAutocomplete = ({
           disabled={disabled}
           {...searchField}
         />
-        <AutocompleteList
-          disabled={disabled}
-          onButtonClick={toggleField}
-          isOpen={isOpen}
-          filteredOptions={[
-            ...filteredOptions.slice(
-              0,
-              maxDisplayOptions ?? filteredOptions.length
-            ),
-            ...(maxDisplayOptions && maxDisplayOptions < filteredOptions.length
-              ? [
-                  {
-                    value: '',
-                    label: `${maxDisplayOptions} résultats maximum. Veuillez affiner votre recherche`,
-                    disabled: true,
-                  },
-                ]
-              : []),
-          ]}
-          maxHeight={maxHeight}
-          displayNumberOfSelectedValues={field.value.length > 0}
-          numberOfSelectedOptions={field.value.length}
-          renderOption={({ value, label }) => (
-            <BaseCheckbox
-              label={label}
-              key={`${fieldName}-${value}`}
-              value={value}
-              name={fieldName}
-              onChange={e => {
-                setFieldTouched(`search-${fieldName}`, true)
-                handleChange(e)
-                onChange?.(e)
-              }}
-              checked={field.value.includes(value)}
-            />
+        (
+        <div className={styles['field-overlay']}>
+          {!hideArrow && (
+            <button
+              onClick={toggleField}
+              className={cx(styles['dropdown-indicator'], {
+                [styles['dropdown-indicator-is-closed']]: !isOpen,
+              })}
+              type="button"
+              disabled={disabled}
+            >
+              <Icon
+                svg="open-dropdown"
+                alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
+              />
+            </button>
           )}
-        />
+          {field.value.length > 0 && (
+            <div onClick={toggleField} className={styles['pellet']}>
+              {field.value.length}
+            </div>
+          )}
+          {isOpen && (
+            <div
+              className={cx(styles['menu'], className)}
+              style={maxHeight ? { maxHeight } : {}}
+              role="listbox"
+            >
+              {filteredOptions.length === 0 && (
+                <span
+                  className={cx({
+                    [styles['menu--no-results']]: filteredOptions.length === 0,
+                  })}
+                >
+                  Aucun résultat
+                </span>
+              )}
+              {filteredOptions.map(option => renderOption(option))}
+            </div>
+          )}
+        </div>
+        )
       </div>
       {!hideTags && field.value.length > 0 && (
         <div className={styles['multi-select-autocomplete-tags']}>
