@@ -1,0 +1,116 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+.menu-button {
+  @include fonts.title2();
+
+  background-color: transparent;
+  border: none;
+  display: flex;
+  padding: rem.torem(8px) rem.torem(10px);
+
+  .menu-button-icon {
+    height: rem.torem(24px);
+  }
+
+  &:focus,
+  &:focus-visible,
+  &:hover {
+    .menu-button-icon {
+      fill: colors.$primary;
+    }
+  }
+}
+
+.menu-item-text {
+  @include fonts.button();
+
+  color: colors.$black;
+
+  .menu-item-disabled & {
+    color: colors.$grey-medium;
+  }
+}
+
+.menu-item-icon {
+  max-height: rem.torem(20px);
+  max-width: rem.torem(20px);
+}
+
+.menu-item {
+  @include fonts.button();
+
+  cursor: pointer;
+  align-items: center;
+  column-gap: rem.torem(4px);
+  display: grid;
+  grid-template-columns: rem.torem(32px) 1fr;
+  margin-top: rem.torem(10px);
+  padding: 0 rem.torem(12px);
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &[data-selected] {
+    background-color: transparent;
+    display: flex;
+
+    .menu-item-icon {
+      path {
+        fill: colors.$black;
+      }
+    }
+  }
+
+  &:not([data-selected]) {
+    display: flex;
+
+    path {
+      fill: colors.$black;
+    }
+  }
+
+  &:hover:not(.menu-item-disabled) {
+    background: colors.$grey-medium;
+  }
+
+  &.menu-item-disabled {
+    cursor: not-allowed;
+  }
+}
+
+.menu-list[data-reach-menu-list] {
+  padding: rem.torem(12px) 0;
+  white-space: pre-wrap;
+  width: rem.torem(215px);
+
+  .menu-item {
+    &.menu-item-disabled {
+      svg {
+        path {
+          fill: colors.$grey-medium;
+        }
+      }
+    }
+
+    > svg {
+      min-height: rem.torem(32px);
+      min-width: rem.torem(32px);
+      margin: rem.torem(-5px);
+    }
+  }
+}
+
+[data-reach-menu-popover] {
+  z-index: 3;
+  border: rem.torem(1px) solid #f1f1f4;
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
+  border-radius: rem.torem(6px);
+  overflow: hidden;
+}
+
+div > [data-reach-menu-list] {
+  border: none;
+}
