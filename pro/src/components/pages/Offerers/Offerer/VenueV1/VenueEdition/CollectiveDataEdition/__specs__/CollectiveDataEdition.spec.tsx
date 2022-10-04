@@ -12,11 +12,51 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useNotification from 'components/hooks/useNotification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { domtomOptions, mainlandOptions } from 'core/shared/interventionOptions'
+import { mainlandOptions, domtomOptions } from 'core/shared/interventionOptions'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import CollectiveDataEdition from '../CollectiveDataEdition'
+
+// RomainC: we need this mock to accelerate this test
+// it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments'
+// in which he is clicking on all departements one by one
+// if we only mock mainlandOptions, the mock is not use to build venueInterventionOptions, allDepartmentValues and mainlandValues
+// and the test fail...
+// the workaround I found is to mock this way :
+jest.mock('core/shared/interventionOptions', () => {
+  const originalModule = jest.requireActual<
+    typeof import('core/shared/interventionOptions')
+  >('core/shared/interventionOptions')
+
+  const mockedMainlandOptions = [
+    { value: '01', label: '01 - Ain' },
+    { value: '02', label: '02 - Aisne' },
+    { value: '03', label: '03 - Allier' },
+    { value: '04', label: '04 - Alpes-de-Haute-Provence' },
+    { value: '05', label: '05 - Hautes-Alpes' },
+  ]
+
+  return {
+    __esModule: true,
+    ...originalModule,
+    mainlandOptions: mockedMainlandOptions,
+    venueInterventionOptions: [
+      {
+        value: originalModule.CULTURAL_PARTNER_OPTION_VALUE,
+        label: originalModule.CULTURAL_PARTNER_OPTION_LABEL,
+      },
+      ...originalModule.otherInterventionOptions,
+      ...mockedMainlandOptions,
+      ...originalModule.domtomOptions,
+    ],
+    allDepartmentValues: [
+      ...mockedMainlandOptions.map(({ value }) => value),
+      ...originalModule.domtomOptions.map(({ value }) => value),
+    ],
+    mainlandValues: mockedMainlandOptions.map(({ value }) => value),
+  }
+})
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getEducationalDomains: jest.fn(),
@@ -355,14 +395,16 @@ describe('CollectiveDataEdition', () => {
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité :/)
       await userEvent.click(interventionAreaField)
 
-      expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
+      const mainlandOption = await screen.findByLabelText(
+        'France métropolitaine'
+      )
+      expect(mainlandOption).toBeInTheDocument()
 
       // check all mainland options
       for await (const option of mainlandOptions) {
         await userEvent.click(screen.getByLabelText(option.label))
       }
 
-      const mainlandOption = screen.getByLabelText('France métropolitaine')
       expect(mainlandOption).toBeChecked()
 
       // check all other departments
