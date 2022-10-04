@@ -6,12 +6,12 @@ from freezegun import freeze_time
 import pytest
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.booking_providers.factories import ExternalBookingFactory
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory

@@ -10,7 +10,6 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.providers import factories as providers_factories
-from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -154,28 +153,6 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     # FIXME (viconnex): understand why these properties are not set with right values in factories
     allocine_provider.isActive = True
     allocine_provider.enabledForPro = True
-
-    # Venue Cine Office (CDS)
-    venue_synchronized_with_cds = offerers_factories.VenueFactory(
-        comment="Salle de cinéma",
-        name="Lieu synchro Ciné Office",
-        siret="21070034000018",
-        pricing_point="self",
-        reimbursement_point="self",
-        managingOfferer__name="Structure du lieu synchro Ciné Office",
-    )
-
-    cds_provider = get_provider_by_local_class("CDSStocks")
-    cds_provider.isActive = True
-    cds_provider.enabledForPro = True
-
-    cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-        venue=venue_synchronized_with_cds, provider=cds_provider, idAtProvider="cdsdemorc1"
-    )
-    providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, accountId="cdsdemorc1")
-    providers_factories.VenueProviderFactory(venue=venue_synchronized_with_cds, provider=cds_provider)
-
-    venue_by_name[venue_synchronized_with_cds.name] = venue_synchronized_with_cds
 
     logger.info("created %d venues", len(venue_by_name))
 
