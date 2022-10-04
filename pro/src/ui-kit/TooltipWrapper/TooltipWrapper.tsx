@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import styles from './TooltipWrapper.module.scss'
 
@@ -14,7 +14,10 @@ const TooltipWrapper = ({
   children,
 }: ITooltipWrapperProps) => {
   const [showTooltip, setShowTooltip] = useState(false)
+  const [height, setHeight] = useState(0)
+
   let timeout: NodeJS.Timeout | undefined
+  const tooltipId = `tooltip-wrapper-title-${title}`
 
   const showTip = () => {
     timeout = setTimeout(() => setShowTooltip(true), delay)
@@ -25,15 +28,27 @@ const TooltipWrapper = ({
     setShowTooltip(false)
   }
 
+  useEffect(() => {
+    const refheight = document.getElementById(tooltipId)?.offsetHeight
+    setHeight(refheight ?? 0)
+  }, [])
+
   return (
     <div
       onMouseEnter={showTip}
       onMouseLeave={hideTip}
       className={styles['tooltip-wrapper']}
     >
-      {showTooltip && (
-        <div className={styles['tooltip-wrapper-title']}>{title}</div>
-      )}
+      <div
+        className={styles['tooltip-wrapper-title']}
+        style={{
+          top: `-${height + 10}px`,
+          opacity: showTooltip ? '1' : '0',
+        }}
+        id={tooltipId}
+      >
+        {title}
+      </div>
       {children}
     </div>
   )
