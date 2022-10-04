@@ -36,6 +36,8 @@ import {
   searchFiltersSelector,
   searchPageNumberSelector,
 } from 'store/offers/selectors'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -296,26 +298,24 @@ const EventStocks = ({ offer, reloadOffer }) => {
         alors automatiquement remise en vente.
       </div>
       {hasNoStock ? (
-        <button
+        <Button
           className="primary-button with-icon add-first-stock-button"
           disabled={isDisabled}
           onClick={addNewStock}
-          type="button"
+          Icon={AddStockSvg}
         >
-          <AddStockSvg />
           Ajouter une date
-        </button>
+        </Button>
       ) : (
         <Fragment>
-          <button
-            className="tertiary-button with-icon"
+          <Button
             disabled={isDisabled || isOfferSynchronized}
             onClick={addNewStock}
-            type="button"
+            Icon={AddStockSvg}
+            variant={ButtonVariant.TERNARY}
           >
-            <AddStockSvg />
             Ajouter une date
-          </button>
+          </Button>
           <table>
             <thead>
               <tr>

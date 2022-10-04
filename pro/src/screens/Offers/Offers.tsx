@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { UserRole } from 'apiClient/v1'
 import useAnalytics from 'components/hooks/useAnalytics'
@@ -26,6 +25,8 @@ import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import NoOffers from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import SearchFilters from './SearchFilters'
 
@@ -108,8 +109,8 @@ const Offers = ({
   )
   const actionLink =
     isAdmin || !currentUser?.roles?.length ? null : (
-      <Link
-        className="primary-button with-icon"
+      <ButtonLink
+        variant={ButtonVariant.PRIMARY}
         onClick={() =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_FORM_NAVIGATION_IN.OFFERS,
@@ -118,11 +119,11 @@ const Offers = ({
             isEdition: false,
           })
         }
-        to="/offre/creation"
+        link={{ isExternal: false, to: '/offre/creation' }}
+        Icon={AddOfferSvg}
       >
-        <AddOfferSvg />
         Créer une offre
-      </Link>
+      </ButtonLink>
     )
 
   const nbSelectedOffers = areAllOffersSelected

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useDispatch } from 'react-redux'
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -21,7 +21,8 @@ import { ReactComponent as CircledRightArrow } from 'icons/ico-right-circle-arro
 import GoBackLink from 'new_components/GoBackLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
-import { Banner } from 'ui-kit'
+import { Banner, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { getCanSubmit, parseSubmitErrors } from 'utils/react-final-form'
 import { sortByLabel } from 'utils/strings'
 
@@ -492,8 +493,8 @@ const VenueEdition = () => {
   const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
 
   const actionLink = !!initialId && (
-    <Link
-      className="primary-button with-icon"
+    <ButtonLink
+      variant={ButtonVariant.PRIMARY}
       onClick={() =>
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_FORM_NAVIGATION_IN.VENUE,
@@ -502,11 +503,14 @@ const VenueEdition = () => {
           isEdition: false,
         })
       }
-      to={`/offre/creation?lieu=${initialId}&structure=${offererId}`}
+      link={{
+        isExternal: false,
+        to: `/offre/creation?lieu=${initialId}&structure=${offererId}`,
+      }}
+      Icon={AddOfferSvg}
     >
-      <AddOfferSvg />
       <span>Créer une offre</span>
-    </Link>
+    </ButtonLink>
   )
 
   const pageSubtitle = initialIsVirtual ? getVirtualVenueName() : initialName
