@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-import { Link, useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -13,6 +13,8 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import { mapApiToBrowser } from 'utils/translate'
 
@@ -179,10 +181,13 @@ class Offerers extends PureComponent {
 
     const actionLink = (
       <span>
-        <Link className="primary-button with-icon" to={offererCreationPageURL}>
-          <AddOffererSvg />
+        <ButtonLink
+          Icon={AddOffererSvg}
+          link={{ isExternal: false, to: offererCreationPageURL }}
+          variant={ButtonVariant.PRIMARY}
+        >
           Ajouter une structure
-        </Link>
+        </ButtonLink>
         <Icon
           data-place="bottom"
           data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
