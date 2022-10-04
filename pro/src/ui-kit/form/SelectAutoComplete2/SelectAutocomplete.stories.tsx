@@ -5,7 +5,7 @@ import type { SelectAutocompleteProps } from './SelectAutocomplete'
 import type { Story } from '@storybook/react'
 
 export default {
-  title: 'ui-kit/forms/SelectAutocomplete',
+  title: 'ui-kit/forms/SelectAutocomplete2',
   component: SelectAutocomplete,
 }
 interface Args extends SelectAutocompleteProps {
