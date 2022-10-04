@@ -11,11 +11,16 @@ MAINTENANCE_PAGE_MESSAGE = models.SubscriptionMessage(
     pop_over_icon=models.PopOverIcon.CLOCK,
 )
 
-REDIRECT_TO_DMS_VIEW_LINK = "passculture://verification-identite/demarches-simplifiees"
 REDIRECT_TO_DMS_CALL_TO_ACTION = models.CallToActionMessage(
     title="Accéder au site Démarches-Simplifiées",
-    link=REDIRECT_TO_DMS_VIEW_LINK,
+    link="passculture://verification-identite/demarches-simplifiees",
     icon=models.CallToActionIcon.EXTERNAL,
+)
+
+REDIRECT_TO_IDENTIFICATION_CHOICE = models.CallToActionMessage(
+    title="Réessayer la vérification de mon identité",
+    link="passculture://verification-identite",
+    icon=models.CallToActionIcon.RETRY,
 )
 
 
