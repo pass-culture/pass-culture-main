@@ -6,9 +6,9 @@ from dateutil.tz import tz
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.booking_providers.factories import ExternalBookingFactory
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.external_bookings.factories import ExternalBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
