@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import TooltipWrapper from 'ui-kit/TooltipWrapper'
 
 import styles from '../../OfferItem.module.scss'
 
@@ -26,16 +27,21 @@ const DuplicateOfferCell = ({ isTemplate }: { isTemplate: boolean }) => {
     <>
       <td className={styles['duplicate-offer-column']}>
         {isTemplate ? (
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            className={styles['button']}
-            onClick={() => setIsModalOpen(true)}
+          <TooltipWrapper
+            delay={0}
+            title="Créer une offre réservable pour un établissement"
           >
-            <PlusIcon
-              className={styles['button-icon']}
-              title="Créer une offre collective à partir d’une offre vitrine"
-            />
-          </Button>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              className={styles['button']}
+              onClick={() => setIsModalOpen(true)}
+            >
+              <PlusIcon
+                className={styles['button-icon']}
+                title="Créer une offre réservable pour un établissement"
+              />
+            </Button>
+          </TooltipWrapper>
         ) : null}
       </td>
       {isModalOpen && shouldDisplayModal && (
