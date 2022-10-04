@@ -41,7 +41,7 @@ const EditOfferCell = ({
         >
           <PenIcon
             title={`${name} - éditer l'offre`}
-            className={styles['edit-icon']}
+            className={styles['button-icon']}
           />
         </ButtonLink>
       )}

@@ -1,8 +1,10 @@
 import React from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { Offer, Venue } from 'core/Offers/types'
 
 import CheckboxCell from './Cells/CheckboxCell'
+import DuplicateOfferCell from './Cells/DuplicateOfferCell'
 import EditOfferCell from './Cells/EditOfferCell'
 import EditStocksCell from './Cells/EditStocksCell'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
@@ -31,6 +33,10 @@ const CollectiveOfferItem = ({
   venue,
   isOfferEditable,
 }: CollectiveOfferItemProps) => {
+  const isCollectiveOfferDuplicationActive = useActiveFeature(
+    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
+  )
+
   return (
     <>
       <CheckboxCell
@@ -47,7 +53,11 @@ const CollectiveOfferItem = ({
         educationalInstitution={offer.educationalInstitution}
       />
       <OfferStatusCell status={offer.status} />
-      <EditStocksCell editionStockLink={editionStockLink} />
+      {isCollectiveOfferDuplicationActive ? (
+        <DuplicateOfferCell isTemplate={Boolean(offer.isShowcase)} />
+      ) : (
+        <EditStocksCell editionStockLink={editionStockLink} />
+      )}
       <EditOfferCell
         isOfferEditable={isOfferEditable}
         name={offer.name}

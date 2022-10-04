@@ -66,13 +66,17 @@
   width: rem.torem(82px);
 }
 
+.duplicate-offer-column {
+  width: rem.torem(44px);
+}
+
 .isbn {
   margin-top: rem.torem(8px);
 }
 
 .button {
   padding: 0 0.5rem;
-  .edit-icon {
+  &-icon {
     width: rem.torem(20px);
     height: rem.torem(20px);
     fill: colors.$primary;
@@ -80,7 +84,7 @@
 
   &:hover,
   &:focus {
-    .edit-icon {
+    .button-icon {
       fill: colors.$white;
     }
   }
