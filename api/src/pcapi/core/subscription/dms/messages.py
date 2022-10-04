@@ -45,14 +45,14 @@ def get_error_updatable_message(
     updated_at: datetime.datetime | None,
 ) -> models.SubscriptionMessage:
     if not application_content or not (application_content.field_errors or birth_date_error):
-        user_message = "Ton dossier déposé sur le site Démarches-Simplifiées contient des erreurs. Tu peux te rendre sur le site pour le rectifier."
+        user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr contient des erreurs. Tu peux te rendre sur le site pour le rectifier."
     else:
         errors = application_content.field_errors or []
         errors.extend([birth_date_error] if birth_date_error else [])
 
         user_message = _generate_form_field_error(
-            "Il semblerait que le champ ‘{formatted_error_fields}’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
-            "Il semblerait que les champs ‘{formatted_error_fields}’ soient invalides. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier.",
+            "Il semblerait que le champ ‘{formatted_error_fields}’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+            "Il semblerait que les champs ‘{formatted_error_fields}’ soient invalides. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier.",
             errors,
         )
 
@@ -71,7 +71,7 @@ def get_error_not_updatable_message(
     birth_date_error: fraud_models.DmsFieldErrorDetails | None,
     updated_at: datetime.datetime | None,
 ) -> models.SubscriptionMessage:
-    user_message = "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé"
+    user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé"
     pop_over_icon: models.PopOverIcon | None = models.PopOverIcon.ERROR
     call_to_action = None
     if (

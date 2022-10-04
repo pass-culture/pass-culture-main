@@ -169,7 +169,7 @@ class NextStepTest:
                     },
                     "popOverIcon": None,
                     "updatedAt": "2022-09-08T12:01:12.343025",
-                    "userMessage": "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site de Démarches-Simplifiées. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
+                    "userMessage": "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
                 },
             ),
         ],
