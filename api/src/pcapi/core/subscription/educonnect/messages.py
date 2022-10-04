@@ -1,17 +1,9 @@
 import datetime
 
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants as users_constants
-
-
-REDIRECT_TO_STEPPER_LINK = "passculture://verification-identite"
-
-RETRY_CALL_TO_ACTION = subscription_models.CallToActionMessage(
-    title="Réessayer la vérification de mon identité",
-    link=REDIRECT_TO_STEPPER_LINK,
-    icon=subscription_models.CallToActionIcon.RETRY,
-)
 
 
 def get_educonnect_failure_subscription_message(
@@ -33,5 +25,7 @@ def get_educonnect_failure_subscription_message(
         user_message = "La vérification de ton identité a échoué. Tu peux réessayer."
 
     return subscription_models.SubscriptionMessage(
-        user_message=user_message, call_to_action=RETRY_CALL_TO_ACTION, updated_at=updated_at
+        user_message=user_message,
+        call_to_action=subscription_messages.REDIRECT_TO_IDENTIFICATION_CHOICE,
+        updated_at=updated_at,
     )

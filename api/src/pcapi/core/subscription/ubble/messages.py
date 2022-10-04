@@ -5,7 +5,17 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 
 
-REDIRECT_TO_IDENTIFICATION_LINK = "passculture://verification-identite/identification"
+PENDING_UBBLE_SUBSCRIPTION_MESSAGE = subscription_models.SubscriptionMessage(
+    user_message="Ton document d'identité est en cours de vérification.",
+    call_to_action=None,
+    pop_over_icon=subscription_models.PopOverIcon.CLOCK,
+)
+
+REDIRECT_TO_IDENTIFICATION = subscription_models.CallToActionMessage(
+    title="Réessayer la vérification de mon identité",
+    link="passculture://verification-identite/identification",
+    icon=subscription_models.CallToActionIcon.RETRY,
+)
 
 
 def get_application_pending_message(updated_at: datetime.datetime | None) -> subscription_models.SubscriptionMessage:
@@ -33,11 +43,7 @@ def get_ubble_retryable_message(
 
     return subscription_models.SubscriptionMessage(
         user_message=user_message,
-        call_to_action=subscription_models.CallToActionMessage(
-            title="Réessayer la vérification de mon identité",
-            link=REDIRECT_TO_IDENTIFICATION_LINK,
-            icon=subscription_models.CallToActionIcon.RETRY,
-        ),
+        call_to_action=REDIRECT_TO_IDENTIFICATION,
         pop_over_icon=None,
         updated_at=updated_at,
     )

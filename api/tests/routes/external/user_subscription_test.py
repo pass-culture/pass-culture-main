@@ -27,7 +27,6 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
-from pcapi.core.subscription.ubble import messages as ubble_messages
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -1895,7 +1894,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Ton document d'identité ne te permet pas de bénéficier du pass Culture. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
         )
-        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.link == "passculture://verification-identite/identification"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -1969,7 +1968,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
         )
-        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.link == "passculture://verification-identite/identification"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2036,7 +2035,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité."
         )
-        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.link == "passculture://verification-identite/identification"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2111,7 +2110,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
         )
-        assert message.call_to_action.link == subscription_messages.REDIRECT_TO_DMS_VIEW_LINK
+        assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
 
@@ -2190,7 +2189,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Ton dossier a été refusé. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
         )
-        assert message.call_to_action.link == subscription_messages.REDIRECT_TO_DMS_VIEW_LINK
+        assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
 
         assert len(mails_testing.outbox) == 0
 
@@ -2278,7 +2277,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé."
         )
-        assert message.call_to_action.link == ubble_messages.REDIRECT_TO_IDENTIFICATION_LINK
+        assert message.call_to_action.link == "passculture://verification-identite/identification"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
