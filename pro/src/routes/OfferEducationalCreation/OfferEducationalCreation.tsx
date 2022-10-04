@@ -25,7 +25,7 @@ import postCollectiveOfferAdapter from './adapters/postCollectiveOfferAdapter'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
-  'categories' | 'userOfferers'
+  'categories' | 'userOfferers' | 'domainsOptions'
 >
 
 const OfferEducationalCreation = (): JSX.Element => {
@@ -70,11 +70,12 @@ const OfferEducationalCreation = (): JSX.Element => {
           console.error(results?.find(res => !res.isOk)?.message)
         }
 
-        const [categories, offerers] = results
+        const [categories, offerers, domains] = results
 
         setScreenProps({
           categories: categories.payload,
           userOfferers: offerers.payload,
+          domainsOptions: domains.payload,
         })
 
         setInitialValues(values =>
@@ -103,9 +104,7 @@ const OfferEducationalCreation = (): JSX.Element => {
             getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
             initialValues={initialValues}
             mode={Mode.CREATION}
-            notify={notify}
             onSubmit={createOffer}
-            getEducationalDomainsAdapter={getEducationalDomainsAdapter}
           />
           <RouteLeavingGuardOfferCreation isCollectiveFlow />
         </>
