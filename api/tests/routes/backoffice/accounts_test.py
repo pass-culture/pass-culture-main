@@ -344,14 +344,11 @@ class PublicAccountSearchTest:
     def test_can_search_public_account_young_but_also_pro(self, client):
         # given
         # She has started subscription process, but is also hired by an offerer
-        young_and_pro = users_factories.UserFactory(
+        young_and_pro = users_factories.BeneficiaryGrant18Factory(
             firstName="Maud",
             lastName="Zarella",
             email="mz@example.com",
             dateOfBirth=datetime.date.today() - relativedelta(years=16, days=5),
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=young_and_pro, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
         offerers_factories.UserOffererFactory(user=young_and_pro)
         user = users_factories.UserFactory()
