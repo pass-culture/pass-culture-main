@@ -86,12 +86,12 @@ describe('confirmation page', () => {
 
   it('should track when clicking on offer creation button', async () => {
     // Given
-    await renderOffer({
+    renderOffer({
       pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
     // When
-    await userEvent.click(screen.getByText('Créer une nouvelle offre'))
+    await userEvent.click(await screen.findByText('Créer une nouvelle offre'))
 
     // Then
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -109,12 +109,12 @@ describe('confirmation page', () => {
 
   it('should track when clicking on got to offers button', async () => {
     // Given
-    await renderOffer({
+    renderOffer({
       pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
     // When
-    await userEvent.click(screen.getByText('Voir la liste des offres'))
+    await userEvent.click(await screen.findByText('Voir la liste des offres'))
 
     // Then
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -132,13 +132,13 @@ describe('confirmation page', () => {
 
   it('should track when clicking on view in app link', async () => {
     // Given
-    await renderOffer({
+    renderOffer({
       pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
     // When
     await userEvent.click(
-      screen.getByText('Visualiser l’offre dans l’application')
+      await screen.findByText('Visualiser l’offre dans l’application')
     )
 
     // Then

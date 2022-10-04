@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
@@ -29,10 +29,12 @@ describe('individual offer step', () => {
       getFakeApiVenuesForOfferer(venue)
 
       // When
-      await renderOffer({ pathname: '/offre/creation/individuel' })
+      renderOffer({ pathname: '/offre/creation/individuel' })
 
       // Then
-      expect(screen.getByTestId('stepper')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByTestId('stepper')).toBeInTheDocument()
+      })
       const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
@@ -56,10 +58,12 @@ describe('individual offer step', () => {
       loadFakeApiCategories()
 
       // When
-      await renderOffer({ pathname: `/offre/${offer.id}/individuel/edition` })
+      renderOffer({ pathname: `/offre/${offer.id}/individuel/edition` })
 
       // Then
-      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
+      })
       const detailTab = await screen.findByText("Détails de l'offre", {
         selector: 'a',
       })
@@ -85,12 +89,14 @@ describe('stocks step', () => {
       loadFakeApiStocks([])
 
       // When
-      await renderOffer({
+      renderOffer({
         pathname: `/offre/${offer.id}/individuel/creation/stocks`,
       })
 
       // Then
-      expect(screen.getByTestId('stepper')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByTestId('stepper')).toBeInTheDocument()
+      })
       const detailTab = await screen
         .getByText("Détails de l'offre")
         .closest('a')
@@ -120,10 +126,12 @@ describe('stocks step', () => {
       loadFakeApiStocks([stock])
 
       // When
-      await renderOffer({ pathname: `/offre/${offer.id}/individuel/stocks` })
+      renderOffer({ pathname: `/offre/${offer.id}/individuel/stocks` })
 
       // Then
-      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
+      })
       const detailTab = await screen.findByText("Détails de l'offre", {
         selector: 'a',
       })
@@ -148,12 +156,14 @@ describe('confirmation step', () => {
       jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
 
       // When
-      await renderOffer({
+      renderOffer({
         pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
       })
 
       // Then
-      expect(screen.queryByText("Détails de l'offre")).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByText("Détails de l'offre")).not.toBeInTheDocument()
+      })
     })
   })
 })

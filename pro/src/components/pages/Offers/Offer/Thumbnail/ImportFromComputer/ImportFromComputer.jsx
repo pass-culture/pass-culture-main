@@ -1,5 +1,5 @@
 import * as PropTypes from 'prop-types'
-import React, { useCallback, useRef, useEffect } from 'react'
+import React, { useCallback } from 'react'
 
 import {
   IMAGE_TYPE,
@@ -19,13 +19,6 @@ const constraints = [
 ]
 
 const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
-  const mountedRef = useRef(true)
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false
-    }
-  }, [])
   const onSetImage = useCallback(
     file => {
       setThumbnail(file)
@@ -36,7 +29,6 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
   const { errors, checkAndSetImage } = useCheckAndSetImage({
     constraints,
     onSetImage,
-    mountedRef,
   })
   return (
     <form action="#" className="tnf-form">

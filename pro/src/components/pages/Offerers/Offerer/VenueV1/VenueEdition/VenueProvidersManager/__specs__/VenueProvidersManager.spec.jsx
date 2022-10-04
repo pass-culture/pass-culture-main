@@ -5,6 +5,7 @@ import {
   screen,
   within,
   waitForElementToBeRemoved,
+  waitFor,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -22,7 +23,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManager = async props => {
+const renderVenueProvidersManager = props => {
   render(
     <Provider store={configureTestStore()}>
       <MemoryRouter>
@@ -30,8 +31,6 @@ const renderVenueProvidersManager = async props => {
       </MemoryRouter>
     </Provider>
   )
-
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 describe('src | VenueProvidersManager', () => {
@@ -63,11 +62,13 @@ describe('src | VenueProvidersManager', () => {
 
   it('should retrieve providers and venue providers when component is mounted', async () => {
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
 
     // then
-    expect(pcapi.loadProviders).toHaveBeenCalledTimes(1)
-    expect(pcapi.loadVenueProviders).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(pcapi.loadProviders).toHaveBeenCalledTimes(1)
+      expect(pcapi.loadVenueProviders).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('when all providers are disabled for pro', () => {
@@ -86,7 +87,8 @@ describe('src | VenueProvidersManager', () => {
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
 
       // When
-      await renderVenueProvidersManager(props)
+      renderVenueProvidersManager(props)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       // Then
       expect(screen.queryByText('Importer des offres')).not.toBeInTheDocument()
@@ -108,10 +110,10 @@ describe('src | VenueProvidersManager', () => {
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
 
       // when
-      await renderVenueProvidersManager(props)
+      renderVenueProvidersManager(props)
 
       // then
-      expect(screen.getByText('Fnac')).toBeInTheDocument()
+      expect(await screen.findByText('Fnac')).toBeInTheDocument()
       expect(
         screen.queryByText(DEFAULT_PROVIDER_OPTION.displayName)
       ).not.toBeInTheDocument()
@@ -131,7 +133,8 @@ describe('src | VenueProvidersManager', () => {
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
 
       // when
-      await renderVenueProvidersManager(props)
+      renderVenueProvidersManager(props)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       // then
       expect(screen.queryByText('Importer des offres')).not.toBeInTheDocument()
@@ -145,7 +148,8 @@ describe('src | VenueProvidersManager', () => {
       pcapi.loadProviders.mockResolvedValue(providers)
 
       // when
-      await renderVenueProvidersManager(props)
+      renderVenueProvidersManager(props)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       // then
       expect(screen.queryByText('Importer des offres')).not.toBeInTheDocument()
@@ -153,23 +157,29 @@ describe('src | VenueProvidersManager', () => {
 
     it('should show import button when at least one provider is given', async () => {
       // when
-      await renderVenueProvidersManager(props)
+      renderVenueProvidersManager(props)
 
       // then
-      expect(screen.getByText('Synchroniser des offres')).toBeInTheDocument()
+      expect(
+        await screen.findByText('Synchroniser des offres')
+      ).toBeInTheDocument()
     })
 
     it('should display a select input to choose a provider on import button click', async () => {
       // given
-      await renderVenueProvidersManager(props)
-      const importOffersButton = screen.getByText('Synchroniser des offres')
+      renderVenueProvidersManager(props)
+      const importOffersButton = await screen.findByText(
+        'Synchroniser des offres'
+      )
 
       // when
       await userEvent.click(importOffersButton)
 
       // then
       const providersSelect = screen.getByRole('combobox')
-      expect(providersSelect).toBeInTheDocument()
+      await waitFor(() => {
+        expect(providersSelect).toBeInTheDocument()
+      })
       expect(providersSelect).toHaveDisplayValue('Choix de la source')
       const providersOptions = within(providersSelect).getAllByRole('option')
       expect(providersOptions[1]).toHaveTextContent(providers[0].name)
@@ -178,14 +188,19 @@ describe('src | VenueProvidersManager', () => {
 
     it('should not display the stock form when no provider is selected', async () => {
       // given
-      await renderVenueProvidersManager(props)
-      const importOffersButton = screen.getByText('Synchroniser des offres')
+      renderVenueProvidersManager(props)
+      const importOffersButton = await screen.findByText(
+        'Synchroniser des offres'
+      )
 
       // when
       await userEvent.click(importOffersButton)
 
       // then
-      expect(screen.queryByText('Compte')).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByText('Compte')).not.toBeInTheDocument()
+      })
+
       expect(screen.queryByText(props.venue.siret)).not.toBeInTheDocument()
     })
 
@@ -200,8 +215,10 @@ describe('src | VenueProvidersManager', () => {
           },
         ]
         pcapi.loadProviders.mockResolvedValue(providers)
-        await renderVenueProvidersManager(props)
-        const importOffersButton = screen.getByText('Synchroniser des offres')
+        renderVenueProvidersManager(props)
+        const importOffersButton = await screen.findByText(
+          'Synchroniser des offres'
+        )
         await userEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 
@@ -209,7 +226,9 @@ describe('src | VenueProvidersManager', () => {
         await userEvent.selectOptions(providersSelect, providers[0].id)
 
         // then
-        expect(screen.getByText('Prix de vente/place')).toBeInTheDocument()
+        await waitFor(() => {
+          expect(screen.getByText('Prix de vente/place')).toBeInTheDocument()
+        })
         expect(screen.getByText('Nombre de places/séance')).toBeInTheDocument()
         expect(
           screen.getByText('Accepter les réservations DUO')
@@ -220,8 +239,10 @@ describe('src | VenueProvidersManager', () => {
         // given
         providers = [{ id: 'providerId', name: 'My little provider' }]
         pcapi.loadProviders.mockResolvedValue(providers)
-        await renderVenueProvidersManager(props)
-        const importOffersButton = screen.getByText('Synchroniser des offres')
+        renderVenueProvidersManager(props)
+        const importOffersButton = await screen.findByText(
+          'Synchroniser des offres'
+        )
         await userEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 
@@ -229,7 +250,9 @@ describe('src | VenueProvidersManager', () => {
         await userEvent.selectOptions(providersSelect, providers[0].id)
 
         // then
-        expect(screen.getByText('Compte')).toBeInTheDocument()
+        await waitFor(() => {
+          expect(screen.getByText('Compte')).toBeInTheDocument()
+        })
         expect(screen.getByText(props.venue.siret)).toBeInTheDocument()
       })
     })

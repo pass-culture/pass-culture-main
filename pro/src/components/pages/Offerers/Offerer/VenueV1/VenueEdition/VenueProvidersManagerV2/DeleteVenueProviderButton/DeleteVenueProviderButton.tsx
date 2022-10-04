@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import useNotification from 'components/hooks/useNotification'
 import { useModal } from 'hooks/useModal'
@@ -22,13 +22,6 @@ const DeleteVenueProviderButton = ({
   const { visible, showModal, hideModal } = useModal()
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
-  const mountedRef = useRef(true)
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false
-    }
-  }, [])
 
   const tryToDeleteVenueProvider = useCallback(async () => {
     setIsLoading(true)
@@ -41,10 +34,8 @@ const DeleteVenueProviderButton = ({
         'Une erreur est survenue. Merci de réessayer plus tard.'
       )
     } finally {
-      if (mountedRef.current) {
-        hideModal()
-        setIsLoading(false)
-      }
+      hideModal()
+      setIsLoading(false)
     }
   }, [notification, hideModal])
   return (

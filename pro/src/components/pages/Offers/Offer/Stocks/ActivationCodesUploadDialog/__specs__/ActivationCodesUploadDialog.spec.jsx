@@ -59,7 +59,7 @@ describe('activationCodesUploadDialog', () => {
 
       // Then
       expect(
-        screen.getByText(
+        await screen.findByText(
           'Une erreur s’est produite lors de l’import de votre fichier',
           { exact: false }
         )

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
@@ -23,15 +23,17 @@ describe('confirmation page', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
 
     // When
-    await renderOffer({
+    renderOffer({
       pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
     // Then
+    await waitFor(() => {
+      expect(
+        screen.getByText('Offre publiée !', { selector: 'h2' })
+      ).toBeInTheDocument()
+    })
     expect(screen.queryByText('active')).not.toBeInTheDocument()
-    expect(
-      screen.getByText('Offre publiée !', { selector: 'h2' })
-    ).toBeInTheDocument()
     expect(
       screen.getByText(
         'Votre offre est désormais disponible à la réservation sur l’application pass Culture.',
@@ -64,15 +66,17 @@ describe('confirmation page', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
 
     // When
-    await renderOffer({
+    renderOffer({
       pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
     // Then
+    await waitFor(() => {
+      expect(
+        screen.getByText('Offre en cours de validation', { selector: 'h2' })
+      ).toBeInTheDocument()
+    })
     expect(screen.queryByText('active')).not.toBeInTheDocument()
-    expect(
-      screen.getByText('Offre en cours de validation', { selector: 'h2' })
-    ).toBeInTheDocument()
     expect(
       screen.queryByText(content =>
         content.startsWith(
