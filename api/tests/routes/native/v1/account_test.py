@@ -233,11 +233,11 @@ class AccountTest:
         msg = response.json["subscriptionMessage"]
         assert (
             msg["userMessage"]
-            == "Ton document d'identité ne te permet pas de bénéficier du pass Culture. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
+            == "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site de Démarches-Simplifiées. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
         )
         assert msg["callToAction"] == {
             "callToActionIcon": "RETRY",
-            "callToActionLink": "passculture://verification-identite/identification",
+            "callToActionLink": "passculture://verification-identite",
             "callToActionTitle": "Réessayer la vérification de mon identité",
         }
         assert msg["popOverIcon"] is None
