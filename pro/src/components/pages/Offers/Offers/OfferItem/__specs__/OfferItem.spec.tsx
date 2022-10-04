@@ -283,8 +283,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display the correct text "2 dates"', () => {
         // given
         props.offer.stocks = [
-          { remainingQuantity: 'unlimited' },
-          { remainingQuantity: 'unlimited' },
+          {
+            beginningDatetime: new Date('01-01-2001'),
+            remainingQuantity: 'unlimited',
+          },
+          {
+            beginningDatetime: new Date('01-01-2001'),
+            remainingQuantity: 'unlimited',
+          },
         ]
 
         // when

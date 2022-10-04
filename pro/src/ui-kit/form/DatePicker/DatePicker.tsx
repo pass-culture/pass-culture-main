@@ -65,6 +65,7 @@ const DatePicker = ({
         minDate={minDateTime}
         onChange={date => {
           let newDate = date
+          /* istanbul ignore next: DEBT, TO FIX */
           if (
             date &&
             maxDateTime &&
