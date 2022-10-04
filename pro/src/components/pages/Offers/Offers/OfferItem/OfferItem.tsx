@@ -45,6 +45,7 @@ const OfferItem = ({
     !!isShowcase
   )
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
     offer.status == OFFER_STATUS_DRAFT

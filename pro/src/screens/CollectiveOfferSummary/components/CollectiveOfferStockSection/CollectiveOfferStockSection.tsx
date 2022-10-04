@@ -8,7 +8,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
 
-interface ICollectiveOfferStockSectionProps {
+export interface ICollectiveOfferStockSectionProps {
   stock?: GetCollectiveOfferCollectiveStockResponseModel | null
   venueDepartmentCode?: string | null
 }
@@ -17,14 +17,17 @@ const CollectiveOfferStockSection = ({
   stock,
   venueDepartmentCode,
 }: ICollectiveOfferStockSectionProps) => {
-  const formatDateTime = (date: string, dateFormat: string) =>
-    format(
+  /* istanbul ignore next: DEBT, TO FIX */
+  const formatDateTime = (date: string, dateFormat: string) => {
+    return format(
       getLocalDepartementDateTimeFromUtc(
-        date,
+        new Date(date),
         venueDepartmentCode || undefined
       ),
       dateFormat
     )
+  }
+  /* istanbul ignore next: DEBT, TO FIX */
   return (
     <>
       <SummaryLayout.Row
@@ -38,8 +41,8 @@ const CollectiveOfferStockSection = ({
       <SummaryLayout.Row
         title="Horaire"
         description={
-          (stock?.bookingLimitDatetime &&
-            formatDateTime(stock.bookingLimitDatetime, FORMAT_HH_mm)) ||
+          (stock?.beginningDatetime &&
+            formatDateTime(stock.beginningDatetime, FORMAT_HH_mm)) ||
           DEFAULT_RECAP_VALUE
         }
       />
