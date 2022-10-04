@@ -50,16 +50,6 @@ class VenueBookingProvider(PcObject, Base, Model):  # type: ignore [valid-type, 
 
 
 @dataclass
-class Movie:
-    id: str
-    title: str
-    duration: int  # duration in minutes
-    description: str
-    posterpath: str | None
-    visa: str
-
-
-@dataclass
 class Ticket:
     barcode: str
     seat_number: str
@@ -78,8 +68,8 @@ class BookingProviderClientAPI:
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
-    def get_venue_movies(self) -> list[Movie]:
-        raise NotImplementedError("Should be implemented in subclass (abstract method)")
+    # def get_venue_movies(self) -> list[Movie]:
+    #     raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
     def cancel_booking(self, barcodes: list[str]) -> None:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")

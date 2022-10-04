@@ -6,7 +6,7 @@ import pytest
 from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
-from pcapi.core.booking_providers.models import Movie
+from pcapi.core.external_bookings.models import Movie
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
