@@ -47,14 +47,6 @@ class LocationViewer extends PureComponent {
       props.debounceTimeout
     )
   }
-  componentDidMount() {
-    // bad pattern, the real solution is to migrate the component to functional component
-    this.mounted = true
-  }
-
-  componentWillUnmount() {
-    this.mounted = false
-  }
 
   static getDerivedStateFromProps(newProps, state) {
     const latitude = sanitizeCoordinates(newProps.latitude)
@@ -189,41 +181,39 @@ class LocationViewer extends PureComponent {
   }
 
   fetchSuggestions = address => {
-    if (this.mounted) {
-      const { maxSuggestions, placeholder } = this.props
-      this.setState({ isLoading: true })
+    const { maxSuggestions, placeholder } = this.props
+    this.setState({ isLoading: true })
 
-      // NOTE: CANNOT EXPRESS THIS WITH AWAIT ASYNC
-      // BECAUSE this.props cannot be found in that case...
-      // weird
-      getSuggestionsFromAddressAndMaxSuggestions(address, maxSuggestions).then(
-        result => {
-          if (result.error) {
-            return
-          }
+    // NOTE: CANNOT EXPRESS THIS WITH AWAIT ASYNC
+    // BECAUSE this.props cannot be found in that case...
+    // weird
+    getSuggestionsFromAddressAndMaxSuggestions(address, maxSuggestions).then(
+      result => {
+        if (result.error) {
+          return
+        }
 
-          const hasNoData = result.data.length === 0
-          if (hasNoData) {
-            this.setState({
-              isLoading: false,
-            })
-            return
-          }
-
-          const defaultSuggestion = {
-            label: placeholder,
-            placeholder: true,
-            id: 'placeholder',
-          }
-
-          const suggestions = result.data.concat(defaultSuggestion)
+        const hasNoData = result.data.length === 0
+        if (hasNoData) {
           this.setState({
             isLoading: false,
-            suggestions,
           })
+          return
         }
-      )
-    }
+
+        const defaultSuggestion = {
+          label: placeholder,
+          placeholder: true,
+          id: 'placeholder',
+        }
+
+        const suggestions = result.data.concat(defaultSuggestion)
+        this.setState({
+          isLoading: false,
+          suggestions,
+        })
+      }
+    )
   }
 
   renderSuggestionsMenu = suggestionElements => {

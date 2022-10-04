@@ -10,10 +10,6 @@ jest.mock('utils/config', () => ({
     'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
-const renderBicIbanFields = props => {
-  render(<BicIbanFields {...props} />)
-}
-
 describe('src | Venue | BicIbanFields', () => {
   it('should display bank informations', () => {
     // Given
@@ -21,7 +17,7 @@ describe('src | Venue | BicIbanFields', () => {
       bic: '123 456 789',
       iban: 'FRBICAVECUNEVALEURPARDEFAUT',
     }
-    renderBicIbanFields(props)
+    render(<BicIbanFields {...props} />)
 
     // then
     expect(

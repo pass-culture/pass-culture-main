@@ -27,7 +27,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOffers = async (props, store, queryParams = null) => {
+const renderOffers = (props, store, queryParams = null) => {
   render(
     <Provider store={store}>
       <MemoryRouter
@@ -44,9 +44,6 @@ const renderOffers = async (props, store, queryParams = null) => {
       </MemoryRouter>
     </Provider>
   )
-  await waitFor(() => {
-    expect(screen.getByTestId('offer-page')).toBeInTheDocument()
-  })
 }
 
 describe('offerDetails - Creation - admin user', () => {
@@ -127,7 +124,10 @@ describe('offerDetails - Creation - admin user', () => {
   describe('render when creating a new offer as admin', () => {
     it('should get selected offerer from API', async () => {
       // When
-      await renderOffers(props, store, `?structure=${offerer.id}`)
+      renderOffers(props, store, `?structure=${offerer.id}`)
+      await waitFor(() => {
+        expect(screen.getByTestId('offer-page')).toBeInTheDocument()
+      })
 
       // Then
       expect(api.getOfferer).toHaveBeenLastCalledWith(offerer.id)
@@ -135,7 +135,10 @@ describe('offerDetails - Creation - admin user', () => {
 
     it('should not get venues from API', async () => {
       // When
-      await renderOffers(props, store, `?structure=${offerer.id}`)
+      renderOffers(props, store, `?structure=${offerer.id}`)
+      await waitFor(() => {
+        expect(screen.getByTestId('offer-page')).toBeInTheDocument()
+      })
 
       // Then
       expect(api.getVenues).toHaveBeenCalledTimes(0)
@@ -144,7 +147,7 @@ describe('offerDetails - Creation - admin user', () => {
     describe('when selecting an offer type', () => {
       it('should have offerer selected and select disabled', async () => {
         // Given
-        await renderOffers(props, store, `?structure=${offerer.id}`)
+        renderOffers(props, store, `?structure=${offerer.id}`)
 
         // When
         await setOfferValues({ categoryId: 'ID' })
@@ -159,7 +162,7 @@ describe('offerDetails - Creation - admin user', () => {
 
       it('should have venue selected when given as queryParam', async () => {
         // Given
-        await renderOffers(
+        renderOffers(
           props,
           store,
           `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React, { ImgHTMLAttributes } from 'react'
 
 import { ROOT_PATH } from 'utils/config'

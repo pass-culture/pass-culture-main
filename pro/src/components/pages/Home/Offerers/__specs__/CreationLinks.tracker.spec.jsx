@@ -30,7 +30,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const mockLogEvent = jest.fn()
-const renderHomePage = async () => {
+const renderHomePage = () => {
   const store = configureTestStore({
     user: {
       currentUser: {
@@ -51,7 +51,6 @@ const renderHomePage = async () => {
       </MemoryRouter>
     </Provider>
   )
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 describe('trackers creationLinks', () => {
@@ -174,7 +173,9 @@ describe('trackers creationLinks', () => {
       },
     ]
     api.getOfferer.mockResolvedValue(baseOfferers[0])
-    await renderHomePage()
+    renderHomePage()
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
     const createOfferButton = screen.queryByText('Créer une offre')
 
     await userEvent.click(createOfferButton)
@@ -202,7 +203,8 @@ describe('trackers creationLinks', () => {
       },
     ]
     api.getOfferer.mockResolvedValue(baseOfferers[0])
-    await renderHomePage()
+    renderHomePage()
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     const createVenueButton = screen.queryByText('Créer un lieu')
 
