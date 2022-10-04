@@ -7,8 +7,8 @@ import pytest
 from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
-from pcapi.core.booking_providers.models import Movie
 from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock

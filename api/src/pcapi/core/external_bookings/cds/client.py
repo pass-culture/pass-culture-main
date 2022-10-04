@@ -10,9 +10,9 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
-import pcapi.core.booking_providers.models as booking_providers_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.external_bookings.models import ExternalBookingsClientAPI
 from pcapi.core.external_bookings.models import Ticket
 
@@ -75,7 +75,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_venue_movies(self) -> list[booking_providers_models.Movie]:
+    def get_venue_movies(self) -> list[external_bookings_models.Movie]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA)
         cds_movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
         return [cds_movie.to_generic_movie() for cds_movie in cds_movies]

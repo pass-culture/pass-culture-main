@@ -8,6 +8,16 @@ class Ticket:
     seat_number: Optional[str]
 
 
+@dataclass
+class Movie:
+    id: str
+    title: str
+    duration: int  # duration in minutes
+    description: str
+    posterpath: str | None
+    visa: str
+
+
 class ExternalBookingsClientAPI:
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")

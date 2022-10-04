@@ -4,7 +4,7 @@ from typing import Dict
 
 from pydantic import Field
 
-import pcapi.core.booking_providers.models as booking_providers_models
+import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import validator
 
@@ -76,8 +76,8 @@ class MediaCDS(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    def to_generic_movie(self) -> booking_providers_models.Movie:
-        return booking_providers_models.Movie(
+    def to_generic_movie(self) -> external_bookings_models.Movie:
+        return external_bookings_models.Movie(
             id=str(self.id),
             title=self.title,
             duration=self.duration // 60,
