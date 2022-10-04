@@ -37,7 +37,7 @@ def get_ubble_retryable_message(
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
         user_message = "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité."
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
-        user_message = "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site de Démarches-Simplifiées. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
+        user_message = "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
         call_to_action = subscription_messages.REDIRECT_TO_IDENTIFICATION_CHOICE
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
         user_message = "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
@@ -58,19 +58,19 @@ def get_ubble_not_retryable_message(
     call_to_action = None
     pop_over_icon = None
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
-        user_message = "Nous n'arrivons pas à lire ton document. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
+        user_message = "Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
-        user_message = "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
+        user_message = "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
-        user_message = "Le document d'identité que tu as présenté n'est pas accepté. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
+        user_message = "Le document d'identité que tu as présenté n'est pas accepté. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
-        user_message = "Ton document d'identité est expiré. Rends-toi sur le site Démarches-Simplifiées avec un document en cours de validité pour renouveler ta demande."
+        user_message = "Ton document d'identité est expiré. Rends-toi sur le site demarches-simplifiees.fr avec un document en cours de validité pour renouveler ta demande."
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif (
@@ -98,12 +98,12 @@ def get_ubble_not_retryable_message(
 
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
         user_message = (
-            "Ton dossier a été refusé. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
+            "Ton dossier a été refusé. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
         )
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     else:
-        user_message = "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
+        user_message = "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     return subscription_models.SubscriptionMessage(

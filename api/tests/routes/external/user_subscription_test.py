@@ -394,7 +394,7 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon == subscription_models.PopOverIcon.ERROR
         assert (
             message.user_message
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé : tu n'es malheureusement pas éligible au pass Culture."
+            == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : tu n'es malheureusement pas éligible au pass Culture."
         )
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
@@ -463,7 +463,7 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon == None
         assert (
             message.user_message
-            == "Il semblerait que les champs ‘numéro de pièce d'identité, code postal’ soient invalides. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
+            == "Il semblerait que les champs ‘numéro de pièce d'identité, code postal’ soient invalides. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
         )
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
@@ -591,7 +591,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que le champ ‘numéro de pièce d'identité’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘numéro de pièce d'identité’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -635,7 +635,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que le champ ‘prénom’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘prénom’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -692,7 +692,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que les champs ‘prénom, nom de famille’ soient invalides. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
+            == "Il semblerait que les champs ‘prénom, nom de famille’ soient invalides. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -738,7 +738,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que le champ ‘code postal’ soit invalide. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘code postal’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -1892,7 +1892,7 @@ class UbbleWebhookTest:
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, True)
         assert (
             message.user_message
-            == "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site de Démarches-Simplifiées. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
+            == "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
         )
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
@@ -2108,7 +2108,7 @@ class UbbleWebhookTest:
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
         assert (
             message.user_message
-            == "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
+            == "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
         )
         assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
@@ -2187,7 +2187,7 @@ class UbbleWebhookTest:
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
         assert (
             message.user_message
-            == "Ton dossier a été refusé. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande."
+            == "Ton dossier a été refusé. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
         )
         assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
 
