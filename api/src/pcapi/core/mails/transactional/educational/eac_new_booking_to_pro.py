@@ -11,7 +11,8 @@ def send_eac_new_booking_email_to_pro(booking: CollectiveBooking) -> bool:
     if not booking_emails:
         return True
     data = get_eac_new_booking_to_pro_email_data(booking)
-    return mails.send(recipients=booking_emails, data=data)
+    main_recipient, bcc_recipients = [booking_emails[0]], booking_emails[1:]
+    return mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
 
 
 def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.TransactionalEmailData:

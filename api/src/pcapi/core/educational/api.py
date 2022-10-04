@@ -265,7 +265,8 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
                 "EDUCATIONAL_INSTITUTION_POSTAL_CODE": collective_booking.educationalInstitution.postalCode,
             },
         )
-        mails.send(recipients=booking_emails, data=data)
+        main_recipient, bcc_recipients = [booking_emails[0]], booking_emails[1:]
+        mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
 
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
 
