@@ -1,20 +1,24 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 @use 'styles/mixins/_rem.scss' as rem;
+
 .tooltip-wrapper {
   position: relative;
   display: flex;
   width: fit-content;
   justify-content: center;
+
   &-title {
     @include fonts.caption();
     position: absolute;
-    top: rem.torem(-28px);
     padding: rem.torem(4px);
     line-height: 1;
-    white-space: nowrap;
+    width: max-content;
+    max-width: rem.torem(170px);
     background-color: black;
     color: white;
     border-radius: rem.torem(3px);
+    pointer-events: 'none';
+
     &::after {
       content: '';
       position: absolute;
@@ -23,7 +27,7 @@
       border-width: rem.torem(6px);
       border-style: solid;
       border-color: #000000 transparent transparent transparent;
-      top: rem.torem(18px);
+      bottom: rem.torem(-12px);
       left: 50%;
       transform: translateX(-50%);
     }
