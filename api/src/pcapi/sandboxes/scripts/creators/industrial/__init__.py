@@ -32,8 +32,8 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_product
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venue_types import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import *
-from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_booking_provider import (
-    create_offerer_with_booking_provider,
+from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_cinema_venue_provider_and_external_bookings import (
+    create_offerer_with_cinema_venue_provider_and_external_bookings,
 )
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
@@ -99,4 +99,4 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_offer_validation_config()
 
-    create_offerer_with_booking_provider()
+    create_offerer_with_cinema_venue_provider_and_external_bookings()
