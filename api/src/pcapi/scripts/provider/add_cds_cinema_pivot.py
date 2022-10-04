@@ -5,9 +5,6 @@ from typing import Iterable
 import openpyxl
 import sqlalchemy.exc
 
-from pcapi.core.booking_providers.models import BookingProvider
-from pcapi.core.booking_providers.models import BookingProviderName
-from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.models import CDSCinemaDetails
 from pcapi.core.providers.models import CinemaProviderPivot
@@ -31,10 +28,7 @@ def add_all_cinema_pivot_from_file(
     dry_run: bool = True,
 ) -> None:
     cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one_or_none()
-    booking_provider = BookingProvider.query.filter(
-        BookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE
-    ).one_or_none()
-    if cds_provider and booking_provider:
+    if cds_provider:
 
         if file_ext == "excel":
             print("read excel file")
@@ -53,7 +47,7 @@ def add_all_cinema_pivot_from_file(
                 print(f"{len(cinemas_to_add)} cinemas to add")
 
         for cinema in cinemas_to_add:
-            add_pivot_and_booking_provider_for_cinema(cinema, cds_provider, booking_provider)
+            add_provider_pivot_for_cinema(cinema, cds_provider)
 
         if dry_run:
             db.session.rollback()
@@ -63,9 +57,7 @@ def add_all_cinema_pivot_from_file(
         print("CDS Provider not found")
 
 
-def add_pivot_and_booking_provider_for_cinema(
-    cinema: CDSCinema, provider: Provider, booking_provider: BookingProvider
-) -> None:
+def add_provider_pivot_for_cinema(cinema: CDSCinema, provider: Provider) -> None:
     print(f"Adding Pivot for {cinema.account_id} - {cinema.cinema_id} - {cinema.venue_siret} -  ...")
     venue = Venue.query.filter(Venue.siret == cinema.venue_siret).one_or_none()
     if venue:
@@ -75,16 +67,8 @@ def add_pivot_and_booking_provider_for_cinema(
                 cds_details = CDSCinemaDetails(
                     cinemaProviderPivot=pivot, cinemaApiToken=cinema.cds_token, accountId=cinema.account_id
                 )
-                venue_booking_provider = VenueBookingProvider(
-                    isActive=True,
-                    venue=venue,
-                    bookingProvider=booking_provider,
-                    idAtProvider=cinema.cinema_id,
-                    token=cinema.cds_token,
-                )
                 db.session.add(pivot)
                 db.session.add(cds_details)
-                db.session.add(venue_booking_provider)
                 db.session.flush()
         except sqlalchemy.exc.IntegrityError as e:
             print("Ignoring cinema: %s because %s" % (str(cinema.cinema_id), e.orig.diag.message_detail))
