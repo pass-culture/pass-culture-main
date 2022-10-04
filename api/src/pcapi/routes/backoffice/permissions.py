@@ -32,6 +32,7 @@ def list_roles() -> serialization.ListRoleResponseModel:
                         id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category
                     )
                     for perm in role.permissions
+                    if perm_models.Permissions.exists(perm.name)
                 ],
             )
             for role in roles
@@ -52,6 +53,7 @@ def list_permissions() -> serialization.ListPermissionResponseModel:
         permissions=[
             serialization.Permission(id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category)
             for perm in permissions
+            if perm_models.Permissions.exists(perm.name)
         ]
     )
 

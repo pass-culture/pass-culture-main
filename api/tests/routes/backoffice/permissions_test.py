@@ -42,6 +42,25 @@ class RoleListTest:
         assert set(role["name"] for role in roles) == {"test_role_1", "test_role_2"}
 
     @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_list_roles_ignoring_obsolete_permissions(self, client):
+        # given
+        obsolete_perm = perm_factories.PermissionFactory(name="OBSOLETE")
+        perm_factories.RoleFactory(name="test_role_1", permissions=[obsolete_perm])
+        perm_factories.RoleFactory(name="test_role_2")
+        user = UserFactory()
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_roles"),
+        )
+
+        # then
+        assert response.status_code == 200
+        roles = response.json["roles"]
+        assert set(role["name"] for role in roles) == {"test_role_1", "test_role_2"}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_roles_without_permission(self, client):
         # given
         perm_factories.RoleFactory(name="test_role_1")
@@ -79,6 +98,23 @@ class PermissionListTest:
         # given
         user = UserFactory()
         auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_permissions"),
+        )
+
+        # then
+        assert response.status_code == 200
+        permissions = response.json["permissions"]
+        assert set(perm["name"] for perm in permissions) == {p.value for p in perm_models.Permissions}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_list_permissions_ignoring_obsolete_ones_in_db(self, client):
+        # given
+        user = UserFactory()
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
+        perm_factories.PermissionFactory(name="OBSOLETE")
 
         # when
         response = client.with_explicit_token(auth_token).get(
