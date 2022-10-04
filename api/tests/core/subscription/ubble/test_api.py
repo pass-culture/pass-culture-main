@@ -826,7 +826,7 @@ class SubscriptionMessageTest:
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
-                "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site de Démarches-Simplifiées. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
+                "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
                 "passculture://verification-identite",
             ),
             (
@@ -884,15 +884,15 @@ class SubscriptionMessageTest:
         [
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
-                "Le document d'identité que tu as présenté n'est pas accepté. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande.",
+                "Le document d'identité que tu as présenté n'est pas accepté. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER],
-                "Ton dossier a été refusé. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande.",
+                "Ton dossier a été refusé. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
             ),
             (
                 None,
-                "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site Démarches-Simplifiées pour renouveler ta demande.",
+                "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
             ),
         ],
     )
