@@ -1,11 +1,10 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import {
   CanOffererCreateCollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
-  GetEducationalDomainsAdapter,
   IOfferEducationalFormValues,
   EducationalCategories,
   Mode,
@@ -23,19 +22,13 @@ export interface IOfferEducationalProps {
   onSubmit(values: IOfferEducationalFormValues): void
   userOfferers: GetEducationalOffererResponseModel[]
   getIsOffererEligible?: CanOffererCreateCollectiveOffer
-  notify: {
-    success: (msg: string | null) => void
-    error: (msg: string | null) => void
-    pending: (msg: string | null) => void
-    information: (msg: string | null) => void
-  }
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
   isOfferBooked?: boolean
   isOfferActive?: boolean
   isOfferCancellable?: boolean
-  getEducationalDomainsAdapter: GetEducationalDomainsAdapter
+  domainsOptions: SelectOption[]
 }
 
 const OfferEducational = ({
@@ -44,16 +37,14 @@ const OfferEducational = ({
   initialValues,
   onSubmit,
   getIsOffererEligible,
-  notify,
   mode,
   cancelActiveBookings,
   setIsOfferActive,
   isOfferBooked = false,
   isOfferCancellable = false,
   isOfferActive = false,
-  getEducationalDomainsAdapter,
+  domainsOptions,
 }: IOfferEducationalProps): JSX.Element => {
-  const [domainsOptions, setDomainsOptions] = useState<SelectOption[]>([])
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
@@ -71,12 +62,6 @@ const OfferEducational = ({
     // are updated after offer update
     resetForm({ values: initialValues })
   }, [initialValues, resetForm])
-
-  useEffect(() => {
-    getEducationalDomainsAdapter().then(result => {
-      setDomainsOptions(result.payload)
-    })
-  }, [])
 
   useEffect(() => {
     if (
@@ -132,7 +117,6 @@ const OfferEducational = ({
             categories={categories}
             getIsOffererEligible={getIsOffererEligible}
             mode={mode}
-            notify={notify}
             userOfferers={userOfferers}
             domainsOptions={domainsOptions}
           />

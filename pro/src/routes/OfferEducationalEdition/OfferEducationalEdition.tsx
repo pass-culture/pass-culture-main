@@ -33,7 +33,7 @@ import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromO
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
-  'categories' | 'userOfferers'
+  'categories' | 'userOfferers' | 'domainsOptions'
 >
 
 const OfferEducationalEdition = (): JSX.Element => {
@@ -123,13 +123,14 @@ const OfferEducationalEdition = (): JSX.Element => {
       const results = await Promise.all([
         getEducationalCategoriesAdapter(),
         getOfferersAdapter(offererId),
+        getEducationalDomainsAdapter(),
       ])
 
       if (results.some(res => !res.isOk)) {
         notify.error(results?.find(res => !res.isOk)?.message)
       }
 
-      const [categories, offerers] = results
+      const [categories, offerers, domains] = results
 
       const offerSubcategory = categories.payload.educationalSubCategories.find(
         ({ id }) => offer.subcategoryId === id
@@ -155,6 +156,7 @@ const OfferEducationalEdition = (): JSX.Element => {
       setScreenProps({
         categories: categories.payload,
         userOfferers,
+        domainsOptions: domains.payload,
       })
 
       setInitialValues(values =>
@@ -205,16 +207,12 @@ const OfferEducationalEdition = (): JSX.Element => {
           initialValues={initialValues}
           isOfferActive={offer?.isActive}
           isOfferBooked={
-            offer && 'collectiveStock' in offer
-              ? offer?.collectiveStock?.isBooked
-              : false
+            offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
           }
           isOfferCancellable={offer && offer.isCancellable}
           mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-          notify={notify}
           onSubmit={editOffer}
           setIsOfferActive={setIsOfferActive}
-          getEducationalDomainsAdapter={getEducationalDomainsAdapter}
         />
       ) : (
         <Spinner />

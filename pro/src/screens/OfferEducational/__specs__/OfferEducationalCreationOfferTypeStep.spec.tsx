@@ -3,6 +3,8 @@ import '@testing-library/jest-dom'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
   categoriesFactory,
   defaultCreationProps,
@@ -130,13 +132,11 @@ describe('screens | OfferEducational : creation offer type step', () => {
     beforeEach(() => {
       props = {
         ...props,
-        getEducationalDomainsAdapter: jest.fn().mockResolvedValue({
-          payload: [
-            { label: 'Domain 1', value: '1' },
-            { label: 'Domain 2', value: '2' },
-            { label: 'Domain 3', value: '3' },
-          ],
-        }),
+        domainsOptions: [
+          { label: 'Domain 1', value: 1 },
+          { label: 'Domain 2', value: 2 },
+          { label: 'Domain 3', value: 3 },
+        ],
       }
     })
 

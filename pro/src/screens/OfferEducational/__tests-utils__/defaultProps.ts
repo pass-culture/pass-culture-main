@@ -51,18 +51,8 @@ export const defaultCreationProps: IOfferEducationalProps = {
     message: null,
     payload: { isOffererEligibleToEducationalOffer: true },
   }),
-  notify: {
-    success: jest.fn(),
-    pending: jest.fn(),
-    error: jest.fn(),
-    information: jest.fn(),
-  },
   mode: Mode.CREATION,
-  getEducationalDomainsAdapter: jest.fn().mockResolvedValue({
-    isOk: true,
-    payload: [{ id: 1, name: 'domain1' }],
-    message: null,
-  }),
+  domainsOptions: [{ value: 1, label: 'domain1' }],
 }
 
 const allParticipantsOptionsToTrue = {
@@ -107,16 +97,6 @@ export const defaultEditionProps: IOfferEducationalProps = {
     educationalCategories: mockEducationalCategories,
     educationalSubCategories: mockEducationalSubcategories,
   },
-  notify: {
-    success: jest.fn(),
-    pending: jest.fn(),
-    error: jest.fn(),
-    information: jest.fn(),
-  },
   mode: Mode.EDITION,
-  getEducationalDomainsAdapter: jest.fn().mockResolvedValue({
-    isOk: true,
-    payload: [{ value: 1, label: 'domain1' }],
-    message: null,
-  }),
+  domainsOptions: [{ value: 1, label: 'domain1' }],
 }
