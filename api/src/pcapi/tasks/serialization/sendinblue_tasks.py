@@ -10,6 +10,7 @@ class UpdateSendinblueContactRequest(BaseModel):
 
 class SendTransactionalEmailRequest(BaseModel):
     recipients: list[str]
+    bcc_recipients: list[str] | None = None
     params: dict | None = None
     template_id: int | None = None
     tags: list[str] | None = None
