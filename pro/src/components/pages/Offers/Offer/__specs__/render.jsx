@@ -1,4 +1,4 @@
-import { screen, render, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -7,7 +7,7 @@ import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import routes from 'routes/routes_map'
 import { configureTestStore } from 'store/testUtils'
 
-export const renderOffer = async (initialEntries, store) => {
+export const renderOffer = (initialEntries, store) => {
   const defaultStore = configureTestStore({
     user: {
       currentUser: {
@@ -34,8 +34,4 @@ export const renderOffer = async (initialEntries, store) => {
       </MemoryRouter>
     </Provider>
   )
-
-  await waitFor(() => {
-    expect(screen.getByTestId('offer-page')).toBeInTheDocument()
-  })
 }

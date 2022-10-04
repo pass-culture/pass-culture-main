@@ -10,10 +10,6 @@ jest.mock('utils/config', () => ({
     'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
-const renderBankInformation = props => {
-  render(<BankInformation {...props} />)
-}
-
 describe('src | Venue | BankInformation', () => {
   const venue = {
     id: 'AA',
@@ -43,7 +39,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        renderBankInformation(props)
+        render(<BankInformation {...props} />)
 
         // then
         expect(
@@ -93,7 +89,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        renderBankInformation(props)
+        render(<BankInformation {...props} />)
 
         // then
         expect(screen.getByText(props.offerer.bic)).toBeInTheDocument()
@@ -121,7 +117,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        renderBankInformation(props)
+        render(<BankInformation {...props} />)
 
         // then
         expect(screen.getByText(props.venue.bic)).toBeInTheDocument()
@@ -145,7 +141,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        renderBankInformation(props)
+        render(<BankInformation {...props} />)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
@@ -174,7 +170,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        renderBankInformation(props)
+        render(<BankInformation {...props} />)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
@@ -199,7 +195,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        renderBankInformation(props)
+        render(<BankInformation {...props} />)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
@@ -229,7 +225,7 @@ describe('src | Venue | BankInformation', () => {
         }
 
         // when
-        renderBankInformation(props)
+        render(<BankInformation {...props} />)
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`

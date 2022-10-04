@@ -6,10 +6,6 @@ import React from 'react'
 
 import DurationInput from '../DurationInput'
 
-const renderDurationInput = props => {
-  render(<DurationInput {...props} />)
-}
-
 describe('src | components | inputs | DurationInput', () => {
   let props
 
@@ -23,7 +19,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should display an input with correct name and placeholder', () => {
     // When
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
 
     // Then
     const durationInput = screen.getByRole('textbox')
@@ -34,7 +30,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should init input with empty text when no initial duration is provided', () => {
     // When
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
 
     // Then
     const durationInput = screen.getByRole('textbox')
@@ -46,7 +42,7 @@ describe('src | components | inputs | DurationInput', () => {
     props.initialDurationInMinutes = 75
 
     // When
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
 
     // Then
     const durationInput = screen.getByRole('textbox')
@@ -58,7 +54,7 @@ describe('src | components | inputs | DurationInput', () => {
     props.initialDurationInMinutes = 60
 
     // When
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
 
     // Then
     const durationInput = screen.getByRole('textbox')
@@ -67,7 +63,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should call onChange prop function with updated duration in minutes when user leave field', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
     await userEvent.type(durationInput, '1:25')
 
@@ -81,7 +77,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should consider as minute a single digit after ":" when user leave field', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
     await userEvent.type(durationInput, '1:7')
 
@@ -95,7 +91,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should consider as hours numbers with no ":" when user leave field', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
 
     await userEvent.type(durationInput, '3')
@@ -111,7 +107,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should call onChange prop function with null when user remove the duration', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
     await userEvent.type(durationInput, '1:25')
     await userEvent.tab()
@@ -127,7 +123,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should accept only numeric caracters', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
 
     // When
@@ -139,7 +135,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should accept only one hours-minutes separator', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
 
     // When
@@ -151,7 +147,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should accept only minutes with two digits', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
 
     // When
@@ -163,7 +159,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should not accept minutes to be over 59', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
 
     // When
@@ -175,7 +171,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should accept minutes equal to 59', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
 
     // When
@@ -187,7 +183,7 @@ describe('src | components | inputs | DurationInput', () => {
 
   it('should not accept minutes without hours', async () => {
     // Given
-    renderDurationInput(props)
+    render(<DurationInput {...props} />)
     const durationInput = screen.getByRole('textbox')
 
     // When

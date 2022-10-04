@@ -8,17 +8,9 @@ import { loadFakeApiVenue } from 'utils/fakeApi'
 
 import OfferPreview from '../OfferPreview'
 
-const renderOfferPreview = async ({ props = {} }) => {
-  render(<OfferPreview {...props} />)
-
-  await waitFor(() => {
-    expect(screen.getByTestId('offer-preview-section')).toBeInTheDocument()
-  })
-}
-
 describe('offer preview', () => {
   describe('render', () => {
-    it('should display title, description and withdrawal details when given', async () => {
+    it('should display title, description and withdrawal details when given', () => {
       // given
       const props = {
         offerPreviewData: {
@@ -29,7 +21,7 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOfferPreview({ props })
+      render(<OfferPreview {...props} />)
 
       // then
       expect(screen.getByText('Offer title')).toBeInTheDocument()
@@ -38,7 +30,7 @@ describe('offer preview', () => {
       expect(screen.getByText('Offer withdrawal details')).toBeInTheDocument()
     })
 
-    it('should truncate description text to maximum 300 characters', async () => {
+    it('should truncate description text to maximum 300 characters', () => {
       // given
       const props = {
         offerPreviewData: {
@@ -48,7 +40,7 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOfferPreview({ props })
+      render(<OfferPreview {...props} />)
 
       // then
       const shrinkedDescriptionText = screen.getByText(
@@ -57,7 +49,7 @@ describe('offer preview', () => {
       expect(shrinkedDescriptionText).toBeInTheDocument()
     })
 
-    it('should not display terms of withdrawal category if not given', async () => {
+    it('should not display terms of withdrawal category if not given', () => {
       // given
       const props = {
         offerPreviewData: {
@@ -68,13 +60,13 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOfferPreview({ props })
+      render(<OfferPreview {...props} />)
 
       // then
       expect(screen.queryByText('Modalités de retrait')).toBeNull()
     })
 
-    it('should truncate withdrawal details text to maximum 300 characters', async () => {
+    it('should truncate withdrawal details text to maximum 300 characters', () => {
       // given
       const props = {
         offerPreviewData: {
@@ -84,7 +76,7 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOfferPreview({ props })
+      render(<OfferPreview {...props} />)
 
       // then
       const shrinkedWithdrawalDetailsText = screen.getByText(
@@ -93,7 +85,7 @@ describe('offer preview', () => {
       expect(shrinkedWithdrawalDetailsText).toBeInTheDocument()
     })
 
-    it('should display "isDuo", "Type" and "Price"', async () => {
+    it('should display "isDuo", "Type" and "Price"', () => {
       // given
       const props = {
         offerPreviewData: {
@@ -102,7 +94,7 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOfferPreview({ props })
+      render(<OfferPreview {...props} />)
 
       // then
       const typeText = screen.getByText('Type')
@@ -125,7 +117,12 @@ describe('offer preview', () => {
         }
 
         // When
-        await renderOfferPreview({ props })
+        render(<OfferPreview {...props} />)
+        await waitFor(() => {
+          expect(
+            screen.getByTestId('offer-preview-section')
+          ).toBeInTheDocument()
+        })
 
         // Then
         expect(
@@ -147,7 +144,12 @@ describe('offer preview', () => {
         }
 
         // When
-        await renderOfferPreview({ props })
+        render(<OfferPreview {...props} />)
+        await waitFor(() => {
+          expect(
+            screen.getByTestId('offer-preview-section')
+          ).toBeInTheDocument()
+        })
 
         // Then
         expect(screen.getByText('Mon Lieu - Ma Ville')).toBeInTheDocument()
@@ -166,7 +168,12 @@ describe('offer preview', () => {
         }
 
         // When
-        await renderOfferPreview({ props })
+        render(<OfferPreview {...props} />)
+        await waitFor(() => {
+          expect(
+            screen.getByTestId('offer-preview-section')
+          ).toBeInTheDocument()
+        })
 
         // Then
         expect(screen.queryByText('Où ?')).not.toBeInTheDocument()
