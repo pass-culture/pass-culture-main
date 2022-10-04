@@ -1892,9 +1892,9 @@ class UbbleWebhookTest:
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, True)
         assert (
             message.user_message
-            == "Ton document d'identité ne te permet pas de bénéficier du pass Culture. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
+            == "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site de Démarches-Simplifiées. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
         )
-        assert message.call_to_action.link == "passculture://verification-identite/identification"
+        assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
