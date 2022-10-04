@@ -883,16 +883,14 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
     # In Flask-Admin backoffice, the difference was made from user_offerer table, which turns the user into a "pro"
     # account ; the same filter is kept here.
     # However, some young users, including beneficiaries, work for organizations and are associated with offerers
-    # using the same email as their personal account. So let's include "pro" users who are beneficiaries or have at
-    # least started subscription process.
+    # using the same email as their personal account. So let's include "pro" users who are beneficiaries (doesn't
+    # include those who are only in the subscription process).
     public_accounts = (
         models.User.query.outerjoin(offerers_models.UserOfferer)
-        .outerjoin(fraud_models.BeneficiaryFraudCheck)
         .filter(
             sa.or_(
                 offerers_models.UserOfferer.userId.is_(None),
                 models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
-                sa.not_(fraud_models.BeneficiaryFraudCheck.userId.is_(None)),
             )
         )
         .distinct(models.User.id)
