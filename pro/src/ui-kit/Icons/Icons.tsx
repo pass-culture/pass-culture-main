@@ -25,7 +25,6 @@ import { ReactComponent as IcoDuo } from 'icons/ico-duo.svg'
 import { ReactComponent as IcoEuroGrey } from 'icons/ico-euro-grey.svg'
 import { ReactComponent as IcoEuroV2 } from 'icons/ico-euro-v2.svg'
 import { ReactComponent as IcoEuro } from 'icons/ico-euro.svg'
-import { ReactComponent as IcoExternalSiteFilledWhite } from 'icons/ico-external-site-filled-white.svg'
 import { ReactComponent as IcoExternalSiteFilled } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as IcoExternalSiteRedFilled } from 'icons/ico-external-site-red-filled.svg'
 import { ReactComponent as IcoEyeClose } from 'icons/ico-eye-close.svg'
@@ -239,12 +238,6 @@ export const Icons = () => (
           <IcoEuroV2 />
         </td>
         <td>ico-euro-v2</td>
-      </tr>
-      <tr>
-        <td className={styles['with-background']}>
-          <IcoExternalSiteFilledWhite />
-        </td>
-        <td>ico-external-site-filled-white</td>
       </tr>
       <tr>
         <td>
