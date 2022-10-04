@@ -19,6 +19,7 @@ const buildBeginningDatetime = (
   beginningDateIsoString,
   beginningTimeIsoString
 ) => {
+  /* istanbul ignore next: DEBT, TO FIX */
   if (!beginningDateIsoString === null || beginningTimeIsoString === null) {
     return ''
   }
@@ -150,6 +151,7 @@ export const validateUpdatedStock = (stock, isEventOffer) => {
 
   const remainingQuantity = stock.quantity - stock.bookingsQuantity
 
+  /* istanbul ignore next: DEBT, TO FIX */
   if (stock.quantity && remainingQuantity < 0) {
     const missingQuantityMessage =
       'La quantité ne peut être inférieure au nombre de réservations.'

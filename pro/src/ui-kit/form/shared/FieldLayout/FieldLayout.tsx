@@ -20,7 +20,7 @@ interface IFieldLayoutProps {
   inline?: boolean
   classNameFooter?: string
 }
-
+/* istanbul ignore next: DEBT, TO FIX */
 const FieldLayout = ({
   children,
   label,
