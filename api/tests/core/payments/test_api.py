@@ -25,7 +25,7 @@ class CreateDepositTest:
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
     def test_create_underage_deposit(self, age, expected_amount):
         with freeze_time(datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=age, months=2)):
-            beneficiary = users_factories.UserFactory(dateOfBirth=datetime.utcnow())
+            beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.utcnow())
         with freeze_time(datetime.utcnow() - relativedelta(month=1)):
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=beneficiary,
@@ -44,9 +44,7 @@ class CreateDepositTest:
         assert deposit.expirationDate == datetime(2021 - (age + 1) + 18, 12, 5, 0, 0, 0)
 
     def test_create_18_years_old_deposit(self):
-        beneficiary = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=4)
-        )
+        beneficiary = users_factories.UserFactory()
 
         deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
@@ -58,9 +56,7 @@ class CreateDepositTest:
 
     @override_settings(IS_INTEGRATION=True)
     def test_deposit_on_integration(self):
-        beneficiary = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=4)
-        )
+        beneficiary = users_factories.UserFactory()
 
         # When
         deposit = api.create_deposit(beneficiary, "integration_signup", users_models.EligibilityType.AGE18)
@@ -73,9 +69,8 @@ class CreateDepositTest:
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
     def test_deposit_created_when_another_type_already_exist_for_user(self):
-        birth_date = datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=4)
         with freeze_time(datetime.utcnow() - relativedelta(years=3)):
-            beneficiary = users_factories.UnderageBeneficiaryFactory(dateOfBirth=birth_date)
+            beneficiary = users_factories.UnderageBeneficiaryFactory()
 
         api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
@@ -87,7 +82,7 @@ class CreateDepositTest:
         AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow().replace(
             hour=0, minute=0, second=0, microsecond=0
         ) - relativedelta(years=18, months=2)
-        beneficiary = users_factories.BeneficiaryGrant18Factory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
+        beneficiary = users_factories.BeneficiaryGrant18Factory(validatedBirthDate=AGE18_ELIGIBLE_BIRTH_DATE)
 
         # When
         with pytest.raises(exceptions.DepositTypeAlreadyGrantedException) as error:

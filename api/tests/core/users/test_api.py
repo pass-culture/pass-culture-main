@@ -420,10 +420,8 @@ class ChangeUserEmailTest:
 
 
 class CreateBeneficiaryTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
-
     def test_with_eligible_user(self):
-        user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
+        user = users_factories.UserFactory(roles=[])
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
@@ -433,7 +431,7 @@ class CreateBeneficiaryTest:
 
     def test_with_eligible_underage_user(self):
         user = users_factories.UserFactory(
-            roles=[], dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=16, months=4)
+            roles=[], validatedBirthDate=datetime.date.today() - relativedelta(years=16, months=4)
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -452,7 +450,7 @@ class CreateBeneficiaryTest:
 
     def test_apps_flyer_called(self):
         apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
-        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, externalIds=apps_flyer_data)
+        user = users_factories.UserFactory(externalIds=apps_flyer_data)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
@@ -475,7 +473,7 @@ class CreateBeneficiaryTest:
             assert len(user.deposits) == 1
 
     def test_external_users_updated(self):
-        user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
+        user = users_factories.UserFactory(roles=[])
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
