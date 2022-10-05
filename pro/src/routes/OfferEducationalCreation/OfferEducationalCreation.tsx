@@ -9,12 +9,10 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
-  getEducationalCategoriesAdapter,
-  getEducationalDomainsAdapter,
-  getOfferersAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
@@ -57,29 +55,22 @@ const OfferEducationalCreation = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadData = async () => {
-        const results = await Promise.all([
-          getEducationalCategoriesAdapter(),
-          getOfferersAdapter(offererId),
-          getEducationalDomainsAdapter(),
-        ])
+        const result = await getCollectiveOfferFormDataApdater({ offererId })
 
-        if (results.some(res => !res.isOk)) {
-          // handle error with notification at some point
-          // FIX ME
-          // eslint-disable-next-line
-          console.error(results?.find(res => !res.isOk)?.message)
+        if (!result.isOk) {
+          notify.error(result.message)
         }
 
-        const [categories, offerers, domains] = results
+        const { categories, offerers, domains } = result.payload
 
         setScreenProps({
-          categories: categories.payload,
-          userOfferers: offerers.payload,
-          domainsOptions: domains.payload,
+          categories: categories,
+          userOfferers: offerers,
+          domainsOptions: domains,
         })
 
         setInitialValues(values =>
-          setInitialFormValues(values, offerers.payload, offererId, venueId)
+          setInitialFormValues(values, offerers, offererId, venueId)
         )
 
         setIsReady(true)
