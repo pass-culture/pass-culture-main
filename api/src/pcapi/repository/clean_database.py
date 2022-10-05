@@ -1,5 +1,4 @@
 from pcapi import settings
-import pcapi.core.booking_providers.models as booking_providers_models
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.models as educational_models
@@ -71,8 +70,6 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     providers_models.CinemaProviderPivot.query.delete()
     providers_models.AllocinePivot.query.delete()
     providers_models.AllocineTheater.query.delete()
-    booking_providers_models.VenueBookingProvider.query.delete()
-    booking_providers_models.BookingProvider.query.delete()
     offerers_models.VenuePricingPointLink.query.delete()
     offerers_models.VenueReimbursementPointLink.query.delete()
     offerers_models.Venue.query.delete()
