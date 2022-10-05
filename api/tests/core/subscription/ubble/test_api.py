@@ -182,8 +182,8 @@ class UbbleWorkflowTest:
 
     @freezegun.freeze_time("2020-05-05")
     def test_ubble_workflow_with_eligibility_change_17_18(self, ubble_mocker):
-        # User set his birth date as if 17 years old
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=6))
+        signup_birth_date = datetime.datetime(year=2002, month=5, day=6)
+        user = users_factories.UserFactory(dateOfBirth=signup_birth_date)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
@@ -225,11 +225,13 @@ class UbbleWorkflowTest:
 
         db.session.refresh(user)
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+        assert user.dateOfBirth == signup_birth_date
+        assert user.validatedBirthDate == document_birth_date.date()
 
     @freezegun.freeze_time("2020-05-05")
     def test_ubble_workflow_with_eligibility_change_18_19(self, ubble_mocker):
-        # User set his birth date as if 18 years old
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2003, month=5, day=4))
+        signup_birth_date = datetime.datetime(year=2003, month=5, day=4)
+        user = users_factories.UserFactory(dateOfBirth=signup_birth_date)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
@@ -264,8 +266,12 @@ class UbbleWorkflowTest:
         assert fraud_checks[0].thirdPartyId == ubble_identification
         assert fraud_models.FraudReasonCode.AGE_TOO_OLD in fraud_checks[0].reasonCodes
 
+        assert user.dateOfBirth == signup_birth_date
+        assert user.validatedBirthDate == document_birth_date.date()
+
     def test_ubble_workflow_updates_user_when_processed(self, ubble_mocker):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=6))
+        signup_birth_date = datetime.datetime(year=2002, month=5, day=6)
+        user = users_factories.UserFactory(dateOfBirth=signup_birth_date)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
@@ -273,12 +279,13 @@ class UbbleWorkflowTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
+        document_birth_date = datetime.datetime(year=2002, month=5, day=4)
         ubble_response = UbbleIdentificationResponseFactory(
             identification_state=IdentificationState.INVALID,
             data__attributes__identification_id=str(fraud_check.thirdPartyId),
             included=[
                 UbbleIdentificationIncludedDocumentsFactory(
-                    attributes__birth_date=datetime.datetime(year=2002, month=5, day=4).date().isoformat()
+                    attributes__birth_date=document_birth_date.date().isoformat()
                 ),
             ],
         )
@@ -290,7 +297,8 @@ class UbbleWorkflowTest:
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         db.session.refresh(user)
-        assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=4)
+        assert user.dateOfBirth == signup_birth_date
+        assert user.validatedBirthDate == document_birth_date.date()
 
     def test_ubble_workflow_does_not_erase_user_data(self, ubble_mocker):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=6))

@@ -99,7 +99,7 @@ class EduconnectFlowTest:
 
         assert user.firstName == "WrongFirstName"
         assert user.lastName == "Wrong Lastname"
-        assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
+        assert user.validatedBirthDate == date(2006, 8, 18)
         assert user.ineHash is None
         assert user.civility is None
 
@@ -115,7 +115,7 @@ class EduconnectFlowTest:
         assert user.firstName == "Max"
         assert user.lastName == "SENS"
         assert user.ineHash == ine_hash
-        assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
+        assert user.validatedBirthDate == date(2006, 8, 18)
         assert user.civility == "Mme"
 
 
@@ -1254,7 +1254,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.firstName == identity_firstname
         assert user.lastName == identity_lastname
-        assert user.dateOfBirth.date() == identity_birth_date
+        assert user.validatedBirthDate == identity_birth_date
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
@@ -1551,7 +1551,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.firstName == identity_firstname
         assert user.lastName == identity_lastname
-        assert user.dateOfBirth.date() == identity_birth_date
+        assert user.validatedBirthDate == identity_birth_date
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
@@ -1602,7 +1602,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.firstName == identity_firstname
         assert user.lastName == identity_lastname
-        assert user.dateOfBirth.date() == identity_birth_date
+        assert user.validatedBirthDate == identity_birth_date
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
