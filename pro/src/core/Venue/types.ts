@@ -50,6 +50,7 @@ export interface IVenue {
   siret: string
   venueType: string
   venueLabel: string
+  withdrawalDetails: string
 }
 
 export type IProviders = {

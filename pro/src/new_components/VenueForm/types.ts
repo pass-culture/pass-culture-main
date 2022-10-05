@@ -29,4 +29,6 @@ export interface IVenueFormValues {
   venueLabel: string
   venueType: string
   webSite: string
+  withdrawalDetails: string
+  isWithdrawalAppliedOnAllOffers: boolean
 }

@@ -15,6 +15,7 @@ import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { OffersSynchronization } from './OffersSynchronization'
 import styles from './VenueForm.module.scss'
+import { WithdrawalDetails } from './WithdrawalDetails'
 
 import { IVenueFormValues } from '.'
 
@@ -65,9 +66,13 @@ const VenueForm = ({
           venueTypes={venueTypes}
           venueLabels={venueLabels}
         />
-        {!!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />}
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          !!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />
+        }
         <Address />
         <Accessibility isCreatingVenue={isCreatingVenue} />
+        <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
         <Contact />
         <SubmitButton isLoading={isSubmitting}>Valider</SubmitButton>
       </FormLayout>

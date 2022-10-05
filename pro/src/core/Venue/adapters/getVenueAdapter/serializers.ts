@@ -10,6 +10,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
     [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
   }
+  /* istanbul ignore next: DEBT, TO FIX */
   return {
     accessibility: {
       ...venueAccessibility,
@@ -42,12 +43,14 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     siret: venue.siret || '',
     venueLabel: venue.venueLabelId || '',
     venueType: venue.venueTypeCode || '',
+    withdrawalDetails: venue.withdrawalDetails || '',
   }
 }
 
 const serializeBannerMetaApi = (
   apiBannerMeta: BannerMetaModel
 ): IVenueBannerMetaProps => {
+  /* istanbul ignore next: DEBT, TO FIX */
   return {
     image_credit: apiBannerMeta.image_credit || '',
     original_image_url: apiBannerMeta.original_image_url || '',
