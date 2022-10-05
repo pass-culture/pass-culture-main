@@ -1,11 +1,13 @@
 import { SubcategoryIdEnum, StudentLevels } from 'apiClient/v1'
+
+import { DEFAULT_EAC_FORM_VALUES } from '../constants'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
-  DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
-} from 'core/OfferEducational'
-import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
+} from '../types'
+
+import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
 
 const computeDurationString = (
   durationMinutes: number | undefined | null
