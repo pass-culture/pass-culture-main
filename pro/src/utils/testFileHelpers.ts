@@ -29,6 +29,14 @@ export const createImageFile = ({
   height = 100,
 }: ICreateImageFileArgs = {}): File => {
   const file = createFile({ name, type, sizeInMB })
+  Object.defineProperty(file, 'width', {
+    value: width,
+    configurable: true,
+  })
+  Object.defineProperty(file, 'height', {
+    value: height,
+    configurable: true,
+  })
   jest
     .spyOn(global, 'createImageBitmap')
     .mockResolvedValue({ width, height } as ImageBitmap)

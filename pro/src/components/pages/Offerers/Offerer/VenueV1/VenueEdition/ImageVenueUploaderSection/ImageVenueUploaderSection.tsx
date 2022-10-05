@@ -43,6 +43,7 @@ export const ImageVenueUploaderSection = ({
   onDeleteImage,
 }: ImageVenueUploaderSectionProps): JSX.Element => {
   let cropParams
+  /* istanbul ignore next: DEBT, TO FIX */
   if (venueBanner !== undefined && venueBanner !== null) {
     cropParams = {
       xCropPercent: venueBanner.crop_params.x_crop_percent,
@@ -59,15 +60,16 @@ export const ImageVenueUploaderSection = ({
     credit: venueBanner?.image_credit,
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const handleOnImageUpload = async ({
-    imageData,
+    imageFile,
     credit,
     cropParams,
   }: IOnImageUploadArgs) => {
     try {
       const { bannerUrl, bannerMeta } = await postImageToVenue({
         venueId,
-        banner: imageData,
+        banner: imageFile,
         xCropPercent: cropParams?.x,
         yCropPercent: cropParams?.y,
         heightCropPercent: cropParams?.height,
@@ -81,6 +83,7 @@ export const ImageVenueUploaderSection = ({
     }
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const handleOnImageDelete = async () => {
     try {
       await api.deleteVenueBanner(venueId)

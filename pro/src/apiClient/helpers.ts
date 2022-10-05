@@ -14,12 +14,13 @@ export const getError = (error: ApiError): any => {
 // FIXME: find a way to test this by mocking ReadableStream
 // in fetch response
 /* istanbul ignore next */
-export const getDataURLFromImageURL = async (
-  imageURL: string
+export const getFileFromURL = async (
+  url: string,
+  name = 'image.jpg'
 ): Promise<File> => {
-  const response = await fetch(imageURL)
+  const response = await fetch(url)
   const blob = await response.blob()
-  return new File([blob], 'image.jpg', { type: blob.type })
+  return new File([blob], name, { type: blob.type })
 }
 
 export const HTTP_STATUS = {

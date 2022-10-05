@@ -2,6 +2,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import useNotification from 'components/hooks/useNotification'
 import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import FormLayout from 'new_components/FormLayout'
 import { ImageUploader } from 'new_components/ImageUploader'
@@ -14,6 +15,7 @@ import { IVenueFormValues } from '../types'
 
 import styles from './ImageUploaderVenue.module.scss'
 
+/* istanbul ignore next: DEBT, TO FIX */
 const buildInitialValues = (
   bannerUrl?: string,
   bannerMeta?: IVenueBannerMetaProps
@@ -36,21 +38,23 @@ const buildInitialValues = (
   }
 }
 
+/* istanbul ignore next: DEBT, TO FIX */
 const ImageUploaderVenue = () => {
+  const notify = useNotification()
   const {
     setFieldValue,
     values: { id: venueId, bannerUrl, bannerMeta },
   } = useFormikContext<IVenueFormValues>()
 
   const handleOnImageUpload = async ({
-    imageData,
+    imageFile,
     credit,
     cropParams,
   }: IOnImageUploadArgs) => {
     try {
       const editedVenue = await postImageToVenue({
         venueId,
-        banner: imageData,
+        banner: imageFile,
         xCropPercent: cropParams?.x,
         yCropPercent: cropParams?.y,
         heightCropPercent: cropParams?.height,
@@ -60,9 +64,12 @@ const ImageUploaderVenue = () => {
 
       setFieldValue('bannerUrl', editedVenue.bannerUrl)
       setFieldValue('bannerMeta', editedVenue.bannerMeta)
-
+      notify.success('Vos modifications ont bien été prises en compte')
       return Promise.resolve()
     } catch {
+      notify.error(
+        'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
+      )
       return Promise.reject()
     }
   }
@@ -76,6 +83,7 @@ const ImageUploaderVenue = () => {
 
       return Promise.resolve()
     } catch {
+      notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
       return Promise.reject()
     }
   }

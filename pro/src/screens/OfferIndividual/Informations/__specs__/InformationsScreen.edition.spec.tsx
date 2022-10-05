@@ -346,6 +346,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     contextValue.offer = {
       ...offer,
       image: {
+        originalUrl: 'http://image.url',
         url: 'http://image.url',
         credit: 'John Do',
       },
@@ -371,6 +372,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     contextValue.offer = {
       ...offer,
       image: {
+        originalUrl: 'http://image.url',
         url: 'http://image.url',
         credit: 'John Do',
       },

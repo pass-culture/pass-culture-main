@@ -55,6 +55,7 @@ const Notification = (): JSX.Element | null => {
   if (isInDom) {
     return (
       <div
+        data-testid={`global-notification-${type}`}
         className={cn('notification', `is-${type || 'success'}`, {
           show: isVisible,
           hide: !isVisible,

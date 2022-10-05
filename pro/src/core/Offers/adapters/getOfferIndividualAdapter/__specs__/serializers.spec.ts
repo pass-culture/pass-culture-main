@@ -121,7 +121,11 @@ describe('serializer', () => {
           thumbCount: 1,
         },
       ] as unknown as GetIndividualOfferResponseModel[],
-      expectedImage: { url: 'http://image.url', credit: 'John Do' },
+      expectedImage: {
+        originalUrl: 'http://image.url',
+        url: 'http://image.url',
+        credit: 'John Do',
+      },
     },
     {
       mediations: [] as unknown as GetIndividualOfferResponseModel[],
@@ -146,7 +150,11 @@ describe('serializer', () => {
           thumbCount: 1,
         },
       ] as unknown as GetIndividualOfferResponseModel[],
-      expectedImage: { url: 'http://image.url', credit: '' },
+      expectedImage: {
+        originalUrl: 'http://image.url',
+        url: 'http://image.url',
+        credit: '',
+      },
     },
   ]
   it.each(serializeOfferApiImageDataSet)(
@@ -440,6 +448,7 @@ describe('serializer', () => {
       isEvent: true,
       withdrawalType: null,
       image: {
+        originalUrl: 'http://my.thumb.url',
         url: 'http://my.thumb.url',
         credit: 'John Do',
       },

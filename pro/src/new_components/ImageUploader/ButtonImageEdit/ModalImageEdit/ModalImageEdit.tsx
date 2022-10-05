@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
-import { getDataURLFromImageURL } from 'apiClient/helpers'
-import useNotification from 'components/hooks/useNotification'
+import { getFileFromURL } from 'apiClient/helpers'
 import DialogBox from 'new_components/DialogBox'
 import {
   coordonateToPosition,
@@ -18,7 +17,8 @@ import { ModalImageUploadBrowser } from './ModalImageUploadBrowser'
 import { ModalImageUploadConfirm } from './ModalImageUploadConfirm'
 
 export interface IOnImageUploadArgs {
-  imageData: File
+  imageFile: File
+  imageCroppedDataUrl?: string
   credit: string
   cropParams?: CroppedRect
 }
@@ -29,14 +29,16 @@ interface IModalImageEditProps {
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   initialValues?: IUploadImageValues
 }
+// FIXME: find a way to test FileReader
+/* istanbul ignore next: DEBT, TO FIX */
 const ModalImageEdit = ({
   mode,
   onDismiss,
   onImageUpload,
   initialValues = {},
 }: IModalImageEditProps): JSX.Element | null => {
-  const notify = useNotification()
   const [isReady, setIsReady] = useState<boolean>(false)
+
   const {
     imageUrl: initialImageUrl,
     originalImageUrl: initialOriginalImageUrl,
@@ -47,7 +49,7 @@ const ModalImageEdit = ({
   const [image, setImage] = useState<File | undefined>()
   useEffect(() => {
     async function setImageFromUrl(url: string) {
-      setImage(await getDataURLFromImageURL(url))
+      setImage(await getFileFromURL(url))
       setIsReady(true)
     }
     const imageUrl = initialOriginalImageUrl
@@ -59,7 +61,7 @@ const ModalImageEdit = ({
   const [credit, setCredit] = useState(initialCredit || '')
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
 
-  const [editedImage, setEditedImage] = useState('')
+  const [editedImageDataUrl, setEditedImageDataUrl] = useState('')
   const [isUploading, setIsUploading] = useState(false)
 
   // First version of the back don't use width_crop_percent which is needed to display the original image with the correct crop
@@ -88,13 +90,13 @@ const ModalImageEdit = ({
   const onEditedImageSave = useCallback(
     (dataUrl: string, croppedRect: CroppedRect) => {
       setCroppingRect(croppedRect)
-      setEditedImage(dataUrl)
+      setEditedImageDataUrl(dataUrl)
     },
-    [setEditedImage, setCroppingRect]
+    [setEditedImageDataUrl, setCroppingRect]
   )
 
   const navigateFromPreviewToEdit = useCallback(() => {
-    setEditedImage('')
+    setEditedImageDataUrl('')
   }, [])
 
   const onImageClientUpload = (values: IImageUploadBrowserFormValues) => {
@@ -109,24 +111,14 @@ const ModalImageEdit = ({
     if (croppingRect === undefined) return
     if (image === undefined) return
 
-    setIsUploading(true)
-    const imageDataURL =
-      typeof image === 'string' ? await getDataURLFromImageURL(image) : image
-
     await onImageUpload({
-      imageData: imageDataURL,
+      imageFile: image,
+      imageCroppedDataUrl: editedImageDataUrl,
       cropParams: croppingRect,
       credit,
+    }).then(() => {
+      onDismiss()
     })
-      .then(() => {
-        notify.success('Vos modifications ont bien été prises en compte')
-        onDismiss()
-      })
-      .catch(() => {
-        notify.error(
-          'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
-        )
-      })
     setIsUploading(false)
   }
 
@@ -145,7 +137,7 @@ const ModalImageEdit = ({
           onImageClientUpload={onImageClientUpload}
           mode={mode}
         />
-      ) : !croppingRect || !editedImage ? (
+      ) : !croppingRect || !editedImageDataUrl ? (
         <ModalImageCrop
           credit={credit}
           image={image}
@@ -163,7 +155,7 @@ const ModalImageEdit = ({
           isUploading={isUploading}
           onGoBack={navigateFromPreviewToEdit}
           onUploadImage={handleOnUpload}
-          imageUrl={editedImage}
+          imageUrl={editedImageDataUrl}
           mode={mode}
         />
       )}
