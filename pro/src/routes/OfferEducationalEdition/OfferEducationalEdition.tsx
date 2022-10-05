@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { SubcategoryIdEnum } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
@@ -11,9 +10,6 @@ import {
   Mode,
   cancelCollectiveBookingAdapter,
   extractOfferIdAndOfferTypeFromRouteParams,
-  getEducationalCategoriesAdapter,
-  getEducationalDomainsAdapter,
-  getOfferersAdapter,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
   setInitialFormValues,
@@ -21,6 +17,7 @@ import {
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -29,7 +26,6 @@ import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducationa
 
 import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
-import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
@@ -120,53 +116,31 @@ const OfferEducationalEdition = (): JSX.Element => {
 
       const offererId = offer.venue.managingOffererId
 
-      const results = await Promise.all([
-        getEducationalCategoriesAdapter(),
-        getOfferersAdapter(offererId),
-        getEducationalDomainsAdapter(),
-      ])
+      const result = await getCollectiveOfferFormDataApdater({
+        offererId,
+        offer,
+      })
 
-      if (results.some(res => !res.isOk)) {
-        notify.error(results?.find(res => !res.isOk)?.message)
+      if (!result.isOk) {
+        notify.error(result.message)
       }
 
-      const [categories, offerers, domains] = results
-
-      const offerSubcategory = categories.payload.educationalSubCategories.find(
-        ({ id }) => offer.subcategoryId === id
-      )
-
-      const offerCategory = offerSubcategory
-        ? categories.payload.educationalCategories.find(
-            ({ id }) => offerSubcategory.categoryId === id
-          )
-        : undefined
-
-      const userOfferers = offerers.payload.filter(offerer =>
-        offerer.managedVenues.map(venue => venue.id).includes(offer.venueId)
-      )
-
-      const initialValuesFromOffer = computeInitialValuesFromOffer(
-        offer,
-        offerCategory?.id ?? '',
-        (offerSubcategory?.id ??
-          DEFAULT_EAC_FORM_VALUES.subCategory) as SubcategoryIdEnum
-      )
+      const { categories, offerers, domains, initialValues } = result.payload
 
       setScreenProps({
-        categories: categories.payload,
-        userOfferers,
-        domainsOptions: domains.payload,
+        categories: categories,
+        userOfferers: offerers,
+        domainsOptions: domains,
       })
 
       setInitialValues(values =>
         setInitialFormValues(
           {
             ...values,
-            ...initialValuesFromOffer,
+            ...initialValues,
           },
-          userOfferers,
-          userOfferers[0].id,
+          offerers,
+          offerers[0].id,
           offer.venueId
         )
       )
