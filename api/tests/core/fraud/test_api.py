@@ -194,11 +194,10 @@ class FindDuplicateUserTest:
     birth_date = datetime.datetime(2000, 1, 1)
 
     def test_duplicate_user_found(self):
-        existing_user = users_factories.UserFactory(
+        existing_user = users_factories.BeneficiaryGrant18Factory(
             firstName=self.first_name,
             lastName=self.last_name,
             dateOfBirth=self.birth_date,
-            roles=[users_models.UserRole.BENEFICIARY],
         )
 
         assert (
@@ -212,7 +211,7 @@ class FindDuplicateUserTest:
         existing_user = users_factories.UserFactory(
             firstName=self.first_name,
             lastName=self.last_name,
-            dateOfBirth=self.birth_date,
+            validatedBirthDate=self.birth_date,
             roles=[users_models.UserRole.BENEFICIARY],
         )
 
@@ -227,7 +226,7 @@ class FindDuplicateUserTest:
         existing_user = users_factories.UserFactory(
             firstName=self.first_name,
             lastName=self.last_name,
-            dateOfBirth=self.birth_date,
+            validatedBirthDate=self.birth_date,
         )
 
         assert (
@@ -242,7 +241,7 @@ class FindDuplicateUserTest:
             firstName=self.first_name,
             lastName=self.last_name,
             married_name=None,
-            dateOfBirth=self.birth_date,
+            validatedBirthDate=self.birth_date,
             roles=[users_models.UserRole.BENEFICIARY],
         )
 
@@ -258,7 +257,7 @@ class FindDuplicateUserTest:
             firstName=self.first_name,
             lastName="Nom de jeune fille",
             married_name="RAVINEAU",
-            dateOfBirth=self.birth_date,
+            validatedBirthDate=self.birth_date,
             roles=[users_models.UserRole.BENEFICIARY],
         )
 
