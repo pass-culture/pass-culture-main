@@ -1,15 +1,6 @@
 import enum
 from typing import Any
 
-from pcapi import settings
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedCancelBookingSuccess
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedCinemas
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedMovies
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedPaymentType
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedScreens
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedSeatMap
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedShows
-from pcapi.core.booking_providers.cds.mocked_api_calls import MockedTariffs
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests
@@ -26,18 +17,6 @@ class ResourceCDS(enum.Enum):
     SEATMAP = "shows/:show_id/seatmap"
     CREATE_TRANSACTION = "transaction/create"
     CANCEL_BOOKING = "transaction/cancel"
-
-
-MOCKS: dict[ResourceCDS, dict | list[dict] | list] = {
-    ResourceCDS.CINEMAS: MockedCinemas,
-    ResourceCDS.SHOWS: MockedShows,
-    ResourceCDS.PAYMENT_TYPE: MockedPaymentType,
-    ResourceCDS.TARIFFS: MockedTariffs,
-    ResourceCDS.SCREENS: MockedScreens,
-    ResourceCDS.CANCEL_BOOKING: MockedCancelBookingSuccess,
-    ResourceCDS.SEATMAP: MockedSeatMap,
-    ResourceCDS.MEDIA: MockedMovies,
-}
 
 
 def _extract_reason_from_response(response: requests.Response) -> str:
@@ -66,10 +45,6 @@ def get_resource(
     resource: ResourceCDS,
     path_params: dict[str, Any] | None = None,
 ) -> dict | list[dict] | list:
-
-    if settings.IS_DEV:
-        return MOCKS[resource]
-
     url = _build_url(api_url, account_id, cinema_api_token, resource, path_params)
     response = requests.get(url)
 
@@ -81,9 +56,6 @@ def get_resource(
 def put_resource(
     api_url: str, account_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
 ) -> dict | list[dict] | list | None:
-    if settings.IS_DEV:
-        return MOCKS[resource]
-
     url = _build_url(api_url, account_id, cinema_api_token, resource)
     headers = {"Content-Type": "application/json"}
     response = requests.put(url, headers=headers, data=body.json(by_alias=True))
