@@ -218,8 +218,8 @@ def find_duplicate_beneficiary(
     excluded_user_id: int,
 ) -> users_models.User | None:
     base_query = users_models.User.query.filter(
-        matching(users_models.User.firstName, first_name)
-        & (sqlalchemy.func.DATE(users_models.User.dateOfBirth) == birth_date)
+        (users_models.User.validatedBirthDate == birth_date)
+        & matching(users_models.User.firstName, first_name)
         & (users_models.User.is_beneficiary == True)
         & (users_models.User.id != excluded_user_id)
     )

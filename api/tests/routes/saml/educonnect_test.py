@@ -327,7 +327,7 @@ class EduconnectTest:
             firstName=educonnect_user.first_name,
             lastName=educonnect_user.last_name,
             email="titus@quartier-latin.com",
-            dateOfBirth=build_date_of_birth_from_age(self.default_underage_user_age).date(),
+            validatedBirthDate=build_date_of_birth_from_age(self.default_underage_user_age).date(),
             roles=[user_models.UserRole.UNDERAGE_BENEFICIARY],
         )
 
