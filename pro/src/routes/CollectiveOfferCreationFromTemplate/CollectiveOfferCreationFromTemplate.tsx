@@ -5,11 +5,13 @@ import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_FORM_VALUES,
+  IOfferEducationalFormValues,
   Mode,
   setInitialFormValues,
 } from 'core/OfferEducational'
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducational from 'screens/OfferEducational'
@@ -27,6 +29,17 @@ const CollectiveOfferCreationFromTemplate = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [initialValues, setInitialValues] = useState(DEFAULT_EAC_FORM_VALUES)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
+
+  const createOffer = async (offer: IOfferEducationalFormValues) => {
+    const { isOk, message } = await postCollectiveOfferAdapter({
+      offer,
+      offerTemplateId: templateId,
+    })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+  }
 
   useEffect(() => {
     const loadData = async () => {
@@ -88,7 +101,7 @@ const CollectiveOfferCreationFromTemplate = () => {
       <OfferEducational
         {...screenProps}
         initialValues={initialValues}
-        onSubmit={() => {}}
+        onSubmit={createOffer}
         mode={Mode.CREATION}
       />
     </CollectiveOfferLayout>
