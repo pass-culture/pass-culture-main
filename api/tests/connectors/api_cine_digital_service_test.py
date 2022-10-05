@@ -8,7 +8,6 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import put_resource
 from pcapi.connectors.serialization.cine_digital_service_serializers import CancelBookingCDS
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
-from pcapi.core.testing import override_settings
 
 
 class CineDigitalServiceBuildUrlTest:
@@ -36,7 +35,6 @@ class CineDigitalServiceBuildUrlTest:
 
 class CineDigitalServiceGetResourceTest:
     @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
-    @override_settings(IS_DEV=False)
     def test_should_return_shows_with_success(self, request_get):
         # Given
         cinema_id = "test_id"
@@ -73,7 +71,6 @@ class CineDigitalServiceGetResourceTest:
         assert json_data == shows_json
 
     @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
-    @override_settings(IS_DEV=False)
     def test_should_raise_if_error(self, request_get):
         # Given
         cinema_id = "test_id"
@@ -93,7 +90,6 @@ class CineDigitalServiceGetResourceTest:
         assert "Error on CDS API on GET ResourceCDS.TARIFFS" in str(exc_info.value)
 
     @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
-    @override_settings(IS_DEV=False)
     def should_call_url_with_path_params_if_present(self, request_get):
         # Given
         cinema_id = "test_id"
@@ -111,7 +107,6 @@ class CineDigitalServiceGetResourceTest:
 
 class CineDigitalServicePutResourceTest:
     @mock.patch("pcapi.connectors.cine_digital_service.requests.put")
-    @override_settings(IS_DEV=False)
     def test_should_call_put_request_with_the_right_arguments(self, request_put):
         # Given
         cinema_id = "test_id"
@@ -138,7 +133,6 @@ class CineDigitalServicePutResourceTest:
         assert json_data == response_json
 
     @mock.patch("pcapi.connectors.cine_digital_service.requests.put")
-    @override_settings(IS_DEV=False)
     def test_should_raise_if_error(self, request_get):
         # Given
         cinema_id = "test_id"
