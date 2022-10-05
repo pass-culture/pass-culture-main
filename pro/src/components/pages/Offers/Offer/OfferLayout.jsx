@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 import {
   Route,
@@ -101,9 +102,13 @@ const OfferLayout = () => {
 
   return (
     <div className="offer-page">
-      <div className="title-section">
+      <div
+        className={cn('title-section', {
+          'without-name': !offer?.name,
+        })}
+      >
         <Titles action={offerHeader} title={pageTitle} />
-        {(!isCreatingOffer || activeStep !== OfferBreadcrumbStep.DETAILS) && (
+        {(!!offer?.name || activeStep !== OfferBreadcrumbStep.DETAILS) && (
           <Title as="h4" className="sub-title" level={4}>
             {offer.name}
           </Title>

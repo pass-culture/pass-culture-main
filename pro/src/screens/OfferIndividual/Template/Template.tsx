@@ -5,6 +5,8 @@ import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { OfferIndividualStepper } from 'new_components/OfferIndividualStepper'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 
+import styles from './Template.module.scss'
+
 export interface ITemplateProps {
   title?: string
   withStepper?: boolean
@@ -19,7 +21,9 @@ const Template = ({ title, children, withStepper = true }: ITemplateProps) => {
 
   return (
     <OfferFormLayout>
-      <OfferFormLayout.TitleBlock>
+      <OfferFormLayout.TitleBlock
+        className={!offer?.name ? styles['title-without-name'] : undefined}
+      >
         <h1>{title ? title : defaultTitle}</h1>
       </OfferFormLayout.TitleBlock>
 
