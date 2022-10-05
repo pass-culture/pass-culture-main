@@ -122,7 +122,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "firstName",
         "lastName",
         "publicName",
-        "dateOfBirth",
+        "validatedBirthDate",
         "departementCode",
         "phoneNumber",
         "postalCode",
@@ -146,7 +146,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "culturalSurveyFilledDate",
         "culturalSurveyId",
         "dateCreated",
-        "dateOfBirth",
+        "validatedBirthDate",
         "departementCode",
         "email",
         "externalIds",
@@ -171,7 +171,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
 
     column_labels = dict(
         comment="Commentaire",
-        dateOfBirth="Date de naissance",
+        validatedBirthDate="Date de naissance (validée)",
         departementCode="Département",
         deposit_type="Type du portefeuille",
         deposit_version="Version du portefeuille",
@@ -221,7 +221,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     def form_columns(self):  # type: ignore [no-untyped-def]
         fields = (
             "email",
-            "dateOfBirth",
+            "validatedBirthDate",
             "departementCode",
             "postalCode",
             "phoneNumber",
@@ -235,7 +235,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     form_args = dict(
         firstName=dict(validators=[DataRequired()]),
         lastName=dict(validators=[DataRequired()]),
-        dateOfBirth=dict(validators=[DataRequired()]),
+        validatedBirthDate=dict(validators=[DataRequired()]),
         postalCode=dict(validators=[DataRequired()]),
         email=dict(validators=[DataRequired()], filters=[filter_email]),
     )
