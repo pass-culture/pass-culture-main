@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
+import useNotification from 'components/hooks/useNotification'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   createIndividualOffer,
@@ -24,6 +25,7 @@ import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCrea
 import { ActionBar } from '../ActionBar'
 
 import { filterCategories } from './utils'
+import { imageFileToDataUrl } from './utils/files'
 
 export interface IInformationsProps {
   initialValues: IOfferIndividualFormValues
@@ -34,6 +36,7 @@ const Informations = ({
   initialValues,
   readOnlyFields = [],
 }: IInformationsProps): JSX.Element => {
+  const notify = useNotification()
   const history = useHistory()
   const isCreation = useIsCreation()
   const {
@@ -45,6 +48,9 @@ const Informations = ({
     venueList,
     reloadOffer,
   } = useOfferIndividualContext()
+  const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
+    IOnImageUploadArgs | undefined
+  >(undefined)
   const [imageOffer, setImageOffer] = useState<
     IOfferIndividualImage | undefined
   >(offer && offer.image ? offer.image : undefined)
@@ -53,25 +59,24 @@ const Informations = ({
     formik.handleSubmit()
   }
 
-  // In order to test this we need to find a way to mock canvas.
-  /* istanbul ignore next */
-  const onSubmitImage = async ({
-    imageData,
+  // FIXME: find a way to test FileReader
+  /* istanbul ignore next: DEBT, TO FIX */
+  const submitImage = async ({
+    imageOfferId,
+    imageFile,
     credit,
     cropParams,
-  }: IOnImageUploadArgs) => {
-    // ImageUploader isn't display when we've no offerId
-    /* istanbul ignore next */
-    if (!offerId) return
+  }: IOnImageUploadArgs & { imageOfferId: string }) => {
     const response = await createThumbnailAdapter({
-      offerId,
+      offerId: imageOfferId,
       credit,
-      imageData,
+      imageFile,
       cropParams,
     })
 
     if (response.isOk) {
       setImageOffer({
+        originalUrl: response.payload.url,
         url: response.payload.url,
         credit: response.payload.credit,
       })
@@ -80,16 +85,64 @@ const Informations = ({
     return Promise.reject()
   }
 
+  // FIXME: find a way to test FileReader
+  /* istanbul ignore next: DEBT, TO FIX */
+  const onImageUpload = async ({
+    imageFile,
+    imageCroppedDataUrl,
+    credit,
+    cropParams,
+  }: IOnImageUploadArgs) => {
+    if (offerId === null) {
+      setImageOfferCreationArgs({
+        imageFile,
+        credit,
+        cropParams,
+      })
+      imageFileToDataUrl(imageFile, imageUrl => {
+        setImageOffer({
+          originalUrl: imageUrl,
+          url: imageCroppedDataUrl || imageUrl,
+          credit,
+          cropParams: cropParams
+            ? {
+                xCropPercent: cropParams.x,
+                yCropPercent: cropParams.y,
+                heightCropPercent: cropParams.height,
+                widthCropPercent: cropParams.width,
+              }
+            : undefined,
+        })
+      })
+    } else {
+      submitImage({
+        imageOfferId: offerId,
+        imageFile,
+        credit,
+        cropParams,
+      })
+        .then(() => {
+          notify.success('Vos modifications ont bien été prises en compte')
+        })
+        .catch(() => {
+          notify.error(
+            'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
+          )
+        })
+      return Promise.resolve()
+    }
+  }
+
   const onImageDelete = async () => {
     // ImageUploader isn't display when we've no offerId
     /* istanbul ignore next */
-    if (!offerId) return
+    if (!offerId) return Promise.resolve()
     const response = await deleteThumbnailAdapter({ offerId })
     if (response.isOk) {
       setImageOffer(undefined)
-      return Promise.resolve()
     }
-    return Promise.reject()
+    notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
+    Promise.resolve()
   }
 
   const onSubmitOffer = async (formValues: IOfferIndividualFormValues) => {
@@ -99,6 +152,13 @@ const Informations = ({
         : await updateIndividualOffer({ offerId, formValues })
 
     if (isOk) {
+      // FIXME: find a way to test FileReader
+      /* istanbul ignore next: DEBT, TO FIX */
+      imageOfferCreationArgs &&
+        (await submitImage({
+          ...imageOfferCreationArgs,
+          imageOfferId: payload.id,
+        }))
       await reloadOffer()
       history.push(
         isCreation
@@ -136,7 +196,7 @@ const Informations = ({
             categories={filteredCategories}
             subCategories={filteredSubCategories}
             readOnlyFields={readOnlyFields}
-            onImageUpload={onSubmitImage}
+            onImageUpload={onImageUpload}
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
           />

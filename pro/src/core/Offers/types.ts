@@ -3,6 +3,7 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
+import { ICropParams } from 'new_components/ImageUploader'
 
 import { CATEGORY_STATUS } from '.'
 
@@ -140,8 +141,10 @@ export interface IOfferIndividualVenueProvider {
 }
 
 export interface IOfferIndividualImage {
+  originalUrl: string
   url: string
   credit: string
+  cropParams?: ICropParams
 }
 
 export interface IOfferIndividual {

@@ -2,7 +2,6 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import {
@@ -53,7 +52,6 @@ const OfferIndividualForm = ({
   const {
     values: { offererId, subcategoryId, venueId },
   } = useFormikContext<IOfferIndividualFormValues>()
-  const { offer } = useOfferIndividualContext()
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -88,13 +86,11 @@ const OfferIndividualForm = ({
       {subcategoryId.length > 0 && filteredVenueList.length > 0 && (
         <>
           <Informations readOnlyFields={readOnlyFields} />
-          {offer && (
-            <ImageUploaderOffer
-              onImageUpload={onImageUpload}
-              onImageDelete={onImageDelete}
-              imageOffer={imageOffer}
-            />
-          )}
+          <ImageUploaderOffer
+            onImageUpload={onImageUpload}
+            onImageDelete={onImageDelete}
+            imageOffer={imageOffer}
+          />
           <UsefulInformations
             isUserAdmin={isAdmin}
             offererNames={offererNames}

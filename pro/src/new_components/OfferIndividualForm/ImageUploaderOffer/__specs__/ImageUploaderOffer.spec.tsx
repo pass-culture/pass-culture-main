@@ -46,12 +46,12 @@ describe('test ImageUploaderOffer', () => {
     )
     expect(infoBox).toBeInTheDocument()
     expect(imageUploaderOfferUtils.buildInitialValues).toHaveBeenCalledWith(
-      undefined,
       undefined
     )
   })
   it('should render when an image is given', async () => {
     props.imageOffer = {
+      originalUrl: 'http://test.url',
       url: 'http://test.url',
       credit: 'John Do',
     }
@@ -63,7 +63,7 @@ describe('test ImageUploaderOffer', () => {
       })
     ).toBeInTheDocument()
     expect(imageUploaderOfferUtils.buildInitialValues).toHaveBeenCalledWith(
-      ...Object.values(props.imageOffer)
+      props.imageOffer
     )
   })
 })

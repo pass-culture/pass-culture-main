@@ -120,7 +120,7 @@ describe('thumbnail edition', () => {
         it('should display no error if file respects all rules', async () => {
           // Given
           renderThumbnail()
-          const file = createImageFile()
+          const file = createImageFile({ width: 400 })
 
           // When
           await userEvent.upload(
@@ -227,7 +227,7 @@ describe('thumbnail edition', () => {
       it('should display the credit step infos', async () => {
         // Given
         renderThumbnail()
-        const file = createImageFile()
+        const file = createImageFile({ width: 400 })
 
         // When
         await userEvent.upload(
@@ -258,7 +258,7 @@ describe('thumbnail edition', () => {
       it('should return to the previous page if the return button is clicked', async () => {
         // Given
         renderThumbnail()
-        const file = createImageFile()
+        const file = createImageFile({ width: 400 })
         await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
           file
@@ -280,7 +280,7 @@ describe('thumbnail edition', () => {
       it('should display the crop step infos', async () => {
         // Given
         renderThumbnail()
-        const file = createImageFile()
+        const file = createImageFile({ width: 400 })
         await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
           file
@@ -308,7 +308,7 @@ describe('thumbnail edition', () => {
       it('should return to the credit step and the user must see the previous credit', async () => {
         // Given
         renderThumbnail()
-        const file = createImageFile()
+        const file = createImageFile({ width: 400 })
         await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
           file
@@ -333,7 +333,7 @@ describe('thumbnail edition', () => {
       it('should update the cropping border at each zoom', async () => {
         // Given
         renderThumbnail()
-        const file = createImageFile()
+        const file = createImageFile({ width: 400 })
         await userEvent.upload(
           screen.getByLabelText('Importer une image depuis l’ordinateur'),
           file

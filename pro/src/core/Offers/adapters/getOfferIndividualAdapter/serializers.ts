@@ -102,6 +102,7 @@ export const serializeOfferApiImage = (
     const mediation = apiOffer.mediations[0]
     if (mediation.thumbUrl) {
       return {
+        originalUrl: mediation.thumbUrl,
         url: mediation.thumbUrl,
         credit: mediation.credit || '',
       }

@@ -3,10 +3,9 @@ import '@testing-library/jest-dom'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import {
-  createImageFile,
-  renderThumbnail,
-} from 'components/pages/Offers/Offer/Thumbnail/__specs__/setup'
+import { createImageFile } from 'utils/testFileHelpers'
+
+import { renderThumbnail } from './setup'
 
 // The tests files have been separated in two because this mock
 // breaks other tests
@@ -37,7 +36,7 @@ describe('when the user is on the preview step', () => {
   it('should display the preview step infos', async () => {
     // Given
     renderThumbnail()
-    const file = createImageFile()
+    const file = createImageFile({ width: 400 })
     await userEvent.upload(
       screen.getByLabelText('Importer une image depuis l’ordinateur'),
       file
@@ -70,7 +69,7 @@ describe('when the user is on the preview step', () => {
   it('should return to the crop step', async () => {
     // Given
     renderThumbnail()
-    const file = createImageFile()
+    const file = createImageFile({ width: 400 })
     await userEvent.upload(
       screen.getByLabelText('Importer une image depuis l’ordinateur'),
       file
@@ -98,7 +97,7 @@ describe('when the user is on the preview step', () => {
       setThumbnailInfo: setThumbnailInfo,
     })
 
-    const file = createImageFile()
+    const file = createImageFile({ width: 400 })
     await userEvent.upload(
       screen.getByLabelText('Importer une image depuis l’ordinateur'),
       file

@@ -194,6 +194,7 @@ describe('useGetOfferIndividual', () => {
       isEvent: true,
       withdrawalType: null,
       image: {
+        originalUrl: 'http://my.thumb.url',
         url: 'http://my.thumb.url',
         credit: 'John Do',
       },

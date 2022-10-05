@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 
-import useNotification from 'components/hooks/useNotification'
 import { useModal } from 'hooks/useModal'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { Button } from 'ui-kit'
@@ -16,17 +15,12 @@ export interface IButtonImageDeleteProps {
 const ButtonImageDelete = ({
   onImageDelete,
 }: IButtonImageDeleteProps): JSX.Element => {
-  const notify = useNotification()
   const { visible, showModal, hideModal } = useModal()
   const [isLoading, setIsLoading] = useState(false)
 
   const onConfirm = async () => {
     setIsLoading(true)
-    onImageDelete().catch(() =>
-      notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
-    )
-    setIsLoading(false)
-    hideModal()
+    await onImageDelete()
   }
 
   return (

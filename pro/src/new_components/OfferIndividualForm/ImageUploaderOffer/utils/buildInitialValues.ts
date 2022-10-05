@@ -1,14 +1,14 @@
+import { IOfferIndividualImage } from 'core/Offers/types'
 import { IUploadImageValues } from 'new_components/ImageUploader/ButtonImageEdit'
 
 export const buildInitialValues = (
-  imageUrl?: string,
-  credit?: string
+  imageOffer?: IOfferIndividualImage
 ): IUploadImageValues => {
   return {
-    imageUrl,
-    originalImageUrl: imageUrl || '',
-    credit: credit || '',
-    cropParams: {
+    imageUrl: imageOffer?.url || '',
+    originalImageUrl: imageOffer?.originalUrl || '',
+    credit: imageOffer?.credit || '',
+    cropParams: imageOffer?.cropParams || {
       xCropPercent: 1,
       yCropPercent: 1,
       heightCropPercent: 0,

@@ -25,7 +25,6 @@ describe('test ButtonImageEdit', () => {
   beforeEach(() => {
     props = {
       mode: UploaderModeEnum.OFFER,
-      initialValues: {},
       onImageUpload: jest.fn(),
     }
   })
@@ -79,7 +78,7 @@ describe('test ButtonImageEdit', () => {
       },
     }
     jest
-      .spyOn(apiHelpers, 'getDataURLFromImageURL')
+      .spyOn(apiHelpers, 'getFileFromURL')
       .mockResolvedValue(new File([''], 'myThumb.png'))
     renderButtonImageEdit(props)
     await userEvent.click(

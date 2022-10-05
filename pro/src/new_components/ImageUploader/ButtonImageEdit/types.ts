@@ -1,4 +1,4 @@
-export interface IImageCropParams {
+export interface ICropParams {
   xCropPercent: number
   yCropPercent: number
   heightCropPercent: number
@@ -9,5 +9,5 @@ export interface IUploadImageValues {
   imageUrl?: string
   originalImageUrl?: string
   credit?: string
-  cropParams?: IImageCropParams
+  cropParams?: ICropParams
 }
