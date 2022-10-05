@@ -620,7 +620,6 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
     if user.is_beneficiary:
         return
     if user.validatedBirthDate != birth_date and birth_date is not None:
-        user.dateOfBirth = birth_date  # TODO (PC-17174) stop overriding this field
         user.validatedBirthDate = birth_date
         pcapi_repository.repository.save(user)
 

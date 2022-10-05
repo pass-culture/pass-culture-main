@@ -79,8 +79,11 @@ class EduconnectTest:
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
+        signup_birth_date = datetime.datetime(2000, 1, 1)
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
-        user = users_factories.UserFactory(email=self.email, firstName="ProfileFirstName", lastName="ProfileLastName")
+        user = users_factories.UserFactory(
+            email=self.email, firstName="ProfileFirstName", lastName="ProfileLastName", dateOfBirth=signup_birth_date
+        )
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
 
         # even if the user has failed educonnect
@@ -162,7 +165,8 @@ class EduconnectTest:
         )
         assert user.firstName == "ProfileFirstName"
         assert user.lastName == "ProfileLastName"
-        assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
+        assert user.dateOfBirth == signup_birth_date
+        assert user.validatedBirthDate == datetime.date(2006, 8, 18)
         assert user.ineHash is None
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
@@ -434,15 +438,21 @@ class EduconnectTest:
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_educonnect_connection_synchronizes_birth_date(self, mock_get_educonnect_user, client, app):
+    def test_educonnect_connection_synchronizes_validated_birth_date(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 15
 
         first_name = user.firstName
         last_name = user.lastName
+        signup_birth_date = user.dateOfBirth
+        educonnect_birth_date = datetime.date(2000, 1, 1)
 
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
-            saml_request_id=request_id, age=age, last_name="Hayward", first_name="Verona"
+            saml_request_id=request_id,
+            age=age,
+            last_name="Hayward",
+            first_name="Verona",
+            birth_date=educonnect_birth_date,
         )
 
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
@@ -450,9 +460,8 @@ class EduconnectTest:
         assert response.status_code == 302
         assert user.firstName == first_name
         assert user.lastName == last_name
-        assert user.dateOfBirth == datetime.datetime.combine(
-            datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
-        )
+        assert user.validatedBirthDate == educonnect_birth_date
+        assert user.dateOfBirth == signup_birth_date
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_educonnect_not_eligible_fails_twice(self, mock_get_educonnect_user, client, app):
@@ -476,21 +485,16 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
 
-    @pytest.mark.parametrize(
-        "age",
-        [15, 16, 17, 18, 19],
-    )
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_educonnect_connection_updates_user_birth_date(self, mock_get_educonnect_user, client, app, age):
+    def test_educonnect_connection_updates_validated_birth_date(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
+        birth_date = datetime.date.today() - relativedelta(years=17, months=1)
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
-            saml_request_id=request_id, age=age
+            saml_request_id=request_id, birth_date=birth_date
         )
 
         client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
-        assert user.dateOfBirth == datetime.datetime.combine(
-            datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
-        )
+        assert user.validatedBirthDate == birth_date
 
 
 class PerformanceTest:
