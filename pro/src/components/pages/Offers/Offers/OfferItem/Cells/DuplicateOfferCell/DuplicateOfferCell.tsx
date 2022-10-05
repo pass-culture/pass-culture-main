@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router'
 
 import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
 import { Button } from 'ui-kit'
@@ -11,7 +12,14 @@ import DuplicateOfferDialog from './DuplicateOfferDialog'
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 
-const DuplicateOfferCell = ({ isTemplate }: { isTemplate: boolean }) => {
+const DuplicateOfferCell = ({
+  isTemplate,
+  templateOfferId,
+}: {
+  isTemplate: boolean
+  templateOfferId: string
+}) => {
+  const history = useHistory()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const shouldDisplayModal =
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
@@ -20,7 +28,7 @@ const DuplicateOfferCell = ({ isTemplate }: { isTemplate: boolean }) => {
     if (shouldNotDisplayModalAgain) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    setIsModalOpen(false)
+    return history.push(`/offre/duplication/collectif/${templateOfferId}`)
   }
 
   return (

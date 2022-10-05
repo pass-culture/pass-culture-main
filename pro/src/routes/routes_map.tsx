@@ -39,6 +39,7 @@ import { VenueCreation } from 'routes/VenueCreation'
 import { VenueEdition } from 'routes/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import CollectiveOfferCreationFromTemplate from './CollectiveOfferCreationFromTemplate'
 import CollectiveOfferSummary from './CollectiveOfferSummary'
 import CollectiveOfferTemplateSummary from './CollectiveOfferTemplateSummary'
 import { OffererStats } from './OffererStats'
@@ -269,6 +270,13 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offre/creation/collectif',
     title: 'Offre collective',
+  },
+  {
+    component: CollectiveOfferCreationFromTemplate,
+    exact: false,
+    path: '/offre/duplication/collectif/:templateId([A-Z0-9]+)',
+    title: 'Offre collective',
+    featureName: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
   },
   {
     component: Offers,

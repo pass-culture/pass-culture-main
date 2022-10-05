@@ -54,7 +54,10 @@ const CollectiveOfferItem = ({
       />
       <OfferStatusCell status={offer.status} />
       {isCollectiveOfferDuplicationActive ? (
-        <DuplicateOfferCell isTemplate={Boolean(offer.isShowcase)} />
+        <DuplicateOfferCell
+          isTemplate={Boolean(offer.isShowcase)}
+          templateOfferId={offer.id}
+        />
       ) : (
         <EditStocksCell editionStockLink={editionStockLink} />
       )}
