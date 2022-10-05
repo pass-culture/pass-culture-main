@@ -219,7 +219,7 @@ def test_public_api(client, app):
                         "contactPhone": {"title": "Contactphone", "type": "string"},
                         "dateCreated": {"title": "Datecreated", "type": "string"},
                         "description": {"nullable": True, "title": "Description", "type": "string"},
-                        "domains": {"items": {"type": "string"}, "title": "Domains", "type": "array"},
+                        "domains": {"items": {"type": "integer"}, "title": "Domains", "type": "array"},
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
                         "educationalInstitution": {
                             "nullable": True,
@@ -347,7 +347,12 @@ def test_public_api(client, app):
                         "contactEmail": {"nullable": True, "title": "Contactemail", "type": "string"},
                         "contactPhone": {"nullable": True, "title": "Contactphone", "type": "string"},
                         "description": {"nullable": True, "title": "Description", "type": "string"},
-                        "domains": {"items": {"type": "string"}, "nullable": True, "title": "Domains", "type": "array"},
+                        "domains": {
+                            "items": {"type": "integer"},
+                            "nullable": True,
+                            "title": "Domains",
+                            "type": "array",
+                        },
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
                         "educationalInstitutionId": {
                             "nullable": True,
@@ -383,8 +388,9 @@ def test_public_api(client, app):
                             "title": "OfferVenueModel",
                         },
                         "students": {
-                            "items": {"$ref": "#/components/schemas/StudentLevels"},
+                            "items": {"type": "string"},
                             "nullable": True,
+                            "title": "Students",
                             "type": "array",
                         },
                         "subcategoryId": {"nullable": True, "title": "Subcategoryid", "type": "string"},
@@ -417,7 +423,7 @@ def test_public_api(client, app):
                         "contactEmail": {"title": "Contactemail", "type": "string"},
                         "contactPhone": {"title": "Contactphone", "type": "string"},
                         "description": {"title": "Description", "type": "string"},
-                        "domains": {"items": {"type": "string"}, "title": "Domains", "type": "array"},
+                        "domains": {"items": {"type": "integer"}, "title": "Domains", "type": "array"},
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
                         "educationalInstitutionId": {
                             "nullable": True,
@@ -443,7 +449,7 @@ def test_public_api(client, app):
                         "name": {"title": "Name", "type": "string"},
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
-                        "students": {"items": {"$ref": "#/components/schemas/StudentLevels"}, "type": "array"},
+                        "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
                         "subcategoryId": {"title": "Subcategoryid", "type": "string"},
                         "totalPrice": {"title": "Totalprice", "type": "integer"},
                         "venueId": {"title": "Venueid", "type": "integer"},
@@ -472,19 +478,6 @@ def test_public_api(client, app):
                     ],
                     "title": "PostCollectiveOfferBodyModel",
                     "type": "object",
-                },
-                "StudentLevels": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "Collège - 4e",
-                        "Collège - 3e",
-                        "CAP - 1re année",
-                        "CAP - 2e année",
-                        "Lycée - Seconde",
-                        "Lycée - Première",
-                        "Lycée - Terminale",
-                    ],
-                    "title": "StudentLevels",
                 },
                 "UpdateVenueStockBodyModel": {
                     "description": "Available stock quantity for a book",

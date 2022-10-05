@@ -35,9 +35,9 @@ class CollectiveOffersPublicPatchOfferTest:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": True,
             "visualDisabilityCompliant": True,
-            "domains": [domain.name],
+            "domains": [domain.id],
             "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.value],
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
             "offerVenue": {
                 "venueId": None,
                 "addressType": "school",
@@ -134,9 +134,9 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
-            "domains": ["invalid_domain"],
+            "domains": [0],
             "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.value],
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
             "offerVenue": {
                 "venueId": None,
                 "addressType": "school",
@@ -167,6 +167,7 @@ class CollectiveOffersPublicPatchOfferTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue)
 
@@ -177,9 +178,9 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
-            "domains": ["invalid_domain"],
+            "domains": [domain.id],
             "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.value],
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
             "offerVenue": {
                 "venueId": None,
                 "addressType": "school",
@@ -211,6 +212,7 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.ApiKeyFactory(offerer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
+        domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory()
 
@@ -221,9 +223,9 @@ class CollectiveOffersPublicPatchOfferTest:
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
             "contactPhone": "+33100992798",
-            "domains": ["invalid_domain"],
+            "domains": [domain.id],
             "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.value],
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
             "offerVenue": {
                 "venueId": None,
                 "addressType": "school",

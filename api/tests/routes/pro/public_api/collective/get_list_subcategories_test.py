@@ -33,6 +33,11 @@ class CollectiveOffersGetCategoriesTest:
             {"id": "EVENEMENT_MUSIQUE", "label": "Autre type d'événement musical", "category": "Musique live"},
             {"id": "CONCERT", "label": "Concert", "category": "Musique live"},
             {"id": "FESTIVAL_MUSIQUE", "label": "Festival de musique", "category": "Musique live"},
+            {
+                "id": "FESTIVAL_ART_VISUEL",
+                "label": "Festival d'arts visuels / arts numériques",
+                "category": "Musée, patrimoine, architecture, arts visuels",
+            },
             {"id": "VISITE", "label": "Visite", "category": "Musée, patrimoine, architecture, arts visuels"},
             {
                 "id": "VISITE_GUIDEE",
@@ -50,7 +55,7 @@ class CollectiveOffersGetCategoriesTest:
                 "category": "Pratique artistique",
             },
             {"id": "SEANCE_ESSAI_PRATIQUE_ART", "label": "Séance d'essai", "category": "Pratique artistique"},
-            {"id": "FESTIVAL_SPECTACLE", "label": "Festival", "category": "Spectacle vivant"},
+            {"id": "FESTIVAL_SPECTACLE", "label": "Festival de spectacle vivant", "category": "Spectacle vivant"},
             {"id": "SPECTACLE_REPRESENTATION", "label": "Spectacle, représentation", "category": "Spectacle vivant"},
         ]
 

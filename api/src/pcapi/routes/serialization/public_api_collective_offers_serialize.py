@@ -115,6 +115,19 @@ def validate_price_detail(price_detail: str | None) -> str | None:
     return price_detail
 
 
+def validate_students(students: list[str] | None) -> list[StudentLevels]:
+    if not students:
+        raise ValueError("La liste des niveaux scolaire ne peut pas être vide")
+    output = []
+    for student in students:
+        try:
+            output.append(getattr(StudentLevels, student))
+        except AttributeError:
+            permitted = '", "'.join(StudentLevels.__members__.keys())
+            raise ValueError(f'Value is not a valid enumeration member; permitted: ["{permitted}"]')
+    return output
+
+
 def number_of_tickets_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True, pre=True)(validate_number_of_tickets)
 
@@ -133,6 +146,10 @@ def beginning_datetime_validator(field_name: str) -> classmethod:
 
 def price_detail_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_price_detail)
+
+
+def students_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_students)
 
 
 class CollectiveOffersResponseModel(BaseModel):
@@ -269,7 +286,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     bookingEmails: list[str] | None
     contactEmail: str
     contactPhone: str
-    domains: list[str]
+    domains: list[int]
     durationMinutes: int | None
     interventionArea: list[str]
     students: list[str]
@@ -305,10 +322,10 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             bookingEmails=offer.bookingEmails,
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
-            domains=[domain.name for domain in offer.domains],
+            domains=[domain.id for domain in offer.domains],
             durationMinutes=offer.durationMinutes,
             interventionArea=offer.interventionArea,
-            students=[student.value for student in offer.students],
+            students=[student.name for student in offer.students],
             dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),
             hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
             isActive=offer.isActive,
@@ -341,9 +358,9 @@ class PostCollectiveOfferBodyModel(BaseModel):
     booking_emails: list[str]
     contact_email: str
     contact_phone: str
-    domains: list[str]
+    domains: list[int]
     duration_minutes: int | None
-    students: list[StudentLevels]
+    students: list[str]
     audio_disability_compliant: bool = False
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
@@ -364,6 +381,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_beginning_datetime = beginning_datetime_validator("beginning_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
+    _validate_students = students_validator("students")
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -371,10 +389,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
         return name
 
     @validator("domains", pre=True)
-    def validate_domains(
-        cls,
-        domains: list[str],
-    ) -> list[str]:
+    def validate_domains(cls, domains: list[str]) -> list[str]:
         if len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
@@ -393,8 +408,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     bookingEmails: list[str] | None
     contactEmail: str | None
     contactPhone: str | None
-    domains: list[str] | None
-    students: list[StudentLevels] | None
+    domains: list[int] | None
+    students: list[str] | None
     offerVenue: OfferVenueModel | None
     interventionArea: list[str] | None
     durationMinutes: int | None
@@ -415,12 +430,10 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     _validate_total_price = price_validator("price")
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
     _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
+    _validate_students = students_validator("students")
 
     @validator("domains")
-    def validate_domains(
-        cls,
-        domains: list[str],
-    ) -> list[str]:
+    def validate_domains(cls, domains: list[int]) -> list[int]:
         if len(domains) == 0:
             raise ValueError("domains must have at least one value")
 

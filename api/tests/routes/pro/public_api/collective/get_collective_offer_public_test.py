@@ -12,7 +12,11 @@ class CollectiveOffersPublicGetOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.ApiKeyFactory(offerer=offerer)
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer)
+        domain = educational_factories.EducationalDomainFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__domains=[domain],
+            collectiveOffer__venue__managingOfferer=offerer,
+        )
         offer = stock.collectiveOffer
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -37,7 +41,7 @@ class CollectiveOffersPublicGetOfferTest:
             "contactEmail": "collectiveofferfactory+contact@example.com",
             "contactPhone": "+33199006328",
             "dateCreated": "2022-04-26T15:00:00",
-            "domains": [],
+            "domains": [domain.id],
             "durationMinutes": None,
             "educationalInstitution": None,
             "educationalPriceDetail": None,
@@ -46,7 +50,7 @@ class CollectiveOffersPublicGetOfferTest:
             "isSoldOut": False,
             "numberOfTickets": 25,
             "status": "ACTIVE",
-            "students": ["Lycée - Seconde"],
+            "students": ["GENERAL2"],
             "subcategoryId": offer.subcategoryId,
             "totalPrice": 10000,
             "hasBookingLimitDatetimesPassed": False,

@@ -145,7 +145,6 @@ def post_collective_offer_public(
 ) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
-
     try:
         offer = educational_api.create_collective_offer_public(
             offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
