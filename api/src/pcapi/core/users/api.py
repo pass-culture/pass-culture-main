@@ -675,6 +675,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
 
     if settings.IS_INTEGRATION:
         new_pro_user.add_beneficiary_role()
+        new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth
         deposit = payment_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 

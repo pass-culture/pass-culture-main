@@ -48,6 +48,7 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
         send_activation_mail=False,
         remote_updates=False,
     )
+    user.validatedBirthDate = _get_birth_date(row)
     if role == UserRole.BENEFICIARY:
         deposit = payments_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE18)
         repository.save(deposit)
