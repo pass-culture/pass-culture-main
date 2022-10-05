@@ -1,34 +1,12 @@
-import { getValidatorErrors, imageConstraints } from '../imageConstraints'
+import { createImageFile } from 'utils/testFileHelpers'
 
+import { getValidatorErrors, imageConstraints } from '../imageConstraints'
 const mockCreateImageBitmap = jest.fn()
 
 Object.defineProperty(global, 'createImageBitmap', {
   writable: true,
   value: mockCreateImageBitmap,
 })
-
-const createFile = ({
-  name = 'example.json',
-  type = 'application/json',
-  sizeInMB = 1,
-} = {}) => {
-  const oneMB = 1024 * 1024
-  const file = new File([''], name, { type })
-  Object.defineProperty(file, 'size', { value: oneMB * sizeInMB })
-  return file
-}
-
-const createImageFile = ({
-  name = 'example.png',
-  type = 'image/png',
-  sizeInMB = 1,
-  width = 400,
-  height = 400,
-} = {}) => {
-  const file = createFile({ name, type, sizeInMB })
-  mockCreateImageBitmap.mockResolvedValue({ width, height })
-  return file
-}
 
 describe('image constraints', () => {
   describe('formats', () => {
