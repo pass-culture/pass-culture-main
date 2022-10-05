@@ -39,7 +39,6 @@ const ImageUploaderOffer = ({
           mode={UploaderModeEnum.OFFER}
         />
       </FormLayout.Row>
-      )
     </FormLayout.Section>
   )
 }
