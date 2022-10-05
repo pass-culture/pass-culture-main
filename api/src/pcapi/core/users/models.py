@@ -221,6 +221,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
+    sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
 
     def _add_role(self, role: UserRole) -> None:
         from pcapi.core.users.exceptions import InvalidUserRoleException
