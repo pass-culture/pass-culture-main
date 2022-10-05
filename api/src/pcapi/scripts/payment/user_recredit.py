@@ -23,7 +23,7 @@ RECREDIT_BATCH_SIZE = 1000
 
 def has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
     first_registration_datetime = subscription_api.get_first_registration_date(
-        user, user.birth_date, users_models.EligibilityType.UNDERAGE
+        user, user.validatedBirthDate, users_models.EligibilityType.UNDERAGE
     )
     if first_registration_datetime is None:
         logger.error("No registration date for user to be recredited", extra={"user_id": user.id})
@@ -58,8 +58,8 @@ def recredit_underage_users() -> None:
         result
         for result, in (
             users_models.User.query.filter(users_models.User.has_underage_beneficiary_role)
-            .filter(users_models.User.dateOfBirth > eighteen_years_ago)
-            .filter(users_models.User.dateOfBirth <= sixteen_years_ago)
+            .filter(users_models.User.validatedBirthDate > eighteen_years_ago)
+            .filter(users_models.User.validatedBirthDate <= sixteen_years_ago)
             .with_entities(users_models.User.id)
             .all()
         )
