@@ -6,6 +6,7 @@ import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = {
   offer: IOfferEducationalFormValues
+  offerTemplateId?: string
 }
 
 type IPayloadSuccess = { offerId: string; collectiveOfferId: string }
@@ -31,9 +32,12 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   },
 }
 
-const postCollectiveOfferAdapter: PostOfferAdapter = async ({ offer }) => {
+const postCollectiveOfferAdapter: PostOfferAdapter = async ({
+  offer,
+  offerTemplateId,
+}) => {
   try {
-    const payload = createCollectiveOfferPayload(offer)
+    const payload = createCollectiveOfferPayload(offer, offerTemplateId)
 
     const response = await api.createCollectiveOffer(payload)
 
