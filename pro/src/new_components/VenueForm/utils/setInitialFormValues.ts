@@ -31,6 +31,8 @@ const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
     siret: humanizeSiret(venue.siret),
     venueType: venue.venueType,
     venueLabel: venue.venueLabel,
+    withdrawalDetails: venue.withdrawalDetails,
+    isWithdrawalAppliedOnAllOffers: false,
   }
 }
 

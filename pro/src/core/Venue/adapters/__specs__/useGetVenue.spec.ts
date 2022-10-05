@@ -55,6 +55,7 @@ describe('useGetVenue', () => {
       comment: 'commentaire lieu sans siret',
       bookingEmail: 'test@example.com',
       venueTypeCode: VenueTypeCode.LIBRAIRIE,
+      withdrawalDetails: '',
     }
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
@@ -108,6 +109,7 @@ describe('useGetVenue', () => {
       comment: 'commentaire lieu sans siret',
       venueLabel: '',
       venueType: 'Librairie',
+      withdrawalDetails: '',
     }
 
     await waitForNextUpdate()
