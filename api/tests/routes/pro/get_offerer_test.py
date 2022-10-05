@@ -102,7 +102,7 @@ def test_basics(client):
                 "visualDisabilityCompliant": False,
                 "withdrawalDetails": venue.withdrawalDetails,
             }
-            for venue in offerer.managedVenues
+            for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
         ],
         "name": offerer.name,
         "nonHumanizedId": offerer.id,
