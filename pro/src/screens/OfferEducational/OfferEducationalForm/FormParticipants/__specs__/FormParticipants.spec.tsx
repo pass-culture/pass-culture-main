@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { StudentLevels } from 'apiClient/v2'
+import { StudentLevels } from 'apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import FormParticipants from '../FormParticipants'

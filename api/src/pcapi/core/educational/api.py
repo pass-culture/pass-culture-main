@@ -932,7 +932,7 @@ def create_collective_offer_public(
     offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
     validation.check_intervention_area(body.intervention_area)
 
-    educational_domains = educational_repository.get_educational_domains_from_names(body.domains)
+    educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
 
     if body.educational_institution_id:
         if not educational_models.EducationalInstitution.query.filter_by(
@@ -962,7 +962,9 @@ def create_collective_offer_public(
         contactPhone=body.contact_phone,
         domains=educational_domains,
         durationMinutes=body.duration_minutes,
-        students=body.students,
+        students=typing.cast(  # type transformation done by the validator (and not detected by mypy)
+            list[educational_models.StudentLevels], body.students
+        ),
         audioDisabilityCompliant=body.audio_disability_compliant,
         mentalDisabilityCompliant=body.mental_disability_compliant,
         motorDisabilityCompliant=body.motor_disability_compliant,
@@ -1020,7 +1022,7 @@ def edit_collective_offer_public(
             offer_validation.check_offer_is_eligible_for_educational(value)
             offer.subcategoryId = value
         elif key == "domains":
-            domains = educational_repository.get_educational_domains_from_names(value)
+            domains = educational_repository.get_educational_domains_from_ids(value)
             if len(domains) != len(value):
                 raise exceptions.EducationalDomainsNotFound()
             offer.domains = domains
