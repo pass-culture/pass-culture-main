@@ -19,28 +19,24 @@ const ImageUploaderOffer = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
-}: IImageUploaderOfferProps) => {
-  const { url: imageUrl, credit } = imageOffer || {}
-
-  return (
-    <FormLayout.Section title="Image de l'offre">
-      <FormLayout.Row
-        sideComponent={
-          <InfoBox
-            type="info"
-            text="Les offres avec une image ont 4 fois plus de chance d’être consultées que celles qui n’en ont pas."
-          />
-        }
-      >
-        <ImageUploader
-          onImageUpload={onImageUpload}
-          onImageDelete={onImageDelete}
-          initialValues={buildInitialValues(imageUrl, credit)}
-          mode={UploaderModeEnum.OFFER}
+}: IImageUploaderOfferProps) => (
+  <FormLayout.Section title="Image de l'offre">
+    <FormLayout.Row
+      sideComponent={
+        <InfoBox
+          type="info"
+          text="Les offres avec une image ont 4 fois plus de chance d’être consultées que celles qui n’en ont pas."
         />
-      </FormLayout.Row>
-    </FormLayout.Section>
-  )
-}
+      }
+    >
+      <ImageUploader
+        onImageUpload={onImageUpload}
+        onImageDelete={onImageDelete}
+        initialValues={buildInitialValues(imageOffer)}
+        mode={UploaderModeEnum.OFFER}
+      />
+    </FormLayout.Row>
+  </FormLayout.Section>
+)
 
 export default ImageUploaderOffer

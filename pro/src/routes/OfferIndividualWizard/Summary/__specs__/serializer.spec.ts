@@ -47,6 +47,7 @@ describe('routes::Summary::serializers', () => {
       speaker: 'Offer speaker',
       subcategoryId: 'SCID',
       image: {
+        originalUrl: 'http://image.url.test',
         url: 'http://image.url.test',
         credit: 'John Do',
       },

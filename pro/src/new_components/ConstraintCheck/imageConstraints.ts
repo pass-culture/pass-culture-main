@@ -6,6 +6,7 @@ export type Constraint = {
   asyncValidator: FileChecker
 }
 
+/* istanbul ignore next: DEBT, TO FIX */
 const getImageBitmap = async (file: File): Promise<ImageBitmap | null> => {
   // Polyfill for Safari and IE not supporting createImageBitmap
   if (!('createImageBitmap' in window)) {

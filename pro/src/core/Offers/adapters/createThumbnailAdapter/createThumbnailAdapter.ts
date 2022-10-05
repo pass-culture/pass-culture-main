@@ -20,7 +20,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 
 const createThumbnailAdapter: TCreateThumbnailAdapter = async ({
   offerId,
-  imageData,
+  imageFile,
   credit,
   cropParams,
 }) => {
@@ -28,7 +28,7 @@ const createThumbnailAdapter: TCreateThumbnailAdapter = async ({
     const response = await pcapi.postThumbnail(
       offerId,
       credit,
-      imageData,
+      imageFile,
       undefined, // api don't use thumbUrl
       cropParams?.x,
       cropParams?.y,
@@ -40,6 +40,7 @@ const createThumbnailAdapter: TCreateThumbnailAdapter = async ({
       isOk: true,
       message: '',
       payload: {
+        originalUrl: response.url,
         url: response.url,
         credit: response.credit,
       },

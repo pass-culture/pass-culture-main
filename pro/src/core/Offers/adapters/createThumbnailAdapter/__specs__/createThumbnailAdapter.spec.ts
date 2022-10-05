@@ -6,13 +6,13 @@ import createThumbnailAdapter from '../createThumbnailAdapter'
 
 describe('test createThumbnailAdapter', () => {
   let offerId: string
-  let imageData: File
+  let imageFile: File
   let credit: string
   let cropParams: CroppedRect
 
   beforeEach(() => {
     offerId = 'AA'
-    imageData = new File([''], 'hello.png')
+    imageFile = new File([''], 'hello.png')
     credit = 'John Do'
     cropParams = { x: 1, y: 1, width: 1, height: 1 }
   })
@@ -22,7 +22,7 @@ describe('test createThumbnailAdapter', () => {
       .mockResolvedValue({ url: 'http://backend.image.url', credit: 'John Do' })
     const response = await createThumbnailAdapter({
       offerId,
-      imageData,
+      imageFile,
       credit,
       cropParams,
     })
@@ -32,7 +32,7 @@ describe('test createThumbnailAdapter', () => {
     jest.spyOn(pcapi, 'postThumbnail').mockRejectedValue(undefined)
     const response = await createThumbnailAdapter({
       offerId,
-      imageData,
+      imageFile,
       credit,
       cropParams,
     })

@@ -185,24 +185,29 @@ describe('OfferIndividualForm', () => {
     expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
   })
 
-  it('should render image section when offer is given', async () => {
-    const offer: Partial<IOfferIndividual> = {
+  const imageSectionDataset: (Partial<IOfferIndividual> | undefined)[] = [
+    {
       id: 'AA',
       stocks: [],
-    }
+    },
+    undefined,
+  ]
+  it.each(imageSectionDataset)(
+    'should render image section when offer is given',
+    async offer => {
+      const contextOverride: Partial<IOfferIndividualContext> = {
+        offer: offer ? (offer as IOfferIndividual) : undefined,
+      }
 
-    const contextOverride: Partial<IOfferIndividualContext> = {
-      offer: offer as IOfferIndividual,
+      renderOfferIndividualForm({
+        initialValues,
+        onSubmit,
+        props,
+        contextOverride,
+      })
+      expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
     }
-
-    renderOfferIndividualForm({
-      initialValues,
-      onSubmit,
-      props,
-      contextOverride,
-    })
-    expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
-  })
+  )
 
   it('should submit minimal physical offer', async () => {
     renderOfferIndividualForm({
