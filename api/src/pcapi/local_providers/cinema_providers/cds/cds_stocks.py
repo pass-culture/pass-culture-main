@@ -222,7 +222,7 @@ class CDSStocks(LocalProvider):
         shows_with_pass_culture_tariff = []
         for show in shows:
             min_price_voucher = client_cds.get_voucher_type_for_show(show)
-            if min_price_voucher is not None:
+            if min_price_voucher and min_price_voucher.tariff:
                 shows_with_pass_culture_tariff.append(
                     {"show_information": show, "price": min_price_voucher.tariff.price}
                 )

@@ -7,7 +7,6 @@ from pcapi.connectors.cine_digital_service import ResourceCDS
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
-from pcapi.core.testing import override_settings
 
 
 def create_show_cds(
@@ -846,10 +845,14 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
 
 class CineDigitalServiceCancelBookingTest:
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
-    def test_should_cancel_booking_with_success(self, mocked_put_resource):
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    def test_should_cancel_booking_with_success(self, mocked_get_voucher_payment_type, mocked_put_resource):
         # Given
         json_response = {}
         mocked_put_resource.return_value = json_response
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
@@ -861,7 +864,10 @@ class CineDigitalServiceCancelBookingTest:
             assert False, "Should not raise exception"
 
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
-    def test_should_cancel_booking_with_errors_for_each_barcode(self, mocked_put_resource):
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    def test_should_cancel_booking_with_errors_for_each_barcode(
+        self, mocked_get_voucher_payment_type, mocked_put_resource
+    ):
         # Given
         json_response = {
             "111111111111": "BARCODE_NOT_FOUND",
@@ -871,6 +877,9 @@ class CineDigitalServiceCancelBookingTest:
             "555555555555": "DAY_CLOSED",
         }
         mocked_put_resource.return_value = json_response
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
@@ -960,7 +969,6 @@ class CineDigitalServiceBookTicketTest:
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_available_seat")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
-    @override_settings(IS_DEV=False)
     def test_should_call_connector_with_correct_args_and_return_barcode_and_seat_number(
         self,
         mocked_get_voucher_payment_type,
@@ -1037,7 +1045,6 @@ class CineDigitalServiceBookTicketTest:
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_available_duo_seat")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
-    @override_settings(IS_DEV=False)
     def test_should_call_connector_with_correct_args_and_return_barcodes_and_seat_numbers_for_duo(
         self,
         mocked_get_voucher_payment_type,
@@ -1132,7 +1139,6 @@ class CineDigitalServiceBookTicketTest:
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
-    @override_settings(IS_DEV=False)
     def test_should_call_connector_with_correct_args_and_return_barcode_when_setamap_is_disabled(
         self,
         mocked_get_voucher_payment_type,
