@@ -22,6 +22,10 @@
 
   .title-section {
     margin-bottom: rem.torem(32px);
+
+    &.without-name {
+      margin-bottom: rem.torem(54px);
+    }
   }
 
   .offer-content {
