@@ -35,7 +35,7 @@ const TextArea = ({
   return (
     <FieldLayout
       className={className}
-      count={countCharacters ? field.value.length : undefined}
+      count={countCharacters ? field?.value?.length : undefined}
       error={meta.error}
       isOptional={isOptional}
       label={label}
