@@ -50,7 +50,7 @@ class BeneficiaryUserViewTest:
             email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth=f"{self.AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d %H:%M:%S}",
+            validatedBirthDate=f"{self.AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d}",
             departementCode="93",
             postalCode="93000",
             phoneNumber="0601020304",
@@ -66,7 +66,7 @@ class BeneficiaryUserViewTest:
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
         assert user_created.publicName == "Serge Lama"
-        assert user_created.dateOfBirth.date() == self.AGE18_ELIGIBLE_BIRTH_DATE.date()
+        assert user_created.validatedBirthDate == self.AGE18_ELIGIBLE_BIRTH_DATE.date()
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
         assert user_created.phoneNumber == "+33601020304"
@@ -260,7 +260,7 @@ class BeneficiaryUserUpdateTest:
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         client.with_session_auth(super_admin.email)
 
-        user_to_update = users_factories.UserFactory(departementCode="92", postalCode="92700")
+        user_to_update = users_factories.BeneficiaryGrant18Factory(departementCode="92", postalCode="92700")
 
         url = f"/pc/back-office/beneficiary_users/edit/?id={user_to_update.id}"
         client.post(
@@ -282,7 +282,7 @@ class BeneficiaryUserUpdateTest:
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         client.with_session_auth(super_admin.email)
 
-        user_to_update = users_factories.UserFactory(
+        user_to_update = users_factories.BeneficiaryGrant18Factory(
             departementCode="92", postalCode="92700", idPieceNumber="123123123"
         )
 
@@ -304,7 +304,7 @@ class BeneficiaryUserUpdateTest:
     def test_update_idpiecenumber_not_updated(self, token, client):
         admin = users_factories.AdminFactory()  # not superadmin
 
-        user_to_update = users_factories.UserFactory(departementCode="92", postalCode="92700")
+        user_to_update = users_factories.BeneficiaryGrant18Factory(departementCode="92", postalCode="92700")
         client.with_session_auth(admin.email)
 
         url = f"/pc/back-office/beneficiary_users/edit/?id={user_to_update.id}"
