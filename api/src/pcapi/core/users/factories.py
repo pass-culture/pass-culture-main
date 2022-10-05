@@ -138,6 +138,8 @@ class BeneficiaryGrant18Factory(BaseFactory):
         kwargs["password"] = crypto.hash_password(password)
         if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
             kwargs["publicName"] = "%s %s" % (kwargs["firstName"], kwargs["lastName"])
+        if "validatedBirthDate" not in kwargs:
+            kwargs["validatedBirthDate"] = kwargs["dateOfBirth"]
         instance = super()._create(model_class, *args, **kwargs)
         instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
