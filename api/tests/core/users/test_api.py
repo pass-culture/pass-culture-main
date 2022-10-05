@@ -729,6 +729,8 @@ class CreateProUserTest:
 
 class BeneficiaryInformationUpdateTest:
     def test_update_user_information_from_dms(self):
+        declared_on_signup_date_of_birth = datetime.datetime(2000, 1, 1, 0, 0)
+        declared_on_dms_date_of_birth = datetime.date(2000, 5, 1)
         user = users_factories.UserFactory(
             activity=None,
             address=None,
@@ -737,13 +739,14 @@ class BeneficiaryInformationUpdateTest:
             lastName=None,
             postalCode=None,
             publicName="UNSET",
+            dateOfBirth=declared_on_signup_date_of_birth,
         )
         beneficiary_information = fraud_models.DMSContent(
             last_name="Doe",
             first_name="Jane",
             activity="Lycéen",
             civility=users_models.GenderEnum.F,
-            birth_date=datetime.date(2000, 5, 1),
+            birth_date=declared_on_dms_date_of_birth,
             email="jane.doe@test.com",
             phone="0612345678",
             postal_code="67200",
@@ -762,7 +765,8 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.publicName == "Jane Doe"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
-        assert beneficiary.validatedBirthDate == datetime.date(2000, 5, 1)
+        assert beneficiary.validatedBirthDate == declared_on_dms_date_of_birth
+        assert beneficiary.dateOfBirth == declared_on_signup_date_of_birth
         assert not beneficiary.has_beneficiary_role
         assert not beneficiary.has_admin_role
         assert beneficiary.password is not None

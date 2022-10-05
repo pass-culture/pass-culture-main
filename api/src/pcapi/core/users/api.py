@@ -196,9 +196,6 @@ def update_user_information(
     if first_name is not None or last_name is not None:
         user.publicName = "%s %s" % (first_name, last_name)
     if validated_birth_date is not None:
-        user.dateOfBirth = datetime.datetime.combine(
-            validated_birth_date, datetime.time.min
-        )  # TODO (PC-17174) stop overriding this field
         user.validatedBirthDate = validated_birth_date
     if activity is not None:
         user.activity = activity

@@ -335,6 +335,7 @@ class RunIntegrationTest:
         beneficiary.
         """
         date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
+        dms_validated_birth_date = date.today() - relativedelta(years=18)
 
         # Create a user that has validated its email and phone number, meaning it
         # should become beneficiary.
@@ -353,7 +354,9 @@ class RunIntegrationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(
+                application_number=123, state="accepte", email=user.email, birth_date=dms_validated_birth_date
+            ),
         ]
 
         import_dms_accepted_applications(6712558)
@@ -368,6 +371,8 @@ class RunIntegrationTest:
         assert user.has_beneficiary_role
         assert user.phoneNumber is None
         assert user.idPieceNumber == "123123123"
+        assert user.dateOfBirth.date() == self.BENEFICIARY_BIRTH_DATE
+        assert user.validatedBirthDate == dms_validated_birth_date
 
         assert len(user.beneficiaryFraudChecks) == 4
 
@@ -377,8 +382,8 @@ class RunIntegrationTest:
             if fraud_check.type == fraud_models.FraudCheckType.DMS
         )
         assert dms_fraud_check.type == fraud_models.FraudCheckType.DMS
-        fraud_content = fraud_models.DMSContent(**dms_fraud_check.resultContent)
-        assert fraud_content.birth_date == user.dateOfBirth.date()
+        fraud_content = dms_fraud_check.source_data()
+        assert fraud_content.birth_date == dms_validated_birth_date
         assert fraud_content.address == "3 La Bigotais 22800 Saint-Donan"
 
         assert next(
