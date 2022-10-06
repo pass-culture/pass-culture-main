@@ -101,11 +101,6 @@ export const postThumbnail = (
 // user
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'body' implicitly has an 'any' type.
-export const updateUserInformations = body => {
-  return client.patch('/users/current', body)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'token' implicitly has an 'any' type.
 export const validateUser = token => client.patch(`/validate/user/${token}`)
 
