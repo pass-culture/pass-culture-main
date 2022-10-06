@@ -1040,7 +1040,7 @@ def create_collective_offer_public(
         collectiveOffer=collective_offer,
         beginningDatetime=body.beginning_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
-        price=body.total_price / 100.0,
+        price=body.total_price,
         numberOfTickets=body.number_of_tickets,
         priceDetail=body.educational_price_detail,
     )

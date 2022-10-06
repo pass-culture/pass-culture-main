@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from unittest.mock import patch
 
 from freezegun import freeze_time
@@ -48,7 +49,7 @@ class CollectiveOffersPublicPatchOfferTest:
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
-            "totalPrice": 35621,
+            "totalPrice": 216.25,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",
             # link to educational institution
@@ -90,7 +91,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
-        assert offer.collectiveStock.price == payload["totalPrice"]
+        assert offer.collectiveStock.price == Decimal(payload["totalPrice"])
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
 
         assert offer.institutionId == educational_institution.id
