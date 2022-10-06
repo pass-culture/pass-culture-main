@@ -26,14 +26,12 @@ const CollectiveOfferVisibility = () => {
   const notify = useNotification()
   const history = useHistory()
 
-  const [isEditable, setIsEditable] = useState<boolean>()
-  const [institution, setInstitution] =
-    useState<EducationalInstitutionResponseModel | null>()
   const [institutions, setInstitutions] = useState<
     EducationalInstitutionResponseModel[]
   >([])
   const [isReady, setIsReady] = useState(false)
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
+  const [offer, setOffer] = useState<CollectiveOffer>()
 
   useEffect(() => {
     getCollectiveOfferAdapter(offerId).then(offerResult => {
@@ -41,8 +39,7 @@ const CollectiveOfferVisibility = () => {
         return notify.error(offerResult.message)
       }
 
-      setInstitution(offerResult.payload.institution)
-      setIsEditable(offerResult.payload.isVisibilityEditable)
+      setOffer(offerResult.payload)
       setIsReady(true)
     })
   }, [])
@@ -65,7 +62,13 @@ const CollectiveOfferVisibility = () => {
     message: string
     payload: CollectiveOffer
   }) => {
-    setInstitution(payload.institution)
+    setOffer(currentOffer => {
+      if (!currentOffer) {
+        return
+      }
+      return { ...currentOffer, institution: payload.institution }
+    })
+
     notify.success(message)
     history.push(
       `/offre/${computeURLCollectiveOfferId(
@@ -73,6 +76,10 @@ const CollectiveOfferVisibility = () => {
         false
       )}/collectif/recapitulatif`
     )
+  }
+
+  if (!isReady || !offer) {
+    return <Spinner />
   }
 
   return (
@@ -83,19 +90,16 @@ const CollectiveOfferVisibility = () => {
         offerId,
       }}
       title="Éditer une offre collective"
+      subTitle={offer.name}
     >
-      {isReady ? (
-        <CollectiveOfferVisibilityScreen
-          mode={isEditable ? Mode.EDITION : Mode.READ_ONLY}
-          patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={extractInitialVisibilityValues(institution)}
-          onSuccess={onSuccess}
-          institutions={institutions}
-          isLoadingInstitutions={isLoadingInstitutions}
-        />
-      ) : (
-        <Spinner />
-      )}
+      <CollectiveOfferVisibilityScreen
+        mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+        patchInstitution={patchEducationalInstitutionAdapter}
+        initialValues={extractInitialVisibilityValues(offer.institution)}
+        onSuccess={onSuccess}
+        institutions={institutions}
+        isLoadingInstitutions={isLoadingInstitutions}
+      />
     </CollectiveOfferLayout>
   )
 }
