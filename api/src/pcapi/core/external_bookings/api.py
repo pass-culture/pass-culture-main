@@ -2,6 +2,7 @@ from pcapi import settings
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_cds_cinema_details
 
 
@@ -32,11 +33,7 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
 
 
 def get_cinema_venue_provider(venue_id: int) -> providers_models.VenueProvider:
-    cinema_venue_provider = providers_models.VenueProvider.query.filter(
-        providers_models.VenueProvider.venueId == venue_id,
-        providers_models.VenueProvider.isFromCinemaProvider,
-        providers_models.VenueProvider.isActive,
-    ).one_or_none()
+    cinema_venue_provider = providers_repository.get_cinema_venue_provider_query(venue_id).one_or_none()
 
     if not cinema_venue_provider:
         raise Exception(f"No active cinema venue provider found for venue #{venue_id}")

@@ -11,7 +11,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
-import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
@@ -45,11 +45,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         feature.FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
         and offer.subcategory.id == subcategories.SEANCE_CINE.id
     ):
-        cinema_venue_provider = providers_models.VenueProvider.query.filter(
-            providers_models.VenueProvider.venueId == offer.venueId,
-            providers_models.VenueProvider.isActive,
-            providers_models.VenueProvider.isFromCinemaProvider,
-        ).one_or_none()
+        cinema_venue_provider = providers_repository.get_cinema_venue_provider_query(offer.venueId).one_or_none()
 
         if (
             cinema_venue_provider
