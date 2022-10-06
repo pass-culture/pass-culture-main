@@ -42,7 +42,7 @@ import PriceErrorHTMLNotification from './PriceErrorHTMLNotification'
 
 const EMPTY_STRING_VALUE = ''
 
-const ThingStocks = ({ offer, reloadOffer }) => {
+const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [enableSubmitButtonSpinner, setEnableSubmitButtonSpinner] =
@@ -56,7 +56,9 @@ const ThingStocks = ({ offer, reloadOffer }) => {
   const location = useLocation()
   const notification = useNotification()
   const summaryStepUrl = isOfferDraft
-    ? `/offre/${offer.id}/individuel/creation/recapitulatif`
+    ? isCompletingDraft
+      ? `/offre/${offer.id}/individuel/brouillon/recapitulatif`
+      : `/offre/${offer.id}/individuel/creation/recapitulatif`
     : `/offre/${offer.id}/individuel/recapitulatif`
   const offersSearchFilters = useSelector(searchFiltersSelector)
   const offersPageNumber = useSelector(searchPageNumberSelector)
@@ -237,7 +239,9 @@ const ThingStocks = ({ offer, reloadOffer }) => {
   const hasAStock = !hasNoStock
   const inCreateMode = hasNoStock || !stock.id
   const cancelUrl = isOfferDraft
-    ? `/offre/${offerId}/individuel/creation`
+    ? isCompletingDraft
+      ? `/offre/${offerId}/individuel/brouillon`
+      : `/offre/${offerId}/individuel/creation`
     : computeOffersUrl(offersSearchFilters, offersPageNumber)
   const providerName = offer.lastProvider?.name || null
 

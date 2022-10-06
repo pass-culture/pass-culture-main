@@ -22,6 +22,7 @@ export enum OfferBreadcrumbStep {
 export interface IOfferBreadcrumb {
   activeStep: OfferBreadcrumbStep
   isCreatingOffer: boolean
+  isCompletingDraft?: boolean
   offerId?: string
   isOfferEducational?: boolean
   className?: string
@@ -31,6 +32,7 @@ export interface IOfferBreadcrumb {
 const OfferBreadcrumb = ({
   activeStep,
   isCreatingOffer,
+  isCompletingDraft = false,
   offerId = '',
   isOfferEducational = false,
   className,
@@ -51,7 +53,7 @@ const OfferBreadcrumb = ({
   )
     return <></>
 
-  if (!isCreatingOffer) {
+  if (!isCreatingOffer && !isCompletingDraft) {
     steps = [
       {
         id: OfferBreadcrumbStep.DETAILS,
@@ -103,20 +105,22 @@ const OfferBreadcrumb = ({
         label: 'Confirmation',
       },
     }
+    let status = 'creation'
+    if (isCompletingDraft) status = 'brouillon'
 
     if (offerId) {
       stepList[
         OfferBreadcrumbStep.DETAILS
-      ].url = `/offre/${offerId}/individuel/creation`
+      ].url = `/offre/${offerId}/individuel/${status}`
 
       stepList[
         OfferBreadcrumbStep.STOCKS
-      ].url = `/offre/${offerId}/individuel/creation/stocks`
+      ].url = `/offre/${offerId}/individuel/${status}/stocks`
 
       if (haveStock) {
         stepList[
           OfferBreadcrumbStep.SUMMARY
-        ].url = `/offre/${offerId}/individuel/creation/recapitulatif`
+        ].url = `/offre/${offerId}/individuel/${status}/recapitulatif`
       }
     }
 
@@ -142,7 +146,7 @@ const OfferBreadcrumb = ({
       className={className}
       steps={steps}
       styleType={
-        isCreatingOffer
+        isCreatingOffer || isCompletingDraft
           ? isOfferEducational
             ? BreadcrumbStyle.DEFAULT
             : BreadcrumbStyle.STEPPER

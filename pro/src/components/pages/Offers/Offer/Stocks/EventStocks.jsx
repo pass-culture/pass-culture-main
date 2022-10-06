@@ -45,7 +45,7 @@ import { FormActions } from './FormActions'
 
 const EMPTY_STRING_VALUE = ''
 
-const EventStocks = ({ offer, reloadOffer }) => {
+const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [isSendingStocksOfferCreation, setIsSendingStocksOfferCreation] =
@@ -59,7 +59,9 @@ const EventStocks = ({ offer, reloadOffer }) => {
   const location = useLocation()
   const notification = useNotification()
   const summaryStepUrl = isOfferDraft
-    ? `/offre/${offer.id}/individuel/creation/recapitulatif`
+    ? isCompletingDraft
+      ? `/offre/${offer.id}/individuel/brouillon/recapitulatif`
+      : `/offre/${offer.id}/individuel/creation/recapitulatif`
     : `/offre/${offer.id}/individuel/recapitulatif`
   const offersSearchFilters = useSelector(searchFiltersSelector)
   const offersPageNumber = useSelector(searchPageNumberSelector)
@@ -267,7 +269,9 @@ const EventStocks = ({ offer, reloadOffer }) => {
   const hasNoStock = stocks.length === 0
   const hasAtLeastOneStock = stocks.length > 0
   const cancelUrl = isOfferDraft
-    ? `/offre/${offerId}/individuel/creation`
+    ? isCompletingDraft
+      ? `/offre/${offerId}/individuel/brouillon`
+      : `/offre/${offerId}/individuel/creation`
     : computeOffersUrl(offersSearchFilters, offersPageNumber)
   let providerName = offer.lastProvider?.name || null
 

@@ -10,6 +10,7 @@ import {
 } from 'context/OfferIndividualContext'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { useHomePath } from 'hooks'
+import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import getWizardData from 'routes/OfferIndividualWizard/adapters/getWizardData/getWizardData'
 import {
@@ -23,6 +24,7 @@ import { parse } from 'utils/query-string'
 
 const OfferV2Summary = (): JSX.Element | null => {
   const isCreation = useIsCreation()
+  const isDraft = useIsCompletingDraft()
   const homePath = useHomePath()
   const notify = useNotification()
   const history = useHistory()
@@ -116,6 +118,7 @@ const OfferV2Summary = (): JSX.Element | null => {
         providerName={providerName}
         offerStatus={offerStatus}
         isCreation={isCreation}
+        isDraft={isDraft}
         offer={offerData}
         stockThing={stockThing}
         stockEventList={stockEventList}
