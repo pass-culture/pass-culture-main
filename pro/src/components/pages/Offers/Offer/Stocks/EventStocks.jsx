@@ -32,7 +32,6 @@ import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import * as pcapi from 'repository/pcapi/pcapi'
 import {
   searchFiltersSelector,
   searchPageNumberSelector,
@@ -202,11 +201,11 @@ const EventStocks = ({ offer, reloadOffer }) => {
           payload.id = updatedStock.id
           return payload
         })
-        pcapi
-          .bulkCreateOrEditStock(offer.id, [
-            ...stocksToCreate,
-            ...stocksToUpdate,
-          ])
+        api
+          .upsertStocks({
+            offerId: offer.id,
+            stocks: [...stocksToCreate, ...stocksToUpdate],
+          })
           .then(async () => {
             const queryParams = queryParamsFromOfferer(location)
             let queryString = ''

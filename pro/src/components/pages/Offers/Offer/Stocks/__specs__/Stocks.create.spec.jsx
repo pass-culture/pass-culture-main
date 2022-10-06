@@ -17,7 +17,6 @@ const GUYANA_CAYENNE_DEPT = '973'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
-  bulkCreateOrEditStock: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -27,6 +26,7 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
     getStocks: jest.fn(),
+    upsertStocks: jest.fn(),
   },
 }))
 
@@ -135,7 +135,7 @@ describe('stocks page', () => {
       subcategories: [],
     })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
-    pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+    api.upsertStocks.mockResolvedValue({})
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         {
@@ -169,7 +169,7 @@ describe('stocks page', () => {
 
     it('should redirect to summary page after submitting stock', async () => {
       // Given
-      pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+      api.upsertStocks.mockResolvedValue({})
 
       renderOffers(props, store)
 
@@ -219,7 +219,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
         // Then
-        expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
+        expect(api.upsertStocks).not.toHaveBeenCalled()
         expect(screen.queryByRole('row')).not.toBeInTheDocument()
       })
 
@@ -287,7 +287,7 @@ describe('stocks page', () => {
 
       it('should add new stocks to stocks and remove new empty stock line when clicking on validate button', async () => {
         // given
-        pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+        api.upsertStocks.mockResolvedValue({})
         const createdStocks = [
           {
             quantity: 15,
@@ -361,9 +361,9 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('Étape suivante'))
 
         // then
-        expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
-          defaultOffer.id,
-          [
+        expect(api.upsertStocks).toHaveBeenCalledWith({
+          offerId: defaultOffer.id,
+          stocks: [
             {
               beginningDatetime: '2020-12-25T23:00:00Z',
               bookingLimitDatetime: '2020-12-24T02:59:59Z',
@@ -376,8 +376,8 @@ describe('stocks page', () => {
               price: '15',
               quantity: '15',
             },
-          ]
-        )
+          ],
+        })
       })
 
       it('should be able to add second stock while first one is not validated', async () => {
@@ -423,7 +423,7 @@ describe('stocks page', () => {
 
       it('should display error message on api error', async () => {
         // Given
-        pcapi.bulkCreateOrEditStock.mockRejectedValueOnce({
+        api.upsertStocks.mockRejectedValueOnce({
           errors: {
             price: 'Le prix est invalide.',
             quantity: 'La quantité est invalide.',
@@ -474,12 +474,12 @@ describe('stocks page', () => {
         expect(errorMessage).toBeInTheDocument()
         expect(screen.getByLabelText('Prix')).toHaveClass('error')
         expect(screen.getByLabelText('Quantité')).toHaveClass('error')
-        expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledTimes(0)
+        expect(api.upsertStocks).toHaveBeenCalledTimes(0)
       })
 
       it('should redirect to summary page after submitting stock', async () => {
         // Given
-        pcapi.bulkCreateOrEditStock.mockResolvedValueOnce({})
+        api.upsertStocks.mockResolvedValueOnce({})
         renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
@@ -547,7 +547,7 @@ describe('stocks page', () => {
 
       it('should display error message on api error', async () => {
         // Given
-        pcapi.bulkCreateOrEditStock.mockRejectedValue({
+        api.upsertStocks.mockRejectedValue({
           errors: {
             price: 'Le prix est invalide.',
             quantity: 'La quantité est invalide.',
@@ -587,12 +587,12 @@ describe('stocks page', () => {
         expect(errorMessage).toBeInTheDocument()
         expect(screen.getByLabelText('Prix')).toHaveClass('error')
         expect(screen.getByLabelText('Quantité')).toHaveClass('error')
-        expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledTimes(0)
+        expect(api.upsertStocks).toHaveBeenCalledTimes(0)
       })
 
       it('should redirect to summary page after submitting stock', async () => {
         // Given
-        pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+        api.upsertStocks.mockResolvedValue({})
         renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter un stock'))
 
@@ -616,7 +616,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
         // Then
-        expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
+        expect(api.upsertStocks).not.toHaveBeenCalled()
         expect(screen.queryByRole('row')).not.toBeInTheDocument()
       })
 
@@ -695,7 +695,7 @@ describe('stocks page', () => {
 
       it('should add new stock to stocks and remove new empty stock line when clicking on validate button', async () => {
         // given
-        pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+        api.upsertStocks.mockResolvedValue({})
         renderOffers(props, store)
 
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -713,13 +713,16 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('Étape suivante'))
 
         // then
-        expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith('AG3A', [
-          {
-            bookingLimitDatetime: '2020-12-23T02:59:59Z',
-            price: '15',
-            quantity: '15',
-          },
-        ])
+        expect(api.upsertStocks).toHaveBeenCalledWith({
+          offerId: 'AG3A',
+          stocks: [
+            {
+              bookingLimitDatetime: '2020-12-23T02:59:59Z',
+              price: '15',
+              quantity: '15',
+            },
+          ],
+        })
       })
 
       describe('digital offer', () => {
@@ -864,7 +867,7 @@ describe('stocks page', () => {
 
         it('should save changes done to stock with activation codes and readjust bookingLimitDatetime according to activationCodesExpirationDatetime', async () => {
           // Given
-          pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+          api.upsertStocks.mockResolvedValue({})
           renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -895,9 +898,9 @@ describe('stocks page', () => {
           await userEvent.click(screen.getByText('Étape suivante'))
 
           // Then
-          expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
-            defaultOffer.id,
-            [
+          expect(api.upsertStocks).toHaveBeenCalledWith({
+            offerId: defaultOffer.id,
+            stocks: [
               {
                 activationCodes: ['ABH', 'JHB'],
                 activationCodesExpirationDatetime: '2020-12-26T02:59:59Z',
@@ -906,13 +909,13 @@ describe('stocks page', () => {
                 price: '14.01',
                 quantity: 2,
               },
-            ]
-          )
+            ],
+          })
         })
 
         it('should save changes done to stock with activation codes and no activationCodesExpirationDatetime', async () => {
           // Given
-          pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+          api.upsertStocks.mockResolvedValue({})
           renderOffers(props, store)
 
           await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -939,9 +942,9 @@ describe('stocks page', () => {
           await userEvent.click(screen.getByText('Étape suivante'))
 
           // Then
-          expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
-            defaultOffer.id,
-            [
+          expect(api.upsertStocks).toHaveBeenCalledWith({
+            offerId: defaultOffer.id,
+            stocks: [
               {
                 activationCodes: ['ABH', 'JHB'],
                 activationCodesExpirationDatetime: null,
@@ -950,8 +953,8 @@ describe('stocks page', () => {
                 price: '14.01',
                 quantity: 2,
               },
-            ]
-          )
+            ],
+          })
         })
 
         it('should change stock quantity and disable activation codes button on upload', async () => {
@@ -1117,7 +1120,7 @@ describe('stocks page', () => {
 
         it('should not allow to set activation codes on an existing stock', async () => {
           // given
-          pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+          api.upsertStocks.mockResolvedValue({})
           const offer = {
             ...defaultOffer,
             isDigital: true,

@@ -21,7 +21,6 @@ const PARIS_FRANCE_DEPT = '75'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
-  bulkCreateOrEditStock: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -31,6 +30,7 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
     getStocks: jest.fn(),
+    upsertStocks: jest.fn(),
   },
 }))
 
@@ -113,7 +113,7 @@ describe('stocks page', () => {
       subcategories: [],
     })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
-    pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+    api.upsertStocks.mockResolvedValue({})
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         {
@@ -509,7 +509,7 @@ describe('stocks page', () => {
 
           describe('when clicking on submit button', () => {
             beforeEach(() => {
-              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+              api.upsertStocks.mockResolvedValue({})
             })
 
             it('should update stock', async () => {
@@ -545,9 +545,9 @@ describe('stocks page', () => {
               )
 
               // Then
-              expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
-                defaultOffer.id,
-                [
+              expect(api.upsertStocks).toHaveBeenCalledWith({
+                offerId: defaultOffer.id,
+                stocks: [
                   {
                     beginningDatetime: '2020-12-26T23:00:00Z',
                     bookingLimitDatetime: '2020-12-26T02:59:59Z',
@@ -555,8 +555,8 @@ describe('stocks page', () => {
                     price: '14.01',
                     quantity: '6',
                   },
-                ]
-              )
+                ],
+              })
             })
 
             it('should refresh stocks', async () => {
@@ -600,7 +600,7 @@ describe('stocks page', () => {
               )
 
               // Then
-              const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+              const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
               expect(savedStocks[0].bookingLimitDatetime).toBe(
                 '2020-12-20T22:00:00Z'
               )
@@ -620,7 +620,7 @@ describe('stocks page', () => {
               )
 
               // Then
-              const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+              const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
               expect(savedStocks[0].bookingLimitDatetime).toBe(
                 '2020-12-20T22:00:00Z'
               )
@@ -640,7 +640,7 @@ describe('stocks page', () => {
               )
 
               // Then
-              const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+              const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
               expect(savedStocks[0].bookingLimitDatetime).toBe(
                 '2020-12-20T02:59:59Z'
               )
@@ -662,7 +662,7 @@ describe('stocks page', () => {
               )
 
               // Then
-              const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+              const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
               expect(savedStocks[0].bookingLimitDatetime).toBe(
                 '2020-12-17T22:59:59Z'
               )
@@ -679,13 +679,13 @@ describe('stocks page', () => {
               )
 
               // Then
-              const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+              const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
               expect(savedStocks[0].quantity).toBeNull()
             })
 
             it('should display error message on api error', async () => {
               // Given
-              pcapi.bulkCreateOrEditStock.mockRejectedValueOnce({
+              api.upsertStocks.mockRejectedValueOnce({
                 errors: {
                   price: 'Le prix est invalide.',
                   quantity: 'La quantité est invalide.',
@@ -733,7 +733,7 @@ describe('stocks page', () => {
                 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
               )
               expect(errorMessage).toBeInTheDocument()
-              expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
+              expect(api.upsertStocks).not.toHaveBeenCalled()
             })
 
             it('should not be able to validate changes when hour field is empty', async () => {
@@ -754,7 +754,7 @@ describe('stocks page', () => {
                 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
               )
               expect(errorMessage).toBeInTheDocument()
-              expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
+              expect(api.upsertStocks).not.toHaveBeenCalled()
             })
 
             it('should not display price error when the price is above 300 euros and offer is not educational', async () => {
@@ -790,7 +790,7 @@ describe('stocks page', () => {
                 quantity: null,
               }
               api.getStocks.mockResolvedValue({ stocks: [eventStock] })
-              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+              api.upsertStocks.mockResolvedValue({})
 
               renderOffers(props, store)
               await userEvent.click(
@@ -841,7 +841,7 @@ describe('stocks page', () => {
 
             it('should display success message on success', async () => {
               // Given
-              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+              api.upsertStocks.mockResolvedValue({})
               renderOffers(props, store)
 
               await userEvent.click(
@@ -868,7 +868,7 @@ describe('stocks page', () => {
 
             it('should refresh offer', async () => {
               // Given
-              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+              api.upsertStocks.mockResolvedValue({})
               const initialOffer = {
                 ...eventOffer,
                 status: 'SOLD_OUT',
@@ -895,7 +895,7 @@ describe('stocks page', () => {
 
             it('should update displayed offer status', async () => {
               // Given
-              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+              api.upsertStocks.mockResolvedValue({})
               const initialOffer = {
                 ...eventOffer,
                 status: 'SOLD_OUT',
@@ -1257,7 +1257,7 @@ describe('stocks page', () => {
         describe('when clicking on submit button', () => {
           it('should save changes done to stock', async () => {
             // Given
-            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            api.upsertStocks.mockResolvedValue({})
             renderOffers(props, store)
 
             const priceField = await screen.findByLabelText('Prix')
@@ -1279,22 +1279,22 @@ describe('stocks page', () => {
             )
 
             // Then
-            expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
-              defaultOffer.id,
-              [
+            expect(api.upsertStocks).toHaveBeenCalledWith({
+              offerId: defaultOffer.id,
+              stocks: [
                 {
                   bookingLimitDatetime: '2020-12-26T02:59:59Z',
                   id: '2E',
                   price: '14.01',
                   quantity: '6',
                 },
-              ]
-            )
+              ],
+            })
           })
 
           it('should refresh stocks', async () => {
             // Given
-            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            api.upsertStocks.mockResolvedValue({})
             const initialStock = {
               ...defaultStock,
               price: 10.01,
@@ -1319,7 +1319,7 @@ describe('stocks page', () => {
 
           it('should set booking limit time to end of selected local day when specified in Cayenne TZ', async () => {
             // Given
-            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            api.upsertStocks.mockResolvedValue({})
             renderOffers(props, store)
             await userEvent.click(
               await screen.findByLabelText('Date limite de réservation')
@@ -1332,7 +1332,7 @@ describe('stocks page', () => {
             )
 
             // Then
-            const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+            const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
             expect(savedStocks[0].bookingLimitDatetime).toBe(
               '2020-12-20T02:59:59Z'
             )
@@ -1342,7 +1342,7 @@ describe('stocks page', () => {
             // Given
             thingOffer.venue.departementCode = PARIS_FRANCE_DEPT
 
-            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            api.upsertStocks.mockResolvedValue({})
             renderOffers(props, store)
             await userEvent.click(
               await screen.findByLabelText('Date limite de réservation')
@@ -1355,7 +1355,7 @@ describe('stocks page', () => {
             )
 
             // Then
-            const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+            const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
             expect(savedStocks[0].bookingLimitDatetime).toBe(
               '2020-12-17T22:59:59Z'
             )
@@ -1363,7 +1363,7 @@ describe('stocks page', () => {
 
           it('should set booking limit datetime to null when not specified', async () => {
             // Given
-            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            api.upsertStocks.mockResolvedValue({})
             renderOffers(props, store)
 
             await userEvent.clear(
@@ -1376,13 +1376,13 @@ describe('stocks page', () => {
             )
 
             // Then
-            const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+            const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
             expect(savedStocks[0].bookingLimitDatetime).toBeNull()
           })
 
           it('should set quantity to null when not specified', async () => {
             // Given
-            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            api.upsertStocks.mockResolvedValue({})
             renderOffers(props, store)
             await userEvent.clear(await screen.findByLabelText('Quantité'))
 
@@ -1391,7 +1391,7 @@ describe('stocks page', () => {
               screen.getByText('Enregistrer les modifications')
             )
             // Then
-            const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+            const savedStocks = api.upsertStocks.mock.calls[0][0].stocks
             expect(savedStocks[0].quantity).toBeNull()
           })
 
@@ -1417,7 +1417,7 @@ describe('stocks page', () => {
 
           it('should display error message on api error', async () => {
             // Given
-            pcapi.bulkCreateOrEditStock.mockRejectedValueOnce({
+            api.upsertStocks.mockRejectedValueOnce({
               errors: {
                 price: 'Le prix est invalide.',
                 quantity: 'La quantité est invalide.',
@@ -1460,7 +1460,7 @@ describe('stocks page', () => {
 
           it('should display success message on success', async () => {
             // Given
-            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            api.upsertStocks.mockResolvedValue({})
             renderOffers(props, store)
 
             await userEvent.type(await screen.findByLabelText('Quantité'), '10')

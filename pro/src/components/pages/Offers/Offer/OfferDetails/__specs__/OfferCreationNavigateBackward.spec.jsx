@@ -8,7 +8,6 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferLayout from '../../OfferLayout'
