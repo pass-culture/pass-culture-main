@@ -34,7 +34,6 @@ import {
   searchPageNumberSelector,
 } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -279,12 +278,11 @@ const ThingStocks = ({ offer, reloadOffer }) => {
       )}
       {hasNoStock ? (
         <Button
-          variant={ButtonVariant.TERNARY}
-          className="primary-button with-icon add-first-stock-button"
+          className="add-first-stock-button"
           disabled={isDisabled}
           onClick={addNewStock}
+          Icon={AddStockSvg}
         >
-          <AddStockSvg />
           Ajouter un stock
         </Button>
       ) : (
