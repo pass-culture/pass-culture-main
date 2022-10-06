@@ -1,6 +1,7 @@
 import typing
 
 from pcapi.core.auth.utils import get_current_user
+from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -105,6 +106,26 @@ def get_offerer_offers_stats(offerer_id: int) -> serialization.OffererOfferStats
                 collective=offers_stats.collective_offers["inactive"] if offers_stats.collective_offers else 0,
             ),
         )
+    )
+
+
+@blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/history", methods=["GET"])
+@spectree_serialize(response_model=serialization.HistoryResponseModel, on_success_status=200, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
+def get_offerer_history(offerer_id: int) -> serialization.HistoryResponseModel:
+    history = history_repository.find_all_actions_by_offerer(offerer_id)
+
+    return serialization.HistoryResponseModel(
+        data=[
+            serialization.HistoryItem(
+                type=action.actionType.value,
+                date=action.actionDate,
+                authorId=action.authorUserId,
+                authorName=action.authorUser.publicName if action.authorUser else None,
+                comment=action.comment,
+            )
+            for action in history
+        ]
     )
 
 
