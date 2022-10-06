@@ -341,7 +341,7 @@ class EditCollectiveOfferStocksTest:
             )
 
         # Then
-        assert error.value.errors == {"global": ["Les événements passés ne sont pas modifiables"]}
+        assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).first()
         assert stock.numberOfTickets == 30
 

@@ -57,7 +57,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
         stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
-            {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'événement"]},
+            {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
             status_code=400,
         )
 

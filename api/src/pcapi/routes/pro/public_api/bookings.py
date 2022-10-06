@@ -135,7 +135,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
     """Annulation d'une réservation.
 
-    Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier,
+    Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier,
     cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
     """
     token = token.upper()

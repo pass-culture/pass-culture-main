@@ -436,7 +436,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"beginningDatetime": ["La date de début de l'événement ne peut pas être nulle."]}
+        assert response.json == {"beginningDatetime": ["La date de début de l'évènement ne peut pas être nulle."]}
 
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, client):
         # Given

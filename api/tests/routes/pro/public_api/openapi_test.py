@@ -536,7 +536,7 @@ def test_public_api(client, app):
         "paths": {
             "/v2/bookings/cancel/token/{token}": {
                 "patch": {
-                    "description": "Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.",
+                    "description": "Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.",
                     "operationId": "PatchCancelBookingByToken",
                     "parameters": [
                         {

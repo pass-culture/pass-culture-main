@@ -1,6 +1,6 @@
 # API Fournisseurs
 
-Ces API peuvent être implémentées par les partenaires techniques du pass Culture qui souhaitent fournir des informations relatives à des évolutions de stocks ou places pour des objets ou événements de manière automatisée. Les différentes sections de l'API sont indépendantes et ne sont donc pas nécessairement toutes à implémenter.
+Ces API peuvent être implémentées par les partenaires techniques du pass Culture qui souhaitent fournir des informations relatives à des évolutions de stocks ou places pour des objets ou évènements de manière automatisée. Les différentes sections de l'API sont indépendantes et ne sont donc pas nécessairement toutes à implémenter.
 
 Ces API ont vocation à être appelées immédiatement lorsqu'un acteur culturel choisit un fournisseur dans le portail, puis une fois par heure et par acteur.
 
@@ -18,7 +18,7 @@ Règles de mise à jour des données dans le pass Culture
 ### Paramètres d’appel
  
 - “SIRET” (string) : identifiant SIRET du lieu dans lequel sont localisées les propositions 
-- “modifiedSince” (string) - date au format aaaa-mm-ddThh:mm:ss.mmmZ. L'API ne renvoie que les événements ou objets modifiés depuis cette date. Techniquement, ce champ n'est pas obligatoire, mais pour des raisons de performances nous invitons fortement à son utilisation.
+- “modifiedSince” (string) - date au format aaaa-mm-ddThh:mm:ss.mmmZ. L'API ne renvoie que les évènements ou objets modifiés depuis cette date. Techniquement, ce champ n'est pas obligatoire, mais pour des raisons de performances nous invitons fortement à son utilisation.
 - “after” (optional, string) - pagination : référence (ex : EAN13) de la dernière entrée traitée (le dernier de la page précédente)
 - “limit” (optional, integer) - pagination : nombre maximum d'entrées (nombre de couples (référence; prix)) à renvoyer pour cette requête. Nous fixons généralement une valeur arbitraire lors de l'appel à 1000 résultats. Tel que notre système fonctionne, nous effectuons des requêtes paginées jusqu'à recevoir aucun résultat.
 

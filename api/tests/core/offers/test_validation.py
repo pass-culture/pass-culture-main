@@ -87,7 +87,7 @@ class CheckRequiredDatesForStockTest:
             )
 
         assert error.value.errors["global"] == [
-            "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
+            "Impossible de mettre une date de début si l'offre ne porte pas sur un évènement"
         ]
 
     def test_thing_offer_ok_with_booking_limit_datetime(self):
@@ -217,7 +217,7 @@ class CheckStockIsDeletableTest:
             validation.check_stock_is_deletable(stock)
 
         assert error.value.errors["global"] == [
-            "L'événement s'est terminé il y a plus de deux jours, la suppression est impossible."
+            "L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible."
         ]
 
 
@@ -264,7 +264,7 @@ class CheckStockIsUpdatableTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_is_updatable(stock)
 
-        assert error.value.errors["global"] == ["Les événements passés ne sont pas modifiables"]
+        assert error.value.errors["global"] == ["Les évènements passés ne sont pas modifiables"]
 
 
 class CheckImageTest:

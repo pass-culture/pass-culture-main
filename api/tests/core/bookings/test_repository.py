@@ -1444,7 +1444,7 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue_for_event = offerers_factories.VenueFactory(
-            managingOfferer=offerer, name="Lieu pour un événement", siret="11816909600069"
+            managingOfferer=offerer, name="Lieu pour un évènement", siret="11816909600069"
         )
         product = offers_factories.EventProductFactory(name="Shutter Island")
         offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
