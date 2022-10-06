@@ -9,7 +9,6 @@ import { MemoryRouter, Route } from 'react-router'
 import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory, stockFactory } from 'utils/apiFactories'
 import { getToday } from 'utils/date'
@@ -19,10 +18,6 @@ import { queryByTextTrimHtml } from 'utils/testHelpers'
 const GUYANA_CAYENNE_DEPT = '973'
 const PARIS_FRANCE_DEPT = '75'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  deleteStock: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getCategories: jest.fn(),
@@ -31,6 +26,7 @@ jest.mock('apiClient/api', () => ({
     getVenues: jest.fn(),
     getStocks: jest.fn(),
     upsertStocks: jest.fn(),
+    deleteStock: jest.fn(),
   },
 }))
 
@@ -112,7 +108,7 @@ describe('stocks page', () => {
       categories: [],
       subcategories: [],
     })
-    pcapi.deleteStock.mockResolvedValue({ id: stockId })
+    api.deleteStock.mockResolvedValue({ id: stockId })
     api.upsertStocks.mockResolvedValue({})
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
@@ -252,7 +248,7 @@ describe('stocks page', () => {
             'aria-disabled',
             'true'
           )
-          expect(pcapi.deleteStock).not.toHaveBeenCalled()
+          expect(api.deleteStock).not.toHaveBeenCalled()
         })
 
         it('should inform user that stock cannot be updated when event is over', async () => {
@@ -979,7 +975,7 @@ describe('stocks page', () => {
             )
 
             // Then
-            expect(pcapi.deleteStock).toHaveBeenCalledWith(stockId)
+            expect(api.deleteStock).toHaveBeenCalledWith(stockId)
           })
 
           it('should not delete stock if aborting on confirmation', async () => {
@@ -995,7 +991,7 @@ describe('stocks page', () => {
             )
 
             // Then
-            expect(pcapi.deleteStock).not.toHaveBeenCalled()
+            expect(api.deleteStock).not.toHaveBeenCalled()
           })
 
           it('should discard deleted stock from list', async () => {
@@ -1084,7 +1080,7 @@ describe('stocks page', () => {
 
           it('should display an error message when deletion fails', async () => {
             // Given
-            pcapi.deleteStock.mockRejectedValue({})
+            api.deleteStock.mockRejectedValue({})
             renderOffers(props, store)
 
             // When
