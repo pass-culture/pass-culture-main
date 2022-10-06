@@ -34,6 +34,7 @@ export const getStockCollectiveOfferTemplateAdapter: GetStockCollectiveOfferTemp
           isEducational: true,
           isShowcase: true,
           offerId: offer.offerId,
+          name: offer.name,
         },
       }
     } catch (error) {

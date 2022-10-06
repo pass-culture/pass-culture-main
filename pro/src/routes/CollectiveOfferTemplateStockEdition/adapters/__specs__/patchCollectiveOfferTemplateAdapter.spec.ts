@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { ApiError, OfferStatus } from 'apiClient/v1'
+import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { EducationalOfferType } from 'core/OfferEducational'
@@ -12,17 +12,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
 
     // when
     const response = await patchCollectiveOfferTemplateAdapter({
-      offer: {
-        id: '',
-        isActive: true,
-        isEducational: true,
-        isBooked: false,
-        isCancellable: true,
-        status: OfferStatus.PENDING,
-        venueDepartmentCode: '1',
-        managingOffererId: 'A1',
-        isShowcase: false,
-      },
+      offerId: '',
       values: {
         eventDate: new Date(),
         eventTime: new Date(),
@@ -56,17 +46,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
 
     // when
     const response = await patchCollectiveOfferTemplateAdapter({
-      offer: {
-        id: '12',
-        isActive: true,
-        isEducational: true,
-        isBooked: false,
-        isCancellable: true,
-        status: OfferStatus.PENDING,
-        venueDepartmentCode: '1',
-        managingOffererId: 'A1',
-        isShowcase: false,
-      },
+      offerId: '12',
       values: {
         eventDate: new Date(),
         eventTime: new Date(),
@@ -93,17 +73,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
 
     // when
     const response = await patchCollectiveOfferTemplateAdapter({
-      offer: {
-        id: '12',
-        isActive: true,
-        isEducational: true,
-        isBooked: false,
-        isCancellable: true,
-        status: OfferStatus.PENDING,
-        venueDepartmentCode: '1',
-        managingOffererId: 'A1',
-        isShowcase: false,
-      },
+      offerId: '12',
       values: {
         eventDate: new Date(),
         eventTime: new Date(),

@@ -1,13 +1,10 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
-import {
-  GetStockOfferSuccessPayload,
-  OfferEducationalStockFormValues,
-} from 'core/OfferEducational'
+import { OfferEducationalStockFormValues } from 'core/OfferEducational'
 
 export type Params = {
-  offer: GetStockOfferSuccessPayload
+  offerId: string
   values: OfferEducationalStockFormValues
 }
 
@@ -30,14 +27,14 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAdapter =
-  async ({ offer, values }) => {
+  async ({ offerId, values }) => {
     try {
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
-      if (!offer.id || offer.id === '') {
+      if (!offerId || offerId === '') {
         throw new Error('L’identifiant de l’offre n’est pas valide.')
       }
 
-      const updatedOffer = await api.editCollectiveOfferTemplate(offer.id, {
+      const updatedOffer = await api.editCollectiveOfferTemplate(offerId, {
         priceDetail: values.priceDetail,
       })
 

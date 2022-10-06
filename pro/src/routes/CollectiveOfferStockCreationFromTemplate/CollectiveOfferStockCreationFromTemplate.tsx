@@ -51,7 +51,7 @@ const CollectiveOfferStockCreationFromTemplate = (): JSX.Element | null => {
         isCreatingOffer: true,
       }}
       title="Créer une nouvelle offre collective"
-      subTitle={data.name || ''}
+      subTitle={data.name}
     >
       <OfferEducationalStockScreen
         initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
