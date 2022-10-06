@@ -370,6 +370,18 @@ def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None
     db.session.delete(api_key)
 
 
+def _fill_in_offerer(
+    offerer: offerers_models.Offerer, offerer_informations: offerers_serialize.CreateOffererQueryModel
+) -> None:
+    offerer.address = offerer_informations.address
+    offerer.city = offerer_informations.city
+    offerer.name = offerer_informations.name
+    offerer.postalCode = offerer_informations.postalCode
+    offerer.siren = offerer_informations.siren
+    offerer.generate_validation_token()
+    offerer.validationStatus = models.ValidationStatus.NEW
+
+
 def create_offerer(
     user: users_models.User, offerer_informations: offerers_serialize.CreateOffererQueryModel
 ) -> models.UserOfferer:
@@ -377,18 +389,29 @@ def create_offerer(
 
     if offerer is not None:
         user_offerer = grant_user_offerer_access(offerer, user)
-        user_offerer.generate_validation_token()
-        repository.save(user_offerer)
+        objects_to_save = [user_offerer]
+        if offerer.isRejected:
+            # When offerer was rejected, it is considered as a new offerer in validation process;
+            # history is kept with same id and siren
+            _fill_in_offerer(offerer, offerer_informations)
+            objects_to_save += [
+                offerer,
+                history_api.log_action(
+                    history_models.ActionType.OFFERER_NEW,
+                    user,
+                    user=user,
+                    offerer=offerer,
+                    save=False,
+                    comment="Nouvelle demande sur un SIREN précédemment rejeté",
+                ),
+            ]
+        else:
+            user_offerer.generate_validation_token()
+        repository.save(*objects_to_save)
 
     else:
         offerer = models.Offerer()
-        offerer.address = offerer_informations.address
-        offerer.city = offerer_informations.city
-        offerer.name = offerer_informations.name
-        offerer.postalCode = offerer_informations.postalCode
-        offerer.siren = offerer_informations.siren
-        offerer.generate_validation_token()
-        offerer.validationStatus = offerers_models.ValidationStatus.NEW
+        _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
         action = history_api.log_action(
@@ -477,6 +500,49 @@ def validate_offerer_by_id(offerer_id: int, author_user: users_models.User) -> N
         raise exceptions.OffererNotFoundException()
 
     _validate_offerer(offerer, author_user)
+
+
+def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if offerer is None:
+        raise exceptions.OffererNotFoundException()
+
+    # A first applicant created the offerer and attachment is automatically validated.
+    # But another applicant may signup and register the same offerer, this other user attachment must be validated later
+    applicants = users_repository.get_users_with_attachment_by_offerer(offerer)
+    first_applicant = sorted(applicants, key=lambda uo: bool(uo.isValidated), reverse=True)[0] if applicants else None
+
+    was_validated = offerer.isValidated
+    offerer.validationStatus = models.ValidationStatus.REJECTED
+    db.session.add(offerer)
+    db.session.add(
+        history_api.log_action(
+            history_models.ActionType.OFFERER_REJECTED,
+            author_user,
+            offerer=offerer,
+            user=first_applicant,
+            comment=comment,
+            save=False,
+        )
+    )
+
+    if not transactional_mails.send_new_offerer_rejection_email_to_pro(offerer):
+        logger.warning(
+            "Could not send rejection confirmation email to offerer",
+            extra={"offerer": offerer.id},
+        )
+
+    # Detach user from offerer after sending transactional email to applicant
+    models.UserOfferer.query.filter_by(offererId=offerer_id).delete()
+
+    # Remove any API key which could have been created when user was waiting for validation
+    models.ApiKey.query.filter(models.ApiKey.offererId == offerer_id).delete()
+
+    db.session.commit()
+
+    if was_validated:
+        for applicant in applicants:
+            users_external.update_external_pro(applicant.email)
 
 
 def set_offerer_pending(offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
@@ -1077,6 +1143,6 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
 
 
 def list_offerers_to_be_validated() -> sa.orm.Query:
-    return offerers_models.Offerer.query.filter(offerers_models.Offerer.isValidated == False).options(
+    return offerers_models.Offerer.query.filter(offerers_models.Offerer.isWaitingForValidation).options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
     )

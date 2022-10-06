@@ -60,9 +60,9 @@ def get_all_offerers_for_user(
         if validated:
             query = query.filter(models.Offerer.isValidated)
         else:
-            query = query.filter(
-                ~models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
-            )
+            query = query.filter(models.Offerer.isWaitingForValidation)
+    else:
+        query = query.filter(sqla.not_(models.Offerer.isRejected))
 
     if keywords:
         query = filter_offerers_with_keywords_string(query, keywords)
@@ -162,7 +162,9 @@ def get_filtered_venues(
         if validated_offerer:
             query = query.filter(models.Offerer.isValidated)
         else:
-            query = query.filter(~models.Offerer.isValidated)  # type: ignore [operator] # pylint: disable=invalid-unary-operand-type
+            query = query.filter(models.Offerer.isWaitingForValidation)
+    else:
+        query = query.filter(sqla.not_(models.Offerer.isRejected))
 
     if active_offerers_only:
         query = query.filter(models.Offerer.isActive.is_(True))

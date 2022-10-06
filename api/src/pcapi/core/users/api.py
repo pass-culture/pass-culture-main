@@ -619,7 +619,24 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
     existing_offerer = offerers_models.Offerer.query.filter_by(siren=pro_user.siren).one_or_none()
 
     if existing_offerer:
-        user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)
+        if existing_offerer.isRejected:
+            existing_offerer = _generate_offerer(pro_user.dict(by_alias=True), existing_offerer=existing_offerer)
+            user_offerer = offerers_api.grant_user_offerer_access(existing_offerer, new_pro_user)
+            # When offerer was rejected, it is considered as a new offerer in validation process;
+            # history is kept with same id and siren
+            objects_to_save += [
+                existing_offerer,
+                history_api.log_action(
+                    history_models.ActionType.OFFERER_NEW,
+                    new_pro_user,
+                    user=new_pro_user,
+                    offerer=existing_offerer,
+                    save=False,
+                    comment="Nouvelle demande sur un SIREN précédemment rejeté",
+                ),
+            ]
+        else:
+            user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)
         offerer = existing_offerer
     else:
         offerer = _generate_offerer(pro_user.dict(by_alias=True))
@@ -629,12 +646,10 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             history_models.ActionType.OFFERER_NEW, new_pro_user, user=new_pro_user, offerer=offerer, save=False
         )
         objects_to_save.extend([digital_venue, offerer, user_offerer, action])
-    objects_to_save.append(user_offerer)
+
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
-    objects_to_save.append(new_pro_user)
-
-    repository.save(*objects_to_save)
+    repository.save(new_pro_user, user_offerer, *objects_to_save)
 
     if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
         logger.warning(
@@ -678,8 +693,11 @@ def _generate_user_offerer_when_existing_offerer(
     return user_offerer
 
 
-def _generate_offerer(data: dict) -> offerers_models.Offerer:
-    offerer = offerers_models.Offerer()
+def _generate_offerer(data: dict, existing_offerer: offerers_models.Offerer | None = None) -> offerers_models.Offerer:
+    if existing_offerer is not None:
+        offerer = existing_offerer
+    else:
+        offerer = offerers_models.Offerer()
     offerer.populate_from_dict(data)
 
     if not settings.IS_INTEGRATION:
