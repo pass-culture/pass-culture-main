@@ -4,7 +4,7 @@ export const SIGNUP_FORM_DEFAULT_VALUES = {
   lastName: '',
   firstName: '',
   phoneNumber: '',
-  contactOk: '',
+  contactOk: false,
   siren: '',
   legalUnitValues: {
     address: '',

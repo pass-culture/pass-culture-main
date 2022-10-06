@@ -4,7 +4,7 @@ export interface ISignupFormValues {
   firstName: string
   lastName: string
   phoneNumber: string
-  contactOk: string
+  contactOk: boolean
   siren: string
   legalUnitValues: {
     address: string

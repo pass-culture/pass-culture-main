@@ -11,7 +11,6 @@ import { Router } from 'react-router-dom'
 import type { IUseCurrentUserReturn } from 'components/hooks/useCurrentUser'
 import * as useCurrentUser from 'components/hooks/useCurrentUser'
 import * as useNotification from 'components/hooks/useNotification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
