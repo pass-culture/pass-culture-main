@@ -4,6 +4,7 @@ import typing
 import pydantic
 
 from pcapi.core.fraud import models as fraud_models
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -356,6 +357,21 @@ class OffererTotalRevenueResponseModel(Response):
 
 class OffererOfferStatsResponseModel(Response):
     data: OffersStats
+
+
+class HistoryItem(BaseModel):
+    class Config:
+        use_enum_values = True
+
+    type: history_models.ActionType
+    date: datetime.datetime
+    authorId: int | None
+    authorName: str | None
+    comment: str | None
+
+
+class HistoryResponseModel(Response):
+    data: list[HistoryItem]
 
 
 class Comment(BaseModel):
