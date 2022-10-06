@@ -21,9 +21,17 @@ const PARIS_FRANCE_DEPT = '75'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
-  loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   bulkCreateOrEditStock: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getCategories: jest.fn(),
+    getOffer: jest.fn(),
+    listOfferersNames: jest.fn(),
+    getVenues: jest.fn(),
+  },
 }))
 
 jest.mock('utils/date', () => ({
@@ -100,7 +108,7 @@ describe('stocks page', () => {
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(defaultOffer)
     pcapi.loadStocks.mockResolvedValue({ stocks: [] })
-    pcapi.loadCategories.mockResolvedValue({
+    api.getCategories.mockResolvedValue({
       categories: [],
       subcategories: [],
     })

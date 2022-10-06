@@ -1,8 +1,10 @@
+import { api } from 'apiClient/api'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { Category, SubCategory } from 'custom_types/categories'
 import { useAdapter } from 'hooks'
-import * as pcapi from 'repository/pcapi/pcapi'
+
+import { CATEGORY_STATUS } from '..'
 
 interface IPayload {
   categories: IOfferCategory[]
@@ -20,7 +22,7 @@ const FAILING_RESPONSE = {
   },
 }
 
-const serializeCategory = (s: Category): IOfferCategory => {
+const serializeCategory = (s: CategoryResponseModel): IOfferCategory => {
   return {
     id: s.id,
     proLabel: s.proLabel,
@@ -28,7 +30,9 @@ const serializeCategory = (s: Category): IOfferCategory => {
   }
 }
 
-const serializeSubCategory = (s: SubCategory): IOfferSubCategory => {
+const serializeSubCategory = (
+  s: SubcategoryResponseModel
+): IOfferSubCategory => {
   return {
     id: s.id,
     categoryId: s.categoryId,
@@ -37,7 +41,7 @@ const serializeSubCategory = (s: SubCategory): IOfferSubCategory => {
     conditionalFields: s.conditionalFields,
     canBeDuo: s.canBeDuo,
     canBeEducational: s.canBeEducational,
-    onlineOfflinePlatform: s.onlineOfflinePlatform,
+    onlineOfflinePlatform: s.onlineOfflinePlatform as CATEGORY_STATUS,
     reimbursementRule: s.reimbursementRule,
     isSelectable: s.isSelectable,
   }
@@ -45,10 +49,7 @@ const serializeSubCategory = (s: SubCategory): IOfferSubCategory => {
 
 export const getCategoriesAdapter: GetCategoriesAdapter = async () => {
   try {
-    const result: {
-      categories: Category[]
-      subcategories: SubCategory[]
-    } = await pcapi.loadCategories()
+    const result = await api.getCategories()
 
     return {
       isOk: true,
