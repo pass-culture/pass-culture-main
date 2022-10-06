@@ -2,13 +2,13 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { CollectiveOfferFromTemplateResponseModel } from 'apiClient/v1'
 import {
-  GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
   createStockDataPayload,
 } from 'core/OfferEducational'
 
 export type Params = {
-  offer: GetStockOfferSuccessPayload
+  offerId: string
+  departmentCode: string
   values: OfferEducationalStockFormValues
 }
 
@@ -31,19 +31,15 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 export const patchCollectiveOfferTemplateIntoCollectiveOfferAdapter: patchCollectiveOfferTemplateIntoCollectiveOfferAdapter =
-  async ({ offer, values }) => {
+  async ({ offerId, departmentCode, values }) => {
     try {
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
-      if (!offer.id || offer.id === '')
+      if (!offerId || offerId === '')
         throw new Error('L’identifiant de l’offre n’est pas valide.')
-      const payload = createStockDataPayload(
-        values,
-        offer.venueDepartmentCode,
-        offer.id
-      )
+      const payload = createStockDataPayload(values, departmentCode, offerId)
       const updatedOffer =
         await api.transformCollectiveOfferTemplateIntoCollectiveOffer(
-          offer.id,
+          offerId,
           payload
         )
 

@@ -35,6 +35,7 @@ export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapte
           isShowcase: true,
           offerId: offer.offerId,
           educationalPriceDetails: offer.educationalPriceDetail,
+          name: offer.name,
         },
       }
     } catch (error) {

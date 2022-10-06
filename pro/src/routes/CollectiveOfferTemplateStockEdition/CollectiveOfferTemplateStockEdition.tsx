@@ -51,8 +51,9 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
     const adapter = getAdapter(values.educationalOfferType)
 
     const stockResponse = await adapter({
-      offer,
+      offerId: offer.id,
       values,
+      departmentCode: offer.venueDepartmentCode,
     })
 
     if (
