@@ -38,4 +38,8 @@
   &validated {
     background-color: colors.$green-valid;
   }
+
+  &draft {
+    background-color: colors.$secondary;
+  }
 }

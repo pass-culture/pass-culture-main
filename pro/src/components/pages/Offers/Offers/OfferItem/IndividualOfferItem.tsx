@@ -1,8 +1,10 @@
 import React from 'react'
 
+import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer, Venue } from 'core/Offers/types'
 
 import CheckboxCell from './Cells/CheckboxCell'
+import DeleteDraftCell from './Cells/DeleteDraftCell'
 import EditOfferCell from './Cells/EditOfferCell'
 import EditStocksCell from './Cells/EditStocksCell'
 import OfferNameCell from './Cells/OfferNameCell'
@@ -47,7 +49,12 @@ const IndividualOfferItem = ({
       <OfferVenueCell venue={venue} />
       <OfferRemainingStockCell stocks={offer.stocks} />
       <OfferStatusCell status={offer.status} />
-      <EditStocksCell editionStockLink={editionStockLink} />
+      {offer.status == OFFER_STATUS_DRAFT ? (
+        <DeleteDraftCell />
+      ) : (
+        <EditStocksCell editionStockLink={editionStockLink} />
+      )}
+
       <EditOfferCell
         isOfferEditable={isOfferEditable}
         name={offer.name}
