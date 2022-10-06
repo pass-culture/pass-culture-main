@@ -12,6 +12,7 @@ $buttonHeight: rem.torem(40px);
   }
 
   .add-first-stock-button {
+    display: flex;
     margin: rem.torem(24px) auto 0 auto;
   }
 
@@ -65,12 +66,11 @@ $buttonHeight: rem.torem(40px);
     }
 
     &.shadow {
-      background-image:
-        radial-gradient(
-          ellipse at bottom,
-          colors.$black-shadow,
-          transparent 75%
-        );
+      background-image: radial-gradient(
+        ellipse at bottom,
+        colors.$black-shadow,
+        transparent 75%
+      );
       bottom: $actionsPaddingBottom + $actionsPaddingTop + $buttonHeight;
       position: sticky;
     }
