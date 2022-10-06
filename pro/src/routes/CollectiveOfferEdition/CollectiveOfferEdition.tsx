@@ -33,7 +33,7 @@ type AsyncScreenProps = Pick<
   'categories' | 'userOfferers' | 'domainsOptions'
 >
 
-const OfferEducationalEdition = (): JSX.Element => {
+const CollectiveOfferEdition = (): JSX.Element => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId, isShowcase } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
@@ -201,4 +201,4 @@ const OfferEducationalEdition = (): JSX.Element => {
   )
 }
 
-export default OfferEducationalEdition
+export default CollectiveOfferEdition
