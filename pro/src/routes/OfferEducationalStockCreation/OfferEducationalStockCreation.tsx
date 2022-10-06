@@ -78,6 +78,10 @@ const OfferEducationalStockCreation = (): JSX.Element | null => {
     return null
   }
 
+  if (isLoading) {
+    return <Spinner />
+  }
+
   return (
     <CollectiveOfferLayout
       breadCrumpProps={{
@@ -85,20 +89,17 @@ const OfferEducationalStockCreation = (): JSX.Element | null => {
         isCreatingOffer: true,
       }}
       title="Créer une nouvelle offre collective"
+      subTitle={data.name}
     >
-      {!isLoading ? (
-        <>
-          <OfferEducationalStockScreen
-            initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
-            mode={Mode.CREATION}
-            offer={data}
-            onSubmit={handleSubmitStock}
-          />
-          <RouteLeavingGuardOfferCreation isCollectiveFlow />
-        </>
-      ) : (
-        <Spinner />
-      )}
+      <>
+        <OfferEducationalStockScreen
+          initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
+          mode={Mode.CREATION}
+          offer={data}
+          onSubmit={handleSubmitStock}
+        />
+        <RouteLeavingGuardOfferCreation isCollectiveFlow />
+      </>
     </CollectiveOfferLayout>
   )
 }

@@ -171,6 +171,10 @@ const CollectiveOfferEdition = (): JSX.Element => {
     }
   }, [isReady, offerId, loadData, history, isShowcase])
 
+  if (!isReady || !screenProps || !offer) {
+    return <Spinner />
+  }
+
   return (
     <CollectiveOfferLayout
       breadCrumpProps={{
@@ -179,24 +183,21 @@ const CollectiveOfferEdition = (): JSX.Element => {
         offerId: offerIdFromParams,
       }}
       title="Éditer une offre collective"
+      subTitle={offer.name}
     >
-      {isReady && screenProps ? (
-        <OfferEducationalScreen
-          {...screenProps}
-          cancelActiveBookings={cancelActiveBookings}
-          initialValues={initialValues}
-          isOfferActive={offer?.isActive}
-          isOfferBooked={
-            offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
-          }
-          isOfferCancellable={offer && offer.isCancellable}
-          mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-          onSubmit={editOffer}
-          setIsOfferActive={setIsOfferActive}
-        />
-      ) : (
-        <Spinner />
-      )}
+      <OfferEducationalScreen
+        {...screenProps}
+        cancelActiveBookings={cancelActiveBookings}
+        initialValues={initialValues}
+        isOfferActive={offer?.isActive}
+        isOfferBooked={
+          offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
+        }
+        isOfferCancellable={offer && offer.isCancellable}
+        mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
+        onSubmit={editOffer}
+        setIsOfferActive={setIsOfferActive}
+      />
     </CollectiveOfferLayout>
   )
 }

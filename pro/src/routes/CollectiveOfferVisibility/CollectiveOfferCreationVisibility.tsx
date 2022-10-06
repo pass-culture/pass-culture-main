@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router'
+import { useHistory, useParams } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import Spinner from 'components/layout/Spinner'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
+import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import { useAdapter } from 'hooks'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
@@ -13,6 +16,7 @@ import patchEducationalInstitutionAdapter from './adapters/patchEducationalInsti
 
 const CollectiveOfferVisibility = () => {
   const history = useHistory()
+  const { offerId } = useParams<{ offerId: string }>()
 
   const [institutions, setInstitutions] = useState<
     EducationalInstitutionResponseModel[]
@@ -24,6 +28,10 @@ const CollectiveOfferVisibility = () => {
     history.push(successUrl)
   }
 
+  const { error, data, isLoading } = useAdapter(() =>
+    getCollectiveOfferAdapter(offerId)
+  )
+
   useEffect(() => {
     getEducationalInstitutionsAdapter().then(result => {
       if (result.isOk) {
@@ -33,6 +41,14 @@ const CollectiveOfferVisibility = () => {
     })
   }, [])
 
+  if (error) {
+    return null
+  }
+
+  if (isLoading) {
+    return <Spinner />
+  }
+
   return (
     <CollectiveOfferLayout
       breadCrumpProps={{
@@ -40,6 +56,7 @@ const CollectiveOfferVisibility = () => {
         isCreatingOffer: true,
       }}
       title="Créer une nouvelle offre collective"
+      subTitle={data.name}
     >
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}
