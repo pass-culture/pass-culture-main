@@ -41,6 +41,7 @@ from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.utils.custom_keys import compute_venue_reference
 
@@ -132,7 +133,10 @@ def get_offers_by_filters(
     period_beginning_date: datetime | None = None,
     period_ending_date: datetime | None = None,
 ) -> BaseQuery:
-    query = Offer.query.filter(Offer.validation != OfferValidationStatus.DRAFT)
+    if FeatureToggle.OFFER_DRAFT_ENABLED.is_active():
+        query = Offer.query
+    else:
+        query = Offer.query.filter(Offer.validation != OfferValidationStatus.DRAFT)
 
     if not user_is_admin:
         query = (
