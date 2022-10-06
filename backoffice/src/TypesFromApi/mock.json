@@ -66,6 +66,18 @@
       }
     }
   },
+  "commentOfferer": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
   "getOffererOffersStats": {
     "200": {
       "data": {
