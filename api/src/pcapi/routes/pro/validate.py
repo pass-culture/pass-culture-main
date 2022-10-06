@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(on_success_status=202, json_format=False)
 def validate_offerer_attachment(token) -> str:  # type: ignore [no-untyped-def]
     try:
-        api.validate_offerer_attachment(token)
+        api.validate_offerer_attachment_by_token(token)
     except ValidationTokenNotFoundError:
         errors = ResourceNotFoundError()
         errors.add_error(

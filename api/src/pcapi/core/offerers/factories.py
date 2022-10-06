@@ -176,6 +176,11 @@ class UserOffererFactory(BaseFactory):
     offerer = factory.SubFactory(OffererFactory)
 
 
+class NotValidatedUserOffererFactory(UserOffererFactory):
+    validationToken = factory.Sequence(lambda n: f"attachment-notvalidated-{n}")
+    validationStatus = models.ValidationStatus.NEW
+
+
 class UserNotValidatedOffererFactory(BaseFactory):
     class Meta:
         model = models.UserOfferer

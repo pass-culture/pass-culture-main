@@ -407,8 +407,13 @@ def create_offerer(
             ]
         else:
             user_offerer.generate_validation_token()
+            user_offerer.validationStatus = offerers_models.ValidationStatus.NEW
+            objects_to_save += [
+                history_api.log_action(
+                    history_models.ActionType.USER_OFFERER_NEW, user, user=user, offerer=offerer, save=False
+                ),
+            ]
         repository.save(*objects_to_save)
-
     else:
         offerer = models.Offerer()
         _fill_in_offerer(offerer, offerer_informations)
@@ -432,17 +437,24 @@ def create_offerer(
 
 
 def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) -> models.UserOfferer:
-    return models.UserOfferer(offerer=offerer, user=user)
+    return models.UserOfferer(offerer=offerer, user=user, validationStatus=models.ValidationStatus.VALIDATED)
 
 
-def validate_offerer_attachment(token: str) -> None:
-    user_offerer = offerers_repository.find_user_offerer_by_validation_token(token)
-    if user_offerer is None:
-        raise exceptions.ValidationTokenNotFoundError()
-
-    user_offerer.validationToken = None
+# TODO (vroullier): author_user should not be None, remove None option when validation by token is no longer used
+def _validate_offerer_attachment(user_offerer: models.UserOfferer, author_user: users_models.User | None) -> None:
     user_offerer.user.add_pro_role()
-    repository.save(user_offerer)
+    user_offerer.validationToken = None
+    user_offerer.validationStatus = models.ValidationStatus.VALIDATED
+
+    action = history_api.log_action(
+        history_models.ActionType.USER_OFFERER_VALIDATED,
+        author=author_user,
+        user=user_offerer.user,
+        offerer=user_offerer.offerer,
+        save=False,
+    )
+
+    repository.save(user_offerer, action)
 
     users_external.update_external_pro(user_offerer.user.email)
 
@@ -451,6 +463,71 @@ def validate_offerer_attachment(token: str) -> None:
             "Could not send attachment validation email to offerer",
             extra={"user_offerer": user_offerer.id},
         )
+
+
+def validate_offerer_attachment_by_token(token: str) -> None:
+    user_offerer = offerers_repository.find_user_offerer_by_validation_token(token)
+    if user_offerer is None:
+        raise exceptions.ValidationTokenNotFoundError()
+
+    _validate_offerer_attachment(user_offerer, None)
+
+
+def validate_offerer_attachment_by_id(user_offerer_id: int, author_user: users_models.User) -> None:
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
+        raise exceptions.UserOffererNotFoundException()
+
+    if user_offerer.isValidated:
+        raise exceptions.UserOffererAlreadyValidatedException()
+
+    _validate_offerer_attachment(user_offerer, author_user)
+
+
+def set_offerer_attachment_pending(
+    user_offerer_id: int, author_user: users_models.User, comment: str | None = None
+) -> None:
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
+        raise exceptions.UserOffererNotFoundException()
+
+    user_offerer.validationStatus = models.ValidationStatus.PENDING
+    action = history_api.log_action(
+        history_models.ActionType.USER_OFFERER_PENDING,
+        author_user,
+        user=user_offerer.user,
+        offerer=user_offerer.offerer,
+        comment=comment,
+        save=False,
+    )
+    repository.save(user_offerer, action)
+
+
+def reject_offerer_attachment(user_offerer_id: int, author_user: users_models.User, comment: str | None = None) -> None:
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
+        raise exceptions.UserOffererNotFoundException()
+
+    db.session.add(
+        history_api.log_action(
+            history_models.ActionType.USER_OFFERER_REJECTED,
+            author_user,
+            user=user_offerer.user,
+            offerer=user_offerer.offerer,
+            comment=comment,
+            save=False,
+        )
+    )
+
+    if not transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer):
+        logger.warning(
+            "Could not send rejection confirmation email to offerer",
+            extra={"offerer": user_offerer.offerer.id},
+        )
+
+    models.UserOfferer.query.filter_by(id=user_offerer_id).delete()
+
+    db.session.commit()
 
 
 # TODO (prouzet): author_user should not be None, remove None option when validation by token is no longer used

@@ -1372,3 +1372,232 @@ class ListOfferersToBeValidatedTest:
 
         # then
         assert response.status_code == 403
+
+
+class ValidateOffererAttachmentTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_validate_offerer_attachment(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer_attachment", user_offerer_id=user_offerer.id)
+        )
+
+        # then
+        print(user_offerer)
+        assert response.status_code == 204
+        db.session.refresh(user_offerer)
+        assert user_offerer.isValidated
+        assert user_offerer.user.has_pro_role
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user_offerer.user.id
+        assert action.offererId == user_offerer.offerer.id
+        assert action.venueId is None
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, client):
+        # given
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer_attachment", user_offerer_id=42)
+        )
+
+        # then
+        assert response.status_code == 404
+        assert response.json["user_offerer_id"] == "Le rattachement n'existe pas"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_validate_offerer_attachment_already_validated(self, client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer_attachment", user_offerer_id=user_offerer.id)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["user_offerer_id"] == "Le rattachement est déjà validé"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_validate_offerer_attachment_without_permission(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer_attachment", user_offerer_id=user_offerer.id)
+        )
+        print(response)
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        assert not user_offerer.isValidated
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_validate_offerer_attachment_as_anonymous(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.validate_offerer_attachment", user_offerer_id=user_offerer.id)
+        )
+
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        assert not user_offerer.isValidated
+        assert history_models.ActionHistory.query.count() == 0
+
+
+class RejectOffererAttachmentTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_reject_offerer_attachment(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.reject_offerer_attachment", user_offerer_id=user_offerer.id)
+        )
+
+        # then
+        assert response.status_code == 204
+        users_offerers = offerers_models.UserOfferer.query.all()
+        assert len(users_offerers) == 0
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user_offerer.user.id
+        assert action.offererId == user_offerer.offerer.id
+        assert action.venueId is None
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, client):
+        # given
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.reject_offerer_attachment", user_offerer_id=42)
+        )
+
+        # then
+        assert response.status_code == 404
+        assert response.json["user_offerer_id"] == "Le rattachement n'existe pas"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_reject_offerer_attachment_without_permission(self, client):
+        # given
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.reject_offerer_attachment", user_offerer_id=user_offerer.id)
+        )
+
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        users_offerers = offerers_models.UserOfferer.query.all()
+        assert len(users_offerers) == 1
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_reject_offerer_attachment_as_anonymous(self, client):
+        # given
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.reject_offerer_attachment", user_offerer_id=user_offerer.id)
+        )
+
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        users_offerers = offerers_models.UserOfferer.query.all()
+        assert len(users_offerers) == 1
+        assert history_models.ActionHistory.query.count() == 0
+
+
+class SetOffererAttachmentPendingTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_set_offerer_attachment_pending(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.set_offerer_attachment_pending", user_offerer_id=user_offerer.id),
+            json={"comment": "En attente de documents"},
+        )
+
+        # then
+        assert response.status_code == 204
+        db.session.refresh(user_offerer)
+        assert not user_offerer.isValidated
+        assert user_offerer.validationStatus == offerers_models.ValidationStatus.PENDING
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user_offerer.user.id
+        assert action.offererId == user_offerer.offerer.id
+        assert action.venueId is None
+        assert action.comment == "En attente de documents"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_set_offerer_pending_without_permission(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.set_offerer_attachment_pending", user_offerer_id=user_offerer.id),
+            json={"comment": "Test"},
+        )
+
+        # then
+        assert response.status_code == 403
+        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_set_offerer_pending_as_anonymous(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.set_offerer_attachment_pending", user_offerer_id=user_offerer.id),
+            json={"comment": "Test"},
+        )
+
+        # then
+        assert response.status_code == 403
+        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert history_models.ActionHistory.query.count() == 0

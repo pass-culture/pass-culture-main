@@ -688,6 +688,7 @@ def _generate_user_offerer_when_existing_offerer(
     user_offerer = offerers_api.grant_user_offerer_access(offerer, new_user)
     if not settings.IS_INTEGRATION:
         user_offerer.generate_validation_token()
+        user_offerer.validationStatus = offerers_models.ValidationStatus.NEW
     return user_offerer
 
 

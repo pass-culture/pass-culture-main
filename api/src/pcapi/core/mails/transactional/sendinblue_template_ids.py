@@ -141,6 +141,9 @@ class TransactionalEmail(Enum):
     OFFERER_ATTACHMENT_VALIDATION = models.TemplatePro(
         id_prod=488, id_not_prod=62, tags=["pro_rattachement_structure_valide"]
     )
+    OFFERER_ATTACHMENT_REJECTION = models.TemplatePro(
+        id_prod=792, id_not_prod=107, tags=["pro_rattachement_structure_rejet"]
+    )
     REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO = models.TemplatePro(id_prod=587, id_not_prod=73, tags=["pro_rappel_event_J-7"])
     REMINDER_OFFER_CREATION_5_DAYS_AFTER_TO_PRO = models.TemplatePro(
         id_prod=566, id_not_prod=104, tags=["pro_relance_offre_J+5"]
