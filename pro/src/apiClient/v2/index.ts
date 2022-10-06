@@ -36,7 +36,6 @@ export { OfferStatus } from './models/OfferStatus';
 export type { OfferVenueModel } from './models/OfferVenueModel';
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
-export { StudentLevels } from './models/StudentLevels';
 export type { UpdateVenueStockBodyModel } from './models/UpdateVenueStockBodyModel';
 export type { UpdateVenueStocksBodyModel } from './models/UpdateVenueStocksBodyModel';
 export type { ValidationError } from './models/ValidationError';
