@@ -19,7 +19,9 @@ import Bookings from 'routes/Bookings'
 import BusinessUnitList from 'routes/BusinessUnitList'
 import CollectiveBookings from 'routes/CollectiveBookings'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
+import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOffers from 'routes/CollectiveOffers'
+import CollectiveOfferStockEdition from 'routes/CollectiveOfferStockEdition'
 import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
@@ -27,9 +29,7 @@ import CsvTable from 'routes/CsvTable'
 import Desk from 'routes/Desk'
 import { EmailChangeValidation } from 'routes/EmailChangeValidation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
-import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
-import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
 import { OfferIndividualWizard } from 'routes/OfferIndividualWizard'
 import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
@@ -323,19 +323,19 @@ const routes: IRoute[] = [
     title: 'Page de confirmation de création d’offre',
   },
   {
-    component: OfferEducationalEdition,
+    component: CollectiveOfferEdition,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    component: OfferEducationalEdition,
+    component: CollectiveOfferEdition,
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    component: OfferEducationalStockEdition,
+    component: CollectiveOfferStockEdition,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition',
     title: 'Edition d’un stock d’une offre collective',

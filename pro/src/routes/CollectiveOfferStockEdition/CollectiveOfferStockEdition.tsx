@@ -24,7 +24,7 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 
-const OfferEducationalStockEdition = (): JSX.Element => {
+const CollectiveOfferStockEdition = (): JSX.Element => {
   const history = useHistory()
 
   const [initialValues, setInitialValues] =
@@ -169,4 +169,4 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   )
 }
 
-export default OfferEducationalStockEdition
+export default CollectiveOfferStockEdition
