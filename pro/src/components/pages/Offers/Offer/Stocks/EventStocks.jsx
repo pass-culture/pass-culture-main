@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
+import { api } from 'apiClient/api'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -64,8 +65,8 @@ const EventStocks = ({ offer, reloadOffer }) => {
   const offersSearchFilters = useSelector(searchFiltersSelector)
   const offersPageNumber = useSelector(searchPageNumberSelector)
   const loadStocks = useCallback(
-    (keepCreationStocks = false) => {
-      return pcapi.loadStocks(offerId).then(receivedStocks => {
+    async (keepCreationStocks = false) => {
+      return api.getStocks(offerId).then(receivedStocks => {
         setStocks(oldStocks => {
           const stocksOnCreation = keepCreationStocks
             ? oldStocks.filter(stock => !stock.id)

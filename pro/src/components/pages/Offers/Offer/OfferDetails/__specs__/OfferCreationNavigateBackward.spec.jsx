@@ -17,7 +17,6 @@ import { getOfferInputForField } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
 }))
 
@@ -29,6 +28,7 @@ jest.mock('apiClient/api', () => ({
     getVenues: jest.fn(),
     getVenue: jest.fn(),
     getCategories: jest.fn(),
+    getStocks: jest.fn(),
   },
 }))
 
@@ -302,7 +302,7 @@ describe('offerCreation - navigate backward', () => {
 
     // FIXME: should call creation patch route when available.
     api.patchOffer.mockResolvedValue({})
-    pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+    api.getStocks.mockResolvedValue({ stocks: [] })
     await userEvent.click(screen.getByText('Étape suivante'))
 
     // TODO: expect: creation route with offer id submit should call the right api route (patch all fields)
@@ -312,7 +312,7 @@ describe('offerCreation - navigate backward', () => {
   })
 
   it('creation step should be clicable from stock form, it link to creation route with offer id', async () => {
-    pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+    api.getStocks.mockResolvedValue({ stocks: [] })
     await renderOfferCreation(props, '/offre/ABC12/individuel/creation/stocks')
     await screen.findByRole('heading', {
       name: 'Stocks et prix',

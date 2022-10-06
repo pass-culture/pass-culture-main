@@ -18,7 +18,6 @@ const GUYANA_CAYENNE_DEPT = '973'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
-  loadStocks: jest.fn(),
   bulkCreateOrEditStock: jest.fn(),
 }))
 
@@ -28,6 +27,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     getVenues: jest.fn(),
     listOfferersNames: jest.fn(),
+    getStocks: jest.fn(),
   },
 }))
 
@@ -102,7 +102,7 @@ describe('stocks page', () => {
       isEventDeletable: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(defaultOffer)
-    pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+    api.getStocks.mockResolvedValue({ stocks: [] })
     api.getCategories.mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -115,7 +115,7 @@ describe('stocks page', () => {
     describe('when no stocks yet', () => {
       it('should not display empty stock list', async () => {
         // given
-        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+        api.getStocks.mockResolvedValue({ stocks: [] })
 
         // when
         await renderOffers(props, store)
@@ -126,7 +126,7 @@ describe('stocks page', () => {
 
       it('should not display action buttons if offer already created', async () => {
         // given
-        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+        api.getStocks.mockResolvedValue({ stocks: [] })
 
         // when
         await renderOffers(props, store)
@@ -140,7 +140,7 @@ describe('stocks page', () => {
 
       it('should display add stock button', async () => {
         // given
-        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+        api.getStocks.mockResolvedValue({ stocks: [] })
 
         // when
         await renderOffers(props, store)
@@ -157,7 +157,7 @@ describe('stocks page', () => {
       await renderOffers(props, store)
 
       // then
-      await waitFor(() => expect(pcapi.loadStocks).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(api.getStocks).toHaveBeenCalledTimes(1))
     })
 
     it('should display stocks sorted by descending beginning datetime', async () => {
@@ -183,7 +183,7 @@ describe('stocks page', () => {
         },
       ]
       jest.spyOn(api, 'getOffer').mockResolvedValue(offerWithMultipleStocks)
-      pcapi.loadStocks.mockResolvedValue({ stocks })
+      api.getStocks.mockResolvedValue({ stocks })
 
       // when
       await renderOffers(props, store)
@@ -207,7 +207,7 @@ describe('stocks page', () => {
         quantity: null,
       }
 
-      pcapi.loadStocks.mockResolvedValue({ stocks: [unlimitedStock] })
+      api.getStocks.mockResolvedValue({ stocks: [unlimitedStock] })
 
       // when
       await renderOffers(props, store)
@@ -222,7 +222,7 @@ describe('stocks page', () => {
         ...defaultStock,
         quantity: null,
       }
-      pcapi.loadStocks.mockResolvedValue({ stocks: [unlimitedStock] })
+      api.getStocks.mockResolvedValue({ stocks: [unlimitedStock] })
 
       // when
       await renderOffers(props, store)
@@ -239,7 +239,7 @@ describe('stocks page', () => {
       }
 
       jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
-      pcapi.loadStocks.mockResolvedValue({
+      api.getStocks.mockResolvedValue({
         stocks: [
           {
             ...defaultStock,
@@ -272,7 +272,7 @@ describe('stocks page', () => {
       describe('when no stock yet', () => {
         it('should display a disabled "Valider et créer l’offre" button', async () => {
           // Given
-          pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+          api.getStocks.mockResolvedValue({ stocks: [] })
 
           // When
           await renderOffers(props, store)
@@ -289,7 +289,7 @@ describe('stocks page', () => {
       describe('when at least one stock', () => {
         it('should display a "Valider et créer l’offre" button', async () => {
           // Given
-          pcapi.loadStocks.mockResolvedValue({
+          api.getStocks.mockResolvedValue({
             stocks: [
               {
                 ...defaultStock,
@@ -337,7 +337,7 @@ describe('stocks page', () => {
         offer.status = 'REJECTED'
         offer.isActive = false
         jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
-        pcapi.loadStocks.mockResolvedValue(stocks)
+        api.getStocks.mockResolvedValue(stocks)
 
         // when
         await renderOffers(props, store)
@@ -368,7 +368,7 @@ describe('stocks page', () => {
         offer.status = 'PENDING'
         offer.isActive = true
         jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
-        pcapi.loadStocks.mockResolvedValue(stocks)
+        api.getStocks.mockResolvedValue(stocks)
 
         // when
         await renderOffers({}, store)
@@ -408,7 +408,7 @@ describe('stocks page', () => {
         }
 
         jest.spyOn(api, 'getOffer').mockResolvedValue(eventOffer)
-        pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
+        api.getStocks.mockResolvedValue({ stocks: [eventStock] })
       })
 
       it('should display an information message regarding booking cancellation', async () => {
@@ -480,7 +480,7 @@ describe('stocks page', () => {
           isEvent: false,
         }
         jest.spyOn(api, 'getOffer').mockResolvedValue(thingOffer)
-        pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
+        api.getStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
       })
 
       it('should display an information message regarding booking cancellation with 10 days auto expiry when subcategory is LIVRE_PAPIER', async () => {
@@ -511,7 +511,7 @@ describe('stocks page', () => {
 
       it('should display button to add stock', async () => {
         // given
-        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+        api.getStocks.mockResolvedValue({ stocks: [] })
 
         // when
         await renderOffers(props, store)
@@ -575,12 +575,12 @@ describe('stocks page', () => {
             },
           }
           jest.spyOn(api, 'getOffer').mockResolvedValue(synchronisedThingOffer)
-          pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+          api.getStocks.mockResolvedValue({ stocks: [] })
         })
 
         it('should not be able to add a stock', async () => {
           // Given
-          pcapi.loadStocks.mockResolvedValue({
+          api.getStocks.mockResolvedValue({
             stocks: [
               {
                 ...defaultStock,
@@ -609,7 +609,7 @@ describe('stocks page', () => {
           isEvent: false,
         }
         jest.spyOn(api, 'getOffer').mockResolvedValue(digitalOffer)
-        pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
+        api.getStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
       })
 
       it('should display an information message regarding booking cancellation', async () => {
@@ -658,7 +658,7 @@ describe('stocks page', () => {
         }
 
         jest.spyOn(api, 'getOffer').mockResolvedValue(eventOffer)
-        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+        api.getStocks.mockResolvedValue({ stocks: [] })
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
 
         await renderOffers(props, store)
@@ -690,7 +690,7 @@ describe('stocks page', () => {
       }
 
       jest.spyOn(api, 'getOffer').mockResolvedValue(eventOffer)
-      pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+      api.getStocks.mockResolvedValue({ stocks: [] })
       pcapi.bulkCreateOrEditStock.mockResolvedValue({})
     })
 

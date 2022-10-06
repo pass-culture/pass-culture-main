@@ -21,7 +21,6 @@ const PARIS_FRANCE_DEPT = '75'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
-  loadStocks: jest.fn(),
   bulkCreateOrEditStock: jest.fn(),
 }))
 
@@ -31,6 +30,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getStocks: jest.fn(),
   },
 }))
 
@@ -107,7 +107,7 @@ describe('stocks page', () => {
       isEventDeletable: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(defaultOffer)
-    pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+    api.getStocks.mockResolvedValue({ stocks: [] })
     api.getCategories.mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -150,7 +150,7 @@ describe('stocks page', () => {
         .spyOn(api, 'getOffer')
         .mockResolvedValueOnce(initialOffer)
         .mockResolvedValueOnce(updatedOffer)
-      pcapi.loadStocks
+      api.getStocks
         .mockResolvedValueOnce({ stocks: [defaultStock] })
         .mockResolvedValueOnce({ stocks: [] })
 
@@ -205,7 +205,7 @@ describe('stocks page', () => {
         }
 
         jest.spyOn(api, 'getOffer').mockResolvedValue(eventOffer)
-        pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
+        api.getStocks.mockResolvedValue({ stocks: [eventStock] })
       })
 
       describe('when offer has been manually created', () => {
@@ -264,7 +264,7 @@ describe('stocks page', () => {
             isEventEditable: false,
           }
 
-          pcapi.loadStocks.mockResolvedValue({ stocks: [eventInThePast] })
+          api.getStocks.mockResolvedValue({ stocks: [eventInThePast] })
           renderOffers(props, store)
 
           // Then
@@ -284,7 +284,7 @@ describe('stocks page', () => {
             isEventEditable: false,
           }
 
-          pcapi.loadStocks.mockResolvedValue({ stocks: [eventInThePast] })
+          api.getStocks.mockResolvedValue({ stocks: [eventInThePast] })
           renderOffers(props, store)
 
           // Then
@@ -303,7 +303,7 @@ describe('stocks page', () => {
             isEventDeletable: false,
           }
 
-          pcapi.loadStocks.mockResolvedValue({ stocks: [eventInThePast] })
+          api.getStocks.mockResolvedValue({ stocks: [eventInThePast] })
           renderOffers(props, store)
 
           // Then
@@ -485,7 +485,7 @@ describe('stocks page', () => {
 
           it('should not set remaining quantity to Illimité when total quantity is zero', async () => {
             // given
-            pcapi.loadStocks.mockResolvedValue({
+            api.getStocks.mockResolvedValue({
               stocks: [
                 {
                   ...defaultStock,
@@ -573,7 +573,7 @@ describe('stocks page', () => {
                 ...stock,
                 price: 10,
               }
-              pcapi.loadStocks
+              api.getStocks
                 .mockResolvedValueOnce({ stocks: [initialStock] })
                 .mockResolvedValueOnce({ stocks: [updatedStock] })
               renderOffers(props, store)
@@ -584,7 +584,7 @@ describe('stocks page', () => {
               )
 
               // Then
-              expect(pcapi.loadStocks).toHaveBeenCalledTimes(2)
+              expect(api.getStocks).toHaveBeenCalledTimes(2)
             })
 
             it('should set booking limit datetime to exact beginning datetime when not specified', async () => {
@@ -789,7 +789,7 @@ describe('stocks page', () => {
                 beginningDatetime: '2020-12-20T22:00:00Z',
                 quantity: null,
               }
-              pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
+              api.getStocks.mockResolvedValue({ stocks: [eventStock] })
               pcapi.bulkCreateOrEditStock.mockResolvedValue({})
 
               renderOffers(props, store)
@@ -1004,7 +1004,7 @@ describe('stocks page', () => {
               ...defaultStock,
               beginningDatetime: '2020-12-20T22:00:00Z',
             }
-            pcapi.loadStocks
+            api.getStocks
               .mockResolvedValueOnce({ stocks: [initialStock] })
               .mockResolvedValueOnce({ stocks: [] })
 
@@ -1028,7 +1028,7 @@ describe('stocks page', () => {
               ...defaultStock,
               beginningDatetime: '2020-12-20T22:00:00Z',
             }
-            pcapi.loadStocks
+            api.getStocks
               .mockResolvedValueOnce({ stocks: [initialStock] })
               .mockResolvedValueOnce({ stocks: [] })
             jest.spyOn(api, 'getOffer').mockResolvedValue({
@@ -1162,7 +1162,7 @@ describe('stocks page', () => {
           isEvent: false,
         }
         jest.spyOn(api, 'getOffer').mockResolvedValue(thingOffer)
-        pcapi.loadStocks.mockResolvedValue({ stocks: [thingStock] })
+        api.getStocks.mockResolvedValue({ stocks: [thingStock] })
       })
 
       describe('when offer has been manually created', () => {
@@ -1240,7 +1240,7 @@ describe('stocks page', () => {
 
         it('should not set remaining quantity to Illimité when total quantity is zero', async () => {
           // given
-          pcapi.loadStocks.mockResolvedValue({
+          api.getStocks.mockResolvedValue({
             stocks: [{ ...defaultStock, quantity: 0, bookingsQuantity: 0 }],
           })
 
@@ -1303,7 +1303,7 @@ describe('stocks page', () => {
               ...defaultStock,
               price: 10,
             }
-            pcapi.loadStocks
+            api.getStocks
               .mockResolvedValueOnce({ stocks: [initialStock] })
               .mockResolvedValueOnce({ stocks: [updatedStock] })
             renderOffers(props, store)
@@ -1314,7 +1314,7 @@ describe('stocks page', () => {
             )
 
             // Then
-            expect(pcapi.loadStocks).toHaveBeenCalledTimes(2)
+            expect(api.getStocks).toHaveBeenCalledTimes(2)
           })
 
           it('should set booking limit time to end of selected local day when specified in Cayenne TZ', async () => {
