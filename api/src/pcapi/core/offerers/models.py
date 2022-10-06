@@ -144,6 +144,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
     __tablename__ = "venue"
 
     name: str = Column(String(140), nullable=False)
+    sa.Index("idx_venue_trgm_name", name, postgresql_using="gin")
 
     siret = Column(String(14), nullable=True, unique=True)
 
@@ -168,6 +169,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
     city = Column(String(50), nullable=True)
 
     publicName = Column(String(255), nullable=True)
+    sa.Index("idx_venue_trgm_public_name", publicName, postgresql_using="gin")
 
     isVirtual: bool = Column(
         Boolean,
@@ -594,6 +596,7 @@ class Offerer(
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     name: str = Column(String(140), nullable=False)
+    sa.Index("idx_offerer_trgm_name", name, postgresql_using="gin")
 
     UserOfferers: list["UserOfferer"] = sa.orm.relationship("UserOfferer", back_populates="offerer")
 
