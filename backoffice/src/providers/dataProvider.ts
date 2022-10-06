@@ -101,15 +101,20 @@ export const dataProvider: DataProvider = {
           await apiProvider().getOffererTotalRevenue({
             offererId: params.id,
           })
+        const users = async () =>
+          await apiProvider().getOffererUsers({ offererId: params.id })
 
-        const [offererStats, offererTotalRevenue] = await Promise.all([
-          stats(),
-          revenue(),
-        ])
+        const [offererStats, offererTotalRevenue, offererProUsers] = [
+          await stats(),
+          await revenue(),
+          await users(),
+        ]
+
         const offererData = {
           ...response.data,
           stats: offererStats.data,
           revenue: offererTotalRevenue.data,
+          users: offererProUsers.data,
         }
         return {
           data: offererData,

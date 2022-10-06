@@ -1,12 +1,23 @@
 import {
+  alpha,
+  Box,
   Button,
   Card,
   CircularProgress,
   Grid,
+  Paper,
   Stack,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tabs,
   Typography,
 } from '@mui/material'
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   useAuthenticated,
   useGetOne,
@@ -18,8 +29,10 @@ import { useParams } from 'react-router-dom'
 import { searchPermission } from '../../../helpers/functions'
 import { Colors } from '../../../layout/Colors'
 import { eventMonitoring } from '../../../libs/monitoring/sentry'
+import { OffererAttachedUser } from '../../../TypesFromApi'
 import { StatusBadge } from '../../PublicUsers/Components/StatusBadge'
 import { PermissionsEnum } from '../../PublicUsers/types'
+import { BankAccountStatusBadge } from '../Components/BankAccountStatusBadge'
 import { ProTypeBadge } from '../Components/ProTypeBadge'
 import { ProTypeEnum } from '../types'
 
@@ -28,6 +41,39 @@ const cardStyle = {
   width: '100%',
   marginTop: '20px',
   padding: 30,
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+  return (
+    <div
+      style={{ maxWidth: '99vw', width: '100%' }}
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  )
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  }
 }
 
 export const OffererDetail = () => {
@@ -40,7 +86,13 @@ export const OffererDetail = () => {
     PermissionsEnum.readProEntity
   )
   const redirect = useRedirect()
-
+  const [tabValue, setTabValue] = useState(1)
+  const handleChange = useCallback(
+    (event: React.SyntheticEvent, newValue: number) => {
+      setTabValue(newValue)
+    },
+    [setTabValue]
+  )
   const { data: offererInfo, isLoading } = useGetOne(
     'offerer',
     { id: id },
@@ -56,6 +108,7 @@ export const OffererDetail = () => {
     return <CircularProgress size={18} thickness={2} />
   }
   const offererStats = offererInfo.stats
+  const offererUsers: OffererAttachedUser[] = offererInfo.users
   const totalActiveOffers =
     offererStats.active.individual + offererStats.active.collective
   const totalInactiveOffers =
@@ -133,6 +186,10 @@ export const OffererDetail = () => {
                   <Grid item xs={6}>
                     {/*  TODO: PRESENCE CB */}
                     <Typography variant="body1" gutterBottom component="div">
+                      <BankAccountStatusBadge
+                        OK={offererInfo.bankInformationStatus.ok}
+                        KO={offererInfo.bankInformationStatus.ko}
+                      />
                       <strong>Présence CB dans les lieux: </strong>
                       {offererInfo.bankInformationStatus.ok} OK /{' '}
                       {offererInfo.bankInformationStatus.ko} KO
@@ -231,6 +288,67 @@ export const OffererDetail = () => {
                 </Typography>
               </Card>
             </Grid>
+          </Grid>
+          <Grid container spacing={2} sx={{ mt: 3 }}>
+            <Box
+              sx={{
+                borderBottom: 1,
+                borderColor: 'divider',
+                width: '100%',
+              }}
+            >
+              <Tabs
+                value={tabValue}
+                onChange={handleChange}
+                aria-label="basic tabs example"
+                variant="fullWidth"
+              >
+                <Tab label="" {...a11yProps(0)} disabled />
+                <Tab
+                  label="Compte(s) Pro(s) Rattaché(s)"
+                  {...a11yProps(1)}
+                  sx={{ bgcolor: alpha(Colors.GREY, 0.1) }}
+                />
+                <Tab label="" {...a11yProps(2)} disabled />
+              </Tabs>
+              <TabPanel value={tabValue} index={0}>
+                Bientôt disponible
+              </TabPanel>
+              <TabPanel value={tabValue} index={1}>
+                <TableContainer component={Paper} elevation={3}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>ID</TableCell>
+                        <TableCell>Nom</TableCell>
+                        <TableCell align="right">Prénom</TableCell>
+                        <TableCell align="right">Email</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {offererUsers.map(user => (
+                        <TableRow
+                          key={user.id}
+                          sx={{
+                            '&:last-child td, &:last-child th': { border: 0 },
+                          }}
+                        >
+                          <TableCell>{user.id}</TableCell>
+                          <TableCell component="th" scope="row">
+                            {user.lastName}
+                          </TableCell>
+                          <TableCell align="right">{user.firstName}</TableCell>
+                          <TableCell align="right">{user.email}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </TabPanel>
+              <TabPanel value={tabValue} index={2}>
+                Bientôt disponible
+              </TabPanel>
+            </Box>
           </Grid>
         </>
       )}
