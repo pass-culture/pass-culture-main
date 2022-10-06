@@ -12,7 +12,6 @@ import Notification from 'components/layout/Notification/Notification'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import * as computeUrl from 'core/Offers/utils'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import { DEFAULT_FORM_VALUES } from '../_constants'

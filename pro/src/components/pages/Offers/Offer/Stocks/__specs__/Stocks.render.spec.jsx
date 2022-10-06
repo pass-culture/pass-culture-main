@@ -18,7 +18,6 @@ const GUYANA_CAYENNE_DEPT = '973'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
-  bulkCreateOrEditStock: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -28,6 +27,7 @@ jest.mock('apiClient/api', () => ({
     getVenues: jest.fn(),
     listOfferersNames: jest.fn(),
     getStocks: jest.fn(),
+    upsertStocks: jest.fn(),
   },
 }))
 
@@ -108,7 +108,7 @@ describe('stocks page', () => {
       subcategories: [],
     })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
-    pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+    api.upsertStocks.mockResolvedValue({})
   })
 
   describe('render', () => {
@@ -634,7 +634,7 @@ describe('stocks page', () => {
         loadFakeApiStocks([stock])
         // do not resolve promise so that button remains in disabled state
         jest
-          .spyOn(pcapi, 'bulkCreateOrEditStock')
+          .spyOn(api, 'upsertStocks')
           .mockImplementation(() => new Promise(() => {}))
         await renderOffers(props, store)
         const submitButton = await screen.findByRole('button', {
@@ -659,7 +659,7 @@ describe('stocks page', () => {
 
         jest.spyOn(api, 'getOffer').mockResolvedValue(eventOffer)
         api.getStocks.mockResolvedValue({ stocks: [] })
-        pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+        api.upsertStocks.mockResolvedValue({})
 
         await renderOffers(props, store)
 
@@ -691,7 +691,7 @@ describe('stocks page', () => {
 
       jest.spyOn(api, 'getOffer').mockResolvedValue(eventOffer)
       api.getStocks.mockResolvedValue({ stocks: [] })
-      pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+      api.upsertStocks.mockResolvedValue({})
     })
 
     it('should have mandatory beginning date field for event offer', async () => {
