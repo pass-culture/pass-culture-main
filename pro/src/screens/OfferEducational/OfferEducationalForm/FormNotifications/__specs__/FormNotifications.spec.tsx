@@ -23,8 +23,8 @@ const renderFormNotifications = ({
       is: true,
       then: yup
         .string()
-        .required('Veuillez renseigner une adresse email')
-        .email('Veuillez renseigner un email valide'),
+        .required('Veuillez renseigner une adresse e-mail')
+        .email('Veuillez renseigner un e-mail valide'),
     }),
   })
   const rtlReturns = render(

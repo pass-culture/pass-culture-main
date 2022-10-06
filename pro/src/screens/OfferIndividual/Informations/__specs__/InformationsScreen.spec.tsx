@@ -225,12 +225,12 @@ describe('screens:OfferIndividual::Informations', () => {
     it('should not display the full form when no venue are available', async () => {
       renderInformationsScreen(props, store, contextValue)
       await userEvent.selectOptions(
-        await screen.findByLabelText('Choisir une catégorie'),
+        await screen.findByLabelText('Catégorie'),
         'A'
       )
 
       await userEvent.selectOptions(
-        await screen.findByLabelText('Choisir une sous-catégorie'),
+        await screen.findByLabelText('Sous-catégorie'),
         'virtual'
       )
       expect(
@@ -250,12 +250,12 @@ describe('screens:OfferIndividual::Informations', () => {
     it('should display the full form when a venue is available', async () => {
       renderInformationsScreen(props, store, contextValue)
       await userEvent.selectOptions(
-        await screen.findByLabelText('Choisir une catégorie'),
+        await screen.findByLabelText('Catégorie'),
         'A'
       )
 
       await userEvent.selectOptions(
-        await screen.findByLabelText('Choisir une sous-catégorie'),
+        await screen.findByLabelText('Sous-catégorie'),
         'physical'
       )
       expect(
@@ -276,7 +276,7 @@ describe('screens:OfferIndividual::Informations', () => {
   it('should scroll to error', async () => {
     renderInformationsScreen(props, store, contextValue)
 
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
 
     await userEvent.click(await screen.findByText('Étape suivante'))

@@ -22,6 +22,7 @@ import { useFilteredVenueList } from './hooks'
 import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
+import styles from './OfferIndividualForm.module.scss'
 import { OptionDuo } from './OptionDuo'
 import { UsefulInformations } from './UsefulInformations'
 
@@ -77,6 +78,9 @@ const OfferIndividualForm = ({
 
   return (
     <>
+      <p className={styles['information']}>
+        Tous les champs sont obligatoires sauf mention contraire.
+      </p>
       <Categories
         categories={categories}
         subCategories={subCategories}

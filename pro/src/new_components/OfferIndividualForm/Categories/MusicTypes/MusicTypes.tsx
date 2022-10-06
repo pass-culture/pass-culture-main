@@ -60,7 +60,7 @@ const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
     <>
       <FormLayout.Row smSpaceAfter={true}>
         <Select
-          label="Choisir un genre musical"
+          label="Genre musical"
           name="musicType"
           options={musicTypesOptions.musicType}
           defaultOption={{
@@ -74,7 +74,7 @@ const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
       {musicTypesOptions.musicSubType.length > 0 && (
         <FormLayout.Row smSpaceAfter={true}>
           <Select
-            label="Choisir un sous-genre"
+            label="Sous-genre"
             name="musicSubType"
             options={musicTypesOptions.musicSubType}
             defaultOption={{

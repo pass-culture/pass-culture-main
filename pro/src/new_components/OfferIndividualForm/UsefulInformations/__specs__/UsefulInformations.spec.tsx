@@ -433,7 +433,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         })
 
         const infoBox = screen.getByText(
-          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
+          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
         )
         const infoLink = screen.getByText('En savoir plus')
         expect(infoBox).toBeInTheDocument()
@@ -454,7 +454,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         })
 
         const infoBoxWithdrawal = screen.getByText(
-          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
+          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
         )
         const infoLinkWithdrawal = screen.getByText('En savoir plus')
         expect(infoBoxWithdrawal).toBeInTheDocument()

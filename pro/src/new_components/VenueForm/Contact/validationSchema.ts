@@ -14,8 +14,8 @@ const validationSchema = {
     }),
   email: yup
     .string()
-    .required('Veuillez renseigner une adresse email')
-    .email('Veuillez renseigner un email valide'),
+    .required('Veuillez renseigner une adresse e-mail')
+    .email('Veuillez renseigner un e-mail valide'),
   webSiteAddress: yup.string().test({
     name: 'matchWebsiteUrl',
     message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',

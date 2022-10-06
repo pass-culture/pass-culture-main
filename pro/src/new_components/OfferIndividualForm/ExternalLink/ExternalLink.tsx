@@ -5,10 +5,7 @@ import { InfoBox, TextInput } from 'ui-kit'
 
 const ExternalLink = (): JSX.Element => {
   return (
-    <FormLayout.Section
-      title="Lien pour le grand public"
-      description="Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet."
-    >
+    <FormLayout.Section title="Lien pour le grand public">
       <FormLayout.Row
         sideComponent={
           <InfoBox

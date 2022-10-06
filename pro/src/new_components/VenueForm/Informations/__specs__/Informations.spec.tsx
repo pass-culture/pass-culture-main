@@ -154,7 +154,7 @@ describe('components | Informations', () => {
     await userEvent.click(mailInput)
     await userEvent.tab()
     expect(
-      screen.getByText('Veuillez renseigner une adresse email')
+      screen.getByText('Veuillez renseigner une adresse e-mail')
     ).toBeInTheDocument()
 
     await userEvent.selectOptions(
