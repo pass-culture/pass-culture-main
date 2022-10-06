@@ -1,0 +1,40 @@
+on: workflow_call
+
+jobs:
+  quality-check:
+    name: "Quality check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - if: ${{ env.use_cache }}
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: ${{ env.node_version }}
+      - if: ${{ env.use_cache == false }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn install
+      - run: yarn lint:js --max-warnings 0
+
+  type-check:
+    name: "Type check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - if: ${{ env.use_cache }}
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: ${{ env.node_version }}
+      - if: ${{ env.use_cache == false }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn install
+      - run: yarn tsc -b
+
+#  tests-adage-front:
+#    runs-on: ubuntu-latest
+#
