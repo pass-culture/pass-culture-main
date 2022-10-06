@@ -34,16 +34,14 @@ def log_action(
         if venue is not None and venue.id is None:
             raise RuntimeError("Unsaved venue would be saved with action %s" % (venue.name,))
 
-    if isinstance(author, users_models.User):
-        author_user_id = author.id
-    else:
+    if not isinstance(author, users_models.User):
         # None or AnonymousUserMixin
         # Examples: offerer validated by token (without authentication), offerer created by script
-        author_user_id = None
+        author = None
 
     action = models.ActionHistory(
         actionType=action_type,
-        authorUserId=author_user_id,
+        authorUser=author,
         user=user,
         offerer=offerer,
         venue=venue,

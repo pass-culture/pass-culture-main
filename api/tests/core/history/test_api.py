@@ -63,7 +63,7 @@ class LogActionTest:
 
         assert action.id is None
         assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
-        assert action.authorUserId == admin.id
+        assert action.authorUser == admin
         assert action.user == user_offerer.user
         assert action.offerer == user_offerer.offerer
         assert action.venueId is None

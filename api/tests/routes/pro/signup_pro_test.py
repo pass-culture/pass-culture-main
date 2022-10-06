@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
@@ -56,12 +57,20 @@ class Returns204Test:
         offerer = Offerer.query.filter_by(siren="349974931").first()
         assert offerer is not None
         assert offerer.validationToken is not None
+        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
         assert len(offerer.managedVenues) == 1
         assert offerer.managedVenues[0].isVirtual
         assert offerer.managedVenues[0].venueTypeCode == offerers_models.VenueTypeCode.DIGITAL
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
         assert user_offerer is not None
         assert user_offerer.validationToken is None
+
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == offerer
 
     def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, app):
         # Given
@@ -80,6 +89,7 @@ class Returns204Test:
         offerer = Offerer.query.filter_by(siren="349974931").first()
         assert offerer is not None
         assert offerer.validationToken is not None
+        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
         assert len(offerer.managedVenues) == 1
         assert offerer.managedVenues[0].isVirtual
         assert offerer.managedVenues[0].venueTypeCode == offerers_models.VenueTypeCode.DIGITAL
@@ -142,6 +152,39 @@ class Returns204Test:
         assert response.status_code == 204
         user = User.query.filter_by(email="toto_pro@example.com").first()
         assert user.needsToFillCulturalSurvey == False
+
+    def test_when_offerer_was_previously_rejected(self, app):
+        # Given
+        offerers_factories.OffererFactory(
+            name="Rejected Offerer",
+            siren=BASE_DATA_PRO["siren"],
+            validationStatus=offerers_models.ValidationStatus.REJECTED,
+        )
+
+        data = BASE_DATA_PRO.copy()
+
+        # When
+        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+
+        # Then
+        assert response.status_code == 204
+        assert "Set-Cookie" not in response.headers
+
+        user = User.query.filter_by(email="toto_pro@example.com").first()
+        offerer = Offerer.query.filter_by(siren="349974931").one()
+        assert offerer.name == BASE_DATA_PRO["name"]
+        assert offerer.validationToken is not None
+        assert offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).one()
+        assert user_offerer.validationToken is None
+
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == offerer
+        assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
 
 @pytest.mark.usefixtures("db_session")

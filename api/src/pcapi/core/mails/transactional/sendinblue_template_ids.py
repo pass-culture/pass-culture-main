@@ -125,6 +125,7 @@ class TransactionalEmail(Enum):
     INVOICE_AVAILABLE_TO_PRO = models.TemplatePro(id_prod=405, id_not_prod=95, tags=["remboursement_justificatif"])
     NEW_BOOKING_TO_PRO = models.TemplatePro(id_prod=608, id_not_prod=59, tags=["pro_nouvelle_reservation"])
     NEW_OFFERER_VALIDATION = models.TemplatePro(id_prod=489, id_not_prod=58, tags=["pro_validation_structure"])
+    NEW_OFFERER_REJECTION = models.TemplatePro(id_prod=790, id_not_prod=106, tags=["pro_rejet_structure"])
     OFFER_APPROVAL_TO_PRO = models.TemplatePro(
         id_prod=349,
         id_not_prod=49,

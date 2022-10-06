@@ -119,6 +119,17 @@ def validate_offerer(offerer_id: int) -> None:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
 
 
+@blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/reject", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def reject_offerer(offerer_id: int, body: serialization.OptionalCommentRequest) -> None:
+    author_user = get_current_user()
+    try:
+        offerers_api.reject_offerer(offerer_id, author_user, comment=body.comment)
+    except offerers_exceptions.OffererNotFoundException:
+        raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+
+
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/pending", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
