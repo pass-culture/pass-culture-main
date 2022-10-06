@@ -59,7 +59,7 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
   return (
     <>
       <Select
-        label="Choisir un type de spectacle"
+        label="Type de spectacle"
         name="showType"
         options={showTypesOptions.showType}
         defaultOption={{
@@ -70,7 +70,7 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
       />
       {showTypesOptions.showSubType.length > 0 && (
         <Select
-          label="Choisir un sous type"
+          label="Sous type"
           name="showSubType"
           options={showTypesOptions.showSubType}
           defaultOption={{

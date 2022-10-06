@@ -259,7 +259,7 @@ describe('CollectiveDataEdition', () => {
         )
       ).toBeInTheDocument()
       expect(
-        screen.queryByText('Veuillez renseigner un email valide')
+        screen.queryByText('Veuillez renseigner un e-mail valide')
       ).toBeInTheDocument()
     })
 
@@ -281,7 +281,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(
-          screen.queryByText('Veuillez renseigner un email valide')
+          screen.queryByText('Veuillez renseigner un e-mail valide')
         ).not.toBeInTheDocument()
       )
       expect(
@@ -311,7 +311,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(
-          screen.queryByText('Veuillez renseigner un email valide')
+          screen.queryByText('Veuillez renseigner un e-mail valide')
         ).not.toBeInTheDocument()
       )
       expect(

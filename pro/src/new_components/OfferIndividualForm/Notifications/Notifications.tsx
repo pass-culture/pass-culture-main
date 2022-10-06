@@ -29,7 +29,7 @@ const Notifications = (): JSX.Element => {
     <FormLayout.Section title="Notifications">
       <FormLayout.Row>
         <Checkbox
-          label="Être notifié par email des réservations"
+          label="Être notifié par e-mail des réservations"
           name="receiveNotificationEmails"
           value=""
         />
@@ -38,7 +38,7 @@ const Notifications = (): JSX.Element => {
       {receiveNotificationEmails && (
         <FormLayout.Row>
           <TextInput
-            label="Email auquel envoyer les notifications :"
+            label="E-mail auquel envoyer les notifications"
             maxLength={90}
             name="bookingEmail"
             placeholder="email@exemple.com"

@@ -44,7 +44,7 @@ describe('has fill fields with correct format', () => {
   })
   // rename it and wrong and goo values
   it('should return an error message when Email is invalid', async () => {
-    const errorMessage = 'Veuillez renseigner un email valide'
+    const errorMessage = 'Veuillez renseigner un e-mail valide'
 
     const emailWithTwoArrowbases = 'jeans@@gmail.com'
     const emailWithNoDot = 'jeans@hotmailfr'

@@ -64,7 +64,7 @@ describe('OfferIndividual section: Notifications', () => {
       onSubmit,
     })
     await userEvent.click(
-      screen.getByText('Être notifié par email des réservations')
+      screen.getByText('Être notifié par e-mail des réservations')
     )
 
     await userEvent.click(screen.getByText('Submit'))
@@ -82,17 +82,17 @@ describe('OfferIndividual section: Notifications', () => {
     })
     expect(await screen.findByText('Notifications')).toBeInTheDocument()
     expect(
-      await screen.findByText('Être notifié par email des réservations')
+      await screen.findByText('Être notifié par e-mail des réservations')
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Email auquel envoyer les notifications :')
+      screen.queryByText('E-mail auquel envoyer les notifications')
     ).not.toBeInTheDocument()
 
     await userEvent.click(
-      screen.getByText('Être notifié par email des réservations')
+      screen.getByText('Être notifié par e-mail des réservations')
     )
     expect(
-      await screen.findByText('Email auquel envoyer les notifications :')
+      await screen.findByText('E-mail auquel envoyer les notifications')
     ).toBeInTheDocument()
     expect(screen.getByDisplayValue('email@example.com')).toBeInTheDocument()
   })
@@ -104,17 +104,17 @@ describe('OfferIndividual section: Notifications', () => {
     })
 
     await userEvent.click(
-      screen.getByText('Être notifié par email des réservations')
+      screen.getByText('Être notifié par e-mail des réservations')
     )
     const bookingEmailInput = screen.getByLabelText(
-      'Email auquel envoyer les notifications :'
+      'E-mail auquel envoyer les notifications'
     )
 
     // when email is empty
     await userEvent.clear(bookingEmailInput)
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText('Veuillez renseigner une adresse email')
+      await screen.findByText('Veuillez renseigner une adresse e-mail')
     ).toBeInTheDocument()
 
     // when email is wrong
@@ -122,7 +122,7 @@ describe('OfferIndividual section: Notifications', () => {
     await userEvent.paste('not an email')
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText('Veuillez renseigner un email valide')
+      await screen.findByText('Veuillez renseigner un e-mail valide')
     ).toBeInTheDocument()
   })
 })

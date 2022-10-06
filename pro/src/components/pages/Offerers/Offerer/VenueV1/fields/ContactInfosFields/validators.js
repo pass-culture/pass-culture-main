@@ -20,7 +20,7 @@ export const validateEmail = async val => {
     return
   }
   if (!isValid) {
-    return 'Veuillez renseigner un email valide'
+    return 'Veuillez renseigner un e-mail valide'
   }
 }
 

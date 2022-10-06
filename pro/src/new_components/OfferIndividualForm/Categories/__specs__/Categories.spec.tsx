@@ -112,7 +112,7 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    expect(screen.getByLabelText('Choisir une catégorie')).toBeInTheDocument()
+    expect(screen.getByLabelText('Catégorie')).toBeInTheDocument()
     const infoBox = screen.getByText(
       'Une sélection précise de vos catégories permettra au grand public de facilement trouver votre offre. Une fois validées, vous ne pourrez pas les modifier.'
     )
@@ -130,15 +130,13 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'C')
-    const subCategorySelect = screen.getByLabelText(
-      'Choisir une sous-catégorie'
-    )
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'C-A')
-    const showSelect = screen.getByLabelText('Choisir un type de spectacle')
+    const showSelect = screen.getByLabelText('Type de spectacle')
     await userEvent.selectOptions(showSelect, '100')
-    const subShowSelect = screen.getByLabelText('Choisir un sous type')
+    const subShowSelect = screen.getByLabelText('Sous type')
     await userEvent.selectOptions(subShowSelect, '101')
 
     await userEvent.click(screen.getByText('Submit'))
@@ -174,24 +172,14 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
-    expect(
-      screen.getByLabelText('Choisir une sous-catégorie')
-    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
 
-    expect(
-      screen.queryByLabelText('Choisir un type de spectacle')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous type')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un genre musical')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous-genre')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous type')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
   })
 
   it('should not display type select when a standard subCategory is choosed', async () => {
@@ -200,29 +188,17 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText(
-      'Choisir une sous-catégorie'
-    )
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'A-A')
 
-    expect(
-      screen.getByLabelText('Choisir une sous-catégorie')
-    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
 
-    expect(
-      screen.queryByLabelText('Choisir un type de spectacle')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous type')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un genre musical')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous-genre')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous type')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
   })
 
   it('should display musicType selects when a music subCategory is choosed', async () => {
@@ -231,35 +207,23 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'B')
-    const subCategorySelect = screen.getByLabelText(
-      'Choisir une sous-catégorie'
-    )
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'B-A')
 
-    expect(
-      screen.queryByLabelText('Choisir un sous-genre')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un type de spectacle')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous type')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous type')).not.toBeInTheDocument()
 
-    const musicSelect = screen.getByLabelText('Choisir un genre musical')
+    const musicSelect = screen.getByLabelText('Genre musical')
     expect(musicSelect).toBeInTheDocument()
 
     await userEvent.selectOptions(musicSelect, '520')
-    expect(screen.getByLabelText('Choisir un sous-genre')).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-genre')).toBeInTheDocument()
 
-    expect(
-      screen.queryByLabelText('Choisir un type de spectacle')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous type')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous type')).not.toBeInTheDocument()
   })
 
   it('should display showType selects when a music subCategory is choosed', async () => {
@@ -268,34 +232,22 @@ describe('OfferIndividual section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Choisir une catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'C')
-    const subCategorySelect = screen.getByLabelText(
-      'Choisir une sous-catégorie'
-    )
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'C-A')
 
-    expect(
-      screen.queryByLabelText('Choisir un genre musical')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous-genre')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous type')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous type')).not.toBeInTheDocument()
 
-    const showSelect = screen.getByLabelText('Choisir un type de spectacle')
+    const showSelect = screen.getByLabelText('Type de spectacle')
     expect(showSelect).toBeInTheDocument()
 
     await userEvent.selectOptions(showSelect, '100')
-    expect(screen.getByLabelText('Choisir un sous type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous type')).toBeInTheDocument()
 
-    expect(
-      screen.queryByLabelText('Choisir un genre musical')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Choisir un sous-genre')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
   })
 })
