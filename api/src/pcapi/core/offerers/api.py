@@ -499,6 +499,9 @@ def validate_offerer_by_id(offerer_id: int, author_user: users_models.User) -> N
     if offerer is None:
         raise exceptions.OffererNotFoundException()
 
+    if offerer.isValidated:
+        raise exceptions.OffererAlreadyValidatedException()
+
     _validate_offerer(offerer, author_user)
 
 
@@ -506,6 +509,9 @@ def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str
     offerer = offerers_repository.find_offerer_by_id(offerer_id)
     if offerer is None:
         raise exceptions.OffererNotFoundException()
+
+    if offerer.isRejected:
+        raise exceptions.OffererAlreadyRejectedException()
 
     # A first applicant created the offerer and attachment is automatically validated.
     # But another applicant may signup and register the same offerer, this other user attachment must be validated later
