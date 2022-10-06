@@ -436,7 +436,7 @@ class UpsertStocksTest:
 
         # Then
         assert error.value.errors == {
-            "global": ["Impossible de mettre une date de début si l'offre ne porte pas sur un événement"],
+            "global": ["Impossible de mettre une date de début si l'offre ne porte pas sur un évènement"],
         }
 
     def test_validate_booking_limit_datetime_with_expiration_datetime_on_creation(self):
@@ -548,7 +548,7 @@ class UpsertStocksTest:
             api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
 
         # Then
-        assert error.value.errors == {"global": ["Les événements passés ne sont pas modifiables"]}
+        assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
 
     def test_does_not_allow_upsert_stocks_on_a_synchronized_offer(self):
         # Given

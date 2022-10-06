@@ -430,7 +430,7 @@ class CheckBeneficiaryCanCancelBookingTest:
             validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'événement"
+            "réservée et moins de 48h avant le début de l'évènement"
         ]
 
     def test_raise_if_booked_long_ago(self):
@@ -442,7 +442,7 @@ class CheckBeneficiaryCanCancelBookingTest:
             validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'événement"
+            "réservée et moins de 48h avant le début de l'évènement"
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
@@ -454,7 +454,7 @@ class CheckBeneficiaryCanCancelBookingTest:
             validation.check_beneficiary_can_cancel_booking(booking.individualBooking.user, booking)
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'événement"
+            "réservée et moins de 48h avant le début de l'évènement"
         ]
 
 

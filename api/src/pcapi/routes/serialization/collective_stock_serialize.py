@@ -137,7 +137,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
     @validator("beginningDatetime", pre=True)
     def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
         if beginningDatetime is None:
-            raise ValueError("La date de début de l'événement ne peut pas être nulle.")
+            raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime
 
     class Config:

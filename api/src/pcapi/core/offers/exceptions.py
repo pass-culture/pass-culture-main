@@ -6,7 +6,7 @@ class TooLateToDeleteStock(ClientError):
     def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__(
             "global",
-            "L'événement s'est terminé il y a plus de deux jours, la suppression est impossible.",
+            "L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible.",
         )
 
 

@@ -412,7 +412,7 @@ class Returns400Test:
 
         response_dict = response.json
         assert response_dict == {
-            "stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'événement"],
+            "stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"],
         }
 
 

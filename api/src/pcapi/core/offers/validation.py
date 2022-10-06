@@ -159,7 +159,7 @@ def check_required_dates_for_stock(
             raise ApiErrors(
                 {
                     "global": [
-                        "Impossible de mettre une date de début si l'offre ne porte pas sur un événement",
+                        "Impossible de mettre une date de début si l'offre ne porte pas sur un évènement",
                     ]
                 }
             )
@@ -187,7 +187,7 @@ def check_stock_is_updatable(stock: Stock) -> None:
 def check_event_expiration(stock: CollectiveStock | Stock) -> None:
     if stock.isEventExpired:
         api_errors = ApiErrors()
-        api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
+        api_errors.add_error("global", "Les évènements passés ne sont pas modifiables")
         raise api_errors
 
 

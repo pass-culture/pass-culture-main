@@ -22,15 +22,15 @@ class CollectiveOffersGetCategoriesTest:
             {"id": "CINE_PLEIN_AIR", "label": "Cinéma plein air", "category": "Cinéma"},
             {"id": "FESTIVAL_CINE", "label": "Festival de cinéma", "category": "Cinéma"},
             {"id": "SEANCE_CINE", "label": "Séance de cinéma", "category": "Cinéma"},
-            {"id": "EVENEMENT_CINE", "label": "Événement cinématographique", "category": "Cinéma"},
+            {"id": "EVENEMENT_CINE", "label": "Évènement cinématographique", "category": "Cinéma"},
             {"id": "CONFERENCE", "label": "Conférence", "category": "Conférences, rencontres"},
             {"id": "RENCONTRE", "label": "Rencontre", "category": "Conférences, rencontres"},
             {"id": "RENCONTRE_EN_LIGNE", "label": "Rencontre en ligne", "category": "Conférences, rencontres"},
             {"id": "SALON", "label": "Salon, Convention", "category": "Conférences, rencontres"},
             {"id": "CONCOURS", "label": "Concours - jeux", "category": "Jeux"},
             {"id": "RENCONTRE_JEU", "label": "Rencontres - jeux", "category": "Jeux"},
-            {"id": "EVENEMENT_JEU", "label": "Événements - jeux", "category": "Jeux"},
-            {"id": "EVENEMENT_MUSIQUE", "label": "Autre type d'événement musical", "category": "Musique live"},
+            {"id": "EVENEMENT_JEU", "label": "Évènements - jeux", "category": "Jeux"},
+            {"id": "EVENEMENT_MUSIQUE", "label": "Autre type d'évènement musical", "category": "Musique live"},
             {"id": "CONCERT", "label": "Concert", "category": "Musique live"},
             {"id": "FESTIVAL_MUSIQUE", "label": "Festival de musique", "category": "Musique live"},
             {
@@ -46,7 +46,7 @@ class CollectiveOffersGetCategoriesTest:
             },
             {
                 "id": "EVENEMENT_PATRIMOINE",
-                "label": "Événement et atelier patrimoine",
+                "label": "Évènement et atelier patrimoine",
                 "category": "Musée, patrimoine, architecture, arts visuels",
             },
             {

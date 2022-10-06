@@ -173,7 +173,7 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.getByText(
-          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des évènements qui seront réservables.'
         )
       ).toBeInTheDocument()
 
@@ -207,7 +207,7 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.queryByText(
-          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des évènements qui seront réservables.'
         )
       ).not.toBeInTheDocument()
 
@@ -240,7 +240,7 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.queryByText(
-          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des évènements qui seront réservables.'
         )
       ).toBeInTheDocument()
 
@@ -273,7 +273,7 @@ describe('creationLinks', () => {
       // Then
       expect(
         screen.queryByText(
-          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des évènements qui seront réservables.'
         )
       ).not.toBeInTheDocument()
       expect(
@@ -320,7 +320,7 @@ describe('creationLinks', () => {
     it('should not display venue creation links', () => {
       expect(
         screen.queryByText(
-          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des événements qui seront réservables.'
+          'Nous vous invitons à créer un lieu, cela vous permettra ensuite de créer des offres physiques ou des évènements qui seront réservables.'
         )
       ).not.toBeInTheDocument()
 

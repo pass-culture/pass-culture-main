@@ -23,8 +23,8 @@ def make_booking(**kwargs):
         individualBooking__user__email="john@example.com",
         stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc),
         stock__price=10,
-        stock__offer__name="Super événement",
-        stock__offer__product__name="Super événement",
+        stock__offer__name="Super évènement",
+        stock__offer__product__name="Super évènement",
         stock__offer__product__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         stock__offer__venue__name="Lieu de l'offreur",
         stock__offer__venue__address="25 avenue du lieu",
@@ -51,7 +51,7 @@ def get_expected_base_email_data(booking, **overrides):
         "IS_EXTERNAL": False,
         "ISBN": "",
         "MUST_USE_TOKEN_FOR_PAYMENT": True,
-        "OFFER_NAME": "Super événement",
+        "OFFER_NAME": "Super évènement",
         "OFFER_SUBCATEGORY": "SPECTACLE_REPRESENTATION",
         "PRICE": "10.00 €",
         "QUANTITY": 1,
@@ -241,7 +241,7 @@ class OffererBookingRecapTest:
         offer = offers_factories.OfferFactory(
             venue__name="Lieu de l'offreur",
             venue__managingOfferer__name="Théâtre du coin",
-            product=offers_factories.DigitalProductFactory(name="Super événement", url="http://example.com"),
+            product=offers_factories.DigitalProductFactory(name="Super évènement", url="http://example.com"),
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]

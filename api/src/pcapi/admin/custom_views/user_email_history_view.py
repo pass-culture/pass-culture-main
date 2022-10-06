@@ -34,7 +34,7 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
         newEmail="Nouvelle adresse email",
         newDomainEmail="Nouveau nom de domaine d'adresse email",
         creationDate="Date de création",
-        eventType="Type d'événement",
+        eventType="Type d'évènement",
     )
 
     column_searchable_list = [

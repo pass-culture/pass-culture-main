@@ -270,7 +270,7 @@ const OffererDetails = ({
                   <strong>Votre structure est en cours de validation</strong>
                   <br />
                   Nous vous invitons à créer un lieu afin de pouvoir proposer
-                  des offres physiques ou des événements. <br />
+                  des offres physiques ou des évènements. <br />
                   Vous pouvez dès à présent créer des offres numériques.
                   L’ensemble de ces offres sera publié une fois votre structure
                   validée.
@@ -364,7 +364,7 @@ const OffererDetails = ({
                 >
                   <p>
                     Nous vous invitons à créer un lieu, cela vous permettra
-                    ensuite de créer des offres physiques ou des événements qui
+                    ensuite de créer des offres physiques ou des évènements qui
                     seront réservables.
                   </p>
                   <br />

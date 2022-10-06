@@ -52,7 +52,7 @@ jest.mock('apiClient/api', () => ({
         },
         {
           id: 'EVENEMENT_CINE',
-          proLabel: 'Événement cinéma',
+          proLabel: 'Évènement cinéma',
           categoryId: 'CINEMA',
         },
         {

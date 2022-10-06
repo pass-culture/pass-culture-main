@@ -18,5 +18,5 @@ BOOKING_CONFIRMATION_ERROR_CLAUSES = {
     "after_creation_delay": f"plus de {_get_hours_from_timedelta(CONFIRM_BOOKING_AFTER_CREATION_DELAY):.0f}h"
     f" après l'avoir réservée et ",
     "before_event_delay": f"moins de {_get_hours_from_timedelta(CONFIRM_BOOKING_BEFORE_EVENT_DELAY):.0f}h"
-    f" avant le début de l'événement",
+    f" avant le début de l'évènement",
 }
