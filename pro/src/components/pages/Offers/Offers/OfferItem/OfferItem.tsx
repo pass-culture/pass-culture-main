@@ -7,6 +7,7 @@ import {
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
@@ -29,13 +30,14 @@ const OfferItem = ({
   selectOffer,
   audience,
 }: OfferItemProps) => {
-  const { venue, id, isEducational, isShowcase } = offer
+  const { venue, id, isEducational, isShowcase, status } = offer
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const editionOfferLink = useOfferEditionURL(
     isEducational,
     id,
     isOfferFormV3,
-    !!isShowcase
+    !!isShowcase,
+    status
   )
   const editionStockLink = useOfferStockEditionURL(
     isEducational,
@@ -45,9 +47,11 @@ const OfferItem = ({
 
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
-    !offer.isActive ||
-    offer.hasBookingLimitDatetimesPassed ||
-    isOfferDisabled(offer.status)
+    offer.status == OFFER_STATUS_DRAFT
+      ? false
+      : !offer.isActive ||
+        offer.hasBookingLimitDatetimesPassed ||
+        isOfferDisabled(offer.status)
 
   return (
     <tr

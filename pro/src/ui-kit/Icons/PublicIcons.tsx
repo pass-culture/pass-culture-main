@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
@@ -262,6 +261,12 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
+          <Icon svg="ico-guichet-full" />
+        </td>
+        <td>public/icons/ico-guichet-full</td>
+      </tr>
+      <tr>
+        <td>
           <Icon svg="ico-help" />
         </td>
         <td>public/icons/ico-help</td>
@@ -283,6 +288,12 @@ export const PublicIcons = () => (
           <Icon svg="ico-left-arrow" />
         </td>
         <td>public/icons/ico-left-arrow</td>
+      </tr>
+      <tr>
+        <td>
+          <Icon svg="ico-next-S" />
+        </td>
+        <td>public/icons/ico-next-S</td>
       </tr>
       <tr>
         <td>
@@ -376,6 +387,12 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td className={styles['with-background']}>
+          <Icon svg="ico-status-draft" />
+        </td>
+        <td>public/icons/ico-status-draft</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
           <Icon svg="ico-status-cancelled" />
         </td>
         <td>public/icons/ico-status-cancelled</td>
@@ -448,6 +465,12 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
+          <Icon svg="ico-trash-filled" />
+        </td>
+        <td>public/icons/ico-trash-filled</td>
+      </tr>
+      <tr>
+        <td>
           <Icon svg="ico-trash" />
         </td>
         <td>public/icons/ico-trash</td>
@@ -502,9 +525,21 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
+          <Icon svg="ico-venue-r" />
+        </td>
+        <td>public/icons/ico-venue-r</td>
+      </tr>
+      <tr>
+        <td>
           <Icon svg="ico-venue" />
         </td>
         <td>public/icons/ico-venue</td>
+      </tr>
+      <tr>
+        <td>
+          <Icon svg="ico-warning-stocks" />
+        </td>
+        <td>public/icons/ico-warning-stocks</td>
       </tr>
       <tr>
         <td>

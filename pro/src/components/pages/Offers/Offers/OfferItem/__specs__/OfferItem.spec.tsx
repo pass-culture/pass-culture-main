@@ -428,6 +428,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
       )
     })
 
+    it('should not display the offer greyed when offer is draft', () => {
+      // Given
+      props.offer.status = 'DRAFT'
+
+      // When
+      renderOfferItem(props, store)
+
+      // Then
+      expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass(
+        'inactive'
+      )
+    })
+
     describe('when audience is COLLECTIVE', () => {
       it('should display a tag when offer is template', () => {
         props.audience = Audience.COLLECTIVE

@@ -66,4 +66,21 @@ describe('useOfferEditionURL', () => {
 
     expect(urlResutl).toStrictEqual('/offre/offerID/individuel/recapitulatif')
   })
+
+  test('It should retrun right url when offer is an individual draft', () => {
+    const isOfferEducational = false
+    const offerId = 'offerID'
+    const isOfferFormV3 = false
+    const isShowcase = false
+
+    const urlResutl = useOfferEditionURL(
+      isOfferEducational,
+      offerId,
+      isOfferFormV3,
+      isShowcase,
+      'DRAFT'
+    )
+
+    expect(urlResutl).toStrictEqual('/offre/offerID/individuel/brouillon')
+  })
 })

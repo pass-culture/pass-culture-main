@@ -5,6 +5,7 @@ import React from 'react'
 
 import {
   OFFER_STATUS_ACTIVE,
+  OFFER_STATUS_DRAFT,
   OFFER_STATUS_EXPIRED,
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
@@ -26,6 +27,10 @@ describe('StatusLabel', () => {
   it('should display "publiée" if offer is active', () => {
     renderStatusLabel(OFFER_STATUS_ACTIVE)
     expect(screen.getByText('publiée')).toBeInTheDocument()
+  })
+  it('should display draft status label if offer is active', () => {
+    renderStatusLabel(OFFER_STATUS_DRAFT)
+    expect(screen.getByText('brouillon')).toBeInTheDocument()
   })
   it('should display "désactivée" if offer is inactive', () => {
     renderStatusLabel(OFFER_STATUS_INACTIVE)

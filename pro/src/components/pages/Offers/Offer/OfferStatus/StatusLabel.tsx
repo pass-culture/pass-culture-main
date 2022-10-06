@@ -3,6 +3,7 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_ACTIVE,
+  OFFER_STATUS_DRAFT,
   OFFER_STATUS_EXPIRED,
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
@@ -28,6 +29,11 @@ export const OFFER_STATUS_PROPERTIES: Record<
     className: 'status-active',
     icon: 'ico-status-validated',
     label: 'publiée',
+  },
+  [OFFER_STATUS_DRAFT]: {
+    className: 'status-draft',
+    icon: 'ico-status-draft',
+    label: 'brouillon',
   },
   [OFFER_STATUS_REJECTED]: {
     className: 'status-rejected',
