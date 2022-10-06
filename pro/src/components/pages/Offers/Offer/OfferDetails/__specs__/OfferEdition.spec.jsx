@@ -27,7 +27,6 @@ import {
 Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
 }))
 
@@ -39,6 +38,7 @@ jest.mock('apiClient/api', () => ({
     getVenues: jest.fn(),
     getVenue: jest.fn(),
     getCategories: jest.fn(),
+    getStocks: jest.fn(),
   },
 }))
 
@@ -200,7 +200,7 @@ describe('offerDetails - Edition', () => {
 
     api.getCategories.mockResolvedValue(categories)
     api.getVenue.mockReturnValue(Promise.resolve())
-    pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
+    api.getStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
   })
 
   describe('render when editing an existing offer', () => {

@@ -13,7 +13,7 @@ export const getFakeApiVenuesForOfferer = ({ ...venues }) =>
   jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venues] })
 
 export const loadFakeApiStocks = stocks =>
-  jest.spyOn(pcapi, 'loadStocks').mockResolvedValue({ stocks })
+  jest.spyOn(api, 'getStocks').mockResolvedValue({ stocks })
 
 export const loadFakeApiVenueStats = venue =>
   jest.spyOn(api, 'getVenueStats').mockResolvedValue(venue)

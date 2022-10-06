@@ -29,7 +29,6 @@ Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
 }))
 
@@ -41,6 +40,7 @@ jest.mock('apiClient/api', () => ({
     getVenues: jest.fn(),
     getVenue: jest.fn(),
     getCategories: jest.fn(),
+    getStocks: jest.fn(),
   },
 }))
 
@@ -1832,7 +1832,7 @@ describe('offerDetails - Creation - pro user', () => {
           departementCode: 93,
         },
       })
-      pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+      api.getStocks.mockResolvedValue({ stocks: [] })
     })
 
     it('should call API with offer data', async () => {
