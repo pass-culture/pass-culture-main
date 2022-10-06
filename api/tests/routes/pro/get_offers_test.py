@@ -34,7 +34,8 @@ class Returns200Test:
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
         client = TestClient(app.test_client()).with_session_auth(email=admin.email)
         path = f"/offers?venueId={humanize(requested_venue.id)}"
-        select_offers_nb_queries = 1
+        select_offers_nb_queries = 1  # FeatureFlag query
+        select_offers_nb_queries += 1  # Offer query
 
         # when
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_offers_nb_queries):
