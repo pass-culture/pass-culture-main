@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
