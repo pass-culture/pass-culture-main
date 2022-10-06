@@ -96,6 +96,14 @@ def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
     return cinema_details
 
 
+def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
+    return models.VenueProvider.query.filter(
+        models.VenueProvider.venueId == venue_id,
+        models.VenueProvider.isActive,
+        models.VenueProvider.isFromCinemaProvider,
+    )
+
+
 # Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).
 # This class is used to handle this logic when a venue wants to sync with Allocine.
 @dataclass
