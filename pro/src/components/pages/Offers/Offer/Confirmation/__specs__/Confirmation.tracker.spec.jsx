@@ -7,7 +7,6 @@ import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { offerFactory } from 'utils/apiFactories'
 
 window.open = jest.fn()
@@ -20,10 +19,6 @@ jest.mock('utils/config', () => {
   }
 })
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
@@ -31,6 +26,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -67,7 +63,7 @@ describe('confirmation page', () => {
         },
       ],
     }
-    pcapi.loadCategories.mockResolvedValue(categories)
+    jest.spyOn(api, 'getCategories').mockResolvedValue(categories)
     offer = offerFactory({
       name: 'mon offre',
       status: 'DRAFT',

@@ -7,16 +7,11 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferLayout from '../../OfferLayout'
 
 import { setOfferValues } from './helpers'
-
-jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn(),
-}))
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -24,6 +19,7 @@ jest.mock('apiClient/api', () => ({
     postOffer: jest.fn(),
     getVenues: jest.fn(),
     getVenue: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -115,7 +111,7 @@ describe('offerDetails - Creation - admin user', () => {
       managedVenues: venues,
     }
 
-    pcapi.loadCategories.mockResolvedValue(categories)
+    api.getCategories.mockResolvedValue(categories)
     api.getOfferer.mockResolvedValue(offerer)
     api.getVenue.mockReturnValue(Promise.resolve())
     jest.spyOn(window, 'scrollTo').mockImplementation()

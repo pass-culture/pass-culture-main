@@ -63,13 +63,6 @@ export const postImageToVenue = async ({
 }
 
 //
-// categories
-//
-export const loadCategories = () => {
-  return client.get('/offers/categories')
-}
-
-//
 // stocks
 //
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.

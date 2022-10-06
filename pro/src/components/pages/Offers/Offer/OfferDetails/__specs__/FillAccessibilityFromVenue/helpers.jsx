@@ -9,7 +9,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import {
@@ -29,10 +28,6 @@ import {
   venueVirtual,
 } from './mocks'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     postOffer: jest.fn(),
@@ -40,6 +35,7 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
     getVenue: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -153,7 +149,7 @@ export const initialize = async ({
     ],
   })
   api.postOffer.mockResolvedValue({})
-  pcapi.loadCategories.mockResolvedValue(categories)
+  api.getCategories.mockResolvedValue(categories)
 
   let rtlRenderReturn
   if (offer) {

@@ -6,7 +6,6 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 

@@ -1,10 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
 
 import { setCategories } from './actions'
 
 export const loadCategories = () => {
   return async dispatch => {
-    return pcapi.loadCategories().then(({ categories, subcategories }) => {
+    return api.getCategories().then(({ categories, subcategories }) => {
       dispatch(
         setCategories({
           categories,

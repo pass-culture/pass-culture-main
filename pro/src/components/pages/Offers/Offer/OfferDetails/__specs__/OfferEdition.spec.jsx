@@ -27,7 +27,6 @@ import {
 Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
 }))
@@ -39,6 +38,7 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
     getVenue: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -198,7 +198,7 @@ describe('offerDetails - Edition', () => {
       .spyOn(api, 'getVenues')
       .mockResolvedValue({ venues: [editedOfferVenue] })
 
-    pcapi.loadCategories.mockResolvedValue(categories)
+    api.getCategories.mockResolvedValue(categories)
     api.getVenue.mockReturnValue(Promise.resolve())
     pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
   })
@@ -454,7 +454,7 @@ describe('offerDetails - Edition', () => {
           editedOffer.status = 'REJECTED'
           editedOffer.isActive = false
           jest.spyOn(api, 'getOffer').mockResolvedValue(editedOffer)
-          pcapi.loadCategories.mockResolvedValue(
+          api.getCategories.mockResolvedValue(
             fullConditionalFieldsCategoryResponse
           )
 
@@ -487,7 +487,7 @@ describe('offerDetails - Edition', () => {
           editedOffer.status = 'PENDING'
           editedOffer.isActive = true
           jest.spyOn(api, 'getOffer').mockResolvedValue(editedOffer)
-          pcapi.loadCategories.mockResolvedValue(
+          api.getCategories.mockResolvedValue(
             fullConditionalFieldsCategoryResponse
           )
 
@@ -586,9 +586,7 @@ describe('offerDetails - Edition', () => {
         ],
       }
 
-      pcapi.loadCategories.mockResolvedValue(
-        fullConditionalFieldsCategoryResponse
-      )
+      api.getCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
       // When
       await renderOffers(props, store)
@@ -784,9 +782,7 @@ describe('offerDetails - Edition', () => {
         ],
       }
 
-      pcapi.loadCategories.mockResolvedValue(
-        fullConditionalFieldsCategoryResponse
-      )
+      api.getCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
       // When
       await renderOffers(props, store)
@@ -985,7 +981,7 @@ describe('offerDetails - Edition', () => {
           ],
         }
 
-        pcapi.loadCategories.mockResolvedValue(
+        api.getCategories.mockResolvedValue(
           fullConditionalFieldsCategoryResponse
         )
 
@@ -1058,7 +1054,7 @@ describe('offerDetails - Edition', () => {
           ],
         }
 
-        pcapi.loadCategories.mockResolvedValue(nonEducationalCategoryResponse)
+        api.getCategories.mockResolvedValue(nonEducationalCategoryResponse)
 
         // When
         await renderOffers(props, store)
@@ -1103,7 +1099,7 @@ describe('offerDetails - Edition', () => {
           ],
         }
 
-        pcapi.loadCategories.mockResolvedValue(
+        api.getCategories.mockResolvedValue(
           fullConditionalFieldsCategoryResponse
         )
 
@@ -1304,7 +1300,7 @@ describe('offerDetails - Edition', () => {
         ],
       }
 
-      pcapi.loadCategories.mockResolvedValue(cinema)
+      api.getCategories.mockResolvedValue(cinema)
 
       await renderOffers(props, store)
 
@@ -1449,7 +1445,7 @@ describe('offerDetails - Edition', () => {
         ],
       }
 
-      pcapi.loadCategories.mockResolvedValue(category)
+      api.getCategories.mockResolvedValue(category)
 
       await renderOffers(props, store)
 
