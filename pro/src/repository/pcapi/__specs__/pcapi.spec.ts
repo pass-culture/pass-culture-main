@@ -1,6 +1,5 @@
 import {
   getFilteredBookingsCSV,
-  updateUserInformations,
   postThumbnail,
   setHasSeenTutos,
 } from 'repository/pcapi/pcapi'
@@ -57,23 +56,6 @@ describe('pcapi', () => {
 
       // then
       expect(client.patch).toHaveBeenCalledWith('/users/tuto-seen')
-    })
-  })
-
-  describe('update profile informations', () => {
-    it('should call api patch with user informations', () => {
-      // when
-      const body = {
-        firstName: 'Example',
-        lastName: 'User',
-        email: 'example.user@example.com',
-        phoneNumber: '0606060606',
-      }
-
-      updateUserInformations(body)
-
-      // then
-      expect(client.patch).toHaveBeenCalledWith('/users/current', body)
     })
   })
 
