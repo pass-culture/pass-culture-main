@@ -12,7 +12,7 @@ from pcapi.models.pc_object import PcObject
 
 class ActionType(enum.Enum):
     # Single comment from admin, on any resource, without status change:
-    COMMENT = "Commentaire"
+    COMMENT = "Commentaire interne"
     # Validation process for offerers:
     OFFERER_NEW = "Nouvelle structure"
     OFFERER_PENDING = "Structure mise en attente"

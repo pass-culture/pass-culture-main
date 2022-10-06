@@ -485,6 +485,154 @@ class GetOffererOffersStatsTest:
         assert response.status_code == 403
 
 
+class GetOffererHistoryTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_history(self, client):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
+        user_offerer = offerers_factories.UserOffererFactory()
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 13, 1),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=user_offerer.user,
+            user=user_offerer.user,
+            offerer=user_offerer.offerer,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 4, 14, 2),
+            actionType=history_models.ActionType.OFFERER_PENDING,
+            authorUser=admin,
+            user=user_offerer.user,
+            offerer=user_offerer.offerer,
+            comment="Documents complémentaires demandés",
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 5, 15, 3),
+            actionType=history_models.ActionType.COMMENT,
+            authorUser=admin,
+            user=user_offerer.user,
+            offerer=user_offerer.offerer,
+            comment="Documents reçus",
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 6, 16, 4),
+            actionType=history_models.ActionType.OFFERER_VALIDATED,
+            authorUser=admin,
+            user=user_offerer.user,
+            offerer=user_offerer.offerer,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 6, 17, 5),
+            actionType=history_models.ActionType.COMMENT,
+            authorUser=admin,
+            user=user_offerer.user,
+            offerer=offerers_factories.UserOffererFactory(user=user_offerer.user).offerer,
+            comment="Commentaire sur une autre structure",
+        )
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_offerer_history", offerer_id=user_offerer.offerer.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["data"] == [
+            {
+                "type": "Structure validée",
+                "date": "2022-10-06T16:04:00",
+                "authorId": admin.id,
+                "authorName": admin.publicName,
+                "comment": None,
+            },
+            {
+                "type": "Commentaire interne",
+                "date": "2022-10-05T15:03:00",
+                "authorId": admin.id,
+                "authorName": admin.publicName,
+                "comment": "Documents reçus",
+            },
+            {
+                "type": "Structure mise en attente",
+                "date": "2022-10-04T14:02:00",
+                "authorId": admin.id,
+                "authorName": admin.publicName,
+                "comment": "Documents complémentaires demandés",
+            },
+            {
+                "type": "Nouvelle structure",
+                "date": "2022-10-03T13:01:00",
+                "authorId": user_offerer.user.id,
+                "authorName": user_offerer.user.publicName,
+                "comment": None,
+            },
+        ]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_history_empty_when_no_action(self, client, offerer):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 6, 12),
+            actionType=history_models.ActionType.COMMENT,
+            authorUser=admin,
+            offerer=offerers_factories.OffererFactory(),
+            comment="Commentaire sur une autre structure",
+        )
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_offerer_history", offerer_id=offerer.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["data"] == []
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_history_empty_when_offerer_not_found(self, client, offerer):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_offerer_history", offerer_id=offerer.id + 100)
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["data"] == []
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_offerer_history_without_permission(self, client, offerer):
+        # given
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_offerer_history", offerer_id=offerer.id)
+        )
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_offerer_history_as_anonymous(self, client, offerer):
+        # given
+
+        # when
+        response = client.get(url_for("backoffice_blueprint.get_offerer_history", offerer_id=offerer.id))
+
+        # then
+        assert response.status_code == 403
+
+
 class ValidateOffererTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_validate_offerer(self, client):
