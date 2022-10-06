@@ -227,6 +227,29 @@ def find_venue_by_id(venue_id: int) -> models.Venue | None:
     return models.Venue.query.filter_by(id=venue_id).options(sqla.orm.joinedload(models.Venue.venueLabel)).one_or_none()
 
 
+def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
+    aliased_venue = sqla.orm.aliased(models.Venue)
+
+    query = db.session.query(models.Venue)
+    query = query.join(models.Offerer, models.Venue.managingOfferer)
+    query = query.join(aliased_venue, models.Offerer.managedVenues)
+    query = query.filter(
+        # constraint on retrieved venues
+        models.Venue.isPermanent == True,
+        models.Venue.isVirtual == False,
+        # constraint on seached venue
+        aliased_venue.isPermanent == True,
+        aliased_venue.isVirtual == False,
+        aliased_venue.id == venue_id,
+    )
+    query = query.options(sqla.orm.joinedload(models.Venue.contact))
+    query = query.options(sqla.orm.joinedload(models.Venue.venueLabel))
+    # group venues by offerer
+    query = query.order_by(models.Venue.managingOffererId, models.Venue.name)
+
+    return query.all()
+
+
 def find_venue_by_siret(siret: str) -> models.Venue | None:
     return models.Venue.query.filter_by(siret=siret).one_or_none()
 

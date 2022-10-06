@@ -160,6 +160,121 @@ class Returns200Test:
             ]
         }
 
+    def test_get_relative_venues_from_siret(self, client) -> None:
+        offerer = offerer_factories.OffererFactory()
+        venue1 = offerer_factories.VenueFactory(
+            siret="12345678912345",
+            name="name1",
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+            collectiveStudents=None,
+            collectiveDomains=[],
+            collectiveInterventionArea=None,
+            collectiveNetwork=None,
+            managingOfferer=offerer,
+            isPermanent=True,
+        )
+        venue2 = offerer_factories.VenueFactory(
+            siret="9874563211235",
+            name="name2",
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+            collectiveStudents=None,
+            collectiveDomains=[],
+            collectiveInterventionArea=None,
+            collectiveNetwork=None,
+            managingOfferer=offerer,
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            siret="8521479632587",
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+            collectiveStudents=None,
+            collectiveDomains=[],
+            collectiveInterventionArea=None,
+            collectiveNetwork=None,
+            managingOfferer=offerer,
+            isPermanent=False,
+        )
+        offerer_factories.VenueFactory(
+            siret="7896541238521",
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+            collectiveStudents=None,
+            collectiveDomains=[],
+            collectiveInterventionArea=None,
+            collectiveNetwork=None,
+            isPermanent=True,
+        )
+
+        client.with_eac_token()
+        response = client.get("/adage/v1/venues/12345678912345?getRelative=true")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "venues": [
+                {
+                    "id": venue1.id,
+                    "adageId": venue1.adageId,
+                    "name": venue1.name,
+                    "address": venue1.address,
+                    "latitude": float(venue1.latitude),
+                    "longitude": float(venue1.longitude),
+                    "city": venue1.city,
+                    "siret": venue1.siret,
+                    "publicName": venue1.publicName,
+                    "description": venue1.description,
+                    "collectiveDescription": venue1.collectiveDescription,
+                    "phoneNumber": venue1.contact.phone_number,
+                    "email": venue1.contact.email,
+                    "website": venue1.contact.website,
+                    "audioDisabilityCompliant": None,
+                    "mentalDisabilityCompliant": None,
+                    "motorDisabilityCompliant": None,
+                    "visualDisabilityCompliant": None,
+                    "domains": [],
+                    "interventionArea": [],
+                    "network": None,
+                    "statusId": None,
+                    "label": None,
+                },
+                {
+                    "id": venue2.id,
+                    "adageId": venue2.adageId,
+                    "name": venue2.name,
+                    "address": venue2.address,
+                    "latitude": float(venue2.latitude),
+                    "longitude": float(venue2.longitude),
+                    "city": venue2.city,
+                    "siret": venue2.siret,
+                    "publicName": venue2.publicName,
+                    "description": venue2.description,
+                    "collectiveDescription": venue2.collectiveDescription,
+                    "phoneNumber": venue2.contact.phone_number,
+                    "email": venue2.contact.email,
+                    "website": venue2.contact.website,
+                    "audioDisabilityCompliant": None,
+                    "mentalDisabilityCompliant": None,
+                    "motorDisabilityCompliant": None,
+                    "visualDisabilityCompliant": None,
+                    "domains": [],
+                    "interventionArea": [],
+                    "network": None,
+                    "statusId": None,
+                    "label": None,
+                },
+            ]
+        }
+
 
 class Returns404Test:
     def test_when_no_venue_is_found(self, client) -> None:

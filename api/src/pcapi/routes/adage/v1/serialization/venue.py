@@ -16,6 +16,10 @@ if TYPE_CHECKING:
     VenueModel = TypeVar("VenueModel", bound="BaseVenueModel")
 
 
+class GetRelativeVenuesQueryModel(BaseModel):
+    getRelative: bool = False
+
+
 class VenueDomain(BaseModel):
     id: int
     name: str
