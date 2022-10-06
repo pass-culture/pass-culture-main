@@ -194,6 +194,72 @@ class Returns200Test:
         assert len(response_venues) == 1
         assert response_venues[0]["id"] == venue.id
 
+    def test_get_relative_venues_from_name(self, client, db_session) -> None:
+        offerer = offerer_factories.OffererFactory()
+        venue1 = offerer_factories.VenueFactory(managingOfferer=offerer, name="azerty", isPermanent=True)
+        venue2 = offerer_factories.VenueFactory(managingOfferer=offerer, name="z123", isPermanent=True)
+        offerer_factories.VenueFactory(managingOfferer=offerer, name="z12345", isPermanent=False)
+        offerer_factories.VenueFactory(isPermanent=True)
+
+        client.with_eac_token()
+        response = client.get("/adage/v1/venues/name/azerty?getRelative=true")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "venues": [
+                {
+                    "id": venue1.id,
+                    "adageId": venue1.adageId,
+                    "name": venue1.name,
+                    "address": venue1.address,
+                    "latitude": float(venue1.latitude),
+                    "longitude": float(venue1.longitude),
+                    "city": venue1.city,
+                    "siret": venue1.siret,
+                    "publicName": venue1.publicName,
+                    "description": venue1.description,
+                    "collectiveDescription": venue1.collectiveDescription,
+                    "phoneNumber": venue1.contact.phone_number,
+                    "email": venue1.contact.email,
+                    "website": venue1.contact.website,
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": False,
+                    "motorDisabilityCompliant": False,
+                    "visualDisabilityCompliant": False,
+                    "domains": [],
+                    "interventionArea": [],
+                    "network": None,
+                    "statusId": None,
+                    "label": None,
+                },
+                {
+                    "id": venue2.id,
+                    "adageId": venue2.adageId,
+                    "name": venue2.name,
+                    "address": venue2.address,
+                    "latitude": float(venue2.latitude),
+                    "longitude": float(venue2.longitude),
+                    "city": venue2.city,
+                    "siret": venue2.siret,
+                    "publicName": venue2.publicName,
+                    "description": venue2.description,
+                    "collectiveDescription": venue2.collectiveDescription,
+                    "phoneNumber": venue2.contact.phone_number,
+                    "email": venue2.contact.email,
+                    "website": venue2.contact.website,
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": False,
+                    "motorDisabilityCompliant": False,
+                    "visualDisabilityCompliant": False,
+                    "domains": [],
+                    "interventionArea": [],
+                    "network": None,
+                    "statusId": None,
+                    "label": None,
+                },
+            ]
+        }
+
 
 class Returns404Test:
     def test_when_no_venue_is_found(self, client, db_session) -> None:
