@@ -12,4 +12,5 @@ export type GetCollectiveOfferTemplateSuccessPayload = {
   isShowcase: boolean
   offerId?: string | null
   educationalPriceDetails?: string | null
+  name: string
 }

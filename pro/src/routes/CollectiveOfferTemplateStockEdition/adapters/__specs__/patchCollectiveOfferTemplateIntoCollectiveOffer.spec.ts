@@ -1,4 +1,3 @@
-import { OfferStatus } from 'apiClient/v1'
 import { EducationalOfferType } from 'core/OfferEducational'
 
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from '../patchCollectiveOfferTemplateIntoCollectiveOffer'
@@ -10,17 +9,8 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
     // when
     const response =
       await patchCollectiveOfferTemplateIntoCollectiveOfferAdapter({
-        offer: {
-          id: '',
-          isActive: true,
-          isEducational: true,
-          isBooked: false,
-          isCancellable: true,
-          status: OfferStatus.PENDING,
-          venueDepartmentCode: '1',
-          managingOffererId: 'A1',
-          isShowcase: false,
-        },
+        offerId: '',
+        departmentCode: '1',
         values: {
           eventDate: new Date(),
           eventTime: new Date(),
@@ -52,17 +42,8 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
     // when
     const response =
       await patchCollectiveOfferTemplateIntoCollectiveOfferAdapter({
-        offer: {
-          id: '12',
-          isActive: true,
-          isEducational: true,
-          isBooked: false,
-          isCancellable: true,
-          status: OfferStatus.PENDING,
-          venueDepartmentCode: '1',
-          managingOffererId: 'A1',
-          isShowcase: false,
-        },
+        offerId: '12',
+        departmentCode: '1',
         values: {
           eventDate: new Date(),
           eventTime: new Date(),
@@ -90,17 +71,8 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
     // when
     const response =
       await patchCollectiveOfferTemplateIntoCollectiveOfferAdapter({
-        offer: {
-          id: '12',
-          isActive: true,
-          isEducational: true,
-          isBooked: false,
-          isCancellable: true,
-          status: OfferStatus.PENDING,
-          venueDepartmentCode: '1',
-          managingOffererId: 'A1',
-          isShowcase: false,
-        },
+        offerId: '12',
+        departmentCode: '1',
         values: {
           eventDate: new Date(),
           eventTime: new Date(),
