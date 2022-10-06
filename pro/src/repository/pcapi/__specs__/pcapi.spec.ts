@@ -1,6 +1,5 @@
 import {
   getFilteredBookingsCSV,
-  signout,
   updateUserInformations,
   postThumbnail,
   setHasSeenTutos,
@@ -26,16 +25,6 @@ jest.mock('utils/date', () => {
 })
 
 describe('pcapi', () => {
-  describe('signout', () => {
-    it('should sign out the user', () => {
-      // When
-      signout()
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/users/signout')
-    })
-  })
-
   describe('postThumbnail', () => {
     it('should call the api correct POST route with thumbnail info as body param', () => {
       // given

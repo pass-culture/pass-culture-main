@@ -1,5 +1,4 @@
 import flask
-from flask import jsonify
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -204,7 +203,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 
 @blueprint.pro_private_api.route("/users/signout", methods=["GET"])
 @login_required
+@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def signout():  # type: ignore [no-untyped-def]
     discard_session()
     logout_user()
-    return jsonify({"global": "Déconnecté"})
