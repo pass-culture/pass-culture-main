@@ -117,6 +117,8 @@ def validate_offerer(offerer_id: int) -> None:
         offerers_api.validate_offerer_by_id(offerer_id, author_user)
     except offerers_exceptions.OffererNotFoundException:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+    except offerers_exceptions.OffererAlreadyValidatedException:
+        raise api_errors.ApiErrors(errors={"offerer_id": "La structure est déjà validée"})
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/reject", methods=["POST"])
@@ -128,6 +130,8 @@ def reject_offerer(offerer_id: int, body: serialization.OptionalCommentRequest) 
         offerers_api.reject_offerer(offerer_id, author_user, comment=body.comment)
     except offerers_exceptions.OffererNotFoundException:
         raise api_errors.ResourceNotFoundError(errors={"offerer_id": "La structure n'existe pas"})
+    except offerers_exceptions.OffererAlreadyRejectedException:
+        raise api_errors.ApiErrors(errors={"offerer_id": "La structure est déjà rejetée"})
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/pending", methods=["POST"])

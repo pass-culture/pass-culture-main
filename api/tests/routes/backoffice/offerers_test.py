@@ -524,6 +524,22 @@ class ValidateOffererTest:
 
         # then
         assert response.status_code == 404
+        assert response.json["offerer_id"] == "La structure n'existe pas"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_validate_offerer_already_validated(self, client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.validate_offerer", offerer_id=user_offerer.offerer.id)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["offerer_id"] == "La structure est déjà validée"
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_validate_offerer_without_permission(self, client):
@@ -555,6 +571,102 @@ class ValidateOffererTest:
         assert response.status_code == 403
         db.session.refresh(user_offerer)
         assert not user_offerer.offerer.isValidated
+        assert not user_offerer.user.has_pro_role
+        assert history_models.ActionHistory.query.count() == 0
+
+
+class RejectOffererTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_reject_offerer(self, client):
+        # given
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.reject_offerer", offerer_id=offerer.id)
+        )
+
+        # then
+        assert response.status_code == 204
+        db.session.refresh(user)
+        db.session.refresh(offerer)
+        assert not offerer.isValidated
+        assert offerer.isRejected
+        assert not user.has_pro_role
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_REJECTED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user.id
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_reject_offerer_returns_404_if_offerer_is_not_found(self, client):
+        # given
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.reject_offerer", offerer_id=42)
+        )
+
+        # then
+        assert response.status_code == 404
+        assert response.json["offerer_id"] == "La structure n'existe pas"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_reject_offerer_already_rejected(self, client):
+        # given
+        offerer = offerers_factories.OffererFactory(validationStatus=offerers_models.ValidationStatus.REJECTED)
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.reject_offerer", offerer_id=offerer.id)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["offerer_id"] == "La structure est déjà rejetée"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_reject_offerer_without_permission(self, client):
+        # given
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.reject_offerer", offerer_id=user_offerer.offerer.id)
+        )
+
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        assert not user_offerer.offerer.isValidated
+        assert not user_offerer.offerer.isRejected
+        assert not user_offerer.user.has_pro_role
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_reject_offerer_as_anonymous(self, client):
+        # given
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+
+        # when
+        response = client.post(url_for("backoffice_blueprint.reject_offerer", offerer_id=user_offerer.offerer.id))
+
+        # then
+        assert response.status_code == 403
+        db.session.refresh(user_offerer)
+        assert not user_offerer.offerer.isValidated
+        assert not user_offerer.offerer.isRejected
         assert not user_offerer.user.has_pro_role
         assert history_models.ActionHistory.query.count() == 0
 
