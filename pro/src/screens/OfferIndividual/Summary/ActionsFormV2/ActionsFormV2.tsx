@@ -15,6 +15,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 interface IActionsFormV2Props {
   isCreation: boolean
+  isDraft: boolean
   offerId: string
   className?: string
   publishOffer: () => void
@@ -26,16 +27,19 @@ const ActionsFormV2 = ({
   className,
   publishOffer,
   isCreation = false,
+  isDraft = false,
   disablePublish = false,
 }: IActionsFormV2Props): JSX.Element => {
   const { logEvent } = useAnalytics()
+  let cancelUrl = `/offre/${offerId}/individuel/creation/stocks`
+  if (isDraft) cancelUrl = `/offre/${offerId}/individuel/brouillon/stocks`
 
   const renderCreationActions = (): JSX.Element => (
     <div className={className}>
       <ButtonLink
         variant={ButtonVariant.SECONDARY}
         link={{
-          to: `/offre/${offerId}/individuel/creation/stocks`,
+          to: cancelUrl,
           isExternal: false,
         }}
         onClick={() =>
@@ -88,7 +92,9 @@ const ActionsFormV2 = ({
     )
   }
 
-  return isCreation ? renderCreationActions() : renderEditionActions()
+  return isCreation || isDraft
+    ? renderCreationActions()
+    : renderEditionActions()
 }
 
 export default ActionsFormV2

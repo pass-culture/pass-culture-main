@@ -38,6 +38,7 @@ export interface ISummaryProps {
   offerId: string
   formOfferV2?: boolean
   isCreation?: boolean
+  isDraft?: boolean
   providerName: string | null
   offerStatus: string
   offer: IOfferSectionProps
@@ -50,6 +51,7 @@ export interface ISummaryProps {
 const Summary = ({
   formOfferV2 = false,
   isCreation = false,
+  isDraft = false,
   providerName,
   offerStatus,
   offerId,
@@ -65,7 +67,9 @@ const Summary = ({
   const { logEvent } = useAnalytics()
   const publishOffer = () => {
     setIsDisabled(true)
-    const url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
+    let url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
+    if (isDraft)
+      url = `/offre/${offerId}/individuel/brouillon/confirmation${location.search}`
     api
       // @ts-expect-error: type string is not assignable to type number
       .patchPublishOffer({ id: offerId })
@@ -103,7 +107,9 @@ const Summary = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: !isCreation,
     })
-    history.push(`/offre/${offerId}/v3/creation/individuelle/stocks`)
+    let url = `/offre/${offerId}/v3/creation/individuelle/stocks`
+    if (isDraft) url = `/offre/${offerId}/v3/brouillon/individuelle/stocks`
+    history.push(url)
   }
   const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
 
@@ -164,6 +170,7 @@ const Summary = ({
 
           {formOfferV2 ? (
             <ActionsFormV2
+              isDraft={isDraft}
               isCreation={isCreation}
               offerId={offerId}
               className={styles['offer-creation-preview-actions']}
@@ -186,7 +193,7 @@ const Summary = ({
             <span>Aperçu dans l'app</span>
           </div>
           <OfferAppPreview {...preview} />
-          {!isCreation && (
+          {!isCreation && !isDraft && (
             <div className={styles['offer-preview-app-link']}>
               <DisplayOfferInAppLink
                 nonHumanizedId={offer.nonHumanizedId}
