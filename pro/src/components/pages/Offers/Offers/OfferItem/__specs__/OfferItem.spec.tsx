@@ -7,6 +7,12 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
+import {
+  OFFER_STATUS_ACTIVE,
+  OFFER_STATUS_DRAFT,
+  OFFER_STATUS_PENDING,
+  OFFER_STATUS_REJECTED,
+} from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { RootState } from 'store/reducers'
@@ -376,32 +382,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
     })
 
-    it('should display the offer greyed when offer has pending status', () => {
-      // Given
-      props.offer.status = 'PENDING'
-
-      // When
-      renderOfferItem(props, store)
-
-      // Then
-      expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
-        'inactive'
-      )
-    })
-
-    it('should display the offer greyed when offer has rejected status', () => {
-      // Given
-      props.offer.status = 'REJECTED'
-
-      // When
-      renderOfferItem(props, store)
-
-      // Then
-      expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
-        'inactive'
-      )
-    })
-
     it('should display the offer greyed when offer is inactive', () => {
       // Given
       props.offer.isActive = false
@@ -415,31 +395,37 @@ describe('src | components | pages | Offers | OfferItem', () => {
       )
     })
 
-    it('should not display the offer greyed when offer is active', () => {
-      // Given
-      props.offer.status = 'ACTIVE'
+    const greyedOfferStatusDataSet = [
+      OFFER_STATUS_REJECTED,
+      OFFER_STATUS_PENDING,
+    ]
+    it.each(greyedOfferStatusDataSet)(
+      'should display the offer greyed when offer is %s',
+      status => {
+        props.offer.status = status
+        renderOfferItem(props, store)
 
-      // When
-      renderOfferItem(props, store)
+        // Then
+        expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
+          'inactive'
+        )
+      }
+    )
 
-      // Then
-      expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass(
-        'inactive'
-      )
-    })
+    const offerStatusDataSet = [OFFER_STATUS_ACTIVE, OFFER_STATUS_DRAFT]
+    it.each(offerStatusDataSet)(
+      'should not display the offer greyed when offer is %s',
+      status => {
+        props.offer.status = status
+        renderOfferItem(props, store)
 
-    it('should not display the offer greyed when offer is draft', () => {
-      // Given
-      props.offer.status = 'DRAFT'
+        // Then
+        expect(
+          screen.getByText('My little offer').closest('tr')
+        ).not.toHaveClass('inactive')
+      }
+    )
 
-      // When
-      renderOfferItem(props, store)
-
-      // Then
-      expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass(
-        'inactive'
-      )
-    })
     it('should have an edit link to detail page when offer is draft', () => {
       // Given
       props.offer.status = 'DRAFT'
