@@ -104,12 +104,20 @@ def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
     return eligible_users
 
 
-def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offerer) -> models.User:
+def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offerer) -> list[models.User]:
     return (
         models.User.query.join(offerers_models.UserOfferer)
         .filter(
             offerers_models.UserOfferer.isValidated,
             offerers_models.UserOfferer.offererId == offerer.id,
         )
+        .all()
+    )
+
+
+def get_users_with_attachment_by_offerer(offerer: offerers_models.Offerer) -> list[models.User]:
+    return (
+        models.User.query.join(offerers_models.UserOfferer)
+        .filter(offerers_models.UserOfferer.offererId == offerer.id)
         .all()
     )

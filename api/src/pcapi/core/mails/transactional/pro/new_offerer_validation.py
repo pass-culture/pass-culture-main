@@ -15,3 +15,15 @@ def send_new_offerer_validation_email_to_pro(offerer: Offerer) -> bool:
     offerer_email = find_new_offerer_user_email(offerer.id)
     data = get_new_offerer_validation_email_data(offerer)
     return mails.send(recipients=[offerer_email], data=data)
+
+
+def get_new_offerer_rejection_email_data(offerer: Offerer) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
+        template=TransactionalEmail.NEW_OFFERER_REJECTION.value, params={"OFFERER_NAME": offerer.name}
+    )
+
+
+def send_new_offerer_rejection_email_to_pro(offerer: Offerer) -> bool:
+    offerer_email = find_new_offerer_user_email(offerer.id)
+    data = get_new_offerer_rejection_email_data(offerer)
+    return mails.send(recipients=[offerer_email], data=data)

@@ -454,6 +454,7 @@ class CreateOffererTest:
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationToken is not None
+        assert created_offerer.validationStatus == offerers_models.ValidationStatus.NEW
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
@@ -463,6 +464,13 @@ class CreateOffererTest:
         mock_maybe_send_offerer_validation_email.assert_called_once_with(
             created_user_offerer.offerer, created_user_offerer
         )
+
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
 
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_digital_venue_if_siren_is_not_already_registered(self, mock_maybe_send_offerer_validation_email):
@@ -500,6 +508,7 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer.name
         assert created_offerer.validationToken is None
+        assert created_offerer.isValidated
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
@@ -509,6 +518,15 @@ class CreateOffererTest:
         mock_maybe_send_offerer_validation_email.assert_called_once_with(
             created_user_offerer.offerer, created_user_offerer
         )
+
+        # TODO (prouzet) when user_offerer history is implemented:
+        # actions_list = history_models.ActionHistory.query.all()
+        # assert len(actions_list) == 1
+        # assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        # assert actions_list[0].authorUser == user
+        # assert actions_list[0].user == user
+        # assert actions_list[0].offerer == offerer
+        assert history_models.ActionHistory.query.count() == 0
 
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(
@@ -529,9 +547,57 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer.name
         assert created_offerer.validationToken == "TOKEN"
+        assert not created_offerer.isValidated
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
+
+    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
+    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected(
+        self, mock_maybe_send_offerer_validation_email
+    ):
+        # Given
+        offerers_factories.VirtualVenueTypeFactory()
+        user = users_factories.UserFactory()
+        offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.OffererFactory(
+            name="Rejected Offerer",
+            siren=offerer_informations.siren,
+            validationStatus=offerers_models.ValidationStatus.REJECTED,
+        )
+
+        # When
+        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.id == offerer.id
+        assert created_offerer.name == offerer_informations.name
+        assert created_offerer.siren == offerer_informations.siren
+        assert created_offerer.address == offerer_informations.address
+        assert created_offerer.postalCode == offerer_informations.postalCode
+        assert created_offerer.city == offerer_informations.city
+        assert created_offerer.validationToken is not None
+        assert created_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationToken is None
+
+        assert not created_user_offerer.user.has_pro_role
+
+        mock_maybe_send_offerer_validation_email.assert_called_once_with(
+            created_user_offerer.offerer, created_user_offerer
+        )
+
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+        assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
 
 class ValidateOffererAttachmentTest:
@@ -596,6 +662,7 @@ class ValidateOffererByTokenTest:
 
         # Then
         assert user_offerer.offerer.validationToken is None
+        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
         assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
@@ -775,6 +842,117 @@ class ValidateOffererByIdTest:
         # Then
         assert not user_offerer.user.has_pro_role
         assert not user_offerer.offerer.isValidated
+        assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert history_models.ActionHistory.query.count() == 0
+
+
+@freeze_time("2020-10-15 00:00:00")
+class RejectOffererTest:
+    def test_offerer_is_not_validated(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
+
+        # When
+        offerers_api.reject_offerer(offerer.id, admin)
+
+        # Then
+        assert not offerer.isValidated
+        assert offerer.dateValidated is None
+        assert offerer.validationStatus == offerers_models.ValidationStatus.REJECTED
+
+    def test_pro_role_is_not_added_to_user(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory()
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=user)
+
+        # When
+        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+
+        # Then
+        assert not user.has_pro_role
+
+    def test_pro_role_is_not_removed_from_user(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        validated_user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=validated_user_offerer.user)
+
+        # When
+        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+
+        # Then
+        assert validated_user_offerer.user.has_pro_role
+
+    def test_attachment_has_been_removed(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+
+        # When
+        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+
+        # Then
+        assert offerers_models.UserOfferer.query.count() == 0
+
+    def test_api_key_has_been_removed(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
+
+        # When
+        offerers_api.reject_offerer(user_offerer.offerer.id, admin)
+
+        # Then
+        assert offerers_models.UserOfferer.query.count() == 0
+        assert offerers_models.ApiKey.query.count() == 0
+
+    @patch("pcapi.core.mails.transactional.send_new_offerer_rejection_email_to_pro", return_value=True)
+    def test_send_rejection_confirmation_email(self, send_new_offerer_rejection_email_to_pro):
+        # Given
+        admin = users_factories.AdminFactory()
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
+
+        # When
+        offerers_api.reject_offerer(offerer.id, admin)
+
+        # Then
+        send_new_offerer_rejection_email_to_pro.assert_called_once_with(offerer)
+
+    def test_action_is_logged(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # removed in reject_offerer()
+        offerers_factories.UserOffererFactory(offerer=offerer)  # another applicant
+
+        # When
+        offerers_api.reject_offerer(offerer.id, admin)
+
+        # Then
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_REJECTED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user.id
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+
+    def test_do_not_reject_if_id_not_found(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+
+        # When
+        with pytest.raises(offerers_exceptions.OffererNotFoundException):
+            offerers_api.reject_offerer(user_offerer.offerer.id + 100, admin)
+
+        # Then
         assert user_offerer.offerer.validationStatus == offerers_models.ValidationStatus.NEW
         assert history_models.ActionHistory.query.count() == 0
 
