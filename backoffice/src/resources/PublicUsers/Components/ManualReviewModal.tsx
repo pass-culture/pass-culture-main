@@ -34,8 +34,8 @@ export const ManualReviewModal = ({
 }) => {
   const [openModal, setOpenModal] = useState(false)
 
-  const fraudChecks = eligibilityFraudChecks.idCheckHistory
-  const noFraudCheck = fraudChecks.length <= 0
+  const fraudChecks = eligibilityFraudChecks?.idCheckHistory
+  const noFraudCheck = fraudChecks?.length <= 0
 
   const notify = useNotify()
 

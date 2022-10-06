@@ -23,6 +23,9 @@ import {
   BeneficiaryReviewResponseModel,
   BeneficiaryReviewResponseModelFromJSON,
   BeneficiaryReviewResponseModelToJSON,
+  CommentRequest,
+  CommentRequestFromJSON,
+  CommentRequestToJSON,
   GetBeneficiaryCreditResponseModel,
   GetBeneficiaryCreditResponseModelFromJSON,
   GetBeneficiaryCreditResponseModelToJSON,
@@ -85,6 +88,11 @@ import {
 export interface AddTagToOffererRequest {
   offererId: number
   tagName: string
+}
+
+export interface CommentOffererRequest {
+  offererId: number
+  commentRequest?: CommentRequest
 }
 
 export interface CreateRoleRequest {
@@ -268,6 +276,60 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: AddTagToOffererRequest
   ): Promise<void> {
     await this.addTagToOffererRaw(requestParameters)
+  }
+
+  /**
+   * comment_offerer <POST>
+   */
+  async commentOffererRaw(
+    requestParameters: CommentOffererRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling commentOfferer.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/comment`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+      body: CommentRequestToJSON(requestParameters.commentRequest),
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * comment_offerer <POST>
+   */
+  async commentOfferer(
+    requestParameters: CommentOffererRequest
+  ): Promise<void> {
+    await this.commentOffererRaw(requestParameters)
   }
 
   /**

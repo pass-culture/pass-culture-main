@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import { captureException } from '@sentry/react'
 import { format } from 'date-fns'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   useAuthenticated,
   useGetOne,
@@ -109,9 +109,12 @@ export const UserDetail = () => {
   const redirect = useRedirect()
   const [tabValue, setTabValue] = useState(1)
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue)
-  }
+  const handleChange = useCallback(
+    (event: React.SyntheticEvent, newValue: number) => {
+      setTabValue(newValue)
+    },
+    [setTabValue]
+  )
   const { data: userBaseInfo, isLoading } = useGetOne(
     'public_accounts',
     { id: id },
@@ -145,7 +148,6 @@ export const UserDetail = () => {
     })
     return <CircularProgress size={18} thickness={2} />
   }
-
   const { remainingCredit, initialCredit } = userBaseInfo.userCredit
   const { AGE18, UNDERAGE } = userBaseInfo.userHistory.subscriptions
 

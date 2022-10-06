@@ -12,7 +12,10 @@
  * Do not edit the class manually.
  */
 
-export const BASE_PATH = 'http://localhost'.replace(/\/+$/, '')
+export const BASE_PATH = 'https://backend.testing.passculture.team'.replace(
+  /\/+$/,
+  ''
+)
 
 const isBlob = (value: any) =>
   typeof Blob !== 'undefined' && value instanceof Blob
