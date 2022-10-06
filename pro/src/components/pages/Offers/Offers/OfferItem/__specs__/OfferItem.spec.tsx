@@ -440,6 +440,20 @@ describe('src | components | pages | Offers | OfferItem', () => {
         'inactive'
       )
     })
+    it('should have an edit link to detail page when offer is draft', () => {
+      // Given
+      props.offer.status = 'DRAFT'
+
+      // When
+      renderOfferItem(props, store)
+
+      // Then
+      const links = screen.getAllByRole('link')
+      expect(links[links.length - 1]).toHaveAttribute(
+        'href',
+        `/offre/${eventOffer.id}/individuel/brouillon`
+      )
+    })
 
     describe('when audience is COLLECTIVE', () => {
       it('should display a tag when offer is template', () => {

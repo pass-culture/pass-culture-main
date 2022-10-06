@@ -15,6 +15,7 @@ import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHead
 import OfferBreadcrumb, {
   OfferBreadcrumbStep,
 } from 'new_components/OfferBreadcrumb'
+import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import { OfferV2Summary as OfferV2SummaryRoute } from 'routes/OfferV2Summary'
 import { Title } from 'ui-kit'
@@ -25,6 +26,7 @@ import Stocks from './Stocks/Stocks'
 const mapPathToStep = {
   creation: OfferBreadcrumbStep.DETAILS,
   edition: OfferBreadcrumbStep.DETAILS,
+  brouillon: OfferBreadcrumbStep.DETAILS,
   stocks: OfferBreadcrumbStep.STOCKS,
   recapitulatif: OfferBreadcrumbStep.SUMMARY,
   confirmation: OfferBreadcrumbStep.CONFIRMATION,
@@ -44,7 +46,11 @@ const getActiveStepFromLocation = location => {
     urlMatch = location.pathname.match(/[a-z]+\/individuel$/)
     stepName = urlMatch && urlMatch[0].split('/individuel')[0]
   }
-
+  // handle draft completion url
+  if (stepName === 'brouillon') {
+    urlMatch = location.pathname.match(/\/[a-z]+\/brouillon$/)
+    stepName = urlMatch && urlMatch[0].split('/individuel/')[1]
+  }
   return stepName ? mapPathToStep[stepName] : null
 }
 
@@ -53,6 +59,7 @@ const OfferLayout = () => {
   const location = useLocation()
   const match = useRouteMatch()
   const isCreatingOffer = location.pathname.includes('creation')
+  const isCompletingDraft = useIsCompletingDraft()
   const [offer, setOffer] = useState(null)
 
   const loadOffer = async offerId => {
@@ -84,14 +91,16 @@ const OfferLayout = () => {
     return null
   }
 
-  if (!isCreatingOffer) {
-    pageTitle = "Éditer l'offre"
+  if (isCompletingDraft) pageTitle = "Compléter l'offre"
+  else if (!isCreatingOffer)
     if (activeStep in editPageTitleByStep)
       pageTitle = editPageTitleByStep[activeStep]
-  }
+    else pageTitle = "Éditer l'offre"
 
   const offerHeader =
-    !isCreatingOffer && !location.pathname.includes('/confirmation') ? (
+    !isCreatingOffer &&
+    !isCompletingDraft &&
+    !location.pathname.includes('/confirmation') ? (
       <OfferHeader offer={offer} reloadOffer={reloadOffer} />
     ) : null
 
@@ -118,11 +127,14 @@ const OfferLayout = () => {
       <OfferBreadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}
+        isCompletingDraft={isCompletingDraft}
         isOfferEducational={false}
         offerId={offer?.id}
         haveStock={offerHaveStock}
         className={
-          isCreatingOffer ? 'pc-breadcrumb-creation' : 'pc-breadcrumb-edition'
+          isCreatingOffer || isCompletingDraft
+            ? 'pc-breadcrumb-creation'
+            : 'pc-breadcrumb-edition'
         }
       />
 
@@ -133,6 +145,7 @@ const OfferLayout = () => {
             path={[
               '/offre/creation/individuel',
               '/offre/:offer_id/individuel/creation',
+              '/offre/:offer_id/individuel/brouillon',
             ]}
           >
             {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
@@ -140,6 +153,7 @@ const OfferLayout = () => {
             {/* in OfferDetails as the offer is loaded in the stock edition page */}
             <OfferDetails
               isCreatingOffer={isCreatingOffer}
+              isCompletingDraft={isCompletingDraft}
               offer={offer}
               reloadOffer={reloadOffer}
             />
@@ -149,12 +163,17 @@ const OfferLayout = () => {
           </Route>
           <Route
             exact
-            path={[`${match.url}/stocks`, `${match.url}/creation/stocks`]}
+            path={[
+              `${match.url}/stocks`,
+              `${match.url}/creation/stocks`,
+              `${match.url}/brouillon/stocks`,
+            ]}
           >
             <Stocks
               location={location}
               offer={offer}
               reloadOffer={reloadOffer}
+              isCompletingDraft={isCompletingDraft}
             />
           </Route>
           <Route
@@ -162,13 +181,17 @@ const OfferLayout = () => {
             path={[
               `${match.path}/recapitulatif`,
               `${match.path}/creation/recapitulatif`,
+              `${match.path}/brouillon/recapitulatif`,
             ]}
           >
             <OfferV2SummaryRoute />
           </Route>
           <Route
             exact
-            path={`${match.url}/creation/confirmation`}
+            path={[
+              `${match.url}/creation/confirmation`,
+              `${match.url}/brouillon/confirmation`,
+            ]}
             render={() => (
               <Confirmation
                 offer={offer}

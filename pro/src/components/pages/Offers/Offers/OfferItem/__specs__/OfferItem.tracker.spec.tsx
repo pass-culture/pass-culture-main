@@ -114,10 +114,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should track when clicking on offer pen', async () => {
       // when
       renderOfferItem(props, store)
-
       // then
-      const links = screen.getAllByRole('link')
-      const editLink = links[links.length - 1]
+      const editLink = screen.getByRole('link', { name: 'Stocks' })
       await userEvent.click(editLink)
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -126,8 +124,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           isEdition: true,
-          to: 'recapitulatif',
-          used: 'OffersPen',
+          to: 'stocks',
+          used: 'OffersStocks',
         }
       )
     })

@@ -156,7 +156,7 @@ describe('stocks page', () => {
   describe('create', () => {
     it('should not display offer status', async () => {
       // Given / When
-      renderOffers(props, store)
+      renderOffers(props, store, '/offre/AG3A/individuel/creation/stocks')
       await screen.findByRole('heading', { name: 'Stocks et prix' })
 
       // Then

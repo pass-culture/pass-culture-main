@@ -31,7 +31,12 @@ import OfferStatusBanner from './OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail'
 import { computeInitialValuesFromOffer } from './utils'
 
-const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
+const OfferDetails = ({
+  isCreatingOffer,
+  isCompletingDraft,
+  offer,
+  reloadOffer,
+}) => {
   const history = useHistory()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
@@ -104,8 +109,10 @@ const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
     if (formInitialValues.venueId !== undefined) {
       queryString += `&lieu=${formInitialValues.venueId}`
     }
-
-    history.push(`/offre/${offerId}/individuel/creation/stocks${queryString}`)
+    let url = `/offre/${offerId}/individuel/creation/stocks${queryString}`
+    if (isCompletingDraft)
+      url = `/offre/${offerId}/individuel/brouillon/stocks${queryString}`
+    history.push(url)
   }
 
   const postThumbnail = useCallback(
@@ -160,7 +167,7 @@ const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
           setFormErrors({})
           setThumbnailError(false)
           setThumbnailMsgError('')
-          if (isCreatingOffer) {
+          if (isCreatingOffer || isCompletingDraft) {
             return Promise.resolve(() => goToStockAndPrice(offer.id))
           } else {
             return Promise.resolve(() =>
@@ -240,7 +247,7 @@ const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
                 isDisabled={isDisabled}
                 isUserAdmin={currentUser.isAdmin}
                 offer={offer}
-                isCreatingOffer={isCreatingOffer}
+                isCreatingOffer={isCreatingOffer || isCompletingDraft}
                 onSubmit={handleSubmitOffer}
                 setOfferPreviewData={setOfferPreviewData}
                 showErrorNotification={showErrorNotification}
@@ -280,7 +287,7 @@ const OfferDetails = ({ isCreatingOffer, offer, reloadOffer }) => {
               />
               <OfferPreview offerPreviewData={offerPreviewData} />
             </div>
-            {!isCreatingOffer ? (
+            {!isCreatingOffer && !isCompletingDraft ? (
               <div className="offer-details-offer-preview-app-link">
                 <DisplayOfferInAppLink
                   nonHumanizedId={offer.nonHumanizedId}
@@ -309,12 +316,14 @@ OfferDetails.defaultProps = {
   offer: null,
   reloadOffer: null,
   isCreatingOffer: false,
+  isCompletingDraft: false,
 }
 
 OfferDetails.propTypes = {
   offer: PropTypes.shape(),
   reloadOffer: PropTypes.func,
   isCreatingOffer: PropTypes.bool,
+  isCompletingDraft: PropTypes.bool,
 }
 
 export default OfferDetails

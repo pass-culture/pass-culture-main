@@ -42,6 +42,17 @@ describe('src | new_components | OfferBreadcrumb', () => {
       expect(listItems[1]).toHaveTextContent('Stocks et prix')
       expect(listItems[2]).toHaveTextContent('Récapitulatif')
       expect(listItems[3]).toHaveTextContent('Confirmation')
+      const links = await screen.findAllByRole('link')
+
+      expect(links).toHaveLength(2)
+      expect(links[0]).toHaveAttribute(
+        'href',
+        expect.stringContaining('creation')
+      )
+      expect(links[1]).toHaveAttribute(
+        'href',
+        expect.stringContaining('creation')
+      )
     })
 
     it('should display breadcrumb for individual offer in edition', async () => {
@@ -69,6 +80,33 @@ describe('src | new_components | OfferBreadcrumb', () => {
       )
       expect(linkItems[1].getAttribute('href')).toBe(
         '/offre/A1/individuel/stocks'
+      )
+    })
+    it('should display breadcrumb for individual offer in brouillon', async () => {
+      props.isCreatingOffer = false
+      props.isCompletingDraft = true
+      renderOfferBreadcrumb(props)
+
+      expect(await screen.getByTestId('stepper')).toBeInTheDocument()
+
+      const listItems = await screen.findAllByRole('listitem')
+
+      expect(listItems).toHaveLength(4)
+      expect(listItems[0]).toHaveTextContent("Détails de l'offre")
+      expect(listItems[1]).toHaveTextContent('Stocks et prix')
+      expect(listItems[2]).toHaveTextContent('Récapitulatif')
+      expect(listItems[3]).toHaveTextContent('Confirmation')
+
+      const links = await screen.findAllByRole('link')
+
+      expect(links).toHaveLength(2)
+      expect(links[0]).toHaveAttribute(
+        'href',
+        expect.stringContaining('brouillon')
+      )
+      expect(links[1]).toHaveAttribute(
+        'href',
+        expect.stringContaining('brouillon')
       )
     })
   })
