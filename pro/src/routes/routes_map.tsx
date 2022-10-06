@@ -40,6 +40,7 @@ import { VenueEdition } from 'routes/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import CollectiveOfferCreationFromTemplate from './CollectiveOfferCreationFromTemplate'
+import CollectiveOfferStockCreationFromTemplate from './CollectiveOfferStockCreationFromTemplate'
 import CollectiveOfferSummary from './CollectiveOfferSummary'
 import CollectiveOfferTemplateSummary from './CollectiveOfferTemplateSummary'
 import { OffererStats } from './OffererStats'
@@ -273,7 +274,7 @@ const routes: IRoute[] = [
   },
   {
     component: CollectiveOfferCreationFromTemplate,
-    exact: false,
+    exact: true,
     path: '/offre/duplication/collectif/:templateId([A-Z0-9]+)',
     title: 'Offre collective',
     featureName: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
@@ -295,6 +296,13 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks',
     title: 'Stock lié à une offre collective',
+  },
+  {
+    component: CollectiveOfferStockCreationFromTemplate,
+    exact: true,
+    path: '/offre/duplication/collectif/:offerId([A-Z0-9]+)/stock',
+    title: 'Stock lié à une offre collective',
+    featureName: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
   },
   {
     component: CollectiveOfferCreationVisibility,

@@ -55,6 +55,7 @@ const getNextButtonWording = (
 
 export interface IOfferEducationalStockProps {
   initialValues: OfferEducationalStockFormValues
+  isCreatingFromTemplate?: boolean
   offer: GetStockOfferSuccessPayload
   onSubmit: (
     offer: GetStockOfferSuccessPayload,
@@ -67,6 +68,7 @@ export interface IOfferEducationalStockProps {
 
 const OfferEducationalStock = ({
   initialValues,
+  isCreatingFromTemplate = false,
   offer,
   onSubmit,
   mode,
@@ -105,7 +107,8 @@ const OfferEducationalStock = ({
   }, [initialValues, resetForm])
 
   const shouldDisplayShowcaseScreen =
-    mode == Mode.CREATION || (mode == Mode.EDITION && offer.isShowcase)
+    !isCreatingFromTemplate &&
+    (mode == Mode.CREATION || (mode == Mode.EDITION && offer.isShowcase))
 
   const displayElementsForShowcaseOption =
     shouldDisplayShowcaseScreen &&

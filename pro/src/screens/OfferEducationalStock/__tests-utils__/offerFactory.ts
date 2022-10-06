@@ -13,5 +13,6 @@ export const offerFactory = (
   managingOffererId: 'OFFERER_ID',
   isEducational: true,
   isShowcase: false,
+  name: 'Offre de test',
   ...offerExtend,
 })
