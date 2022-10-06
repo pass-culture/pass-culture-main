@@ -135,6 +135,10 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
     }
   }, [offerId, isReady, notify, history])
 
+  if (!offer || !isReady) {
+    return <Spinner />
+  }
+
   return (
     <CollectiveOfferLayout
       breadCrumpProps={{
@@ -143,19 +147,16 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
         offerId: offerIdFromParams,
       }}
       title="Éditer une offre collective"
+      subTitle={offer.name}
     >
-      {offer && isReady ? (
-        <OfferEducationalStockScreen
-          cancelActiveBookings={cancelActiveBookings}
-          initialValues={initialValues}
-          mode={Mode.EDITION} // a collective offer template is always editable
-          offer={offer}
-          onSubmit={handleSubmitStock}
-          setIsOfferActive={setIsOfferActive}
-        />
-      ) : (
-        <Spinner />
-      )}
+      <OfferEducationalStockScreen
+        cancelActiveBookings={cancelActiveBookings}
+        initialValues={initialValues}
+        mode={Mode.EDITION} // a collective offer template is always editable
+        offer={offer}
+        onSubmit={handleSubmitStock}
+        setIsOfferActive={setIsOfferActive}
+      />
     </CollectiveOfferLayout>
   )
 }
