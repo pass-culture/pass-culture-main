@@ -101,9 +101,6 @@ export const postThumbnail = (
 // user
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'user' implicitly has an 'any' type.
-export const signup = user => client.post('/users/signup/pro', user)
-
 export const signout = () => client.get('/users/signout')
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'body' implicitly has an 'any' type.

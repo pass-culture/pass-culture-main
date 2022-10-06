@@ -6,11 +6,11 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import SignupForm from '../SignupForm'
@@ -18,12 +18,10 @@ import SignupForm from '../SignupForm'
 const mockLogEvent = jest.fn()
 
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
-jest.mock('repository/pcapi/pcapi', () => ({
-  signup: jest.fn(),
-}))
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn().mockResolvedValue({}),
+    signupPro: jest.fn(),
   },
 }))
 
@@ -59,7 +57,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
     }
-    pcapi.signup.mockResolvedValue({})
+    api.signupPro.mockResolvedValue({})
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
@@ -343,10 +341,10 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
         await userEvent.click(submitButton)
 
-        expect(pcapi.signup).toHaveBeenCalledWith({
+        expect(api.signupPro).toHaveBeenCalledWith({
           address: '4 rue du test',
           city: 'Plessix-Balisson',
-          contactOk: '',
+          contactOk: false,
           email: 'test@example.com',
           firstName: 'Prénom',
           lastName: 'Nom',
@@ -370,7 +368,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })
       it('should show a notification on api call error', async () => {
-        pcapi.signup.mockRejectedValue({
+        api.signupPro.mockRejectedValue({
           errors: {
             phoneNumber: 'Le téléphone doit faire moins de 20 caractères',
           },
@@ -406,7 +404,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         await userEvent.tab()
 
         await userEvent.click(submitButton)
-        expect(pcapi.signup).toHaveBeenCalledTimes(1)
+        expect(api.signupPro).toHaveBeenCalledTimes(1)
         expect(submitButton).toBeDisabled()
 
         expect(
