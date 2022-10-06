@@ -2,6 +2,7 @@ import collections
 import datetime
 import itertools
 import logging
+from operator import attrgetter
 import secrets
 import statistics
 import time
@@ -51,7 +52,13 @@ def _get_eta(total: int, current: int, elapsed_per_invoice: list[float]) -> str:
 @blueprint.cli.command("generate_complementary_invoices")
 @click.option("--after-id", help="Limit to invoices id after ID (not included)", default=0)
 @click.option("--only-id", help="Limit to this specific invoice id", default=0)
-def generate_complementary_invoices(after_id: int, only_id: int) -> None:
+@click.option(
+    "--only-pdf",
+    is_flag=True,
+    help="Expect the complementary invoice to exist and only generate the PDF file",
+    default=False,
+)
+def generate_complementary_invoices(after_id: int, only_id: int, only_pdf: bool) -> None:
     """Generate and store complementary invoices, up to cashflow batch N
     (included).
     """
@@ -72,33 +79,52 @@ def generate_complementary_invoices(after_id: int, only_id: int) -> None:
     elapsed_per_invoice = []
     for original_invoice in invoices:
         start = time.perf_counter()
-        with log_elapsed(
-            logger,
-            f"Generated complementary invoice {original_invoice.id}: {original_invoice.reference}.2",
-        ):
-            reimbursement_point_id = original_invoice.reimbursementPointId
-            cashflow_ids = [c.id for c in original_invoice.cashflows]
-            # It's important to call our custom function (defined
-            # below) and NOT `core.finance.api._generate_invoice()`.
-            complementary_invoice = _custom_generate_invoice(
-                reimbursement_point_id=reimbursement_point_id,
-                cashflow_ids=cashflow_ids,
-                original_invoice=original_invoice,
+        if not original_invoice.reimbursementPointId:
+            logger.warning(
+                "Could not generate complementary invoice (missing reimbursement point) for %s",
+                original_invoice.reference,
             )
-            # Again, call our custom function that uses a custom
-            # template.
-            html = _custom_generate_invoice_html(complementary_invoice)
-            finance_api._store_invoice_pdf(complementary_invoice.storage_object_id, html)
-        done += 1
-        elapsed = time.perf_counter() - start
-        elapsed_per_invoice.append(elapsed)
-        if done % 100 == 0:
-            eta = _get_eta(total, done, elapsed_per_invoice)
-            print(f"  => {done} done, ETA = {eta}")
+            continue
+        try:
+            with log_elapsed(
+                logger,
+                f"Generated complementary invoice {original_invoice.id}: {original_invoice.reference}.2",
+            ):
+                reimbursement_point_id = original_invoice.reimbursementPointId
+                cashflow_ids = [c.id for c in original_invoice.cashflows]
+                if only_pdf:
+                    # Handle cases where we generated an Invoice
+                    # object but could not generate the PDF.
+                    complementary_invoice = finance_models.Invoice.query.filter_by(
+                        reference=original_invoice.reference + ".2"
+                    ).one()
+                else:
+                    # It's important to call our custom function (defined
+                    # below) and NOT `core.finance.api._generate_invoice()`.
+                    complementary_invoice = _custom_generate_invoice(
+                        reimbursement_point_id=reimbursement_point_id,
+                        cashflow_ids=cashflow_ids,
+                        original_invoice=original_invoice,
+                    )
+                # Again, call our custom function that uses a custom
+                # template.
+                html = _custom_generate_invoice_html(complementary_invoice)
+                finance_api._store_invoice_pdf(complementary_invoice.storage_object_id, html)
+            elapsed = time.perf_counter() - start
+            elapsed_per_invoice.append(elapsed)
+            done += 1
+            if done % 100 == 0:
+                eta = _get_eta(total, done, elapsed_per_invoice)
+                print(f"  => {done} done, ETA = {eta}")
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not generate complementary invoice and/or PDF (unexpected error) for %s",
+                original_invoice.reference,
+            )
 
 
 def _custom_generate_invoice_html(invoice: finance_models.Invoice) -> str:
-    context = finance_api._prepare_invoice_context(invoice)
+    context = _custom_prepare_invoice_context(invoice)
     context["original_reference_number"] = invoice.reference.replace(".2", "")
     return render_template("invoices/complementary_invoice.html", **context)
 
@@ -165,3 +191,78 @@ def _custom_generate_invoice(
     db.session.bulk_save_objects(cf_links)
     db.session.commit()
     return invoice
+
+
+# This is a copy of `core.finance.api._prepare_invoice_context()`, except
+# we get the BankInformation object from the cashflows instead of looking
+# at the current BankInformation of the reimbursement point, because
+# some reimbursement points do not have any BankInformation.
+def _custom_prepare_invoice_context(invoice: finance_models.Invoice) -> dict:
+    # Easier to sort here and not in PostgreSQL, and not much slower
+    # because there are very few cashflows (and usually only 1).
+    cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
+
+    invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
+    total_used_bookings_amount = 0
+    total_contribution_amount = 0
+    total_reimbursed_amount = 0
+    invoice_groups: dict[str, tuple[str, list[finance_models.InvoiceLine]]] = {}
+    for group, lines in itertools.groupby(invoice_lines, attrgetter("group")):
+        invoice_groups[group["label"]] = (group, list(lines))
+
+    groups = []
+    for group, lines in invoice_groups.values():  # type: ignore [assignment]
+        contribution_subtotal = sum(line.contributionAmount for line in lines)
+        total_contribution_amount += contribution_subtotal
+        reimbursed_amount_subtotal = sum(line.reimbursedAmount for line in lines)
+        total_reimbursed_amount += reimbursed_amount_subtotal
+        used_bookings_subtotal = sum(line.bookings_amount for line in lines)
+        total_used_bookings_amount += used_bookings_subtotal
+
+        invoice_group = finance_models.InvoiceLineGroup(
+            position=group["position"],
+            label=group["label"],
+            contribution_subtotal=contribution_subtotal,
+            reimbursed_amount_subtotal=reimbursed_amount_subtotal,
+            used_bookings_subtotal=used_bookings_subtotal,
+            lines=lines,  # type: ignore [arg-type]
+        )
+        groups.append(invoice_group)
+    reimbursements_by_venue = finance_api.get_reimbursements_by_venue(invoice)
+
+    reimbursement_point = None
+    reimbursement_point_name = None
+    reimbursement_point_iban = None
+
+    reimbursement_point = invoice.reimbursementPoint
+    if reimbursement_point is None:
+        raise ValueError("Could not generate invoice without reimbursement point")
+    reimbursement_point_name = reimbursement_point.publicName or reimbursement_point.name
+    #
+    # bank_information = offerers_repository.BankInformation.query.filter(
+    #    offerers_repository.BankInformation.venueId == reimbursement_point.id
+    # ).one()
+    bank_information = (
+        finance_models.BankInformation.query.join(finance_models.Cashflow.bankAccount)
+        .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.cashflowId == finance_models.Cashflow.id)
+        .join(finance_models.Invoice, finance_models.Invoice.id == finance_models.InvoiceCashflow.invoiceId)
+        .filter(finance_models.Invoice.id == invoice.id)
+        .first()
+    )
+    reimbursement_point_iban = bank_information.iban if bank_information else None
+    period_start, period_end = finance_api.get_invoice_period(invoice.date)
+
+    return dict(
+        invoice=invoice,
+        cashflows=cashflows,
+        groups=groups,
+        reimbursement_point=reimbursement_point,
+        reimbursement_point_name=reimbursement_point_name,
+        reimbursement_point_iban=reimbursement_point_iban,
+        total_used_bookings_amount=total_used_bookings_amount,
+        total_contribution_amount=total_contribution_amount,
+        total_reimbursed_amount=total_reimbursed_amount,
+        period_start=period_start,
+        period_end=period_end,
+        reimbursements_by_venue=reimbursements_by_venue,
+    )
