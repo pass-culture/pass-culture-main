@@ -2,6 +2,7 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useLogEventOnUnload from 'components/hooks/useLogEventOnUnload'
@@ -12,7 +13,6 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { BannerInvisibleSiren, BannerRGS } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { Button, SubmitButton, TextInput, Checkbox } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
@@ -54,8 +54,8 @@ const SignupForm = (): JSX.Element => {
   const onSubmit = (values: ISignupFormValues) => {
     const { legalUnitValues, ...flattenvalues } = values
     const { firstName, siren } = flattenvalues
-    pcapi
-      .signup({
+    api
+      .signupPro({
         ...flattenvalues,
         ...legalUnitValues,
         siren: removeWhitespaces(siren),
@@ -207,7 +207,6 @@ const SignupForm = (): JSX.Element => {
                       nouveautés du pass Culture et contribuer à son
                       amélioration (facultatif)"
                     name="contactOk"
-                    value={formik.values.contactOk}
                   />
                 </FormLayout.Row>
                 <LegalInfos
