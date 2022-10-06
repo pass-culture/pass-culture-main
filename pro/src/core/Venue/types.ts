@@ -1,4 +1,9 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
+import {
+  GetVenueDomainResponseModel,
+  GetVenueResponseModel,
+  LegalStatusResponseModel,
+  StudentLevels,
+} from 'apiClient/v1'
 import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import { IAccessibiltyFormValues } from 'core/shared'
 
@@ -51,6 +56,16 @@ export interface IVenue {
   venueType: string
   venueLabel: string
   withdrawalDetails: string
+  collectiveAccessInformation: string
+  collectiveDescription: string
+  collectiveDomains: Array<GetVenueDomainResponseModel>
+  collectiveEmail: string
+  collectiveInterventionArea: Array<string>
+  collectiveLegalStatus: LegalStatusResponseModel | null
+  collectiveNetwork: Array<string>
+  collectivePhone: string
+  collectiveStudents: Array<StudentLevels>
+  collectiveWebsite: string
 }
 
 export type IProviders = {

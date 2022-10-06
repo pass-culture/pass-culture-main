@@ -11,6 +11,7 @@ import { IProviders, IVenue } from '../../core/Venue/types'
 import { Accessibility } from './Accessibility'
 import { Address } from './Address'
 import { Contact } from './Contact'
+import { EACInformation } from './EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { OffersSynchronization } from './OffersSynchronization'
@@ -74,6 +75,7 @@ const VenueForm = ({
         <Accessibility isCreatingVenue={isCreatingVenue} />
         <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
         <Contact />
+        <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
         <SubmitButton isLoading={isSubmitting}>Valider</SubmitButton>
       </FormLayout>
     </div>

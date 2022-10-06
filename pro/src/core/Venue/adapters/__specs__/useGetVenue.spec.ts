@@ -56,6 +56,15 @@ describe('useGetVenue', () => {
       bookingEmail: 'test@example.com',
       venueTypeCode: VenueTypeCode.LIBRAIRIE,
       withdrawalDetails: '',
+      collectiveAccessInformation: '',
+      collectiveDescription: 'Description',
+      collectiveEmail: 'email@email.email',
+      collectiveInterventionArea: [],
+      collectiveLegalStatus: null,
+      collectiveNetwork: [],
+      collectivePhone: '',
+      collectiveStudents: [],
+      collectiveWebsite: '',
     }
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
@@ -110,6 +119,16 @@ describe('useGetVenue', () => {
       venueLabel: '',
       venueType: 'Librairie',
       withdrawalDetails: '',
+      collectiveAccessInformation: '',
+      collectiveDescription: 'Description',
+      collectiveDomains: [],
+      collectiveEmail: 'email@email.email',
+      collectiveInterventionArea: [],
+      collectiveLegalStatus: null,
+      collectiveNetwork: [],
+      collectivePhone: '',
+      collectiveStudents: [],
+      collectiveWebsite: '',
     }
 
     await waitForNextUpdate()

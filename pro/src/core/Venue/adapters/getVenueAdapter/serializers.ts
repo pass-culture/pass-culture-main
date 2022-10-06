@@ -44,6 +44,16 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     venueLabel: venue.venueLabelId || '',
     venueType: venue.venueTypeCode || '',
     withdrawalDetails: venue.withdrawalDetails || '',
+    collectiveAccessInformation: venue.collectiveAccessInformation || '',
+    collectiveDescription: venue.collectiveDescription || '',
+    collectiveDomains: venue.collectiveDomains || [],
+    collectiveEmail: venue.collectiveEmail || '',
+    collectiveInterventionArea: venue.collectiveInterventionArea || [],
+    collectiveLegalStatus: venue.collectiveLegalStatus || null,
+    collectiveNetwork: venue.collectiveNetwork || [],
+    collectivePhone: venue.collectivePhone || '',
+    collectiveStudents: venue.collectiveStudents || [],
+    collectiveWebsite: venue.collectiveWebsite || '',
   }
 }
 
