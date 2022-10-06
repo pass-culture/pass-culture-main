@@ -9,15 +9,10 @@ import { MemoryRouter, Route } from 'react-router'
 import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 const GUYANA_CAYENNE_DEPT = '973'
-
-jest.mock('repository/pcapi/pcapi', () => ({
-  deleteStock: jest.fn(),
-}))
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -27,6 +22,7 @@ jest.mock('apiClient/api', () => ({
     getVenues: jest.fn(),
     getStocks: jest.fn(),
     upsertStocks: jest.fn(),
+    deleteStock: jest.fn(),
   },
 }))
 
@@ -134,7 +130,7 @@ describe('stocks page', () => {
       categories: [],
       subcategories: [],
     })
-    pcapi.deleteStock.mockResolvedValue({ id: stockId })
+    api.deleteStock.mockResolvedValue({ id: stockId })
     api.upsertStocks.mockResolvedValue({})
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
