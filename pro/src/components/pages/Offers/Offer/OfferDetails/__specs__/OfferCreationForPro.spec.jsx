@@ -29,7 +29,6 @@ Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
 }))
@@ -41,6 +40,7 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
     getVenue: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -172,7 +172,7 @@ describe('offerDetails - Creation - pro user', () => {
     it('should get categories from API', async () => {
       // When
       await renderOffers(props)
-      await waitFor(() => expect(pcapi.loadCategories).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(api.getCategories).toHaveBeenCalledTimes(1))
     })
 
     it("should get user's offerer from API", async () => {
@@ -1687,7 +1687,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Given
           await renderOffers(props)
           await waitFor(() =>
-            expect(pcapi.loadCategories).toHaveBeenCalledTimes(1)
+            expect(api.getCategories).toHaveBeenCalledTimes(1)
           )
 
           // When

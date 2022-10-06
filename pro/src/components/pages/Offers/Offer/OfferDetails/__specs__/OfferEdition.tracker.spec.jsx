@@ -10,7 +10,6 @@ import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import { fieldLabels } from './helpers'
@@ -19,7 +18,6 @@ window.open = jest.fn()
 const mockLogEvent = jest.fn()
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   postThumbnail: jest.fn(),
 }))
@@ -30,6 +28,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     getVenues: jest.fn(),
     getVenue: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -149,7 +148,7 @@ describe('offerDetails - Edition', () => {
     }
 
     jest.spyOn(api, 'getOffer').mockResolvedValue(editedOffer)
-    pcapi.loadCategories.mockResolvedValue(categories)
+    api.getCategories.mockResolvedValue(categories)
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,

@@ -11,7 +11,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import * as pcapi from 'repository/pcapi/pcapi'
+import { CATEGORY_STATUS } from 'core/Offers'
 import { configureTestStore } from 'store/testUtils'
 
 import { OfferIndividualWizard } from '..'
@@ -183,7 +183,7 @@ describe('test OfferIndividualWisard', () => {
       .mockResolvedValue({ offerersNames: [] })
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     jest
-      .spyOn(pcapi, 'loadCategories')
+      .spyOn(api, 'getCategories')
       .mockResolvedValue({ categories: [], subcategories: [] })
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   })
@@ -211,7 +211,7 @@ describe('test OfferIndividualWisard', () => {
       'CU' // offererId
     )
 
-    expect(pcapi.loadCategories).toHaveBeenCalledWith()
+    expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).not.toHaveBeenCalled()
   })
 
@@ -231,23 +231,35 @@ describe('test OfferIndividualWisard', () => {
 
     expect(api.getVenues).not.toHaveBeenCalled()
     expect(api.listOfferersNames).not.toHaveBeenCalled()
-    expect(pcapi.loadCategories).not.toHaveBeenCalled()
+    expect(api.getCategories).not.toHaveBeenCalled()
     expect(api.getOffer).not.toHaveBeenCalled()
   })
 
   it('should initialize context with api when a offerId is given', async () => {
-    jest.spyOn(pcapi, 'loadCategories').mockResolvedValue({
+    jest.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [
         {
           id: 'A',
-          name: 'Category name',
+          proLabel: 'Category name',
+          isSelectable: true,
         },
       ],
       subcategories: [
         {
           id: SubcategoryIdEnum.SEANCE_CINE,
-          name: 'Sub category name',
+          proLabel: 'Sub category name',
+          appLabel: 'Sub category name',
           categoryId: 'A',
+          isSelectable: true,
+          canBeDuo: true,
+          canBeEducational: true,
+          canExpire: false,
+          conditionalFields: [],
+          isDigitalDeposit: false,
+          isEvent: true,
+          isPhysicalDeposit: true,
+          onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+          reimbursementRule: '',
         },
       ],
     })
@@ -265,7 +277,7 @@ describe('test OfferIndividualWisard', () => {
       true, // activeOfferersOnly,
       apiOffer.venue.managingOfferer.id // offererId
     )
-    expect(pcapi.loadCategories).toHaveBeenCalledWith()
+    expect(api.getCategories).toHaveBeenCalledWith()
 
     expect(api.listOfferersNames).not.toHaveBeenCalled()
     expect(api.getOffer).toHaveBeenCalledWith(offerId)

@@ -1156,5 +1156,5 @@ export const loadFakeApiCategories = () => {
     ],
   }
 
-  jest.spyOn(pcapi, 'loadCategories').mockResolvedValue(categories)
+  jest.spyOn(api, 'getCategories').mockResolvedValue(categories)
 }

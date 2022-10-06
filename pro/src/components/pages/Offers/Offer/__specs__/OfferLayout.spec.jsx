@@ -8,14 +8,9 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferLayout from '../OfferLayout'
-
-jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn(),
-}))
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -24,6 +19,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getCategories: jest.fn(),
   },
 }))
 
@@ -89,7 +85,7 @@ describe('offerLayout', () => {
       ],
     }
     jest.spyOn(api, 'getOffer')
-    pcapi.loadCategories.mockResolvedValue(categories)
+    jest.spyOn(api, 'getCategories').mockResolvedValue(categories)
   })
 
   describe('render when editing an existing offer', () => {
