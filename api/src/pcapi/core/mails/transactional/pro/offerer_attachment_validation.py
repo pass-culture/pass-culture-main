@@ -16,3 +16,16 @@ def get_offerer_attachment_validation_email_data(
 def send_offerer_attachment_validation_email_to_pro(user_offerer: offerers_models.UserOfferer) -> bool:
     data = get_offerer_attachment_validation_email_data(user_offerer.offerer)
     return mails.send(recipients=[user_offerer.user.email], data=data)
+
+
+def get_offerer_attachment_rejection_email_data(
+    offerer: offerers_models.Offerer,
+) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
+        template=TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value, params={"OFFERER_NAME": offerer.name}
+    )
+
+
+def send_offerer_attachment_rejection_email_to_pro(user_offerer: offerers_models.UserOfferer) -> bool:
+    data = get_offerer_attachment_rejection_email_data(user_offerer.offerer)
+    return mails.send(recipients=[user_offerer.user.email], data=data)

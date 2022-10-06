@@ -709,7 +709,7 @@ offerer_ts_indexes = [
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
 
 
-class UserOfferer(PcObject, Base, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
+class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusMixin):  # type: ignore [valid-type, misc]
     __table_name__ = "user_offerer"
     userId: int = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
     user = relationship("User", foreign_keys=[userId], back_populates="UserOfferers")  # type: ignore [misc]

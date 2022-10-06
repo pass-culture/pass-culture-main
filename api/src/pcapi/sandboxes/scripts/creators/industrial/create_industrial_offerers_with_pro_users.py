@@ -4,6 +4,7 @@ import logging
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import ValidationStatus
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.repository import check_if_siren_already_exists
 import pcapi.core.users.factories as users_factories
@@ -257,14 +258,17 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
 
             if offerer.isValidated and user_offerer_index % VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
                 user_offerer_validation_token = None
+                user_offerer_validation_status = ValidationStatus.VALIDATED
             else:
                 user_offerer_validation_token = "{}{}".format(
                     user_offerer_validation_prefix, user_offerer_validation_suffix
                 )
+                user_offerer_validation_status = ValidationStatus.NEW
             user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = offerers_factories.UserOffererFactory(
                 offerer=offerer,
                 user=pro,
                 validationToken=user_offerer_validation_token,
+                validationStatus=user_offerer_validation_status,
             )
             user_offerer_index += 1
             user_offerer_validation_suffix += 1
