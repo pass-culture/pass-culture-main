@@ -29,7 +29,8 @@ def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResp
     """Get the list of all (pro) users attached to the offerer"""
     users_offerer: list[offerers_models.UserOfferer] = (
         offerers_models.UserOfferer.query.filter(
-            offerers_models.UserOfferer.offererId == offerer_id, offerers_models.UserOfferer.isValidated
+            offerers_models.UserOfferer.offererId == offerer_id,
+            offerers_models.UserOfferer.isValidated,
         )
         .order_by(offerers_models.UserOfferer.id)
         .all()
@@ -127,6 +128,41 @@ def get_offerer_history(offerer_id: int) -> serialization.HistoryResponseModel:
             for action in history
         ]
     )
+
+
+@blueprint.backoffice_blueprint.route("users_offerers/<int:user_offerer_id>/validate", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def validate_offerer_attachment(user_offerer_id: int) -> None:
+    author_user = get_current_user()
+    try:
+        offerers_api.validate_offerer_attachment_by_id(user_offerer_id, author_user)
+    except offerers_exceptions.UserOffererNotFoundException:
+        raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
+    except offerers_exceptions.UserOffererAlreadyValidatedException:
+        raise api_errors.ApiErrors(errors={"user_offerer_id": "Le rattachement est déjà validé"})
+
+
+@blueprint.backoffice_blueprint.route("users_offerers/<int:user_offerer_id>/pending", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def set_offerer_attachment_pending(user_offerer_id: int, body: serialization.OptionalCommentRequest) -> None:
+    author_user = get_current_user()
+    try:
+        offerers_api.set_offerer_attachment_pending(user_offerer_id, author_user, comment=body.comment)
+    except offerers_exceptions.UserOffererNotFoundException:
+        raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
+
+
+@blueprint.backoffice_blueprint.route("users_offerers/<int:user_offerer_id>/reject", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def reject_offerer_attachment(user_offerer_id: int, body: serialization.OptionalCommentRequest) -> None:
+    author_user = get_current_user()
+    try:
+        offerers_api.reject_offerer_attachment(user_offerer_id, author_user, comment=body.comment)
+    except offerers_exceptions.UserOffererNotFoundException:
+        raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/validate", methods=["POST"])

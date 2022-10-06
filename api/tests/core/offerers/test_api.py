@@ -458,6 +458,7 @@ class CreateOffererTest:
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
+        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -512,6 +513,7 @@ class CreateOffererTest:
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
+        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -519,14 +521,12 @@ class CreateOffererTest:
             created_user_offerer.offerer, created_user_offerer
         )
 
-        # TODO (prouzet) when user_offerer history is implemented:
-        # actions_list = history_models.ActionHistory.query.all()
-        # assert len(actions_list) == 1
-        # assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
-        # assert actions_list[0].authorUser == user
-        # assert actions_list[0].user == user
-        # assert actions_list[0].offerer == offerer
-        assert history_models.ActionHistory.query.count() == 0
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == offerer
 
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(
@@ -551,6 +551,7 @@ class CreateOffererTest:
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
+        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
 
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected(
@@ -584,6 +585,7 @@ class CreateOffererTest:
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
+        assert created_user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
 
         assert not created_user_offerer.user.has_pro_role
 
@@ -607,10 +609,11 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
 
         # When
-        offerers_api.validate_offerer_attachment(user_offerer.validationToken)
+        offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
 
         # Then
         assert user_offerer.validationToken is None
+        assert user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
 
     def test_pro_role_is_added_to_user(self):
         # Given
@@ -618,7 +621,7 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
 
         # When
-        offerers_api.validate_offerer_attachment(user_offerer.validationToken)
+        offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
 
         # Then
         assert applicant.has_pro_role
@@ -630,7 +633,7 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
 
         # When
-        offerers_api.validate_offerer_attachment(user_offerer.validationToken)
+        offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
 
         # Then
         mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer)
@@ -642,11 +645,93 @@ class ValidateOffererAttachmentTest:
 
         # When
         with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
-            offerers_api.validate_offerer_attachment("OTHER TOKEN")
+            offerers_api.validate_offerer_attachment_by_token("OTHER TOKEN")
 
         # Then
         assert not applicant.has_pro_role
         assert user_offerer.validationToken == "TOKEN"
+
+
+@freeze_time("2020-10-15 00:00:00")
+class RejectOffererAttachementTest:
+    def test_offerer_attachement_is_not_validated(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # When
+        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+
+        # Then
+        assert offerers_models.UserOfferer.query.count() == 0
+
+    def test_pro_role_is_not_added_to_user(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
+
+        # When
+        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+
+        # Then
+        assert not user.has_pro_role
+
+    def test_pro_role_is_not_removed_from_user(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        validated_user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=validated_user_offerer.user)
+
+        # When
+        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+
+        # Then
+        assert validated_user_offerer.user.has_pro_role
+
+    @patch("pcapi.core.mails.transactional.send_offerer_attachment_rejection_email_to_pro", return_value=True)
+    def test_send_rejection_confirmation_email(self, send_offerer_attachment_rejection_email_to_pro):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # When
+        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+
+        # Then
+        send_offerer_attachment_rejection_email_to_pro.assert_called_once_with(user_offerer)
+
+    def test_action_is_logged(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        offerers_api.reject_offerer_attachment(user_offerer.id, admin)
+
+        # Then
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user.id
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+
+    def test_do_not_reject_if_id_not_found(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # When
+        with pytest.raises(offerers_exceptions.UserOffererNotFoundException):
+            offerers_api.reject_offerer_attachment(user_offerer.id + 100, admin)
+
+        # Then
+        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert history_models.ActionHistory.query.count() == 0
 
 
 @freeze_time("2020-10-15 00:00:00")
@@ -965,6 +1050,7 @@ def test_grant_user_offerer_access():
 
     assert user_offerer.user == user
     assert user_offerer.offerer == offerer
+    assert user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
     assert not user.has_pro_role
 
 
