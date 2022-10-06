@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useHistory, useParams } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -25,13 +25,14 @@ type AsyncScreenProps = Pick<
 const CollectiveOfferCreationFromTemplate = () => {
   const { templateId } = useParams<{ templateId: string }>()
   const notify = useNotification()
+  const history = useHistory()
 
   const [isLoading, setIsLoading] = useState(true)
   const [initialValues, setInitialValues] = useState(DEFAULT_EAC_FORM_VALUES)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
 
-  const createOffer = async (offer: IOfferEducationalFormValues) => {
-    const { isOk, message } = await postCollectiveOfferAdapter({
+  const handleSubmit = async (offer: IOfferEducationalFormValues) => {
+    const { isOk, message, payload } = await postCollectiveOfferAdapter({
       offer,
       offerTemplateId: templateId,
     })
@@ -39,6 +40,7 @@ const CollectiveOfferCreationFromTemplate = () => {
     if (!isOk) {
       return notify.error(message)
     }
+    history.push(`/offre/duplication/collectif/${payload.offerId}/stock`)
   }
 
   useEffect(() => {
@@ -101,7 +103,7 @@ const CollectiveOfferCreationFromTemplate = () => {
       <OfferEducational
         {...screenProps}
         initialValues={initialValues}
-        onSubmit={createOffer}
+        onSubmit={handleSubmit}
         mode={Mode.CREATION}
       />
     </CollectiveOfferLayout>
