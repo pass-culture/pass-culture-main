@@ -1,0 +1,78 @@
+on: workflow_call
+
+env:
+  region: europe-west1
+  tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}
+
+jobs:
+  build-tests-docker-image:
+    name: "Build tests docker image"
+    uses: ./.github/workflows/build-and-push-docker-images.yml
+    with:
+      tag: ${{ github.sha }}
+      tests: true
+    secrets: inherit
+
+  quality-api:
+    runs-on: ubuntu-latest
+    needs: build-tests-docker-image
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - uses: docker/login-action@v2
+        with:
+          registry: '${{ env.region }}-docker.pkg.dev'
+          username: oauth2accesstoken
+          password: ${{ steps.openid-auth.outputs.access_token }}
+      - run: docker pull ${{ env.tests_docker_image }}
+      - name: Show installed Python packages
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: pip freeze
+      - name: Check imports are well organized with isort
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: isort . --check-only
+          working_directory: /usr/src/app
+      - name: Check code is well formatted with black
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: black . --check
+          working_directory: /usr/src/app
+      - name: Run pylint
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: pylint src tests --jobs=2
+          working_directory: /usr/src/app
+      - name: Run mypy
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: mypy src
+          working_directory: /usr/src/app
+#      - when:
+#          condition:
+#            equal: [ "master", << pipeline.git.branch >> ]
+#          steps:
+#            - notify-slack:
+#                channel: shérif
+#
+#  tests-api:
+#    runs-on: ubuntu-latest
+#
+
+
