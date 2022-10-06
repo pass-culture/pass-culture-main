@@ -9,7 +9,7 @@ import {
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
-  cancelActiveBookingsAdapter,
+  cancelCollectiveBookingAdapter,
   extractInitialStockValues,
   extractOfferIdAndOfferTypeFromRouteParams,
   patchIsTemplateOfferActiveAdapter,
@@ -106,7 +106,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
   }
 
   const cancelActiveBookings = async () => {
-    const { isOk, message } = await cancelActiveBookingsAdapter({
+    const { isOk, message } = await cancelCollectiveBookingAdapter({
       offerId: offer?.offerId || '',
     })
 

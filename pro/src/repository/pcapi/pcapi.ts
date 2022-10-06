@@ -63,15 +63,6 @@ export const postImageToVenue = async ({
 }
 
 //
-// stocks
-//
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
-export const cancelEducationalBooking = offerId => {
-  return client.patch(`/offers/${offerId}/cancel_booking`)
-}
-
-//
 // thumbnail
 //
 

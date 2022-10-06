@@ -1,4 +1,3 @@
-export * from './cancelActiveBookingsAdapter'
 export * from './cancelCollectiveBookingAdapter'
 export * from './getEducationalCategoriesAdapter'
 export * from './getStockCollectiveOfferAdapter'
