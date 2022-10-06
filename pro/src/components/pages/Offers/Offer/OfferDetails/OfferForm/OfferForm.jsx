@@ -173,6 +173,7 @@ const OfferForm = ({
             ? false
             : !Object.values(venueAccessibilities).includes(true),
         }
+        resetFormError('disabilityCompliant')
       }
       handleFormUpdate(updatedValues)
     },
