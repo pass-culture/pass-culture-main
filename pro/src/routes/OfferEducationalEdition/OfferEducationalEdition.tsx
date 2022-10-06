@@ -19,6 +19,7 @@ import {
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalScreen from 'screens/OfferEducational'
@@ -64,7 +65,12 @@ const OfferEducationalEdition = (): JSX.Element => {
         }
 
         notify.success(offerResponse.message)
-        loadData(offerResponse)
+        history.push(
+          `/offre/${computeURLCollectiveOfferId(
+            offer.id,
+            offer.isTemplate
+          )}/collectif/recapitulatif`
+        )
       }
     },
     [offer]
