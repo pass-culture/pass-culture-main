@@ -1535,6 +1535,22 @@ export class DefaultService {
   }
 
   /**
+   * signout <GET>
+   * @returns void
+   * @throws ApiError
+   */
+  public signout(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/users/signout',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * signup_pro <POST>
    * @param requestBody
    * @returns void
