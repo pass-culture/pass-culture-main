@@ -28,7 +28,7 @@ from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
-import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
@@ -151,11 +151,7 @@ def book_offer(
 
 def _book_external_offer(booking: Booking, stock: Stock) -> None:
     is_active_cinema_venue_provider = db.session.query(
-        providers_models.VenueProvider.query.filter(
-            providers_models.VenueProvider.venueId == stock.offer.venueId,
-            providers_models.VenueProvider.isActive,
-            providers_models.VenueProvider.isFromCinemaProvider,
-        ).exists()
+        providers_repository.get_cinema_venue_provider_query(stock.offer.venueId).exists()
     ).scalar()
 
     if (
