@@ -2,7 +2,6 @@ import {
   getFilteredBookingsCSV,
   signout,
   updateUserInformations,
-  deleteStock,
   postThumbnail,
   setHasSeenTutos,
 } from 'repository/pcapi/pcapi'
@@ -27,16 +26,6 @@ jest.mock('utils/date', () => {
 })
 
 describe('pcapi', () => {
-  describe('deleteStock', () => {
-    it('should delete stock given its id', () => {
-      // When
-      deleteStock('2E')
-
-      // Then
-      expect(client.delete).toHaveBeenCalledWith('/stocks/2E')
-    })
-  })
-
   describe('signout', () => {
     it('should sign out the user', () => {
       // When
