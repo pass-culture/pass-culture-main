@@ -101,8 +101,6 @@ export const postThumbnail = (
 // user
 //
 
-export const signout = () => client.get('/users/signout')
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'body' implicitly has an 'any' type.
 export const updateUserInformations = body => {
   return client.patch('/users/current', body)

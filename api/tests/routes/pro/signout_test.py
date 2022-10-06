@@ -13,6 +13,5 @@ def test_existing_user_session_to_be_deleted(client):
 
     response = client.get("/users/signout")
 
-    assert response.status_code == 200
-    assert response.json == {"global": "Déconnecté"}
+    assert response.status_code == 204
     assert users_models.UserSession.query.filter_by(userId=user.id).count() == 0

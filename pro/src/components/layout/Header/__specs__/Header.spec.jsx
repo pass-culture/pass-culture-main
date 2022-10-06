@@ -6,16 +6,16 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import Header from '../Header'
 
 const mockLogEvent = jest.fn()
-jest.mock('repository/pcapi/pcapi', () => ({
-  signout: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: { signout: jest.fn() },
 }))
 
 const defaultStore = {
@@ -199,7 +199,7 @@ describe('navigation menu', () => {
     it('when clicking on Logout', async () => {
       // given
       renderHeader()
-      pcapi.signout.mockResolvedValue({})
+      api.signout.mockResolvedValue()
 
       // When
       await userEvent.click(screen.getAllByRole('menuitem')[5])
