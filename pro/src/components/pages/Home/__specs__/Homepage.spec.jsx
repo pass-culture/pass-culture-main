@@ -27,7 +27,6 @@ jest.mock('utils/config', () => ({
 jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn(),
   setHasSeenRGSBanner: jest.fn(),
-  updateUserInformations: jest.fn().mockResolvedValue({}),
 }))
 
 jest.mock('apiClient/api', () => ({
