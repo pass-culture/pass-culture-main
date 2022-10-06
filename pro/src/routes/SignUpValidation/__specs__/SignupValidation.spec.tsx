@@ -8,6 +8,10 @@ import { Provider } from 'react-redux'
 import reactRouter from 'react-router'
 import { Router } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import type { IUseCurrentUserReturn } from 'components/hooks/useCurrentUser'
 import * as useCurrentUser from 'components/hooks/useCurrentUser'
 import * as useNotification from 'components/hooks/useNotification'
@@ -54,7 +58,7 @@ describe('src | components | pages | Signup | validation', () => {
   afterEach(jest.resetAllMocks)
 
   it('should redirect to home page if the user is logged in', async () => {
-    const validateUser = jest.spyOn(pcapi, 'validateUser')
+    const validateUser = jest.spyOn(api, 'validateUser')
     const redirect = jest.fn()
     jest.spyOn(reactRouter, 'useHistory').mockImplementation(() => ({
       push: redirect,
@@ -95,9 +99,7 @@ describe('src | components | pages | Signup | validation', () => {
   })
 
   it('should verify validity of user token and redirect to connexion', async () => {
-    const validateUser = jest
-      .spyOn(pcapi, 'validateUser')
-      .mockResolvedValue(true)
+    const validateUser = jest.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
     render(
       <Provider store={store}>
@@ -116,7 +118,7 @@ describe('src | components | pages | Signup | validation', () => {
   })
 
   it('should call media campaign tracker once', () => {
-    jest.spyOn(pcapi, 'validateUser').mockResolvedValue(true)
+    jest.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
     render(
       <Provider store={store}>
@@ -130,7 +132,7 @@ describe('src | components | pages | Signup | validation', () => {
   })
 
   it('should display a success message when token verification is successful', async () => {
-    jest.spyOn(pcapi, 'validateUser').mockResolvedValue(true)
+    jest.spyOn(api, 'validateUser').mockResolvedValue()
     const notifySuccess = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
@@ -160,11 +162,17 @@ describe('src | components | pages | Signup | validation', () => {
       ...mockUseNotification,
       error: notifyError,
     }))
-    jest.spyOn(pcapi, 'validateUser').mockRejectedValue({
-      errors: {
-        global: ['error1', 'error2'],
-      },
-    })
+    jest.spyOn(api, 'validateUser').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          body: {
+            global: ['error1', 'error2'],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
     // given the user lands on signup validation page
     render(
       <Provider store={store}>
