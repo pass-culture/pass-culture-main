@@ -195,9 +195,7 @@ describe('test OfferIndividualWisard', () => {
     expect(
       await screen.findByRole('heading', { name: 'Créer une offre' })
     ).toBeInTheDocument()
-    expect(
-      await screen.findByLabelText('Choisir une catégorie')
-    ).toBeInTheDocument()
+    expect(await screen.findByLabelText('Catégorie')).toBeInTheDocument()
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validatedForUser,
       null, // validated,

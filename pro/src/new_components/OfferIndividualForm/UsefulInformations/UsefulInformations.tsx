@@ -73,8 +73,8 @@ const UsefulInformations = ({
             type="info"
             text={
               isVenueVirtual
-                ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
-                : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
+                ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
+                : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
             }
             link={{
               isExternal: true,
@@ -93,7 +93,9 @@ const UsefulInformations = ({
           maxLength={500}
           disabled={readOnlyFields.includes('withdrawalDetails')}
           placeholder={
-            'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par e-mail...'
+            isVenueVirtual
+              ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par e-mail...'
+              : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par e-mail...'
           }
         />
       </FormLayout.Row>

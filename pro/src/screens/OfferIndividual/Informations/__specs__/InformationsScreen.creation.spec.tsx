@@ -168,11 +168,9 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   it('should submit minimal physical offer', async () => {
     renderInformationsScreen(props, store, contextValue)
 
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText(
-      'Choisir une sous-catégorie'
-    )
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
     const nameField = screen.getByLabelText("Titre de l'offre")
     await userEvent.type(nameField, 'Le nom de mon offre')
@@ -212,11 +210,9 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   it('should display api errors', async () => {
     renderInformationsScreen(props, store, contextValue)
 
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText(
-      'Choisir une sous-catégorie'
-    )
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'physical')
     const nameField = screen.getByLabelText("Titre de l'offre")
     await userEvent.type(nameField, 'Le nom de mon offre')
@@ -247,11 +243,9 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   it('should submit minimal virtual offer', async () => {
     renderInformationsScreen(props, store, contextValue)
 
-    const categorySelect = await screen.findByLabelText('Choisir une catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText(
-      'Choisir une sous-catégorie'
-    )
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
     await userEvent.selectOptions(subCategorySelect, 'virtual')
     const nameField = screen.getByLabelText("Titre de l'offre")
     await userEvent.type(nameField, 'Le nom de mon offre')

@@ -35,7 +35,7 @@ const SelectSubCategory = ({
 
   return (
     <Select
-      label="Choisir une sous-catégorie"
+      label="Sous-catégorie"
       name="subcategoryId"
       options={options}
       defaultOption={{

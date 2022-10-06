@@ -87,8 +87,8 @@ export const validationSchema = yup.object().shape({
     }),
   email: yup
     .string()
-    .required('Veuillez renseigner une adresse email')
-    .email('Veuillez renseigner un email valide'),
+    .required('Veuillez renseigner une adresse e-mail')
+    .email('Veuillez renseigner un e-mail valide'),
   notifications: yup.boolean(),
   notificationEmails: yup.array().when('notifications', {
     is: true,
@@ -97,8 +97,8 @@ export const validationSchema = yup.object().shape({
       .of(
         yup
           .string()
-          .email('Veuillez renseigner un email valide')
-          .required('Veuillez renseigner une adresse email')
+          .email('Veuillez renseigner un e-mail valide')
+          .required('Veuillez renseigner une adresse e-mail')
       ),
   }),
   domains: yup.array().test({

@@ -498,7 +498,7 @@ const OfferForm = ({
     }
 
     if (!(await isEmailValid(formValues.bookingEmail))) {
-      newFormErrors['bookingEmail'] = 'Veuillez renseigner un email valide'
+      newFormErrors['bookingEmail'] = 'Veuillez renseigner un e-mail valide'
     }
 
     setFormErrors(newFormErrors)

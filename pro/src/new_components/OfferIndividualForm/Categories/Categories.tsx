@@ -69,7 +69,7 @@ const Categories = ({
         }
       >
         <Select
-          label="Choisir une catégorie"
+          label="Catégorie"
           name="categoryId"
           options={categoryOptions}
           defaultOption={{

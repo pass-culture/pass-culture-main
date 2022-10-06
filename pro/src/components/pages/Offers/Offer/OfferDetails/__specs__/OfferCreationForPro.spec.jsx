@@ -894,7 +894,7 @@ describe('offerDetails - Creation - pro user', () => {
         await userEvent.paste('wrong email')
         await userEvent.click(screen.getByText('Étape suivante'))
         expect(
-          screen.getByText('Veuillez renseigner un email valide')
+          screen.getByText('Veuillez renseigner un e-mail valide')
         ).toBeInTheDocument()
       })
 
