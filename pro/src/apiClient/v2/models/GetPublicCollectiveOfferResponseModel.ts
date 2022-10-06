@@ -13,7 +13,7 @@ export type GetPublicCollectiveOfferResponseModel = {
   contactPhone: string;
   dateCreated: string;
   description?: string | null;
-  domains: Array<string>;
+  domains: Array<number>;
   durationMinutes?: number | null;
   educationalInstitution?: string | null;
   educationalPriceDetail?: string | null;

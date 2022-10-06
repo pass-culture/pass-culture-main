@@ -3,7 +3,6 @@
 /* eslint-disable */
 
 import type { OfferVenueModel } from './OfferVenueModel';
-import type { StudentLevels } from './StudentLevels';
 
 export type PostCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean;
@@ -13,7 +12,7 @@ export type PostCollectiveOfferBodyModel = {
   contactEmail: string;
   contactPhone: string;
   description: string;
-  domains: Array<string>;
+  domains: Array<number>;
   durationMinutes?: number | null;
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
@@ -23,7 +22,7 @@ export type PostCollectiveOfferBodyModel = {
   name: string;
   numberOfTickets: number;
   offerVenue: OfferVenueModel;
-  students: Array<StudentLevels>;
+  students: Array<string>;
   subcategoryId: string;
   totalPrice: number;
   venueId: number;
