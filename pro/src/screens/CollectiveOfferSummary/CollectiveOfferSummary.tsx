@@ -9,6 +9,7 @@ import {
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import { ButtonLink } from 'ui-kit'
@@ -73,13 +74,15 @@ const CollectiveOfferSummary = ({
     reloadCollectiveOffer?.()
   }
 
-  const offerEditLink = `/offre/${offer.isTemplate ? 'T-' : ''}${
-    offer.id
-  }/collectif/edition`
+  const offerEditLink = `/offre/${computeURLCollectiveOfferId(
+    offer.id,
+    offer.isTemplate
+  )}/collectif/edition`
 
-  const stockEditLink = `/offre/${offer.isTemplate ? 'T-' : ''}${
-    offer.id
-  }/collectif/stocks/edition`
+  const stockEditLink = `/offre/${computeURLCollectiveOfferId(
+    offer.id,
+    offer.isTemplate
+  )}/collectif/stocks/edition`
 
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 

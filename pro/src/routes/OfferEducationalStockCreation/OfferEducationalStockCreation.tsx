@@ -11,6 +11,7 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import useGetStockCollectiveOfferAdapter from 'core/OfferEducational/adapters/useGetStockCollectiveOfferAdapter'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
@@ -57,9 +58,10 @@ const OfferEducationalStockCreation = (): JSX.Element | null => {
       return notify.error(message)
     }
 
-    let url = `/offre/${isTemplate ? 'T-' : ''}${
-      isTemplate ? payload?.id : offer.id
-    }/collectif`
+    let url = `/offre/${computeURLCollectiveOfferId(
+      isTemplate && payload ? payload.id : offer.id,
+      isTemplate
+    )}/collectif`
 
     if (!isTemplate) {
       url = `${url}/visibilite`
