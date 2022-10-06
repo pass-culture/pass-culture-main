@@ -299,7 +299,7 @@ const EventStocks = ({ offer, reloadOffer }) => {
       </div>
       {hasNoStock ? (
         <Button
-          className="primary-button with-icon add-first-stock-button"
+          className="add-first-stock-button"
           disabled={isDisabled}
           onClick={addNewStock}
           Icon={AddStockSvg}
