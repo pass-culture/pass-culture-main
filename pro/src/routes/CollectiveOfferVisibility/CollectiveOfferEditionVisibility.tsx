@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
@@ -10,6 +10,7 @@ import {
   CollectiveOffer,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
@@ -23,6 +24,7 @@ const CollectiveOfferVisibility = () => {
   const { offerId } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const notify = useNotification()
+  const history = useHistory()
 
   const [isEditable, setIsEditable] = useState<boolean>()
   const [institution, setInstitution] =
@@ -65,6 +67,12 @@ const CollectiveOfferVisibility = () => {
   }) => {
     setInstitution(payload.institution)
     notify.success(message)
+    history.push(
+      `/offre/${computeURLCollectiveOfferId(
+        payload.id,
+        false
+      )}/collectif/recapitulatif`
+    )
   }
 
   return (

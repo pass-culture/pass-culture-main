@@ -10,10 +10,10 @@ import {
   Mode,
   OfferEducationalStockFormValues,
   cancelCollectiveBookingAdapter,
-  extractInitialStockValues,
   extractOfferIdAndOfferTypeFromRouteParams,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
@@ -76,18 +76,12 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
     }
 
     notify.success(stockResponse.message)
-    const initialValuesFromStock = offerResponse.payload.isShowcase
-      ? {
-          ...DEFAULT_EAC_STOCK_FORM_VALUES,
-          priceDetail: stockResponse.payload.educationalPriceDetail ?? '',
-          educationalOfferType: EducationalOfferType.SHOWCASE,
-        }
-      : extractInitialStockValues(
-          stockResponse.payload,
-          offerResponse.payload,
-          EducationalOfferType.CLASSIC
-        )
-    setInitialValues(initialValuesFromStock)
+    history.push(
+      `/offre/${computeURLCollectiveOfferId(
+        offer.id,
+        true
+      )}/collectif/recapitulatif`
+    )
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
