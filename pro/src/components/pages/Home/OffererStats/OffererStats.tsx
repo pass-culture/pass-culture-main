@@ -43,7 +43,7 @@ const OffererStats = () => {
             {...defaultIconLinkProps}
           />
           <IconLinkBox
-            title="Nombre de réservations par semaine"
+            title="Nombre de réservations"
             IconHeader={CalendarIcon}
             {...defaultIconLinkProps}
           />
