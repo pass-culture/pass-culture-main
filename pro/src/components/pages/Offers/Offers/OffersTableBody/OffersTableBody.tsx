@@ -1,12 +1,14 @@
 import React from 'react'
 
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
 import OfferItem from '../OfferItem/OfferItem'
 
 type OffersTableBodyProps = {
   areAllOffersSelected: boolean
-  offers: any[]
+  offers: Offer[]
   selectOffer: (
     offerId: string,
     isSelected: boolean,
@@ -25,7 +27,10 @@ const OffersTableBody = ({
 }: OffersTableBodyProps) => (
   <tbody className="offers-list">
     {offers.map(offer => {
-      const offerId = `${offer.isShowcase ? `T-` : ''}${offer.id}`
+      const offerId = computeURLCollectiveOfferId(
+        offer.id,
+        Boolean(offer.isShowcase)
+      )
 
       return (
         <OfferItem

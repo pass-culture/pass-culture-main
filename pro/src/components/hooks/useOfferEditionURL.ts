@@ -1,5 +1,4 @@
-const getOfferId = (offerId: string, isShowcase?: boolean) =>
-  isShowcase ? `T-${offerId}` : offerId
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 
 export const useOfferEditionURL = (
   isOfferEducational: boolean,
@@ -8,7 +7,7 @@ export const useOfferEditionURL = (
   isShowcase?: boolean
 ): string => {
   if (isOfferEducational) {
-    const id = getOfferId(offerId, isShowcase)
+    const id = computeURLCollectiveOfferId(offerId, Boolean(isShowcase))
     return `/offre/${id}/collectif/recapitulatif`
   }
 
@@ -23,7 +22,7 @@ export const useOfferStockEditionURL = (
   isShowcase?: boolean
 ): string => {
   if (isOfferEducational) {
-    const id = getOfferId(offerId, isShowcase)
+    const id = computeURLCollectiveOfferId(offerId, Boolean(isShowcase))
     return `/offre/${id}/collectif/stocks/edition`
   }
 

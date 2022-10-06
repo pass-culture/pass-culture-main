@@ -4,6 +4,7 @@ import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
@@ -98,7 +99,7 @@ const Offers = ({
     (offerId: string, selected: boolean, isTemplate: boolean) => {
       setSelectedOfferIds(currentSelectedIds => {
         const newSelectedOfferIds = [...currentSelectedIds]
-        const id = `${isTemplate ? 'T-' : ''}${offerId}`
+        const id = computeURLCollectiveOfferId(offerId, isTemplate)
         if (selected) {
           newSelectedOfferIds.push(id)
         } else {
