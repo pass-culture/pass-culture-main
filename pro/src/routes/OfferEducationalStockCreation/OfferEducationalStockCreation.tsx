@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
@@ -9,8 +9,8 @@ import {
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
-  getStockCollectiveOfferAdapter,
 } from 'core/OfferEducational'
+import useGetStockCollectiveOfferAdapter from 'core/OfferEducational/adapters/useGetStockCollectiveOfferAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
@@ -19,9 +19,7 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 
-const OfferEducationalStockCreation = (): JSX.Element => {
-  const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
-  const [isReady, setIsReady] = useState<boolean>(false)
+const OfferEducationalStockCreation = (): JSX.Element | null => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
   const history = useHistory()
@@ -71,24 +69,12 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     history.push(url)
   }
 
-  useEffect(() => {
-    if (!isReady) {
-      const loadOffer = async () => {
-        const { payload, message, isOk } = await getStockCollectiveOfferAdapter(
-          offerId
-        )
+  const { isLoading, error, data } = useGetStockCollectiveOfferAdapter(offerId)
 
-        if (!isOk) {
-          return notify.error(message)
-        }
-
-        setOffer(payload)
-        setIsReady(true)
-      }
-
-      loadOffer()
-    }
-  }, [offerId, notify, isReady])
+  if (error) {
+    notify.error(error.message)
+    return null
+  }
 
   return (
     <CollectiveOfferLayout
@@ -98,12 +84,12 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       }}
       title="Créer une nouvelle offre collective"
     >
-      {offer && isReady ? (
+      {!isLoading ? (
         <>
           <OfferEducationalStockScreen
             initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
             mode={Mode.CREATION}
-            offer={offer}
+            offer={data}
             onSubmit={handleSubmitStock}
           />
           <RouteLeavingGuardOfferCreation isCollectiveFlow />
