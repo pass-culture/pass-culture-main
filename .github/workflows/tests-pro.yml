@@ -1,0 +1,51 @@
+on: workflow_call
+
+env:
+  folder: pro
+  node_version: 14.18
+  use_cache: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  type-check:
+    name: "Type check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - if: ${{ env.use_cache }}
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: ${{ env.node_version }}
+      - if: ${{ env.use_cache == false }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn install
+        working-directory: ${{ env.folder }}
+      - run: yarn tsc -b
+        working-directory: ${{ env.folder }}
+
+  quality-check:
+    name: "Quality check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - if: ${{ env.use_cache }}
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: ${{ env.node_version }}
+      - if: ${{ env.use_cache == false }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn install
+        working-directory: ${{ env.folder }}
+      - run: yarn lint:js --max-warnings 0
+        working-directory: ${{ env.folder }}
+
+#  tests-pro-unit-tests:
+#    runs-on: ubuntu-latest
+#
+#  tests-pro-e2e-tests:
+#    runs-on: ubuntu-latest

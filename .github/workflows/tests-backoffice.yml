@@ -1,0 +1,41 @@
+on: workflow_call
+
+defaults:
+  run:
+    working-directory: backoffice
+
+env:
+  node_version: 14.18
+  use_cache: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  tests-backoffice-front-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - if: ${{ env.use_cache }}
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: ${{ env.node_version }}
+      - if: ${{ env.use_cache == false }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn install
+      - name: Use Jest Cache
+        id: jest-cache
+        uses: actions/cache@v3
+        with:
+          path: ./${{ env.folder }}/.jest_cache
+          key: node-14.18-jest-cache
+      - if: ${{ github.ref != 'refs/heads/master' }}
+        run: yarn test:unit:ci
+      - run: yarn test:unit:ci --coverage --changedSince=master
+      - if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_CHANNEL: shérif
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Github Actions Bot
