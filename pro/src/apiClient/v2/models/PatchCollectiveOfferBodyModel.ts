@@ -3,7 +3,6 @@
 /* eslint-disable */
 
 import type { OfferVenueModel } from './OfferVenueModel';
-import type { StudentLevels } from './StudentLevels';
 
 export type PatchCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean | null;
@@ -13,7 +12,7 @@ export type PatchCollectiveOfferBodyModel = {
   contactEmail?: string | null;
   contactPhone?: string | null;
   description?: string | null;
-  domains?: Array<string> | null;
+  domains?: Array<number> | null;
   durationMinutes?: number | null;
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
@@ -23,7 +22,7 @@ export type PatchCollectiveOfferBodyModel = {
   name?: string | null;
   numberOfTickets?: number | null;
   offerVenue?: OfferVenueModel | null;
-  students?: Array<StudentLevels> | null;
+  students?: Array<string> | null;
   subcategoryId?: string | null;
   totalPrice?: number | null;
   venueId?: number | null;
