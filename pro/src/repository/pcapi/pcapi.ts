@@ -65,10 +65,6 @@ export const postImageToVenue = async ({
 //
 // stocks
 //
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
-export const loadStocks = offerId => {
-  return client.get(`/offers/${offerId}/stocks`)
-}
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
 export const bulkCreateOrEditStock = (offerId, stocks) => {

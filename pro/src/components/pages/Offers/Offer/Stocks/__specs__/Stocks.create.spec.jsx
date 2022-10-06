@@ -17,7 +17,6 @@ const GUYANA_CAYENNE_DEPT = '973'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
-  loadStocks: jest.fn(),
   bulkCreateOrEditStock: jest.fn(),
 }))
 
@@ -27,6 +26,7 @@ jest.mock('apiClient/api', () => ({
     getOffer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenues: jest.fn(),
+    getStocks: jest.fn(),
   },
 }))
 
@@ -129,7 +129,7 @@ describe('stocks page', () => {
       isEventDeletable: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(defaultOffer)
-    pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+    api.getStocks.mockResolvedValue({ stocks: [] })
     api.getCategories.mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -229,7 +229,7 @@ describe('stocks page', () => {
           ...defaultStock,
           beginningDatetime: '2020-12-20T22:00:00Z',
         }
-        pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
+        api.getStocks.mockResolvedValue({ stocks: [eventStock] })
         renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
@@ -312,7 +312,7 @@ describe('stocks page', () => {
             isEventDeletable: true,
           },
         ]
-        pcapi.loadStocks
+        api.getStocks
           .mockResolvedValueOnce({ stocks: [] })
           .mockResolvedValueOnce({ stocks: createdStocks })
         renderOffers(props, store)
@@ -1135,7 +1135,7 @@ describe('stocks page', () => {
             bookingLimitDatetime: '2020-12-22T23:59:59Z',
             id: stockId,
           }
-          pcapi.loadStocks.mockResolvedValueOnce({ stocks: [createdStock] })
+          api.getStocks.mockResolvedValueOnce({ stocks: [createdStock] })
 
           // when
           renderOffers(props, store)
