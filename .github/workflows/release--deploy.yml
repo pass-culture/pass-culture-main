@@ -34,6 +34,8 @@ jobs:
     steps:
       - name: Checkout Release
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Deploy Release to ${{ github.event.inputs.target_environment }}
         run: |
           git push -f origin HEAD:${{ github.event.inputs.target_environment }}
