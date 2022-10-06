@@ -17,6 +17,7 @@ import {
   patchIsCollectiveOfferActiveAdapter,
 } from 'core/OfferEducational'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
@@ -60,18 +61,12 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     }
 
     notify.success(stockResponse.message)
-    const initialValuesFromStock = offerResponse.payload.isShowcase
-      ? {
-          ...DEFAULT_EAC_STOCK_FORM_VALUES,
-          priceDetail: stockResponse.payload.educationalPriceDetail ?? '',
-          educationalOfferType: EducationalOfferType.SHOWCASE,
-        }
-      : extractInitialStockValues(
-          stockResponse.payload,
-          offerResponse.payload,
-          values.educationalOfferType
-        )
-    setInitialValues(initialValuesFromStock)
+    history.push(
+      `/offre/${computeURLCollectiveOfferId(
+        offer.id,
+        false
+      )}/collectif/recapitulatif`
+    )
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
