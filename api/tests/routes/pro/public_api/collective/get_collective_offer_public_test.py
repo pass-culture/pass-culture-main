@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from freezegun import freeze_time
 import pytest
 
@@ -52,7 +54,7 @@ class CollectiveOffersPublicGetOfferTest:
             "status": "ACTIVE",
             "students": ["GENERAL2"],
             "subcategoryId": offer.subcategoryId,
-            "totalPrice": 10000,
+            "totalPrice": Decimal(100.00),
             "hasBookingLimitDatetimesPassed": False,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,

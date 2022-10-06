@@ -255,7 +255,7 @@ def test_public_api(client, app):
                         "status": {"title": "Status", "type": "string"},
                         "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
                         "subcategoryId": {"title": "Subcategoryid", "type": "string"},
-                        "totalPrice": {"title": "Totalprice", "type": "integer"},
+                        "totalPrice": {"title": "Totalprice", "type": "number"},
                         "venueId": {"title": "Venueid", "type": "integer"},
                         "visualDisabilityCompliant": {
                             "nullable": True,
@@ -453,7 +453,7 @@ def test_public_api(client, app):
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
                         "subcategoryId": {"title": "Subcategoryid", "type": "string"},
-                        "totalPrice": {"title": "Totalprice", "type": "integer"},
+                        "totalPrice": {"title": "Totalprice", "type": "number"},
                         "venueId": {"title": "Venueid", "type": "integer"},
                         "visualDisabilityCompliant": {
                             "default": False,

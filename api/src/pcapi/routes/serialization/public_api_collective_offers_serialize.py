@@ -301,7 +301,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     visualDisabilityCompliant: bool | None
     beginningDatetime: str
     bookingLimitDatetime: str
-    totalPrice: int
+    totalPrice: float
     numberOfTickets: int
     educationalPriceDetail: str | None
     educationalInstitution: str | None
@@ -337,7 +337,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
             beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
             bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
-            totalPrice=(offer.collectiveStock.price * 100),
+            totalPrice=offer.collectiveStock.price,
             numberOfTickets=offer.collectiveStock.numberOfTickets,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
@@ -371,7 +371,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # stock part
     beginning_datetime: datetime
     booking_limit_datetime: datetime
-    total_price: int
+    total_price: float
     number_of_tickets: int
     educational_price_detail: str | None
     # link to educational institution
