@@ -51,13 +51,13 @@ const DuplicateOfferCell = ({
             </Button>
           </TooltipWrapper>
         ) : null}
+        {isModalOpen && shouldDisplayModal && (
+          <DuplicateOfferDialog
+            onCancel={() => setIsModalOpen(false)}
+            onConfirm={onDialogConfirm}
+          />
+        )}
       </td>
-      {isModalOpen && shouldDisplayModal && (
-        <DuplicateOfferDialog
-          onCancel={() => setIsModalOpen(false)}
-          onConfirm={onDialogConfirm}
-        />
-      )}
     </>
   )
 }
