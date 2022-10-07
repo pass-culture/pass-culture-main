@@ -18,7 +18,7 @@ import { configureTestStore } from 'store/testUtils'
 
 import VenueEdition from '../VenueEdition'
 
-const renderVenueEdition = async (
+const renderVenueEdition = (
   venueId: string,
   offererId: string,
   store: Store
@@ -127,7 +127,7 @@ describe('route VenueEdition', () => {
   })
   it('should call getVenue and display Venue Form screen on success', async () => {
     // When
-    await renderVenueEdition(venue.id, offerer.id, store)
+    renderVenueEdition(venue.id, offerer.id, store)
 
     // Then
     const venuePublicName = await screen.findByRole('heading', {
@@ -138,17 +138,18 @@ describe('route VenueEdition', () => {
   })
 
   it('should return to home when not able to get venue informations', async () => {
-    jest
-      .spyOn(api, 'getVenue')
-      .mockRejectedValue('Impossible de récupérer le lieu')
+    jest.spyOn(api, 'getVenue').mockRejectedValue({
+      status: 403,
+    })
     // When
-    await renderVenueEdition(venue.id, offerer.id, store)
+    renderVenueEdition(venue.id, offerer.id, store)
+    // await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
     const homeTitle = await screen.findByRole('heading', {
       name: 'Home',
     })
-    expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(homeTitle).toBeInTheDocument()
   })
 })
