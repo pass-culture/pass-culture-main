@@ -9,6 +9,9 @@ import FormLayout from 'new_components/FormLayout'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Banner, ButtonLink } from 'ui-kit/index'
 
+import { GetVenueResponseModel } from '../../../apiClient/v1'
+import CollectiveData from '../../../components/pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/CollectiveData'
+
 import styles from './eacInformation.module.scss'
 
 interface IEACInformation {
@@ -35,7 +38,10 @@ const EACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
     >
       <FormLayout.Row>
         {collectiveDataIsNotEmpty ? (
-          <></>
+          <CollectiveData
+            venue={venue as unknown as GetVenueResponseModel}
+            vueStyles={styles}
+          />
         ) : (
           <Banner className={styles['eac-banner-light']} type="light">
             Une fois votre lieu créé, vous pourrez renseigner des informations
