@@ -59,19 +59,8 @@ def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
 def make_offerer_internal_validation_email(
     offerer: offerers_models.Offerer,
     user_offerer: offerers_models.UserOfferer,
+    siren_info: sirene.SirenInfo | None,
 ) -> mails_models.TransactionalWithoutTemplateEmailData:
-    siren_info: sirene.SirenInfo | None = None
-    assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
-    try:
-        siren_info = sirene.get_siren(offerer.siren)
-    except sirene.SireneException as exc:
-        logger.info(
-            "Could not fetch info from Sirene API for offerer validation e-mail",
-            extra={"exc": exc},
-        )
-        siren_info = siren_info_as_dict = None
-    else:
-        siren_info_as_dict = siren_info.dict()
 
     offerer_departement_code = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
 
@@ -82,7 +71,7 @@ def make_offerer_internal_validation_email(
         offerer_pro_link=urls.build_pc_pro_offerer_link(offerer),
         offerer_summary=pformat(_summarize_offerer_vars(offerer, siren_info)),
         user_summary=pformat(_summarize_user_vars(user_offerer)),
-        api_entreprise=pformat(siren_info_as_dict),
+        api_entreprise=pformat(siren_info.dict() if siren_info else None),
         api_url=settings.API_URL,
     )
 

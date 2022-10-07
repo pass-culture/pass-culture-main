@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from pcapi.connectors import sirene
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
@@ -27,9 +28,17 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     user = users_factories.UserFactory()
     offerer = offerers_factories.OffererFactory(validationToken="12356")
     user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, user=user)
+    siren_info = sirene.SirenInfo(
+        siren="123456789",
+        name="whatever",
+        head_office_siret="12345678900001",
+        ape_code="16.64Z",
+        legal_category_code="???",
+        address=None,
+    )
 
     # When
-    maybe_send_offerer_validation_email(offerer, user_offerer)
+    maybe_send_offerer_validation_email(offerer, user_offerer, siren_info)
 
     # Then
     assert len(mails_testing.outbox) == 1
@@ -42,9 +51,17 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     user = users_factories.UserFactory()
     offerer = offerers_factories.OffererFactory()
     user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, user=user)
+    siren_info = sirene.SirenInfo(
+        siren="123456789",
+        name="whatever",
+        head_office_siret="12345678900001",
+        ape_code="16.64Z",
+        legal_category_code="???",
+        address=None,
+    )
 
     # When
-    maybe_send_offerer_validation_email(offerer, user_offerer)
+    maybe_send_offerer_validation_email(offerer, user_offerer, siren_info)
 
     # Then
     assert not mails_testing.outbox

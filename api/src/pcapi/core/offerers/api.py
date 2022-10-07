@@ -7,6 +7,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.connectors import sirene
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -49,6 +50,11 @@ logger = logging.getLogger(__name__)
 UNCHANGED = object()
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude", "criteria"]
 API_KEY_SEPARATOR = "_"
+APE_TAG_MAPPING = {
+    "84.11Z": "Collectivité",
+    "84.12Z": "Établissement public",
+    "91.03Z": "Établissement public",
+}
 
 
 def create_digital_venue(offerer: models.Offerer) -> models.Venue:
@@ -385,10 +391,33 @@ def _fill_in_offerer(
     offerer.validationStatus = models.ValidationStatus.NEW
 
 
+def _auto_tag_new_offerer(offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo) -> None:
+    tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
+
+    if tag_label:
+        tag_id = db.session.execute(
+            sa.select(offerers_models.OffererTag.id).filter(offerers_models.OffererTag.label == tag_label)
+        ).scalar()
+
+        if tag_id:
+            mapping = offerers_models.OffererTagMapping(
+                offererId=offerer.id,
+                tagId=tag_id,
+            )
+            db.session.add(mapping)
+            db.session.commit()
+        else:
+            logger.warning(
+                "Could not assign tag to offerer: tag not found in DB",
+                extra={"offerer": offerer.id, "tag": tag_label},
+            )
+
+
 def create_offerer(
     user: users_models.User, offerer_informations: offerers_serialize.CreateOffererQueryModel
 ) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
+    new = False
 
     if offerer is not None:
         user_offerer = grant_user_offerer_access(offerer, user)
@@ -418,6 +447,7 @@ def create_offerer(
             ]
         repository.save(*objects_to_save)
     else:
+        new = True
         offerer = models.Offerer()
         _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
@@ -427,7 +457,17 @@ def create_offerer(
         )
         repository.save(offerer, digital_venue, user_offerer, action)
 
-    if not admin_emails.maybe_send_offerer_validation_email(offerer, user_offerer):
+    assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
+    try:
+        siren_info = sirene.get_siren(offerer.siren)
+    except sirene.SireneException as exc:
+        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+        siren_info = None
+
+    if new and siren_info:
+        _auto_tag_new_offerer(offerer, siren_info)
+
+    if not admin_emails.maybe_send_offerer_validation_email(offerer, user_offerer, siren_info):
         logger.warning(
             "Could not send validation email to offerer",
             extra={"user_offerer": user_offerer.id},
