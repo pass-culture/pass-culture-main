@@ -10,6 +10,7 @@ import {
 } from 'core/OfferEducational'
 
 import {
+  collectiveOfferTemplateFactory,
   defaultProps,
   elements,
   offerFactory,
@@ -66,7 +67,7 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
   it('should prefill form with default values when user is editing stock and offer is showcase', async () => {
     const testProps: IOfferEducationalStockProps = {
       ...defaultProps,
-      offer: offerFactory({ isShowcase: true }),
+      offer: collectiveOfferTemplateFactory({}),
       initialValues: {
         ...DEFAULT_EAC_STOCK_FORM_VALUES,
         priceDetail: 'Détail du prix',
@@ -110,7 +111,7 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
   it('should not show radio buttons if offer has a stock and is not showcase', async () => {
     const testProps: IOfferEducationalStockProps = {
       ...defaultProps,
-      offer: offerFactory({ isShowcase: false }),
+      offer: offerFactory({}),
       initialValues: {
         eventDate: new Date('2022-02-10T00:00:00.000Z'),
         eventTime: new Date('2022-02-10T00:00:00.000Z'),

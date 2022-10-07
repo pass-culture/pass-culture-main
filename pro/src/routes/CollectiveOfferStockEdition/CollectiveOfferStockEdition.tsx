@@ -8,13 +8,13 @@ import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
-  GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
   cancelCollectiveBookingAdapter,
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
   patchIsCollectiveOfferActiveAdapter,
+  CollectiveOffer,
 } from 'core/OfferEducational'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
@@ -29,14 +29,14 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-  const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
+  const [offer] = useState<CollectiveOffer>(null)
   const [stock, setStock] = useState<CollectiveStockResponseModel | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
 
   const handleSubmitStock = async (
-    offer: GetStockOfferSuccessPayload,
+    offer: CollectiveOffer,
     values: OfferEducationalStockFormValues
   ) => {
     if (!stock) {
@@ -50,7 +50,6 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
       initialValues,
     })
     const offerResponse = await getStockCollectiveOfferAdapter(offerId)
-    setOffer(offerResponse.payload)
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
@@ -102,26 +101,15 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
-        const [offerResponse, stockResponse] = await Promise.all([
-          getStockCollectiveOfferAdapter(offerId),
-          getCollectiveStockAdapter({
-            offerId,
-          }),
-        ])
-        if (!offerResponse.isOk) {
-          return notify.error(offerResponse.message)
-        }
-
-        if (!offerResponse.payload.isEducational) {
-          return history.push(`/offre/${offerId}/individuel/stocks`)
-        }
+        const stockResponse = await getCollectiveStockAdapter({
+          offerId,
+        })
 
         if (!stockResponse.isOk) {
           return notify.error(stockResponse.message)
         }
-        setOffer(offerResponse.payload)
         setStock(stockResponse.payload.stock)
-        const initialValuesFromStock = offerResponse.payload.isShowcase
+        const initialValuesFromStock = offer.isTemplate
           ? {
               ...DEFAULT_EAC_STOCK_FORM_VALUES,
               priceDetail:
@@ -130,8 +118,8 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
             }
           : extractInitialStockValues(
               stockResponse.payload.stock,
-              offerResponse.payload,
-              offerResponse.payload.isShowcase
+              offer,
+              offer.isTemplate
                 ? EducationalOfferType.SHOWCASE
                 : EducationalOfferType.CLASSIC
             )

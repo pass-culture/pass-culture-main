@@ -6,22 +6,21 @@ import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
-  GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
   cancelCollectiveBookingAdapter,
   extractOfferIdAndOfferTypeFromRouteParams,
   patchIsTemplateOfferActiveAdapter,
+  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
+import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
-import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
-import { GetCollectiveOfferTemplateSuccessPayload } from './types'
 
 const getAdapter = (educationalOfferType: EducationalOfferType) => {
   if (educationalOfferType === EducationalOfferType.CLASSIC) {
@@ -36,8 +35,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-  const [offer, setOffer] =
-    useState<GetCollectiveOfferTemplateSuccessPayload | null>(null)
+  const [offer, setOffer] = useState<CollectiveOfferTemplate | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId } =
@@ -45,7 +43,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
   const notify = useNotification()
 
   const handleSubmitStock = async (
-    offer: GetStockOfferSuccessPayload,
+    offer: CollectiveOfferTemplate,
     values: OfferEducationalStockFormValues
   ) => {
     const adapter = getAdapter(values.educationalOfferType)
@@ -53,7 +51,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
     const stockResponse = await adapter({
       offerId: offer.id,
       values,
-      departmentCode: offer.venueDepartmentCode,
+      departmentCode: offer.venue.departementCode ?? '',
     })
 
     if (
@@ -125,7 +123,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
         setOffer(offerResponse.payload)
         const initialValuesFromStock = {
           ...DEFAULT_EAC_STOCK_FORM_VALUES,
-          priceDetail: offerResponse.payload.educationalPriceDetails ?? '',
+          priceDetail: offerResponse.payload.educationalPriceDetail ?? '',
           educationalOfferType: EducationalOfferType.SHOWCASE,
         }
         setInitialValues(initialValuesFromStock)
