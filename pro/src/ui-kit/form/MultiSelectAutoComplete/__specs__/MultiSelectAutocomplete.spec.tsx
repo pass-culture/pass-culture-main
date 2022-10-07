@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
@@ -36,7 +36,7 @@ describe('MultiSelectAutocomplete', () => {
     ],
     pluralLabel: 'Départements',
   }
-  const initialValues = { departement: ['01', '02'] }
+  const initialValues = { departement: ['01', '02'], 'search-departement': '' }
 
   it('should display field', () => {
     render(
@@ -53,7 +53,7 @@ describe('MultiSelectAutocomplete', () => {
         <MultiSelectAutocomplete {...props} />
       </Formik>
     )
-    expect(await screen.findByText('2')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 
   describe('Options', () => {
@@ -100,9 +100,7 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(
-        await screen.findByRole('button', { name: 'Outside' })
-      )
+      await userEvent.click(screen.getByRole('button', { name: 'Outside' }))
       expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
     })
 
@@ -113,8 +111,8 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
+      await userEvent.click(screen.getByLabelText('Aveyron'))
+      await userEvent.click(screen.getByLabelText('Calvados'))
       expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
         initialValues.departement.length + ['Aveyron', 'Calvados'].length
       )
@@ -127,7 +125,7 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Ain'))
+      await userEvent.click(screen.getByLabelText('Ain'))
       expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
         initialValues.departement.length - ['Ain'].length
       )
@@ -175,8 +173,8 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
+      await userEvent.click(screen.getByLabelText('Aveyron'))
+      await userEvent.click(screen.getByLabelText('Calvados'))
       expect(
         screen.getByRole('button', { name: 'Aveyron' })
       ).toBeInTheDocument()
@@ -192,8 +190,8 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
+      await userEvent.click(screen.getByLabelText('Aveyron'))
+      await userEvent.click(screen.getByLabelText('Calvados'))
       expect(
         screen.queryByRole('button', { name: 'Aveyron' })
       ).not.toBeInTheDocument()
@@ -247,12 +245,10 @@ describe('MultiSelectAutocomplete', () => {
     ).not.toBeInTheDocument()
     await userEvent.click(screen.getByRole('textbox'))
     // and unselects default options
-    await userEvent.click(await screen.findByLabelText('Ain'))
-    await userEvent.click(await screen.findByLabelText('Aisne'))
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Veuillez renseigner un département')
-      ).toBeInTheDocument()
-    })
+    await userEvent.click(screen.getByLabelText('Ain'))
+    await userEvent.click(screen.getByLabelText('Aisne'))
+    expect(
+      screen.queryByText('Veuillez renseigner un département')
+    ).toBeInTheDocument()
   })
 })

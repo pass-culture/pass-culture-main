@@ -12,7 +12,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderStoreProvider = () => {
-  return render(
+  render(
     <StoreProvider>
       <p>Sub component</p>
     </StoreProvider>
@@ -39,7 +39,7 @@ describe('src | App', () => {
     expect(api.getProfile).toHaveBeenCalled()
   })
   it('should load features', async () => {
-    await renderStoreProvider()
+    renderStoreProvider()
     await screen.findByText('Sub component')
 
     // Then
