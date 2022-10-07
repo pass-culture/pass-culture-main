@@ -6,7 +6,8 @@ import {
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
-  GetStockOfferSuccessPayload,
+  CollectiveOffer,
+  CollectiveOfferTemplate,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -17,7 +18,7 @@ export const extractInitialStockValues = (
     | GetCollectiveOfferTemplateResponseModel
     | CollectiveStockResponseModel
     | null,
-  offer: GetStockOfferSuccessPayload,
+  offer: CollectiveOffer | CollectiveOfferTemplate,
   offerType: EducationalOfferType
 ): OfferEducationalStockFormValues => {
   if (!stock) {
@@ -30,12 +31,12 @@ export const extractInitialStockValues = (
       eventDate:
         getLocalDepartementDateTimeFromUtc(
           typedStock.beginningDatetime,
-          offer.venueDepartmentCode
+          offer.venue.departementCode
         ) ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
       eventTime:
         getLocalDepartementDateTimeFromUtc(
           typedStock.beginningDatetime,
-          offer.venueDepartmentCode
+          offer.venue.departementCode
         ) ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventTime,
       numberOfPlaces:
         typedStock.numberOfTickets ??
@@ -47,7 +48,7 @@ export const extractInitialStockValues = (
       priceDetail:
         typedStock.educationalPriceDetail ??
         DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
-      educationalOfferType: offer.isShowcase
+      educationalOfferType: offer.isTemplate
         ? EducationalOfferType.SHOWCASE
         : EducationalOfferType.CLASSIC,
     }
@@ -57,7 +58,7 @@ export const extractInitialStockValues = (
     ...DEFAULT_EAC_STOCK_FORM_VALUES,
     priceDetail:
       stock.educationalPriceDetail ?? DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
-    educationalOfferType: offer.isShowcase
+    educationalOfferType: offer.isTemplate
       ? EducationalOfferType.SHOWCASE
       : EducationalOfferType.CLASSIC,
   }

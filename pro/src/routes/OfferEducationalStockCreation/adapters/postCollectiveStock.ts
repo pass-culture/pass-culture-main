@@ -1,14 +1,15 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import {
-  GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
   createStockDataPayload,
   hasStatusCodeAndErrorsCode,
+  CollectiveOfferTemplate,
+  CollectiveOffer,
 } from 'core/OfferEducational'
 
 type Params = {
-  offer: GetStockOfferSuccessPayload
+  offer: CollectiveOfferTemplate | CollectiveOffer
   values: OfferEducationalStockFormValues
 }
 
@@ -37,7 +38,7 @@ const postCollectiveStockAdapter: PostCollectiveStockAdapter = async ({
 }: Params) => {
   const stockPayload = createStockDataPayload(
     values,
-    offer.venueDepartmentCode,
+    offer.venue.departementCode ?? '',
     offer.id
   )
   try {

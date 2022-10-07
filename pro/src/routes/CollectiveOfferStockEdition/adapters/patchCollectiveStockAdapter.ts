@@ -2,13 +2,13 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { CollectiveStockResponseModel } from 'apiClient/v1'
 import {
-  GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
   createPatchStockDataPayload,
+  CollectiveOffer,
 } from 'core/OfferEducational'
 
 type Params = {
-  offer: GetStockOfferSuccessPayload
+  offer: CollectiveOffer
   stockId: string
   values: OfferEducationalStockFormValues
   initialValues: OfferEducationalStockFormValues
@@ -40,7 +40,7 @@ const patchCollectiveStockAdapter: PatchCollectiveStockAdapter = async ({
 }: Params) => {
   const patchStockPayload = createPatchStockDataPayload(
     values,
-    offer.venueDepartmentCode,
+    offer.venue.departementCode ?? '',
     initialValues
   )
   try {
