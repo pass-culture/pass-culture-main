@@ -33,7 +33,10 @@ const renderCollectiveTableRow = (props: ITableBodyProps) =>
       <Provider store={configureTestStore({})}>
         <CollectiveTableRow {...props} />
       </Provider>
-    </Router>
+    </Router>,
+    {
+      container: document.body.appendChild(document.createElement('tbody')),
+    }
   )
 
 describe('CollectiveTableRow', () => {

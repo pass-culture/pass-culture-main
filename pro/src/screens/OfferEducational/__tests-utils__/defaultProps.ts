@@ -1,5 +1,9 @@
 import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
-import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
+import {
+  DEFAULT_EAC_FORM_VALUES,
+  IOfferEducationalFormValues,
+  Mode,
+} from 'core/OfferEducational'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import { IOfferEducationalProps } from '../OfferEducational'
@@ -60,7 +64,7 @@ const allParticipantsOptionsToTrue = {
   ...buildStudentLevelsMapWithDefaultValue(true),
 }
 
-const editionFormValues = {
+const editionFormValues: IOfferEducationalFormValues = {
   category: 'MUSEE',
   subCategory: SubcategoryIdEnum.VISITE_GUIDEE,
   title: 'offer title',
@@ -87,6 +91,8 @@ const editionFormValues = {
   notifications: true,
   notificationEmails: ['email.notification@email.com'],
   domains: [],
+  'search-domains': '',
+  'search-interventionArea': '',
 }
 
 export const defaultEditionProps: IOfferEducationalProps = {

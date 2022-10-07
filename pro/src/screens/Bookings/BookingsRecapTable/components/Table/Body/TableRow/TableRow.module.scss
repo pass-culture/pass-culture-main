@@ -2,10 +2,17 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .details-container {
-    padding: rem.torem(16px);
-    border-top: 1px solid colors.$grey-medium;
+  padding: rem.torem(16px);
+  border-top: 1px solid colors.$grey-medium;
+
+  td {
+    padding: unset;
+    font-size: unset;
+    font-weight: unset;
+    line-height: unset;
+  }
 }
 
 .loader {
-    margin: auto;
+  margin: auto;
 }
