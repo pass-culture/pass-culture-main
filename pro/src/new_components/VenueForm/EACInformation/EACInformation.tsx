@@ -53,7 +53,6 @@ const EACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
       </FormLayout.Row>
       <FormLayout.Row>
         <ButtonLink
-          className={styles['edit-button']}
           link={{
             to: `/structures/${offererId}/lieux/${venue?.id}/eac`,
             isExternal: false,
@@ -61,6 +60,7 @@ const EACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
           Icon={collectiveDataIsNotEmpty ? EditIcon : undefined}
           variant={ButtonVariant.SECONDARY}
           isDisabled={isCreatingVenue}
+          className={styles['edit-button']}
         >
           {collectiveDataIsNotEmpty
             ? 'Modifier mes informations'

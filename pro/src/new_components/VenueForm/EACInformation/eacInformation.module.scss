@@ -5,12 +5,9 @@
   background-color: colors.$notification-info;
 }
 
+
 .edit-button {
   margin-top: rem.torem(16px);
-
-  svg {
-    margin-right: rem.torem(8px);
-  }
 }
 
 .collective-data-row:not(:last-of-type) {
