@@ -6,8 +6,26 @@
 }
 
 .edit-button {
+  margin-top: rem.torem(16px);
+
   svg {
     fill: colors.$primary;
     margin-right: rem.torem(8px);
   }
+}
+
+.collective-data-row:not(:last-of-type) {
+  margin-bottom: rem.torem(16px);
+}
+
+.collective-data-row, .collective-data-title {
+  font-size: rem.torem(15px);
+  font-style: normal;
+  font-weight: 500;
+  line-height: rem.torem(20px);
+}
+
+.collective-data-title {
+  color: colors.$grey-dark;
+  display: inline;
 }
