@@ -15,8 +15,6 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
@@ -30,12 +28,19 @@ const getAdapter = (educationalOfferType: EducationalOfferType) => {
   return patchCollectiveOfferTemplateAdapter
 }
 
-const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
+interface CollectiveOfferTemplateStockEditionProps {
+  offer: CollectiveOfferTemplate
+  reloadCollectiveOffer: () => void
+}
+
+const CollectiveOfferTemplateStockEdition = ({
+  offer,
+  reloadCollectiveOffer,
+}: CollectiveOfferTemplateStockEditionProps): JSX.Element => {
   const history = useHistory()
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-  const [offer, setOffer] = useState<CollectiveOfferTemplate | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId } =
@@ -63,7 +68,6 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
       )
     }
     const offerResponse = await getCollectiveOfferTemplateAdapter(offerId)
-    setOffer(offerResponse.payload)
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
@@ -95,7 +99,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
     }
 
     notify.success(message)
-    setIsReady(false)
+    reloadCollectiveOffer()
   }
 
   const cancelActiveBookings = async () => {
@@ -108,7 +112,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
     }
 
     notify.success(message)
-    setIsReady(false)
+    reloadCollectiveOffer()
   }
 
   useEffect(() => {
@@ -120,7 +124,6 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
           return notify.error(offerResponse.message)
         }
 
-        setOffer(offerResponse.payload)
         const initialValuesFromStock = {
           ...DEFAULT_EAC_STOCK_FORM_VALUES,
           priceDetail: offerResponse.payload.educationalPriceDetail ?? '',
@@ -138,24 +141,14 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
   }
 
   return (
-    <CollectiveOfferLayout
-      breadCrumpProps={{
-        activeStep: OfferBreadcrumbStep.STOCKS,
-        isCreatingOffer: false,
-        offerId: offerIdFromParams,
-      }}
-      title="Éditer une offre collective"
-      subTitle={offer.name}
-    >
-      <OfferEducationalStockScreen
-        cancelActiveBookings={cancelActiveBookings}
-        initialValues={initialValues}
-        mode={Mode.EDITION} // a collective offer template is always editable
-        offer={offer}
-        onSubmit={handleSubmitStock}
-        setIsOfferActive={setIsOfferActive}
-      />
-    </CollectiveOfferLayout>
+    <OfferEducationalStockScreen
+      cancelActiveBookings={cancelActiveBookings}
+      initialValues={initialValues}
+      mode={Mode.EDITION} // a collective offer template is always editable
+      offer={offer}
+      onSubmit={handleSubmitStock}
+      setIsOfferActive={setIsOfferActive}
+    />
   )
 }
 
