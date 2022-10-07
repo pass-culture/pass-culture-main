@@ -133,7 +133,9 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should save selected institution and call onSuccess props', async () => {
-    const spyPatch = jest.fn().mockResolvedValue({ isOk: true })
+    const spyPatch = jest
+      .fn()
+      .mockResolvedValue({ isOk: true, payload: { institutions: [] } })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
@@ -148,7 +150,13 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByRole('button', { name: /Valider et créer l’offre/ })
     )
     expect(spyPatch).toHaveBeenCalledTimes(1)
-    expect(props.onSuccess).toHaveBeenCalledWith({ offerId: 'BQ', message: '' })
+    expect(props.onSuccess).toHaveBeenCalledWith({
+      offerId: 'BQ',
+      message: '',
+      payload: {
+        institutions: [],
+      },
+    })
   })
 
   it('should display an error when the institution could not be saved', async () => {
