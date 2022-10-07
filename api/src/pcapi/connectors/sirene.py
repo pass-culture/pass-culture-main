@@ -3,6 +3,7 @@
 Documentation of the API: https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee
 """
 
+from collections import defaultdict
 import logging
 import re
 
@@ -118,11 +119,21 @@ class TestingBackend(BaseBackend):
         assert len(siren) == 9
         if siren == "000000000":
             raise UnknownEntityException()
+
+        siren_ape = defaultdict(
+            lambda: "90.03A",
+            {
+                "777084112": "84.11Z",
+                "777084122": "84.12Z",
+                "777091032": "91.03Z",
+            },
+        )
+
         return SirenInfo(
             siren=siren,
             name="MINISTERE DE LA CULTURE",
             head_office_siret=siren + "00001",
-            ape_code="90.03A",
+            ape_code=siren_ape[siren],
             legal_category_code="1000",
             address=self.address if with_address else None,
         )
