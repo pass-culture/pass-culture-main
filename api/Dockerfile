@@ -90,7 +90,8 @@ USER root
 
 RUN apt-get update && \
     apt-get -y install \
-		curl
+		curl \
+		less
 
 RUN apt update && \
 	apt install -y wget gnupg2 && \
