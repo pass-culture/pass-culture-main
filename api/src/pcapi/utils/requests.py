@@ -8,8 +8,6 @@ from requests import Response
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from pcapi import settings
-
 
 # fmt: off
 # isort: off
@@ -98,15 +96,10 @@ class Session(requests.Session):
         if disable_synchronous_retry:
             return
 
-        # Only sets a retry strategy for safe verbs
-        safe_retry_strategy = Retry(total=3, allowed_methods=["HEAD", "GET", "OPTIONS"])
-        unsafe_retry_strategy = Retry(total=3)
-        safe_adapter = HTTPAdapter(max_retries=safe_retry_strategy)
-        unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
-        self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
-        self.mount(settings.UBBLE_API_URL, safe_adapter)
-        self.mount("https://api.batch.com", unsafe_adapter)
-        self.mount("https://api.insee.fr/entreprises/sirene/V3", safe_adapter)
+        adapter = HTTPAdapter(max_retries=Retry(total=3))
+
+        self.mount("https://", adapter)
+        self.mount("http://", adapter)
 
     def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> Response:
         return _wrapper(super().request, method, url, *args, **kwargs)
