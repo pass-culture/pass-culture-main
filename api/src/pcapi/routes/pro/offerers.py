@@ -1,5 +1,5 @@
-import datetime
 import logging
+import time
 
 from flask_login import current_user
 from flask_login import login_required
@@ -240,7 +240,7 @@ def get_available_reimbursement_points(
     )
 
 
-@private_api.route("/offerers/<offerer_id>/stats", methods=["GET"])
+@private_api.route("/offerers/<offerer_id>/dashboard", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offerers_serialize.OffererStatsResponseModel,
@@ -252,16 +252,14 @@ def get_offerer_stats_dashboard_url(
     offerer = offerers_models.Offerer.query.get_or_404(dehumanize(offerer_id))
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
 
-    METABASE_SITE_URL = settings.METABASE_SITE_URL
-    METABASE_SECRET_KEY = settings.METABASE_SECRET_KEY
-
     payload = {
-        "resource": {"dashboard": 438},
-        "params": {"siren": [offerer.siren]},
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=10),  # 10 minute expiration
+        "resource": {"dashboard": settings.METABASE_DASHBOARD_ID},
+        "params": {"siren": [offerer.siren], "venueid": [str(venue.id) for venue in offerer.managedVenues]},
+        # dashboard token expire after 10 min (note that after that delay user has to refresh his page to interact with the dashbaord (e.g export content))
+        "exp": round(time.time()) + (60 * 10),
     }
-    token = jwt.encode(payload, METABASE_SECRET_KEY, algorithm="HS256")
+    token = jwt.encode(payload, settings.METABASE_SECRET_KEY, algorithm="HS256")
 
-    iframeUrl = METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=false&titled=false"
+    iframeUrl = settings.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=false&titled=false"
 
     return offerers_serialize.OffererStatsResponseModel(dashboardUrl=iframeUrl)
