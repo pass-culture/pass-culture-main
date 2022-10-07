@@ -4,7 +4,7 @@ import React, { MouseEventHandler, HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './Button.module.scss'
-import { ButtonVariant, SharedButtonProps } from './types'
+import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 export type InternalLinkProps = Omit<HTMLProps<HTMLLinkElement>, 'onClick'> & {
   isExternal: false
@@ -38,6 +38,7 @@ const ButtonLink = ({
   onClick,
   variant = ButtonVariant.TERNARY,
   link,
+  iconPosition = IconPositionEnum.LEFT,
 }: IButtonProps): JSX.Element => {
   const classNames = cn(
     styles['button'],
@@ -54,13 +55,31 @@ const ButtonLink = ({
         className={classNames}
         href={to}
         onClick={e => {
+          /* istanbul ignore next */
           isDisabled ? e.preventDefault() : onClick?.(e)
         }}
-        {...(isDisabled ? { 'aria-disabled': true } : {})}
+        {...(isDisabled
+          ? /* istanbul ignore next */ { 'aria-disabled': true }
+          : /* istanbul ignore next */ {})}
         {...linkProps}
       >
-        {Icon && <Icon className={styles['button-icon']} />}
+        {
+          /* istanbul ignore next */
+          Icon && iconPosition === IconPositionEnum.LEFT && (
+            <Icon
+              className={cn(styles['button-icon'], styles['button-icon-left'])}
+            />
+          )
+        }
         {children}
+        {
+          /* istanbul ignore next */
+          Icon && iconPosition === IconPositionEnum.RIGHT && (
+            <Icon
+              className={cn(styles['button-icon'], styles['button-icon-right'])}
+            />
+          )
+        }
       </a>
     )
   }
@@ -68,12 +87,30 @@ const ButtonLink = ({
   return (
     <Link
       className={classNames}
-      onClick={e => (isDisabled ? e.preventDefault() : onClick?.(e))}
+      onClick={e =>
+        /* istanbul ignore next */
+        isDisabled ? e.preventDefault() : onClick?.(e)
+      }
       to={link.to}
       {...(isDisabled ? { 'aria-disabled': true } : {})}
     >
-      {Icon && <Icon className={styles['button-icon']} />}
+      {
+        /* istanbul ignore next */
+        Icon && iconPosition === IconPositionEnum.LEFT && (
+          <Icon
+            className={cn(styles['button-icon'], styles['button-icon-left'])}
+          />
+        )
+      }
       {children}
+      {
+        /* istanbul ignore next */
+        Icon && iconPosition === IconPositionEnum.RIGHT && (
+          <Icon
+            className={cn(styles['button-icon'], styles['button-icon-right'])}
+          />
+        )
+      }
     </Link>
   )
 }
