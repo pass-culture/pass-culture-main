@@ -53,7 +53,7 @@ const CollectiveOfferStockCreationFromTemplate = (): JSX.Element | null => {
         activeStep: OfferBreadcrumbStep.STOCKS,
         isCreatingOffer: true,
       }}
-      title="Créer une nouvelle offre collective"
+      title="Créer une offre collective"
       subTitle={data.name}
     >
       <OfferEducationalStockScreen

@@ -55,7 +55,7 @@ const CollectiveOfferVisibility = () => {
         activeStep: OfferBreadcrumbStep.VISIBILITY,
         isCreatingOffer: true,
       }}
-      title="Créer une nouvelle offre collective"
+      title="Créer une offre collective"
       subTitle={data.name}
     >
       <CollectiveOfferVisibilityScreen
