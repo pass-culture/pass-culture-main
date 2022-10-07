@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
@@ -17,6 +18,8 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -258,6 +261,40 @@ class OffersTest:
         response = TestClient(app.test_client()).get("/native/v1/offer/1")
 
         assert response.status_code == 404
+
+    @freeze_time("2023-01-01")
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @patch("pcapi.core.offers.api.get_shows_stock")
+    def test_get_cinema_venue_provider_synchronized_seance_cine_offer(self, mocked_get_shows_stock, app):
+        movie_id = 54
+        show_id = 5008
+
+        mocked_get_shows_stock.return_value = {5008: 0}
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}"
+        offer = OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        stock = EventStockFactory(
+            offer=offer,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}/2022-12-03",
+        )
+
+        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+
+        assert stock.remainingQuantity == 0
+        assert response.json["stocks"][0]["isSoldOut"]
 
 
 class SendOfferWebAppLinkTest:
