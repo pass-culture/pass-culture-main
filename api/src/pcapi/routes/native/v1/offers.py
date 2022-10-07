@@ -52,7 +52,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
             and cinema_venue_provider.provider.localClass == "CDSStocks"
             and check_offer_is_from_current_cinema_provider(offer)
         ):
-            api.update_stock_quantity_to_match_cinemma_venue_provider_remaining_place(offer, cinema_venue_provider)
+            api.update_stock_quantity_to_match_cinema_venue_provider_remaining_place(offer, cinema_venue_provider)
 
     return serializers.OfferResponse.from_orm(offer)
 

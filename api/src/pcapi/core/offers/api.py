@@ -1059,7 +1059,7 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: str | Non
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
-def update_stock_quantity_to_match_cinemma_venue_provider_remaining_place(
+def update_stock_quantity_to_match_cinema_venue_provider_remaining_place(
     offer: Offer, venue_provider: providers_models.VenueProvider
 ) -> None:
     sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
@@ -1075,7 +1075,7 @@ def update_stock_quantity_to_match_cinemma_venue_provider_remaining_place(
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "venue_provider": venue_provider.id},
     )
-    shows_remaining_places = get_shows_stock(offer.venue, shows_id)
+    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
 
     for show_id, remaining_places in shows_remaining_places.items():
         stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))
