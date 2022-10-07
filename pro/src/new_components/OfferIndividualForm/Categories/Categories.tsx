@@ -9,6 +9,8 @@ import {
 } from 'new_components/OfferIndividualForm'
 import { InfoBox, Select } from 'ui-kit'
 
+import styles from '../OfferIndividualForm.module.scss'
+
 import { MusicTypes } from './MusicTypes'
 import { SelectSubCategory } from './SelectSubCategory'
 import { ShowTypes } from './ShowTypes'
@@ -50,12 +52,11 @@ const Categories = ({
   const hasShowType = formValues.subCategoryFields.includes('showType')
 
   return (
-    <FormLayout.Section
-      title="Type d’offre"
-      description="Le type de l’offre permet de la caractériser et de la valoriser au mieux dans l’application."
-    >
+    <FormLayout.Section title="Type d’offre">
       <FormLayout.Row
-        smSpaceAfter={true}
+        className={
+          hasSubCategory || !!Banner ? undefined : styles['category-row']
+        }
         sideComponent={
           <InfoBox
             type="info"
@@ -64,6 +65,8 @@ const Categories = ({
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-',
               text: 'Quelles catégories choisir ?',
+              target: '_blank',
+              rel: 'noopener noreferrer',
             }}
           />
         }
@@ -90,18 +93,13 @@ const Categories = ({
       )}
 
       {hasMusicType && (
-        <FormLayout.Row>
-          <MusicTypes readOnly={readOnlyFields.includes('musicType')} />
-        </FormLayout.Row>
+        <MusicTypes readOnly={readOnlyFields.includes('musicType')} />
       )}
 
       {hasShowType && (
-        <FormLayout.Row>
-          <ShowTypes readOnly={readOnlyFields.includes('showType')} />
-        </FormLayout.Row>
+        <ShowTypes readOnly={readOnlyFields.includes('showType')} />
       )}
-
-      <FormLayout.Row>{!!Banner && Banner}</FormLayout.Row>
+      {!!Banner && <FormLayout.Row>{Banner}</FormLayout.Row>}
     </FormLayout.Section>
   )
 }

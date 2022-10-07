@@ -60,7 +60,7 @@ const ActionBar = ({
         {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
           <ButtonLink
             link={{ to: backOfferUrl, isExternal: false }}
-            variant={ButtonVariant.SECONDARY}
+            variant={ButtonVariant.PRIMARY}
           >
             Retour à la liste des offres
           </ButtonLink>

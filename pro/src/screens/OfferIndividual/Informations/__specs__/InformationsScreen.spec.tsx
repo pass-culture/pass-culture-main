@@ -234,7 +234,7 @@ describe('screens:OfferIndividual::Informations', () => {
         'virtual'
       )
       expect(
-        screen.queryByRole('heading', { name: 'Informations générales' })
+        screen.queryByRole('heading', { name: 'Informations artistiques' })
       ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('heading', { name: 'Accessibilité' })
@@ -259,7 +259,7 @@ describe('screens:OfferIndividual::Informations', () => {
         'physical'
       )
       expect(
-        screen.getByRole('heading', { name: 'Informations générales' })
+        screen.getByRole('heading', { name: 'Informations artistiques' })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('heading', { name: 'Accessibilité' })
