@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
@@ -36,7 +36,7 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
         { value: '15', label: 'Cantal' },
       ],
     }
-    const initialValues = { departement: '' }
+    const initialValues = { departement: '', 'search-departement': '' }
 
     it('should display field', () => {
       render(
@@ -65,7 +65,7 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
           </Formik>
         )
         await userEvent.click(screen.getByRole('textbox'))
-        expect(await screen.findAllByRole('option')).toHaveLength(15)
+        expect(screen.getAllByRole('option')).toHaveLength(15)
       })
 
       it('should close and hide all options when the user triggers the close arrow button', async () => {
@@ -89,9 +89,7 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
           </Formik>
         )
         await userEvent.click(screen.getByRole('textbox'))
-        await userEvent.click(
-          await screen.findByRole('button', { name: 'Outside' })
-        )
+        await userEvent.click(screen.getByRole('button', { name: 'Outside' }))
         expect(screen.queryAllByRole('option')).toHaveLength(0)
       })
 
@@ -102,7 +100,7 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
           </Formik>
         )
         await userEvent.click(screen.getByRole('textbox'))
-        await userEvent.click(await screen.findByLabelText('Aveyron'))
+        await userEvent.click(screen.getByLabelText('Aveyron'))
         expect(screen.getByRole('textbox')).toHaveValue('Aveyron')
       })
 
@@ -113,7 +111,7 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
           </Formik>
         )
         await userEvent.click(screen.getByRole('textbox'))
-        const additionalOption = await screen.findByLabelText(
+        const additionalOption = screen.getByLabelText(
           /5 résultats maximum. Veuillez affiner votre recherche/
         )
         expect(additionalOption).toBeDisabled()
@@ -176,11 +174,9 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
       ).not.toBeInTheDocument()
       await userEvent.click(screen.getByRole('textbox'))
       await userEvent.click(screen.getByAltText('Masquer les options'))
-      await waitFor(() => {
-        expect(
-          screen.queryByText('Veuillez renseigner un département')
-        ).toBeInTheDocument()
-      })
+      expect(
+        screen.getByText('Veuillez renseigner un département')
+      ).toBeInTheDocument()
     })
   })
 })
