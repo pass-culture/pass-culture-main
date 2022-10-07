@@ -2,17 +2,20 @@ import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
 import { IVenueFormValues } from 'new_components/VenueForm'
 import { SubmitButton } from 'ui-kit'
 
-import { validationSchema as informationsValidationSchema } from '../'
+import {
+  DEFAULT_INFORMATIONS_FORM_VALUES,
+  validationSchema as informationsValidationSchema,
+} from '../'
 import Informations, { IInformations } from '../Informations'
 
-const renderInformations = async ({
+const renderInformations = ({
   initialValues,
   onSubmit = jest.fn(),
   props,
@@ -28,12 +31,10 @@ const renderInformations = async ({
       onSubmit={onSubmit}
       validationSchema={validationSchema}
     >
-      {({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
-          <Informations {...props} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
-        </form>
-      )}
+      <Form>
+        <Informations {...props} />
+        <SubmitButton isLoading={false}>Submit</SubmitButton>
+      </Form>
     </Formik>
   )
 
@@ -52,7 +53,7 @@ describe('components | Informations', () => {
 
   beforeEach(() => {
     const updateIsSiretValued = jest.fn()
-    initialValues = { description: '' }
+    initialValues = { ...DEFAULT_INFORMATIONS_FORM_VALUES }
     props = {
       isCreatedEntity: true,
       readOnly: false,
@@ -64,7 +65,7 @@ describe('components | Informations', () => {
   })
 
   it('should submit form without errors', async () => {
-    const { buttonSubmit } = await renderInformations({
+    const { buttonSubmit } = renderInformations({
       initialValues,
       onSubmit,
       props,
@@ -91,7 +92,7 @@ describe('components | Informations', () => {
   })
 
   it('should validate required fields on submit', async () => {
-    await renderInformations({
+    renderInformations({
       initialValues,
       onSubmit,
       props,
