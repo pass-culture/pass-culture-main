@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto'
+
 import {
   alpha,
   Box,
@@ -17,10 +19,12 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
+import { format } from 'date-fns'
 import React, { useCallback, useState } from 'react'
 import {
   useAuthenticated,
   useGetOne,
+  useNotify,
   usePermissions,
   useRedirect,
 } from 'react-admin'
@@ -29,10 +33,11 @@ import { useParams } from 'react-router-dom'
 import { searchPermission } from '../../../helpers/functions'
 import { Colors } from '../../../layout/Colors'
 import { eventMonitoring } from '../../../libs/monitoring/sentry'
-import { OffererAttachedUser } from '../../../TypesFromApi'
+import { HistoryItem, OffererAttachedUser } from '../../../TypesFromApi'
 import { StatusBadge } from '../../PublicUsers/Components/StatusBadge'
 import { PermissionsEnum } from '../../PublicUsers/types'
 import { BankAccountStatusBadge } from '../Components/BankAccountStatusBadge'
+import { CommentOfferer } from '../Components/CommentOfferer'
 import { ProTypeBadge } from '../Components/ProTypeBadge'
 import { ProTypeEnum } from '../types'
 
@@ -42,6 +47,8 @@ const cardStyle = {
   marginTop: '20px',
   padding: 30,
 }
+
+const tabStyle = { bgcolor: alpha(Colors.GREY, 0.1) }
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -85,6 +92,7 @@ export const OffererDetail = () => {
     formattedPermissions,
     PermissionsEnum.readProEntity
   )
+  const notify = useNotify()
   const redirect = useRedirect()
   const [tabValue, setTabValue] = useState(1)
   const handleChange = useCallback(
@@ -97,7 +105,14 @@ export const OffererDetail = () => {
     'offerer',
     { id: id },
     // redirect to the list if the book is not found
-    { onError: () => redirect('/pro/search') }
+    {
+      onError() {
+        notify(`Une erreur est survenue`, {
+          type: 'error',
+        })
+        redirect('/pro/search')
+      },
+    }
   )
   if (isLoading) {
     return <CircularProgress size={18} thickness={2} />
@@ -109,6 +124,10 @@ export const OffererDetail = () => {
   }
   const offererStats = offererInfo.stats
   const offererUsers: OffererAttachedUser[] = offererInfo.users
+  const offererHistory: HistoryItem[] = offererInfo.history.sort(
+    (a: HistoryItem, b: HistoryItem) => (a.date < b.date ? 1 : -1)
+  )
+
   const totalActiveOffers =
     offererStats.active.individual + offererStats.active.collective
   const totalInactiveOffers =
@@ -303,16 +322,51 @@ export const OffererDetail = () => {
                 aria-label="basic tabs example"
                 variant="fullWidth"
               >
-                <Tab label="" {...a11yProps(0)} disabled />
+                <Tab
+                  label="Historique du compte"
+                  {...a11yProps(0)}
+                  sx={tabStyle}
+                />
                 <Tab
                   label="Compte(s) Pro(s) Rattaché(s)"
                   {...a11yProps(1)}
-                  sx={{ bgcolor: alpha(Colors.GREY, 0.1) }}
+                  sx={tabStyle}
                 />
                 <Tab label="" {...a11yProps(2)} disabled />
               </Tabs>
               <TabPanel value={tabValue} index={0}>
-                Bientôt disponible
+                <CommentOfferer offererId={offererInfo.id} />
+                <TableContainer component={Paper} elevation={3}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>&nbsp;</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Date/Heure</TableCell>
+                        <TableCell align="right">Auteur</TableCell>
+                        <TableCell align="left">Commentaire</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {offererHistory.map(item => (
+                        <TableRow
+                          key={randomUUID()}
+                          sx={{
+                            '&:last-child td, &:last-child th': { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row"></TableCell>
+                          <TableCell>{item.type}</TableCell>
+                          <TableCell>
+                            {format(item.date, 'dd/MM/yyyy à HH:mm:ss')}
+                          </TableCell>
+                          <TableCell align="right">{item.authorName}</TableCell>
+                          <TableCell align="left">{item.comment}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </TabPanel>
               <TabPanel value={tabValue} index={1}>
                 <TableContainer component={Paper} elevation={3}>

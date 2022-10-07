@@ -104,17 +104,22 @@ export const dataProvider: DataProvider = {
         const users = async () =>
           await apiProvider().getOffererUsers({ offererId: params.id })
 
-        const [offererStats, offererTotalRevenue, offererProUsers] = [
-          await stats(),
-          await revenue(),
-          await users(),
-        ]
+        const history = async () =>
+          await apiProvider().getOffererHistory({ offererId: params.id })
+
+        const [
+          offererStats,
+          offererTotalRevenue,
+          offererProUsers,
+          offererHistory,
+        ] = [await stats(), await revenue(), await users(), await history()]
 
         const offererData = {
           ...response.data,
           stats: offererStats.data,
           revenue: offererTotalRevenue.data,
           users: offererProUsers.data,
+          history: offererHistory.data,
         }
         return {
           data: offererData,
