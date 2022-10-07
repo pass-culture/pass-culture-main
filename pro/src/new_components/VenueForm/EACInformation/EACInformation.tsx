@@ -42,11 +42,13 @@ const EACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
             venue={venue as unknown as GetVenueResponseModel}
             vueStyles={styles}
           />
-        ) : (
+        ) : isCreatingVenue ? (
           <Banner className={styles['eac-banner-light']} type="light">
             Une fois votre lieu créé, vous pourrez renseigner des informations
             pour les enseignants en revenant sur cette page.
           </Banner>
+        ) : (
+          <></>
         )}
       </FormLayout.Row>
       <FormLayout.Row>
