@@ -3,12 +3,12 @@ import { Chip } from '@mui/material'
 import { ProResult } from '../../../TypesFromApi'
 import { ProTypeEnum, Venue } from '../types'
 
-type Props = {
+export type ProTypeBadgeProps = {
   type: ProTypeEnum
   resource: ProResult
 }
 
-export const ProTypeBadge = ({ type, resource }: Props) => {
+export const ProTypeBadge = ({ type, resource }: ProTypeBadgeProps) => {
   let label
   switch (type) {
     case ProTypeEnum.offerer:

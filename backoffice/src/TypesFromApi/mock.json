@@ -78,6 +78,20 @@
       }
     }
   },
+  "getOffererHistory": {
+    "200": {
+      "data": [{}]
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
   "getOffererOffersStats": {
     "200": {
       "data": {
@@ -91,6 +105,30 @@
         }
       }
     },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "setOffererPending": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "rejectOfferer": {
+    "204": "No Content",
     "403": "Forbidden",
     "422": {
       "0": {
