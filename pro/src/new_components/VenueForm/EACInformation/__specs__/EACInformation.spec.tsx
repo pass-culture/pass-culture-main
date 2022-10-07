@@ -3,9 +3,12 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
-import { IVenue } from '../../../../core/Venue'
+import { IVenue } from 'core/Venue'
+import { configureTestStore } from 'store/testUtils'
+
 import EACInformation from '../EACInformation'
 
 const CREATION_TEXT = /Renseigner mes informations/
@@ -21,7 +24,9 @@ const renderEACInformation = async ({
 }) => {
   render(
     <Router history={createBrowserHistory()}>
-      <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
+      <Provider store={configureTestStore({})}>
+        <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
+      </Provider>
     </Router>
   )
 }
