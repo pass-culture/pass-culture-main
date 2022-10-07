@@ -42,7 +42,7 @@ const IconLinkBox = ({
           variant={ButtonVariant.TERNARY}
           link={{
             to: linkUrl,
-            isExternal: true,
+            isExternal: false,
           }}
           onClick={onClick}
           Icon={IconLink}

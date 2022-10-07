@@ -42,9 +42,11 @@ describe('updateAllOffersActiveStatusAdapter', () => {
   it('should return an error when the update has failed', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 422,
-    })
+    jest.spyOn(window, 'fetch').mockResolvedValueOnce(
+      new Response(new Blob(), {
+        status: 422,
+      })
+    )
 
     // when
     const response = await updateAllOffersActiveStatusAdapter({
