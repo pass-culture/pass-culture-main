@@ -146,12 +146,12 @@ const CollectiveOfferVisibility = ({
                 disabled={mode === Mode.READ_ONLY}
                 group={[
                   {
-                    label: 'Tous les établissements',
-                    value: 'all',
-                  },
-                  {
                     label: 'Un établissement en particulier',
                     value: 'one',
+                  },
+                  {
+                    label: 'Tous les établissements',
+                    value: 'all',
                   },
                 ]}
                 name="visibility"
