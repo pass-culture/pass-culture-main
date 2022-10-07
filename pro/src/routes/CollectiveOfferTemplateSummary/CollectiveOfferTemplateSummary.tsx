@@ -9,35 +9,33 @@ import {
   EducationalCategories,
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferSummary from 'screens/CollectiveOfferSummary'
 
-const CollectiveOfferTemplateSummary = () => {
+interface CollectiveOfferTemplateSummaryProps {
+  offer: CollectiveOfferTemplate
+}
+
+const CollectiveOfferTemplateSummary = ({
+  offer,
+}: CollectiveOfferTemplateSummaryProps) => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const notify = useNotification()
 
   const { offerId } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
-  const [offer, setOffer] = useState<CollectiveOfferTemplate | null>(null)
   const [categories, setCategories] = useState<EducationalCategories | null>(
     null
   )
 
   useEffect(() => {
     const loadData = async () => {
-      const [offerResponse, categoriesResponse] = await Promise.all([
-        getCollectiveOfferTemplateAdapter(offerId),
-        getEducationalCategoriesAdapter(),
-      ])
+      const categoriesResponse = await getEducationalCategoriesAdapter()
 
-      if (!offerResponse.isOk || !categoriesResponse.isOk) {
-        return notify.error(GET_DATA_ERROR_MESSAGE)
+      if (!categoriesResponse.isOk) {
+        return notify.error(categoriesResponse.message)
       }
 
-      setOffer(offerResponse.payload)
       setCategories(categoriesResponse.payload)
     }
 
@@ -49,9 +47,7 @@ const CollectiveOfferTemplateSummary = () => {
   return !isReady ? (
     <Spinner />
   ) : (
-    <CollectiveOfferLayout title="Récapitulatif" subTitle={offer.name}>
-      <CollectiveOfferSummary offer={offer} categories={categories} />
-    </CollectiveOfferLayout>
+    <CollectiveOfferSummary offer={offer} categories={categories} />
   )
 }
 

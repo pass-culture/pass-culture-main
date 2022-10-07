@@ -9,6 +9,8 @@ import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { CollectiveOfferTemplate } from 'core/OfferEducational'
+import { collectiveOfferTemplateFactory } from 'screens/OfferEducationalStock/__tests-utils__'
 import {
   EVENT_DATE_LABEL,
   EVENT_TIME_LABEL,
@@ -36,17 +38,12 @@ jest.mock('apiClient/api', () => ({
     transformCollectiveOfferTemplateIntoCollectiveOffer: jest
       .fn()
       .mockResolvedValue({ offerId: 'B1' }),
-    getCollectiveOfferTemplate: jest.fn().mockResolvedValue({
-      id: 'T-A1',
-      venue: {
-        managinOfferer: { id: 'A1' },
-      },
-    }),
   },
 }))
 
 describe('CollectiveOfferTemplateStockEdition', () => {
   let history: History
+  const offer: CollectiveOfferTemplate = collectiveOfferTemplateFactory({})
 
   beforeAll(() => {
     history = createBrowserHistory()
@@ -55,7 +52,10 @@ describe('CollectiveOfferTemplateStockEdition', () => {
     render(
       <Router history={history}>
         <Provider store={configureTestStore({})}>
-          <CollectiveOfferTemplateStockEdition />
+          <CollectiveOfferTemplateStockEdition
+            offer={offer}
+            reloadCollectiveOffer={jest.fn()}
+          />
         </Provider>
       </Router>
     )

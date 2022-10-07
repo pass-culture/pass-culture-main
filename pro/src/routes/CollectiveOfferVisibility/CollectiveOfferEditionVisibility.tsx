@@ -12,14 +12,12 @@ import {
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
 
-const CollectiveOfferVisibility = () => {
+const CollectiveOfferVisibility = ({ offer }: { offer: CollectiveOffer }) => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
@@ -31,7 +29,6 @@ const CollectiveOfferVisibility = () => {
   >([])
   const [isReady, setIsReady] = useState(false)
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
-  const [offer, setOffer] = useState<CollectiveOffer>()
 
   useEffect(() => {
     getCollectiveOfferAdapter(offerId).then(offerResult => {
@@ -39,7 +36,6 @@ const CollectiveOfferVisibility = () => {
         return notify.error(offerResult.message)
       }
 
-      setOffer(offerResult.payload)
       setIsReady(true)
     })
   }, [])
@@ -62,13 +58,6 @@ const CollectiveOfferVisibility = () => {
     message: string
     payload: CollectiveOffer
   }) => {
-    setOffer(currentOffer => {
-      if (!currentOffer) {
-        return
-      }
-      return { ...currentOffer, institution: payload.institution }
-    })
-
     notify.success(message)
     history.push(
       `/offre/${computeURLCollectiveOfferId(
@@ -83,24 +72,14 @@ const CollectiveOfferVisibility = () => {
   }
 
   return (
-    <CollectiveOfferLayout
-      breadCrumpProps={{
-        activeStep: OfferBreadcrumbStep.VISIBILITY,
-        isCreatingOffer: false,
-        offerId,
-      }}
-      title="Éditer une offre collective"
-      subTitle={offer.name}
-    >
-      <CollectiveOfferVisibilityScreen
-        mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-        patchInstitution={patchEducationalInstitutionAdapter}
-        initialValues={extractInitialVisibilityValues(offer.institution)}
-        onSuccess={onSuccess}
-        institutions={institutions}
-        isLoadingInstitutions={isLoadingInstitutions}
-      />
-    </CollectiveOfferLayout>
+    <CollectiveOfferVisibilityScreen
+      mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+      patchInstitution={patchEducationalInstitutionAdapter}
+      initialValues={extractInitialVisibilityValues(offer.institution)}
+      onSuccess={onSuccess}
+      institutions={institutions}
+      isLoadingInstitutions={isLoadingInstitutions}
+    />
   )
 }
 
