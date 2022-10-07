@@ -19,7 +19,8 @@ const individualUrlPatterns: { [key: string]: RegExp } = {
 const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/creation\/collectif/g,
   [STEP_STOCKS]: /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/stocks/g,
-  [STEP_VISIBILITY]: /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/visibilite/g,
+  [STEP_VISIBILITY]:
+    /\/offre(\/duplication)?\/((T-){0,1}[A-Z0-9]+)\/collectif\/visibilite/g,
   [STEP_CONFIRMATION]:
     /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/confirmation/g,
 }
@@ -77,7 +78,6 @@ const RouteLeavingGuardOfferCreation = ({
         }
         return { redirectPath, shouldBlock: false }
       }
-
       if (
         // going to stocks
         to === STEP_STOCKS ||

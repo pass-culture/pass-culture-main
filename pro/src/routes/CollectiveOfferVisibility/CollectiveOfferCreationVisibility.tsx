@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
@@ -16,6 +17,7 @@ import patchEducationalInstitutionAdapter from './adapters/patchEducationalInsti
 
 const CollectiveOfferVisibility = () => {
   const history = useHistory()
+  const notify = useNotification()
   const { offerId } = useParams<{ offerId: string }>()
 
   const [institutions, setInstitutions] = useState<
@@ -44,9 +46,9 @@ const CollectiveOfferVisibility = () => {
   }, [])
 
   if (error) {
+    notify.error(error.message)
     return null
   }
-
   if (isLoading) {
     return <Spinner />
   }
@@ -57,7 +59,7 @@ const CollectiveOfferVisibility = () => {
         activeStep: OfferBreadcrumbStep.VISIBILITY,
         isCreatingOffer: true,
       }}
-      title="Créer une offre collective"
+      title="Créer une offre réservable"
       subTitle={offer.name}
     >
       <CollectiveOfferVisibilityScreen

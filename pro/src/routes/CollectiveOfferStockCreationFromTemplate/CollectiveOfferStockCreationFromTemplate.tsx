@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -19,6 +19,7 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 const CollectiveOfferStockCreationFromTemplate = (): JSX.Element | null => {
   const { offerId } = useParams<{ offerId: string }>()
+  const history = useHistory()
   const notify = useNotification()
 
   const handleSubmitStock = async (
@@ -29,10 +30,10 @@ const CollectiveOfferStockCreationFromTemplate = (): JSX.Element | null => {
       offer,
       values,
     })
-
     if (!response.isOk) {
       return notify.error(response.message)
     }
+    history.push(`/offre/duplication/${offerId}/collectif/visibilite`)
   }
 
   const { isLoading, error, data } = useAdapter(() =>
