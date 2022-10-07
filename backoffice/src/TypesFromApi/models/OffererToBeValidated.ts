@@ -91,7 +91,7 @@ export interface OffererToBeValidated {
    * @type {string}
    * @memberof OffererToBeValidated
    */
-  status?: string | null
+  status: string
   /**
    *
    * @type {string}
@@ -124,7 +124,7 @@ export function OffererToBeValidatedFromJSONTyped(
     phoneNumber: !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
     postalCode: json['postalCode'],
     siren: json['siren'],
-    status: !exists(json, 'status') ? undefined : json['status'],
+    status: json['status'],
     step: !exists(json, 'step') ? undefined : json['step'],
   }
 }

@@ -32,6 +32,9 @@ import {
   GetUserSubscriptionHistoryResponseModel,
   GetUserSubscriptionHistoryResponseModelFromJSON,
   GetUserSubscriptionHistoryResponseModelToJSON,
+  HistoryResponseModel,
+  HistoryResponseModelFromJSON,
+  HistoryResponseModelToJSON,
   ListOffererToBeValidatedResponseModel,
   ListOffererToBeValidatedResponseModelFromJSON,
   ListOffererToBeValidatedResponseModelToJSON,
@@ -59,6 +62,9 @@ import {
   OffererTotalRevenueResponseModel,
   OffererTotalRevenueResponseModelFromJSON,
   OffererTotalRevenueResponseModelToJSON,
+  OptionalCommentRequest,
+  OptionalCommentRequestFromJSON,
+  OptionalCommentRequestToJSON,
   PublicAccount,
   PublicAccountFromJSON,
   PublicAccountToJSON,
@@ -115,6 +121,10 @@ export interface GetOffererBasicInfoRequest {
   offererId: number
 }
 
+export interface GetOffererHistoryRequest {
+  offererId: number
+}
+
 export interface GetOffererOffersStatsRequest {
   offererId: number
 }
@@ -157,6 +167,11 @@ export interface ListOfferersToBeValidatedRequest {
   sort?: string | null
 }
 
+export interface RejectOffererRequest {
+  offererId: number
+  optionalCommentRequest?: OptionalCommentRequest
+}
+
 export interface RemoveTagFromOffererRequest {
   offererId: number
   tagName: string
@@ -188,6 +203,11 @@ export interface SearchPublicAccountRequest {
 
 export interface SendPhoneValidationCodeRequest {
   userId: number
+}
+
+export interface SetOffererPendingRequest {
+  offererId: number
+  optionalCommentRequest?: OptionalCommentRequest
 }
 
 export interface SkipPhoneValidationRequest {
@@ -576,6 +596,60 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: GetOffererBasicInfoRequest
   ): Promise<OffererBasicInfoResponseModel> {
     const response = await this.getOffererBasicInfoRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * get_offerer_history <GET>
+   */
+  async getOffererHistoryRaw(
+    requestParameters: GetOffererHistoryRequest
+  ): Promise<runtime.ApiResponse<HistoryResponseModel>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling getOffererHistory.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/history`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      HistoryResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_offerer_history <GET>
+   */
+  async getOffererHistory(
+    requestParameters: GetOffererHistoryRequest
+  ): Promise<HistoryResponseModel> {
+    const response = await this.getOffererHistoryRaw(requestParameters)
     return await response.value()
   }
 
@@ -1234,6 +1308,60 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * reject_offerer <POST>
+   */
+  async rejectOffererRaw(
+    requestParameters: RejectOffererRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling rejectOfferer.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/reject`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+      body: OptionalCommentRequestToJSON(
+        requestParameters.optionalCommentRequest
+      ),
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * reject_offerer <POST>
+   */
+  async rejectOfferer(requestParameters: RejectOffererRequest): Promise<void> {
+    await this.rejectOffererRaw(requestParameters)
+  }
+
+  /**
    * remove_tag_from_offerer <DELETE>
    */
   async removeTagFromOffererRaw(
@@ -1600,6 +1728,62 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: SendPhoneValidationCodeRequest
   ): Promise<void> {
     await this.sendPhoneValidationCodeRaw(requestParameters)
+  }
+
+  /**
+   * set_offerer_pending <POST>
+   */
+  async setOffererPendingRaw(
+    requestParameters: SetOffererPendingRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling setOffererPending.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/pending`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+      body: OptionalCommentRequestToJSON(
+        requestParameters.optionalCommentRequest
+      ),
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * set_offerer_pending <POST>
+   */
+  async setOffererPending(
+    requestParameters: SetOffererPendingRequest
+  ): Promise<void> {
+    await this.setOffererPendingRaw(requestParameters)
   }
 
   /**
