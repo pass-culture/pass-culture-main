@@ -1,5 +1,5 @@
 import React from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useParams, Redirect } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -19,7 +19,6 @@ const VenueEdition = (): JSX.Element | null => {
   const { offererId } = useParams<{ offererId: string }>()
   const { venueId } = useParams<{ venueId: string }>()
   const notify = useNotification()
-  const history = useHistory()
   const {
     isLoading: isLoadingVenue,
     error: errorVenue,
@@ -77,9 +76,12 @@ const VenueEdition = (): JSX.Element | null => {
     ].find(error => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
-      history.push(homePath)
     }
-    return null
+    // RomainC Redirect fix this warning here :
+    // Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state.
+    // which was caused by the setState in useGetVenue
+    // push is used to keep history of navigation
+    return <Redirect push to={homePath} />
   }
 
   const initialValues = setInitialFormValues(venue)

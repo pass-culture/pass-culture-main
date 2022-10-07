@@ -32,12 +32,11 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
   it('should return an error when there is an error in the form', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 400,
-      json: async () => ({
-        code: '',
-      }),
-    })
+    jest.spyOn(window, 'fetch').mockResolvedValueOnce(
+      new Response(new Blob(), {
+        status: 400,
+      })
+    )
 
     // when
     const response =

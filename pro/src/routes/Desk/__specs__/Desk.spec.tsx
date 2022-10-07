@@ -108,7 +108,7 @@ describe('src | routes | Desk', () => {
       .mockResolvedValue(apiBooking)
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
-    userEvent.click(buttonGetBooking)
+    await userEvent.click(buttonGetBooking)
     await waitFor(() => {
       expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
@@ -144,7 +144,7 @@ describe('src | routes | Desk', () => {
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
-    userEvent.click(buttonGetBooking)
+    await userEvent.click(buttonGetBooking)
     await waitFor(() => {
       expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
@@ -175,7 +175,7 @@ describe('src | routes | Desk', () => {
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
-    userEvent.click(buttonGetBooking)
+    await userEvent.click(buttonGetBooking)
     await waitFor(() => {
       expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
@@ -206,7 +206,7 @@ describe('src | routes | Desk', () => {
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
-    userEvent.click(buttonGetBooking)
+    await userEvent.click(buttonGetBooking)
     await waitFor(() => {
       expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
@@ -241,7 +241,7 @@ describe('src | routes | Desk', () => {
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
-    userEvent.click(buttonGetBooking)
+    await userEvent.click(buttonGetBooking)
     await waitFor(() => {
       expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
@@ -271,7 +271,7 @@ describe('src | routes | Desk', () => {
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
-    userEvent.click(buttonGetBooking)
+    await userEvent.click(buttonGetBooking)
     await waitFor(() => {
       expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
@@ -293,7 +293,7 @@ describe('src | routes | Desk', () => {
     const { buttonSubmitInvalidate, responseDataContainer } =
       await renderDeskRoute()
 
-    userEvent.click(buttonSubmitInvalidate)
+    await userEvent.click(buttonSubmitInvalidate)
     await waitFor(() => {
       expect(apiContremarque.patchBookingKeepByToken).toHaveBeenCalledWith(
         testToken
@@ -322,7 +322,7 @@ describe('src | routes | Desk', () => {
     const { buttonSubmitInvalidate, responseDataContainer } =
       await renderDeskRoute()
 
-    userEvent.click(buttonSubmitInvalidate)
+    await userEvent.click(buttonSubmitInvalidate)
     await waitFor(() => {
       expect(apiContremarque.patchBookingKeepByToken).toHaveBeenCalledWith(
         testToken
@@ -344,7 +344,7 @@ describe('src | routes | Desk', () => {
     const { buttonSubmitValidate, responseDataContainer } =
       await renderDeskRoute()
 
-    userEvent.click(buttonSubmitValidate)
+    await userEvent.click(buttonSubmitValidate)
     await waitFor(() => {
       expect(apiContremarque.patchBookingUseByToken).toHaveBeenCalledWith(
         testToken
@@ -373,7 +373,7 @@ describe('src | routes | Desk', () => {
     const { buttonSubmitValidate, responseDataContainer } =
       await renderDeskRoute()
 
-    userEvent.click(buttonSubmitValidate)
+    await userEvent.click(buttonSubmitValidate)
     await waitFor(() => {
       expect(apiContremarque.patchBookingUseByToken).toHaveBeenCalledWith(
         testToken
