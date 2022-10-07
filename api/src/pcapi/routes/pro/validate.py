@@ -2,6 +2,7 @@ import logging
 
 from flask_login import login_required
 
+from pcapi.connectors import sirene
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
@@ -69,7 +70,15 @@ def validate_user(token: str) -> None:
 
     if user_offerer:
         offerer = user_offerer.offerer
-        if not maybe_send_offerer_validation_email(offerer, user_offerer):
+
+        assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
+        try:
+            siren_info = sirene.get_siren(offerer.siren)
+        except sirene.SireneException as exc:
+            logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+            siren_info = None
+
+        if not maybe_send_offerer_validation_email(offerer, user_offerer, siren_info):
             logger.warning(
                 "Could not send offerer validation email to offerer",
                 extra={"user_offerer": user_offerer.id},

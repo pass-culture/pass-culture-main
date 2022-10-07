@@ -1,4 +1,5 @@
 from pcapi import settings
+from pcapi.connectors import sirene
 from pcapi.core import mails
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveOffer
@@ -15,10 +16,11 @@ from pcapi.utils.mailing import make_suspended_fraudulent_beneficiary_by_ids_not
 def maybe_send_offerer_validation_email(
     offerer: offerers_models.Offerer,
     user_offerer: offerers_models.UserOfferer,
+    siren_info: sirene.SirenInfo | None,
 ) -> bool:
     if offerer.isValidated and user_offerer.isValidated:
         return True
-    email = make_offerer_internal_validation_email(offerer, user_offerer)
+    email = make_offerer_internal_validation_email(offerer, user_offerer, siren_info)
     recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
     return mails.send(recipients=recipients, data=email)
 

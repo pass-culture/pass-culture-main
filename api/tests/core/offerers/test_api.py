@@ -7,6 +7,7 @@ from freezegun import freeze_time
 import pytest
 import sqlalchemy as sa
 
+from pcapi.connectors import sirene
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
@@ -432,6 +433,10 @@ class ApiKeyTest:
 
 
 class CreateOffererTest:
+    def _gen_offerer_tags(self):
+        tags = [offerers_factories.OffererTagFactory(label=label) for label in ("Collectivité", "Établissement public")]
+        return tags
+
     @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
     def test_create_new_offerer_with_validation_token_if_siren_is_not_already_registered(
         self, mock_maybe_send_offerer_validation_email
@@ -463,7 +468,9 @@ class CreateOffererTest:
         assert not created_user_offerer.user.has_pro_role
 
         mock_maybe_send_offerer_validation_email.assert_called_once_with(
-            created_user_offerer.offerer, created_user_offerer
+            created_user_offerer.offerer,
+            created_user_offerer,
+            sirene.get_siren(created_user_offerer.offerer.siren),
         )
 
         actions_list = history_models.ActionHistory.query.all()
@@ -518,7 +525,9 @@ class CreateOffererTest:
         assert not created_user_offerer.user.has_pro_role
 
         mock_maybe_send_offerer_validation_email.assert_called_once_with(
-            created_user_offerer.offerer, created_user_offerer
+            created_user_offerer.offerer,
+            created_user_offerer,
+            sirene.get_siren(created_user_offerer.offerer.siren),
         )
 
         actions_list = history_models.ActionHistory.query.all()
@@ -600,6 +609,46 @@ class CreateOffererTest:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
+
+    @pytest.mark.parametrize(
+        "siren, expected_ape, expected_tag",
+        (
+            ("777084112", "84.11Z", "Collectivité"),
+            ("777084122", "84.12Z", "Établissement public"),
+            ("777091032", "91.03Z", "Établissement public"),
+        ),
+    )
+    def test_create_offerer_auto_tagging(self, siren, expected_ape, expected_tag):
+        # Given
+        self._gen_offerer_tags()
+        offerers_factories.VirtualVenueTypeFactory()
+        user = users_factories.UserFactory()
+        offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer", siren=siren, address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+
+        # When
+        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == offerer_informations.name
+        assert expected_tag in (tag.label for tag in created_offerer.tags)
+
+    def test_create_offerer_auto_tagging_no_error_if_tag_not_in_db(self):
+        # Given
+        offerers_factories.VirtualVenueTypeFactory()
+        user = users_factories.UserFactory()
+        offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer", siren=777084112, address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+
+        # When
+        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == offerer_informations.name
 
 
 class ValidateOffererAttachmentTest:
