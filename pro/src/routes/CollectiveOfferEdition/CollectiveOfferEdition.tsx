@@ -16,12 +16,8 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
-import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
@@ -33,7 +29,13 @@ type AsyncScreenProps = Pick<
   'categories' | 'userOfferers' | 'domainsOptions'
 >
 
-const CollectiveOfferEdition = (): JSX.Element => {
+const CollectiveOfferEdition = ({
+  offer,
+  reloadCollectiveOffer,
+}: {
+  offer: CollectiveOffer | CollectiveOfferTemplate
+  reloadCollectiveOffer: () => void
+}): JSX.Element => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId, isShowcase } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
@@ -43,9 +45,7 @@ const CollectiveOfferEdition = (): JSX.Element => {
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
-  const [offer, setOffer] = useState<
-    CollectiveOffer | CollectiveOfferTemplate
-  >()
+
   const notify = useNotification()
 
   const editOffer = useCallback(
@@ -90,7 +90,7 @@ const CollectiveOfferEdition = (): JSX.Element => {
     }
 
     notify.success(message)
-    setIsReady(false)
+    reloadCollectiveOffer()
   }
 
   const cancelActiveBookings = async () => {
@@ -103,28 +103,16 @@ const CollectiveOfferEdition = (): JSX.Element => {
     }
 
     notify.success(message, NOTIFICATION_LONG_SHOW_DURATION)
-    setIsReady(false)
+    reloadCollectiveOffer()
   }
 
   const loadData = useCallback(
-    async (
-      offerResponse:
-        | AdapterFailure<null>
-        | AdapterSuccess<CollectiveOffer>
-        | AdapterSuccess<CollectiveOfferTemplate>
-    ) => {
-      if (!offerResponse.isOk) {
-        return notify.error(offerResponse.message)
-      }
-
-      const offer = offerResponse.payload
-      setOffer(offer)
-
-      const offererId = offer.venue.managingOffererId
+    async (offerResponse: CollectiveOffer | CollectiveOfferTemplate) => {
+      const offererId = offerResponse.venue.managingOffererId
 
       const result = await getCollectiveOfferFormDataApdater({
         offererId,
-        offer,
+        offer: offerResponse,
       })
 
       if (!result.isOk) {
@@ -147,7 +135,7 @@ const CollectiveOfferEdition = (): JSX.Element => {
           },
           offerers,
           offerers[0].id,
-          offer.venueId
+          offerResponse.venueId
         )
       )
 
@@ -158,16 +146,7 @@ const CollectiveOfferEdition = (): JSX.Element => {
 
   useEffect(() => {
     if (!isReady) {
-      const _loadData = async () => {
-        const getOfferAdapter = isShowcase
-          ? getCollectiveOfferTemplateAdapter
-          : getCollectiveOfferAdapter
-        const offerResponse = await getOfferAdapter(offerId)
-
-        loadData(offerResponse)
-      }
-
-      _loadData()
+      loadData(offer)
     }
   }, [isReady, offerId, loadData, history, isShowcase])
 
@@ -176,29 +155,19 @@ const CollectiveOfferEdition = (): JSX.Element => {
   }
 
   return (
-    <CollectiveOfferLayout
-      breadCrumpProps={{
-        activeStep: OfferBreadcrumbStep.DETAILS,
-        isCreatingOffer: false,
-        offerId: offerIdFromParams,
-      }}
-      title="Éditer une offre collective"
-      subTitle={offer.name}
-    >
-      <OfferEducationalScreen
-        {...screenProps}
-        cancelActiveBookings={cancelActiveBookings}
-        initialValues={initialValues}
-        isOfferActive={offer?.isActive}
-        isOfferBooked={
-          offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
-        }
-        isOfferCancellable={offer && offer.isCancellable}
-        mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-        onSubmit={editOffer}
-        setIsOfferActive={setIsOfferActive}
-      />
-    </CollectiveOfferLayout>
+    <OfferEducationalScreen
+      {...screenProps}
+      cancelActiveBookings={cancelActiveBookings}
+      initialValues={initialValues}
+      isOfferActive={offer?.isActive}
+      isOfferBooked={
+        offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
+      }
+      isOfferCancellable={offer && offer.isCancellable}
+      mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
+      onSubmit={editOffer}
+      setIsOfferActive={setIsOfferActive}
+    />
   )
 }
 

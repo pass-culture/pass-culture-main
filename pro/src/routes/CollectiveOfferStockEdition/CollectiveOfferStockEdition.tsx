@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import { CollectiveStockResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
@@ -18,21 +18,25 @@ import {
 } from 'core/OfferEducational'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 
-const CollectiveOfferStockEdition = (): JSX.Element => {
+interface OfferEducationalStockEditionProps {
+  offer: CollectiveOffer
+  reloadCollectiveOffer: () => void
+}
+
+const CollectiveOfferStockEdition = ({
+  offer,
+  reloadCollectiveOffer,
+}: OfferEducationalStockEditionProps): JSX.Element => {
   const history = useHistory()
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-  const [offer] = useState<CollectiveOffer>(null)
   const [stock, setStock] = useState<CollectiveStockResponseModel | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
-  const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
 
   const handleSubmitStock = async (
@@ -49,7 +53,7 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
       values,
       initialValues,
     })
-    const offerResponse = await getStockCollectiveOfferAdapter(offerId)
+    const offerResponse = await getStockCollectiveOfferAdapter(offer.id)
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
@@ -69,11 +73,9 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchOfferId = offerId
-
     const { isOk, message } = await patchIsCollectiveOfferActiveAdapter({
       isActive,
-      offerId: patchOfferId,
+      offerId: offer.id,
     })
 
     if (!isOk) {
@@ -81,13 +83,12 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
     }
 
     notify.success(message)
-    setIsReady(false)
+    reloadCollectiveOffer()
   }
 
   const cancelActiveBookings = async () => {
-    const patchOfferId = offerId
     const { isOk, message } = await cancelCollectiveBookingAdapter({
-      offerId: patchOfferId,
+      offerId: offer.id,
     })
 
     if (!isOk) {
@@ -95,14 +96,14 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
     }
 
     notify.success(message, NOTIFICATION_LONG_SHOW_DURATION)
-    setIsReady(false)
+    reloadCollectiveOffer()
   }
 
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
         const stockResponse = await getCollectiveStockAdapter({
-          offerId,
+          offerId: offer.id,
         })
 
         if (!stockResponse.isOk) {
@@ -128,31 +129,21 @@ const CollectiveOfferStockEdition = (): JSX.Element => {
       }
       loadStockAndOffer()
     }
-  }, [offerId, isReady, notify, history])
+  }, [offer.id, isReady, notify, history])
 
-  if (!offer || !isReady) {
+  if (!isReady) {
     return <Spinner />
   }
 
   return (
-    <CollectiveOfferLayout
-      breadCrumpProps={{
-        activeStep: OfferBreadcrumbStep.STOCKS,
-        isCreatingOffer: false,
-        offerId,
-      }}
-      title="Éditer une offre collective"
-      subTitle={offer.name}
-    >
-      <OfferEducationalStockScreen
-        cancelActiveBookings={cancelActiveBookings}
-        initialValues={initialValues}
-        mode={stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY}
-        offer={offer}
-        onSubmit={handleSubmitStock}
-        setIsOfferActive={setIsOfferActive}
-      />
-    </CollectiveOfferLayout>
+    <OfferEducationalStockScreen
+      cancelActiveBookings={cancelActiveBookings}
+      initialValues={initialValues}
+      mode={stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY}
+      offer={offer}
+      onSubmit={handleSubmitStock}
+      setIsOfferActive={setIsOfferActive}
+    />
   )
 }
 

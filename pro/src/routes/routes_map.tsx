@@ -19,12 +19,8 @@ import Bookings from 'routes/Bookings'
 import BusinessUnitList from 'routes/BusinessUnitList'
 import CollectiveBookings from 'routes/CollectiveBookings'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
-import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOffers from 'routes/CollectiveOffers'
-import CollectiveOfferStockEdition from 'routes/CollectiveOfferStockEdition'
-import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
-import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import CsvTable from 'routes/CsvTable'
 import Desk from 'routes/Desk'
 import { EmailChangeValidation } from 'routes/EmailChangeValidation'
@@ -40,9 +36,9 @@ import { VenueEdition } from 'routes/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import CollectiveOfferCreationFromTemplate from './CollectiveOfferCreationFromTemplate'
+import CollectiveOfferEditionRoutes from './CollectiveOfferEditionRoutes'
 import CollectiveOfferStockCreationFromTemplate from './CollectiveOfferStockCreationFromTemplate'
-import CollectiveOfferSummary from './CollectiveOfferSummary'
-import CollectiveOfferTemplateSummary from './CollectiveOfferTemplateSummary'
+import CollectiveOfferTemplateEditionRoutes from './CollectiveOfferTemplateEditionRoutes'
 import { OffererStats } from './OffererStats'
 
 interface ILayoutConfig {
@@ -55,13 +51,14 @@ interface IRouteMeta {
   layoutConfig?: ILayoutConfig
 }
 
-export interface IRoute {
+export interface IRoute<T = string> {
   component: any
   exact?: boolean
   path: string | string[]
   title?: string
   meta?: IRouteMeta
   featureName?: string
+  subRoutesPaths?: T[]
 }
 
 const RedirectToConnexionComponent = () => {
@@ -292,6 +289,18 @@ const routes: IRoute[] = [
     title: 'Offres',
   },
   {
+    component: CollectiveOfferEditionRoutes,
+    exact: false,
+    path: '/offre/:offerId([A-Z0-9]+)/collectif',
+    title: 'Edition d’une offre collective',
+  },
+  {
+    component: CollectiveOfferTemplateEditionRoutes,
+    exact: false,
+    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif',
+    title: 'Edition d’une offre collective',
+  },
+  {
     component: OfferEducationalStockCreation,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks',
@@ -321,48 +330,6 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/confirmation',
     title: 'Page de confirmation de création d’offre',
-  },
-  {
-    component: CollectiveOfferEdition,
-    exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif/edition',
-    title: 'Edition d’une offre collective',
-  },
-  {
-    component: CollectiveOfferEdition,
-    exact: true,
-    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/edition',
-    title: 'Edition d’une offre collective',
-  },
-  {
-    component: CollectiveOfferStockEdition,
-    exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition',
-    title: 'Edition d’un stock d’une offre collective',
-  },
-  {
-    component: CollectiveOfferTemplateStockEdition,
-    exact: true,
-    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/stocks/edition',
-    title: 'Edition d’un stock d’une offre collective',
-  },
-  {
-    component: CollectiveOfferEditionVisibility,
-    exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite/edition',
-    title: 'Edition de la visibilité d’une offre collective',
-  },
-  {
-    component: CollectiveOfferSummary,
-    exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif/recapitulatif',
-    title: 'Récapitulatif d’une offre collective',
-  },
-  {
-    component: CollectiveOfferTemplateSummary,
-    exact: true,
-    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/recapitulatif',
-    title: 'Récapitulatif d’une offre collective',
   },
   {
     component: LostPassword,
