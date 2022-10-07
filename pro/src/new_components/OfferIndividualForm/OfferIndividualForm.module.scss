@@ -8,3 +8,13 @@
   margin-bottom: rem.torem(32px);
   color: colors.$grey-dark;
 }
+
+.category-row {
+  padding-bottom: rem.torem(8px);
+}
+
+.accessibility-checkbox-group {
+  legend {
+    margin-bottom: rem.torem(24px);
+  }
+}

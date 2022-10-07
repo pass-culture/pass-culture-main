@@ -42,10 +42,7 @@ const UsefulInformations = ({
     !offerSubCategory?.isEvent && !isVenueVirtual
 
   return (
-    <FormLayout.Section
-      title="Informations pratiques"
-      description="Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande."
-    >
+    <FormLayout.Section title="Informations pratiques">
       <Venue
         offererNames={offererNames}
         venueList={venueList}
@@ -81,6 +78,8 @@ const UsefulInformations = ({
               to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
               text: 'En savoir plus',
               'aria-label': 'en savoir plus sur les modalités de retrait',
+              target: '_blank',
+              rel: 'noopener noreferrer',
             }}
           />
         }

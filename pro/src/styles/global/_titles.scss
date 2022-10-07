@@ -11,6 +11,4 @@ h1 {
 
 h2 {
   @include fonts.title2();
-
-  line-height: rem.torem(28px);
 }

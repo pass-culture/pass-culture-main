@@ -26,7 +26,7 @@ const Informations = ({
   const hasDurationMinutes = subCategoryFields.includes('durationMinutes')
 
   return (
-    <FormLayout.Section title="Informations générales">
+    <FormLayout.Section title="Informations artistiques">
       <FormLayout.Row>
         <TextInput
           countCharacters
@@ -98,12 +98,14 @@ const Informations = ({
       )}
 
       {hasDurationMinutes && (
-        <TextInput
-          isOptional
-          label={'Durée'}
-          name="durationMinutes"
-          placeholder="HH:MM"
-        />
+        <FormLayout.Row>
+          <TextInput
+            isOptional
+            label={'Durée'}
+            name="durationMinutes"
+            placeholder="HH:MM"
+          />
+        </FormLayout.Row>
       )}
     </FormLayout.Section>
   )

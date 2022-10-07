@@ -2,6 +2,7 @@ import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import FormLayout from 'new_components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
@@ -58,27 +59,31 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
 
   return (
     <>
-      <Select
-        label="Type de spectacle"
-        name="showType"
-        options={showTypesOptions.showType}
-        defaultOption={{
-          label: 'Choisir un type de spectacle',
-          value: FORM_DEFAULT_VALUES.showType,
-        }}
-        disabled={readOnly}
-      />
-      {showTypesOptions.showSubType.length > 0 && (
+      <FormLayout.Row>
         <Select
-          label="Sous type"
-          name="showSubType"
-          options={showTypesOptions.showSubType}
+          label="Type de spectacle"
+          name="showType"
+          options={showTypesOptions.showType}
           defaultOption={{
-            label: 'Choisir un sous type',
-            value: FORM_DEFAULT_VALUES.showSubType,
+            label: 'Choisir un type de spectacle',
+            value: FORM_DEFAULT_VALUES.showType,
           }}
           disabled={readOnly}
         />
+      </FormLayout.Row>
+      {showTypesOptions.showSubType.length > 0 && (
+        <FormLayout.Row>
+          <Select
+            label="Sous type"
+            name="showSubType"
+            options={showTypesOptions.showSubType}
+            defaultOption={{
+              label: 'Choisir un sous type',
+              value: FORM_DEFAULT_VALUES.showSubType,
+            }}
+            disabled={readOnly}
+          />
+        </FormLayout.Row>
       )}
     </>
   )

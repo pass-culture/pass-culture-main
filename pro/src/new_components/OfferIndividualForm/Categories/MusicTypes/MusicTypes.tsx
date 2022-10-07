@@ -58,7 +58,7 @@ const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
 
   return (
     <>
-      <FormLayout.Row smSpaceAfter={true}>
+      <FormLayout.Row>
         <Select
           label="Genre musical"
           name="musicType"
@@ -72,7 +72,7 @@ const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
       </FormLayout.Row>
 
       {musicTypesOptions.musicSubType.length > 0 && (
-        <FormLayout.Row smSpaceAfter={true}>
+        <FormLayout.Row>
           <Select
             label="Sous-genre"
             name="musicSubType"
