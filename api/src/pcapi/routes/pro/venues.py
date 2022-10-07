@@ -1,10 +1,14 @@
+import time
+
 import flask
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
+import jwt
 import pydantic
 import sqlalchemy.orm as sqla_orm
 
+from pcapi import settings
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
@@ -15,6 +19,7 @@ from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
@@ -266,3 +271,25 @@ def get_venue_stats(humanized_venue_id: str) -> venues_serialize.VenueStatsRespo
 def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
     return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)
+
+
+@private_api.route("/venues/<humanized_venue_id>/dashboard", methods=["GET"])
+@login_required
+@spectree_serialize(
+    on_success_status=200, response_model=offerers_serialize.OffererStatsResponseModel, api=blueprint.pro_private_schema
+)
+def get_venue_stats_dashboard_url(humanized_venue_id: str) -> offerers_serialize.OffererStatsResponseModel:
+    venue: Venue = load_or_404(Venue, humanized_venue_id)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
+    payload = {
+        "resource": {"dashboard": settings.METABASE_DASHBOARD_ID},
+        "params": {"siren": [venue.managingOfferer.siren], "venueid": [str(dehumanize(humanized_venue_id))]},
+        # dashboard token expire after 10 min (note that after that delay user has to refresh his page to interact with the dashbaord (e.g export content))
+        "exp": round(time.time()) + (60 * 10),
+    }
+    token = jwt.encode(payload, settings.METABASE_SECRET_KEY, algorithm="HS256")
+
+    iframeUrl = settings.METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=false&titled=false"
+
+    return offerers_serialize.OffererStatsResponseModel(dashboardUrl=iframeUrl)

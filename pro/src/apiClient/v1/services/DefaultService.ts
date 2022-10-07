@@ -970,17 +970,17 @@ export class DefaultService {
   }
 
   /**
-   * get_available_reimbursement_points <GET>
+   * get_offerer_stats_dashboard_url <GET>
    * @param offererId
-   * @returns ReimbursementPointListResponseModel OK
+   * @returns OffererStatsResponseModel OK
    * @throws ApiError
    */
-  public getAvailableReimbursementPoints(
-    offererId: number,
-  ): CancelablePromise<ReimbursementPointListResponseModel> {
+  public getOffererStatsDashboardUrl(
+    offererId: string,
+  ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/reimbursement-points',
+      url: '/offerers/{offerer_id}/dashboard',
       path: {
         'offerer_id': offererId,
       },
@@ -992,17 +992,17 @@ export class DefaultService {
   }
 
   /**
-   * get_offerer_stats_dashboard_url <GET>
+   * get_available_reimbursement_points <GET>
    * @param offererId
-   * @returns OffererStatsResponseModel OK
+   * @returns ReimbursementPointListResponseModel OK
    * @throws ApiError
    */
-  public getOffererStatsDashboardUrl(
-    offererId: string,
-  ): CancelablePromise<OffererStatsResponseModel> {
+  public getAvailableReimbursementPoints(
+    offererId: number,
+  ): CancelablePromise<ReimbursementPointListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offerers/{offerer_id}/stats',
+      url: '/offerers/{offerer_id}/reimbursement-points',
       path: {
         'offerer_id': offererId,
       },
@@ -1811,6 +1811,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues-educational-statuses',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_venue_stats_dashboard_url <GET>
+   * @param humanizedVenueId
+   * @returns OffererStatsResponseModel OK
+   * @throws ApiError
+   */
+  public getVenueStatsDashboardUrl(
+    humanizedVenueId: string,
+  ): CancelablePromise<OffererStatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{humanized_venue_id}/dashboard',
+      path: {
+        'humanized_venue_id': humanizedVenueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
