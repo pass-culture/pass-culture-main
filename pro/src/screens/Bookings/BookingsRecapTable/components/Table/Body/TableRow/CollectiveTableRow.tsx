@@ -46,15 +46,19 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
           <tr />
           <tr className={styles['details-container']}>
             {isLoading ? (
-              <Spinner className={styles['loader']} />
+              <td className={styles['loader']}>
+                <Spinner />
+              </td>
             ) : (
               bookingDetails && (
-                <CollectiveBookingDetails
-                  bookingDetails={bookingDetails}
-                  offerId={row.original.stock.offer_identifier}
-                  canCancelBooking={bookingDetails.isCancellable}
-                  reloadBookings={reloadBookings}
-                />
+                <td>
+                  <CollectiveBookingDetails
+                    bookingDetails={bookingDetails}
+                    offerId={row.original.stock.offer_identifier}
+                    canCancelBooking={bookingDetails.isCancellable}
+                    reloadBookings={reloadBookings}
+                  />
+                </td>
               )
             )}
           </tr>

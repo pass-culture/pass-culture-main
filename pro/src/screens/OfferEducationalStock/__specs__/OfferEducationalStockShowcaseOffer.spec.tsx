@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 
-import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import {
@@ -41,13 +40,11 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
     renderOfferEducationalStock(props)
     const showCaseOptionRadioButton = queryShowcaseOfferRadio()
 
-    await waitFor(() => expect(showCaseOptionRadioButton).toBeInTheDocument())
+    expect(showCaseOptionRadioButton).toBeInTheDocument()
 
     expect(showCaseOptionRadioButton?.checked).toBe(false)
-    userEvent.click(showCaseOptionRadioButton as HTMLInputElement)
-    await waitFor(() =>
-      expect(expect(showCaseOptionRadioButton?.checked).toBe(true))
-    )
+    await userEvent.click(showCaseOptionRadioButton as HTMLInputElement)
+    expect(showCaseOptionRadioButton?.checked).toBe(true)
 
     const beginningDateInput = queryBeginningDateInput()
     const beginningTimeInput = queryBeginningTimeInput()
@@ -79,16 +76,16 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
 
     const showCaseOptionRadioButton = queryShowcaseOfferRadio()
 
-    await waitFor(() => expect(showCaseOptionRadioButton).toBeInTheDocument())
+    expect(showCaseOptionRadioButton).toBeInTheDocument()
     expect(showCaseOptionRadioButton?.checked).toBe(true)
 
     const priceDetailsTextArea = queryPriceDetailsTextarea()
     expect(priceDetailsTextArea).toHaveValue('Détail du prix')
 
     const classicOptionRadioButton = queryClassicOfferRadio()
-    userEvent.click(classicOptionRadioButton as HTMLInputElement)
+    await userEvent.click(classicOptionRadioButton as HTMLInputElement)
 
-    await waitFor(() => expect(showCaseOptionRadioButton?.checked).toBe(false))
+    expect(showCaseOptionRadioButton?.checked).toBe(false)
     expect(classicOptionRadioButton?.checked).toBe(true)
 
     const beginningDateInput = queryBeginningDateInput()
@@ -108,7 +105,7 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
     expect(bookingLimitDatetimeInput?.value).toBe('')
   })
 
-  it('should not show radio buttons if offer has a stock and is not showcase', async () => {
+  it('should not show radio buttons if offer has a stock and is not showcase', () => {
     const testProps: IOfferEducationalStockProps = {
       ...defaultProps,
       offer: offerFactory({}),

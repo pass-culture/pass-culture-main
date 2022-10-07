@@ -162,7 +162,7 @@ const SelectAutocomplete = ({
               role="option"
               aria-selected={field.value === value}
               disabled={disabled}
-              checked={field.value === value}
+              defaultChecked={field.value === value}
               onClick={() => {
                 helpers.setValue(value)
                 setIsOpen(false)
