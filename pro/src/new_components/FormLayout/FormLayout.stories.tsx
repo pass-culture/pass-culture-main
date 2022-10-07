@@ -85,6 +85,15 @@ const TemplateDesigned: ComponentStory<typeof FormLayout> = args => (
           <FormLayout.Row sideComponent={<DemoInformationBox />}>
             <TextInput label="Nom" name="lastname" />
           </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput label="Tel" name="Tel" />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput label="Mail" name="mail" />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput label="Jambon" name="ham" />
+          </FormLayout.Row>
         </FormLayout.Section>
         <FormLayout.Section
           description="Lorem ipsum dolor sit amet"

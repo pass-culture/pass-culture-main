@@ -7,6 +7,7 @@ import { useAccessibilityUpdates } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
 import { CheckboxGroup } from 'ui-kit'
 
+import styles from '../OfferIndividualForm.module.scss'
 import { IOfferIndividualFormValues } from '../types'
 
 interface IAccessiblityProps {
@@ -36,10 +37,11 @@ const Accessibility = ({
     <FormLayout.Section title="Accessibilité">
       <FormLayout.Row>
         <CheckboxGroup
+          className={styles['accessibility-checkbox-group']}
           group={accessibilityOptions}
           groupName="accessibility"
-          legend="Cette offre est accessible au public en situation de handicap :"
           disabled={readOnlyFields.includes('accessibility')}
+          legend="Cette offre est accessible au public en situation de handicap :"
         />
       </FormLayout.Row>
     </FormLayout.Section>
