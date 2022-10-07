@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom'
 import * as yup from 'yup'
 
 import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
   EducationalOfferType,
-  GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
@@ -53,20 +54,21 @@ const getNextButtonWording = (
   return 'Valider et créer l’offre'
 }
 
-export interface IOfferEducationalStockProps {
+export interface IOfferEducationalStockProps<
+  T = CollectiveOffer | CollectiveOfferTemplate
+> {
   initialValues: OfferEducationalStockFormValues
   isCreatingFromTemplate?: boolean
-  offer: GetStockOfferSuccessPayload
-  onSubmit: (
-    offer: GetStockOfferSuccessPayload,
-    values: OfferEducationalStockFormValues
-  ) => Promise<void>
+  offer: T
+  onSubmit: (offer: T, values: OfferEducationalStockFormValues) => Promise<void>
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
 }
 
-const OfferEducationalStock = ({
+const OfferEducationalStock = <
+  T extends CollectiveOffer | CollectiveOfferTemplate
+>({
   initialValues,
   isCreatingFromTemplate = false,
   offer,
@@ -74,7 +76,7 @@ const OfferEducationalStock = ({
   mode,
   cancelActiveBookings,
   setIsOfferActive,
-}: IOfferEducationalStockProps): JSX.Element => {
+}: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -108,7 +110,7 @@ const OfferEducationalStock = ({
 
   const shouldDisplayShowcaseScreen =
     !isCreatingFromTemplate &&
-    (mode == Mode.CREATION || (mode == Mode.EDITION && offer.isShowcase))
+    (mode == Mode.CREATION || (mode == Mode.EDITION && offer.isTemplate))
 
   const displayElementsForShowcaseOption =
     shouldDisplayShowcaseScreen &&
@@ -120,7 +122,9 @@ const OfferEducationalStock = ({
         <OfferEducationalActions
           cancelActiveBookings={cancelActiveBookings}
           className={styles.actions}
-          isBooked={offer.isBooked}
+          isBooked={
+            offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
+          }
           isCancellable={offer.isCancellable}
           isOfferActive={offer.isActive}
           setIsOfferActive={setIsOfferActive}

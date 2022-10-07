@@ -4,14 +4,15 @@ import { useHistory, useParams } from 'react-router-dom'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
+  CollectiveOffer,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
-  GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import useGetStockCollectiveOfferAdapter from 'core/OfferEducational/adapters/useGetStockCollectiveOfferAdapter'
+import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { useAdapter } from 'hooks'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
@@ -25,9 +26,8 @@ const OfferEducationalStockCreation = (): JSX.Element | null => {
   const notify = useNotification()
   const history = useHistory()
 
-  // FIX ME
   const handleSubmitStock = async (
-    offer: GetStockOfferSuccessPayload,
+    offer: CollectiveOffer,
     values: OfferEducationalStockFormValues
   ) => {
     let isOk: boolean
@@ -71,7 +71,9 @@ const OfferEducationalStockCreation = (): JSX.Element | null => {
     history.push(url)
   }
 
-  const { isLoading, error, data } = useGetStockCollectiveOfferAdapter(offerId)
+  const { isLoading, error, data } = useAdapter(() =>
+    getCollectiveOfferAdapter(offerId)
+  )
 
   if (error) {
     notify.error(error.message)

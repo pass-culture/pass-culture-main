@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
+  CollectiveOfferTemplate,
   DEFAULT_EAC_STOCK_FORM_VALUES,
-  GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import useGetStockCollectiveOfferAdapter from 'core/OfferEducational/adapters/useGetStockCollectiveOfferAdapter'
+import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { useAdapter } from 'hooks'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
@@ -21,7 +22,7 @@ const CollectiveOfferStockCreationFromTemplate = (): JSX.Element | null => {
   const notify = useNotification()
 
   const handleSubmitStock = async (
-    offer: GetStockOfferSuccessPayload,
+    offer: CollectiveOfferTemplate,
     values: OfferEducationalStockFormValues
   ) => {
     const response = await postCollectiveStockAdapter({
@@ -34,7 +35,9 @@ const CollectiveOfferStockCreationFromTemplate = (): JSX.Element | null => {
     }
   }
 
-  const { isLoading, error, data } = useGetStockCollectiveOfferAdapter(offerId)
+  const { isLoading, error, data } = useAdapter(() =>
+    getCollectiveOfferTemplateAdapter(offerId)
+  )
 
   if (error) {
     notify.error(error.message)
