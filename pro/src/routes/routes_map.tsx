@@ -305,7 +305,10 @@ const routes: IRoute[] = [
   {
     component: CollectiveOfferCreationVisibility,
     exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite',
+    path: [
+      '/offre/:offerId([A-Z0-9]+)/collectif/visibilite',
+      '/offre/duplication/:offerId([A-Z0-9]+)/collectif/visibilite',
+    ],
     title: 'Visibilité d’une offre collective',
   },
   {
