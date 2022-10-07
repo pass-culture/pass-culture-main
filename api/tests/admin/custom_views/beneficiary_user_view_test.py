@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -24,7 +24,7 @@ from tests.conftest import clean_database
 
 
 class BeneficiaryUserViewTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = date.today() - relativedelta(years=18, months=4)
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -66,7 +66,7 @@ class BeneficiaryUserViewTest:
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
         assert user_created.publicName == "Serge Lama"
-        assert user_created.validatedBirthDate == self.AGE18_ELIGIBLE_BIRTH_DATE.date()
+        assert user_created.validatedBirthDate == self.AGE18_ELIGIBLE_BIRTH_DATE
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
         assert user_created.phoneNumber == "+33601020304"
