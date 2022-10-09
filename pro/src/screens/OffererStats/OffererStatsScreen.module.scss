@@ -1,0 +1,25 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
+.dashboard-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.offerer-stats {
+  &-description {
+    margin-bottom: rem.torem(32px);
+  }
+  &-select-offerer {
+    width: rem.torem(486px);
+    margin-bottom: rem.torem(32px);
+  }
+  &-select-venue {
+    width: rem.torem(486px);
+  }
+}
+
+.iframeContainer {
+  margin-top: rem.torem(44px);
+  height: rem.torem(3500px);
+}

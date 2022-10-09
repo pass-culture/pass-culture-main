@@ -1,9 +1,11 @@
+import cn from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import InputError from './Errors/InputError'
 
 const Select = ({
+  className,
   defaultOption,
   error,
   isDisabled,
@@ -16,7 +18,7 @@ const Select = ({
   selectedValue,
   subLabel,
 }) => (
-  <div className="input-select">
+  <div className={cn('input-select', className)}>
     {label && (
       <label className="labels" htmlFor={name}>
         {label}
@@ -56,6 +58,7 @@ const Select = ({
 )
 
 Select.defaultProps = {
+  className: null,
   defaultOption: null,
   error: null,
   isDisabled: false,
@@ -66,6 +69,7 @@ Select.defaultProps = {
 }
 
 Select.propTypes = {
+  className: PropTypes.string,
   defaultOption: PropTypes.shape({
     displayName: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
