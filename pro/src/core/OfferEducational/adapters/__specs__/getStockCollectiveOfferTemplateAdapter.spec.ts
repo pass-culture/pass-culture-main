@@ -1,5 +1,10 @@
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import {
+  ApiError,
+  OfferAddressType,
+  OfferStatus,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 
@@ -35,24 +40,50 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
     it('should not return an error when offer has been found', async () => {
       // given
       // @ts-ignore
-      jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        headers: new Headers({
-          // @ts-ignore
-          'Content-Type': 'application/json',
-        }),
-        json: () =>
-          Promise.resolve({
-            id: 'A1',
-            venue: {
-              managingOffererId: 'A1',
-              departementCode: 'A1',
-            },
+      jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+        id: 'A1',
+        isActive: true,
+        offerId: 'A1',
+        bookingEmails: [],
+        name: 'mon offre',
+        contactEmail: 'mail',
+        contactPhone: 'phone',
+        dateCreated: 'date',
+        description: 'description',
+        domains: [],
+        hasBookingLimitDatetimesPassed: false,
+        interventionArea: [],
+        isCancellable: true,
+        isEditable: true,
+        nonHumanizedId: 1,
+        offerVenue: {
+          addressType: OfferAddressType.OFFERER_VENUE,
+          otherAddress: '',
+          venueId: 'A1',
+        },
+        status: OfferStatus.ACTIVE,
+        students: [],
+        subcategoryId: SubcategoryIdEnum.CONCERT,
+        venue: {
+          fieldsUpdated: [],
+          id: 'A1',
+          isValidated: true,
+          isVirtual: false,
+          managingOfferer: {
+            city: 'Vélizy',
+            dateCreated: 'date',
+            id: '1',
             isActive: true,
-            status: 'ACTIVE',
-            offerId: 'A1',
-          }),
+            isValidated: true,
+            name: 'mon offerer',
+            postalCode: '78sang40',
+            thumbCount: 1,
+          },
+          managingOffererId: 'A1',
+          name: 'mon lieu',
+          thumbCount: 1,
+        },
+        venueId: 'A1',
       })
 
       // when

@@ -1,12 +1,17 @@
+import { api } from 'apiClient/api'
+import {
+  ApiError,
+  CollectiveOfferFromTemplateResponseModel,
+} from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { EducationalOfferType } from 'core/OfferEducational'
 
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from '../patchCollectiveOfferTemplateIntoCollectiveOffer'
 
 describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
   it('should return an error when the offer id is not valid', async () => {
-    // given
-
-    // when
+    // given / when
     const response =
       await patchCollectiveOfferTemplateIntoCollectiveOfferAdapter({
         offerId: '',
@@ -31,12 +36,15 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
 
   it('should return an error when there is an error in the form', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce(
-      new Response(new Blob(), {
-        status: 400,
-      })
-    )
+    jest
+      .spyOn(api, 'transformCollectiveOfferTemplateIntoCollectiveOffer')
+      .mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          { body: {}, status: 400 } as ApiResult,
+          ''
+        )
+      )
 
     // when
     const response =
@@ -64,8 +72,8 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
   it('should return a confirmation when the offer was updated', async () => {
     // given
     jest
-      .spyOn(window, 'fetch')
-      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
+      .spyOn(api, 'transformCollectiveOfferTemplateIntoCollectiveOffer')
+      .mockResolvedValue({} as CollectiveOfferFromTemplateResponseModel)
 
     // when
     const response =

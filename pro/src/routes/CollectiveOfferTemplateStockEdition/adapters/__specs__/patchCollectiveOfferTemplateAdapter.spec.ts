@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import { ApiError, GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { EducationalOfferType } from 'core/OfferEducational'
@@ -8,9 +8,7 @@ import { patchCollectiveOfferTemplateAdapter } from '../patchCollectiveOfferTemp
 
 describe('patchCollectiveOfferTemplateAdapter', () => {
   it('should return an error when the offer id is not valid', async () => {
-    // given
-
-    // when
+    // given / when
     const response = await patchCollectiveOfferTemplateAdapter({
       offerId: '',
       values: {
@@ -33,7 +31,6 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
 
   it('should return an error when there is an error in the form', async () => {
     // given
-    // @ts-ignore
     jest
       .spyOn(api, 'editCollectiveOfferTemplate')
       .mockRejectedValueOnce(
@@ -68,8 +65,8 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
   it('should return a confirmation when the offer was updated', async () => {
     // given
     jest
-      .spyOn(window, 'fetch')
-      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
+      .spyOn(api, 'editCollectiveOfferTemplate')
+      .mockResolvedValue({} as GetCollectiveOfferTemplateResponseModel)
 
     // when
     const response = await patchCollectiveOfferTemplateAdapter({
