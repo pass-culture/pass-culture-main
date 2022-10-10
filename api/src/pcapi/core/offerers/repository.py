@@ -231,6 +231,14 @@ def find_venue_by_id(venue_id: int) -> models.Venue | None:
     return models.Venue.query.filter_by(id=venue_id).options(sqla.orm.joinedload(models.Venue.venueLabel)).one_or_none()
 
 
+def get_permanent_venue_by_id(venue_id: int) -> models.Venue | None:
+    return (
+        models.Venue.query.filter_by(id=venue_id, isPermanent=True, isVirtual=False)
+        .options(sqla.orm.joinedload(models.Venue.venueLabel))
+        .one_or_none()
+    )
+
+
 def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
     aliased_venue = sqla.orm.aliased(models.Venue)
 

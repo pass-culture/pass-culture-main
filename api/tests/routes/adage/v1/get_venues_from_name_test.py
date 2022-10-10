@@ -9,10 +9,22 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName=None,
+            isPermanent=True,
         )
-        venue2 = offerer_factories.VenueFactory(publicName="a beautiful name")
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="a beautiful name", siret=None)
+        venue2 = offerer_factories.VenueFactory(
+            publicName="a beautiful name",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="a beautiful name",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20name")
@@ -28,9 +40,18 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName=None,
+            isPermanent=True,
         )
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="a beautiful name", siret=None)
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="a beautiful name",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20Name")
@@ -50,6 +71,7 @@ class Returns200Test:
             collectiveDomains=[domain1, domain2],
             collectiveInterventionArea=["mainland"],
             collectiveNetwork=["1"],
+            isPermanent=True,
         )
 
         client.with_eac_token()
@@ -92,9 +114,18 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName=None,
+            isPermanent=True,
         )
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="somting completely diffetrent", siret=None)
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="somting completely diffetrent",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/a%20name%20with%20c")
@@ -110,9 +141,18 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName="à ñÅmé wïth ç",
+            isPermanent=True,
         )
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="somting completely diffetrent", siret=None)
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="somting completely diffetrent",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/a%20name%20with%20c")
@@ -128,9 +168,18 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName=None,
+            isPermanent=True,
         )
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="somting completely diffetrent", siret=None)
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="somting completely diffetrent",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/%C3%A0%20%C3%B1%C3%85m%C3%A9%20w%C3%AFth%20%C3%A7")
@@ -146,9 +195,18 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName=None,
+            isPermanent=True,
         )
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="somting completely diffetrent", siret=None)
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="somting completely diffetrent",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/%C3%A0%20%C3%B1%C3%85m%C3%A9%20w%C3%AFth%20%C3%A7")
@@ -164,9 +222,18 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName=None,
+            isPermanent=True,
         )
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="somting completely diffetrent", siret=None)
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="somting completely diffetrent",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/a-composed-name")
@@ -182,9 +249,18 @@ class Returns200Test:
             siret=None,
             comment="no siret",
             publicName=None,
+            isPermanent=True,
         )
-        offerer_factories.VenueFactory(name="not the same")
-        offerer_factories.VenueFactory(isVirtual=True, name="somting completely diffetrent", siret=None)
+        offerer_factories.VenueFactory(
+            name="not the same",
+            isPermanent=True,
+        )
+        offerer_factories.VenueFactory(
+            isVirtual=True,
+            name="somting completely diffetrent",
+            siret=None,
+            isPermanent=True,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/a%20composed%20name")

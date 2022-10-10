@@ -8,6 +8,7 @@ class Returns200Test:
             siret=None,
             comment="no siret",
         )
+        offerer_factories.VenueFactory(isVirtual=False, isPermanent=False)
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues")
@@ -44,9 +45,9 @@ class Returns200Test:
         }
 
     def test_get_all_venues_pagination(self, client, db_session) -> None:
-        first_venues = offerer_factories.VenueFactory.create_batch(2)
-        offerer_factories.VenueFactory(isVirtual=True, siret=None)
-        last_venues = offerer_factories.VenueFactory.create_batch(8)
+        first_venues = offerer_factories.VenueFactory.create_batch(2, isPermanent=True)
+        offerer_factories.VenueFactory(isVirtual=True, siret=None, isPermanent=True)
+        last_venues = offerer_factories.VenueFactory.create_batch(8, isPermanent=True)
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues?per_page=2")
