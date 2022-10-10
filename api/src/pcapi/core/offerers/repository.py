@@ -290,6 +290,30 @@ def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: in
     ).scalar()
 
 
+def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(
+    days: int,
+) -> BaseQuery:
+    validated_x_days_ago_with_physical_venue_offerers_ids_subquery = (
+        sqla.select(models.Offerer.id)
+        .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)
+        .filter(sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=days)))
+        .filter(~models.Venue.isVirtual)
+        .distinct()
+    )
+
+    offerers_ids_with_no_offers_subquery = (
+        sqla.select(models.Venue.managingOffererId)
+        .filter(models.Venue.managingOffererId.in_(validated_x_days_ago_with_physical_venue_offerers_ids_subquery))
+        .outerjoin(Offer, models.Venue.id == Offer.venueId)
+        .group_by(models.Venue.managingOffererId)
+        .having(sqla.func.count(Offer.id) == 0)
+    )
+
+    return models.Venue.query.with_entities(models.Venue.id, models.Venue.bookingEmail).filter(
+        models.Venue.managingOffererId.in_(offerers_ids_with_no_offers_subquery)
+    )
+
+
 def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
     return db.session.query(
         models.Venue.query.join(Offer, models.Venue.id == Offer.venueId)

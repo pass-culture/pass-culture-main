@@ -1353,31 +1353,3 @@ class UpdateStockQuantityToDnBookedQuantityTest:
         repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
         # then
         assert stock.quantity == 6
-
-
-@pytest.mark.usefixtures("db_session")
-class GetVenueWithNoOfferTest:
-    def test_get_venue_booking_email_with_no_offer(self):
-        # Given
-        five_days_ago = datetime.utcnow() - timedelta(days=5)
-        booking_email_test = "get_this_email@app.fr"
-        venue_with_no_offer = offerers_factories.VenueFactory(
-            dateCreated=five_days_ago, bookingEmail=booking_email_test
-        )
-        venue_with_no_offer2 = offerers_factories.VenueFactory(dateCreated=five_days_ago)
-        venue_with_no_offer3 = offerers_factories.VenueFactory()
-        venue_with_offer = offerers_factories.VenueFactory()
-        factories.OfferFactory(venue=venue_with_offer)
-
-        # When
-        query = repository.venues_with_no_offer_since_x_days(5)
-        emails = [venue_email for venue_id, venue_email in query]
-        ids = [venue_id for venue_id, venue_email in query]
-
-        assert emails == [venue_with_no_offer.bookingEmail, venue_with_no_offer2.bookingEmail]
-        assert ids == [venue_with_no_offer.id, venue_with_no_offer2.id]
-
-        assert venue_with_no_offer3.id not in ids
-        assert venue_with_no_offer3.bookingEmail not in emails
-        assert venue_with_offer.id not in ids
-        assert venue_with_offer.bookingEmail not in emails
