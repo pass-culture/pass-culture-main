@@ -8,17 +8,43 @@
   width: 100%;
 }
 
-.multi-select-autocomplete-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: rem.torem(8px);
-  padding-top: rem.torem(8px);
-}
-
 .multi-select-autocomplete-placeholder-input::placeholder {
   font-style: normal;
 
   &:not(:disabled) {
     color: colors.$black;
   }
+}
+
+.field-overlay {
+  position: relative;
+  height: 0;
+
+  .pellet {
+    align-items: center;
+    background-color: colors.$grey-light;
+    border-radius: rem.torem(100px);
+    box-sizing: border-box;
+    color: colors.$black;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    font-size: rem.torem(9px);
+    height: rem.torem(18px);
+    justify-content: center;
+    padding: rem.torem(6px);
+    position: absolute;
+    left: rem.torem(12.8px);
+    top: rem.torem(-28.8px);
+    width: rem.torem(18px);
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  margin: -5000px;
 }

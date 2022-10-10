@@ -1,15 +1,14 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
 import SelectAutocomplete, {
   SelectAutocompleteProps,
 } from '../SelectAutocomplete'
-import { render, screen, waitFor } from '@testing-library/react'
-
-import { Formik } from 'formik'
-import React from 'react'
-import userEvent from '@testing-library/user-event'
 
 describe('SelectAutocomplete', () => {
   const props: SelectAutocompleteProps = {
@@ -37,7 +36,7 @@ describe('SelectAutocomplete', () => {
     ],
     pluralLabel: 'Départements',
   }
-  const initialValues = { departement: ['01', '02'] }
+  const initialValues = { departement: '01' }
 
   it('should display field', () => {
     render(
@@ -46,15 +45,6 @@ describe('SelectAutocomplete', () => {
       </Formik>
     )
     expect(screen.getByLabelText('Département')).toBeInTheDocument()
-  })
-
-  it('should display the number of selected options', async () => {
-    render(
-      <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-        <SelectAutocomplete {...props} />
-      </Formik>
-    )
-    expect(await screen.findByText('2')).toBeInTheDocument()
   })
 
   describe('Options', () => {
@@ -74,10 +64,8 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.click(screen.getByRole('textbox'))
-      expect(await screen.findAllByRole('checkbox')).toHaveLength(
-        props.options.length
-      )
+      await userEvent.click(screen.getByLabelText('Département'))
+      expect(screen.getByTestId('list').children).toHaveLength(15)
     })
 
     it('should close and hide all options when the user triggers the close arrow button', async () => {
@@ -86,9 +74,9 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.click(screen.getByRole('textbox'))
+      await userEvent.click(screen.getByLabelText('Département'))
       await userEvent.click(screen.getByAltText('Masquer les options'))
-      expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
+      expect(screen.queryByTestId('list')).not.toBeInTheDocument()
     })
 
     it('should close and hide options when the user focuses outside of the field', async () => {
@@ -100,38 +88,75 @@ describe('SelectAutocomplete', () => {
           </>
         </Formik>
       )
-      await userEvent.click(screen.getByRole('textbox'))
+      await userEvent.click(screen.getByLabelText('Département'))
       await userEvent.click(
         await screen.findByRole('button', { name: 'Outside' })
       )
-      expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
+      expect(screen.queryByTestId('list')).not.toBeInTheDocument()
+    })
+    describe('Multi', () => {
+      it('should display the number of selected options', async () => {
+        render(
+          <Formik
+            initialValues={{ departement: ['01', '02'] }}
+            onSubmit={jest.fn()}
+          >
+            <SelectAutocomplete {...{ ...props, multi: true }} />
+          </Formik>
+        )
+        expect(await screen.findByText('2')).toBeInTheDocument()
+      })
+      it('should select several options', async () => {
+        render(
+          <Formik
+            initialValues={{ departement: ['01', '02'] }}
+            onSubmit={jest.fn()}
+          >
+            <SelectAutocomplete {...{ ...props, multi: true }} />
+          </Formik>
+        )
+        await userEvent.click(screen.getByLabelText('Département'))
+        const list = screen.getByTestId('list')
+        await userEvent.click(await within(list).findByText('Aveyron'))
+        await userEvent.click(await within(list).findByText('Calvados'))
+        expect(screen.queryByTestId('select')).toHaveValue([
+          '01', // Ain (initial value)
+          '02', // Aisne (initial value)
+          '12', // Aveyron
+          '14', // Calvados
+        ])
+      })
+
+      it('should unselect options', async () => {
+        render(
+          <Formik
+            initialValues={{ departement: ['01', '02'] }}
+            onSubmit={jest.fn()}
+          >
+            <SelectAutocomplete {...{ ...props, multi: true }} />
+          </Formik>
+        )
+        await userEvent.click(screen.getByLabelText('Département'))
+        const list = screen.getByTestId('list')
+        await userEvent.click(await within(list).findByText('Ain'))
+        expect(screen.queryByTestId('select')).toHaveValue([
+          '02', // Aisne (initial value)
+        ])
+      })
     })
 
-    it('should display options as selected when the user selects them', async () => {
-      render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-          <SelectAutocomplete {...props} />
-        </Formik>
-      )
-      await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
-      expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
-        initialValues.departement.length + ['Aveyron', 'Calvados'].length
-      )
-    })
-
-    it('should not display options as selected when the user unselects them', async () => {
-      render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-          <SelectAutocomplete {...props} />
-        </Formik>
-      )
-      await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Ain'))
-      expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
-        initialValues.departement.length - ['Ain'].length
-      )
+    describe('Simple', () => {
+      it('should replace single option', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+            <SelectAutocomplete {...props} />
+          </Formik>
+        )
+        await userEvent.click(screen.getByLabelText('Département'))
+        const list = screen.getByTestId('list')
+        await userEvent.click(await within(list).findByText('Aveyron'))
+        expect(screen.queryByTestId('select')).toHaveValue('12')
+      })
     })
   })
 
@@ -142,8 +167,8 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.type(screen.getByRole('textbox'), 'al')
-      expect(screen.getAllByRole('checkbox')).toHaveLength(
+      await userEvent.type(screen.getByLabelText('Département'), 'al')
+      expect(screen.getByTestId('list').children).toHaveLength(
         [
           'Allier',
           'Alpes',
@@ -161,69 +186,98 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.type(screen.getByRole('textbox'), 'al')
+      await userEvent.type(screen.getByLabelText('Département'), 'al')
       await userEvent.click(screen.getByAltText('Masquer les options'))
       await userEvent.click(screen.getByAltText('Afficher les options'))
-      expect(screen.getAllByRole('checkbox')).toHaveLength(15)
+
+      expect(screen.getByTestId('list').children).toHaveLength(15)
+    })
+
+    it('should warn that there are no results', async () => {
+      render(
+        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+          <SelectAutocomplete {...props} />
+        </Formik>
+      )
+      await userEvent.type(
+        screen.getByLabelText('Département'),
+        'pas dans la liste'
+      )
+      expect(await screen.findByText(/Aucun résultat/)).toBeInTheDocument()
     })
   })
 
   describe('tags', () => {
     it('should display tags when the user selects options', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-          <SelectAutocomplete {...props} />
+        <Formik
+          initialValues={{ departement: ['01', '02'] }}
+          onSubmit={jest.fn()}
+        >
+          <SelectAutocomplete {...{ ...props, multi: true }} />
         </Formik>
       )
-      await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
+      await userEvent.click(screen.getByLabelText('Département'))
+      const list = screen.getByTestId('list')
+      await userEvent.click(await within(list).findByText('Aveyron'))
+      await userEvent.click(await within(list).findByText('Calvados'))
       expect(
-        screen.getByRole('button', { name: 'Aveyron' })
+        screen.getByRole('button', { name: /Aveyron/ })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: 'Calvados' })
+        screen.getByRole('button', { name: /Calvados/ })
       ).toBeInTheDocument()
     })
 
     it('should not display associated tags when tags are hidden and the user selects options', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-          <SelectAutocomplete {...props} hideTags />
+        <Formik
+          initialValues={{ departement: ['01', '02'] }}
+          onSubmit={jest.fn()}
+        >
+          <SelectAutocomplete {...{ ...props, multi: true }} hideTags />
         </Formik>
       )
-      await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
+      await userEvent.click(screen.getByLabelText('Département'))
+      const list = screen.getByTestId('list')
+      await userEvent.click(await within(list).findByText('Aveyron'))
+      await userEvent.click(await within(list).findByText('Calvados'))
       expect(
-        screen.queryByRole('button', { name: 'Aveyron' })
+        screen.queryByRole('button', { name: /Aveyron/ })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: 'Calvados' })
+        screen.queryByRole('button', { name: /Calvados/ })
       ).not.toBeInTheDocument()
     })
 
     it('should remove a tag when the user closes the tag', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-          <SelectAutocomplete {...props} />
+        <Formik
+          initialValues={{ departement: ['01', '02'] }}
+          onSubmit={jest.fn()}
+        >
+          <SelectAutocomplete {...{ ...props, multi: true }} />
         </Formik>
       )
 
-      await userEvent.click(screen.getByRole('button', { name: 'Aisne' }))
+      await userEvent.click(screen.getByRole('button', { name: /Aisne/ }))
       expect(
         screen.queryByRole('button', { name: 'Aisne' })
       ).not.toBeInTheDocument()
     })
     it('should unselect option when the user removes a tag', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-          <SelectAutocomplete {...props} />
+        <Formik
+          initialValues={{ departement: ['01', '02'] }}
+          onSubmit={jest.fn()}
+        >
+          <SelectAutocomplete {...{ ...props, multi: true }} />
         </Formik>
       )
-      await userEvent.click(screen.getByRole('button', { name: 'Aisne' }))
-      await userEvent.click(screen.getByRole('textbox'))
-      expect(screen.queryByLabelText('Aisne')).not.toBeChecked()
+      await userEvent.click(screen.getByRole('button', { name: /Aisne/ }))
+      await userEvent.click(screen.getByLabelText('Département'))
+      // Ain (01) still selected, Aisne (02) not selected any more
+      expect(screen.queryByTestId('select')).toHaveValue(['01'])
     })
   })
 
@@ -231,28 +285,26 @@ describe('SelectAutocomplete', () => {
     const validationSchema = yup.object().shape({
       departement: yup.array().test({
         message: 'Veuillez renseigner un département',
-        test: domains => Boolean(domains?.length && domains.length > 0),
+        test: items => Boolean(items?.length && items.length > 0),
       }),
     })
     render(
       <Formik
-        initialValues={initialValues}
+        initialValues={{ departement: ['01', '02'] }}
         onSubmit={() => {}}
         validationSchema={validationSchema}
       >
-        <SelectAutocomplete {...props} />
+        <SelectAutocomplete {...{ ...props, multi: true }} />
       </Formik>
     )
-    expect(
-      screen.queryByText('Veuillez renseigner un Département')
-    ).not.toBeInTheDocument()
-    await userEvent.click(screen.getByRole('textbox'))
-    // and unselects default options
-    await userEvent.click(await screen.findByLabelText('Ain'))
-    await userEvent.click(await screen.findByLabelText('Aisne'))
+    await userEvent.click(screen.getByLabelText('Département'))
+    // when user unselects default options
+    const list = screen.getByTestId('list')
+    await userEvent.click(await within(list).findByText('Ain'))
+    await userEvent.click(await within(list).findByText('Aisne'))
     await waitFor(() => {
       expect(
-        screen.queryByText('Veuillez renseigner un département')
+        screen.getByText(/Veuillez renseigner un département/)
       ).toBeInTheDocument()
     })
   })
