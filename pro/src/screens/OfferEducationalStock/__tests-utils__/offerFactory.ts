@@ -64,7 +64,7 @@ export const collectiveOfferTemplateFactory = (
 ): CollectiveOfferTemplate => ({
   id: 'OFFER_ID',
   isActive: true,
-  status: OfferStatus.PENDING,
+  status: OfferStatus.ACTIVE,
   isCancellable: true,
   venue: {
     id: 'VENUE_ID',

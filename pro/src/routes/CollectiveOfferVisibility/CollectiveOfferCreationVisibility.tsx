@@ -28,9 +28,11 @@ const CollectiveOfferVisibility = () => {
     history.push(successUrl)
   }
 
-  const { error, data, isLoading } = useAdapter(() =>
-    getCollectiveOfferAdapter(offerId)
-  )
+  const {
+    error,
+    data: offer,
+    isLoading,
+  } = useAdapter(() => getCollectiveOfferAdapter(offerId))
 
   useEffect(() => {
     getEducationalInstitutionsAdapter().then(result => {
@@ -56,7 +58,7 @@ const CollectiveOfferVisibility = () => {
         isCreatingOffer: true,
       }}
       title="Créer une offre collective"
-      subTitle={data.name}
+      subTitle={offer.name}
     >
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}

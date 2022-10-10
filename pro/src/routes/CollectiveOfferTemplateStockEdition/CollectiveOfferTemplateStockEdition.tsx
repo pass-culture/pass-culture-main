@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   Mode,
   OfferEducationalStockFormValues,
   cancelCollectiveBookingAdapter,
-  extractOfferIdAndOfferTypeFromRouteParams,
   patchIsTemplateOfferActiveAdapter,
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
@@ -38,14 +35,10 @@ const CollectiveOfferTemplateStockEdition = ({
   reloadCollectiveOffer,
 }: CollectiveOfferTemplateStockEditionProps): JSX.Element => {
   const history = useHistory()
+  const notify = useNotification()
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-  const [isReady, setIsReady] = useState<boolean>(false)
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
-  const { offerId } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
-  const notify = useNotification()
 
   const handleSubmitStock = async (
     offer: CollectiveOfferTemplate,
@@ -67,14 +60,9 @@ const CollectiveOfferTemplateStockEdition = ({
         `/offre/${stockResponse.payload.offerId}/collectif/visibilite/edition`
       )
     }
-    const offerResponse = await getCollectiveOfferTemplateAdapter(offerId)
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
-    }
-
-    if (!offerResponse.isOk) {
-      return notify.error(offerResponse.message)
     }
 
     notify.success(stockResponse.message)
@@ -87,11 +75,9 @@ const CollectiveOfferTemplateStockEdition = ({
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchOfferId = offerId
-
     const { isOk, message } = await patchIsTemplateOfferActiveAdapter({
       isActive,
-      offerId: patchOfferId,
+      offerId: offer.id,
     })
 
     if (!isOk) {
@@ -104,7 +90,7 @@ const CollectiveOfferTemplateStockEdition = ({
 
   const cancelActiveBookings = async () => {
     const { isOk, message } = await cancelCollectiveBookingAdapter({
-      offerId: offer?.offerId || '',
+      offerId: offer.id,
     })
 
     if (!isOk) {
@@ -116,29 +102,13 @@ const CollectiveOfferTemplateStockEdition = ({
   }
 
   useEffect(() => {
-    if (!isReady) {
-      const loadStockAndOffer = async () => {
-        const offerResponse = await getCollectiveOfferTemplateAdapter(offerId)
-
-        if (!offerResponse.isOk) {
-          return notify.error(offerResponse.message)
-        }
-
-        const initialValuesFromStock = {
-          ...DEFAULT_EAC_STOCK_FORM_VALUES,
-          priceDetail: offerResponse.payload.educationalPriceDetail ?? '',
-          educationalOfferType: EducationalOfferType.SHOWCASE,
-        }
-        setInitialValues(initialValuesFromStock)
-        setIsReady(true)
-      }
-      loadStockAndOffer()
+    const initialValuesFromStock = {
+      ...DEFAULT_EAC_STOCK_FORM_VALUES,
+      priceDetail: offer.educationalPriceDetail ?? '',
+      educationalOfferType: EducationalOfferType.SHOWCASE,
     }
-  }, [offerId, isReady, notify, history])
-
-  if (!offer || !isReady) {
-    return <Spinner />
-  }
+    setInitialValues(initialValuesFromStock)
+  }, [])
 
   return (
     <OfferEducationalStockScreen

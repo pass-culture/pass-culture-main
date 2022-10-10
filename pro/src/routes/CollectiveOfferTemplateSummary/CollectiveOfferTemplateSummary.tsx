@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
-  extractOfferIdAndOfferTypeFromRouteParams,
   getEducationalCategoriesAdapter,
   EducationalCategories,
   CollectiveOfferTemplate,
@@ -18,11 +16,7 @@ interface CollectiveOfferTemplateSummaryProps {
 const CollectiveOfferTemplateSummary = ({
   offer,
 }: CollectiveOfferTemplateSummaryProps) => {
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const notify = useNotification()
-
-  const { offerId } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
   const [categories, setCategories] = useState<EducationalCategories | null>(
     null
@@ -40,7 +34,7 @@ const CollectiveOfferTemplateSummary = ({
     }
 
     loadData()
-  }, [offerId])
+  }, [])
 
   const isReady = offer !== null && categories !== null
 
