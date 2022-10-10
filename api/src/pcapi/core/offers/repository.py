@@ -1,4 +1,3 @@
-from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
@@ -7,13 +6,11 @@ import typing
 from typing import List
 
 from flask_sqlalchemy import BaseQuery
-import sqlalchemy as sqla
 from sqlalchemy import and_
 from sqlalchemy import false
 from sqlalchemy import func
 from sqlalchemy import not_
 from sqlalchemy import or_
-from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
@@ -378,17 +375,6 @@ def venue_already_has_validated_offer(offer: Offer) -> bool:
         )
         .first()
         is not None
-    )
-
-
-def venues_with_no_offer_since_x_days(number_of_days: int) -> Query:
-    return (
-        db.session.query(Venue.id, Venue.bookingEmail)
-        .outerjoin(Offer, Offer.venueId == Venue.id)
-        .filter(
-            Offer.venueId.is_(None),
-            sqla.cast(Venue.dateCreated, sqla.Date) == (date.today() - timedelta(days=number_of_days)),
-        )
     )
 
 

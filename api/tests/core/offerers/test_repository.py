@@ -422,3 +422,42 @@ class GetOfferersValidatedThreeDaysAgoWithNoVenuesCreatedTest:
         # then
         assert len(offerers) == 1
         assert offerers[0] == offerer_with_only_digital_venue_and_no_offers
+
+
+class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
+    def test_should_return_two_venues_of_offerer_without_offers_and_validated_5_days_ago(self):
+        five_days_ago = datetime.utcnow() - timedelta(days=5)
+        # Offerer with two physical venues and one offer => venues should not be returned
+        offerer_with_two_venues = offerers_factories.OffererFactory(dateValidated=five_days_ago)
+        venue_with_offers = offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
+        offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
+        offers_factories.OfferFactory(venue=venue_with_offers)
+
+        # Offerer with only virtual venue and no offer => venue should not be returned
+        offerer_with_only_virtual_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
+        offerers_factories.VenueFactory(managingOfferer=offerer_with_only_virtual_venue, isVirtual=True, siret=None)
+
+        # Offerer with two physical venues and no offer => venus should be returned
+        offerer_with_physical_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
+        venue_without_offer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_with_physical_venue)
+        venue_without_offer_2 = offerers_factories.VenueFactory(managingOfferer=offerer_with_physical_venue)
+
+        # Offerer with virtual venue and one offer => venue should not be returned
+        offerer_with_virtual_offer = offerers_factories.OffererFactory(dateValidated=five_days_ago)
+        virtual_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer_with_virtual_offer, isVirtual=True, siret=None
+        )
+        offerers_factories.VenueFactory(managingOfferer=offerer_with_virtual_offer)
+        offers_factories.OfferFactory(venue=virtual_venue)
+
+        venues = (
+            repository.find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(5)
+            .order_by(models.Venue.id)
+            .all()
+        )
+        expected_venues_list = [
+            (venue_without_offer_1.id, venue_without_offer_1.bookingEmail),
+            (venue_without_offer_2.id, venue_without_offer_2.bookingEmail),
+        ]
+
+        assert venues == expected_venues_list
