@@ -16,6 +16,7 @@ type OffersTableBodyProps = {
   ) => void
   selectedOfferIds: string[]
   audience: Audience
+  refreshOffers: () => void
 }
 
 const OffersTableBody = ({
@@ -24,6 +25,7 @@ const OffersTableBody = ({
   selectOffer,
   selectedOfferIds,
   audience,
+  refreshOffers,
 }: OffersTableBodyProps) => (
   <tbody className="offers-list">
     {offers.map(offer => {
@@ -40,6 +42,7 @@ const OffersTableBody = ({
           offer={offer}
           selectOffer={selectOffer}
           audience={audience}
+          refreshOffers={refreshOffers}
         />
       )
     })}

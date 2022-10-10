@@ -12,7 +12,12 @@ import TooltipWrapper from 'ui-kit/TooltipWrapper'
 import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'
 import styles from '../../OfferItem.module.scss'
 
-const DeleteDraftCell = ({ offer }: { offer: Offer }) => {
+interface IDeleteDraftOffers {
+  offer: Offer
+  refreshOffers: () => void
+}
+
+const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const notification = useNotification()
   const closeDeleteDraftDialog = useCallback(() => {
@@ -26,7 +31,10 @@ const DeleteDraftCell = ({ offer }: { offer: Offer }) => {
 
     if (!isOk) {
       notification.error(message)
-    } else notification.success(message)
+    } else {
+      notification.success(message)
+      refreshOffers()
+    }
 
     setIsConfirmDialogOpen(false)
   }, [offer])
