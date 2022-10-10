@@ -147,6 +147,8 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="collectiveOffers"
     )
 
+    isPublicApi: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer

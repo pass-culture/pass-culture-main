@@ -1025,6 +1025,7 @@ def create_collective_offer_public(
         offerVenue=offer_venue,
         interventionArea=body.intervention_area,
         institutionId=body.educational_institution_id,
+        isPublicApi=True,
     )
     collective_offer.bookingEmails = body.booking_emails
     collective_stock = educational_models.CollectiveStock(
