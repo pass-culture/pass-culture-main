@@ -23,8 +23,8 @@ class Returns200Test:
 
     def test_return_venue_with_publicName_of_given_id(self, app):
         # Given
-        requested_venue = offerers_factories.VenueFactory(publicName="Un petit surnom")
-        offerers_factories.VenueFactory()
+        requested_venue = offerers_factories.VenueFactory(publicName="Un petit surnom", isPermanent=True)
+        offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
 
         test_client = TestClient(app.test_client())
@@ -43,8 +43,8 @@ class Returns200Test:
 
     def test_return_venue_without_publicName_of_given_id(self, app):
         # Given
-        requested_venue = offerers_factories.VenueFactory(publicName=None)
-        offerers_factories.VenueFactory()
+        requested_venue = offerers_factories.VenueFactory(publicName=None, isPermanent=True)
+        offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
 
         test_client = TestClient(app.test_client())
@@ -74,7 +74,7 @@ class ReturnsErrorTest:
 
     def test_return_error_if_venue_does_not_exist(self, app):
         # Given
-        offerers_factories.VenueFactory()
+        offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
 
         test_client = TestClient(app.test_client())
