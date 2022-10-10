@@ -7,6 +7,11 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import Notification from 'components/layout/Notification/Notification'
 import {
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_DRAFT,
@@ -20,6 +25,12 @@ import { configureTestStore } from 'store/testUtils'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'
 
+jest.mock('apiClient/api', () => ({
+  api: {
+    deleteDraftOffers: jest.fn(),
+  },
+}))
+
 const renderOfferItem = (props: OfferItemProps, store: Store) => {
   return render(
     <Provider store={store}>
@@ -29,6 +40,7 @@ const renderOfferItem = (props: OfferItemProps, store: Store) => {
             <OfferItem {...props} />
           </tbody>
         </table>
+        <Notification />
       </MemoryRouter>
     </Provider>
   )
@@ -62,6 +74,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     }
 
     props = {
+      refreshOffers: jest.fn(),
       offer: eventOffer,
       selectOffer: jest.fn(),
       audience: Audience.INDIVIDUAL,
@@ -105,6 +118,59 @@ describe('src | components | pages | Offers | OfferItem', () => {
           'href',
           `/offre/${eventOffer.id}/individuel/stocks`
         )
+      })
+      describe('draft delete button', () => {
+        it('should display a trash icon with a confirm dialog to delete draft offer', async () => {
+          // given
+          props.offer.status = 'DRAFT'
+
+          renderOfferItem(props, store)
+
+          await userEvent.click(screen.getByRole('button'))
+          const deleteButton = screen.getByRole('button', {
+            name: 'Supprimer ce brouillon',
+          })
+          expect(deleteButton).toBeInTheDocument()
+          await userEvent.click(deleteButton)
+          expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
+          expect(api.deleteDraftOffers).toHaveBeenCalledWith({ ids: ['M4'] })
+          expect(
+            screen.getByText('1 brouillon a bien été supprimé')
+          ).toBeInTheDocument()
+        })
+
+        it('should display a notification in case of draft deletion error', async () => {
+          // given
+          props.offer.status = 'DRAFT'
+
+          renderOfferItem(props, store)
+          jest.spyOn(api, 'deleteDraftOffers').mockRejectedValue(
+            new ApiError(
+              {} as ApiRequestOptions,
+              {
+                status: 500,
+                body: {
+                  ids: 'api wrong ids',
+                },
+              } as ApiResult,
+              ''
+            )
+          )
+
+          await userEvent.click(screen.getByRole('button'))
+          await userEvent.click(
+            screen.getByRole('button', {
+              name: 'Supprimer ce brouillon',
+            })
+          )
+          expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
+          expect(api.deleteDraftOffers).toHaveBeenCalledWith({ ids: ['M4'] })
+          expect(
+            screen.getByText(
+              'Une erreur est survenue lors de la suppression du brouillon'
+            )
+          ).toBeInTheDocument()
+        })
       })
 
       describe('edit offer link', () => {
