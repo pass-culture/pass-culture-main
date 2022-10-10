@@ -51,14 +51,13 @@ interface IRouteMeta {
   layoutConfig?: ILayoutConfig
 }
 
-export interface IRoute<T = string> {
+export interface IRoute {
   component: any
   exact?: boolean
   path: string | string[]
   title?: string
   meta?: IRouteMeta
   featureName?: string
-  subRoutesPaths?: T[]
 }
 
 const RedirectToConnexionComponent = () => {
