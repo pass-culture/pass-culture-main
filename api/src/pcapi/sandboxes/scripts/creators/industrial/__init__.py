@@ -95,7 +95,7 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_search_indexed_objects()
 
-    create_venue_labels()
+    create_venue_labels(sandbox=True)
 
     create_industrial_offer_validation_config()
 

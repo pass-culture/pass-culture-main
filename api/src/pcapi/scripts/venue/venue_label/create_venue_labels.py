@@ -2,7 +2,7 @@ from pcapi.core.offerers.models import VenueLabel
 from pcapi.repository import repository
 
 
-def create_venue_labels():  # type: ignore [no-untyped-def]
+def create_venue_labels(sandbox: bool = False) -> None:
     venue_label_strings = [
         "Architecture contemporaine remarquable",
         "CAC - Centre d'art contemporain d'intérêt national",
@@ -36,13 +36,15 @@ def create_venue_labels():  # type: ignore [no-untyped-def]
         "Ville et Pays d'art et d'histoire",
     ]
 
-    save_new_venue_labels(venue_label_strings)
+    save_new_venue_labels(venue_label_strings, sandbox)
 
 
-def save_new_venue_labels(venue_label_strings: list[str]):  # type: ignore [no-untyped-def]
+def save_new_venue_labels(venue_label_strings: list[str], sandbox: bool = False) -> None:
     venue_label_list = []
-    for label_string in venue_label_strings:
+    for label_id, label_string in enumerate(venue_label_strings):
         venue_label = VenueLabel()
+        if sandbox:
+            venue_label.id = label_id + 1
         venue_label.label = label_string
         venue_label_list.append(venue_label)
     repository.save(*venue_label_list)
