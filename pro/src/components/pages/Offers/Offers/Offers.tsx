@@ -37,6 +37,7 @@ type OffersProps = {
   setSelectedOfferIds: React.Dispatch<React.SetStateAction<string[]>>
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: TSearchFilters
+  refreshOffers: () => void
 }
 
 const Offers = ({
@@ -58,6 +59,7 @@ const Offers = ({
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   audience,
+  refreshOffers,
 }: OffersProps) => {
   const isAdminForbidden = useCallback(
     (searchFilters: TSearchFilters) => {
@@ -162,6 +164,7 @@ const Offers = ({
               selectOffer={selectOffer}
               selectedOfferIds={selectedOfferIds}
               audience={audience}
+              refreshOffers={refreshOffers}
             />
           </table>
           {hasOffers && (

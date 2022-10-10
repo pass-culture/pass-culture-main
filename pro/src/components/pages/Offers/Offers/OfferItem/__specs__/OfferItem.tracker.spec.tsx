@@ -59,6 +59,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     }
 
     props = {
+      refreshOffers: jest.fn(),
       offer: eventOffer,
       selectOffer: jest.fn(),
       audience: Audience.INDIVIDUAL,
