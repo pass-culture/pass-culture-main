@@ -50,7 +50,7 @@ const IndividualOfferItem = ({
       <OfferRemainingStockCell stocks={offer.stocks} />
       <OfferStatusCell status={offer.status} />
       {offer.status == OFFER_STATUS_DRAFT ? (
-        <DeleteDraftCell />
+        <DeleteDraftCell offer={offer} />
       ) : (
         <EditStocksCell editionStockLink={editionStockLink} />
       )}
