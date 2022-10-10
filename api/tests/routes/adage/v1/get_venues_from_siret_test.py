@@ -19,6 +19,7 @@ class Returns200Test:
             collectiveDomains=[],
             collectiveInterventionArea=None,
             collectiveNetwork=None,
+            isPermanent=True,
         )
 
         client.with_eac_token()
@@ -68,6 +69,7 @@ class Returns200Test:
             collectiveInterventionArea=None,
             collectiveNetwork=None,
             venueLabel=offerer_factories.VenueLabelFactory(),
+            isPermanent=True,
         )
 
         client.with_eac_token()
@@ -124,6 +126,7 @@ class Returns200Test:
             collectiveDomains=[domain1, domain2],
             collectiveInterventionArea=["75", "92", "971"],
             collectiveNetwork=["1"],
+            isPermanent=True,
         )
 
         client.with_eac_token()
@@ -276,6 +279,7 @@ class Returns200Test:
         }
 
 
+@pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def test_when_no_venue_is_found(self, client) -> None:
         client.with_eac_token()
@@ -283,3 +287,23 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json == {"code": "VENUES_NOT_FOUND"}
+
+    def test_get_not_permanent_venues_from_siret(self, client) -> None:
+
+        offerer_factories.VenueFactory(
+            siret="12345678912345",
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+            collectiveStudents=None,
+            collectiveDomains=[],
+            collectiveInterventionArea=None,
+            collectiveNetwork=None,
+            isPermanent=False,
+        )
+
+        client.with_eac_token()
+        response = client.get("/adage/v1/venues/12345678912345")
+
+        assert response.status_code == 404

@@ -122,3 +122,11 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json == {"code": "VENUE_NOT_FOUND"}
+
+    def test_get_not_permanent_venue_by_id(self, client: Any) -> None:
+        venue = offerer_factories.CollectiveVenueFactory(isPermanent=False)
+
+        client.with_eac_token()
+        response = client.get(f"/adage/v1/venues/id/{venue.id}")
+
+        assert response.status_code == 404

@@ -317,7 +317,11 @@ def create_educational_deposit(
 
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = (
-        offerers_models.Venue.query.filter_by(siret=siret, isVirtual=False)
+        offerers_models.Venue.query.filter(
+            offerers_models.Venue.siret == siret,
+            offerers_models.Venue.isVirtual == False,
+            offerers_models.Venue.isPermanent == True,
+        )
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
         .one()
@@ -353,7 +357,10 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
     per_page = 1000 if per_page is None else per_page
 
     return (
-        offerers_models.Venue.query.filter_by(isVirtual=False)
+        offerers_models.Venue.query.filter(
+            offerers_models.Venue.isVirtual == False,
+            offerers_models.Venue.isPermanent == True,
+        )
         .order_by(offerers_models.Venue.id)
         .offset((page - 1) * per_page)
         .limit(per_page)
@@ -372,9 +379,10 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
             or_(
                 sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
                 sa.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
-            )
+            ),
+            offerers_models.Venue.isVirtual == False,
+            offerers_models.Venue.isPermanent == True,
         )
-        .filter(offerers_models.Venue.isVirtual.is_(False))
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
         .all()
