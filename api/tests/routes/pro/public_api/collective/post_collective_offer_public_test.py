@@ -74,6 +74,7 @@ class CollectiveOffersPublicPostOfferTest:
             "addressType": "offererVenue",
             "otherAddress": "",
         }
+        assert offer.isPublicApi == True
 
     def test_invalid_api_key(self, client):
         # Given
