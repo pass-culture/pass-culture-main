@@ -31,6 +31,8 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
+const mockRefreshOffer = jest.fn()
+
 const renderOfferItem = (props: OfferItemProps, store: Store) => {
   return render(
     <Provider store={store}>
@@ -74,7 +76,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     }
 
     props = {
-      refreshOffers: jest.fn(),
+      refreshOffers: mockRefreshOffer,
       offer: eventOffer,
       selectOffer: jest.fn(),
       audience: Audience.INDIVIDUAL,
@@ -134,6 +136,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           await userEvent.click(deleteButton)
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({ ids: ['M4'] })
+          expect(mockRefreshOffer).toHaveBeenCalledTimes(1)
           expect(
             screen.getByText('1 brouillon a bien été supprimé')
           ).toBeInTheDocument()

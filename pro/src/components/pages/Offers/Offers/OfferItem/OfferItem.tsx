@@ -21,6 +21,7 @@ export type OfferItemProps = {
   offer: Offer
   selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
   audience: Audience
+  refreshOffers: () => void
 }
 
 const OfferItem = ({
@@ -29,6 +30,7 @@ const OfferItem = ({
   isSelected = false,
   selectOffer,
   audience,
+  refreshOffers,
 }: OfferItemProps) => {
   const { venue, id, isEducational, isShowcase, status } = offer
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
@@ -70,6 +72,7 @@ const OfferItem = ({
           editionStockLink={editionStockLink}
           venue={venue}
           isOfferEditable={Boolean(isOfferEditable)}
+          refreshOffers={refreshOffers}
         />
       ) : (
         <CollectiveOfferItem

@@ -22,6 +22,7 @@ export type IndividualOfferItemProps = {
   editionStockLink: string
   venue: Venue
   isOfferEditable: boolean
+  refreshOffers: () => void
 }
 
 const IndividualOfferItem = ({
@@ -33,6 +34,7 @@ const IndividualOfferItem = ({
   editionStockLink,
   venue,
   isOfferEditable,
+  refreshOffers,
 }: IndividualOfferItemProps) => {
   return (
     <>
@@ -50,7 +52,7 @@ const IndividualOfferItem = ({
       <OfferRemainingStockCell stocks={offer.stocks} />
       <OfferStatusCell status={offer.status} />
       {offer.status == OFFER_STATUS_DRAFT ? (
-        <DeleteDraftCell offer={offer} />
+        <DeleteDraftCell offer={offer} refreshOffers={refreshOffers} />
       ) : (
         <EditStocksCell editionStockLink={editionStockLink} />
       )}

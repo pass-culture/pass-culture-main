@@ -261,6 +261,7 @@ const Offers = ({
           setSelectedOfferIds={setSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           urlSearchFilters={urlSearchFilters}
+          refreshOffers={refreshOffers}
         />
       )}
       {nbSelectedOffers > 0 && (
