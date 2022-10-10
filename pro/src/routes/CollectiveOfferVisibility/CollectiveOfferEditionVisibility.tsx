@@ -1,55 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import React from 'react'
+import { useHistory } from 'react-router-dom'
 
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import {
-  Mode,
-  extractOfferIdAndOfferTypeFromRouteParams,
-  CollectiveOffer,
-} from 'core/OfferEducational'
-import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import { Mode, CollectiveOffer } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import { useAdapter } from 'hooks'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
 
 const CollectiveOfferVisibility = ({ offer }: { offer: CollectiveOffer }) => {
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
-  const { offerId } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const notify = useNotification()
   const history = useHistory()
 
-  const [institutions, setInstitutions] = useState<
-    EducationalInstitutionResponseModel[]
-  >([])
-  const [isReady, setIsReady] = useState(false)
-  const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
-
-  useEffect(() => {
-    getCollectiveOfferAdapter(offerId).then(offerResult => {
-      if (!offerResult.isOk) {
-        return notify.error(offerResult.message)
-      }
-
-      setIsReady(true)
-    })
-  }, [])
-
-  useEffect(() => {
-    getEducationalInstitutionsAdapter().then(result => {
-      if (!result.isOk) {
-        return notify.error(result.message)
-      }
-
-      setInstitutions(result.payload.institutions)
-      setIsLoadingInstitutions(false)
-    })
-  }, [])
+  const {
+    error,
+    data: institutionsPayload,
+    isLoading,
+  } = useAdapter(getEducationalInstitutionsAdapter)
 
   const onSuccess = ({
     message,
@@ -67,8 +38,12 @@ const CollectiveOfferVisibility = ({ offer }: { offer: CollectiveOffer }) => {
     )
   }
 
-  if (!isReady || !offer) {
+  if (isLoading) {
     return <Spinner />
+  }
+
+  if (error) {
+    return null
   }
 
   return (
@@ -77,8 +52,8 @@ const CollectiveOfferVisibility = ({ offer }: { offer: CollectiveOffer }) => {
       patchInstitution={patchEducationalInstitutionAdapter}
       initialValues={extractInitialVisibilityValues(offer.institution)}
       onSuccess={onSuccess}
-      institutions={institutions}
-      isLoadingInstitutions={isLoadingInstitutions}
+      institutions={institutionsPayload.institutions}
+      isLoadingInstitutions={isLoading}
     />
   )
 }
