@@ -1,3 +1,5 @@
+import { api } from 'apiClient/api'
+
 import { patchIsTemplateOfferActiveAdapter } from '../patchIsTemplateOfferActiveAdapter'
 
 describe('patchIsTemplateOfferActiveAdapter', () => {
@@ -19,10 +21,9 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockRejectedValueOnce({
-      status: 422,
-    })
+    jest
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      .mockRejectedValue({})
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
@@ -38,11 +39,9 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
   })
   it('should confirm when the offer was activated', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      ok: true,
-      status: 204,
-    })
+    jest
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      .mockResolvedValue()
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
@@ -58,11 +57,9 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
   })
   it('should confirm when the offer was deactivated', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      ok: true,
-      status: 204,
-    })
+    jest
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      .mockResolvedValue()
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({

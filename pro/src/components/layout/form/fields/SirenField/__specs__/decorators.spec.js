@@ -1,23 +1,17 @@
+import { api } from 'apiClient/api'
+
 import { sirenUpdate } from '../decorators'
 
 describe('sirenUpdate', () => {
   beforeEach(() => {
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-      json: () =>
-        Promise.resolve({
-          name: 'nom du lieu',
-          siren: '841166096',
-          address: {
-            street: '3 rue de la gare',
-            city: 'paris',
-            postalCode: '75000',
-          },
-        }),
+    jest.spyOn(api, 'getSirenInfo').mockResolvedValue({
+      name: 'nom du lieu',
+      siren: '841166096',
+      address: {
+        street: '3 rue de la gare',
+        city: 'paris',
+        postalCode: '75000',
+      },
     })
   })
 
@@ -30,7 +24,7 @@ describe('sirenUpdate', () => {
       sirenUpdate(siren)
 
       // Then
-      expect(fetch).not.toHaveBeenCalled()
+      expect(api.getSirenInfo).not.toHaveBeenCalled()
     })
 
     it('should return empty information', async () => {
@@ -60,9 +54,8 @@ describe('sirenUpdate', () => {
       await sirenUpdate(siren)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`/sirene/siren/${siren}`),
-        expect.anything()
+      expect(api.getSirenInfo).toHaveBeenCalledWith(
+        expect.stringContaining(`${siren}`)
       )
     })
 
@@ -74,9 +67,8 @@ describe('sirenUpdate', () => {
       await sirenUpdate(siren)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/sirene/siren/418166096'),
-        expect.anything()
+      expect(api.getSirenInfo).toHaveBeenCalledWith(
+        expect.stringContaining('418166096')
       )
     })
   })
@@ -89,9 +81,8 @@ describe('sirenUpdate', () => {
     await sirenUpdate(siren)
 
     // Then
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/sirene/siren/841166096'),
-      expect.anything()
+    expect(api.getSirenInfo).toHaveBeenCalledWith(
+      expect.stringContaining('841166096')
     )
   })
 
