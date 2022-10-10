@@ -1,15 +1,16 @@
+import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
+
 import SelectAutocomplete from './SelectAutocomplete'
 import type { SelectAutocompleteProps } from './SelectAutocomplete'
-import type { Story } from '@storybook/react'
 
 export default {
   title: 'ui-kit/forms/SelectAutocomplete2',
   component: SelectAutocomplete,
 }
 interface Args extends SelectAutocompleteProps {
-  initialValues: { departement: string[] }
+  initialValues: { departement: string | string[] }
 }
 
 const Template: Story<Args> = args => (
@@ -41,7 +42,7 @@ const defaultProps: Args = {
     { value: '14', label: 'Calvados' },
     { value: '15', label: 'Cantal' },
   ],
-  initialValues: { departement: ['01', '02'] },
+  initialValues: { departement: '01' },
   label: 'Département',
   hideFooter: false,
   hideTags: false,
@@ -52,5 +53,17 @@ const defaultProps: Args = {
 export const Default = Template.bind({})
 Default.args = defaultProps
 
+export const Multi = Template.bind({})
+Multi.args = {
+  ...defaultProps,
+  multi: true,
+  initialValues: { departement: ['01', '02'] },
+}
+
 export const WithoutTags = Template.bind({})
-WithoutTags.args = { ...defaultProps, hideTags: true }
+WithoutTags.args = {
+  ...defaultProps,
+  multi: true,
+  initialValues: { departement: ['01', '02'] },
+  hideTags: true,
+}

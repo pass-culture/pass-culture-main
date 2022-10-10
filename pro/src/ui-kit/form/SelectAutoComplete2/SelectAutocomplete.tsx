@@ -1,59 +1,64 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
+import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
-import BaseCheckbox from '../shared/BaseCheckbox'
 import { BaseInput } from '../shared'
 import FieldLayout from '../shared/FieldLayout'
-import Icon from 'components/layout/Icon'
-import { SelectOption } from 'custom_types/form'
-import Tag from 'ui-kit/Tag'
-import cx from 'classnames'
+
+import OptionsList from './OptionsList'
 import styles from './SelectAutocomplete.module.scss'
+import Tags from './Tags'
+import Toggle from './Toggle'
+
+type SelectOption = { value: string; label: string }
 
 export interface SelectAutocompleteProps {
   className?: string
+  disabled?: boolean
   fieldName: string
+  hideArrow?: boolean
   hideFooter?: boolean
   hideTags?: boolean
+  inline?: boolean
   isOptional?: boolean
   label: string
-  maxDisplayOptions?: number
-  maxDisplayOptionsLabel?: string
   maxHeight?: number
+  multi?: boolean
   options: SelectOption[]
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  placeholder?: string
   pluralLabel?: string
   smallLabel?: boolean
-  disabled?: boolean
-  placeholder?: string
-  inline?: boolean
-  hideArrow?: boolean
 }
 
 const SelectAutocomplete = ({
   className,
+  disabled = false,
   fieldName,
+  hideArrow,
   hideFooter = false,
   hideTags = false,
+  inline,
   isOptional = false,
   label,
-  options,
-  onChange,
-  maxDisplayOptions,
   maxHeight,
+  multi = false,
+  options,
+  placeholder,
   pluralLabel,
   smallLabel = false,
-  disabled = false,
-  placeholder,
-  inline,
-  hideArrow,
 }: SelectAutocompleteProps): JSX.Element => {
-  const { setFieldValue, handleChange, setFieldTouched } =
-    useFormikContext<any>()
-  const [field, meta] = useField(fieldName)
+  const { setFieldTouched, setFieldValue } = useFormikContext<any>()
+
+  const [field, meta] = useField<string | string[]>(fieldName)
   const [searchField, searchMeta] = useField(`search-${fieldName}`)
 
+  const [hovered, setHovered] = useState<number | null>(null)
+  const [optionsLabelById, setOptionsLabelById] = useState<
+    Record<string, string>
+  >({})
+
   const containerRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLUListElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
 
@@ -62,10 +67,21 @@ const SelectAutocomplete = ({
   }, [options])
 
   useEffect(() => {
-    if (!isOpen && searchField.value !== '')
+    if (isOpen && searchField.value !== '')
       setFieldValue(`search-${fieldName}`, '', false)
   }, [isOpen])
 
+  /* hashtable for the options */
+  useEffect(() => {
+    setOptionsLabelById(
+      options.reduce<Record<string, string>>((optionsById, option) => {
+        optionsById[option.value] = option.label
+        return optionsById
+      }, {})
+    )
+  }, [options])
+
+  /* istanbul ignore next */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       if (!containerRef.current?.contains(e.target as Node)) {
@@ -89,14 +105,80 @@ const SelectAutocomplete = ({
     )
   }, [searchField.value])
 
-  const optionsLabelById = useMemo(
-    () =>
-      options.reduce<Record<string, string>>((optionsById, option) => {
-        optionsById[option.value] = option.label
-        return optionsById
-      }, {}),
-    [options]
-  )
+  /* istanbul ignore next */
+  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
+    switch (event.key) {
+      case 'ArrowUp':
+        if (hovered === null) {
+          setHovered(filteredOptions.length - 1)
+        } else if (hovered <= 0) {
+          setHovered(null)
+        } else {
+          setHovered(hovered - 1)
+        }
+        if (!isOpen) setIsOpen(true)
+        listRef.current?.focus()
+        break
+      case 'ArrowDown':
+        if (hovered === null) {
+          setHovered(0)
+        } else if (hovered >= filteredOptions.length - 1) {
+          setHovered(null)
+        } else {
+          setHovered(hovered + 1)
+        }
+        if (!isOpen) setIsOpen(true)
+        listRef.current?.focus()
+        break
+      case 'Space':
+        if (!isOpen) setIsOpen(true)
+        listRef.current?.focus()
+        break
+      case 'Enter':
+        if (isOpen && hovered !== null) {
+          selectOption(filteredOptions[hovered].value)
+        }
+        break
+      case 'Escape':
+        setHovered(null)
+        setIsOpen(false)
+        break
+      case 'Tab':
+        setHovered(null)
+        setIsOpen(false)
+        break
+      default:
+        //
+        break
+    }
+  }
+
+  const selectOption = (value: string) => {
+    let updatedSelection
+    if (multi) {
+      if (field.value.includes(value) && Array.isArray(field.value)) {
+        updatedSelection = field.value.filter(li => li !== value)
+      } else {
+        updatedSelection = [...field.value, value]
+      }
+    } else {
+      updatedSelection = value
+      setIsOpen(false)
+      setHovered(null)
+      setFieldValue(
+        `search-${fieldName}`,
+        optionsLabelById[updatedSelection],
+        false
+      )
+    }
+    setFieldValue(fieldName, updatedSelection)
+  }
+
+  const openField = () => {
+    /* istanbul ignore next */
+    if (!isOpen) setIsOpen(true)
+    setFieldTouched(fieldName, true)
+  }
 
   const toggleField = () => {
     if (isOpen) {
@@ -108,20 +190,10 @@ const SelectAutocomplete = ({
     setFieldTouched(fieldName, true)
   }
 
-  const renderOption = ({ value, label }) => (
-    <BaseCheckbox
-      label={label}
-      key={`${fieldName}-${value}`}
-      value={value}
-      name={fieldName}
-      onChange={e => {
-        setFieldTouched(`search-${fieldName}`, true)
-        handleChange(e)
-        onChange?.(e)
-      }}
-      checked={field.value.includes(value)}
-    />
-  )
+  const placeholderDisplay = multi
+    ? placeholder ??
+      (field.value.length > 1 && pluralLabel ? pluralLabel : label)
+    : ''
 
   return (
     <FieldLayout
@@ -137,90 +209,97 @@ const SelectAutocomplete = ({
     >
       <div
         className={cx(styles['multi-select-autocomplete-container'], className)}
+        onKeyDown={handleKeyDown}
         ref={containerRef}
       >
         <BaseInput
-          onFocus={() => {
-            if (!isOpen) {
-              setIsOpen(true)
-            }
-            setFieldTouched(fieldName, true)
-          }}
-          placeholder={
-            placeholder ??
-            (field.value.length > 1 && pluralLabel ? pluralLabel : label)
-          }
-          style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
-          className={cx({
-            [styles['multi-select-autocomplete-placeholder-input']]:
-              field.value.length > 0,
+          {...(hovered !== null && {
+            'aria-activedescendant': `option-display-${filteredOptions[hovered]?.value}`,
           })}
+          onFocus={openField}
+          placeholder={placeholderDisplay}
+          style={{
+            paddingLeft: multi && field.value.length > 0 ? '2.2rem' : '1rem',
+          }}
+          className={styles['multi-select-autocomplete-placeholder-input']}
           hasError={searchMeta.touched && !!searchMeta.error}
           type="text"
           disabled={disabled}
           {...searchField}
+          aria-autocomplete="list"
+          aria-controls={`list-${fieldName}`}
+          aria-describedby={`help-${fieldName}`}
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          role="combobox"
         />
-        (
+        <div
+          aria-live="polite"
+          aria-relevant="text"
+          className={styles['visually-hidden']}
+          id={`help-${fieldName}`}
+        >
+          {multi && `${field.value.length} options sélectionnées`}
+          {!multi &&
+            !Array.isArray(field.value) &&
+            field.value !== '' &&
+            `Option sélectionnée : ${optionsLabelById[field.value]}`}
+          {isOpen
+            ? `${filteredOptions.length} options ${
+                searchField.value === ''
+                  ? 'disponibles'
+                  : 'correspondant au texte saisi'
+              }`
+            : 'saisissez du texte pour afficher et filtrer les options'}
+        </div>
+        <select
+          className={styles.hidden}
+          {...(multi && { multiple: true })}
+          {...field}
+          data-testid="select"
+        >
+          {options?.map(({ label, value }) => (
+            <option key={`option-${value}`} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
         <div className={styles['field-overlay']}>
           {!hideArrow && (
-            <button
-              onClick={toggleField}
-              className={cx(styles['dropdown-indicator'], {
-                [styles['dropdown-indicator-is-closed']]: !isOpen,
-              })}
-              type="button"
+            <Toggle
               disabled={disabled}
-            >
-              <Icon
-                svg="open-dropdown"
-                alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
-              />
-            </button>
+              isOpen={isOpen}
+              toggleField={toggleField}
+            />
           )}
-          {field.value.length > 0 && (
+          {multi && field.value.length > 0 && (
             <div onClick={toggleField} className={styles['pellet']}>
               {field.value.length}
             </div>
           )}
           {isOpen && (
-            <div
-              className={cx(styles['menu'], className)}
-              style={maxHeight ? { maxHeight } : {}}
-              role="listbox"
-            >
-              {filteredOptions.length === 0 && (
-                <span
-                  className={cx({
-                    [styles['menu--no-results']]: filteredOptions.length === 0,
-                  })}
-                >
-                  Aucun résultat
-                </span>
-              )}
-              {filteredOptions.map(option => renderOption(option))}
-            </div>
+            <OptionsList
+              className={className}
+              fieldName={fieldName}
+              maxHeight={maxHeight}
+              selectedValues={field.value}
+              filteredOptions={filteredOptions}
+              setHovered={setHovered}
+              listRef={listRef}
+              hovered={hovered}
+              selectOption={selectOption}
+            />
           )}
         </div>
-        )
       </div>
-      {!hideTags && field.value.length > 0 && (
-        <div className={styles['multi-select-autocomplete-tags']}>
-          {field.value.map((value: string) => (
-            <Tag
-              key={`tag-${fieldName}-${value}`}
-              label={optionsLabelById[value]}
-              closeable={{
-                onClose: () => {
-                  setFieldValue(
-                    fieldName,
-                    field.value.filter((_value: string) => _value !== value)
-                  )
-                },
-                disabled,
-              }}
-            />
-          ))}
-        </div>
+      {Array.isArray(field.value) && !hideTags && field.value.length > 0 && (
+        <Tags
+          disabled={disabled}
+          fieldName={fieldName}
+          optionsLabelById={optionsLabelById}
+          selectedOptions={field.value}
+          removeOption={selectOption}
+        />
       )}
     </FieldLayout>
   )
