@@ -134,7 +134,7 @@ describe('test updateIndividualOffer::serializers', () => {
       }
       patchBody = {
         ...patchBody,
-        bookingEmail: '',
+        bookingEmail: null,
         durationMinutes: null,
       }
       expect(serializePatchOffer(formValues)).toEqual(patchBody)
