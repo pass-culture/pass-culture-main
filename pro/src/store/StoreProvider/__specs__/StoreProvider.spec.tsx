@@ -12,7 +12,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderStoreProvider = () => {
-  render(
+  return render(
     <StoreProvider>
       <p>Sub component</p>
     </StoreProvider>

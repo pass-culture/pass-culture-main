@@ -56,7 +56,7 @@ const SiretOrCommentFields = ({
       return null
     }
     getSiretDataFromApi().then(response => {
-      if (response?.isOk && response?.message !== 'SIRET vide') {
+      if (response?.isOk) {
         setIsFieldNameFrozen(true)
         setFieldValue('name', response.payload.values?.name)
       }

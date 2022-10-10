@@ -8,10 +8,13 @@ import '@testing-library/jest-dom'
 
 import { api } from 'apiClient/api'
 import {
+  ApiError,
   GetOffererResponseModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { IProviders, IVenueProviderApi } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -138,12 +141,20 @@ describe('route VenueEdition', () => {
   })
 
   it('should return to home when not able to get venue informations', async () => {
-    jest.spyOn(api, 'getVenue').mockRejectedValue({
-      status: 403,
-    })
+    jest.spyOn(api, 'getVenue').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 404,
+          body: {
+            global: ['error'],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
     // When
     renderVenueEdition(venue.id, offerer.id, store)
-    // await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then
     expect(api.getVenue).toHaveBeenCalledTimes(1)

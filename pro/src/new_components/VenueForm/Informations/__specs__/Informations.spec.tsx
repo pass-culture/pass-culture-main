@@ -6,14 +6,36 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { apiAdresse } from 'apiClient/adresse'
+import { api } from 'apiClient/api'
 import { IVenueFormValues } from 'new_components/VenueForm'
 import { SubmitButton } from 'ui-kit'
 
-import {
-  DEFAULT_INFORMATIONS_FORM_VALUES,
-  validationSchema as informationsValidationSchema,
-} from '../'
+import { DEFAULT_INFORMATIONS_FORM_VALUES } from '../constants'
 import Informations, { IInformations } from '../Informations'
+import generateSiretValidationSchema from '../SiretOrCommentFields/validationSchema'
+import { default as informationsValidationSchema } from '../validationSchema'
+
+const mockAdressData = [
+  {
+    address: '19 RUE LAITIERE',
+    city: 'BAYEUX',
+    id: '1',
+    latitude: 11.1,
+    longitude: -11.1,
+    label: '19 RUE LAITIERE 14400 BAYEUX',
+    postalCode: '14400',
+  },
+]
+
+jest.mock('apiClient/adresse', () => {
+  return {
+    ...jest.requireActual('apiClient/adresse'),
+    default: {
+      getDataFromAddress: jest.fn(),
+    },
+  }
+})
 
 const renderInformations = ({
   initialValues,
@@ -24,7 +46,17 @@ const renderInformations = ({
   onSubmit: () => void
   props: IInformations
 }) => {
-  const validationSchema = yup.object().shape(informationsValidationSchema)
+  const generateSiretOrCommentValidationSchema = generateSiretValidationSchema(
+    '123456789',
+    true
+  )
+
+  const formValidationSchema = yup
+    .object()
+    .shape(informationsValidationSchema)
+    .concat(generateSiretOrCommentValidationSchema)
+
+  const validationSchema = formValidationSchema
   const rtlReturns = render(
     <Formik
       initialValues={initialValues}
@@ -65,12 +97,26 @@ describe('components | Informations', () => {
   })
 
   it('should submit form without errors', async () => {
+    jest.spyOn(api, 'getSiretInfo').mockResolvedValueOnce({
+      name: 'MUSEE DE LA TAPISSERIE DE BAYEUX',
+      siret: '12345178912345',
+      active: true,
+      address: {
+        street: '19 RUE LAITIERE',
+        city: 'BAYEUX',
+        postalCode: '14400',
+      },
+    })
+    jest
+      .spyOn(apiAdresse, 'getDataFromAddress')
+      .mockResolvedValue(mockAdressData)
+
     const { buttonSubmit } = renderInformations({
       initialValues,
       onSubmit,
       props,
     })
-    const nameInput = screen.getByLabelText('Nom du lieu', {
+    const siretInput = screen.getByLabelText('SIRET de ce lieu', {
       exact: false,
     })
     const mailInput = screen.getByLabelText('Mail', {
@@ -80,7 +126,7 @@ describe('components | Informations', () => {
       exact: false,
     })
 
-    await userEvent.type(nameInput, 'Mon super cinéma')
+    await userEvent.type(siretInput, '12345678912345')
     await userEvent.type(mailInput, 'superCine@example.com')
     await userEvent.selectOptions(venueTypeSelect, 'CINEMA')
 

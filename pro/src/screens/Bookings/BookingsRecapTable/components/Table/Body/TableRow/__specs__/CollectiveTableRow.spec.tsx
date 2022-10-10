@@ -31,12 +31,13 @@ const renderCollectiveTableRow = (props: ITableBodyProps) =>
   render(
     <Router history={createBrowserHistory()}>
       <Provider store={configureTestStore({})}>
-        <CollectiveTableRow {...props} />
+        <table>
+          <tbody>
+            <CollectiveTableRow {...props} />
+          </tbody>
+        </table>
       </Provider>
-    </Router>,
-    {
-      container: document.body.appendChild(document.createElement('tbody')),
-    }
+    </Router>
   )
 
 describe('CollectiveTableRow', () => {
