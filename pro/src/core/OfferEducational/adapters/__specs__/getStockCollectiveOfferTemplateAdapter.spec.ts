@@ -39,7 +39,6 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
 
     it('should not return an error when offer has been found', async () => {
       // given
-      // @ts-ignore
       jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
         id: 'A1',
         isActive: true,

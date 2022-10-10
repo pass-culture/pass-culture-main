@@ -77,7 +77,7 @@ describe('getSirenDataAdapter', () => {
 
       // then
       expect(api.getSirenInfo).toHaveBeenCalledTimes(1)
-      expect(api.getSirenInfo).toHaveBeenCalledWith(`${siren}`)
+      expect(api.getSirenInfo).toHaveBeenCalledWith(siren)
       expect(response.isOk).toBeTruthy()
       expect(response.message).toBe(
         `Informations récupéré avec success pour le SIREN: ${unhumanizeSiren(

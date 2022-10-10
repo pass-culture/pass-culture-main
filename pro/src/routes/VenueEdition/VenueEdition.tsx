@@ -76,12 +76,13 @@ const VenueEdition = (): JSX.Element | null => {
     ].find(error => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
+      // RomainC Redirect fix this warning here :
+      // Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state.
+      // which was caused by the setState in useGetVenue
+      // push is used to keep history of navigation
+      return <Redirect push to={homePath} />
     }
-    // RomainC Redirect fix this warning here :
-    // Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state.
-    // which was caused by the setState in useGetVenue
-    // push is used to keep history of navigation
-    return <Redirect push to={homePath} />
+    return null
   }
 
   const initialValues = setInitialFormValues(venue)

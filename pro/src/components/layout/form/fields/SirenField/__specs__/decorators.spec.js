@@ -54,9 +54,7 @@ describe('sirenUpdate', () => {
       await sirenUpdate(siren)
 
       // Then
-      expect(api.getSirenInfo).toHaveBeenCalledWith(
-        expect.stringContaining(`${siren}`)
-      )
+      expect(api.getSirenInfo).toHaveBeenCalledWith(siren)
     })
 
     it('should format the SIREN to the API standards', async () => {

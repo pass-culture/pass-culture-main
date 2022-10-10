@@ -25,7 +25,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
   if (humanSiret === '') {
     return {
       isOk: true,
-      message: 'SIRET vide',
+      message: '',
       payload: {
         values: {
           address: '',
