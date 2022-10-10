@@ -154,9 +154,7 @@ describe('components | SiretField', () => {
 
       // then
       expect(api.getSiretInfo).toHaveBeenCalledTimes(1)
-      expect(api.getSiretInfo).toHaveBeenCalledWith(
-        expect.stringContaining(`${siret}`)
-      )
+      expect(api.getSiretInfo).toHaveBeenCalledWith(siret)
     })
     it('should not return an error message when SIRET exists in INSEE registry', async () => {
       // given
@@ -247,9 +245,7 @@ describe('components | SiretField', () => {
 
       // then
       expect(api.getSiretInfo).toHaveBeenCalledTimes(1)
-      expect(api.getSiretInfo).toHaveBeenCalledWith(
-        expect.stringContaining(`${siret}`)
-      )
+      expect(api.getSiretInfo).toHaveBeenCalledWith(siret)
     })
   })
 })

@@ -27,9 +27,7 @@ describe('components | SirenField', () => {
 
       // then
       expect(api.getSirenInfo).toHaveBeenCalledTimes(1)
-      expect(api.getSirenInfo).toHaveBeenCalledWith(
-        expect.stringContaining(`${siren}`)
-      )
+      expect(api.getSirenInfo).toHaveBeenCalledWith(siren)
     })
 
     it('should not return an error message when SIREN exists in INSEE registry', async () => {
@@ -123,9 +121,7 @@ describe('components | SirenField', () => {
 
       // then
       expect(api.getSirenInfo).toHaveBeenCalledTimes(1)
-      expect(api.getSirenInfo).toHaveBeenCalledWith(
-        expect.stringContaining(`${siren}`)
-      )
+      expect(api.getSirenInfo).toHaveBeenCalledWith(siren)
     })
   })
 })

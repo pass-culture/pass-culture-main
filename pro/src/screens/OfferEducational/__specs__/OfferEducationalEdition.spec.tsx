@@ -59,24 +59,24 @@ describe('screens | OfferEducational', () => {
     }
     renderEACOfferForm(props, store)
 
-    const inputs = await Promise.all([
-      await screen.findByLabelText(CATEGORY_LABEL),
-      await screen.findByLabelText(SUBCATEGORY_LABEL),
-      await screen.findByLabelText(TITLE_LABEL),
-      await screen.findByLabelText(CATEGORY_LABEL),
-      await screen.findByLabelText(DURATION_LABEL, { exact: false }),
-      await screen.findByLabelText(OFFERER_LABEL),
-      await screen.findByLabelText(VENUE_LABEL),
-      await screen.findByLabelText('Autre'), // one of every option
-      await screen.findByLabelText('Collège - 3e'), // one of every option
-      await screen.findByLabelText('Visuel'), // one of every option
-      await screen.findByLabelText(PHONE_LABEL),
-      await screen.findByLabelText(EMAIL_LABEL),
-      await screen.findByLabelText(NOTIFICATIONS_LABEL),
-      await screen.findByLabelText(NOTIFICATIONS_EMAIL_LABEL),
-      await screen.findByLabelText(INTERVENTION_AREA_LABEL),
-    ])
-    const submitButton = await screen.findByRole('button', {
+    const inputs = [
+      screen.getByLabelText(CATEGORY_LABEL),
+      screen.getByLabelText(SUBCATEGORY_LABEL),
+      screen.getByLabelText(TITLE_LABEL),
+      screen.getByLabelText(CATEGORY_LABEL),
+      screen.getByLabelText(DURATION_LABEL, { exact: false }),
+      screen.getByLabelText(OFFERER_LABEL),
+      screen.getByLabelText(VENUE_LABEL),
+      screen.getByLabelText('Autre'), // one of every option
+      screen.getByLabelText('Collège - 3e'), // one of every option
+      screen.getByLabelText('Visuel'), // one of every option
+      screen.getByLabelText(PHONE_LABEL),
+      screen.getByLabelText(EMAIL_LABEL),
+      screen.getByLabelText(NOTIFICATIONS_LABEL),
+      screen.getByLabelText(NOTIFICATIONS_EMAIL_LABEL),
+      screen.getByLabelText(INTERVENTION_AREA_LABEL),
+    ]
+    const submitButton = await screen.getByRole('button', {
       name: 'Enregistrer',
     })
 

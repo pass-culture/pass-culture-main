@@ -51,7 +51,7 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
               </td>
             ) : (
               bookingDetails && (
-                <td>
+                <td className={styles['details-content']}>
                   <CollectiveBookingDetails
                     bookingDetails={bookingDetails}
                     offerId={row.original.stock.offer_identifier}
