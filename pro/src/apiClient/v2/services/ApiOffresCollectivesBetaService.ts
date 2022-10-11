@@ -16,7 +16,7 @@ import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOffer
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 
-export class ApiOffresCollectivesService {
+export class ApiOffresCollectivesBetaService {
 
   constructor(public readonly httpRequest: BaseHttpRequest) {}
 
