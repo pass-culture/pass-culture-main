@@ -15,8 +15,6 @@ from pcapi.core.auth.utils import _set_current_user
 from pcapi.core.permissions.models import Permissions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.backoffice.blueprint import BACKOFFICE_AUTH
-from pcapi.serialization.spec_tree import add_security_scheme
 
 
 logger = logging.getLogger(__name__)
@@ -24,8 +22,6 @@ logger = logging.getLogger(__name__)
 
 def permission_required(permission: Permissions) -> typing.Callable:
     def wrapper(func: typing.Callable) -> typing.Callable:
-        add_security_scheme(func, BACKOFFICE_AUTH)
-
         @wraps(func)
         def wrapped(*args, **kwargs) -> tuple[Response, int] | typing.Callable:  # type: ignore[no-untyped-def]
             if not FeatureToggle.ENABLE_BACKOFFICE_API.is_active():

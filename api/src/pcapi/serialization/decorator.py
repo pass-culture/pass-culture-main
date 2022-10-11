@@ -1,4 +1,3 @@
-from copy import deepcopy
 from functools import wraps
 import logging
 from typing import Any
@@ -114,7 +113,11 @@ def spectree_serialize(
         else:
             spectree_response = SpectreeResponse(**response_codes)
 
-        security = deepcopy(getattr(route, "requires_authentication", None))
+        security: list[dict[str, list]] | None = (
+            [{security_scheme.name: []} for security_scheme in api.config.security_schemes]
+            if api.config.security_schemes
+            else None
+        )
 
         @wraps(route)
         @api.validate(

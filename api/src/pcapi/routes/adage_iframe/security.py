@@ -8,17 +8,13 @@ from jwt import InvalidTokenError
 
 from pcapi.core.users import utils as user_utils
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.routes.adage_iframe.blueprint import JWT_AUTH
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.serialization.spec_tree import add_security_scheme
 
 
 logger = logging.getLogger(__name__)
 
 
 def adage_jwt_required(route_function):  # type: ignore [no-untyped-def]
-    add_security_scheme(route_function, JWT_AUTH)
-
     @wraps(route_function)
     def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
         mandatory_authorization_type = "Bearer "

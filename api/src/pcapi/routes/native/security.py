@@ -11,8 +11,6 @@ import sentry_sdk
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.routes.native.v1.blueprint import JWT_AUTH
-from pcapi.serialization.spec_tree import add_security_scheme
 
 
 logger = logging.getLogger(__name__)
@@ -23,8 +21,6 @@ RouteDecorator = typing.Callable[..., typing.Any]
 
 
 def authenticated_and_active_user_required(route_function: RouteFunc) -> RouteDecorator:
-    add_security_scheme(route_function, JWT_AUTH)
-
     @wraps(route_function)
     @jwt_required()
     def retrieve_authenticated_user(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
@@ -35,8 +31,6 @@ def authenticated_and_active_user_required(route_function: RouteFunc) -> RouteDe
 
 
 def authenticated_maybe_inactive_user_required(route_function: RouteFunc) -> RouteDecorator:
-    add_security_scheme(route_function, JWT_AUTH)
-
     @wraps(route_function)
     @jwt_required()
     def retrieve_authenticated_user(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
