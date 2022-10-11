@@ -16,6 +16,7 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
   hasSearchFilters,
+  OFFER_STATUS_DRAFT,
 } from 'core/Offers'
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
@@ -204,6 +205,13 @@ const Offers = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
 
+  const canUpdateOffersStatus = (selectedOfferIds: string[]) => {
+    const selectedOffers = offers.filter(offer =>
+      selectedOfferIds.includes(offer.id)
+    )
+    return !selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)
+  }
+
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
@@ -273,6 +281,8 @@ const Offers = ({
           selectedOfferIds={selectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}
+          canUpdateOffersStatus={canUpdateOffersStatus}
+          canDeleteOffers={canDeleteOffers}
         />
       )}
     </div>
