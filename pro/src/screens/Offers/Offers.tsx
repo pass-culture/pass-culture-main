@@ -212,6 +212,13 @@ const Offers = ({
     return !selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)
   }
 
+  const canDeleteOffers = (selectedOfferIds: string[]) => {
+    const selectedOffers = offers.filter(offer =>
+      selectedOfferIds.includes(offer.id)
+    )
+    return !selectedOffers.some(offer => offer.status !== OFFER_STATUS_DRAFT)
+  }
+
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
