@@ -46,9 +46,6 @@ from flask import render_template
 from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sqla
-from sqlalchemy import Date
-from sqlalchemy import and_
-from sqlalchemy import cast
 import sqlalchemy.orm as sqla_orm
 import sqlalchemy.sql.functions as sqla_func
 
@@ -56,9 +53,6 @@ from pcapi import settings
 from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
@@ -338,7 +332,7 @@ def get_non_cancelled_pricing_from_booking(
 
 
 def price_booking(
-    booking: bookings_models.Booking | CollectiveBooking,
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> models.Pricing | None:
     if not booking.venue.pricing_point_links:
         return None
@@ -366,7 +360,7 @@ def price_booking(
         # fetched it before we acquired the lock.
         # If the status is REIMBURSED, it means the booking is
         # already priced.
-        if (is_booking_collective and booking.status is not CollectiveBookingStatus.USED) or (
+        if (is_booking_collective and booking.status is not educational_models.CollectiveBookingStatus.USED) or (
             not is_booking_collective and booking.status is not bookings_models.BookingStatus.USED
         ):
             return None
@@ -451,11 +445,11 @@ def _get_pricing_point_id_and_current_revenue(
 
 
 def _price_booking(
-    booking: bookings_models.Booking | CollectiveBooking,
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> models.Pricing:
     pricing_point_id, current_revenue = _get_pricing_point_id_and_current_revenue(booking)
     new_revenue = current_revenue
-    is_booking_collective = isinstance(booking, CollectiveBooking)
+    is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
     # Collective bookings must not be included in revenue.
     if not is_booking_collective and booking.individualBookingId:
         new_revenue += utils.to_eurocents(booking.total_amount)
@@ -499,7 +493,9 @@ def _price_booking(
     return models.Pricing(**pricing_data)  # type: ignore [arg-type]
 
 
-def _get_initial_pricing_status(booking: bookings_models.Booking | CollectiveBooking) -> models.PricingStatus:
+def _get_initial_pricing_status(
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
+) -> models.PricingStatus:
     # In the future, we may set the pricing as "pending" (as in
     # "pending validation") for example if the pricing point is new,
     # or if the offer or offerer has particular characteristics. For
@@ -508,7 +504,7 @@ def _get_initial_pricing_status(booking: bookings_models.Booking | CollectiveBoo
 
 
 def _delete_dependent_pricings(
-    booking: bookings_models.Booking | CollectiveBooking,
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
     log_message: str,
 ) -> None:
     """Delete pricings for bookings that should be priced after the
@@ -519,7 +515,7 @@ def _delete_dependent_pricings(
     # Collective bookings are always reimbursed 100%, so there is no need to price them in
     # a specific order. In other words, there are no dependent pricings, and hence none to
     # delete.
-    if isinstance(booking, CollectiveBooking):
+    if isinstance(booking, educational_models.CollectiveBooking):
         return
 
     assert booking.dateUsed is not None  # helps mypy for `_get_revenue_period()`
@@ -667,7 +663,7 @@ def _delete_dependent_pricings(
 
 
 def cancel_pricing(
-    booking: bookings_models.Booking | CollectiveBooking, reason: models.PricingLogReason
+    booking: bookings_models.Booking | educational_models.CollectiveBooking, reason: models.PricingLogReason
 ) -> models.Pricing | None:
     if not booking.dateUsed:
         return None
@@ -693,7 +689,7 @@ def cancel_pricing(
                 },
             )
 
-        if isinstance(booking, CollectiveBooking):
+        if isinstance(booking, educational_models.CollectiveBooking):
             booking_attribute = models.Pricing.collectiveBooking
         else:
             booking_attribute = models.Pricing.booking
@@ -1112,16 +1108,17 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.collectiveBooking)
-        .join(CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveBooking.collectiveStock)
         .join(
             offerers_models.Venue,
             offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
         )
-        .join(CollectiveBooking.educationalInstitution)
+        .join(educational_models.CollectiveBooking.educationalInstitution)
         .join(
             educational_models.EducationalDeposit,
-            and_(
-                educational_models.EducationalDeposit.educationalYearId == CollectiveBooking.educationalYearId,
+            sqla.and_(
+                educational_models.EducationalDeposit.educationalYearId
+                == educational_models.CollectiveBooking.educationalYearId,
                 educational_models.EducationalDeposit.educationalInstitutionId
                 == educational_models.EducationalInstitution.id,
             ),
@@ -1139,7 +1136,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
             ).label("reimbursement_point_name"),
-            sqla_func.sum(CollectiveStock.price).label("booking_amount"),
+            sqla_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
             educational_models.EducationalDeposit.ministry.label("ministry"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
@@ -1328,7 +1325,7 @@ def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
         .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
-        .filter(cast(models.Invoice.date, Date) == invoice_date)
+        .filter(sqla.cast(models.Invoice.date, sqla.Date) == invoice_date)
         .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
     )
     row_formatter = lambda row: (
@@ -1598,11 +1595,11 @@ def get_reimbursements_by_venue(
         pricing_query.with_entities(
             *common_columns,
             sqla_func.sum(models.Pricing.amount).label("reimbursed_amount"),
-            sqla_func.sum(CollectiveStock.price).label("booking_amount"),
+            sqla_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
         )
         .join(models.Pricing.collectiveBooking)
-        .join(CollectiveBooking.venue)
-        .join(CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveBooking.venue)
+        .join(educational_models.CollectiveBooking.collectiveStock)
         .group_by(
             offerers_models.Venue.id,
             sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
@@ -1768,12 +1765,12 @@ def reload_booking_for_pricing(booking_id: int) -> bookings_models.Booking:
     return query.one()
 
 
-def reload_collective_booking_for_pricing(booking_id: int) -> CollectiveBooking:
-    query = CollectiveBooking.query.filter_by(id=booking_id).options(
-        sqla_orm.joinedload(CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
-            CollectiveStock.collectiveOffer, innerjoin=True
+def reload_collective_booking_for_pricing(booking_id: int) -> educational_models.CollectiveBooking:
+    query = educational_models.CollectiveBooking.query.filter_by(id=booking_id).options(
+        sqla_orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
+            educational_models.CollectiveStock.collectiveOffer, innerjoin=True
         ),
-        sqla_orm.joinedload(CollectiveBooking.venue, innerjoin=True)
+        sqla_orm.joinedload(educational_models.CollectiveBooking.venue, innerjoin=True)
         .joinedload(offerers_models.Venue.pricing_point_links, innerjoin=True)
         .joinedload(offerers_models.VenuePricingPointLink.venue, innerjoin=True),
     )
