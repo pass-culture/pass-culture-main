@@ -35,7 +35,6 @@ import itertools
 import logging
 import math
 from operator import attrgetter
-from operator import or_
 import pathlib
 import secrets
 import tempfile
@@ -333,12 +332,7 @@ def get_non_cancelled_pricing_from_booking(
     if isinstance(booking, bookings_models.Booking):
         pricing_query = models.Pricing.query.filter_by(booking=booking)
     else:
-        pricing_query = models.Pricing.query.filter(
-            or_(
-                models.Pricing.collectiveBookingId == booking.id,
-                and_(models.Pricing.bookingId.isnot(None), models.Pricing.bookingId == booking.bookingId),
-            )
-        )
+        pricing_query = models.Pricing.query.filter_by(collectiveBooking=booking)
 
     return pricing_query.filter(models.Pricing.status != models.PricingStatus.CANCELLED).one_or_none()
 
