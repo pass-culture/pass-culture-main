@@ -34,8 +34,10 @@
 }
 
 .menu-item-icon {
-  max-height: rem.torem(20px);
-  max-width: rem.torem(20px);
+  height: rem.torem(20px);
+  width: rem.torem(20px);
+  flex-shrink: 0;
+  margin-right: rem.torem(8px);
 }
 
 .menu-item {
@@ -72,8 +74,9 @@
     }
   }
 
-  &:hover:not(.menu-item-disabled) {
-    background: colors.$grey-medium;
+  &:hover:not(.menu-item-disabled),
+  &:focus:not(.menu-item-disabled) {
+    text-decoration: underline;
   }
 
   &.menu-item-disabled {
@@ -93,12 +96,6 @@
           fill: colors.$grey-medium;
         }
       }
-    }
-
-    > svg {
-      min-height: rem.torem(32px);
-      min-width: rem.torem(32px);
-      margin: rem.torem(-5px);
     }
   }
 }
