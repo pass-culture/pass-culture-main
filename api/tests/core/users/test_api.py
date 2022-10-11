@@ -795,7 +795,7 @@ class BeneficiaryInformationUpdateTest:
             last_name="Dufy",
             birth_date=datetime.date(2000, 5, 1).isoformat(),
             id_document_number="123456789",
-            gender="M",
+            gender=users_models.GenderEnum.M,
         )
         new_user = users_api.update_user_information_from_external_source(user, ubble_data)
 

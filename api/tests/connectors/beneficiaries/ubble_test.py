@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests as requests_utils
 
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
@@ -132,3 +133,17 @@ class GetContentTest:
         assert record.extra["request_type"] == "get-content"
         assert record.extra["error_type"] == "http"
         assert exc_info.value.is_retryable == True
+
+
+class HelperFunctionsTest:
+    @pytest.mark.parametrize(
+        "ubble_gender, expected",
+        [
+            ("M", GenderEnum.M),
+            ("F", GenderEnum.F),
+            ("X", None),
+            (None, None),
+        ],
+    )
+    def test_parse_ubble_gender(self, ubble_gender, expected):
+        assert ubble._parse_ubble_gender(ubble_gender) == expected
