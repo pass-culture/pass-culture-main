@@ -309,13 +309,7 @@ const routes: IRoute[] = [
   {
     component: CollectiveOfferConfirmation,
     exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif/confirmation',
-    title: 'Page de confirmation de création d’offre',
-  },
-  {
-    component: CollectiveOfferConfirmation,
-    exact: true,
-    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/confirmation',
+    path: '/offre/:offerId/collectif/confirmation',
     title: 'Page de confirmation de création d’offre',
   },
   {

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { OfferStatus } from 'apiClient/v1'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
-import { Title } from 'ui-kit'
+import { Banner, Title } from 'ui-kit'
 
 import styles from './CollectiveOfferConfirmation.module.scss'
 
@@ -93,32 +93,60 @@ const CollectiveOfferConfirmation = ({
   )
 
   return (
-    <div className={styles['confirmation']}>
-      <Icon className={styles['confirmation-icon']} />
-      <div className={styles['confirmation-section']}>
-        <div className={styles['confirmation-section-header']}>
-          <Title as="h2" level={3}>
-            {title}
-          </Title>
+    <div className={styles['confirmation-wrapper']}>
+      <div className={styles['confirmation']}>
+        <Icon className={styles['confirmation-icon']} />
+        <div className={styles['confirmation-section']}>
+          <div className={styles['confirmation-section-header']}>
+            <Title as="h2" level={3}>
+              {title}
+            </Title>
+          </div>
+          <p className={styles['form-layout-section-description']}>
+            {description}
+          </p>
         </div>
-        <p className={styles['form-layout-section-description']}>
-          {description}
-        </p>
+        <div className={styles['confirmation-actions']}>
+          <Link
+            className={cn(styles['confirmation-action'], 'secondary-link')}
+            to="/offres/collectives"
+          >
+            Voir mes offres
+          </Link>
+          <Link
+            className={cn('primary-button', styles['confirmation-action'])}
+            to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
+          >
+            Créer une nouvelle offre
+          </Link>
+        </div>
       </div>
-      <div className={styles['confirmation-actions']}>
-        <Link
-          className={cn(styles['confirmation-action'], 'secondary-link')}
-          to="/offres/collectives"
-        >
-          Voir mes offres
-        </Link>
-        <Link
-          className={cn('primary-button', styles['confirmation-action'])}
-          to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
-        >
-          Créer une nouvelle offre
-        </Link>
-      </div>
+      <Banner
+        type="notification-info"
+        className={styles['confirmation-banner']}
+      >
+        <h2 className={styles['confirmation-banner-title']}>
+          Quelle est la prochaine étape ?
+        </h2>
+        {isShowcase ? (
+          <>
+            L’enseignant doit préréserver votre offre depuis son compte ADAGE.
+            <br />
+            Une fois la préréservation faite, vous verrez une réservation
+            portant le statut préréservé.
+          </>
+        ) : (
+          <>
+            Les enseignants intéressés par votre offre vitrine vous contacterons
+            par mail ou téléphone. <br />
+            Après un accord mutuel, vous pourrez créer une offre réservable en
+            complétant la date, le prix et l’établissement convenus avec
+            l’enseignant. <br />
+            Cette nouvelle offre apparaitra sur ADAGE et pourra être
+            pré-réservée par l’enseignant.
+          </>
+        )}
+      </Banner>
     </div>
   )
 }
