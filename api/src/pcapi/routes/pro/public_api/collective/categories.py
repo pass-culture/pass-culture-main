@@ -17,7 +17,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @lru_cache(maxsize=1)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
-    tags=["API offres collectives"],
+    tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
             {
@@ -52,7 +52,7 @@ def list_categories() -> public_api_collective_offers_serialize.CollectiveOffers
 @lru_cache(maxsize=1)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
-    tags=["API offres collectives"],
+    tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
             {

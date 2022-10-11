@@ -699,7 +699,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des catégories d'offres proposées.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 }
             },
             "/v2/collective/educational-domains": {
@@ -730,7 +730,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 }
             },
             "/v2/collective/educational-institutions/": {
@@ -812,7 +812,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste établissements scolaires.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 }
             },
             "/v2/collective/offers/": {
@@ -884,7 +884,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 },
                 "post": {
                     "description": "",
@@ -938,7 +938,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Création d'une offre collective.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 },
             },
             "/v2/collective/offers/{offer_id}": {
@@ -989,7 +989,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récuperation de l'offre collective avec l'identifiant offer_id.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 },
                 "patch": {
                     "description": "",
@@ -1051,7 +1051,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Édition d'une offre collective.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 },
             },
             "/v2/collective/student-levels": {
@@ -1084,7 +1084,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 }
             },
             "/v2/collective/subcategories": {
@@ -1117,7 +1117,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des sous-catégories d'offres proposées a un public collectif.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 }
             },
             "/v2/collective/venues": {
@@ -1148,7 +1148,7 @@ def test_public_api(client, app):
                         },
                     },
                     "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
-                    "tags": ["API offres collectives"],
+                    "tags": ["API offres collectives BETA"],
                 }
             },
             "/v2/venue/{venue_id}/stocks": {
@@ -1188,5 +1188,5 @@ def test_public_api(client, app):
         },
         "security": [],
         "servers": [{"url": settings.API_URL}],
-        "tags": [{"name": "API offres collectives"}, {"name": "API Contremarque"}, {"name": "API Stocks"}],
+        "tags": [{"name": "API offres collectives BETA"}, {"name": "API Contremarque"}, {"name": "API Stocks"}],
     }
