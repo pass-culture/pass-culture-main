@@ -11,7 +11,6 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprint.pro_public_api_v2.route("/collective/educational-domains", methods=["GET"])
-@api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
@@ -30,6 +29,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         )
     ),
 )
+@api_key_required
 @cached_view(prefix="pro_public_api_v2")
 def list_educational_domains() -> public_api_collective_offers_serialize.CollectiveOffersListDomainsResponseModel:
     # in French, to be used by Swagger for the API documentation

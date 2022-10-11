@@ -13,7 +13,6 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprint.pro_public_api_v2.route("/collective/categories", methods=["GET"])
-@api_key_required
 @lru_cache(maxsize=1)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
@@ -33,6 +32,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         )
     ),
 )
+@api_key_required
 def list_categories() -> public_api_collective_offers_serialize.CollectiveOffersListCategoriesResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des catégories d'offres proposées."""
@@ -48,7 +48,6 @@ def list_categories() -> public_api_collective_offers_serialize.CollectiveOffers
 
 
 @blueprint.pro_public_api_v2.route("/collective/subcategories", methods=["GET"])
-@api_key_required
 @lru_cache(maxsize=1)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
@@ -68,6 +67,7 @@ def list_categories() -> public_api_collective_offers_serialize.CollectiveOffers
         )
     ),
 )
+@api_key_required
 def list_subcategories() -> public_api_collective_offers_serialize.CollectiveOffersListSubCategoriesResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des sous-catégories d'offres proposées a un public collectif."""

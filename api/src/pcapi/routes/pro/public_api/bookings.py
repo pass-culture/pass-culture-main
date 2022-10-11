@@ -112,7 +112,6 @@ def patch_booking_use_by_token(token: str) -> None:
 @blueprint.pro_public_api_v2.route("/bookings/cancel/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
-@login_or_api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API Contremarque"],
@@ -131,6 +130,7 @@ def patch_booking_use_by_token(token: str) -> None:
         )
     ),
 )
+@login_or_api_key_required
 def patch_cancel_booking_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
     """Annulation d'une réservation.
@@ -163,7 +163,6 @@ def patch_cancel_booking_by_token(token: str) -> None:
 @blueprint.pro_public_api_v2.route("/bookings/keep/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
-@login_or_api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API Contremarque"],
@@ -181,6 +180,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
         )
     ),
 )
+@login_or_api_key_required
 def patch_booking_keep_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
     """Annulation de la validation d'une réservation."""
