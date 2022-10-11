@@ -307,9 +307,13 @@ def price_bookings() -> None:
 
 
 @blueprint.cli.command("generate_cashflows_and_payment_files")
+@click.option("--override-feature-flag", help="Override feature flag", is_flag=True, default=False)
 @log_cron_with_transaction
-@cron_require_feature(FeatureToggle.GENERATE_CASHFLOWS_BY_CRON)
-def generate_cashflows_and_payment_files() -> None:
+def generate_cashflows_and_payment_files(override_feature_flag: bool) -> None:
+    flag = FeatureToggle.GENERATE_CASHFLOWS_BY_CRON
+    if not override_feature_flag and not flag.is_active():
+        logger.info("%s is not active, cronjob will not run.", flag.name)
+        return
     last_day = datetime.date.today() - datetime.timedelta(days=1)
     cutoff = finance_utils.get_cutoff_as_datetime(last_day)
     finance_api.generate_cashflows_and_payment_files(cutoff)
