@@ -13,7 +13,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
-    tags=["API offres collectives"],
+    tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
             {

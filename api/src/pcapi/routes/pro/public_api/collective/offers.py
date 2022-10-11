@@ -26,7 +26,7 @@ BASE_CODE_DESCRIPTIONS = {
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
-    tags=["API offres collectives"],
+    tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
             BASE_CODE_DESCRIPTIONS
@@ -65,7 +65,7 @@ def get_collective_offers_public(
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
-    tags=["API offres collectives"],
+    tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
             BASE_CODE_DESCRIPTIONS
@@ -115,7 +115,7 @@ def get_collective_offer_public(
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
-    tags=["API offres collectives"],
+    tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
             {
@@ -186,7 +186,7 @@ def post_collective_offer_public(
 @api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
-    tags=["API offres collectives"],
+    tags=["API offres collectives BETA"],
     resp=SpectreeResponse(
         **(
             {
