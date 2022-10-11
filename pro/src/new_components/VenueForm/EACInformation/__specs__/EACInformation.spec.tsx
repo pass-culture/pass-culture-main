@@ -11,10 +11,6 @@ import { configureTestStore } from 'store/testUtils'
 
 import EACInformation from '../EACInformation'
 
-const CREATION_TEXT = /Renseigner mes informations/
-const UPDATE_TEXT = /Modifier mes informations/
-const INFORMATION_BANNER_TEXT = /Une fois votre lieu créé/
-
 const renderEACInformation = async ({
   venue,
   isCreatingVenue,
@@ -32,13 +28,13 @@ const renderEACInformation = async ({
 }
 
 describe('components | EACInformation', () => {
-  it('should have the button disabled', async () => {
+  it('should not be able to submit when creating a venue', async () => {
     await renderEACInformation({
       isCreatingVenue: true,
       venue: null,
     })
 
-    expect(screen.queryByText(CREATION_TEXT)).toHaveAttribute(
+    expect(screen.queryByText(/Renseigner mes informations/)).toHaveAttribute(
       'aria-disabled',
       'true'
     )
@@ -54,7 +50,9 @@ describe('components | EACInformation', () => {
       venue: venue,
     })
 
-    expect(await screen.queryByText(CREATION_TEXT)).toBeInTheDocument()
+    expect(
+      await screen.queryByText(/Renseigner mes informations/)
+    ).toBeInTheDocument()
   })
 
   it('should have the button with update text', async () => {
@@ -70,7 +68,9 @@ describe('components | EACInformation', () => {
       venue: venue,
     })
 
-    expect(await screen.queryByText(UPDATE_TEXT)).toBeInTheDocument()
+    expect(
+      await screen.queryByText(/Modifier mes informations/)
+    ).toBeInTheDocument()
   })
 
   it('should have the information banner', async () => {
@@ -80,7 +80,7 @@ describe('components | EACInformation', () => {
     })
 
     expect(
-      await screen.queryByText(INFORMATION_BANNER_TEXT)
+      await screen.queryByText(/Une fois votre lieu créé/)
     ).toBeInTheDocument()
   })
 
@@ -98,7 +98,7 @@ describe('components | EACInformation', () => {
     })
 
     expect(
-      await screen.queryByText(INFORMATION_BANNER_TEXT)
+      await screen.queryByText(/Une fois votre lieu créé/)
     ).not.toBeInTheDocument()
   })
 })
