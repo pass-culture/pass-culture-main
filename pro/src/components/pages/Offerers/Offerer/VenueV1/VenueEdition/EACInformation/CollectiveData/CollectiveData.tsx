@@ -11,14 +11,10 @@ import styles from './CollectiveData.module.scss'
 
 const CollectiveData = ({
   venue,
-  vueStyles,
 }: {
   venue: GetVenueResponseModel
-  vueStyles?: { [key: string]: string }
 }): JSX.Element => {
   const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
-
-  vueStyles = vueStyles || styles
 
   useEffect(() => {
     getCulturalPartnersAdapter().then(response => {
@@ -29,8 +25,8 @@ const CollectiveData = ({
   return (
     <>
       {venue.collectiveDescription && (
-        <div className={vueStyles['collective-data-row']}>
-          <Title className={vueStyles['collective-data-title']} level={4}>
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
             Présentation de vos informations EAC :{' '}
           </Title>
           {venue.collectiveDescription}
@@ -38,8 +34,8 @@ const CollectiveData = ({
       )}
 
       {venue.collectiveStudents && venue.collectiveStudents?.length > 0 && (
-        <div className={vueStyles['collective-data-row']}>
-          <Title className={vueStyles['collective-data-title']} level={4}>
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
             Public cible :{' '}
           </Title>
           {venue.collectiveStudents?.join(', ')}
@@ -49,8 +45,8 @@ const CollectiveData = ({
       {
         /* istanbul ignore next: DEBT, TO FIX */
         venue.collectiveWebsite && (
-          <div className={vueStyles['collective-data-row']}>
-            <Title className={vueStyles['collective-data-title']} level={4}>
+          <div className={styles['collective-data-row']}>
+            <Title className={styles['collective-data-title']} level={4}>
               URL de votre site web :{' '}
             </Title>
             {venue.collectiveWebsite}
@@ -59,8 +55,8 @@ const CollectiveData = ({
       }
 
       {venue.collectiveDomains && venue.collectiveDomains.length > 0 && (
-        <div className={vueStyles['collective-data-row']}>
-          <Title className={vueStyles['collective-data-title']} level={4}>
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
             Domaines artistiques et culturels :{' '}
           </Title>
           {venue.collectiveDomains.map(domain => domain.name).join(', ')}
@@ -71,8 +67,8 @@ const CollectiveData = ({
         /* istanbul ignore next: DEBT, TO FIX */
         venue.collectiveInterventionArea &&
           venue.collectiveInterventionArea.length > 0 && (
-            <div className={vueStyles['collective-data-row']}>
-              <Title className={vueStyles['collective-data-title']} level={4}>
+            <div className={styles['collective-data-row']}>
+              <Title className={styles['collective-data-title']} level={4}>
                 Zone de mobilité :{' '}
               </Title>
               {getInterventionAreaLabels(venue.collectiveInterventionArea)}
@@ -81,8 +77,8 @@ const CollectiveData = ({
       }
 
       {venue.collectiveLegalStatus && (
-        <div className={vueStyles['collective-data-row']}>
-          <Title className={vueStyles['collective-data-title']} level={4}>
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
             Statut :{' '}
           </Title>
           <>{venue.collectiveLegalStatus.name}</>
@@ -92,8 +88,8 @@ const CollectiveData = ({
       {
         /* istanbul ignore next: DEBT, TO FIX */
         venue.collectiveNetwork && venue.collectiveNetwork.length > 0 && (
-          <div className={vueStyles['collective-data-row']}>
-            <Title className={vueStyles['collective-data-title']} level={4}>
+          <div className={styles['collective-data-row']}>
+            <Title className={styles['collective-data-title']} level={4}>
               Réseau partenaire :{' '}
             </Title>
             {venue.collectiveNetwork
@@ -112,8 +108,8 @@ const CollectiveData = ({
       {
         /* istanbul ignore next: DEBT, TO FIX */
         venue.collectivePhone && (
-          <div className={vueStyles['collective-data-row']}>
-            <Title className={vueStyles['collective-data-title']} level={4}>
+          <div className={styles['collective-data-row']}>
+            <Title className={styles['collective-data-title']} level={4}>
               Téléphone :{' '}
             </Title>
             {venue.collectivePhone}
@@ -122,8 +118,8 @@ const CollectiveData = ({
       }
 
       {venue.collectiveEmail && (
-        <div className={vueStyles['collective-data-row']}>
-          <Title className={vueStyles['collective-data-title']} level={4}>
+        <div className={styles['collective-data-row']}>
+          <Title className={styles['collective-data-title']} level={4}>
             E-mail :{' '}
           </Title>
           {venue.collectiveEmail}
