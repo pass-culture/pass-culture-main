@@ -1541,10 +1541,6 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
         groups.append(invoice_group)
     reimbursements_by_venue = get_reimbursements_by_venue(invoice)
 
-    reimbursement_point = None
-    reimbursement_point_name = None
-    reimbursement_point_iban = None
-
     reimbursement_point = invoice.reimbursementPoint
     if reimbursement_point is None:
         raise ValueError("Could not generate invoice without reimbursement point")
