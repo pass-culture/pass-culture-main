@@ -38,6 +38,8 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const mockLogEvent = jest.fn()
+const mockCanUpdatedOfferStatus = jest.fn().mockReturnValue(true)
+const mockCanDeleteOffers = jest.fn().mockReturnValue(true)
 
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props: IActionBarProps
@@ -52,6 +54,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
   beforeEach(() => {
     props = {
+      canUpdateOffersStatus: mockCanUpdatedOfferStatus,
       refreshOffers: jest.fn(),
       selectedOfferIds: ['testId1', 'testId2'],
       clearSelectedOfferIds: jest.fn(),
@@ -145,6 +148,28 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       expect(props.refreshOffers).toHaveBeenCalled()
       expect(notifySuccess).toHaveBeenCalledWith(
         '2 offres ont bien été publiées'
+      )
+    })
+    it('should not activate offers when a draft is selected', async () => {
+      // given
+      const notifyError = jest.fn()
+      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+        ...mockUseNotification,
+        error: notifyError,
+      }))
+      mockCanUpdatedOfferStatus.mockReturnValueOnce(false)
+
+      renderActionsBar({ props, store })
+
+      // when
+      await userEvent.click(screen.getByText('Publier'))
+
+      // then
+      expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
+      expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
+      expect(props.refreshOffers).not.toHaveBeenCalled()
+      expect(notifyError).toHaveBeenCalledWith(
+        'Vous ne pouvez pas publier des brouillons depuis cette liste'
       )
     })
   })
