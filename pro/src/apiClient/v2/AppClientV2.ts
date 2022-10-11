@@ -6,7 +6,7 @@ import type { OpenAPIConfig } from './core/OpenAPI';
 import { FetchHttpRequest } from './core/FetchHttpRequest';
 
 import { ApiContremarqueService } from './services/ApiContremarqueService';
-import { ApiOffresCollectivesService } from './services/ApiOffresCollectivesService';
+import { ApiOffresCollectivesBetaService } from './services/ApiOffresCollectivesBetaService';
 import { ApiStocksService } from './services/ApiStocksService';
 
 type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
@@ -14,7 +14,7 @@ type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 export class AppClientV2 {
 
   public readonly apiContremarque: ApiContremarqueService;
-  public readonly apiOffresCollectives: ApiOffresCollectivesService;
+  public readonly apiOffresCollectivesBeta: ApiOffresCollectivesBetaService;
   public readonly apiStocks: ApiStocksService;
 
   public readonly request: BaseHttpRequest;
@@ -33,7 +33,7 @@ export class AppClientV2 {
     });
 
     this.apiContremarque = new ApiContremarqueService(this.request);
-    this.apiOffresCollectives = new ApiOffresCollectivesService(this.request);
+    this.apiOffresCollectivesBeta = new ApiOffresCollectivesBetaService(this.request);
     this.apiStocks = new ApiStocksService(this.request);
   }
 }
