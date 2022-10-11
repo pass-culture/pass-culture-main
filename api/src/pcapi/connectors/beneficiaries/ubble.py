@@ -1,3 +1,4 @@
+from contextlib import suppress
 import logging
 import typing
 import urllib.parse
@@ -8,6 +9,7 @@ from urllib3 import exceptions as urllib3_exceptions
 from pcapi import settings
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.core.users import models as users_models
 from pcapi.utils import requests
 
 
@@ -50,6 +52,14 @@ def _get_data_attribute(response: ubble_fraud_models.UbbleIdentificationResponse
     return response["data"]["attributes"].get(name)  # type: ignore [index]
 
 
+def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | None:
+    if not ubble_gender:
+        return None
+    with suppress(KeyError):
+        return users_models.GenderEnum[ubble_gender]
+    return None
+
+
 def _extract_useful_content_from_response(
     response: ubble_fraud_models.UbbleIdentificationResponse,
 ) -> ubble_fraud_models.UbbleContent:
@@ -79,7 +89,7 @@ def _extract_useful_content_from_response(
         id_document_number=getattr(documents, "document_number", None),
         identification_id=identification_id,
         identification_url=identification_url,
-        gender=getattr(documents, "gender", None),
+        gender=_parse_ubble_gender(getattr(documents, "gender", None)),
         last_name=getattr(documents, "last_name", None),
         married_name=getattr(documents, "married_name", None),
         ove_score=getattr(document_checks, "ove_score", None),
