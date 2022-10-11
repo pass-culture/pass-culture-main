@@ -31,7 +31,9 @@
     * since there is a placeholder for the footer under the input
     */
     .field-layout-label {
-      margin-bottom: rem.torem(forms.$input-space-before-error + forms.$input-error-reserved-space);
+      margin-bottom: rem.torem(
+        forms.$input-space-before-error + forms.$input-error-reserved-space
+      );
       margin-right: rem.torem(8px);
     }
   }
@@ -51,6 +53,9 @@
 
   &-error {
     flex: 1;
+    svg {
+      flex: 1 0 auto;
+    }
   }
 
   &-counter {
