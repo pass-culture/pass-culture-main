@@ -52,7 +52,7 @@ class ShowCDS(BaseModel):
         allow_population_by_field_name = True
 
     @validator("is_empty_seatmap")
-    def string_with_no_digit_to_true(cls, value: str | bool) -> bool:  # pylint: disable=no-self-argument
+    def string_with_no_digit_to_true(cls, value: str | bool) -> bool:
         """
         2022/08/02 a seatmap should be similar to [[1,1,1,0],[1,1,1,0]]
         when empty, it can be "[[],[]]" or ""

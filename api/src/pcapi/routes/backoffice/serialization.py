@@ -107,13 +107,13 @@ class PublicAccountUpdateRequest(BaseModel):
     city: str | None
 
     @pydantic.validator("email", pre=True)
-    def validate_email(cls, email: str) -> str:  # pylint: disable=no-self-argument
+    def validate_email(cls, email: str) -> str:
         if not email:
             return email
         return sanitize_email(email)
 
     @pydantic.validator("phoneNumber")
-    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+    def validate_phone_number(cls, phone_number: str) -> str:
         if not phone_number:
             return phone_number
 
