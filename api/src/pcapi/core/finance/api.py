@@ -348,6 +348,10 @@ def price_booking(
 ) -> models.Pricing | None:
     if not booking.venue.pricing_point_links:
         return None
+    # Handle bookings that were used when we fetched them in `price_bookings()`
+    # but have been marked as unused since then.
+    if not booking.dateUsed:
+        return None
     pricing_point_id = _get_pricing_point_link(booking).pricingPointId
 
     is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
