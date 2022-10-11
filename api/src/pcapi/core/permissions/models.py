@@ -73,8 +73,8 @@ def sync_db_permissions(session: sa.orm.Session) -> None:
 role_permission_table = sa.Table(
     "role_permission",
     Base.metadata,
-    sa.Column("roleId", sa.ForeignKey("role.id")),
-    sa.Column("permissionId", sa.ForeignKey("permission.id")),
+    sa.Column("roleId", sa.ForeignKey("role.id", ondelete="CASCADE")),
+    sa.Column("permissionId", sa.ForeignKey("permission.id", ondelete="CASCADE")),
     sa.UniqueConstraint("roleId", "permissionId"),
 )
 
