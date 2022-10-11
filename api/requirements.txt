@@ -45,7 +45,6 @@ pydantic[email]==1.10.2
 PyJWT[crypto]==2.4.0
 pylint
 pylint-pydantic
-pylint-strict-informational
 pysaml2
 pytest==6.2.5
 pytest-cov==2.10.1
