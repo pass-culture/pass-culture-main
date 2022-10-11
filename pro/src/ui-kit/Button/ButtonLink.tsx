@@ -55,16 +55,18 @@ const ButtonLink = ({
         className={classNames}
         href={to}
         onClick={e => {
-          /* istanbul ignore next */
+          /* istanbul ignore next: Graphic variations */
           isDisabled ? e.preventDefault() : onClick?.(e)
         }}
         {...(isDisabled
-          ? /* istanbul ignore next */ { 'aria-disabled': true }
-          : /* istanbul ignore next */ {})}
+          ? /* istanbul ignore next: Graphic variations */ {
+              'aria-disabled': true,
+            }
+          : /* istanbul ignore next: Graphic variations */ {})}
         {...linkProps}
       >
         {
-          /* istanbul ignore next */
+          /* istanbul ignore next: Graphic variations */
           Icon && iconPosition === IconPositionEnum.LEFT && (
             <Icon
               className={cn(styles['button-icon'], styles['button-icon-left'])}
@@ -73,7 +75,7 @@ const ButtonLink = ({
         }
         {children}
         {
-          /* istanbul ignore next */
+          /* istanbul ignore next: Graphic variations */
           Icon && iconPosition === IconPositionEnum.RIGHT && (
             <Icon
               className={cn(styles['button-icon'], styles['button-icon-right'])}
@@ -88,14 +90,14 @@ const ButtonLink = ({
     <Link
       className={classNames}
       onClick={e =>
-        /* istanbul ignore next */
+        /* istanbul ignore next: Graphic variations */
         isDisabled ? e.preventDefault() : onClick?.(e)
       }
       to={link.to}
       {...(isDisabled ? { 'aria-disabled': true } : {})}
     >
       {
-        /* istanbul ignore next */
+        /* istanbul ignore next: Graphic variations */
         Icon && iconPosition === IconPositionEnum.LEFT && (
           <Icon
             className={cn(styles['button-icon'], styles['button-icon-left'])}
@@ -104,7 +106,7 @@ const ButtonLink = ({
       }
       {children}
       {
-        /* istanbul ignore next */
+        /* istanbul ignore next: Graphic variations */
         Icon && iconPosition === IconPositionEnum.RIGHT && (
           <Icon
             className={cn(styles['button-icon'], styles['button-icon-right'])}
