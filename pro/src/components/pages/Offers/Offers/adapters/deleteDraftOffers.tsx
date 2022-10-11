@@ -1,6 +1,9 @@
 import { api } from 'apiClient/api'
 
-import { computeDeletionSuccessMessage } from './utils'
+import {
+  computeDeletionErrorMessage,
+  computeDeletionSuccessMessage,
+} from './utils'
 
 type UpdateAllCollectiveOffersActiveStatusAdapter = Adapter<
   {
@@ -27,7 +30,7 @@ export const deleteDraftOffersAdapter: UpdateAllCollectiveOffersActiveStatusAdap
       return {
         isOk: false,
         payload: null,
-        message: `Une erreur est survenue lors de la suppression du brouillon`,
+        message: computeDeletionErrorMessage(nbSelectedOffers),
       }
     }
   }
