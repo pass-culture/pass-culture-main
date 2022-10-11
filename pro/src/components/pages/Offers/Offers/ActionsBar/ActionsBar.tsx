@@ -16,7 +16,7 @@ import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateA
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
-import DeactivationConfirmDialog from './ConfirmDialog.tsx/DeactivationConfirmDialog'
+import DeactivationConfirmDialog from './ConfirmDialog/DeactivationConfirmDialog'
 
 export interface IActionBarProps {
   areAllOffersSelected: boolean
@@ -26,6 +26,7 @@ export interface IActionBarProps {
   selectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
+  canUpdateOffersStatus: (selectedOfferIds: string[]) => boolean
 }
 
 const getUpdateActiveStatusAdapter = (
@@ -72,6 +73,7 @@ const ActionsBar = ({
   areAllOffersSelected,
   nbSelectedOffers,
   audience,
+  canUpdateOffersStatus,
 }: IActionBarProps): JSX.Element => {
   const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
@@ -114,7 +116,13 @@ const ActionsBar = ({
   )
 
   const handleActivate = useCallback(() => {
-    handleUpdateOffersStatus(true)
+    if (canUpdateOffersStatus(selectedOfferIds)) {
+      handleUpdateOffersStatus(true)
+    } else {
+      notify.error(
+        'Vous ne pouvez pas publier des brouillons depuis cette liste'
+      )
+    }
   }, [handleUpdateOffersStatus])
 
   const handleDeactivate = useCallback(() => {
