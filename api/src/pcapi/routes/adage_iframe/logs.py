@@ -7,8 +7,8 @@ from pcapi.serialization.decorator import spectree_serialize
 
 
 @blueprint.adage_iframe.route("/logs/catalog-view", methods=["POST"])
-@adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
 def log_catalog_view(
     authenticated_information: AuthenticatedInformation,
     body: serialization.CatalogViewBody,
@@ -24,8 +24,8 @@ def log_catalog_view(
 
 
 @blueprint.adage_iframe.route("/logs/search-button", methods=["POST"])
-@adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
 def log_search_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.SearchBody,
@@ -39,8 +39,8 @@ def log_search_button_click(
 
 
 @blueprint.adage_iframe.route("/logs/offer-detail", methods=["POST"])
-@adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
 def log_offer_details_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.StockIdBody,
@@ -54,8 +54,8 @@ def log_offer_details_button_click(
 
 
 @blueprint.adage_iframe.route("/logs/offer-template-detail", methods=["POST"])
-@adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
 def log_offer_template_details_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.OfferIdBody,
@@ -69,8 +69,8 @@ def log_offer_template_details_button_click(
 
 
 @blueprint.adage_iframe.route("/logs/booking-modal-button", methods=["POST"])
-@adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
 def log_booking_modal_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.StockIdBody,
@@ -84,8 +84,8 @@ def log_booking_modal_button_click(
 
 
 @blueprint.adage_iframe.route("/logs/contact-modal-button", methods=["POST"])
-@adage_jwt_required
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
 def log_contact_modal_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.OfferIdBody,

@@ -11,7 +11,6 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 @blueprint.pro_public_api_v2.route("/collective/venues", methods=["GET"])
-@api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
@@ -30,6 +29,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
         )
     ),
 )
+@api_key_required
 def list_venues() -> public_api_collective_offers_serialize.CollectiveOffersListVenuesResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.

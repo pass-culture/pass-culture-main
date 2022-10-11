@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.adage_iframe.route("/offers/categories", methods=["GET"])
-@adage_jwt_required
 @spectree_serialize(response_model=serializers.CategoriesResponseModel, api=blueprint.api)
+@adage_jwt_required
 def get_educational_offers_categories(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.CategoriesResponseModel:
@@ -34,8 +34,8 @@ def get_educational_offers_categories(
 
 
 @blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])
-@adage_jwt_required
 @spectree_serialize(response_model=serializers.CollectiveOfferResponseModel, api=blueprint.api, on_error_statuses=[404])
+@adage_jwt_required
 def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferResponseModel:
@@ -48,10 +48,10 @@ def get_collective_offer(
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
-@adage_jwt_required
 @spectree_serialize(
     response_model=serializers.CollectiveOfferTemplateResponseModel, api=blueprint.api, on_error_statuses=[404]
 )
+@adage_jwt_required
 def get_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferTemplateResponseModel:
