@@ -562,6 +562,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
                     "summary": "Annulation d'une réservation.",
                     "tags": ["API Contremarque"],
                 }
@@ -594,6 +595,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
                     "summary": "Annulation de la validation d'une réservation.",
                     "tags": ["API Contremarque"],
                 }
@@ -698,6 +700,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récupération de la liste des catégories d'offres proposées.",
                     "tags": ["API offres collectives BETA"],
                 }
@@ -729,6 +732,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
                     "tags": ["API offres collectives BETA"],
                 }
@@ -811,6 +815,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récupération de la liste établissements scolaires.",
                     "tags": ["API offres collectives BETA"],
                 }
@@ -883,6 +888,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.",
                     "tags": ["API offres collectives BETA"],
                 },
@@ -937,6 +943,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Création d'une offre collective.",
                     "tags": ["API offres collectives BETA"],
                 },
@@ -988,6 +995,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récuperation de l'offre collective avec l'identifiant offer_id.",
                     "tags": ["API offres collectives BETA"],
                 },
@@ -1050,6 +1058,7 @@ def test_public_api(client, app):
                             "description": "Cetains champs ne peuvent pas être édités selon l'état de l'offre",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Édition d'une offre collective.",
                     "tags": ["API offres collectives BETA"],
                 },
@@ -1083,6 +1092,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
                     "tags": ["API offres collectives BETA"],
                 }
@@ -1116,6 +1126,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récupération de la liste des sous-catégories d'offres proposées a un public collectif.",
                     "tags": ["API offres collectives BETA"],
                 }
@@ -1147,6 +1158,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
                     "tags": ["API offres collectives BETA"],
                 }
@@ -1181,6 +1193,7 @@ def test_public_api(client, app):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"ApiKeyAuth": []}],
                     "summary": "Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.",
                     "tags": ["API Stocks"],
                 }

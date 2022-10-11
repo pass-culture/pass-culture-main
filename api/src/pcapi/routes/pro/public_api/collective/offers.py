@@ -23,7 +23,6 @@ BASE_CODE_DESCRIPTIONS = {
 
 
 @blueprint.pro_public_api_v2.route("/collective/offers/", methods=["GET"])
-@api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
@@ -39,6 +38,7 @@ BASE_CODE_DESCRIPTIONS = {
         )
     ),
 )
+@api_key_required
 def get_collective_offers_public(
     query: public_api_collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> public_api_collective_offers_serialize.CollectiveOffersListResponseModel:
@@ -62,7 +62,6 @@ def get_collective_offers_public(
 
 
 @blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["GET"])
-@api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
@@ -78,6 +77,7 @@ def get_collective_offers_public(
         )
     ),
 )
+@api_key_required
 def get_collective_offer_public(
     offer_id: int,
 ) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
@@ -112,7 +112,6 @@ def get_collective_offer_public(
 
 
 @blueprint.pro_public_api_v2.route("/collective/offers/", methods=["POST"])
-@api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
@@ -140,6 +139,7 @@ def get_collective_offer_public(
         )
     ),
 )
+@api_key_required
 def post_collective_offer_public(
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> public_api_collective_offers_serialize.GetPublicCollectiveOfferResponseModel:
@@ -183,7 +183,6 @@ def post_collective_offer_public(
 
 
 @blueprint.pro_public_api_v2.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
-@api_key_required
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
@@ -215,6 +214,7 @@ def post_collective_offer_public(
         )
     ),
 )
+@api_key_required
 def patch_collective_offer_public(
     offer_id: int,
     body: public_api_collective_offers_serialize.PatchCollectiveOfferBodyModel,

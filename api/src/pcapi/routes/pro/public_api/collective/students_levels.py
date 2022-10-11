@@ -11,7 +11,6 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprint.pro_public_api_v2.route("/collective/student-levels", methods=["GET"])
-@api_key_required
 @lru_cache(maxsize=1)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
@@ -31,6 +30,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         )
     ),
 )
+@api_key_required
 def list_students_levels() -> public_api_collective_offers_serialize.CollectiveOffersListStudentLevelsResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées."""
