@@ -163,11 +163,11 @@ class UserProfileResponse(BaseModel):
         use_enum_values = True
 
     @validator("publicName", pre=True)
-    def format_public_name(cls, publicName: str) -> str | None:  # pylint: disable=no-self-argument
+    def format_public_name(cls, publicName: str) -> str | None:
         return publicName if publicName != VOID_PUBLIC_NAME else None
 
     @validator("firstName", pre=True)
-    def format_first_name(cls, firstName: str | None) -> str | None:  # pylint: disable=no-self-argument
+    def format_first_name(cls, firstName: str | None) -> str | None:
         return firstName if firstName != VOID_FIRST_NAME else None
 
     @staticmethod
@@ -265,7 +265,7 @@ class UserProfilingFraudRequest(BaseModel):
     agentType: AgentType | None
 
     @root_validator()
-    def session_id_alphanumerics(cls, values: dict[str, Any]) -> dict[str, Any]:  # pylint: disable=no-self-argument
+    def session_id_alphanumerics(cls, values: dict[str, Any]) -> dict[str, Any]:
         session_id = values.get("sessionId") or values.get("session_id")
         if not session_id:
             raise ValueError("L'identifiant de session est manquant")
@@ -277,7 +277,7 @@ class UserProfilingFraudRequest(BaseModel):
         return values
 
     @validator("agentType", always=True)
-    def agent_type_validation(cls, agent_type: str) -> str:  # pylint: disable=no-self-argument
+    def agent_type_validation(cls, agent_type: str) -> str:
         if agent_type is None:
             agent_type = AgentType.AGENT_MOBILE
         if agent_type not in (AgentType.BROWSER_COMPUTER, AgentType.BROWSER_MOBILE, AgentType.AGENT_MOBILE):

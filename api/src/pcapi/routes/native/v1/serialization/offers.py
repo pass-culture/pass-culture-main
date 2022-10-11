@@ -221,7 +221,7 @@ class OfferReportRequest(BaseModel):
     custom_reason: str | None
 
     @validator("custom_reason")
-    def custom_reason_must_not_be_too_long(cls, content: str | None) -> str | None:  # pylint: disable=no-self-argument
+    def custom_reason_must_not_be_too_long(cls, content: str | None) -> str | None:
         if not content:
             return None
 
@@ -231,7 +231,7 @@ class OfferReportRequest(BaseModel):
         return content
 
     @validator("reason")
-    def reason_is_valid_enum_value(cls, reason: str) -> str:  # pylint: disable=no-self-argument
+    def reason_is_valid_enum_value(cls, reason: str) -> str:
         if reason not in {r.value for r in Reason}:
             raise ValueError("unknown reason")
         return reason

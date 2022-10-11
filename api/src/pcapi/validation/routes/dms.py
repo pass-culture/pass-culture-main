@@ -18,7 +18,7 @@ class DMSWebhookRequest(pydantic.BaseModel):
     updated_at: datetime.datetime
 
     @pydantic.validator("updated_at", pre=True)
-    def validate_udpated_at(cls, value):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def validate_udpated_at(cls, value):  # type: ignore [no-untyped-def]
         return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S %z")
 
 
