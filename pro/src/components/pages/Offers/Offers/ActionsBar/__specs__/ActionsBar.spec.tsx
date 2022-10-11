@@ -33,6 +33,7 @@ const renderActionsBar = ({ props, store }: IRenderActionsBar) =>
 jest.mock('apiClient/api', () => ({
   api: {
     patchOffersActiveStatus: jest.fn().mockResolvedValue({}),
+    deleteDraftOffers: jest.fn().mockResolvedValue({}),
     patchAllOffersActiveStatus: jest.fn().mockResolvedValue({}),
   },
 }))
@@ -55,6 +56,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
   beforeEach(() => {
     props = {
       canUpdateOffersStatus: mockCanUpdatedOfferStatus,
+      canDeleteOffers: mockCanDeleteOffers,
       refreshOffers: jest.fn(),
       selectedOfferIds: ['testId1', 'testId2'],
       clearSelectedOfferIds: jest.fn(),
@@ -78,7 +80,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     }))
   })
 
-  it('should have buttons to activate and deactivate offers, and to abort action', () => {
+  it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
     // when
     renderActionsBar({ props, store })
 
@@ -90,6 +92,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Désactiver', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Supprimer', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Annuler', { selector: 'button' })
@@ -170,6 +175,53 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       expect(props.refreshOffers).not.toHaveBeenCalled()
       expect(notifyError).toHaveBeenCalledWith(
         'Vous ne pouvez pas publier des brouillons depuis cette liste'
+      )
+    })
+  })
+  describe('on click on "Supprimer" button', () => {
+    it('should delete selected draft offers', async () => {
+      // given
+      const notifySuccess = jest.fn()
+      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+        ...mockUseNotification,
+        success: notifySuccess,
+      }))
+      renderActionsBar({ props, store })
+
+      // when
+      await userEvent.click(screen.getByText('Supprimer'))
+      await userEvent.click(screen.getByText('Supprimer ces brouillons'))
+
+      // then
+      expect(api.deleteDraftOffers).toHaveBeenLastCalledWith({
+        ids: ['testId1', 'testId2'],
+      })
+      expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
+      expect(props.refreshOffers).toHaveBeenCalled()
+      expect(notifySuccess).toHaveBeenCalledWith(
+        '1 brouillon a bien été supprimé'
+      )
+    })
+    it('should not delete offers when a non draft is selected', async () => {
+      // given
+      const notifyError = jest.fn()
+      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+        ...mockUseNotification,
+        error: notifyError,
+      }))
+      mockCanDeleteOffers.mockReturnValueOnce(false)
+
+      renderActionsBar({ props, store })
+
+      // when
+      await userEvent.click(screen.getByText('Supprimer'))
+
+      // then
+      expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
+      expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
+      expect(props.refreshOffers).not.toHaveBeenCalled()
+      expect(notifyError).toHaveBeenCalledWith(
+        'Seuls les brouillons peuvent être supprimés'
       )
     })
   })

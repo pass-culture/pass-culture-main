@@ -7,16 +7,20 @@ import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { deleteDraftOffersAdapter } from '../adapters/deleteDraftOffers'
 
 import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateAllCollectiveOffersActiveStatusAdapter'
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
 import DeactivationConfirmDialog from './ConfirmDialog/DeactivationConfirmDialog'
+import DeleteConfirmDialog from './ConfirmDialog/DeleteConfirmDialog'
 
 export interface IActionBarProps {
   areAllOffersSelected: boolean
@@ -27,6 +31,7 @@ export interface IActionBarProps {
   toggleSelectAllCheckboxes: () => void
   audience: Audience
   canUpdateOffersStatus: (selectedOfferIds: string[]) => boolean
+  canDeleteOffers: (selectedOfferIds: string[]) => boolean
 }
 
 const getUpdateActiveStatusAdapter = (
@@ -74,6 +79,7 @@ const ActionsBar = ({
   nbSelectedOffers,
   audience,
   canUpdateOffersStatus,
+  canDeleteOffers,
 }: IActionBarProps): JSX.Element => {
   const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
@@ -140,6 +146,32 @@ const ActionsBar = ({
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
+  const handleDelete = useCallback(async () => {
+    if (!canDeleteOffers(selectedOfferIds)) {
+      notify.error('Seuls les  brouillons peuvent être supprimés')
+      return
+    }
+    const { isOk, message } = await deleteDraftOffersAdapter({
+      ids: selectedOfferIds,
+    })
+    if (!isOk) {
+      notify.error(message)
+    } else {
+      notify.success(message)
+      refreshOffers()
+    }
+    setIsDeleteDialogOpen(false)
+  }, [])
+
+  const handleOpenDeleteDialog = () => {
+    if (!canDeleteOffers(selectedOfferIds)) {
+      notify.error('Seuls les brouillons peuvent être supprimés')
+      return
+    }
+    setIsDeleteDialogOpen(true)
+  }
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
   const Left = () => <span>{computeSelectedOffersLabel()}</span>
 
   const Right = () => (
@@ -150,6 +182,11 @@ const ActionsBar = ({
       >
         Désactiver
       </Button>
+      {audience == Audience.INDIVIDUAL && (
+        <Button onClick={() => handleOpenDeleteDialog()} Icon={TrashFilledIcon}>
+          Supprimer
+        </Button>
+      )}
       <Button onClick={handleActivate} Icon={StatusValidatedIcon}>
         Publier
       </Button>
@@ -167,6 +204,13 @@ const ActionsBar = ({
           nbSelectedOffers={nbSelectedOffers}
           onConfirm={handleDeactivate}
           onCancel={setIsConfirmDialogOpen}
+        />
+      )}
+      {isDeleteDialogOpen && (
+        <DeleteConfirmDialog
+          setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+          nbSelectedOffers={nbSelectedOffers}
+          handleDelete={handleDelete}
         />
       )}
       <ActionsBarSticky>
