@@ -1,18 +1,13 @@
 import React, { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
 
+import useNotification from 'components/hooks/useNotification'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
-import { Events } from 'core/FirebaseEvents/constants'
 import { TSearchFilters } from 'core/Offers/types'
-import { Audience, NBSP } from 'core/shared'
-import useAnalytics from 'hooks/useAnalytics'
-import useNotification from 'hooks/useNotification'
-import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
+import { Audience } from 'core/shared'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import ActionsBarSticky from 'new_components/ActionsBarSticky'
-import ConfirmDialog from 'new_components/ConfirmDialog'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -21,6 +16,7 @@ import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateA
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
+import DeactivationConfirmDialog from './ConfirmDialog.tsx/DeactivationConfirmDialog'
 
 export interface IActionBarProps {
   areAllOffersSelected: boolean
@@ -77,10 +73,8 @@ const ActionsBar = ({
   nbSelectedOffers,
   audience,
 }: IActionBarProps): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
-  const location = useLocation()
 
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
@@ -160,39 +154,12 @@ const ActionsBar = ({
   return (
     <>
       {isConfirmDialogOpen && (
-        <ConfirmDialog
-          cancelText={'Annuler'}
-          confirmText={'Désactiver'}
-          onCancel={() => {
-            logEvent?.(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
-              from: location.pathname,
-              has_selected_all_offers: areAllOffersSelected,
-            })
-            setIsConfirmDialogOpen(false)
-          }}
-          onConfirm={() => {
-            logEvent?.(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
-              from: location.pathname,
-              has_selected_all_offers: areAllOffersSelected,
-            })
-            handleDeactivate()
-          }}
-          icon={EyeIcon}
-          title={
-            nbSelectedOffers === 1
-              ? `Vous avez sélectionné ${nbSelectedOffers} offre,`
-              : `Vous avez sélectionné ${nbSelectedOffers} offres,`
-          }
-          secondTitle={
-            nbSelectedOffers === 1
-              ? `êtes-vous sûr de vouloir la désactiver${NBSP}?`
-              : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`
-          }
-        >
-          {nbSelectedOffers === 1
-            ? 'Dans ce cas, elle ne sera plus visible sur l’application pass Culture.'
-            : 'Dans ce cas, elles ne seront plus visibles sur l’application pass Culture.'}
-        </ConfirmDialog>
+        <DeactivationConfirmDialog
+          areAllOffersSelected={areAllOffersSelected}
+          nbSelectedOffers={nbSelectedOffers}
+          onConfirm={handleDeactivate}
+          onCancel={setIsConfirmDialogOpen}
+        />
       )}
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
