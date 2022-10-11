@@ -21,8 +21,11 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
+from pcapi.core.users.constants import SuspensionEventType
+from pcapi.core.users.constants import SuspensionReason
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -169,6 +172,18 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
+class BackOfficeUserProfile(Base, Model):  # type: ignore[valid-type, misc]
+    __tablename__ = "backoffice_user_profile"
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+
+    userId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
+    user = orm.relationship("User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile")  # type: ignore [misc]
+
+    role = sa.Column(sa.Enum(perm_models.Roles, create_constraint=False), nullable=False)
+
+
 class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     __tablename__ = "user"
 
@@ -218,6 +233,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
+    backoffice_profile = orm.relationship("BackOfficeUserProfile", uselist=False, back_populates="user")  # type: ignore [misc]
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
 
     def _add_role(self, role: UserRole) -> None:
