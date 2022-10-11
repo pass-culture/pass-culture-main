@@ -58,12 +58,14 @@ exclude = """
 
 
 [tool.pylint.MASTER]
+# Include info messages into score so that pylint fails if we have
+# such messages (e.g. "useless-suppression").
+evaluation = "max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention + info) / statement) * 10))"
 extension-pkg-whitelist = [
     "pydantic",
 ]
 load-plugins = [
     "pcapi.utils.pylint",
-    "pylint_strict_informational",
     "pylint_pydantic",
 ]
 
