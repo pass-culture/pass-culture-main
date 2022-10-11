@@ -1765,6 +1765,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "create_account <POST>",
                     "tags": [],
                 }
@@ -2026,6 +2027,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "cookies_consent <POST>",
                     "tags": [],
                 }
@@ -2295,6 +2297,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_offer <GET>",
                     "tags": [],
                 }
@@ -2486,6 +2489,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "validate_user_email <PUT>",
                     "tags": [],
                 }
@@ -2510,6 +2514,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "refresh <POST>",
                     "tags": [],
                 }
@@ -2535,6 +2540,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "request_password_reset <POST>",
                     "tags": [],
                 }
@@ -2561,6 +2567,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "resend_email_validation <POST>",
                     "tags": [],
                 }
@@ -2586,6 +2593,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "reset_password <POST>",
                     "tags": [],
                 }
@@ -2716,6 +2724,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_settings <GET>",
                     "tags": [],
                 }
@@ -2743,6 +2752,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "signin <POST>",
                     "tags": [],
                 }
@@ -2769,6 +2779,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_subcategories <GET>",
                     "tags": [],
                 }
@@ -2795,6 +2806,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_subcategories_v2 <GET>",
                     "tags": [],
                 }
@@ -2891,6 +2903,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_profile_options <GET>",
                     "tags": [],
                 }
@@ -3006,6 +3019,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "validate_email <POST>",
                     "tags": [],
                 }
@@ -3062,6 +3076,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_venue <GET>",
                     "tags": [],
                 }
