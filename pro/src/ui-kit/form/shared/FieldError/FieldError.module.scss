@@ -7,16 +7,16 @@
 
   color: forms.$error-text-color;
   display: flex;
-  line-height: rem.torem(16px);
   text-align: left;
 
   svg {
-    height: rem.torem(15px);
+    height: rem.torem(18px);
     margin-right: rem.torem(4px);
-    width: rem.torem(15px);
+    width: rem.torem(18px);
   }
 
   &-text {
     white-space: pre-wrap;
+    line-height: rem.torem(18px);
   }
 }

@@ -8,6 +8,7 @@ import { ReactComponent as CloseDialogIcon } from 'icons/close-dialog.svg'
 import { ReactComponent as DropdownDisclosureDownBDisabledIcon } from 'icons/dropdown-disclosure-down-b-disabled.svg'
 import { ReactComponent as DropdownDisclosureDownBIcon } from 'icons/dropdown-disclosure-down-b.svg'
 import { ReactComponent as DropdownDisclosureDownSWIcon } from 'icons/dropdown-disclosure-down-s-w.svg'
+import { ReactComponent as ErrorIcon } from 'icons/error.svg'
 import { ReactComponent as IcoAlertGrey } from 'icons/ico-alert-grey.svg'
 import { ReactComponent as IcoAttention } from 'icons/ico-attention.svg'
 import { ReactComponent as IcoBreadcrumbArrowRight } from 'icons/ico-breadcrumb-arrow-right.svg'
@@ -148,6 +149,12 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
+          <ErrorIcon />
+        </td>
+        <td>ico-error</td>
+      </tr>
+      <tr>
+        <td>
           <IcoBreadcrumbArrowRight />
         </td>
         <td>ico-breadcrumb-arrow-right</td>
@@ -156,13 +163,13 @@ export const Icons = () => (
         <td className={styles['with-background']}>
           <IcoMiniArrowRight />
         </td>
-        <td>ico-mini-arrow-right-icon</td>
+        <td>ico-mini-arrow-right</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
           <IcoMiniArrowLeft />
         </td>
-        <td>ico-mini-arrow-left-icon</td>
+        <td>ico-mini-arrow-left</td>
       </tr>
       <tr>
         <td>
