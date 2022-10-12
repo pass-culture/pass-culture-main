@@ -29,7 +29,7 @@ const upsertStocksThingAdapter: TUpdateStocksAdapter = async ({
     })
     return {
       isOk: true,
-      message: '',
+      message: 'Vos modifications ont bien été prises en compte',
       payload: {
         stockIds: response.stockIds.map(
           (stock: StockIdResponseModel) => stock.id

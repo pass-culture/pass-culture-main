@@ -17,7 +17,7 @@ const renderStockThingForm = () => {
     <Formik
       initialValues={STOCK_THING_FORM_DEFAULT_VALUES}
       onSubmit={() => {}}
-      validationSchema={getValidationSchema(new Date())}
+      validationSchema={getValidationSchema(minQuantity)}
     >
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>

@@ -21,6 +21,7 @@ describe('setFormReadOnlyFields', () => {
       isDuo: false,
       isEducational: false,
       isEvent: true,
+      isDigital: false,
       accessibility: {
         [AccessiblityEnum.AUDIO]: true,
         [AccessiblityEnum.MENTAL]: true,

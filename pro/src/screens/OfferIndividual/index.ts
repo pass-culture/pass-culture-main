@@ -1,4 +1,4 @@
 export { Informations } from './Informations'
-export { Stocks } from './Stocks'
+export { StocksThing } from './StocksThing'
 export { Summary } from './Summary'
 export { Template } from './Template'

@@ -37,7 +37,7 @@ const renderStockFormRow =
           alert(`onSubmit with values: ${JSON.stringify(values)}`)
           return Promise.resolve()
         }}
-        validationSchema={getValidationSchema(today)}
+        validationSchema={getValidationSchema()}
         validateOnChange={false}
       >
         {({ handleSubmit, isSubmitting }) => (

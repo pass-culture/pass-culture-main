@@ -27,6 +27,7 @@ describe('routes::Summary::serializers', () => {
       isDuo: false,
       isEducational: false,
       isEvent: true,
+      isDigital: true,
       accessibility: {
         [AccessiblityEnum.AUDIO]: true,
         [AccessiblityEnum.MENTAL]: true,

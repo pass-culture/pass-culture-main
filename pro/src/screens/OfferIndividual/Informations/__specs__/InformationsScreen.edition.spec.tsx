@@ -141,6 +141,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       isDuo: false,
       isEducational: false,
       isEvent: true,
+      isDigital: false,
       accessibility: {
         [AccessiblityEnum.AUDIO]: true,
         [AccessiblityEnum.MENTAL]: true,
