@@ -15,7 +15,12 @@ const FormContact = ({
     title="Contact"
   >
     <FormLayout.Row>
-      <TextInput label={PHONE_LABEL} name="phone" disabled={disableForm} />
+      <TextInput
+        label={PHONE_LABEL}
+        name="phone"
+        disabled={disableForm}
+        placeholder="0639980101"
+      />
     </FormLayout.Row>
     <FormLayout.Row>
       <TextInput
