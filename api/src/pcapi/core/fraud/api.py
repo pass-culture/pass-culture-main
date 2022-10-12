@@ -2,7 +2,6 @@ import datetime
 import logging
 import re
 
-import sqlalchemy
 from sqlalchemy.orm import Query
 
 from pcapi import settings
@@ -263,12 +262,7 @@ def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_us
     return users_models.User.query.filter(
         users_models.User.id != excluded_user_id,
         users_models.User.idPieceNumber.isnot(None),
-        sqlalchemy.sql.func.replace(
-            users_models.User.idPieceNumber,
-            " ",
-            "",
-        )
-        == format_id_piece_number(id_piece_number),
+        users_models.User.idPieceNumber == format_id_piece_number(id_piece_number),
     ).first()
 
 
