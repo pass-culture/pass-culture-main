@@ -30,7 +30,8 @@ const SiretOrCommentFields = ({
     !isToggleDisabled || initialSiret !== null
   )
 
-  const { setFieldValue, values, errors } = useFormikContext<IVenueFormValues>()
+  const { setFieldValue, values, errors, touched } =
+    useFormikContext<IVenueFormValues>()
   const handleToggleClick = () => {
     if (isSiretSelected) {
       setIsFieldNameFrozen(false)
@@ -55,13 +56,14 @@ const SiretOrCommentFields = ({
       setIsFieldNameFrozen(false)
       return null
     }
-    getSiretDataFromApi().then(response => {
-      if (response?.isOk) {
-        setIsFieldNameFrozen(true)
-        setFieldValue('name', response.payload.values?.name)
-      }
-    })
-  }, [errors.siret, isSiretSelected])
+    touched.siret &&
+      getSiretDataFromApi().then(response => {
+        if (response?.isOk) {
+          setIsFieldNameFrozen(true)
+          setFieldValue('name', response.payload.values?.name)
+        }
+      })
+  }, [touched.siret, errors.siret, isSiretSelected])
 
   return (
     <>

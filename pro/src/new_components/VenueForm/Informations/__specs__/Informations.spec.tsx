@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
@@ -14,7 +14,7 @@ import { SubmitButton } from 'ui-kit'
 import { DEFAULT_INFORMATIONS_FORM_VALUES } from '../constants'
 import Informations, { IInformations } from '../Informations'
 import generateSiretValidationSchema from '../SiretOrCommentFields/validationSchema'
-import { default as informationsValidationSchema } from '../validationSchema'
+import informationsValidationSchema from '../validationSchema'
 
 const mockAdressData = [
   {
@@ -51,12 +51,10 @@ const renderInformations = ({
     true
   )
 
-  const formValidationSchema = yup
-    .object()
-    .shape(informationsValidationSchema)
-    .concat(generateSiretOrCommentValidationSchema)
+  const validationSchema = generateSiretOrCommentValidationSchema.concat(
+    yup.object().shape(informationsValidationSchema)
+  )
 
-  const validationSchema = formValidationSchema
   const rtlReturns = render(
     <Formik
       initialValues={initialValues}
@@ -132,9 +130,7 @@ describe('components | Informations', () => {
 
     await userEvent.click(buttonSubmit)
 
-    await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledTimes(1)
-    })
+    expect(onSubmit).toHaveBeenCalledTimes(1)
   })
 
   it('should validate required fields on submit', async () => {
@@ -153,14 +149,12 @@ describe('components | Informations', () => {
 
     await userEvent.click(nameInput)
     await userEvent.tab()
-    expect(
-      await screen.findByText('Veuillez renseigner un nom')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Veuillez renseigner un nom')).toBeInTheDocument()
 
     await userEvent.click(mailInput)
     await userEvent.tab()
     expect(
-      await screen.findByText('Veuillez renseigner une adresse email')
+      screen.getByText('Veuillez renseigner une adresse email')
     ).toBeInTheDocument()
 
     await userEvent.selectOptions(
@@ -169,7 +163,7 @@ describe('components | Informations', () => {
     )
     await userEvent.tab()
     expect(
-      await screen.findByText('Veuillez sélectionner un type de lieu')
+      screen.getByText('Veuillez sélectionner un type de lieu')
     ).toBeInTheDocument()
   })
 })
