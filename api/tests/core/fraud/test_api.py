@@ -272,9 +272,7 @@ class FindDuplicateUserTest:
         "existing_id_piece_number,new_id_piece_number",
         [
             ("123456789", "123456789"),
-            ("123 456 789", "123456789"),
             ("123456789", "123 456 789"),
-            ("1 2345678 9", "123 456 789"),
         ],
     )
     def test_find_duplicate_id_piece_number_user(self, existing_id_piece_number, new_id_piece_number):
