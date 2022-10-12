@@ -57,7 +57,9 @@ describe('OffererStatsScreen', () => {
     offerers = [
       {
         id: 'A1',
+        hasDigitalVenueAtLeastOneOffer: true,
         managedVenues: [
+          { id: 'D1', name: 'Offre numérique', isVirtual: true },
           { id: 'V1', name: 'Salle 1' },
           { id: 'V2', name: 'Stand popcorn' },
         ],
@@ -96,7 +98,21 @@ describe('OffererStatsScreen', () => {
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
+    const virtualVenueOption = screen.getByText('Offre numérique')
     const venueOption = screen.getByText('Salle 1')
+    expect(virtualVenueOption).toBeInTheDocument()
+    expect(venueOption).toBeInTheDocument()
+  })
+  it('should not display virtual venue if offerer has no digital offer', async () => {
+    offerers[0].hasDigitalVenueAtLeastOneOffer = false
+    renderOffererStatsScreen(offererOptions, store)
+
+    await waitFor(() => {
+      expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    })
+    const virtualVenueOption = screen.queryByText('Offre numérique')
+    const venueOption = screen.getByText('Salle 1')
+    expect(virtualVenueOption).not.toBeInTheDocument()
     expect(venueOption).toBeInTheDocument()
   })
   it('should update venues  when selecting offerer and display offerer iframe', async () => {
