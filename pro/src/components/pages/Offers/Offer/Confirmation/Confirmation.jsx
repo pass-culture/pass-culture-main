@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import Spinner from 'components/layout/Spinner'
-import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
-import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import {
   Events,
@@ -14,6 +12,8 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as PendingIcon } from 'icons/pending.svg'
+import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 
 const Confirmation = ({ offer, setOffer, reloadOffer }) => {
