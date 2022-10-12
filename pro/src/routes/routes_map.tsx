@@ -1,3 +1,5 @@
+/* No need to test this file */
+/* istanbul ignore file */
 import { Redirect, useLocation } from 'react-router-dom'
 
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
