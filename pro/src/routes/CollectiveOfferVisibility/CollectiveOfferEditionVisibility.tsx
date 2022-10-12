@@ -12,7 +12,15 @@ import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
 
-const CollectiveOfferVisibility = ({ offer }: { offer: CollectiveOffer }) => {
+interface CollectiveOfferVisibilityProps {
+  reloadCollectiveOffer: () => void
+  offer: CollectiveOffer
+}
+
+const CollectiveOfferVisibility = ({
+  offer,
+  reloadCollectiveOffer,
+}: CollectiveOfferVisibilityProps) => {
   const notify = useNotification()
   const history = useHistory()
 
@@ -30,6 +38,7 @@ const CollectiveOfferVisibility = ({ offer }: { offer: CollectiveOffer }) => {
     payload: CollectiveOffer
   }) => {
     notify.success(message)
+    reloadCollectiveOffer()
     history.push(
       `/offre/${computeURLCollectiveOfferId(
         payload.id,
