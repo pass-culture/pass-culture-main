@@ -1,5 +1,9 @@
-export const getProviderInfo = providerName => {
-  const providers = [
+import { IProviderInfo } from '../types'
+
+export const getProviderInfo = (
+  providerName: string
+): IProviderInfo | undefined => {
+  const providers: IProviderInfo[] = [
     {
       id: 'allociné',
       icon: 'logo-allocine',

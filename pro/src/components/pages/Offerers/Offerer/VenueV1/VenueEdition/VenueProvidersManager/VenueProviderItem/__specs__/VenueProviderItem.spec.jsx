@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import Notification from 'components/layout/Notification/Notification'
-import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
+import { getProviderInfo } from 'core/Providers/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'

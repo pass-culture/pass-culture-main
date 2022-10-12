@@ -1,6 +1,6 @@
 import { IOfferIndividualVenueProvider } from 'core/Offers/types'
 
-import { CINEMA_PROVIDER_NAMES } from './constants'
+import { CINEMA_PROVIDER_NAMES } from '../constants'
 
 export const isAllocineProvider = (
   provider: IOfferIndividualVenueProvider | null
