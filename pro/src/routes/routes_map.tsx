@@ -288,18 +288,6 @@ const routes: IRoute[] = [
     title: 'Offres',
   },
   {
-    component: CollectiveOfferEditionRoutes,
-    exact: false,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif',
-    title: 'Edition d’une offre collective',
-  },
-  {
-    component: CollectiveOfferTemplateEditionRoutes,
-    exact: false,
-    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif',
-    title: 'Edition d’une offre collective',
-  },
-  {
     component: OfferEducationalStockCreation,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks',
@@ -329,6 +317,18 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/confirmation',
     title: 'Page de confirmation de création d’offre',
+  },
+  {
+    component: CollectiveOfferEditionRoutes,
+    exact: false,
+    path: '/offre/:offerId([A-Z0-9]+)/collectif',
+    title: 'Edition d’une offre collective',
+  },
+  {
+    component: CollectiveOfferTemplateEditionRoutes,
+    exact: false,
+    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif',
+    title: 'Edition d’une offre collective',
   },
   {
     component: LostPassword,
