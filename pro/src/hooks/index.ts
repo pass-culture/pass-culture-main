@@ -4,4 +4,5 @@ export { default as useScrollToFirstErrorAfterSubmit } from './useScrollToFirstE
 export { default as useHomePath } from './useHomePath'
 export { default as useAdapter } from './useAdapter'
 export { default as useAccessibilityUpdates } from './useAccessibilityUpdates'
+export { default as useNavigate } from './useNavigate'
 export type { TUseAdapterFailure } from './useAdapter'
