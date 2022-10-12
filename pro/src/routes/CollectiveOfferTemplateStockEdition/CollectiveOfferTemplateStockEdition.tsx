@@ -11,6 +11,7 @@ import {
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
@@ -36,6 +37,10 @@ const CollectiveOfferTemplateStockEdition = ({
 }: CollectiveOfferTemplateStockEditionProps): JSX.Element => {
   const history = useHistory()
   const notify = useNotification()
+
+  const isCollectiveOfferDuplicationActive = useActiveFeature(
+    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
+  )
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
@@ -119,6 +124,9 @@ const CollectiveOfferTemplateStockEdition = ({
       offer={offer}
       onSubmit={handleSubmitStock}
       setIsOfferActive={setIsOfferActive}
+      shouldDisableTurnTemplateIntoCollectiveOfferFeature={
+        isCollectiveOfferDuplicationActive
+      }
     />
   )
 }

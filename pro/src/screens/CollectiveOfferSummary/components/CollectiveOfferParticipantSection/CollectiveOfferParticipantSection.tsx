@@ -13,7 +13,7 @@ const CollectiveOfferParticipantSection = ({
   return (
     <SummaryLayout.SubSection title="Participants">
       {students.map(student => (
-        <SummaryLayout.Row description={student} />
+        <SummaryLayout.Row description={student} key={student} />
       ))}
     </SummaryLayout.SubSection>
   )
