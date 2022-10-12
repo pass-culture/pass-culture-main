@@ -8,9 +8,9 @@ from pcapi import settings
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import offer_queries
 from pcapi.utils.module_loading import import_string
 
 
@@ -367,7 +367,7 @@ def index_offers_of_venues_in_queue() -> None:
             page = 0
             logger.info("Starting to index offers of venue", extra={"venue": venue_id})
             while True:
-                offer_ids = offer_queries.get_paginated_offer_ids_by_venue_id(
+                offer_ids = offers_repository.get_paginated_offer_ids_by_venue_id(
                     limit=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE, page=page, venue_id=venue_id
                 )
                 if not offer_ids:
