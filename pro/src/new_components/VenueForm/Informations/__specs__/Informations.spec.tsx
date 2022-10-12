@@ -143,9 +143,7 @@ describe('components | Informations', () => {
       onSubmit,
       props,
     })
-    const nameInput = screen.getByLabelText('Nom du lieu', {
-      exact: false,
-    })
+    const nameInput = screen.getByText('Nom du lieu')
     const mailInput = screen.getByLabelText('Mail', {
       exact: false,
     })
