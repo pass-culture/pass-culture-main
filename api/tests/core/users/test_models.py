@@ -1,11 +1,16 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+import decimal
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
+import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -14,9 +19,13 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.core.users.exceptions import InvalidUserRoleException
+from pcapi.models import db
+from pcapi.repository import repository
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class UserTest:
     class DepositTest:
         def test_return_none_if_no_deposits_exists(self):
@@ -271,7 +280,155 @@ class UserTest:
         assert user.hasPhysicalVenues
 
 
-@pytest.mark.usefixtures("db_session")
+class HasAccessTest:
+    def test_does_not_have_access_if_not_attached(self):
+        offerer = offerers_factories.OffererFactory()
+        user = users_factories.UserFactory()
+
+        assert not user.has_access(offerer.id)
+
+    def test_does_not_have_access_if_not_validated(self):
+        user_offerer = offerers_factories.UserOffererFactory(validationToken="token")
+        offerer = user_offerer.offerer
+        user = user_offerer.user
+
+        assert not user.has_access(offerer.id)
+
+    def test_has_access(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+        user = user_offerer.user
+
+        assert user.has_access(offerer.id)
+
+    def test_has_access_if_admin(self):
+        offerer = offerers_factories.OffererFactory()
+        admin = users_factories.AdminFactory()
+
+        assert admin.has_access(offerer.id)
+
+
+class CalculateAgeTest:
+    @freeze_time("2018-06-01")
+    def test_user_age(self):
+        assert users_factories.UserFactory.build(dateOfBirth=None).age is None
+        assert users_factories.UserFactory.build(dateOfBirth=datetime(2000, 6, 1, 5, 1)).age == 18  # happy birthday
+        assert users_factories.UserFactory.build(dateOfBirth=datetime(1999, 7, 1)).age == 18
+        assert users_factories.UserFactory.build(dateOfBirth=datetime(2000, 7, 1)).age == 17
+        assert users_factories.UserFactory.build(dateOfBirth=datetime(1999, 5, 1)).age == 19
+
+
+class UserDepositVersionTest:
+    def test_return_the_deposit(self):
+        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        assert user.deposit_version == 1
+
+    def test_when_no_deposit(self):
+        user = users_factories.UserFactory()
+        repository.delete(*user.deposits)
+        assert user.deposit_version is None
+
+
+class UserWalletBalanceTest:
+    def test_balance_is_0_with_no_deposits_and_no_bookings(self):
+        user = users_factories.UserFactory()
+
+        assert user.wallet_balance == 0
+        assert user.real_wallet_balance == 0
+
+    def test_balance_ignores_expired_deposits(self):
+        user = users_factories.BeneficiaryGrant18Factory(deposit__expirationDate=datetime(2000, 1, 1))
+
+        assert user.wallet_balance == 0
+        assert user.real_wallet_balance == 0
+
+    def test_balance(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=2, amount=20)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=3, amount=30)
+        bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, quantity=4, amount=40)
+
+        assert user.wallet_balance == 300 - (10 + 2 * 20 + 3 * 30)
+        assert user.real_wallet_balance == 300 - (10 + 2 * 20)
+
+    def test_real_balance_with_only_used_bookings(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=1, amount=30)
+
+        assert user.wallet_balance == 300 - 30
+        assert user.real_wallet_balance == 300
+
+    def test_balance_when_expired(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
+        deposit = user.deposit
+        deposit.expirationDate = datetime(2000, 1, 1)
+
+        assert user.wallet_balance == 0
+        assert user.real_wallet_balance == 0
+
+
+class SQLFunctionsTest:
+    def test_wallet_balance(self):
+        with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+            user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            # disable trigger because deposit.expirationDate > now() is False in database time
+            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+            bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
+            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+
+        finance_api.create_deposit(user, "test", user_models.EligibilityType.AGE18)
+
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, amount=10)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=1)
+
+        assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == decimal.Decimal(289)
+        assert db.session.query(sa.func.get_wallet_balance(user.id, True)).first()[0] == decimal.Decimal(290)
+
+    def test_wallet_balance_no_deposit(self):
+        user = users_factories.UserFactory()
+
+        assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
+
+    def test_wallet_balance_multiple_deposits(self):
+        user = users_factories.UserFactory()
+        users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_15_17)
+        users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_18)
+
+        with pytest.raises(sa_exc.ProgrammingError) as exc:
+            # pylint: disable=expression-not-assigned
+            db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0]
+
+        assert "more than one row returned by a subquery" in str(exc.value)
+
+    def test_wallet_balance_expired_deposit(self):
+        with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+            user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            # disable trigger because deposit.expirationDate > now() is False in database time
+            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+            bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
+            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+
+        assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
+
+    def test_deposit_balance(self):
+        deposit = users_factories.DepositGrantFactory()
+
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__deposit=deposit, amount=10)
+        bookings_factories.IndividualBookingFactory(individualBooking__deposit=deposit, amount=1)
+
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 289
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 290
+
+    def test_deposit_balance_wrong_id(self):
+        with pytest.raises(sa_exc.InternalError) as exc:
+            # pylint: disable=expression-not-assigned
+            db.session.query(sa.func.get_deposit_balance(None, False)).first()[0]
+
+        assert "the deposit was not found" in str(exc)
+
+
 class SuperAdminTest:
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=["super@admin.user"], IS_PROD=True)
     def test_super_user_prod(self):
