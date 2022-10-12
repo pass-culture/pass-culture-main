@@ -417,6 +417,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
+    isActive: bool | None
     # stock part
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
