@@ -35,6 +35,7 @@ const generateSiretValidationSchema = (
     comment: yup.string().required('Veuillez renseigner un commentaire'),
   }
 
+  /* istanbul ignore next */
   return yup
     .object()
     .shape(isSiretValued ? siretValidationSchema : commentValidationSchema)
