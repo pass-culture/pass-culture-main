@@ -34,7 +34,6 @@ export interface IVenue {
   collectiveDomains: Array<GetVenueDomainResponseModel>
   dateCreated: string
   fieldsUpdated: Array<string>
-  isValidated: boolean
   isVirtual: boolean
   managingOffererId: string
   accessibility: IAccessibiltyFormValues

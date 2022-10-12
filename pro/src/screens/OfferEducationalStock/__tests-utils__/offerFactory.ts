@@ -20,7 +20,6 @@ export const offerFactory = (
     publicName: 'venue name',
     departementCode: '75',
     fieldsUpdated: [],
-    isValidated: true,
     isVirtual: false,
     managingOffererId: 'OFFERER_ID',
     managingOfferer: {
@@ -83,7 +82,6 @@ export const collectiveOfferTemplateFactory = (
     publicName: 'venue name',
     departementCode: '75',
     fieldsUpdated: [],
-    isValidated: true,
     isVirtual: false,
     managingOffererId: 'OFFERER_ID',
     managingOfferer: {

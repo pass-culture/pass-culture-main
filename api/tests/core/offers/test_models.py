@@ -517,10 +517,6 @@ class StockIsBookableTest:
         stock = factories.StockFactory(offer__venue__managingOfferer__isActive=False)
         assert not stock.isBookable
 
-    def test_not_bookable_if_venue_is_not_validated(self):
-        stock = factories.StockFactory(offer__venue__validationToken="token")
-        assert not stock.isBookable
-
     def test_not_bookable_if_offer_is_not_active(self):
         stock = factories.StockFactory(offer__isActive=False)
         assert not stock.isBookable

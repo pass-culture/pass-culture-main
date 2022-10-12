@@ -68,7 +68,6 @@ const venue = {
   departementCode: '75',
   id: 'AQ',
   isBusinessUnitMainVenue: false,
-  isValidated: true,
   isVirtual: false,
   isPermanent: true,
   latitude: 48.91683,

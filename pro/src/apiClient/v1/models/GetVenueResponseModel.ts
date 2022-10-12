@@ -47,7 +47,6 @@ export type GetVenueResponseModel = {
   idAtProviders?: string | null;
   isBusinessUnitMainVenue?: boolean | null;
   isPermanent?: boolean | null;
-  isValidated: boolean;
   isVirtual: boolean;
   lastProviderId?: string | null;
   latitude?: number | null;

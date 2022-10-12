@@ -461,12 +461,8 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     @property
     def isReleased(self) -> bool:
-        return (
-            self._released
-            and self.venue.isReleased
-            and self.venue.managingOfferer.isActive
-            and self.venue.managingOfferer.isValidated
-        )
+        offerer = self.venue.managingOfferer
+        return self._released and offerer.isActive and offerer.isValidated
 
     @sa.ext.hybrid.hybrid_property
     def _released(self) -> bool:

@@ -179,7 +179,6 @@ class LegalStatusResponseModel(BaseModel):
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     id: str
     dateCreated: datetime
-    isValidated: bool
     managingOffererId: str
     nonHumanizedId: int
 

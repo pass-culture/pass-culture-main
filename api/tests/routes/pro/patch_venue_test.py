@@ -64,10 +64,6 @@ class Returns200Test:
         venue = offerers_models.Venue.query.get(venue_id)
         assert venue.name == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
-        json = response.json
-        assert json["isValidated"] is True
-        assert "validationToken" not in json
-        assert venue.isValidated
         assert len(external_testing.sendinblue_requests) == 1
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
 
