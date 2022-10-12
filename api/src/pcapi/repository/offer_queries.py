@@ -1,10 +1,6 @@
 from pcapi.core.offers.models import Offer
 
 
-def get_offer_by_id(offer_id: int):  # type: ignore [no-untyped-def]
-    return Offer.query.get(offer_id)
-
-
 def get_paginated_active_offer_ids(limit: int, page: int) -> list[int]:
     query = (
         Offer.query.with_entities(Offer.id)

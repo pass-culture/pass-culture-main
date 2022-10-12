@@ -519,7 +519,7 @@ def upsert_stocks(
     edited_stocks = []
     edited_stocks_previous_beginnings = {}
 
-    offer = offer_queries.get_offer_by_id(offer_id)
+    offer = models.Offer.query.get(offer_id)
 
     for stock_data in stock_data_list:
         if isinstance(stock_data, StockEditionBodyModel):
