@@ -57,7 +57,6 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     withdrawalDetails: venue.withdrawalDetails || '',
     collectiveAccessInformation: venue.collectiveAccessInformation || '',
     collectiveDescription: venue.collectiveDescription || '',
-    collectiveDomains: venue.collectiveDomains || [],
     collectiveEmail: venue.collectiveEmail || '',
     collectiveInterventionArea: venue.collectiveInterventionArea || [],
     collectiveLegalStatus: venue.collectiveLegalStatus || null,
