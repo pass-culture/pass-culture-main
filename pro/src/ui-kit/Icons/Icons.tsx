@@ -72,10 +72,12 @@ import { ReactComponent as MentalDisabilityIcon } from 'icons/mental-disability.
 import { ReactComponent as MotorDisabilityIcon } from 'icons/motor-disability.svg'
 import { ReactComponent as OfferCardEuroIcon } from 'icons/offer-card-euro.svg'
 import { ReactComponent as OpenDropdownIcon } from 'icons/open-dropdown.svg'
+import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { ReactComponent as TickIcon } from 'icons/tick.svg'
 import { ReactComponent as TicketCrossIcon } from 'icons/ticket-cross.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
+import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { ReactComponent as VisualDisabilityIcon } from 'icons/visual-disability.svg'
 
 import styles from './Icons.module.scss'
@@ -539,6 +541,18 @@ export const Icons = () => (
           <GuichetFullIcon />
         </td>
         <td>ico-guichet-full</td>
+      </tr>
+      <tr>
+        <td>
+          <PendingIcon />
+        </td>
+        <td>pending</td>
+      </tr>
+      <tr>
+        <td>
+          <ValidateIcon />
+        </td>
+        <td>validate</td>
       </tr>
     </body>
   </table>
