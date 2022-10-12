@@ -3,8 +3,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
-import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
-import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
+import { ReactComponent as PendingIcon } from 'icons/pending.svg'
+import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { Banner, Title } from 'ui-kit'
 
 import styles from './CollectiveOfferConfirmation.module.scss'
@@ -98,7 +98,7 @@ const CollectiveOfferConfirmation = ({
         <Icon className={styles['confirmation-icon']} />
         <div className={styles['confirmation-section']}>
           <div className={styles['confirmation-section-header']}>
-            <Title as="h2" level={3}>
+            <Title as="h1" level={3}>
               {title}
             </Title>
           </div>
