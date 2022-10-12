@@ -4,8 +4,8 @@ name = "cz_customize"
 [tool.commitizen.customize]
 message_template = "({{jira_ticket}}){% if affected_repository %}[{{affected_repository}}]{% endif %} {{change_type}}: {{message}}"
 schema = "(<ticket_number>)[<affected_repository>] <type>: <commit_message>"
-schema_pattern = "\\((PC-\\d+|BSR)\\)(\\[(API|PRO|ADAGE)\\])? ?(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump)(\\[[\\w\\s]+\\])?:[\\w\\s]+"
-example = "(PC-88888)[API] feat: this is such a great commit"
+schema_pattern = "\\((PC-\\d+|BSR)\\)(\\[(API|PRO|ADAGE|MAIN)\\])? ?(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump)(\\[[\\w\\s]+\\])?:[\\w\\s]+"
+example = "(PC-88888)[API] feat: add a great commit"
 
 
 [[tool.commitizen.customize.questions]]
@@ -20,6 +20,7 @@ choices = [
     {value = "API", name = "API"}, 
     {value = "PRO", name = "PRO"}, 
     {value = "ADAGE", name = "ADAGE"}, 
+    {value = "MAIN", name = "MAIN"}, 
     {value = "", name = "None of the above"}
 ]
 message = "Select the repository affected by the change you are committing"
