@@ -9,8 +9,8 @@ class SaveNewVenueLabelsTest:
     def test_should_save_venue_labels_to_database(self):
         # Given
         venue_labels_to_create = [
-            "Architecture contemporaine remarquable",
-            "CAC - Centre d'art contemporain d'intérêt national",
+            ("Architecture contemporaine remarquable", 1),
+            ("CAC - Centre d'art contemporain d'intérêt national", 2),
         ]
 
         # When
