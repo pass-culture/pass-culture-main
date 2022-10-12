@@ -115,7 +115,6 @@ describe('useGetVenue', () => {
       description: 'description du lieu',
       dmsToken: '',
       fieldsUpdated: [],
-      hasMissingReimbursementPoint: false,
       isValidated: true,
       isVirtual: false,
       managingOfferer: {
