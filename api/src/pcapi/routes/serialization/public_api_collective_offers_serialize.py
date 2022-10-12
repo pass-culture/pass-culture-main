@@ -367,6 +367,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     visual_disability_compliant: bool = False
     offer_venue: OfferVenueModel
     intervention_area: list[str]
+    isActive: bool
     # stock part
     beginning_datetime: datetime
     booking_limit_datetime: datetime
