@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
+import { getProviderInfo } from 'core/Providers/utils'
 
 const SynchronizedProviderInformation = ({ providerName }) => {
   const providerInfo = getProviderInfo(providerName)

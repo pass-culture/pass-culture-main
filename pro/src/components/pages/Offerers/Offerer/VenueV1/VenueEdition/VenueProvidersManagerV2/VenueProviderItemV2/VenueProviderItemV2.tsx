@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { VenueProviderResponse } from 'apiClient/v1'
-import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
+import { getProviderInfo } from 'core/Providers/utils'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
