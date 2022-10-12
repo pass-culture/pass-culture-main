@@ -92,7 +92,6 @@ class Returns200Test:
             "idAtProviders": venue.idAtProviders,
             "isBusinessUnitMainVenue": True,
             "isPermanent": venue.isPermanent,
-            "isValidated": venue.isValidated,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),
             "lastProviderId": venue.lastProviderId,

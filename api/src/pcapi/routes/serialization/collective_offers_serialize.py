@@ -197,7 +197,6 @@ class GetCollectiveOfferVenueResponseModel(BaseModel, AccessibilityComplianceMix
     fieldsUpdated: list[str]
     id: str
     idAtProviders: str | None
-    isValidated: bool
     isVirtual: bool
     lastProviderId: str | None
     latitude: float | None

@@ -32,7 +32,6 @@ describe('useGetVenue', () => {
       dateCreated: '2022-07-29T12:18:43.087097Z',
       fieldsUpdated: [],
       id: 'AE',
-      isValidated: true,
       isVirtual: false,
       isPermanent: true,
       latitude: 12.3,
@@ -115,7 +114,6 @@ describe('useGetVenue', () => {
       description: 'description du lieu',
       dmsToken: '',
       fieldsUpdated: [],
-      isValidated: true,
       isVirtual: false,
       managingOfferer: {
         city: 'Paris',

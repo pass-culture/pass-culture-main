@@ -87,7 +87,6 @@ def test_basics(client):
                 "departementCode": venue.departementCode,
                 "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
                 "id": humanize(venue.id),
-                "isValidated": venue.isValidated,
                 "isVirtual": venue.isVirtual,
                 "managingOffererId": humanize(venue.managingOffererId),
                 "mentalDisabilityCompliant": False,

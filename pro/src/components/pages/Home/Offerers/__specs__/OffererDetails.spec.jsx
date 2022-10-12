@@ -509,7 +509,6 @@ describe('offererDetailsLegacy', () => {
     beforeEach(() => {
       const virtualVenue = {
         id: 'test_venue_id_1',
-        isValidated: true,
         isVirtual: true,
         managingOffererId: firstOffererByAlphabeticalOrder.id,
         name: 'Le Sous-sol (Offre numérique)',

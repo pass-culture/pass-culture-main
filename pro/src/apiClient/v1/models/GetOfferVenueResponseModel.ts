@@ -16,7 +16,6 @@ export type GetOfferVenueResponseModel = {
   fieldsUpdated: Array<string>;
   id: string;
   idAtProviders?: string | null;
-  isValidated: boolean;
   isVirtual: boolean;
   lastProviderId?: string | null;
   latitude?: number | null;

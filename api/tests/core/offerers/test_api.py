@@ -1356,13 +1356,6 @@ class HasVenueAtLeastOneBookableOfferTest:
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
     @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
-    def test_venue_not_validated(self):
-        venue = offerers_factories.VenueFactory(isPermanent=True, validationToken="not_validated_yet")
-        offers_factories.EventStockFactory(offer__venue=venue)
-
-        assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
-
-    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_no_offers(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)

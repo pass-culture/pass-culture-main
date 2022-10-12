@@ -14,7 +14,6 @@ export type GetOffererVenueResponseModel = {
   departementCode?: string | null;
   hasMissingReimbursementPoint: boolean;
   id: string;
-  isValidated: boolean;
   isVirtual: boolean;
   managingOffererId: string;
   mentalDisabilityCompliant?: boolean | null;

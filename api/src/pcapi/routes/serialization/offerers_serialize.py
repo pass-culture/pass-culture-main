@@ -22,7 +22,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     departementCode: str | None
     hasMissingReimbursementPoint: bool
     id: str
-    isValidated: bool
     isVirtual: bool
     managingOffererId: str
     name: str

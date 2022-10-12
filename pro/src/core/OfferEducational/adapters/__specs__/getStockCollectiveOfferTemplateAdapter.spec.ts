@@ -66,7 +66,6 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
         venue: {
           fieldsUpdated: [],
           id: 'A1',
-          isValidated: true,
           isVirtual: false,
           managingOfferer: {
             city: 'Vélizy',

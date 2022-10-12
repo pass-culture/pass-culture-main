@@ -194,7 +194,6 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         return (
             self.isActive
             and self.validation == offer_mixin.OfferValidationStatus.APPROVED
-            and self.venue.isValidated
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
         )
@@ -354,7 +353,6 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
         return (
             self.isActive
             and self.validation == offer_mixin.OfferValidationStatus.APPROVED
-            and self.venue.isValidated
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
         )

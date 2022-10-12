@@ -388,7 +388,6 @@ describe('serializer', () => {
         fieldsUpdated: [],
         id: 'DY',
         idAtProviders: null,
-        isValidated: true,
         isVirtual: false,
         lastProviderId: null,
         latitude: 48.87004,

@@ -259,7 +259,6 @@ class Returns200Test:
                 "fieldsUpdated": [],
                 "id": humanize(venue.id),
                 "idAtProviders": None,
-                "isValidated": True,
                 "isVirtual": False,
                 "lastProviderId": None,
                 "latitude": 48.87004,

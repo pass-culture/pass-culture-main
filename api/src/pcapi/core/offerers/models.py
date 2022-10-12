@@ -140,7 +140,7 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 )
 
 
-class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
+class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
     name: str = Column(String(140), nullable=False)
@@ -380,7 +380,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidati
 
     @property
     def isReleased(self) -> bool:
-        return self.isValidated and self.managingOfferer.isActive and self.managingOfferer.isValidated
+        return self.managingOfferer.isActive and self.managingOfferer.isValidated
 
     @hybrid_property
     def timezone(self) -> str:

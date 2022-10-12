@@ -107,7 +107,6 @@ class Returns201Test:
         assert venue.contact.email == venue_data["contact"]["email"]
         assert venue.dmsToken
 
-        assert venue.isValidated
         assert not venue.isPermanent
         assert not venue.contact.phone_number
         assert not venue.contact.social_medias
