@@ -72,7 +72,10 @@ const CollectiveOfferEditionRoutes = (): JSX.Element => {
           />
         </Route>
         <Route path="/offre/:offerId([A-Z0-9]+)/collectif/visibilite/edition">
-          <CollectiveOfferVisibility offer={offer} />
+          <CollectiveOfferVisibility
+            offer={offer}
+            reloadCollectiveOffer={loadCollectiveOffer}
+          />
         </Route>
         <Route path="/offre/:offerId([A-Z0-9]+)/collectif/recapitulatif">
           <CollectiveOfferSummary

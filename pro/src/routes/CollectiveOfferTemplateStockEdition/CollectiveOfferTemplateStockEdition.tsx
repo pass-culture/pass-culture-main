@@ -66,6 +66,7 @@ const CollectiveOfferTemplateStockEdition = ({
     }
 
     notify.success(stockResponse.message)
+    reloadCollectiveOffer()
     history.push(
       `/offre/${computeURLCollectiveOfferId(
         offer.id,
