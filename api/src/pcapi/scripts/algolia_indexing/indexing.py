@@ -2,7 +2,7 @@ import logging
 
 from pcapi.core import search
 from pcapi.core.offerers import api as offerers_api
-from pcapi.repository import offer_queries
+import pcapi.core.offers.repository as offers_repository
 from pcapi.utils.chunks import get_chunks
 
 
@@ -17,7 +17,7 @@ def batch_indexing_offers_in_algolia_from_database(
         if ending_page and ending_page == page:
             break
 
-        offer_ids = offer_queries.get_paginated_active_offer_ids(limit=limit, page=page)
+        offer_ids = offers_repository.get_paginated_active_offer_ids(limit=limit, page=page)
         if not offer_ids:
             break
         search.reindex_offer_ids(offer_ids)

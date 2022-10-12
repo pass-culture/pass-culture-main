@@ -640,3 +640,25 @@ def update_stock_quantity_to_dn_booked_quantity(stock_id: int | None) -> None:
         return
     Stock.query.filter(Stock.id == stock_id).update({"quantity": Stock.dnBookedQuantity})
     db.session.commit()
+
+
+def get_paginated_active_offer_ids(limit: int, page: int) -> list[int]:
+    query = (
+        Offer.query.with_entities(Offer.id)
+        .filter(Offer.isActive.is_(True))
+        .order_by(Offer.id)
+        .offset(page * limit)
+        .limit(limit)
+    )
+    return [offer_id for offer_id, in query]
+
+
+def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) -> list[int]:
+    query = (
+        Offer.query.with_entities(Offer.id)
+        .filter(Offer.venueId == venue_id)
+        .order_by(Offer.id)
+        .offset(page * limit)
+        .limit(limit)
+    )
+    return [offer_id for offer_id, in query]

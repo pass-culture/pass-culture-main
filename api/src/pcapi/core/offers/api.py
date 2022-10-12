@@ -62,7 +62,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
