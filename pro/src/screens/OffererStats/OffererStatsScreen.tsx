@@ -36,15 +36,20 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
   }
 
   useEffect(() => {
-    api.getOfferer(selectedOffererId).then(response => {
-      if (response.managedVenues) {
+    api.getOfferer(selectedOffererId).then(offerer => {
+      if (offerer.managedVenues) {
         setVenueOptions([
           ALL_VENUES_OPTION,
           ...sortByDisplayName(
-            response.managedVenues.map(venue => ({
-              id: venue.id,
-              displayName: venue.publicName || venue.name,
-            }))
+            offerer.managedVenues
+              .filter(
+                venue =>
+                  offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
+              )
+              .map(venue => ({
+                id: venue.id,
+                displayName: venue.publicName || venue.name,
+              }))
           ),
         ])
         setSelectedVenueId(ALL_VENUES_OPTION.id)
