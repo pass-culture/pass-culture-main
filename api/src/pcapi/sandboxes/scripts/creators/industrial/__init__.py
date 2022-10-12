@@ -8,6 +8,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion imp
     associate_criterion_to_one_offer_with_mediation,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_draft_offers import create_industrial_draft_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_educational_bookings import (
     create_industrial_educational_bookings,
 )
@@ -57,6 +58,8 @@ def save_industrial_sandbox() -> None:
     event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
 
     thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
+
+    create_industrial_draft_offers(offerers_by_name)
 
     create_industrial_offers_with_activation_codes()
 
