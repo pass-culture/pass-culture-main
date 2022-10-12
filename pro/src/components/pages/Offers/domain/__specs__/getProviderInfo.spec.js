@@ -1,4 +1,4 @@
-import { getProviderInfo } from '../getProviderInfo'
+import { getProviderInfo } from 'core/Providers/utils'
 
 describe('src | getProviderInfo', () => {
   it('should return provider information which id match lowercase name', () => {
