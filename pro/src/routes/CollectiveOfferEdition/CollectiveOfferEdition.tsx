@@ -65,6 +65,7 @@ const CollectiveOfferEdition = ({
         }
 
         notify.success(offerResponse.message)
+        reloadCollectiveOffer()
         history.push(
           `/offre/${computeURLCollectiveOfferId(
             offer.id,
