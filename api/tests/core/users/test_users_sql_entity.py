@@ -15,18 +15,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
-
-
-@pytest.mark.usefixtures("db_session")
-def test_cannot_create_admin_that_can_book():
-    # Given
-    user = users_factories.UserFactory.build(roles=[user_models.UserRole.BENEFICIARY, user_models.UserRole.ADMIN])
-
-    # When
-    with pytest.raises(ApiErrors):
-        repository.save(user)
 
 
 @pytest.mark.usefixtures("db_session")
