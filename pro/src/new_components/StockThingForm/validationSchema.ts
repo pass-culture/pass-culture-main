@@ -1,13 +1,9 @@
 import * as yup from 'yup'
 
 export const getValidationSchema = (
-  today: Date,
   /* istanbul ignore next: DEBT, TO FIX */
   minQuantity: number | null = null
 ) => {
-  const bookingLimitMinDate = today
-  bookingLimitMinDate.setHours(0, 0, 0, 0)
-
   const validationSchema = {
     price: yup
       .number()

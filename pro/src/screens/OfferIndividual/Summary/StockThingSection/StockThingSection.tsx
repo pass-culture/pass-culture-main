@@ -32,7 +32,7 @@ const StockThingSection = ({
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const stocksUrls = isOfferFormV3
     ? {
-        creation: `/offre/:${offerId}/v3/creation/individuelle/stocks`,
+        creation: `/offre/${offerId}/v3/creation/individuelle/stocks`,
         edition: `/offre/${offerId}/v3/individuelle/stocks`,
       }
     : {

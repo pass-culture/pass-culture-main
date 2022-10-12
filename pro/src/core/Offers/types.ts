@@ -99,7 +99,7 @@ export interface IOfferIndividualStock {
   offerId: string
   price: number
   quantity?: number | null
-  remainingQuantity: number | string
+  remainingQuantity: number | null
 }
 
 export interface IOfferIndividualOfferer {
@@ -158,6 +158,7 @@ export interface IOfferIndividual {
   isDuo: boolean
   isEducational: boolean
   isEvent: boolean
+  isDigital: boolean
   accessibility: IAccessibiltyFormValues
   isNational: boolean
   name: string

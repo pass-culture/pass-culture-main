@@ -63,7 +63,9 @@ export const serializeStockApi = (
   offerId: apiStock.offerId,
   price: apiStock.price,
   quantity: apiStock.quantity,
-  remainingQuantity: apiStock.remainingQuantity ?? 0,
+  remainingQuantity: apiStock.remainingQuantity
+    ? parseInt(apiStock.remainingQuantity.toString(), 10)
+    : 0,
 })
 
 export const serializeOfferApiExtraData = (
@@ -136,6 +138,7 @@ export const serializeOfferApi = (
     durationMinutes: apiOffer.durationMinutes || null,
     isDuo: apiOffer.isDuo,
     isEvent: apiOffer.isEvent,
+    isDigital: apiOffer.isDigital,
     isEducational: apiOffer.isEducational,
     isNational: apiOffer.isNational,
     name: apiOffer.name,
