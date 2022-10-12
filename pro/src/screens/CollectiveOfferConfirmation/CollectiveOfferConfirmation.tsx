@@ -130,13 +130,6 @@ const CollectiveOfferConfirmation = ({
         </h2>
         {isShowcase ? (
           <>
-            L’enseignant doit préréserver votre offre depuis son compte ADAGE.
-            <br />
-            Une fois la préréservation faite, vous verrez une réservation
-            portant le statut préréservé.
-          </>
-        ) : (
-          <>
             Les enseignants intéressés par votre offre vitrine vous contacterons
             par mail ou téléphone. <br />
             Après un accord mutuel, vous pourrez créer une offre réservable en
@@ -144,6 +137,13 @@ const CollectiveOfferConfirmation = ({
             l’enseignant. <br />
             Cette nouvelle offre apparaitra sur ADAGE et pourra être
             pré-réservée par l’enseignant.
+          </>
+        ) : (
+          <>
+            L’enseignant doit préréserver votre offre depuis son compte ADAGE.
+            <br />
+            Une fois la préréservation faite, vous verrez une réservation
+            portant le statut préréservé.
           </>
         )}
       </Banner>
