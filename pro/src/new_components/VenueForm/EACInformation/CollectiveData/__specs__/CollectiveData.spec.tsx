@@ -88,7 +88,7 @@ describe('CollectiveData', () => {
     expect(screen.queryByText(/Zone de mobilité :/)).not.toBeInTheDocument()
   })
 
-  it('should display the networks available from the api call', async () => {
+  it('should display the networks available when available', async () => {
     jest.spyOn(api, 'getEducationalPartners').mockResolvedValue({
       partners: [
         { id: 1, libelle: 'Libellé 1' },

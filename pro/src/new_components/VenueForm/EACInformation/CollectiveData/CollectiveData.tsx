@@ -33,8 +33,8 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
     <dl>
       {venue.collectiveDescription && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            Présentation de vos informations EAC :{' '}
+          <dt className={styles['collective-data-term']}>
+            Présentation de vos informations EAC :
           </dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveDescription}
@@ -44,9 +44,7 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectiveStudents && venue.collectiveStudents?.length > 0 && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            Public cible :{' '}
-          </dt>
+          <dt className={styles['collective-data-term']}>Public cible :</dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveStudents?.join(', ')}
           </dd>
@@ -55,8 +53,8 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectiveWebsite && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            URL de votre site web :{' '}
+          <dt className={styles['collective-data-term']}>
+            URL de votre site web :
           </dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveWebsite}
@@ -66,8 +64,8 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectiveDomains && venue.collectiveDomains.length > 0 && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            Domaines artistiques et culturels :{' '}
+          <dt className={styles['collective-data-term']}>
+            Domaines artistiques et culturels :
           </dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveDomains.map(domain => domain.name).join(', ')}
@@ -78,8 +76,8 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
       {venue.collectiveInterventionArea &&
         venue.collectiveInterventionArea.length > 0 && (
           <>
-            <dt role="emphasis" className={styles['collective-data-term']}>
-              Zone de mobilité :{' '}
+            <dt className={styles['collective-data-term']}>
+              Zone de mobilité :
             </dt>
             <dd className={styles['collective-data-description']}>
               {getInterventionAreaLabels(venue.collectiveInterventionArea)}
@@ -89,9 +87,7 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectiveLegalStatus && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            Statut :{' '}
-          </dt>
+          <dt className={styles['collective-data-term']}>Statut :</dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveLegalStatus.name}
           </dd>
@@ -100,8 +96,8 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectiveNetwork && venue.collectiveNetwork.length > 0 && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            Réseau partenaire :{' '}
+          <dt className={styles['collective-data-term']}>
+            Réseau partenaire :
           </dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveNetwork
@@ -119,9 +115,7 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectivePhone && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            Téléphone :{' '}
-          </dt>
+          <dt className={styles['collective-data-term']}>Téléphone :</dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectivePhone}
           </dd>
@@ -130,9 +124,7 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectiveEmail && (
         <div className={styles['collective-data-row']}>
-          <dt role="emphasis" className={styles['collective-data-term']}>
-            E-mail :{' '}
-          </dt>
+          <dt className={styles['collective-data-term']}>E-mail :</dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveEmail}
           </dd>
