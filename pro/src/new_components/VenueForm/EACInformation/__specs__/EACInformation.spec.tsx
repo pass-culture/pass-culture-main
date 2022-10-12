@@ -28,7 +28,7 @@ const renderEACInformation = async ({
 }
 
 describe('components | EACInformation', () => {
-  it('should not be able to submit when creating a venue', async () => {
+  it('should not be able to access information page when creating a venue', async () => {
     await renderEACInformation({
       isCreatingVenue: true,
       venue: null,
@@ -40,7 +40,7 @@ describe('components | EACInformation', () => {
     )
   })
 
-  it('should have the button with creation text with empty details', async () => {
+  it('should be able to access information page when updating a venue', async () => {
     const venue = {
       id: 'V1',
     } as unknown as IVenue
@@ -51,26 +51,8 @@ describe('components | EACInformation', () => {
     })
 
     expect(
-      await screen.queryByText(/Renseigner mes informations/)
-    ).toBeInTheDocument()
-  })
-
-  it('should have the button with update text', async () => {
-    const venue = {
-      id: 'V1',
-      collectiveAccessInformation: 'test',
-      collectiveDescription: 'desc',
-      collectiveEmail: 'email@email.email',
-    } as unknown as IVenue
-
-    await renderEACInformation({
-      isCreatingVenue: false,
-      venue: venue,
-    })
-
-    expect(
-      await screen.queryByText(/Modifier mes informations/)
-    ).toBeInTheDocument()
+      screen.queryByText(/Renseigner mes informations/)
+    ).not.toHaveAttribute('aria-disabled', 'true')
   })
 
   it('should have the information banner', async () => {
