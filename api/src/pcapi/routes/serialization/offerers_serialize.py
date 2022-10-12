@@ -9,7 +9,6 @@ import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.users.models as users_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.utils import humanize_field
 import pcapi.utils.date as date_utils
 
@@ -93,11 +92,7 @@ class GetOffererResponseModel(BaseModel):
 
     @classmethod
     # type: ignore
-    def from_orm(
-        cls,
-        offerer: offerers_models.Offerer,
-        venue_stats_by_ids: dict[int, venues_serialize.VenueStatsResponseModel] | None = None,
-    ):
+    def from_orm(cls, offerer: offerers_models.Offerer):
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
@@ -109,9 +104,6 @@ class GetOffererResponseModel(BaseModel):
             .order_by(sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name))
             .all()
         )
-        if venue_stats_by_ids:
-            for venue in venues:
-                venue.stats = venue_stats_by_ids[venue.id]
 
         offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
             offerer.id
