@@ -20,7 +20,7 @@ interface OfferEducationalStockCreationProps {
   offer: CollectiveOffer
 }
 
-const OfferEducationalStockCreation = ({
+const CollectiveOfferStockCreation = ({
   offer,
 }: OfferEducationalStockCreationProps): JSX.Element | null => {
   const notify = useNotification()
@@ -84,4 +84,4 @@ const OfferEducationalStockCreation = ({
   )
 }
 
-export default OfferEducationalStockCreation
+export default CollectiveOfferStockCreation

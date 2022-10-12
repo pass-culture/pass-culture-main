@@ -21,9 +21,18 @@ import Bookings from 'routes/Bookings'
 import BusinessUnitList from 'routes/BusinessUnitList'
 import CollectiveBookings from 'routes/CollectiveBookings'
 import CollectiveOffers from 'routes/CollectiveOffers'
+<<<<<<< HEAD
 import CsvTable from 'routes/CsvTable'
 import Desk from 'routes/Desk'
 import { EmailChangeValidation } from 'routes/EmailChangeValidation'
+=======
+import CollectiveOfferStockCreation from 'routes/CollectiveOfferStockCreation'
+import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
+import CsvTable from 'routes/CsvTable'
+import Desk from 'routes/Desk'
+import { EmailChangeValidation } from 'routes/EmailChangeValidation'
+import OfferEducationalCreation from 'routes/OfferEducationalCreation'
+>>>>>>> f4848d87c3 ((PC-17545)[PRO] chore: rename CollectiveOfferCreationStock component)
 import { OfferIndividualWizard } from 'routes/OfferIndividualWizard'
 import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
