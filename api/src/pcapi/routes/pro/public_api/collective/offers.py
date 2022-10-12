@@ -240,6 +240,7 @@ def patch_collective_offer_public(
         "mentalDisabilityCompliant",
         "motorDisabilityCompliant",
         "visualDisabilityCompliant",
+        "isActive",
     ]
     for field in non_nullable_fields:
         if field in new_values and new_values[field] is None:

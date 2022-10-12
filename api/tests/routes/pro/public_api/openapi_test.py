@@ -370,6 +370,7 @@ def test_public_api(client, app):
                             "title": "Interventionarea",
                             "type": "array",
                         },
+                        "isActive": {"nullable": True, "title": "Isactive", "type": "boolean"},
                         "mentalDisabilityCompliant": {
                             "nullable": True,
                             "title": "Mentaldisabilitycompliant",
@@ -436,6 +437,7 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
+                        "isActive": {"title": "Isactive", "type": "boolean"},
                         "mentalDisabilityCompliant": {
                             "default": False,
                             "title": "Mentaldisabilitycompliant",
@@ -471,6 +473,7 @@ def test_public_api(client, app):
                         "students",
                         "offerVenue",
                         "interventionArea",
+                        "isActive",
                         "beginningDatetime",
                         "bookingLimitDatetime",
                         "totalPrice",

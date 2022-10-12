@@ -43,6 +43,7 @@ class CollectiveOffersPublicPostOfferTest:
                 "otherAddress": "",
             },
             "interventionArea": ["44"],
+            "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -105,6 +106,7 @@ class CollectiveOffersPublicPostOfferTest:
                 "otherAddress": "",
             },
             "interventionArea": ["44"],
+            "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -154,6 +156,7 @@ class CollectiveOffersPublicPostOfferTest:
                 "otherAddress": "",
             },
             "interventionArea": ["44"],
+            "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -205,6 +208,7 @@ class CollectiveOffersPublicPostOfferTest:
                 "otherAddress": "",
             },
             "interventionArea": ["44"],
+            "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -254,6 +258,7 @@ class CollectiveOffersPublicPostOfferTest:
                 "otherAddress": "",
             },
             "interventionArea": ["44", "158"],
+            "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -302,6 +307,7 @@ class CollectiveOffersPublicPostOfferTest:
                 "otherAddress": "",
             },
             "interventionArea": ["44"],
+            "isActive": True,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
