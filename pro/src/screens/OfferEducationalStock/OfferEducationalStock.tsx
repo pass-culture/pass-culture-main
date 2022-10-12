@@ -64,6 +64,8 @@ export interface IOfferEducationalStockProps<
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
+  // TODO : remove this props once FF is enabled in production
+  shouldDisableTurnTemplateIntoCollectiveOfferFeature?: boolean
 }
 
 const OfferEducationalStock = <
@@ -76,6 +78,7 @@ const OfferEducationalStock = <
   mode,
   cancelActiveBookings,
   setIsOfferActive,
+  shouldDisableTurnTemplateIntoCollectiveOfferFeature = false,
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
@@ -133,16 +136,18 @@ const OfferEducationalStock = <
       <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
+            <FormLayout.MandatoryInfo />
             <FormLayout.Section title="Date et prix">
-              {shouldDisplayShowcaseScreen && (
-                <FormLayout.Row>
-                  <RadioGroup
-                    group={showcaseOfferRadios}
-                    name="educationalOfferType"
-                    hideFooter
-                  />
-                </FormLayout.Row>
-              )}
+              {shouldDisplayShowcaseScreen &&
+                !shouldDisableTurnTemplateIntoCollectiveOfferFeature && (
+                  <FormLayout.Row>
+                    <RadioGroup
+                      group={showcaseOfferRadios}
+                      name="educationalOfferType"
+                      hideFooter
+                    />
+                  </FormLayout.Row>
+                )}
               {displayElementsForShowcaseOption ? (
                 <ShowcaseBannerInfo />
               ) : (

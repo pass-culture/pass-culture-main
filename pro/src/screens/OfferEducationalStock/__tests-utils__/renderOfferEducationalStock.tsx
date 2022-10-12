@@ -1,7 +1,10 @@
 import { render } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
 
 import OfferEducationalStock, {
   IOfferEducationalStockProps,
@@ -12,8 +15,10 @@ export const renderOfferEducationalStock = (
 ) => {
   const history = createBrowserHistory()
   return render(
-    <Router history={history}>
-      <OfferEducationalStock {...props} />
-    </Router>
+    <Provider store={configureTestStore({})}>
+      <Router history={history}>
+        <OfferEducationalStock {...props} />
+      </Router>
+    </Provider>
   )
 }
