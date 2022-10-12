@@ -3,6 +3,10 @@
 .eac-layout {
   position: relative;
 
+  &-tag {
+    margin-bottom: rem.torem(4px);
+  }
+
   &-headings {
     margin-bottom: rem.torem(32px);
   }

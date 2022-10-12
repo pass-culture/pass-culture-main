@@ -1,6 +1,14 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .actions {
-    position: absolute;
-    top: 0;
-    right: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.duplicate-offer {
+  margin-bottom: rem.torem(32px);
+  &-description {
+    margin-bottom: rem.torem(24px);
   }
-  
+}

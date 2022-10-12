@@ -1,4 +1,5 @@
 import {
+  GetCollectiveOfferCollectiveStockResponseModel,
   OfferAddressType,
   OfferStatus,
   StudentLevels,
@@ -57,6 +58,16 @@ export const offerFactory = (
   isBookable: true,
   isVisibilityEditable: true,
   ...offerExtend,
+})
+
+export const collectiveOfferStockFactory = (
+  stockExtend: Partial<GetCollectiveOfferCollectiveStockResponseModel>
+): GetCollectiveOfferCollectiveStockResponseModel => ({
+  id: 'STOCK_ID',
+  isBooked: false,
+  isCancellable: true,
+  price: 10,
+  ...stockExtend,
 })
 
 export const collectiveOfferTemplateFactory = (
