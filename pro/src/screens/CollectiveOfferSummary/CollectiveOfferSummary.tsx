@@ -1,5 +1,6 @@
 import React from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import {
   cancelCollectiveBookingAdapter,
@@ -40,6 +41,7 @@ const CollectiveOfferSummary = ({
 }: ICollectiveOfferSummaryProps) => {
   const notify = useNotification()
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const setIsOfferActive = async () => {
     const adapter = offer.isTemplate
       ? patchIsTemplateOfferActiveAdapter
@@ -57,6 +59,7 @@ const CollectiveOfferSummary = ({
     notify.error(response.message)
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const cancelActiveBookings = async () => {
     if (offer.isTemplate) {
       return
@@ -73,6 +76,10 @@ const CollectiveOfferSummary = ({
     notify.success(message)
     reloadCollectiveOffer?.()
   }
+
+  const isCollectiveOfferDuplicationActive = useActiveFeature(
+    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
+  )
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -98,6 +105,27 @@ const CollectiveOfferSummary = ({
         isOfferActive={offer.isActive}
         setIsOfferActive={setIsOfferActive}
       />
+      {isCollectiveOfferDuplicationActive && offer.isTemplate && (
+        <div className={styles['duplicate-offer']}>
+          <p className={styles['duplicate-offer-description']}>
+            Vous pouvez dupliquer cette offre autant de fois que vous le
+            souhaitez pour l’associer aux établissements scolaires qui vous
+            contactent. <br />
+            &nbsp;· L’offre vitrine restera visible sur ADAGE <br />
+            &nbsp;· L’offre associée à l’établissement devra être pré-réservée
+            par l’enseignant(e) qui vous a contacté
+          </p>
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            link={{
+              isExternal: false,
+              to: `/offre/duplication/collectif/${offer.id}`,
+            }}
+          >
+            Créer une offre réservable pour un établissement scolaire
+          </ButtonLink>
+        </div>
+      )}
       <SummaryLayout>
         <SummaryLayout.Content fullWidth>
           <SummaryLayout.Section

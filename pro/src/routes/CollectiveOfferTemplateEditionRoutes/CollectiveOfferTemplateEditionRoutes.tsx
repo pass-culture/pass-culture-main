@@ -13,6 +13,7 @@ import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferTemplateSummary from 'routes/CollectiveOfferTemplateSummary'
 
+/* istanbul ignore next: DEBT, TO FIX */
 const CollectiveOfferTemplateEditionRoutes = (): JSX.Element => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId } =
@@ -47,6 +48,7 @@ const CollectiveOfferTemplateEditionRoutes = (): JSX.Element => {
 
   return (
     <CollectiveOfferLayout
+      isTemplate
       title={isSummaryPage ? 'Récapitulatif' : 'Éditer une offre collective'}
       subTitle={offer.name}
       breadCrumpProps={
