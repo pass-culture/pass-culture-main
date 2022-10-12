@@ -191,6 +191,7 @@ describe('useGetOfferIndividual', () => {
       isNational: false,
       name: 'Séance ciné duo',
       isEvent: true,
+      isDigital: false,
       withdrawalType: null,
       image: {
         originalUrl: 'http://my.thumb.url',

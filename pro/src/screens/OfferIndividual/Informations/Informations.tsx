@@ -170,6 +170,7 @@ const Informations = ({
           imageOfferId: payload.id,
         }))
       await reloadOffer()
+      notify.success('Vos modifications ont bien été prises en compte')
       history.push(
         isCreation
           ? `/offre/${payload.id}/v3/creation/individuelle/stocks`
