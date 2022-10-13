@@ -3,7 +3,9 @@ import type { Row } from 'react-table'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
+import useAnalytics from 'components/hooks/useAnalytics'
 import Spinner from 'components/layout/Spinner'
+import { Events } from 'core/FirebaseEvents/constants'
 
 import CollectiveBookingDetails from '../CollectiveBookingDetails'
 
@@ -20,6 +22,7 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
   const [bookingDetails, setBookingDetails] =
     useState<CollectiveBookingByIdResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { logEvent } = useAnalytics()
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -38,9 +41,20 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
     }
   }, [row.isExpanded])
 
+  const onRowClick = () => {
+    logEvent?.(Events.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS)
+    row.toggleRowExpanded()
+  }
+
   return (
     <>
-      <TableRow row={row} />
+      <TableRow
+        row={row}
+        additionalRowAttribute={{
+          onClick: onRowClick,
+          style: { cursor: 'pointer' },
+        }}
+      />
       {row.isExpanded && (
         <>
           <tr />
