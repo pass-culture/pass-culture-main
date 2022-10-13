@@ -599,7 +599,16 @@ class CreateOffererTest:
         assert not created_user_offerer.user.has_pro_role
 
         mock_maybe_send_offerer_validation_email.assert_called_once_with(
-            created_user_offerer.offerer, created_user_offerer
+            created_user_offerer.offerer,
+            created_user_offerer,
+            sirene.SirenInfo(
+                siren="418166096",
+                name="MINISTERE DE LA CULTURE",
+                head_office_siret="41816609600001",
+                ape_code="90.03A",
+                legal_category_code="1000",
+                address=sirene._Address(street="3 RUE DE VALOIS", postal_code="75001", city="Paris"),
+            ),
         )
 
         actions_list = history_models.ActionHistory.query.all()

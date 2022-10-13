@@ -1282,7 +1282,32 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
     return db.session.execute(offers_stats_query).one_or_none()
 
 
-def list_offerers_to_be_validated() -> sa.orm.Query:
-    return offerers_models.Offerer.query.filter(offerers_models.Offerer.isWaitingForValidation).options(
+def list_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+    query = offerers_models.Offerer.query.filter(offerers_models.Offerer.isWaitingForValidation).options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
     )
+
+    filter_dict = {f["field"]: f["value"] for f in filter_}
+    tags = filter_dict.get("tags")
+    if tags:
+        tagged_offerers = (
+            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.label).label("tags"))
+            .join(
+                offerers_models.OffererTagMapping,
+                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            )
+            .join(
+                offerers_models.OffererTag,
+                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
+            )
+            .group_by(
+                offerers_models.Offerer.id,
+            )
+            .cte()
+        )
+
+        query = query.join(tagged_offerers, tagged_offerers.c.id == offerers_models.Offerer.id).filter(
+            sa.and_(*(tagged_offerers.c.tags.any(tag) for tag in tags))
+        )
+
+    return query

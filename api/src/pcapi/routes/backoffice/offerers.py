@@ -301,9 +301,9 @@ def _get_offerer_status(offerer: offerers_models.Offerer) -> str:
 )
 @perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def list_offerers_to_be_validated(
-    query: serialization.PaginableQuery,
+    query: serialization.OffererToBeValidatedQuery,
 ) -> serialization.ListOffererToBeValidatedResponseModel:
-    offerers = offerers_api.list_offerers_to_be_validated()
+    offerers = offerers_api.list_offerers_to_be_validated([dict(f) for f in query.filter])
 
     sorts = query.sort.split(",") if query.sort else ["-id"]
     sorted_offerers = utils.sort_query(offerers, db_utils.get_ordering_clauses(offerers_models.Offerer, sorts))
