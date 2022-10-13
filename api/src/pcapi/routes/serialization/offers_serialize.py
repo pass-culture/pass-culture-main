@@ -10,9 +10,8 @@ from pydantic import validator
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.models import Stock
-from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
@@ -72,7 +71,7 @@ class PostOfferBodyModel(BaseModel):
     media_urls: list[str] | None
     description: str | None
     withdrawal_details: str | None
-    withdrawal_type: WithdrawalTypeEnum | None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None
     withdrawal_delay: int | None
     conditions: str | None
     age_min: int | None
@@ -129,7 +128,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     externalTicketOfficeUrl: HttpUrl | None
     url: HttpUrl | None
     withdrawalDetails: str | None
-    withdrawalType: WithdrawalTypeEnum | None
+    withdrawalType: offers_models.WithdrawalTypeEnum | None
     withdrawalDelay: int | None
     isActive: bool | None
     isDuo: bool | None
@@ -325,7 +324,7 @@ class GetOfferStockResponseModel(BaseModel):
     _humanize_offer_id = humanize_field("offerId")
 
     @classmethod
-    def from_orm(cls, stock: Stock):  # type: ignore
+    def from_orm(cls, stock: offers_models.Stock):  # type: ignore
         # here we have N+1 requests (for each stock we query an activation code)
         # but it should be more efficient than loading all activationCodes of all stocks
         stock.hasActivationCode = (
@@ -441,7 +440,7 @@ class GetOfferMediationResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
+class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
     ageMax: int | None
     ageMin: int | None
@@ -479,7 +478,9 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     url: str | None
     venue: GetOfferVenueResponseModel
     venueId: str
+    withdrawalDelay: int | None
     withdrawalDetails: str | None
+    withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
 
     _humanize_id = humanize_field("id")
@@ -496,11 +497,6 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
-
-
-class GetIndividualOfferResponseModel(GetOfferResponseModel):
-    withdrawalType: WithdrawalTypeEnum | None
-    withdrawalDelay: int | None
 
 
 class ImageBodyModel(BaseModel):
