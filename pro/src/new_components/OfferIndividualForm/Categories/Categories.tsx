@@ -34,8 +34,9 @@ const Categories = ({
     touched,
   } = useFormikContext<IOfferIndividualFormValues>()
   useEffect(() => {
-    if (touched.subcategoryId === true) {
+    if (touched.subcategoryId) {
       setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
+      setFieldValue('subCategoryFields', FORM_DEFAULT_VALUES.subCategoryFields)
     }
   }, [formValues.categoryId])
 
