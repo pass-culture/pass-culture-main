@@ -1,5 +1,3 @@
-import { randomUUID } from 'crypto'
-
 import {
   alpha,
   Box,
@@ -30,7 +28,7 @@ import {
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 
-import { searchPermission } from '../../../helpers/functions'
+import { searchPermission, uuid } from '../../../helpers/functions'
 import { Colors } from '../../../layout/Colors'
 import { eventMonitoring } from '../../../libs/monitoring/sentry'
 import { HistoryItem, OffererAttachedUser } from '../../../TypesFromApi'
@@ -350,7 +348,7 @@ export const OffererDetail = () => {
                     <TableBody>
                       {offererHistory.map(item => (
                         <TableRow
-                          key={randomUUID()}
+                          key={uuid()}
                           sx={{
                             '&:last-child td, &:last-child th': { border: 0 },
                           }}
