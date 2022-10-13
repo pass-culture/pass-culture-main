@@ -13,7 +13,6 @@ import { v4 as generateRandomUuid } from 'uuid'
 import { api } from 'apiClient/api'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {
   createEventStockPayload,
@@ -32,6 +31,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 import {
   searchFiltersSelector,
   searchPageNumberSelector,

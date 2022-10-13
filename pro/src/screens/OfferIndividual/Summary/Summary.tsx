@@ -4,7 +4,6 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
-import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner'
 import {
   Events,
@@ -27,6 +26,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import { ActionBar } from '../ActionBar'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
 import { ActionsFormV2 } from './ActionsFormV2'
 import { IOfferSectionProps, OfferSection } from './OfferSection'
