@@ -60,7 +60,7 @@ class VenueProviderResponse(BaseModel):
     _humanize_provider_id = humanize_field("providerId")
 
     @classmethod
-    def from_orm(cls: Any, venue_provider: VenueProvider):  # type: ignore
+    def from_orm(cls: Any, venue_provider: VenueProvider) -> "VenueProviderResponse":
         result = super().from_orm(venue_provider)
 
         if not venue_provider.isFromAllocineProvider:

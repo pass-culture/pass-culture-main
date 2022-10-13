@@ -29,7 +29,7 @@ class BusinessUnitResponseModel(BaseModel):
     siret: str | None
 
     @classmethod
-    def from_orm(cls, business_unit: finance_models.BusinessUnit):  # type: ignore [no-untyped-def]
+    def from_orm(cls, business_unit: finance_models.BusinessUnit) -> "BusinessUnitResponseModel":
         business_unit.iban = business_unit.bankAccount.iban
         business_unit.bic = business_unit.bankAccount.bic
         res = super().from_orm(business_unit)
@@ -88,7 +88,7 @@ class InvoiceResponseModel(BaseModel):
     cashflowLabels: list[str]
 
     @classmethod
-    def from_orm(cls, invoice: finance_models.Invoice):  # type: ignore [no-untyped-def]
+    def from_orm(cls, invoice: finance_models.Invoice) -> "InvoiceResponseModel":
         invoice.businessUnitName = invoice.businessUnit.name if invoice.businessUnit else None
         invoice.reimbursementPointName = (
             (invoice.reimbursementPoint.publicName or invoice.reimbursementPoint.name)

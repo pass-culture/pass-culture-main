@@ -91,8 +91,7 @@ class GetOffererResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
 
     @classmethod
-    # type: ignore
-    def from_orm(cls, offerer: offerers_models.Offerer):
+    def from_orm(cls, offerer: offerers_models.Offerer) -> "GetOffererResponseModel":
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
@@ -238,12 +237,12 @@ class GetOfferersResponseModel(BaseModel):
         orm_mode = True
 
     @classmethod
-    def from_orm(  # type: ignore [no-untyped-def, override]
+    def from_orm(  # type: ignore [override]
         cls,
         offerer: offerers_models.Offerer,
         user: users_models.User,
         offer_counts: dict[int, int],
-    ):
+    ) -> "GetOfferersResponseModel":
         offerer.userHasAccess = user.has_admin_role or any(
             uo.isValidated for uo in offerer.UserOfferers if uo.userId == user.id
         )

@@ -33,7 +33,7 @@ class StockResponseModel(BaseModel):
     _humanize_offer_id = humanize_field("offerId")
 
     @classmethod
-    def from_orm(cls, stock: Stock):  # type: ignore
+    def from_orm(cls, stock: Stock) -> "StockResponseModel":
         activation_code = (
             ActivationCode.query.filter(ActivationCode.stockId == stock.id).first()
             if stock.canHaveActivationCodes

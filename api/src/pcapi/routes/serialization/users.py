@@ -9,7 +9,7 @@ import pydantic
 from pydantic import EmailStr
 from pydantic.class_validators import validator
 
-from pcapi.core.users import models as user_models
+from pcapi.core.users import models as users_models
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.domain.password import check_password_strength
 from pcapi.routes.serialization import BaseModel
@@ -94,7 +94,7 @@ class ProUserCreationBodyModel(BaseModel):
     contact_ok: bool
 
     @validator("password")
-    def validate_password_strength(cls, password: str) -> str:  # typing: ignore
+    def validate_password_strength(cls, password: str) -> str:
         check_password_strength("password", password)
         return password
 
@@ -104,7 +104,7 @@ class ProUserCreationBodyModel(BaseModel):
     # require this validator. It may be a bug in the frontend. Revisit
     # this when we have switched the frontend from "pcapi" to "apiClient".
     @validator("contact_ok", pre=True, always=True)
-    def cast_contact_ok_to_bool(cls, contact_ok: bool | None) -> bool:  # typing: ignore
+    def cast_contact_ok_to_bool(cls, contact_ok: bool | None) -> bool:
         return bool(contact_ok)
 
     _validate_phone_number_format = validate_phone_number_format("phone_number")
@@ -123,7 +123,7 @@ class SharedLoginUserResponseModel(BaseModel):
     activity: str | None
     address: str | None
     city: str | None
-    civility: user_models.GenderEnum | None
+    civility: users_models.GenderEnum | None
     dateCreated: datetime
     dateOfBirth: datetime | None
     departementCode: str | None
@@ -144,7 +144,7 @@ class SharedLoginUserResponseModel(BaseModel):
     phoneNumber: str | None
     postalCode: str | None
     publicName: str | None
-    roles: list[user_models.UserRole]
+    roles: list[users_models.UserRole]
 
     _normalize_id = humanize_field("id")
 
@@ -157,7 +157,7 @@ class SharedLoginUserResponseModel(BaseModel):
         use_enum_values = True
 
     @classmethod
-    def from_orm(cls, user):  # type: ignore [no-untyped-def]
+    def from_orm(cls, user: users_models.User) -> "SharedLoginUserResponseModel":
         user.isAdmin = user.has_admin_role
         user.nonHumanizedId = user.id
         result = super().from_orm(user)
@@ -169,7 +169,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     activity: str | None
     address: str | None
     city: str | None
-    civility: user_models.GenderEnum | None
+    civility: users_models.GenderEnum | None
     dateCreated: datetime
     dateOfBirth: datetime | None
     departementCode: str | None
@@ -189,10 +189,10 @@ class SharedCurrentUserResponseModel(BaseModel):
     needsToFillCulturalSurvey: bool | None
     notificationSubscriptions: typing.Dict | None
     phoneNumber: str | None
-    phoneValidationStatus: user_models.PhoneValidationStatusType | None
+    phoneValidationStatus: users_models.PhoneValidationStatusType | None
     postalCode: str | None
     publicName: str | None
-    roles: list[user_models.UserRole]
+    roles: list[users_models.UserRole]
 
     _normalize_id = humanize_field("id")
 
@@ -202,7 +202,7 @@ class SharedCurrentUserResponseModel(BaseModel):
         orm_mode = True
 
     @classmethod
-    def from_orm(cls, user):  # type: ignore [no-untyped-def]
+    def from_orm(cls, user: users_models.User) -> "SharedCurrentUserResponseModel":
         user.isAdmin = user.has_admin_role
         user.nonHumanizedId = user.id
         result = super().from_orm(user)

@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+import typing
 
 from pydantic import Field
 from pydantic import validator
@@ -10,6 +11,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
+import pcapi.core.offers.models as offers_models
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -22,6 +24,11 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+
+
+T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
+    "T_GetCollectiveOfferBaseResponseModel", bound="GetCollectiveOfferBaseResponseModel"
+)
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
@@ -51,7 +58,7 @@ class CollectiveOffersStockResponseModel(BaseModel):
     beginningDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
-    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def]
+    def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
         return remainingQuantity
@@ -273,9 +280,11 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     _humanize_venue_id = humanize_field("venueId")
 
     @classmethod
-    def from_orm(cls, offer):  # type: ignore
+    def from_orm(
+        cls: typing.Type[T_GetCollectiveOfferBaseResponseModel],
+        offer: offers_models.Offer,
+    ) -> T_GetCollectiveOfferBaseResponseModel:
         offer.nonHumanizedId = offer.id
-
         return super().from_orm(offer)
 
     class Config:
