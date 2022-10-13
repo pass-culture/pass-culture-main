@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from typing import Any
 from typing import Callable
 
 from pydantic.class_validators import validator
@@ -9,6 +8,7 @@ from pydantic.fields import Field
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
@@ -77,7 +77,7 @@ class OfferStockResponse(BaseModel):
         return {"expirationDate": activation_code.expirationDate}
 
     @classmethod
-    def from_orm(cls, stock):  # type: ignore
+    def from_orm(cls, stock: Stock) -> "OfferStockResponse":
         stock.cancellation_limit_datetime = cls._get_cancellation_limit_datetime(stock)
         stock.activationCode = cls._get_non_scrappable_activation_code(stock)
         return super().from_orm(stock)
@@ -85,7 +85,7 @@ class OfferStockResponse(BaseModel):
 
 class OfferVenueResponse(BaseModel):
     @classmethod
-    def from_orm(cls, venue):  # type: ignore
+    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
         # FIXME: remove this line once Venue.isPermanent is not nullable
         venue.isPermanent = venue.isPermanent or False
@@ -167,7 +167,7 @@ class OfferImageResponse(BaseModel):
 
 class OfferResponse(BaseModel):
     @classmethod
-    def from_orm(cls: Any, offer: Offer):  # type: ignore
+    def from_orm(cls, offer: Offer) -> "OfferResponse":
         offer.accessibility = {
             "audioDisability": offer.audioDisabilityCompliant,
             "mentalDisability": offer.mentalDisabilityCompliant,
