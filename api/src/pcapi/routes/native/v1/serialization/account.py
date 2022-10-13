@@ -192,7 +192,7 @@ class UserProfileResponse(BaseModel):
         return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
 
     @classmethod
-    def from_orm(cls, user: User):  # type: ignore
+    def from_orm(cls, user: User) -> "UserProfileResponse":
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
         user.domains_credit = users_api.get_domains_credit(user)

@@ -42,7 +42,7 @@ class BookingVenueResponse(BaseModel):
         allow_population_by_field_name = True
 
     @classmethod
-    def from_orm(cls: Any, venue: Venue):  # type: ignore
+    def from_orm(cls, venue: Venue) -> "BookingVenueResponse":
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
         return super().from_orm(venue)
 
@@ -113,7 +113,7 @@ class BookingReponse(BaseModel):
     _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
 
     @classmethod
-    def from_orm(cls: Any, booking: Booking):  # type: ignore
+    def from_orm(cls: Any, booking: Booking) -> "BookingReponse":
         booking.confirmationDate = booking.cancellationLimitDate
         return super().from_orm(booking)
 

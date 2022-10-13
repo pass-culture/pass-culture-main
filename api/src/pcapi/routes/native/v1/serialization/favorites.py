@@ -5,6 +5,7 @@ from pydantic.class_validators import validator
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
+from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.serialization import BaseModel
@@ -47,7 +48,7 @@ class FavoriteOfferResponse(BaseModel):
         orm_mode = True
 
     @classmethod
-    def from_orm(cls, offer):  # type: ignore
+    def from_orm(cls, offer: Offer) -> "FavoriteOfferResponse":
         offer.coordinates = {"latitude": offer.venue.latitude, "longitude": offer.venue.longitude}
         offer.expenseDomains = get_expense_domains(offer)
         return super().from_orm(offer)
