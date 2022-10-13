@@ -284,3 +284,17 @@ class LocalProviderEvent(PcObject, Base, Model):  # type: ignore [valid-type, mi
     date: datetime.datetime = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     type: LocalProviderEventType = Column(Enum(LocalProviderEventType), nullable=False)
     payload = Column(String(50), nullable=True)
+
+
+class BoostCinemaDetails(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+    """Stores info on the specific login details of a cinema synced with Boost"""
+
+    cinemaProviderPivotId = Column(
+        BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
+    )
+    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
+    cinemaUrl: str = Column(Text, nullable=False)  # including http:// or https:// and trailing /
+    username: str = Column(Text, nullable=False)
+    password: str = Column(Text, nullable=False)
+    token: str | None = Column(Text, nullable=True)
+    tokenExpirationDate: datetime.datetime | None = Column(DateTime, nullable=True)
