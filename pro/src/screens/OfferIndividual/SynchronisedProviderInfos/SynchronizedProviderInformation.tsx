@@ -4,8 +4,16 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import { getProviderInfo } from 'core/Providers/utils'
 
-const SynchronizedProviderInformation = ({ providerName }) => {
+interface ISynchronizedProviderInformation {
+  providerName: string
+}
+
+const SynchronizedProviderInformation = ({
+  providerName,
+}: ISynchronizedProviderInformation): JSX.Element | null => {
   const providerInfo = getProviderInfo(providerName)
+
+  if (providerInfo === undefined) return null
 
   return (
     <div className="provider-information">
