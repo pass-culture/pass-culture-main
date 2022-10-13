@@ -23,6 +23,7 @@ const BaseInput = ({
       className={cn(styles['base-radio-input'], {
         [styles['has-error']]: hasError,
       })}
+      aria-invalid={hasError}
     />
     <span className={cn(styles['base-radio-label'])}>{label}</span>
   </label>
