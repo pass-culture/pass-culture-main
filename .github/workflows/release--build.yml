@@ -1,10 +1,10 @@
-name: '[Deployment] Create a release'
+name: "[Deployment] Create a release"
 
 on:
   workflow_dispatch:
     inputs:
-      releaseCandidateVersion:
-        description: "Numéro de la RC sans le .0.0 (ex: 2150)"
+      commitHash:
+        description: "Hash du commit à déployer (ex: cadd172232c80206107e2f0122542adf19fb42af)"
         required: true
         type: string
 
@@ -19,7 +19,7 @@ jobs:
     uses: ./.github/workflows/reusable--build-and-tag.yml
     secrets: inherit
     with:
-      base_ref: RC-${{ github.event.inputs.releaseCandidateVersion }}.0.0
+      base_ref: ${{ github.event.inputs.commitHash }}
       tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
 
   create-maintenance-branch:
