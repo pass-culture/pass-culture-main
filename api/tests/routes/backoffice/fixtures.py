@@ -38,6 +38,8 @@ __all__ = (
     "individual_offerer_bookings",
     "collective_offerer_booking",
     "collective_venue_booking",
+    "offerer_tags",
+    "offerers_to_be_validated",
 )
 
 
@@ -308,3 +310,33 @@ def collective_venue_booking(venue_with_accepted_bank_info):
         venue=venue_with_accepted_bank_info,
     )
     return used, cancelled
+
+
+@pytest.fixture
+def offerer_tags():
+    tags = tuple(
+        offerers_factories.OffererTagFactory(label=label)
+        for label in ("Top acteur", "Collectivité", "Établissement public")
+    )
+    return tags
+
+
+@pytest.fixture
+def offerers_to_be_validated(offerer_tags):
+    top_tag, collec_tag, public_tag = offerer_tags
+
+    no_tag = offerers_factories.OffererFactory(name="A", validationStatus="NEW", validationToken="1" + "0" * 26)
+    top = offerers_factories.OffererFactory(name="B", validationStatus="NEW", validationToken="2" + "0" * 26)
+    collec = offerers_factories.OffererFactory(name="C", validationStatus="NEW", validationToken="3" + "0" * 26)
+    public = offerers_factories.OffererFactory(name="D", validationStatus="NEW", validationToken="4" + "0" * 26)
+    top_collec = offerers_factories.OffererFactory(name="E", validationStatus="NEW", validationToken="5" + "0" * 26)
+    top_public = offerers_factories.OffererFactory(name="F", validationStatus="NEW", validationToken="6" + "0" * 26)
+
+    for offerer in (top, top_collec, top_public):
+        offerers_factories.OffererTagMappingFactory(tagId=top_tag.id, offererId=offerer.id)
+    for offerer in (collec, top_collec):
+        offerers_factories.OffererTagMappingFactory(tagId=collec_tag.id, offererId=offerer.id)
+    for offerer in (public, top_public):
+        offerers_factories.OffererTagMappingFactory(tagId=public_tag.id, offererId=offerer.id)
+
+    return (no_tag, top, collec, public, top_collec, top_public)

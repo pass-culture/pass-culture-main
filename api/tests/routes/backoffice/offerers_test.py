@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 import datetime
+import json
 
 from flask import url_for
 import pytest
@@ -1422,6 +1423,39 @@ class ListOfferersToBeValidatedTest:
         assert [o["id"] for o in name_asc.json["data"]] == [o.id for o in (offerer_1, offerer_2, offerer_3)]
         assert creation_date_desc.status_code == 200
         assert [o["id"] for o in creation_date_desc.json["data"]] == [o.id for o in (offerer_2, offerer_1, offerer_3)]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    @pytest.mark.parametrize(
+        "tag_filter, expected_offerer_names",
+        (
+            (["Top acteur"], ["B", "E", "F"]),
+            (["Collectivité"], ["C", "E"]),
+            (
+                [
+                    "Établissement public",
+                ],
+                ["D", "F"],
+            ),
+            (["Établissement public", "Top acteur"], ["F"]),
+        ),
+    )
+    def test_list_filtering(self, client, tag_filter, expected_offerer_names, offerers_to_be_validated):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for(
+                "backoffice_blueprint.list_offerers_to_be_validated",
+                filter=json.dumps([{"field": "tags", "value": tag_filter}]),
+            )
+        )
+
+        # then
+        assert response.status_code == 200
+        data = response.json["data"]
+        assert sorted(o["name"] for o in data) == sorted(expected_offerer_names)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_without_permission(self, client):
