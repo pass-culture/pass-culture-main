@@ -83,4 +83,4 @@ jobs:
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
-          jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10045=${{ steps.get_release_version.outputs.value }} --override customfield_10060=${{ steps.get_commit_info.outputs.hash }} --noedit
+          jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10045=${{ steps.get_release_version.outputs.value }} customfield_10059=${{ steps.get_commit_info.outputs.number }} --override customfield_10060=${{ steps.get_commit_info.outputs.hash }} --noedit
