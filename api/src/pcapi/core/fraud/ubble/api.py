@@ -13,7 +13,7 @@ from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 
 
-UBBLE_TEST_EMAIL_RE = re.compile(r"^.+\+ubble_test@.+$")
+UBBLE_TEST_EMAIL_RE = re.compile(r"^.+(\+ubble_test@.+|@yeswehack.ninja)$")
 
 logger = logging.getLogger(__name__)
 

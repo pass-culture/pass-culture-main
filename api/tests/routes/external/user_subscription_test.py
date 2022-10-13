@@ -1291,8 +1291,8 @@ class UbbleWebhookTest:
         assert response.status_code == 200
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
-    def test_birth_date_overrided_with_ubble_test_emails(self, client, ubble_mocker, mocker):
-        email = "whatever+ubble_test@example.com"
+    @pytest.mark.parametrize("email", ["whatever+ubble_test@example.com", "Test-ywh-12345678@yeswehack.ninja"])
+    def test_birth_date_overrided_with_ubble_test_emails(self, client, ubble_mocker, mocker, email):
         subscription_birth_date = datetime.datetime.combine(
             datetime.date.today(), datetime.time(0, 0)
         ) - relativedelta.relativedelta(years=18, months=6)
