@@ -68,6 +68,7 @@ describe('updateIndividualOffer', () => {
       isNational: true,
       isDuo: true,
       name: 'Test offer',
+      url: null,
       venueId: 'AB',
       withdrawalDelay: 12,
       withdrawalDetails: 'withdrawal description',
