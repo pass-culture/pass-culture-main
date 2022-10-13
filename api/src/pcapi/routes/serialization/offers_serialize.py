@@ -93,13 +93,13 @@ class PostOfferBodyModel(BaseModel):
     offererId: str | None
 
     @validator("name", pre=True)
-    def validate_name(cls, name, values):  # type: ignore [no-untyped-def]
+    def validate_name(cls, name: str, values: dict) -> str:
         if not values["product_id"]:
             check_offer_name_length_is_valid(name)
         return name
 
     @validator("extra_data", pre=True)
-    def validate_isbn(cls, extra_data_field, values):  # type: ignore [no-untyped-def]
+    def validate_isbn(cls, extra_data_field: dict, values: dict) -> dict:
         if (
             FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
             and not values["product_id"]
@@ -141,7 +141,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     productId: str | None
 
     @validator("name", pre=True, allow_reuse=True)
-    def validate_name(cls, name):  # type: ignore [no-untyped-def]
+    def validate_name(cls, name: str) -> str:
         if name:
             check_offer_name_length_is_valid(name)
         return name
@@ -217,7 +217,7 @@ class ListOffersStockResponseModel(BaseModel):
     beginningDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
-    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def]
+    def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
         return remainingQuantity
@@ -324,7 +324,7 @@ class GetOfferStockResponseModel(BaseModel):
     _humanize_offer_id = humanize_field("offerId")
 
     @classmethod
-    def from_orm(cls, stock: offers_models.Stock):  # type: ignore
+    def from_orm(cls, stock: offers_models.Stock) -> "GetOfferStockResponseModel":
         # here we have N+1 requests (for each stock we query an activation code)
         # but it should be more efficient than loading all activationCodes of all stocks
         stock.hasActivationCode = (
@@ -333,7 +333,9 @@ class GetOfferStockResponseModel(BaseModel):
         return super().from_orm(stock)
 
     @validator("cancellationLimitDate", pre=True, always=True)
-    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # type: ignore [no-untyped-def]
+    def validate_cancellation_limit_date(
+        cls, cancellation_limit_date: datetime | None, values: dict
+    ) -> datetime | None:
         return compute_cancellation_limit_date(values.get("beginningDatetime"), datetime.utcnow())
 
     class Config:
@@ -489,7 +491,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     _humanize_last_provider_id = humanize_field("lastProviderId")
 
     @classmethod
-    def from_orm(cls, offer):  # type: ignore
+    def from_orm(cls, offer: offers_models.Offer) -> "GetIndividualOfferResponseModel":
         offer.nonHumanizedId = offer.id
         return super().from_orm(offer)
 

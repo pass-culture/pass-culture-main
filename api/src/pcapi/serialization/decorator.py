@@ -128,7 +128,7 @@ def spectree_serialize(
             json=body_in_kwargs,
             security=security,
         )
-        def sync_validate(*args: dict, **kwargs: dict) -> Response:
+        def sync_validate(*args: Any, **kwargs: Any) -> Response:
             try:
                 body_params = request.get_json()
             except BadRequest as error:

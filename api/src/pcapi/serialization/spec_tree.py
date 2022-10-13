@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Any
 from typing import Callable
 from typing import Dict
+from typing import Type
 
 from pydantic import BaseModel  # pylint: disable=wrong-pydantic-base-model-import
 from spectree import Response
@@ -11,11 +12,11 @@ from spectree.utils import parse_code
 from pcapi import settings
 
 
-def get_model_key(model):  # type: ignore [no-untyped-def]
+def get_model_key(model: Type[BaseModel]) -> str:
     return model.__name__
 
 
-def get_model_schema(model):  # type: ignore [no-untyped-def]
+def get_model_schema(model: Type[BaseModel]) -> dict:
     assert issubclass(model, BaseModel)
     return model.schema(
         ref_template=f"#/components/schemas/{{model}}"  # pylint: disable=f-string-without-interpolation
@@ -37,7 +38,7 @@ def build_operation_id(func: Callable) -> str:
 
 
 class ExtendedSpecTree(SpecTree):
-    def __init__(self, *args, humanize_operation_id=False, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, *args: Any, humanize_operation_id: bool = False, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.humanize_operation_id = humanize_operation_id
 
@@ -54,14 +55,13 @@ class ExtendedSpecTree(SpecTree):
                     spec["servers"] = [{"url": settings.API_URL}]
         return spec
 
-    def _add_model(self, model) -> str:  # type: ignore [no-untyped-def]
+    def _add_model(self, model: Type[BaseModel]) -> str:
         model_key = get_model_key(model=model)
         self.models[model_key] = deepcopy(get_model_schema(model=model))
 
         return model_key
 
-    def _get_model_definitions(self):  # type: ignore [no-untyped-def]
-
+    def _get_model_definitions(self) -> dict:
         definitions = {}
         for _name, schema in self.models.items():
             if "definitions" in schema:

@@ -1,3 +1,5 @@
+import flask
+
 from pcapi.core.offers import validation
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
@@ -31,7 +33,7 @@ class CreateThumbnailBodyModel(BaseModel):
             width_crop_percent=self.cropping_rect_width,
         )
 
-    def get_image_as_bytes(self, request) -> bytes:  # type: ignore [no-untyped-def]
+    def get_image_as_bytes(self, request: flask.Request) -> bytes:
         """
         Get the image from the POSTed data (request)
         Only the max size is checked at this stage, and possibly the content type header
