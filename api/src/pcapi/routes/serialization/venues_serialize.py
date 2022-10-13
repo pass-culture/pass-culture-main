@@ -33,17 +33,17 @@ MAX_LATITUDE = 90
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     # pydantic constrained types do not work well with Mypy, see https://github.com/samuelcolvin/pydantic/issues/156
-    address: pydantic.constr(max_length=200)  # type: ignore
-    bookingEmail: pydantic.constr(max_length=120)  # type: ignore
-    city: pydantic.constr(max_length=50)  # type: ignore
+    address: pydantic.constr(max_length=200)  # type: ignore [valid-type]
+    bookingEmail: pydantic.constr(max_length=120)  # type: ignore [valid-type]
+    city: pydantic.constr(max_length=50)  # type: ignore [valid-type]
     comment: str | None
     latitude: float
     longitude: float
     managingOffererId: str
-    name: pydantic.constr(max_length=140)  # type: ignore
-    publicName: pydantic.constr(max_length=255) | None  # type: ignore
-    postalCode: pydantic.constr(min_length=4, max_length=6)  # type: ignore
-    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore
+    name: pydantic.constr(max_length=140)  # type: ignore [valid-type]
+    publicName: pydantic.constr(max_length=255) | None  # type: ignore [valid-type]
+    postalCode: pydantic.constr(min_length=4, max_length=6)  # type: ignore [valid-type]
+    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore [valid-type]
     venueLabelId: str | None
     venueTypeCode: str
     withdrawalDetails: str | None
@@ -291,15 +291,15 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    name: pydantic.constr(max_length=140) | None  # type: ignore
-    address: pydantic.constr(max_length=200) | None  # type: ignore
-    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore
+    name: pydantic.constr(max_length=140) | None  # type: ignore [valid-type]
+    address: pydantic.constr(max_length=200) | None  # type: ignore [valid-type]
+    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore [valid-type]
     latitude: float | str | None
     longitude: float | str | None
-    bookingEmail: pydantic.constr(max_length=120) | None  # type: ignore
-    postalCode: pydantic.constr(min_length=4, max_length=6) | None  # type: ignore
-    city: pydantic.constr(max_length=50) | None  # type: ignore
-    publicName: pydantic.constr(max_length=255) | None  # type: ignore
+    bookingEmail: pydantic.constr(max_length=120) | None  # type: ignore [valid-type]
+    postalCode: pydantic.constr(min_length=4, max_length=6) | None  # type: ignore [valid-type]
+    city: pydantic.constr(max_length=50) | None  # type: ignore [valid-type]
+    publicName: pydantic.constr(max_length=255) | None  # type: ignore [valid-type]
     comment: str | None
     venueTypeCode: str | None
     venueLabelId: int | None
@@ -307,7 +307,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     isAccessibilityAppliedOnAllOffers: bool | None
     isWithdrawalAppliedOnAllOffers: bool | None
     isEmailAppliedOnAllOffers: bool | None
-    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore
+    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
     contact: base.VenueContactModel | None
     businessUnitId: int | None
     reimbursementPointId: int | None
@@ -373,8 +373,8 @@ class VenueListQueryModel(BaseModel):
 
 
 class VenueBannerContentModel(BaseModel):
-    content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)  # type: ignore
-    image_credit: base.VenueImageCredit | None  # type: ignore
+    content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)  # type: ignore [valid-type]
+    image_credit: base.VenueImageCredit | None  # type: ignore [valid-type]
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
