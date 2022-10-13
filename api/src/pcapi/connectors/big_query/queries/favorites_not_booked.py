@@ -31,5 +31,5 @@ class FavoritesNotBooked(BaseQuery):
 
     def execute(self, page_size: int = 1_000) -> RowIterator:
         for row in super().execute(page_size):
-            for chunk in chunks.get_chunks(row.user_ids, page_size):  # type: ignore
+            for chunk in chunks.get_chunks(row.user_ids, page_size):  # type: ignore [var-annotated]
                 yield FavoritesNotBookedModel(offer_id=row.offer_id, offer_name=row.offer_name, user_ids=chunk)

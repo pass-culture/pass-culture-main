@@ -34,7 +34,7 @@ def decode_jwt_token(jwt_token: str) -> dict:
 
 def decode_jwt_token_rs256(jwt_token: str) -> dict:
     with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
-        payload = jwt.decode(jwt_token, key=reader.read(), algorithms=[ALGORITHM_RS_256])  # type: ignore # known as str in build assertion
+        payload = jwt.decode(jwt_token, key=reader.read(), algorithms=[ALGORITHM_RS_256])  # type: ignore [arg-type] # known as str in build assertion
     return payload
 
 
