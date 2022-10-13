@@ -15,21 +15,13 @@ from pydantic.fields import Field
 from sqlalchemy.orm import joinedload
 
 from pcapi.connectors.user_profiling import AgentType
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 import pcapi.core.users.models as users_models
-from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
-from pcapi.core.users.models import VOID_FIRST_NAME
-from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
@@ -135,7 +127,7 @@ class UserProfileResponse(BaseModel):
     deposit_type: finance_models.DepositType | None
     deposit_version: int | None
     domains_credit: DomainsCredit | None
-    eligibility: EligibilityType | None
+    eligibility: users_models.EligibilityType | None
     eligibility_end_datetime: datetime.datetime | None
     eligibility_start_datetime: datetime.datetime | None
     email: str
@@ -148,7 +140,7 @@ class UserProfileResponse(BaseModel):
     phoneNumber: str | None
     publicName: str | None = Field(None, alias="pseudo")
     recreditAmountToShow: int | None
-    roles: list[UserRole]
+    roles: list[users_models.UserRole]
     show_eligible_card: bool
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     subscriptionMessage: subscription_serialization.SubscriptionMessage | None
@@ -164,35 +156,39 @@ class UserProfileResponse(BaseModel):
 
     @validator("publicName", pre=True)
     def format_public_name(cls, publicName: str) -> str | None:
-        return publicName if publicName != VOID_PUBLIC_NAME else None
+        return publicName if publicName != users_models.VOID_PUBLIC_NAME else None
 
     @validator("firstName", pre=True)
     def format_first_name(cls, firstName: str | None) -> str | None:
-        return firstName if firstName != VOID_FIRST_NAME else None
+        return firstName if firstName != users_models.VOID_FIRST_NAME else None
 
     @staticmethod
-    def _show_eligible_card(user: User) -> bool:
+    def _show_eligible_card(user: users_models.User) -> bool:
         return (
             relativedelta(user.dateCreated, user.birth_date).years < users_constants.ELIGIBILITY_AGE_18
             and user.has_beneficiary_role is False
-            and user.eligibility == EligibilityType.AGE18
+            and user.eligibility == users_models.EligibilityType.AGE18
         )
 
     @staticmethod
-    def _get_booked_offers(user: User) -> dict:
+    def _get_booked_offers(user: users_models.User) -> dict:
         not_cancelled_bookings = (
-            Booking.query.join(Booking.individualBooking)
-            .options(joinedload(Booking.stock).joinedload(Stock.offer).load_only(Offer.id))
+            bookings_models.Booking.query.join(bookings_models.Booking.individualBooking)
+            .options(
+                joinedload(bookings_models.Booking.stock)
+                .joinedload(offers_models.Stock.offer)
+                .load_only(offers_models.Offer.id)
+            )
             .filter(
-                IndividualBooking.userId == user.id,
-                Booking.status != BookingStatus.CANCELLED,
+                bookings_models.IndividualBooking.userId == user.id,
+                bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
             )
         )
 
         return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
 
     @classmethod
-    def from_orm(cls, user: User) -> "UserProfileResponse":
+    def from_orm(cls, user: users_models.User) -> "UserProfileResponse":
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
         user.domains_credit = users_api.get_domains_credit(user)
@@ -212,7 +208,7 @@ class UserProfileResponse(BaseModel):
         return serialized_user
 
 
-def _should_prevent_from_filling_cultural_survey(user: User) -> bool:
+def _should_prevent_from_filling_cultural_survey(user: users_models.User) -> bool:
     # when the native form is active, there is no reason to prevent
     if FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active():
         return False

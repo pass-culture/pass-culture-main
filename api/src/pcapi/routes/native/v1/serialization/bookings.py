@@ -3,8 +3,7 @@ from typing import Any
 
 from pydantic.class_validators import validator
 
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -97,7 +96,7 @@ class ExternalBookingResponse(BaseModel):
 class BookingReponse(BaseModel):
     id: int
     cancellationDate: datetime | None
-    cancellationReason: BookingCancellationReasons | None
+    cancellationReason: bookings_models.BookingCancellationReasons | None
     confirmationDate: datetime | None
     completedUrl: str | None
     dateUsed: datetime | None
@@ -113,7 +112,7 @@ class BookingReponse(BaseModel):
     _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
 
     @classmethod
-    def from_orm(cls: Any, booking: Booking) -> "BookingReponse":
+    def from_orm(cls: Any, booking: bookings_models.Booking) -> "BookingReponse":
         booking.confirmationDate = booking.cancellationLimitDate
         return super().from_orm(booking)
 

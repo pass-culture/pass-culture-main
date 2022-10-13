@@ -5,13 +5,10 @@ import logging
 from pydantic import Field
 from pydantic.class_validators import validator
 
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import StudentLevels
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.utils import convert_to_cent
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceStrictMixin
-from pcapi.routes.native.v1.serialization.common_models import Coordinates
+from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -57,7 +54,7 @@ class OfferVenueResponse(BaseModel):
     name: str
     postalCode: str | None
     publicName: str | None
-    coordinates: Coordinates
+    coordinates: common_models.Coordinates
     managingOfferer: OfferManagingOffererResponse
 
     class Config:
@@ -130,7 +127,7 @@ class EducationalInstitutionResponseModel(BaseModel):
         extra = "forbid"
 
 
-class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin):
+class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplianceStrictMixin):
     id: int
     subcategoryLabel: str
     description: str | None
@@ -139,7 +136,7 @@ class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin
     name: str
     collectiveStock: OfferStockResponse = Field(alias="stock")
     venue: OfferVenueResponse
-    students: list[StudentLevels]
+    students: list[educational_models.StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
     contactPhone: str
@@ -151,7 +148,7 @@ class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin
     interventionArea: list[str]
 
     @classmethod
-    def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOfferResponseModel":
+    def from_orm(cls, offer: educational_models.CollectiveOffer) -> "CollectiveOfferResponseModel":
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
@@ -171,7 +168,7 @@ class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin
         extra = "forbid"
 
 
-class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStrictMixin):
+class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceStrictMixin):
     id: int
     subcategoryLabel: str
     description: str | None
@@ -179,7 +176,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStr
     isSoldOut: bool
     name: str
     venue: OfferVenueResponse
-    students: list[StudentLevels]
+    students: list[educational_models.StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
     contactPhone: str
@@ -190,7 +187,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStr
     interventionArea: list[str]
 
     @classmethod
-    def from_orm(cls, offer: CollectiveOfferTemplate) -> "CollectiveOfferTemplateResponseModel":
+    def from_orm(cls, offer: educational_models.CollectiveOfferTemplate) -> "CollectiveOfferTemplateResponseModel":
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
