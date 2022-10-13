@@ -16,7 +16,7 @@ const useSubCategoryUpdates = ({
 }: IUseSubCategoryUpdatesArgs) => {
   const {
     dirty,
-    values: { subcategoryId },
+    values: { subcategoryId, subCategoryFields },
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
 
@@ -44,8 +44,12 @@ const useSubCategoryUpdates = ({
   useEffect(
     function onSubCategoryChange() {
       if (dirty) {
+        const previousSubCategoryFields = subCategoryFields
         setFormSubCategoryFields()
-        resetSubCategoryFieldValues()
+
+        if (previousSubCategoryFields !== subCategoryFields) {
+          resetSubCategoryFieldValues()
+        }
       }
     },
     [subcategoryId]

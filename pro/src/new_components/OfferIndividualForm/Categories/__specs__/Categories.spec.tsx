@@ -250,4 +250,26 @@ describe('OfferIndividual section: Categories', () => {
     expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
   })
+
+  it('should not display subType selects when a music category is back to default', async () => {
+    renderCategories({
+      initialValues,
+      onSubmit,
+      props,
+    })
+    const categorySelect = screen.getByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'C')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'C-A')
+
+    const showSelect = screen.getByLabelText('Type de spectacle')
+    expect(showSelect).toBeInTheDocument()
+
+    await userEvent.selectOptions(showSelect, '100')
+    expect(screen.getByLabelText('Sous type')).toBeInTheDocument()
+
+    await userEvent.selectOptions(categorySelect, '')
+    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous type')).not.toBeInTheDocument()
+  })
 })
