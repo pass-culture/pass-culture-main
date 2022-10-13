@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { Link, useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import { OFFER_TYPES } from 'core/Offers'
-import { computeOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import FormLayout from 'new_components/FormLayout'
-import { SubmitButton } from 'ui-kit'
 
+import ActionsBar from './ActionsBar/ActionsBar'
+import ActionsBarLegacy from './ActionsBar/ActionsBarLegacy'
 import styles from './OfferType.module.scss'
 import OfferTypeButton from './OfferTypeButton'
 
@@ -65,19 +65,11 @@ const OfferType = (): JSX.Element => {
           </FormLayout.Row>
         </FormLayout.Section>
 
-        <FormLayout.Actions>
-          <Link className="secondary-link" to={computeOffersUrl({})}>
-            Retour
-          </Link>
-          <SubmitButton
-            className="primary-button"
-            disabled={false}
-            isLoading={false}
-            onClick={getNextPageHref}
-          >
-            Étape suivante
-          </SubmitButton>
-        </FormLayout.Actions>
+        {isOfferFormV3 ? (
+          <ActionsBar getNextPageHref={getNextPageHref} />
+        ) : (
+          <ActionsBarLegacy getNextPageHref={getNextPageHref} />
+        )}
       </FormLayout>
     </div>
   )

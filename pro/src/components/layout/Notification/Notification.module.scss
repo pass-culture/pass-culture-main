@@ -1,5 +1,6 @@
 @use 'styles/mixins/_rem.scss' as rem;
 @use 'styles/variables/_colors.scss' as colors;
+@use 'styles/variables/_size.scss' as size;
 
 .notification {
   align-items: center;
@@ -21,6 +22,11 @@
     transform: translateX(-50%) translateY(rem.torem(-30px));
     transition: all 400ms ease-out;
     visibility: visible;
+
+    &.with-sticky-action-bar {
+      transform: translateX(-50%)
+        translateY(rem.torem(-30px) - size.$action-bar-sticky-height);
+    }
   }
 
   @media screen and (prefers-reduced-motion: reduce) {
@@ -30,6 +36,11 @@
       transform: translateX(-50%) translateY(rem.torem(-30px));
       transition: none;
       visibility: visible;
+
+      &.with-sticky-action-bar {
+        transform: translateX(-50%)
+          translateY(rem.torem(-30px) - size.$action-bar-sticky-height);
+      }
     }
   }
 
