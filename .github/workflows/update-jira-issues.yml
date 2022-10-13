@@ -1,0 +1,71 @@
+name: Update jira issues for release selection
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-jira-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+
+      - name: Get commit info
+        id: get_commit_info
+        run: |
+          COMMIT_NUMBER=$(git rev-list --count HEAD)
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "::set-output name=number::$COMMIT_NUMBER"
+          echo "::set-output name=hash::$COMMIT_HASH"
+
+      - name: Setup gajira cli
+        uses: atlassian/gajira-cli@master
+        with:
+          version: 1.0.27
+
+      - name: Login
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      - name: Get jira issue key in commit
+        id: get_jira_key
+        uses: atlassian/gajira-find-issue-key@master
+        with:
+          from: commits
+
+      - name: Get jira ticket previous commit number
+        id: get_previous_commit_number
+        if: ${{ steps.get_jira_key.outputs.issue != null }}
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        # The jira view finds templates in .jira.d/templates directory
+        run: echo "::set-output name=value::$(jira view --template=view_commit_number  ${{ steps.get_jira_key.outputs.issue }})"
+
+      - name: Mark issue as not deployable
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        if: ${{ steps.get_previous_commit_number.outputs.value != null && steps.get_previous_commit_number.outputs.value != '<no value>' }}
+        # If "previous commit number" is not null, it means this push-to-branch is a fix.
+        # All commits between prveious commit number and this commit number are therefore not safe to deploy.
+        # So mark them as "impropre: true".
+
+        # The echo command is to clear jira config.yml file set in get_jira_key step
+        # The jira edit command uses .jira.d/templates/edit template by default
+        run: |
+          echo "issue:" >> $HOME/.jira.d/config.yml
+          jira edit --query='"Numéro de commit[Number]" > ${{ steps.get_previous_commit_number.outputs.value }}' --override customfield_10044=true --noedit
+
+      - name: Push commit info to jira issue
+        if: ${{ steps.get_jira_key.outputs.issue != null }}
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10059=${{ steps.get_commit_info.outputs.number }} --noedit
+          jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10060=${{ steps.get_commit_info.outputs.hash }} --noedit
