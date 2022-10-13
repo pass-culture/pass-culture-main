@@ -10,6 +10,7 @@ import { ReactComponent as ErrorIcon } from './assets/notification-error-white.s
 import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
 import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
+import styles from './Notification.module.scss'
 
 const Notification = (): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
@@ -56,10 +57,12 @@ const Notification = (): JSX.Element | null => {
     return (
       <div
         data-testid={`global-notification-${type}`}
-        className={cn('notification', `is-${type || 'success'}`, {
-          show: isVisible,
-          hide: !isVisible,
-        })}
+        className={cn(
+          styles['notification'],
+          styles[`is-${type || 'success'}`],
+          isVisible ? styles['show'] : styles['hide'],
+          notification.withStickyActionBar && styles['with-sticky-action-bar']
+        )}
       >
         {iconComponent}
         {text}

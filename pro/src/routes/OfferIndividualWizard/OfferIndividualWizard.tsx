@@ -75,7 +75,7 @@ const OfferIndividualWizard = () => {
       })
       return Promise.resolve(response.payload)
     }
-    notify.error(response.message)
+    notify.error(response.message, { withStickyActionBar: true })
     history.push(homePath)
     return Promise.resolve()
   }, [offerId])
@@ -104,7 +104,7 @@ const OfferIndividualWizard = () => {
 
   if (data.isLoading === true) return <Spinner />
   if (data.error !== undefined) {
-    notify.error(data.error)
+    notify.error(data.error, { withStickyActionBar: true })
     history.push(homePath)
     return null
   }
