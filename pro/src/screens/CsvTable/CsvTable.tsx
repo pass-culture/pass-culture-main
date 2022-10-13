@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 
 import Spinner from 'components/layout/Spinner'
 import type { ITableData } from 'screens/CsvTable'
-import { Button } from 'ui-kit/Button'
 import { API_URL } from 'utils/config'
 import { getKey } from 'utils/strings'
 
@@ -13,8 +12,6 @@ export interface ICsvTableProps {
 
 const CsvTable = ({ getCsvData }: ICsvTableProps): JSX.Element => {
   const { search } = useLocation()
-
-  const handlePrintCurrentView = () => window.print()
   const [dataFromCsv, setDataFromCsv] = useState<ITableData | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
@@ -62,11 +59,6 @@ const CsvTable = ({ getCsvData }: ICsvTableProps): JSX.Element => {
         </table>
       </div>
       <hr />
-      <div id="csv-print-container">
-        <Button id="csv-print-button" onClick={handlePrintCurrentView}>
-          Imprimer
-        </Button>
-      </div>
     </main>
   ) : (
     <main className="no-data-container">
