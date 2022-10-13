@@ -12,6 +12,7 @@ import { Select } from 'ui-kit'
 interface IMusicTypesProps {
   readOnly?: boolean
 }
+
 const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
   const [musicTypesOptions, setMusicTypesOptions] = useState<{
     musicType: SelectOptions
@@ -25,13 +26,15 @@ const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
       .sort((a, b) => a.label.localeCompare(b.label, 'fr')),
     musicSubType: [],
   })
+
   const {
     values: { musicType },
+    initialValues,
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
 
   useEffect(() => {
-    setFieldValue('musicSubType', FORM_DEFAULT_VALUES.musicSubType)
+    setFieldValue('musicSubType', initialValues.musicSubType)
     let newMusicSubTypeOptions: SelectOptions = []
     if (musicType !== FORM_DEFAULT_VALUES.musicType) {
       const selectedMusicTypeChildren = musicOptionsTree.find(

@@ -15,6 +15,7 @@ interface IShowTypesProps {
 
 const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
   const {
+    initialValues,
     values: { showType },
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
@@ -32,7 +33,7 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
   })
 
   useEffect(() => {
-    setFieldValue('showSubType', FORM_DEFAULT_VALUES.showSubType)
+    setFieldValue('showSubType', initialValues.showSubType)
     let newShowSubTypeOptions: SelectOptions = []
     if (showType !== FORM_DEFAULT_VALUES.showType) {
       const selectedShowTypeChildren = showOptionsTree.find(
