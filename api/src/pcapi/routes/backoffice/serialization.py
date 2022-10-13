@@ -1,5 +1,6 @@
 import datetime
 import typing
+import urllib
 
 import pydantic
 
@@ -73,6 +74,35 @@ class PaginableQuery(BaseModel):
     page: int | None = 1
     perPage: int | None = 20
     sort: str | None = None
+
+
+class BaseFilter(BaseModel):
+    """
+    base class for backoffice filters, should probably be specialized for each endpoint
+    """
+
+    field: str
+    value: typing.Any
+
+
+class BaseFilterableQuery(BaseModel):
+    """
+    base class for backoffice filterable query, should probably be specialized for each endpoint
+    """
+
+    filter: pydantic.Json[list[BaseFilter]] = []
+
+    def validate_filter(self, value: str) -> str:
+        return urllib.parse.unquote_plus(value)
+
+
+class ToBeValidatedOffererFilter(BaseFilter):
+    field: typing.Literal["tags"]
+    value: list[typing.Literal["Collectivité", "Top acteur", "Établissement public"]]
+
+
+class OffererToBeValidatedQuery(PaginableQuery, BaseFilterableQuery):
+    filter: pydantic.Json[list[ToBeValidatedOffererFilter]] = []  # type: ignore [assignment] # pylint: disable=unsubscriptable-object
 
 
 class SearchQuery(PaginableQuery):
