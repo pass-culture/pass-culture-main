@@ -10,15 +10,22 @@ interface ITableBodyProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
   row: Row<T>
+  isCollective?: boolean
+  additionalRowAttribute?: any
 }
 
 const TableRow = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >({
   row,
+  additionalRowAttribute,
 }: ITableBodyProps<T>) => {
+  const rowAttributes = {
+    ...row.getRowProps(),
+    ...additionalRowAttribute,
+  }
   return (
-    <tr {...row.getRowProps()}>
+    <tr {...rowAttributes}>
       {row.cells.map(cell => {
         const column: ColumnInstance<T> & { className?: string } = cell.column
         return (
