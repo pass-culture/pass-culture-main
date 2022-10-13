@@ -81,6 +81,10 @@ class ToDevSendinblueBackend(SendinblueBackend):
         for recipient in recipient_list:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
             user = find_user_by_email(recipient)
-            if (user and user.has_test_role) or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS:
+            if (
+                (user and user.has_test_role)
+                or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS
+                or (settings.IS_STAGING and recipient.endswith("@yeswehack.ninja"))
+            ):
                 whitelisted_recipients.add(recipient)
         return list(whitelisted_recipients)

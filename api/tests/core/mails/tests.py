@@ -134,15 +134,18 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert list(task_param.recipients) == list(self.recipients[0:1])
         assert result.successful
 
-    @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["whitelisted@example.com", "avery.kelly@example.com"])
+    @pytest.mark.parametrize("recipient", ["avery.kelly@example.com", "Test-ywh-0123456789012345@yeswehack.ninja"])
+    @override_settings(
+        WHITELISTED_EMAIL_RECIPIENTS=["whitelisted@example.com", "avery.kelly@example.com"], IS_STAGING=True
+    )
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
-    def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task):
-        users_factories.UserFactory(email="avery.kelly@example.com", roles=[users_models.UserRole.TEST])
+    def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task, recipient):
+        users_factories.UserFactory(email=recipient, roles=[users_models.UserRole.TEST])
 
         backend = self._get_backend()
-        result = backend().send_mail(recipients=self.recipients, data=self.data)
+        result = backend().send_mail(recipients=[recipient, "lucy.ellingson@example.com"], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
-        assert list(task_param.recipients) == ["avery.kelly@example.com"]
+        assert list(task_param.recipients) == [recipient]
         assert result.successful
