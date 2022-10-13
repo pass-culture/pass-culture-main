@@ -112,6 +112,7 @@ describe('test updateIndividualOffer::serializers', () => {
         mentalDisabilityCompliant: true,
         motorDisabilityCompliant: true,
         name: 'test name',
+        url: 'http://my.url',
         venueId: 'test venueId',
         visualDisabilityCompliant: true,
         withdrawalDelay: null,
