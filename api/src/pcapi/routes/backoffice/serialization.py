@@ -154,7 +154,7 @@ class IdCheckItemModel(BaseModel):
         use_enum_values = True
 
     @classmethod
-    def from_orm(cls: typing.Any, fraud_check: fraud_models.BeneficiaryFraudCheck):  # type: ignore
+    def from_orm(cls, fraud_check: fraud_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
         fraud_check.technicalDetails = fraud_check.resultContent
 
         if fraud_check.type == fraud_models.FraudCheckType.DMS and fraud_check.resultContent is not None:

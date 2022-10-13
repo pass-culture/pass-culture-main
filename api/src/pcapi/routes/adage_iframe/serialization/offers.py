@@ -1,7 +1,6 @@
 from datetime import datetime
 import enum
 import logging
-from typing import Any
 
 from pydantic import Field
 from pydantic.class_validators import validator
@@ -9,6 +8,7 @@ from pydantic.class_validators import validator
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import StudentLevels
+from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceStrictMixin
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
@@ -46,7 +46,7 @@ class OfferStockResponse(BaseModel):
 
 class OfferVenueResponse(BaseModel):
     @classmethod
-    def from_orm(cls, venue):  # type: ignore
+    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
         result = super().from_orm(venue)
         return result
@@ -151,7 +151,7 @@ class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin
     interventionArea: list[str]
 
     @classmethod
-    def from_orm(cls: Any, offer: CollectiveOffer):  # type: ignore
+    def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOfferResponseModel":
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
@@ -190,7 +190,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStr
     interventionArea: list[str]
 
     @classmethod
-    def from_orm(cls: Any, offer: CollectiveOfferTemplate):  # type: ignore
+    def from_orm(cls, offer: CollectiveOfferTemplate) -> "CollectiveOfferTemplateResponseModel":
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
