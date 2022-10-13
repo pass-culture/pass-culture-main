@@ -14,6 +14,7 @@ interface IRadioButtonProps {
   className?: string
   checked?: boolean
   withBorder?: boolean
+  hasError?: boolean
 }
 
 const RadioButton = ({
@@ -23,6 +24,7 @@ const RadioButton = ({
   value,
   withBorder,
   className,
+  hasError,
 }: IRadioButtonProps): JSX.Element => {
   const [field] = useField({ name, value, type: 'radio' })
 
@@ -43,6 +45,7 @@ const RadioButton = ({
           [style['radio-input-checked']]: field.checked,
         })}
         checked={field.checked}
+        hasError={hasError}
       />
     </div>
   )
