@@ -22,6 +22,9 @@ args+=" --row-limit 0"
 # Disable startup and exit messages.
 args+=" --less-chatty"
 
+# Automatically switch to vertical output mode if the result is wider than the terminal width.
+args+="--auto-vertical-output"
+
 # Determine color of the prompt, depending on the environment.
 environment=$(hostname | cut -d"-" -f1)
 if [ "${environment}" == "production" ]; then color="\x1b[1;49;31m" # red
