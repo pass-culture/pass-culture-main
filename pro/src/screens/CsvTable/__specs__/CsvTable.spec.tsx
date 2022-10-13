@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -88,15 +87,6 @@ describe('src | components | layout | CsvTable', () => {
         expect(screen.getAllByRole('columnheader')).toHaveLength(2)
       })
       expect(screen.getAllByRole('cell')).toHaveLength(4)
-    })
-
-    it('should open a new window for printing when clicking on print button', async () => {
-      renderCsvTable({ props })
-
-      jest.spyOn(global, 'print').mockImplementation()
-      await userEvent.click(await screen.findByText('Imprimer'))
-
-      expect(global.print).toHaveBeenCalledTimes(1)
     })
   })
 })

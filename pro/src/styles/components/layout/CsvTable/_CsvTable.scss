@@ -34,12 +34,6 @@
   }
 }
 
-#csv-print-container {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
 .no-data-container {
   align-items: center;
   background-color: colors.$white;
@@ -81,8 +75,7 @@
   body {
     font-size: xx-small;
 
-    header,
-    #csv-print-button {
+    header {
       display: none;
     }
   }
