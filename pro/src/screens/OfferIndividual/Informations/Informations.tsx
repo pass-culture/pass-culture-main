@@ -122,11 +122,16 @@ const Informations = ({
         cropParams,
       })
         .then(() => {
-          notify.success('Vos modifications ont bien été prises en compte')
+          notify.success('Vos modifications ont bien été prises en compte', {
+            withStickyActionBar: true,
+          })
         })
         .catch(() => {
           notify.error(
-            'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
+            'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard',
+            {
+              withStickyActionBar: true,
+            }
           )
         })
       return Promise.resolve()
@@ -141,7 +146,9 @@ const Informations = ({
     if (response.isOk) {
       setImageOffer(undefined)
     }
-    notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
+    notify.error('Une erreur est survenue. Merci de réessayer plus tard.', {
+      withStickyActionBar: true,
+    })
     Promise.resolve()
   }
 

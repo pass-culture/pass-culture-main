@@ -12,9 +12,9 @@ const addEventStockButton = Selector('button').withText('Ajouter une date')
 const submitButton = Selector('button').withText('Enregistrer')
 const priceInput = Selector('input[name="price"]')
 const stockItem = Selector('tbody').find('tr')
-const submitSuccess = Selector('.notification.is-success').withText(
-  'Vos modifications ont bien été enregistrées'
-)
+const submitSuccess = Selector('div')
+  .withAttribute('data-testid', 'global-notification-success')
+  .withText('Vos modifications ont bien été enregistrées')
 const keyCombinationToDeleteTextInput = 'ctrl+a delete'
 
 fixture('En étant sur la page des stocks d’une offre,')
@@ -129,9 +129,9 @@ test('je peux supprimer un stock pour un évènement', async t => {
   await navigateToStocksAs(user, offer, createUserRole(user))(t)
   const deleteButton = Selector('td').find('button')
   const deleteButtonConfirmation = Selector('button').withText('Supprimer')
-  const deleteSuccess = Selector('.notification.is-success').withText(
-    'Le stock a été supprimé.'
-  )
+  const deleteSuccess = Selector('div')
+    .withAttribute('data-testid', 'global-notification-success')
+    .withText('Le stock a été supprimé.')
 
   await t
     .click(deleteButton)

@@ -21,6 +21,7 @@ Error.args = {
   notification: {
     text: 'Une erreur fatale est survenue',
     type: 'error',
+    duration: 2000,
   },
 }
 
@@ -29,6 +30,7 @@ Success.args = {
   notification: {
     text: 'Vos modifications ont bien été prises en compte',
     type: 'success',
+    duration: 2000,
   },
 }
 
@@ -37,6 +39,7 @@ Pending.args = {
   notification: {
     text: 'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes',
     type: 'pending',
+    duration: 2000,
   },
 }
 
@@ -45,5 +48,6 @@ Information.args = {
   notification: {
     text: 'Ceci est une information',
     type: 'information',
+    duration: 2000,
   },
 }
