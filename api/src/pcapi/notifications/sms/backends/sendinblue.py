@@ -56,10 +56,16 @@ class SendinblueBackend:
 
 class ToDevSendinblueBackend(SendinblueBackend):
     def send_transactional_sms(self, recipient: str, content: str) -> bool:
+        # No need to import in production
+        import sqlalchemy as sa
+
+        from pcapi.core.users import models as users_models
+
         if recipient in settings.WHITELISTED_SMS_RECIPIENTS:
             if not super().send_transactional_sms(recipient, content):
                 return False
 
+        mail_recipient = settings.DEV_EMAIL_ADDRESS
         mail_content = mails_models.TransactionalWithoutTemplateEmailData(
             subject="Code de validation du téléphone",
             html_content=(
@@ -68,4 +74,18 @@ class ToDevSendinblueBackend(SendinblueBackend):
             ),
         )
 
-        return mails.send(recipients=[settings.DEV_EMAIL_ADDRESS], data=mail_content)
+        try:
+            user = users_models.User.query.filter(users_models.User.phoneNumber == recipient).one_or_none()
+        except sa.orm.exc.MultipleResultsFound:
+            logger.error("Several user accounts with the same phone number", extra={"phone_number": recipient})
+        else:
+            # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
+            if user is not None:
+                if (
+                    (user and user.has_test_role)
+                    or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS
+                    or (settings.IS_STAGING and recipient.endswith("@yeswehack.ninja"))
+                ):
+                    mail_recipient = user.email
+
+        return mails.send(recipients=[mail_recipient], data=mail_content)
