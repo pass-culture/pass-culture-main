@@ -104,6 +104,15 @@ def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
     )
 
 
+def get_boost_cinema_details(cinema_id: str) -> models.BoostCinemaDetails:
+    cinema_details = (
+        models.BoostCinemaDetails.query.join(models.CinemaProviderPivot)
+        .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
+        .one()
+    )
+    return cinema_details
+
+
 # Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).
 # This class is used to handle this logic when a venue wants to sync with Allocine.
 @dataclass

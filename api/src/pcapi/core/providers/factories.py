@@ -1,4 +1,5 @@
 import base64
+import datetime
 import random
 import secrets
 
@@ -80,6 +81,18 @@ class CDSCinemaDetailsFactory(BaseFactory):
     cinemaProviderPivot = factory.SubFactory(CinemaProviderPivotFactory)
     cinemaApiToken = factory.LazyFunction(secrets.token_urlsafe)
     accountId = factory.Sequence("account{}".format)
+
+
+class BoostCinemaDetailsFactory(BaseFactory):
+    class Meta:
+        model = models.BoostCinemaDetails
+
+    cinemaProviderPivot = factory.SubFactory(CinemaProviderPivotFactory)
+    cinemaUrl = factory.Sequence("https://cinema-{}.example.com/".format)
+    username = "pass_culture"
+    password = "a great password"
+    token = factory.LazyFunction(secrets.token_urlsafe)
+    tokenExpirationDate = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() + datetime.timedelta(hours=24))
 
 
 class AllocineProviderFactory(BaseFactory):
