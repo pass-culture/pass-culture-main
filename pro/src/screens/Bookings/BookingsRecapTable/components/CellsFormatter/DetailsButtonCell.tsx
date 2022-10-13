@@ -15,10 +15,7 @@ const DetailsButtonCell = ({
   bookingRow: Row<CollectiveBookingResponseModel>
 }) => {
   return (
-    <Button
-      variant={ButtonVariant.TERNARY}
-      {...bookingRow.getToggleRowExpandedProps()}
-    >
+    <Button variant={ButtonVariant.TERNARY}>
       Détails
       <DropdownIcon
         className={cn(styles['details-dropdown-icon'], {

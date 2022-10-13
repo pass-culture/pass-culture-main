@@ -36,6 +36,7 @@ export enum Events {
   CLICKED_TOGGLE_HIDE_OFFERER_NAME = 'hasClickedToggleHideOffererName',
   CLICKED_VIEW_OFFERER_STATS = 'hasClickedViewOffererStats',
   CLICKED_VIEW_ALL_OFFERER_STATS = 'hasClickedViewAllOffererStats',
+  CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS = 'hasClickedExpandCollectiveBookingDetails',
   FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
   SIGNUP_FORM_ABORT = 'signupFormAbort',

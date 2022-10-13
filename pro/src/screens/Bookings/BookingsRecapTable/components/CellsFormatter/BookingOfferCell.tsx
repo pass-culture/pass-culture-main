@@ -42,34 +42,36 @@ const BookingOfferCell = ({ offer }: IBookingOfferCellProps) => {
     : null
 
   return (
-    <a
-      href={editionUrl}
-      rel="noopener noreferrer"
-      target="_blank"
-      onClick={() =>
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_FORM_NAVIGATION_IN.BOOKINGS,
-          to: OfferBreadcrumbStep.SUMMARY,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.BOOKINGS_TITLE,
-          isEdition: true,
-        })
-      }
-      title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
-    >
-      <div
-        className={cn('booking-offer-name', {
-          'booking-offer-name-individual': !offer.offer_is_educational,
-        })}
+    <>
+      <a
+        href={editionUrl}
+        rel="noopener noreferrer"
+        target="_blank"
+        onClick={() =>
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_FORM_NAVIGATION_IN.BOOKINGS,
+            to: OfferBreadcrumbStep.SUMMARY,
+            used: OFFER_FORM_NAVIGATION_MEDIUM.BOOKINGS_TITLE,
+            isEdition: true,
+          })
+        }
+        title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
       >
-        {offer.offer_name}
-      </div>
+        <div
+          className={cn('booking-offer-name', {
+            'booking-offer-name-individual': !offer.offer_is_educational,
+          })}
+        >
+          {offer.offer_name}
+        </div>
+      </a>
       {isbn ||
         (eventBeginningDatetime && (
           <div className="booking-offer-additional-info">
             {eventDatetimeFormatted || isbn}
           </div>
         ))}
-    </a>
+    </>
   )
 }
 
