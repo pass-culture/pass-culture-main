@@ -17,6 +17,7 @@ export type PostCollectiveOfferBodyModel = {
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
   interventionArea: Array<string>;
+  isActive: boolean;
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
   name: string;
