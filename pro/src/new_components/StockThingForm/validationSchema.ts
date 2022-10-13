@@ -1,17 +1,22 @@
 import * as yup from 'yup'
 
 export const getValidationSchema = (today: Date) => {
+  const bookingLimitMinDate = today
+  bookingLimitMinDate.setHours(0, 0, 0, 0)
   const validationSchema = {
     price: yup
       .number()
-      .typeError('Veuillez entrer un prix valide')
+      .typeError('Veuillez renseigner un prix')
       .moreThan(-1, 'Le prix ne peut pas être inferieur à 0€')
-      .lessThan(300, 'Veuillez renseigner un prix inférieur à 300€')
-      .required('Veuillez entrer un prix valide'),
+      .max(300, 'Veuillez renseigner un prix inférieur à 300€')
+      .required('Veuillez renseigner un prix'),
     bookingLimitDatetime: yup
       .date()
       .nullable()
-      .min(today, "Veuillez sélectionner une date à partir d'aujourd'hui"),
+      .min(
+        bookingLimitMinDate,
+        "Veuillez sélectionner une date à partir d'aujourd'hui"
+      ),
     quantity: yup
       .number()
       .typeError('Doit être un nombre')
