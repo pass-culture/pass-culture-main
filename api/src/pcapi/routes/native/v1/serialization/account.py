@@ -226,7 +226,7 @@ class UserProfileUpdateRequest(BaseModel):
 
 class UserProfileEmailUpdate(BaseModel):
     email: pydantic.EmailStr
-    password: pydantic.constr(strip_whitespace=True, min_length=8, strict=True)  # type: ignore
+    password: pydantic.constr(strip_whitespace=True, min_length=8, strict=True)  # type: ignore [valid-type]
 
 
 class ValidateEmailRequest(BaseModel):
