@@ -43,7 +43,7 @@ describe('StockThingForm:validationSchema', () => {
   const dataSetPriceErrors = [
     {
       price: 'ABCD',
-      error: 'Veuillez entrer un prix valide',
+      error: 'Veuillez renseigner un prix',
     },
     {
       price: '-5',
