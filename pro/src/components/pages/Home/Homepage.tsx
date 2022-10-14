@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { BannerRGS } from 'new_components/Banner'
 import { Newsletter } from 'new_components/Newsletter'
-import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
@@ -23,7 +23,7 @@ const Homepage = (): JSX.Element => {
   )
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const handleCloseRGSBanner = () => {
-    setHasSeenRGSBanner().finally(() => {
+    api.patchProUserRgsSeen().finally(() => {
       setHasClosedRGSBanner(true)
     })
   }

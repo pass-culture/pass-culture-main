@@ -115,12 +115,6 @@ export const submitResetPassword = (newPassword, token) => {
   return client.post('/users/new-password', { newPassword, token })
 }
 
-// RGS Banner
-//
-export const setHasSeenRGSBanner = () => {
-  return client.patch(`/users/rgs-seen`)
-}
-
 //
 // Providers
 //
