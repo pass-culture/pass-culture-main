@@ -39,7 +39,6 @@ def synchronize_venue_providers_for_provider(provider_id: int, limit: int | None
             with transaction():
                 synchronize_venue_provider(venue_provider, limit)
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
-            notion_connector.add_to_synchronization_error_database(exception, venue_provider)
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
         except provider_api.ProviderAPIException as exception:
             notion_connector.add_to_synchronization_error_database(exception, venue_provider)
