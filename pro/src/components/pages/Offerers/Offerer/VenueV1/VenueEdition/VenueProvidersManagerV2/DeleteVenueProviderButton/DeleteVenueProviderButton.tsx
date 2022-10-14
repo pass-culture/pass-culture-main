@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
-import { deleteVenueProvider } from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -26,7 +26,7 @@ const DeleteVenueProviderButton = ({
   const tryToDeleteVenueProvider = useCallback(async () => {
     setIsLoading(true)
     try {
-      await deleteVenueProvider(venueProviderId)
+      await api.deleteVenueProvider(venueProviderId)
 
       afterDelete(venueProviderId)
     } catch (exception) {
