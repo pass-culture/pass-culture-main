@@ -100,10 +100,12 @@ const CollectiveOfferEdition = ({
     })
 
     if (!isOk) {
-      return notify.error(message, NOTIFICATION_LONG_SHOW_DURATION)
+      return notify.error(message, {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
     }
 
-    notify.success(message, NOTIFICATION_LONG_SHOW_DURATION)
+    notify.success(message, { duration: NOTIFICATION_LONG_SHOW_DURATION })
     reloadCollectiveOffer()
   }
 

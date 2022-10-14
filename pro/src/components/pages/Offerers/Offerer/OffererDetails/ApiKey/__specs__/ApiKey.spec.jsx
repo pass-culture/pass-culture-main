@@ -122,6 +122,7 @@ describe('src | Offerer | ApiKey', () => {
       type: 'error',
       duration: 5000,
       text: "Une erreur s'est produite, veuillez réessayer",
+      withStickyActionBar: false,
     })
   })
 
