@@ -4,7 +4,6 @@ import React from 'react'
 import ReactTooltip from 'react-tooltip'
 
 import Header from 'components/layout/Header/Header'
-import Notification from 'components/layout/Notification/Notification'
 import DomainNameBanner from 'new_components/DomainNameBanner'
 import GoBackLink from 'new_components/GoBackLink'
 import TutorialDialog from 'new_components/TutorialDialog'
@@ -22,7 +21,6 @@ const AppLayout = props => {
     ...defaultConfig,
     ...layoutConfig,
   }
-
   return (
     <>
       {!fullscreen && <Header />}
@@ -51,13 +49,15 @@ const AppLayout = props => {
               })}
             >
               <DomainNameBanner />
-              {backTo && <GoBackLink to={backTo.path} title={backTo.label} />}
+              {
+                /* istanbul ignore next: DEBT, TO FIX */
+                backTo && <GoBackLink to={backTo.path} title={backTo.label} />
+              }
               {children}
             </div>
           </div>
         )}
         <TutorialDialog />
-        <Notification />
       </main>
     </>
   )
