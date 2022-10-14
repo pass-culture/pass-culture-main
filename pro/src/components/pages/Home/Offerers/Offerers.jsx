@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import useFrenchQuery from 'components/hooks/useFrenchQuery'
 import Spinner from 'components/layout/Spinner'
 import {
   INITIAL_PHYSICAL_VENUES,
@@ -29,13 +28,20 @@ const Offerers = () => {
   const [virtualVenue, setVirtualVenue] = useState(INITIAL_VIRTUAL_VENUE)
   const [isLoading, setIsLoading] = useState(true)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
-
+  const location = useLocation()
   const history = useHistory()
-  const [query, setQuery] = useFrenchQuery()
+
+  const { structure: offererId } = Object.fromEntries(
+    new URLSearchParams(location.search)
+  )
+
+  const setQuery = offererId => {
+    const frenchQueryString = `structure=${offererId}`
+    history.push(`${location.pathname}?${frenchQueryString}`)
+  }
 
   useEffect(
     function fetchData() {
-      const { offererId } = query
       api.listOfferersNames().then(receivedOffererNames => {
         const initialOffererOptions = sortByDisplayName(
           receivedOffererNames.offerersNames.map(item => ({
@@ -58,7 +64,7 @@ const Offerers = () => {
         }
       })
     },
-    [query]
+    [offererId]
   )
 
   useEffect(() => {
@@ -98,7 +104,7 @@ const Offerers = () => {
         history.push('/structures/creation')
       } else if (newOffererId !== selectedOfferer.id) {
         setSelectedOffererId(newOffererId)
-        setQuery({ offererId: newOffererId })
+        setQuery(newOffererId)
       }
     },
     [history, selectedOfferer, setQuery]
