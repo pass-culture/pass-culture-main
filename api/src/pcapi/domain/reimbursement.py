@@ -5,7 +5,6 @@ from decimal import Decimal
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
-import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.models import Offer
 
@@ -17,11 +16,11 @@ SEPTEMBER_2021 = datetime.datetime(2021, 9, 1) - datetime.timedelta(hours=2)
 class DigitalThingsReimbursement(finance_models.ReimbursementRule):
     rate = Decimal(0)
     description = "Pas de remboursement pour les offres digitales"
-    group = finance_conf.RuleGroups.NOT_REIMBURSED  # type: ignore [assignment]
+    group = finance_models.RuleGroup.NOT_REIMBURSED
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         offer = booking.stock.offer
         return offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.NOT_REIMBURSED.value
 
@@ -29,11 +28,11 @@ class DigitalThingsReimbursement(finance_models.ReimbursementRule):
 class EducationalOffersReimbursement(finance_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement total pour les offres éducationnelles"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue: Decimal = Decimal(0)) -> bool:
+    def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue: Decimal) -> bool:
         return isinstance(booking, CollectiveBooking)
 
     def apply(self, booking: CollectiveBooking) -> Decimal:
@@ -43,11 +42,11 @@ class EducationalOffersReimbursement(finance_models.ReimbursementRule):
 class PhysicalOffersReimbursement(finance_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement total pour les offres physiques"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         return is_relevant_for_standard_reimbursement_rule(booking.stock.offer)
 
 
@@ -55,7 +54,7 @@ class MaxReimbursementByOfferer(finance_models.ReimbursementRule):
     # This rule is not used anymore.
     rate = Decimal(0)
     description = "Pas de remboursement au dessus du plafond de 20 000 € par acteur culturel"
-    group = finance_conf.RuleGroups.DEPRECATED  # type: ignore [assignment]
+    group = finance_models.RuleGroup.DEPRECATED
     valid_from = None
     valid_until = None
 
@@ -68,7 +67,7 @@ class MaxReimbursementByOfferer(finance_models.ReimbursementRule):
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(finance_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = None
     valid_until = SEPTEMBER_2021
 
@@ -81,7 +80,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(finance
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(finance_models.ReimbursementRule):
     rate = Decimal("0.85")
     description = "Remboursement à 85% entre 40 000 € et 150 000 € par lieu"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = None
     valid_until = SEPTEMBER_2021
 
@@ -94,7 +93,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(financ
 class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(finance_models.ReimbursementRule):
     rate = Decimal("0.70")
     description = "Remboursement à 70% au dessus de 150 000 € par lieu"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = None
     valid_until = SEPTEMBER_2021
 
@@ -107,7 +106,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(finance_models.R
 class ReimbursementRateByVenueBetween20000And40000(finance_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu (>= 2021-09-01)"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = SEPTEMBER_2021
     valid_until = None
 
@@ -120,7 +119,7 @@ class ReimbursementRateByVenueBetween20000And40000(finance_models.ReimbursementR
 class ReimbursementRateByVenueBetween40000And150000(finance_models.ReimbursementRule):
     rate = Decimal("0.92")
     description = "Remboursement à 92% entre 40 000 € et 150 000 € par lieu (>= 2021-09-01)"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = SEPTEMBER_2021
     valid_until = None
 
@@ -133,7 +132,7 @@ class ReimbursementRateByVenueBetween40000And150000(finance_models.Reimbursement
 class ReimbursementRateByVenueAbove150000(finance_models.ReimbursementRule):
     rate = Decimal("0.90")
     description = "Remboursement à 90% au dessus de 150 000 € par lieu (>= 2021-09-01)"
-    group = finance_conf.RuleGroups.STANDARD  # type: ignore [assignment]
+    group = finance_models.RuleGroup.STANDARD
     valid_from = SEPTEMBER_2021
     valid_until = None
 
@@ -146,7 +145,7 @@ class ReimbursementRateByVenueAbove150000(finance_models.ReimbursementRule):
 class ReimbursementRateForBookBelow20000(finance_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement à 100% jusqu'à 20 000 € pour les livres"
-    group = finance_conf.RuleGroups.BOOK  # type: ignore [assignment]
+    group = finance_models.RuleGroup.BOOK
     valid_from = None
     valid_until = None
 
@@ -159,7 +158,7 @@ class ReimbursementRateForBookBelow20000(finance_models.ReimbursementRule):
 class ReimbursementRateForBookAbove20000(finance_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% au dessus de 20 000 € pour les livres"
-    group = finance_conf.RuleGroups.BOOK  # type: ignore [assignment]
+    group = finance_models.RuleGroup.BOOK
     valid_from = None
     valid_until = None
 
@@ -207,23 +206,23 @@ class BookingReimbursement:
 
 
 class CustomRuleFinder:
-    def __init__(self):  # type: ignore [no-untyped-def]
+    def __init__(self) -> None:
         self.rules = finance_models.CustomReimbursementRule.query.all()
         self.rules_by_offer = self._partition_by_field("offerId")
         self.rules_by_offerer = self._partition_by_field("offererId")
 
-    def _partition_by_field(self, field: str):  # type: ignore [no-untyped-def]
-        cache = {}  # type: ignore [var-annotated]
+    def _partition_by_field(self, field: str) -> dict:
+        cache: dict[int, list[finance_models.CustomReimbursementRule]] = {}
         for rule in self.rules:
             cache.setdefault(getattr(rule, field), []).append(rule)
         return cache
 
     def get_rule(self, booking: Booking) -> finance_models.CustomReimbursementRule | None:
         for rule in self.rules_by_offer.get(booking.stock.offerId, ()):
-            if rule.matches(booking):
+            if rule.matches(booking, cumulative_revenue=0):  # cumulative revenue is ignored
                 return rule
         for rule in self.rules_by_offerer.get(booking.offererId, ()):
-            if rule.matches(booking):
+            if rule.matches(booking, cumulative_revenue=0):  # cumulative revenue is ignored
                 return rule
         return None
 

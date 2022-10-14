@@ -131,7 +131,7 @@ def format_offer(
 def format_offerer(
     view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
-    offerer = model.offerer or model.offer.venue.managingOfferer
+    offerer = model.offer.venue.managingOfferer if model.offer else model.offerer
     url = build_pc_pro_offerer_link(offerer)
     return markupsafe.Markup('<a href="{url}">{offerer.name}</a>').format(
         url=url,
@@ -179,7 +179,7 @@ def format_subcategories(
 def format_siren(
     view: BaseAdminView, context: Context, model: finance_models.CustomReimbursementRule, name: str
 ) -> str:
-    offerer = model.offerer or model.offer.venue.managingOfferer
+    offerer = model.offer.venue.managingOfferer if model.offer else model.offerer
     return offerer.siren
 
 
@@ -188,6 +188,7 @@ def format_venue(
 ) -> str:
     if model.offererId:
         return ""
+    assert model.offer  # helps mypy when accessing venue below
     venue = model.offer.venue
     url = build_pc_pro_venue_link(venue)
     return markupsafe.Markup('<a href="{url}">{name}</a>').format(

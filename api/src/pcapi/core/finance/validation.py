@@ -37,20 +37,26 @@ def validate_siret_format(siret: str) -> None:
         raise exceptions.NotAllDigitSiret()
 
 
-def validate_reimbursement_rule(rule: models.CustomReimbursementRule, check_start_date=True):  # type: ignore [no-untyped-def]
+def validate_reimbursement_rule(
+    rule: models.CustomReimbursementRule,
+    check_start_date: bool = True,
+) -> None:
     _check_reimbursement_rule_subcategories(rule)
     _check_reimbursement_rule_dates(rule, check_start_date=check_start_date)
     _check_reimbursement_rule_conflicts(rule)
 
 
-def _check_reimbursement_rule_subcategories(rule):  # type: ignore [no-untyped-def]
+def _check_reimbursement_rule_subcategories(rule: models.CustomReimbursementRule) -> None:
     for subcategory_id in rule.subcategories:
         if subcategory_id not in ALL_SUBCATEGORIES_DICT:
             message = f""""{subcategory_id}" n'est pas une sous-catégorie valide."""
             raise exceptions.UnknownSubcategoryForReimbursementRule(message)
 
 
-def _check_reimbursement_rule_dates(rule, check_start_date=True):  # type: ignore [no-untyped-def]
+def _check_reimbursement_rule_dates(
+    rule: models.CustomReimbursementRule,
+    check_start_date: bool = True,
+) -> None:
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     tomorrow = date_utils.get_day_start(tomorrow, utils.ACCOUNTING_TIMEZONE)
     # If we just set the `timespan` attribute, the lower and upper
@@ -82,7 +88,7 @@ def _check_reimbursement_rule_dates(rule, check_start_date=True):  # type: ignor
             raise exceptions.WrongDateForReimbursementRule(message)
 
 
-def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule):  # type: ignore [no-untyped-def]
+def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule) -> None:
     overlapping = models.CustomReimbursementRule.query
     overlapping = overlapping.filter(models.CustomReimbursementRule.timespan.overlaps(rule.timespan))
     if rule.offerId:

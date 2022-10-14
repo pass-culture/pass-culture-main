@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import secrets
+import typing
 
 import factory
 import schwifty
@@ -128,7 +129,12 @@ class CustomReimbursementRuleFactory(BaseFactory):
     amount = 5
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.CustomReimbursementRule],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.CustomReimbursementRule:
         if "rate" in kwargs:
             kwargs["amount"] = None
         if "offerer" in kwargs:
@@ -199,7 +205,12 @@ class PaymentFactory(BaseFactory):
     transactionLabel = None
 
     @factory.post_generation
-    def statuses(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def statuses(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: list[models.PaymentStatus],
+        **kwargs: typing.Any,
+    ) -> list[models.PaymentStatus] | None:
 
         if not create:
             return None

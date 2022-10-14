@@ -34,7 +34,6 @@ import hashlib
 import itertools
 import logging
 import math
-from operator import attrgetter
 import pathlib
 import secrets
 import tempfile
@@ -162,14 +161,15 @@ def price_bookings(
     last_booking = None
     last_collective_booking = None
     while loops > 0:
-        bookings = itertools.chain.from_iterable(
-            (
-                _get_loop_query(booking_query, last_booking),
-                _get_loop_query(collective_booking_query, last_collective_booking),
-            )
-        )
         with log_elapsed(logger, "Fetched batch of bookings to price"):
-            bookings = list(bookings)  # type: ignore [assignment]
+            bookings = list(
+                itertools.chain.from_iterable(
+                    (
+                        _get_loop_query(booking_query, last_booking),
+                        _get_loop_query(collective_booking_query, last_collective_booking),
+                    )
+                )
+            )
         for booking in bookings:
             if isinstance(booking, bookings_models.Booking):
                 last_booking = booking
@@ -476,21 +476,20 @@ def _price_booking(
         )
     )
 
-    pricing_data = {
-        "status": _get_initial_pricing_status(booking),
-        "pricingPointId": pricing_point_id,
-        "valueDate": booking.dateUsed,
-        "amount": amount,
-        "standardRule": rule.description if not isinstance(rule, models.CustomReimbursementRule) else "",
-        "customRuleId": rule.id if isinstance(rule, models.CustomReimbursementRule) else None,
-        "revenue": new_revenue,
-        "lines": lines,
-        "bookingId": booking.id if not is_booking_collective else None,
-        "collectiveBookingId": booking.id if is_booking_collective else None,
-        "venueId": booking.venueId,  # denormalized for performance in `_generate_cashflows()`
-    }
-
-    return models.Pricing(**pricing_data)  # type: ignore [arg-type]
+    assert booking.dateUsed  # helps mypy when setting Pricing.valueDate below
+    return models.Pricing(
+        status=_get_initial_pricing_status(booking),
+        pricingPointId=pricing_point_id,
+        valueDate=booking.dateUsed,
+        amount=amount,
+        standardRule=rule.description if not isinstance(rule, models.CustomReimbursementRule) else "",
+        customRuleId=rule.id if isinstance(rule, models.CustomReimbursementRule) else None,
+        revenue=new_revenue,
+        lines=lines,
+        bookingId=booking.id if not is_booking_collective else None,
+        collectiveBookingId=booking.id if is_booking_collective else None,
+        venueId=booking.venueId,  # denormalized for performance in `_generate_cashflows()`
+    )
 
 
 def _get_initial_pricing_status(
@@ -1150,7 +1149,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     )
 
 
-def _payment_details_row_formatter(sql_row) -> tuple:  # type: ignore [no-untyped-def]
+def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
     if hasattr(sql_row, "ministry"):
         booking_type = "EACC"
     elif sql_row.deposit_type == models.DepositType.GRANT_15_17:
@@ -1220,9 +1219,9 @@ def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRu
 
 
 def _make_invoice_line(
-    group: conf.RuleGroups,
+    group: models.RuleGroup,
     pricings: list,
-    line_rate: decimal.Decimal = None,
+    line_rate: decimal.Decimal | None = None,
 ) -> tuple[models.InvoiceLine, int]:
     reimbursed_amount = 0
     flat_lines = list(itertools.chain.from_iterable(pricing.lines for pricing in pricings))
@@ -1396,13 +1395,13 @@ def _generate_invoice(
         for pricing, rate in pricings_and_rates:
             rates[rate].append(pricing)
         for rate, pricings in rates.items():
-            invoice_line, reimbursed_amount = _make_invoice_line(rule_group, pricings, rate)  # type: ignore [arg-type]
+            invoice_line, reimbursed_amount = _make_invoice_line(rule_group, pricings, rate)
             invoice_lines.append(invoice_line)
             total_reimbursed_amount += reimbursed_amount
 
     for custom_rule, pricings in pricings_by_custom_rule.items():
         # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
-        invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, pricings, custom_rule.rate)  # type: ignore [arg-type]
+        invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, pricings, custom_rule.rate)
         invoice_lines.append(invoice_line)
         total_reimbursed_amount += reimbursed_amount
 
@@ -1512,17 +1511,21 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     total_used_bookings_amount = 0
     total_contribution_amount = 0
     total_reimbursed_amount = 0
-    invoice_groups: dict[str, tuple[str, list[models.InvoiceLine]]] = {}
-    for group, lines in itertools.groupby(invoice_lines, attrgetter("group")):
-        invoice_groups[group["label"]] = (group, list(lines))
+    invoice_groups: dict[str, tuple[dict, list[models.InvoiceLine]]] = {}
+    for line in invoice_lines:
+        group = line.group
+        if line.group["label"] in invoice_groups:
+            invoice_groups[line.group["label"]][1].append(line)
+        else:
+            invoice_groups[line.group["label"]] = (group, [line])
 
     groups = []
-    for group, lines in invoice_groups.values():  # type: ignore [assignment]
+    for group, lines in invoice_groups.values():
         contribution_subtotal = sum(line.contributionAmount for line in lines)
         total_contribution_amount += contribution_subtotal
         reimbursed_amount_subtotal = sum(line.reimbursedAmount for line in lines)
         total_reimbursed_amount += reimbursed_amount_subtotal
-        used_bookings_subtotal = sum(line.bookings_amount for line in lines)
+        used_bookings_subtotal = sum(line.bookings_amount for line in lines if line.bookings_amount)
         total_used_bookings_amount += used_bookings_subtotal
 
         invoice_group = models.InvoiceLineGroup(
@@ -1531,7 +1534,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
             contribution_subtotal=contribution_subtotal,
             reimbursed_amount_subtotal=reimbursed_amount_subtotal,
             used_bookings_subtotal=used_bookings_subtotal,
-            lines=lines,  # type: ignore [arg-type]
+            lines=lines,
         )
         groups.append(invoice_group)
     reimbursements_by_venue = get_reimbursements_by_venue(invoice)
@@ -1565,7 +1568,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
 def get_reimbursements_by_venue(
     invoice: models.Invoice,
 ) -> typing.ValuesView:
-    common_columns = (  # type: ignore [var-annotated]
+    common_columns: tuple = (
         offerers_models.Venue.id.label("venue_id"),
         sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name).label("venue_name"),
     )
@@ -1777,7 +1780,13 @@ def reload_collective_booking_for_pricing(booking_id: int) -> educational_models
     return query.one()
 
 
-def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_date, end_date=None):  # type: ignore [no-untyped-def]
+def create_offerer_reimbursement_rule(
+    offerer_id: int,
+    subcategories: list[int],
+    rate: decimal.Decimal,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime = None,
+) -> models.CustomReimbursementRule:
     return _create_reimbursement_rule(
         offerer_id=offerer_id,
         subcategories=subcategories,
@@ -1787,7 +1796,12 @@ def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_dat
     )
 
 
-def create_offer_reimbursement_rule(offer_id, amount, start_date, end_date=None):  # type: ignore [no-untyped-def]
+def create_offer_reimbursement_rule(
+    offer_id: int,
+    amount: decimal.Decimal,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime = None,
+) -> models.CustomReimbursementRule:
     return _create_reimbursement_rule(
         offer_id=offer_id,
         amount=amount,
@@ -1796,9 +1810,15 @@ def create_offer_reimbursement_rule(offer_id, amount, start_date, end_date=None)
     )
 
 
-def _create_reimbursement_rule(  # type: ignore [no-untyped-def]
-    offerer_id=None, offer_id=None, subcategories=None, rate=None, amount=None, start_date=None, end_date=None
-):
+def _create_reimbursement_rule(
+    offerer_id: int | None = None,
+    offer_id: int | None = None,
+    subcategories: list[int] | None = None,
+    rate: decimal.Decimal | None = None,
+    amount: decimal.Decimal | None = None,
+    start_date: datetime.datetime = None,
+    end_date: datetime.datetime | None = None,
+) -> models.CustomReimbursementRule:
     subcategories = subcategories or []
     if not (bool(offerer_id) ^ bool(offer_id)):
         raise ValueError("Must provider offer or offerer (but not both)")
@@ -1824,7 +1844,10 @@ def _create_reimbursement_rule(  # type: ignore [no-untyped-def]
     return rule
 
 
-def edit_reimbursement_rule(rule, end_date):  # type: ignore [no-untyped-def]
+def edit_reimbursement_rule(
+    rule: models.CustomReimbursementRule,
+    end_date: datetime.datetime,
+) -> models.CustomReimbursementRule:
     # To avoid complexity, we do not allow to edit the end date of a
     # rule that already has one.
     if rule.timespan.upper:
