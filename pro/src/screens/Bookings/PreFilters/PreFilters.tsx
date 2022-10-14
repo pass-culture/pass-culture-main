@@ -2,15 +2,15 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
-import useNotification from 'components/hooks/useNotification'
 import {
   DEFAULT_PRE_FILTERS,
   TPreFilters,
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
 } from 'core/Bookings'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { Button } from 'ui-kit'

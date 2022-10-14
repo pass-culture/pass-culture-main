@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { UserProfile as UserProfileScreen } from 'screens/UserProfile'
 
 import {

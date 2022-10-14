@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
+import useNotification from 'hooks/useNotification'
 import GoBackLink from 'new_components/GoBackLink'
 import { Title } from 'ui-kit'
 

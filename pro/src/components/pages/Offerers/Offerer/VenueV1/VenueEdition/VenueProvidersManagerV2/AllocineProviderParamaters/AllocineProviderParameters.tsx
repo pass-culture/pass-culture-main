@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 
-import useNotification from 'components/hooks/useNotification'
+import useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'

@@ -1,8 +1,8 @@
 import React from 'react'
 import { useLocation } from 'react-router'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { BannerCreateOfferAdmin } from 'new_components/Banner'
 import {
   setInitialFormValues,

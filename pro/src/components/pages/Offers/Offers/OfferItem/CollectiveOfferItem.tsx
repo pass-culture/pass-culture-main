@@ -1,7 +1,7 @@
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import { Offer, Venue } from 'core/Offers/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 
 import CheckboxCell from './Cells/CheckboxCell'
 import DuplicateOfferCell from './Cells/DuplicateOfferCell'

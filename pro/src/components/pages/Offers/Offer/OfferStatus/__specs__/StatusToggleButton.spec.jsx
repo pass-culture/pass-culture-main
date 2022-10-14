@@ -6,11 +6,11 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import { api } from 'apiClient/api'
-import * as useNotification from 'components/hooks/useNotification'
 import {
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_INACTIVE,
 } from 'core/Offers/constants'
+import * as useNotification from 'hooks/useNotification'
 import { configureTestStore } from 'store/testUtils'
 
 import StatusToggleButton from '../StatusToggleButton'

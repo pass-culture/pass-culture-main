@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   getEducationalCategoriesAdapter,
   EducationalCategories,
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
+import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummary from 'screens/CollectiveOfferSummary'
 
 interface CollectiveOfferTemplateSummaryProps {

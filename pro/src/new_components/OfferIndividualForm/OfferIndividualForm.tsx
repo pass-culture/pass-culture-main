@@ -1,7 +1,6 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
 import { TOffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import {
@@ -11,6 +10,7 @@ import {
 } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useCurrentUser from 'hooks/useCurrentUser'
 import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'

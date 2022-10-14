@@ -2,13 +2,13 @@ import React, { Fragment, useCallback, useState } from 'react'
 import { Field, Form } from 'react-final-form'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import { setPassword } from 'repository/pcapi/pcapi'
 
 const INVALID_FORM_MESSAGE =

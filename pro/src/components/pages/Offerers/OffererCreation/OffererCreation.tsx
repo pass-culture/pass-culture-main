@@ -4,11 +4,11 @@ import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
 import { addressAndDesignationFromSirenDecorator } from 'components/layout/form/fields/SirenField'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useNotification from 'hooks/useNotification'
 import GoBackLink from 'new_components/GoBackLink'
 
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'

@@ -11,8 +11,7 @@ import { useContext, useEffect, useState } from 'react'
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContext } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
-
-import useUtmQueryParams from './useUtmQueryParams'
+import useUtmQueryParams from 'hooks/useUtmQueryParams'
 
 export const useConfigureAnalytics = (currentUserId: string | undefined) => {
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()

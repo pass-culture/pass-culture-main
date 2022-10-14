@@ -9,8 +9,6 @@ import React, {
 } from 'react'
 import { Link } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select from 'components/layout/inputs/Select'
@@ -26,6 +24,8 @@ import {
   EXTRA_DATA_FIELDS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from 'core/Offers'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SubmitButton } from 'ui-kit'

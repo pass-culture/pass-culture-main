@@ -2,7 +2,6 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import useNotification from 'components/hooks/useNotification'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   createIndividualOffer,
@@ -12,6 +11,7 @@ import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdap
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
 import { IOfferIndividualImage } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import useNotification from 'hooks/useNotification'
 import FormLayout from 'new_components/FormLayout'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import {

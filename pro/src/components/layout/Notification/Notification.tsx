@@ -2,8 +2,8 @@ import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import useNotification from 'components/hooks/useNotification'
 import { NOTIFICATION_TRANSITION_DURATION } from 'core/Notification/constants'
+import useNotification from 'hooks/useNotification'
 import { notificationSelector } from 'store/selectors/notificationSelector'
 
 import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'

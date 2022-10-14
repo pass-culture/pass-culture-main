@@ -6,7 +6,7 @@ import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
-import * as useNotification from 'components/hooks/useNotification'
+import * as useNotification from 'hooks/useNotification'
 import { configureTestStore } from 'store/testUtils'
 
 import OffererStats from '../OffererStats'

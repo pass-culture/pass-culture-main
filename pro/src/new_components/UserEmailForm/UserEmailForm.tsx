@@ -1,7 +1,7 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { BoxFormLayout } from 'new_components/BoxFormLayout'
 import FormLayout from 'new_components/FormLayout'
 import { PostEmailAdapter } from 'routes/User/adapters/postEmailAdapter'

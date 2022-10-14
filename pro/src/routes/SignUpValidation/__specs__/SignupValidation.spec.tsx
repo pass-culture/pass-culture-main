@@ -12,17 +12,17 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import type { IUseCurrentUserReturn } from 'components/hooks/useCurrentUser'
-import * as useCurrentUser from 'components/hooks/useCurrentUser'
-import * as useNotification from 'components/hooks/useNotification'
+import type { IUseCurrentUserReturn } from 'hooks/useCurrentUser'
+import * as useCurrentUser from 'hooks/useCurrentUser'
+import * as useNotification from 'hooks/useNotification'
 import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignUpValidation from '../SignUpValidation'
 
 jest.mock('repository/pcapi/pcapi')
-jest.mock('components/hooks/useCurrentUser')
-jest.mock('components/hooks/useNotification')
+jest.mock('hooks/useCurrentUser')
+jest.mock('hooks/useNotification')
 
 describe('src | components | pages | Signup | validation', () => {
   let history: History

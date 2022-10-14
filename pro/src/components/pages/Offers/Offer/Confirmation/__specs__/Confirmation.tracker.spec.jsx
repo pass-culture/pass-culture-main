@@ -4,9 +4,9 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import * as useAnalytics from 'components/hooks/useAnalytics'
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
 import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { offerFactory } from 'utils/apiFactories'
 
 window.open = jest.fn()
