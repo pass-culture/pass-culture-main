@@ -11,7 +11,7 @@ export interface IVenueFormValues {
   city: string
   comment: string
   description: string
-  departmentCode: string
+  departementCode: string
   email: string
   id: string
   isAccessibilityAppliedOnAllOffers: boolean

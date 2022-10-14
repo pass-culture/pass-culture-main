@@ -75,7 +75,7 @@ const StockEventSection = ({
           price={s.price}
           quantity={s.quantity}
           bookingLimitDatetime={s.bookingLimitDatetime}
-          departmentCode={s.departmentCode}
+          departementCode={s.departementCode}
         />
       ))}
 

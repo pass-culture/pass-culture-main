@@ -11,7 +11,7 @@ export interface IStockEventItemProps {
   quantity?: number | null
   bookingLimitDatetime: string | Date | null
   activationCodesExpirationDatetime?: Date | null
-  departmentCode: string
+  departementCode: string
 }
 
 const StockEventItem = ({
@@ -20,7 +20,7 @@ const StockEventItem = ({
   price,
   quantity,
   bookingLimitDatetime,
-  departmentCode,
+  departementCode,
 }: IStockEventItemProps): JSX.Element => {
   return (
     <div className={className}>
@@ -29,7 +29,7 @@ const StockEventItem = ({
           title="Date"
           description={formatLocalTimeDateString(
             beginningDatetime,
-            departmentCode,
+            departementCode,
             FORMAT_DD_MM_YYYY
           )}
         />
@@ -39,7 +39,7 @@ const StockEventItem = ({
           title="Horaire"
           description={formatLocalTimeDateString(
             beginningDatetime,
-            departmentCode,
+            departementCode,
             FORMAT_HH_mm
           )}
         />
@@ -50,7 +50,7 @@ const StockEventItem = ({
           title="Date limite de réservation"
           description={formatLocalTimeDateString(
             bookingLimitDatetime,
-            departmentCode,
+            departementCode,
             FORMAT_DD_MM_YYYY
           )}
         />

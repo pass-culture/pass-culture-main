@@ -116,7 +116,7 @@ export interface IOfferIndividualVenue {
   postalCode: string
   city: string
   offerer: IOfferIndividualOfferer
-  departmentCode: string
+  departementCode: string
   accessibility: IAccessibiltyFormValues
 }
 

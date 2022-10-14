@@ -22,25 +22,25 @@ const serializer = {
   eventDate: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel,
-    departmentCode: string
+    departementCode: string
   ) => ({
     ...changedValues,
     beginningDatetime: buildBeginningDatetimeForStockPayload(
       values.eventDate,
       values.eventTime,
-      departmentCode
+      departementCode
     ),
   }),
   eventTime: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel,
-    departmentCode: string
+    departementCode: string
   ) => ({
     ...changedValues,
     beginningDatetime: buildBeginningDatetimeForStockPayload(
       values.eventDate,
       values.eventTime,
-      departmentCode
+      departementCode
     ),
   }),
   numberOfPlaces: (
@@ -60,14 +60,14 @@ const serializer = {
   bookingLimitDatetime: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel,
-    departmentCode: string
+    departementCode: string
   ) => ({
     ...changedValues,
     bookingLimitDatetime: buildBookingLimitDatetimeForStockPayload(
       values.eventDate,
       values.eventTime,
       values.bookingLimitDatetime,
-      departmentCode
+      departementCode
     ),
   }),
   priceDetail: (
@@ -108,7 +108,7 @@ const getValuesWithoutEducationalOfferTypeAttribute = (
 
 export const createPatchStockDataPayload = (
   values: OfferEducationalStockFormValues,
-  departmentCode: string,
+  departementCode: string,
   initialValues: OfferEducationalStockFormValues
 ): CollectiveStockEditionBodyModel => {
   let changedValues: CollectiveStockEditionBodyModel = {}
@@ -132,7 +132,7 @@ export const createPatchStockDataPayload = (
         changedValues = serializer[key](
           valuesWithoutEducationalOfferType,
           changedValues,
-          departmentCode
+          departementCode
         )
       }
     })

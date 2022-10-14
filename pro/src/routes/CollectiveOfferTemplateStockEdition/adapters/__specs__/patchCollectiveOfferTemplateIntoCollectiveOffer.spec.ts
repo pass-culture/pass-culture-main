@@ -15,7 +15,7 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
     const response =
       await patchCollectiveOfferTemplateIntoCollectiveOfferAdapter({
         offerId: '',
-        departmentCode: '1',
+        departementCode: '1',
         values: {
           eventDate: new Date(),
           eventTime: new Date(),
@@ -50,7 +50,7 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
     const response =
       await patchCollectiveOfferTemplateIntoCollectiveOfferAdapter({
         offerId: '12',
-        departmentCode: '1',
+        departementCode: '1',
         values: {
           eventDate: new Date(),
           eventTime: new Date(),
@@ -79,7 +79,7 @@ describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {
     const response =
       await patchCollectiveOfferTemplateIntoCollectiveOfferAdapter({
         offerId: '12',
-        departmentCode: '1',
+        departementCode: '1',
         values: {
           eventDate: new Date(),
           eventTime: new Date(),

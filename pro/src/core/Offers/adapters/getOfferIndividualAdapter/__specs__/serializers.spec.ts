@@ -214,7 +214,7 @@ describe('serializer', () => {
       isVirtual: false,
       address: 'venue address',
       postalCode: 'venue postalCode',
-      departmentCode: '75',
+      departementCode: '75',
       city: 'venue city',
       offerer: {
         id: 'Offerer ID',
@@ -505,7 +505,7 @@ describe('serializer', () => {
         },
         postalCode: '75000',
         publicName: 'Cinéma synchro avec booking provider',
-        departmentCode: '75',
+        departementCode: '75',
         accessibility: {
           none: true,
           audio: false,

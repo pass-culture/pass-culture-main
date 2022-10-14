@@ -9,7 +9,7 @@ import {
 
 export const createStockDataPayload = (
   values: OfferEducationalStockFormValues,
-  departmentCode: string,
+  departementCode: string,
   offerId: string
 ): CollectiveStockCreationBodyModel => {
   if (
@@ -25,13 +25,13 @@ export const createStockDataPayload = (
     beginningDatetime: buildBeginningDatetimeForStockPayload(
       values.eventDate,
       values.eventTime,
-      departmentCode
+      departementCode
     ),
     bookingLimitDatetime: buildBookingLimitDatetimeForStockPayload(
       values.eventDate,
       values.eventTime,
       values.bookingLimitDatetime,
-      departmentCode
+      departementCode
     ),
     totalPrice: values.totalPrice,
     numberOfTickets: values.numberOfPlaces,

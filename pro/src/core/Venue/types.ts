@@ -49,7 +49,7 @@ export interface IVenue {
     webSite: string
   }
   description: string
-  departmentCode: string
+  departementCode: string
   dmsToken: string
   id: string
   isPermanent: boolean

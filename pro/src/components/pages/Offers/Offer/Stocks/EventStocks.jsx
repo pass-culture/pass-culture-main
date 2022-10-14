@@ -341,7 +341,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
             <tbody>
               {stocksInCreation.map(stockInCreation => (
                 <StockItem
-                  departmentCode={offer.venue.departementCode}
+                  departementCode={offer.venue.departementCode}
                   errors={formErrors[stockInCreation.key]}
                   initialStock={stockInCreation}
                   isDigital={offer.isDigital}
@@ -356,7 +356,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
 
               {existingStocks.map(stock => (
                 <StockItem
-                  departmentCode={offer.venue.departementCode}
+                  departementCode={offer.venue.departementCode}
                   errors={formErrors[stock.key]}
                   initialStock={stock}
                   isDigital={offer.isDigital}

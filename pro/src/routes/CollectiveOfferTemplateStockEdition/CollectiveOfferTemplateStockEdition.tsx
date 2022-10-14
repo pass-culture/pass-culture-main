@@ -49,7 +49,7 @@ const CollectiveOfferTemplateStockEdition = ({
     const stockResponse = await adapter({
       offerId: offer.id,
       values,
-      departmentCode: offer.venue.departementCode ?? '',
+      departementCode: offer.venue.departementCode ?? '',
     })
 
     if (

@@ -33,7 +33,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
       email: venue.contact?.email || '',
       webSite: venue.contact?.website || '',
     },
-    departmentCode: venue.departementCode || '',
+    departementCode: venue.departementCode || '',
     description: venue.description || '',
     collectiveDomains: venue.collectiveDomains || [],
     dateCreated: venue.dateCreated || '',

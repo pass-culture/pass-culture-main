@@ -66,7 +66,7 @@ describe('routes::Summary::serializers', () => {
           id: 'OFID',
           name: 'Offerer name',
         },
-        departmentCode: '75',
+        departementCode: '75',
         accessibility: {
           [AccessiblityEnum.AUDIO]: false,
           [AccessiblityEnum.MENTAL]: false,
@@ -194,14 +194,14 @@ describe('routes::Summary::serializers', () => {
         price: 12,
         bookingLimitDatetime: '01-01-2023',
         beginningDatetime: '01-12-2023',
-        departmentCode: '75',
+        departementCode: '75',
       },
       {
         quantity: 10,
         price: 12,
         bookingLimitDatetime: '01-01-2022',
         beginningDatetime: '01-12-2022',
-        departmentCode: '75',
+        departementCode: '75',
       },
 
       {
@@ -209,7 +209,7 @@ describe('routes::Summary::serializers', () => {
         price: 12,
         bookingLimitDatetime: '01-01-2021',
         beginningDatetime: null,
-        departmentCode: '75',
+        departementCode: '75',
       },
 
       {
@@ -217,7 +217,7 @@ describe('routes::Summary::serializers', () => {
         price: 12,
         bookingLimitDatetime: '01-01-2024',
         beginningDatetime: null,
-        departmentCode: '75',
+        departementCode: '75',
       },
     ])
     expect(previewSerialized).toEqual({

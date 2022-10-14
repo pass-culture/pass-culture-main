@@ -309,7 +309,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
           <tbody>
             {inCreateMode ? (
               <StockItem
-                departmentCode={offer.venue.departementCode}
+                departementCode={offer.venue.departementCode}
                 errors={formErrors}
                 initialStock={stock}
                 isDigital={offer.isDigital}
@@ -322,7 +322,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               />
             ) : (
               <StockItem
-                departmentCode={offer.venue.departementCode}
+                departementCode={offer.venue.departementCode}
                 errors={formErrors}
                 initialStock={stock}
                 isDigital={offer.isDigital}

@@ -21,13 +21,13 @@ export const getLocalBeginningDatetime = (
 ): string => {
   if (!venuePostalCode) return ''
 
-  const departmentCode = extractDepartmentCode(venuePostalCode)
+  const departementCode = extractDepartmentCode(venuePostalCode)
   const stockBeginningDate = new Date(beginningDatetime)
   const stockBeginningDateISOString =
     toISOStringWithoutMilliseconds(stockBeginningDate)
   const stockLocalBeginningDate = formatLocalTimeDateString(
     stockBeginningDateISOString,
-    departmentCode,
+    departementCode,
     'dd/MM/yyyy à HH:mm'
   )
 

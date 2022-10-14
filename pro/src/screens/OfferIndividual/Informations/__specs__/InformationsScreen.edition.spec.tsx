@@ -176,7 +176,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           id: 'OFID',
           name: 'Offerer name',
         },
-        departmentCode: '75',
+        departementCode: '75',
         accessibility: {
           [AccessiblityEnum.AUDIO]: false,
           [AccessiblityEnum.MENTAL]: false,

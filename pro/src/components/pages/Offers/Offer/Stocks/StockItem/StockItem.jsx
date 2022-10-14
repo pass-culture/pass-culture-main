@@ -19,7 +19,7 @@ import StockItemOptionsMenu from '../StockItemOptionsMenu/StockItemOptionsMenu'
 const noOperation = () => {}
 
 const StockItem = ({
-  departmentCode,
+  departementCode,
   errors,
   isDigital,
   isEvent,
@@ -31,7 +31,7 @@ const StockItem = ({
   removeStockInCreation,
   initialStock,
 }) => {
-  const today = getLocalDepartementDateTimeFromUtc(getToday(), departmentCode)
+  const today = getLocalDepartementDateTimeFromUtc(getToday(), departementCode)
 
   const [isDeleting, setIsDeleting] = useState(false)
   const [beginningDate, setBeginningDate] = useState(
@@ -356,7 +356,7 @@ const StockItem = ({
 }
 
 StockItem.defaultProps = {
-  departmentCode: '',
+  departementCode: '',
   errors: {},
   isDigital: false,
   isDisabled: false,
@@ -366,7 +366,7 @@ StockItem.defaultProps = {
 }
 
 StockItem.propTypes = {
-  departmentCode: PropTypes.string,
+  departementCode: PropTypes.string,
   errors: PropTypes.shape(),
   initialStock: PropTypes.shape({
     id: PropTypes.string,
