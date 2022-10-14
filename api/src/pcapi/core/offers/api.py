@@ -787,12 +787,10 @@ def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
 def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
     domains = {ExpenseDomain.ALL.value}
 
-    for _deposit_type, versions in finance_conf.SPECIFIC_CAPS.items():
-        for _version, specific_caps in versions.items():  # type: ignore [attr-defined]
-            if specific_caps.digital_cap_applies(offer):
-                domains.add(ExpenseDomain.DIGITAL.value)
-            if specific_caps.physical_cap_applies(offer):
-                domains.add(ExpenseDomain.PHYSICAL.value)
+    if finance_conf.digital_cap_applies_to_offer(offer):
+        domains.add(ExpenseDomain.DIGITAL.value)
+    if finance_conf.physical_cap_applies_to_offer(offer):
+        domains.add(ExpenseDomain.PHYSICAL.value)
 
     return list(domains)  # type: ignore [arg-type]
 
