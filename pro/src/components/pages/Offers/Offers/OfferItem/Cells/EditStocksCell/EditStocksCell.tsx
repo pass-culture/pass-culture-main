@@ -1,11 +1,11 @@
 import React from 'react'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { ButtonLink } from 'ui-kit'

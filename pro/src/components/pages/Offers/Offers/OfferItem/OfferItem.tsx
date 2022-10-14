@@ -1,15 +1,15 @@
 import cn from 'classnames'
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import {
-  useOfferEditionURL,
-  useOfferStockEditionURL,
-} from 'components/hooks/useOfferEditionURL'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
+import {
+  useOfferEditionURL,
+  useOfferStockEditionURL,
+} from 'hooks/useOfferEditionURL'
 
 import CollectiveOfferItem from './CollectiveOfferItem'
 import IndividualOfferItem from './IndividualOfferItem'

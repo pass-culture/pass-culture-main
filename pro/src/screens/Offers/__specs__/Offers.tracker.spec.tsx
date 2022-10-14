@@ -7,10 +7,10 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { UserRole } from 'apiClient/v1'
-import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 import { offererFactory } from 'utils/apiFactories'
 

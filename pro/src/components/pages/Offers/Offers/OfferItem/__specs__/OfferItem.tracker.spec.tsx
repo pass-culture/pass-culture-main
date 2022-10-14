@@ -7,10 +7,10 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
-import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'

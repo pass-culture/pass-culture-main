@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react'
 
-import useAnalytics from 'components/hooks/useAnalytics'
-import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
 import Icon from 'components/layout/Icon'
 import { TPreFilters } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
+import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 

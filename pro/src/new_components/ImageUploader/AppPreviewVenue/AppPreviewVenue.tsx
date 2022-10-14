@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 
-import useNotification from 'components/hooks/useNotification'
+import useNotification from 'hooks/useNotification'
 import { ImagePreview, ImagePreviewsWrapper } from 'new_components/ImagePreview'
 
 import homeShell from '../assets/venue-home-shell.png'

@@ -2,8 +2,6 @@ import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import Spinner from 'components/layout/Spinner'
 import { BOOKING_STATUS } from 'core/Bookings'
 import {
@@ -13,6 +11,8 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as DownIcon } from 'icons/ico-caret-down.svg'
 import { ReactComponent as RightIcon } from 'icons/ico-caret-right.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'

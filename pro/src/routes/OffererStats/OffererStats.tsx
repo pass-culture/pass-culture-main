@@ -1,8 +1,8 @@
 import React from 'react'
 
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { useGetOffererNames } from 'core/Offerers/adapters'
+import useNotification from 'hooks/useNotification'
 import { OffererStatsScreen } from 'screens/OffererStats'
 import { sortByDisplayName } from 'utils/strings'
 

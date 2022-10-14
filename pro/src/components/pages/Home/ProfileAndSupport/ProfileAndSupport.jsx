@@ -1,8 +1,8 @@
 import React from 'react'
 
-import useAnalytics from 'components/hooks/useAnalytics'
-import useCurrentUser from 'components/hooks/useCurrentUser'
 import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'

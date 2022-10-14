@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { CollectiveStockResponseModel } from 'apiClient/v1'
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
@@ -18,6 +17,7 @@ import {
 } from 'core/OfferEducational'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import useNotification from 'hooks/useNotification'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'

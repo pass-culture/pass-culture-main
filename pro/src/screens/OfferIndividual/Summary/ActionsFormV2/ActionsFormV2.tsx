@@ -1,13 +1,13 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl } from 'core/Offers'
+import useAnalytics from 'hooks/useAnalytics'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { RootState } from 'store/reducers'
 import { Button, ButtonLink } from 'ui-kit'

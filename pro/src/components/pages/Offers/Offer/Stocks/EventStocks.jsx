@@ -11,8 +11,6 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import { api } from 'apiClient/api'
-import useAnalytics from 'components/hooks/useAnalytics'
-import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
@@ -30,6 +28,8 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
+import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import {

@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import useAnalytics from 'components/hooks/useAnalytics'
-import useNotification from 'components/hooks/useNotification'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
@@ -14,6 +12,8 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { IOfferSubCategory } from 'core/Offers/types'
+import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { BannerSummary } from 'new_components/Banner'
 import {

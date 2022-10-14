@@ -1,11 +1,11 @@
 import React from 'react'
 
-import useAnalytics from 'components/hooks/useAnalytics'
-import { useOfferStockEditionURL } from 'components/hooks/useOfferEditionURL'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
+import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import type { Step } from 'new_components/Breadcrumb'
 import Breadcrumb, {
   BreadcrumbStyle,

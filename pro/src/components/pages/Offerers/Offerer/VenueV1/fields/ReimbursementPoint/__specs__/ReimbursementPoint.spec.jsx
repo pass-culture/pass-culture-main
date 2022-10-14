@@ -11,8 +11,8 @@ import React from 'react'
 import { Form } from 'react-final-form'
 
 import { api } from 'apiClient/api'
-import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 
 import ReimbursementPoint from '../ReimbursementPoint'
 

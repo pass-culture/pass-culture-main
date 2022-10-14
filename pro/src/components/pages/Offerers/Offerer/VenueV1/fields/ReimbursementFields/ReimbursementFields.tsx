@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import FormLayout from 'new_components/FormLayout'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'

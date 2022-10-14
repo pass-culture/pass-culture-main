@@ -8,8 +8,6 @@ import {
   useRouteMatch,
 } from 'react-router'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   IOfferIndividualContext,
@@ -18,6 +16,8 @@ import {
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useHomePath } from 'hooks'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import { parse } from 'utils/query-string'
 
 import getWizardData, {

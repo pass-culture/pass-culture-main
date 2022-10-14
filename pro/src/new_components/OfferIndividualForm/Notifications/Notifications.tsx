@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
+import useCurrentUser from 'hooks/useCurrentUser'
 import FormLayout from 'new_components/FormLayout'
 import { Checkbox, TextInput } from 'ui-kit'
 

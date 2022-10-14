@@ -2,13 +2,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
 import { ButtonLink } from 'ui-kit'

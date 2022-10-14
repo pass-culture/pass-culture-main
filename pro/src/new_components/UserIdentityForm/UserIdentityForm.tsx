@@ -2,7 +2,7 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import { useDispatch } from 'react-redux'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { BoxFormLayout } from 'new_components/BoxFormLayout'
 import FormLayout from 'new_components/FormLayout'
 import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
