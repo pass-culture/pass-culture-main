@@ -110,6 +110,12 @@ class CustomReimbursementRuleTest:
 
 
 class DepositSpecificCapsTest:
+    def should_not_have_digital_cap_if_from_wallis_and_futuna(self):
+        user = users_factories.BeneficiaryGrant18Factory(departementCode=986)
+        specific_caps = user.deposit.specific_caps
+
+        assert specific_caps.DIGITAL_CAP is None
+
     def should_have_no_specific_cap_if_underage(self):
         user = users_factories.UnderageBeneficiaryFactory()
         specific_caps = user.deposit.specific_caps
