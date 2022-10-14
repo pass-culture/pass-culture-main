@@ -99,12 +99,12 @@ def get_offerer_offers_stats(offerer_id: int) -> serialization.OffererOfferStats
     return serialization.OffererOfferStatsResponseModel(
         data=serialization.OffersStats(
             active=serialization.BaseOffersStats(
-                individual=offers_stats.individual_offers["active"] if offers_stats.individual_offers else 0,
-                collective=offers_stats.collective_offers["active"] if offers_stats.collective_offers else 0,
+                individual=offers_stats.individual_offers.get("active", 0) if offers_stats.individual_offers else 0,
+                collective=offers_stats.collective_offers.get("active", 0) if offers_stats.collective_offers else 0,
             ),
             inactive=serialization.BaseOffersStats(
-                individual=offers_stats.individual_offers["inactive"] if offers_stats.individual_offers else 0,
-                collective=offers_stats.collective_offers["inactive"] if offers_stats.collective_offers else 0,
+                individual=offers_stats.individual_offers.get("inactive", 0) if offers_stats.individual_offers else 0,
+                collective=offers_stats.collective_offers.get("inactive", 0) if offers_stats.collective_offers else 0,
             ),
         )
     )
