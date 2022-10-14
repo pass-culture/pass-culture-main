@@ -30,7 +30,7 @@ class CollectiveOffersPublicPatchOfferTest:
             "venueId": venue2.id,
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "+33100992798",
+            "contactPhone": "01 00 99 27.98",
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": True,
@@ -72,7 +72,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.subcategoryId == payload["subcategoryId"]
         assert offer.bookingEmails == payload["bookingEmails"]
         assert offer.contactEmail == payload["contactEmail"]
-        assert offer.contactPhone == payload["contactPhone"]
+        assert offer.contactPhone == "+33100992798"
         assert offer.domains == [domain]
         assert offer.durationMinutes == 183
         assert offer.students == [educational_models.StudentLevels.COLLEGE4]
@@ -252,3 +252,24 @@ class CollectiveOffersPublicPatchOfferTest:
 
         # Then
         assert response.status_code == 403
+
+    def test_patch_offer_invalid_phone_number(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        stock = educational_factories.CollectiveStockFactory()
+
+        payload = {
+            "contactPhone": "NOT A PHONE NUMBER",
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 400

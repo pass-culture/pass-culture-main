@@ -8,10 +8,13 @@ from pydantic import validator
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
+from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import email as email_utils
+from pcapi.utils import phone_number
 from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
@@ -71,6 +74,29 @@ class OfferVenueModel(BaseModel):
             )
 
         return otherAddress
+
+
+def validate_email(email: str) -> str:
+    if not email:
+        raise ValueError("Ce champ ne peut pas être vide")
+    if not email_utils.is_valid_email(email):
+        raise ValueError(f"{email} n'est pas une adresse mail valide")
+    return email
+
+
+def validate_emails(emails: list[str]) -> list[str]:
+    for email in emails:
+        if not email_utils.is_valid_email(email):
+            raise ValueError(f"{email} n'est pas une adresse mail valide")
+    return emails
+
+
+def validate_phone_number(number: str | None) -> str:
+    try:
+        parsed = phone_number.parse_phone_number(number)
+    except InvalidPhoneNumber:
+        raise ValueError("Ce numéro de telephone ne semble pas valide")
+    return phone_number.get_formatted_phone_number(parsed)
 
 
 def validate_number_of_tickets(number_of_tickets: int | None) -> int:
@@ -150,6 +176,18 @@ def price_detail_validator(field_name: str) -> classmethod:
 
 def students_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_students)
+
+
+def phone_number_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_phone_number)
+
+
+def email_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_email)
+
+
+def emails_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_emails)
 
 
 class CollectiveOffersResponseModel(BaseModel):
@@ -383,6 +421,9 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
     _validate_students = students_validator("students")
+    _validate_contact_phone = phone_number_validator("contact_phone")
+    _validate_booking_emails = emails_validator("booking_emails")
+    _validate_contact_email = email_validator("contact_email")
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -433,6 +474,9 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
     _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
     _validate_students = students_validator("students")
+    _validate_contact_phone = phone_number_validator("contactPhone")
+    _validate_booking_emails = emails_validator("bookingEmails")
+    _validate_contact_email = email_validator("contactEmail")
 
     @validator("domains")
     def validate_domains(cls, domains: list[int]) -> list[int]:
