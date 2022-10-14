@@ -6,6 +6,7 @@ from pcapi.routes.serialization import BaseModel
 import pcapi.serialization.utils as serialization_utils
 
 
+# FIXME (dbaty, 2022-10-14): rename as ReimbursementPointListQueryModel
 class BusinessUnitListQueryModel(BaseModel):
     class Config:
         alias_generator = serialization_utils.to_camel
@@ -13,34 +14,6 @@ class BusinessUnitListQueryModel(BaseModel):
 
     _dehumanize_id = serialization_utils.dehumanize_field("offerer_id")
     offerer_id: int | None
-
-
-class BusinessUnitResponseModel(BaseModel):
-    class Config:
-        orm_mode = True
-
-    id: int
-    iban: str | None
-    bic: str | None
-    name: str
-    # FIXME (dbaty, 2021-12-15): SIRET may be NULL while we initialize
-    # business units. In a few months, all business units should have
-    # a SIRET and we should remove `Optional`.
-    siret: str | None
-
-    @classmethod
-    def from_orm(cls, business_unit: finance_models.BusinessUnit) -> "BusinessUnitResponseModel":
-        business_unit.iban = business_unit.bankAccount.iban
-        business_unit.bic = business_unit.bankAccount.bic
-        res = super().from_orm(business_unit)
-        return res
-
-
-class BusinessUnitListResponseModel(BaseModel):
-    __root__: list[BusinessUnitResponseModel]
-
-    class Config:
-        orm_mode = True
 
 
 class ReimbursementPointListQueryModel(BaseModel):
@@ -69,7 +42,6 @@ class InvoiceListQueryModel(BaseModel):
     class Config:
         orm_mode = True
 
-    businessUnitId: int | None
     periodBeginningDate: datetime.date | None
     periodEndingDate: datetime.date | None
     reimbursementPointId: int | None
@@ -83,16 +55,16 @@ class InvoiceResponseModel(BaseModel):
     date: datetime.date
     amount: float
     url: str
-    businessUnitName: str | None
     reimbursementPointName: str | None
     cashflowLabels: list[str]
 
     @classmethod
     def from_orm(cls, invoice: finance_models.Invoice) -> "InvoiceResponseModel":
-        invoice.businessUnitName = invoice.businessUnit.name if invoice.businessUnit else None
         invoice.reimbursementPointName = (
             (invoice.reimbursementPoint.publicName or invoice.reimbursementPoint.name)
             if invoice.reimbursementPoint
+            # FIXME (dbaty, 2022-10-14): remove else clause once
+            # Invoice.reimbursementPointId is made NOT NULLable
             else None
         )
         invoice.cashflowLabels = [cashflow.batch.label for cashflow in invoice.cashflows]
@@ -103,11 +75,3 @@ class InvoiceResponseModel(BaseModel):
 
 class InvoiceListResponseModel(BaseModel):
     __root__: list[InvoiceResponseModel]
-
-
-class BusinessUnitEditionBodyModel(BaseModel):
-    class Config:
-        alias_generator = serialization_utils.to_camel
-        extra = "forbid"
-
-    siret: str

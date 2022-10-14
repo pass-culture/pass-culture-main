@@ -273,7 +273,7 @@
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
         <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
         <td>{{ cashflow.amount|fr_currency }} €</td>
-        <td>{% if reimbursement_point %}{{ reimbursement_point.name }}{% else %}{{ invoice.businessUnit.name }}{% endif %}</td>
+        <td>{{ reimbursement_point.name }}</td>
     </tr>
 {% endfor %}
     <tr class="coloredSection bottomTableText">

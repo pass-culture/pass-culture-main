@@ -9,7 +9,6 @@ import pydantic
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
-import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
@@ -41,7 +40,6 @@ def get_venue(venue_id: str) -> venues_serialize.GetVenueResponseModel:
         models.Venue.query.filter(models.Venue.id == dehumanized_id)
         .options(sqla_orm.joinedload(models.Venue.contact))
         .options(sqla_orm.joinedload(models.Venue.bankInformation))
-        .options(sqla_orm.joinedload(models.Venue.businessUnit).joinedload(finance_models.BusinessUnit.bankAccount))
         .options(sqla_orm.joinedload(models.Venue.managingOfferer).joinedload(models.Offerer.bankInformation))
         .options(
             sqla_orm.joinedload(models.Venue.pricing_point_links).joinedload(models.VenuePricingPointLink.pricingPoint)
@@ -101,9 +99,7 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
                 mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
                 motorDisabilityCompliant=venue.motorDisabilityCompliant,
                 visualDisabilityCompliant=venue.visualDisabilityCompliant,
-                businessUnitId=venue.businessUnitId,
                 siret=venue.siret,
-                isBusinessUnitMainVenue=venue.isBusinessUnitMainVenue,
             )
             for venue in venue_list
         ]

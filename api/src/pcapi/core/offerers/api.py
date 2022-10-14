@@ -78,17 +78,6 @@ def update_venue(
     if not modifications:
         return venue
 
-    # FUTURE-NEW-BANK-DETAILS: clean up when new bank details journey is complete
-    business_unit_id = modifications.get("businessUnitId")
-    if business_unit_id and venue.isBusinessUnitMainVenue:
-        delete_business_unit(venue.businessUnit)
-        logger.info(
-            "Change Venue.businessUnitId where Venue.siret and BusinessUnit.siret are equal",
-            extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
-        )
-    if "businessUnitId" in modifications:
-        set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)
-
     if reimbursement_point_id != venue.current_reimbursement_point_id:
         link_venue_to_reimbursement_point(venue, reimbursement_point_id)
 
@@ -141,30 +130,6 @@ def update_venue_collective_data(
     return venue
 
 
-def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
-    finance_models.BusinessUnitVenueLink.query.filter(
-        finance_models.BusinessUnitVenueLink.businessUnit == business_unit,
-        sa.func.upper(finance_models.BusinessUnitVenueLink.timespan).is_(None),
-    ).update(
-        {
-            "timespan": sa.func.tsrange(
-                sa.func.lower(finance_models.BusinessUnitVenueLink.timespan),
-                datetime.utcnow(),
-                "[)",
-            )
-        },
-        synchronize_session=False,
-    )
-    models.Venue.query.filter(models.Venue.businessUnitId == business_unit.id).update(
-        {"businessUnitId": None}, synchronize_session=False
-    )
-
-    business_unit.status = finance_models.BusinessUnitStatus.DELETED
-    db.session.add(business_unit)
-    db.session.commit()
-    logger.info("Set BusinessUnit.status as DELETED", extra={"business_unit_id": business_unit.id})
-
-
 def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.VenueContactModel) -> models.Venue:
     """
     Create and attach a VenueContact to a Venue if it has none.
@@ -202,8 +167,6 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     venue.dmsToken = generate_dms_token()
     repository.save(venue)
 
-    if venue_data.businessUnitId:
-        set_business_unit_to_venue_id(venue_data.businessUnitId, venue.id)
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
@@ -213,33 +176,6 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     zendesk_sell.create_venue(venue)
 
     return venue
-
-
-# TODO(fseguin, 2022-06-26, FUTURE-NEW-BANK-DETAILS): remove when new bank details journey is complete
-def set_business_unit_to_venue_id(
-    business_unit_id: int | None,
-    venue_id: int,
-    timestamp: datetime | None = None,
-) -> None:
-    if not timestamp:
-        timestamp = datetime.utcnow()
-    current_link = finance_models.BusinessUnitVenueLink.query.filter(
-        finance_models.BusinessUnitVenueLink.venueId == venue_id,
-        finance_models.BusinessUnitVenueLink.timespan.contains(timestamp),
-    ).one_or_none()
-    if current_link:
-        current_link.timespan = db_utils.make_timerange(
-            current_link.timespan.lower,
-            timestamp,
-        )
-        db.session.add(current_link)
-    if business_unit_id:
-        new_link = finance_models.BusinessUnitVenueLink(
-            businessUnitId=business_unit_id, venueId=venue_id, timespan=(timestamp, None)
-        )
-        db.session.add(new_link)
-    models.Venue.query.filter(models.Venue.id == venue_id).update({"businessUnitId": business_unit_id})
-    db.session.commit()
 
 
 def link_venue_to_pricing_point(

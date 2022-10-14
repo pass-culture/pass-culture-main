@@ -21,10 +21,7 @@ export type { BookingRecapResponseStockModel } from './models/BookingRecapRespon
 export { BookingRecapStatus } from './models/BookingRecapStatus';
 export { BookingStatusFilter } from './models/BookingStatusFilter';
 export type { BookingStatusHistoryResponseModel } from './models/BookingStatusHistoryResponseModel';
-export type { BusinessUnitEditionBodyModel } from './models/BusinessUnitEditionBodyModel';
 export type { BusinessUnitListQueryModel } from './models/BusinessUnitListQueryModel';
-export type { BusinessUnitListResponseModel } from './models/BusinessUnitListResponseModel';
-export type { BusinessUnitResponseModel } from './models/BusinessUnitResponseModel';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
 export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';

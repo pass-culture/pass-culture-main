@@ -3,7 +3,6 @@ import decimal
 import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.finance.models as finance_models
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import dehumanize
 
@@ -14,16 +13,6 @@ MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
 VENUE_BANNER_MAX_SIZE = 10_000_000
-
-
-# FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
-def check_existing_business_unit(business_unit_id: int, offerer: models.Offerer):  # type: ignore [no-untyped-def]
-    business_unit = finance_models.BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
-    if not business_unit:
-        raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'existe pas."]})
-
-    if business_unit.siret[:9] != offerer.siren:
-        raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'est pas un choix valide pour ce lieu."]})
 
 
 def validate_coordinates(raw_latitude, raw_longitude):  # type: ignore [no-untyped-def]
@@ -59,7 +48,6 @@ def check_venue_creation(data):  # type: ignore [no-untyped-def]
 def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
-    business_unit_id = modifications.get("businessUnitId")
     reimbursement_point_id = modifications.get("reimbursementPointId")
 
     venue_disability_compliance = [
@@ -77,7 +65,6 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
 
     allowed_virtual_venue_modifications = {
         "reimbursementPointId",
-        "businessUnitId",  # FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
     }
     if venue.isVirtual and modifications.keys() - allowed_virtual_venue_modifications:
         raise ApiErrors(
@@ -97,8 +84,6 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
 
     if reimbursement_point_id:
         check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
-    elif business_unit_id:
-        check_existing_business_unit(business_unit_id, offerer=venue.managingOfferer)
 
 
 def _validate_longitude(api_errors, raw_longitude):  # type: ignore [no-untyped-def]

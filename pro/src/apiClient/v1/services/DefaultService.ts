@@ -5,8 +5,6 @@ import type { AdageCulturalPartnerResponseModel } from '../models/AdageCulturalP
 import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
-import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
-import type { BusinessUnitListResponseModel } from '../models/BusinessUnitListResponseModel';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
@@ -684,56 +682,7 @@ export class DefaultService {
   }
 
   /**
-   * get_business_units <GET>
-   * @param offererId
-   * @returns BusinessUnitListResponseModel OK
-   * @throws ApiError
-   */
-  public getBusinessUnits(
-    offererId?: number | null,
-  ): CancelablePromise<BusinessUnitListResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/finance/business-units',
-      query: {
-        'offererId': offererId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * edit_business_unit <PATCH>
-   * @param businessUnitId
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public editBusinessUnit(
-    businessUnitId: number,
-    requestBody?: BusinessUnitEditionBodyModel,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/finance/business-units/{business_unit_id}',
-      path: {
-        'business_unit_id': businessUnitId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * get_invoices <GET>
-   * @param businessUnitId
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param reimbursementPointId
@@ -741,7 +690,6 @@ export class DefaultService {
    * @throws ApiError
    */
   public getInvoices(
-    businessUnitId?: number | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     reimbursementPointId?: number | null,
@@ -750,7 +698,6 @@ export class DefaultService {
       method: 'GET',
       url: '/finance/invoices',
       query: {
-        'businessUnitId': businessUnitId,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'reimbursementPointId': reimbursementPointId,

@@ -149,7 +149,6 @@ def get_filtered_venues(
         models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
         .options(sqla_orm.joinedload(models.Venue.managingOfferer))
-        .options(sqla_orm.joinedload(models.Venue.businessUnit))
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
     )
     if not user_is_admin:

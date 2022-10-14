@@ -8,7 +8,6 @@ export type PostVenueBodyModel = {
   address: string;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail: string;
-  businessUnitId?: number | null;
   city: string;
   comment?: string | null;
   contact?: VenueContactModel | null;

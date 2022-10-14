@@ -365,12 +365,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         return sum(result for result, in results)
 
     @property
-    def isBusinessUnitMainVenue(self) -> bool:
-        if self.businessUnit and self.businessUnit.siret:
-            return self.siret == self.businessUnit.siret
-        return False
-
-    @property
     def thumbUrl(self) -> str:
         """
         Override to discard the thumbCount column: not used by Venues

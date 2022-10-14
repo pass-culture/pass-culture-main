@@ -80,20 +80,6 @@ class CreateVenueTest:
         assert venue.siret is None
         assert venue.current_pricing_point_id is None
 
-    def test_with_business_unit(self):
-        offerer = offerers_factories.OffererFactory()
-        business_unit = offerers_factories.VenueFactory(
-            managingOfferer=offerer,
-            siret=offerer.siren + "12345",
-        ).businessUnit
-        data = dict(self.base_data(offerer), businessUnitId=business_unit.id)
-        offerers_api.create_venue(venues_serialize.PostVenueBodyModel(**data))
-
-        venue = offerers_models.Venue.query.order_by(offerers_models.Venue.id.desc()).first()
-        assert venue.businessUnit == business_unit
-        links = [link for link in business_unit.venue_links if link.venueId == venue.id]
-        assert len(links) == 1
-
 
 class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
@@ -285,64 +271,6 @@ class EditVenueTest:
         assert venue.contact
         assert venue.contact.phone_number == contact_data.phone_number
         assert venue.contact.email == contact_data.email
-
-    def test_update_venue_holder_business_unit(self):
-        offerer = offerers_factories.OffererFactory(siren="000000000")
-        venue = offerers_factories.VenueFactory(
-            siret="00000000000011", businessUnit__siret="00000000000011", managingOfferer=offerer
-        )
-        deleted_business_unit = venue.businessUnit
-        offerers_factories.VenueFactory(
-            siret="00000000000012", businessUnit=deleted_business_unit, managingOfferer=offerer
-        )
-        offerers_factories.VenueFactory(
-            siret="00000000000013", businessUnit=deleted_business_unit, managingOfferer=offerer
-        )
-        offerers_factories.VenueFactory(
-            siret="00000000000014", businessUnit=deleted_business_unit, managingOfferer=offerer
-        )
-        offerers_factories.VenueFactory(siret="00000000000015", managingOfferer=offerer)
-
-        business_unit = finance_factories.BusinessUnitFactory(siret="00000000000013")
-
-        venue_data = {"businessUnitId": business_unit.id}
-
-        offerers_api.update_venue(venue, **venue_data)
-
-        assert venue.businessUnitId == business_unit.id
-        assert deleted_business_unit.status == finance_models.BusinessUnitStatus.DELETED
-        assert offerers_models.Venue.query.filter(offerers_models.Venue.businessUnitId.is_(None)).count() == 3
-        links = (
-            finance_models.BusinessUnitVenueLink.query.filter_by(venueId=venue.id)
-            .order_by(finance_models.BusinessUnitVenueLink.id)
-            .all()
-        )
-        assert len(links) == 2
-        assert links[0].timespan.upper is not None
-        assert links[1].timespan.upper is None
-
-    def test_update_virtual_venue_business_unit(self):
-        offerer = offerers_factories.OffererFactory(siren="000000000")
-        venue = offerers_factories.VenueFactory(siret="00000000000011", managingOfferer=offerer)
-        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        venue_data = {"businessUnitId": venue.businessUnitId}
-
-        offerers_api.update_venue(virtual_venue, **venue_data)
-
-        assert virtual_venue.businessUnitId == venue.businessUnitId
-
-    def test_updating_business_unit_sets_a_new_link(self):
-        venue = offerers_factories.VenueFactory(businessUnit=None)
-        siren = venue.managingOfferer.siren
-        business_unit = finance_factories.BusinessUnitFactory(siret=siren + "00000")
-
-        offerers_api.update_venue(venue, businessUnitId=business_unit.id)
-
-        assert venue.businessUnit == business_unit
-        link = finance_models.BusinessUnitVenueLink.query.filter_by(venueId=venue.id).one()
-        assert link.businessUnit == business_unit
-        assert link.timespan.upper is None
 
     def test_cannot_update_virtual_venue_name(self):
         offerer = offerers_factories.OffererFactory(siren="000000000")
@@ -1159,76 +1087,6 @@ class GetEligibleForSearchVenuesTest:
         venues = list(offerers_api.get_eligible_for_search_venues())
 
         assert {venue.id for venue in venues} == {venue.id for venue in eligible_venues}
-
-
-# FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
-def test_set_business_unit_to_venue_id():
-    venue = offerers_factories.VenueFactory()
-    current_link = finance_models.BusinessUnitVenueLink.query.one()
-    new_business_unit = finance_factories.BusinessUnitFactory()
-
-    offerers_api.set_business_unit_to_venue_id(new_business_unit.id, venue.id)
-
-    assert current_link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
-    new_link = finance_models.BusinessUnitVenueLink.query.order_by(
-        finance_models.BusinessUnitVenueLink.id.desc()
-    ).first()
-    assert new_link.venue == venue
-    assert new_link.businessUnit == new_business_unit
-    assert new_link.timespan.lower == current_link.timespan.upper
-    assert new_link.timespan.upper is None
-
-
-def test_set_business_unit_to_venue_id_with_multiple_links():
-    venue = offerers_factories.VenueFactory()
-    current_link = finance_models.BusinessUnitVenueLink.query.one()
-    finance_factories.BusinessUnitVenueLinkFactory(
-        venue=venue,
-        timespan=[  # former, inactive link
-            datetime.datetime.utcnow() - datetime.timedelta(days=1000),
-            datetime.datetime.utcnow() - datetime.timedelta(days=800),
-        ],
-    )
-    new_business_unit = finance_factories.BusinessUnitFactory()
-
-    offerers_api.set_business_unit_to_venue_id(new_business_unit.id, venue.id)
-
-    assert current_link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
-    new_link = finance_models.BusinessUnitVenueLink.query.order_by(
-        finance_models.BusinessUnitVenueLink.id.desc()
-    ).first()
-    assert new_link.venue == venue
-    assert new_link.businessUnit == new_business_unit
-    assert new_link.timespan.lower == current_link.timespan.upper
-    assert new_link.timespan.upper is None
-
-
-def test_delete_business_unit():
-    venue = offerers_factories.VenueFactory()
-    business_unit = venue.businessUnit
-    link = finance_models.BusinessUnitVenueLink.query.one()
-    link_initial_start_date = link.timespan.lower
-    previous_link = finance_factories.BusinessUnitVenueLinkFactory(
-        businessUnit=business_unit,
-        venue=venue,
-        timespan=(datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 1)),
-    )
-    previous_link_initial_start_date = previous_link.timespan.upper
-
-    other_venue = offerers_factories.VenueFactory()
-    other_link = finance_models.BusinessUnitVenueLink.query.filter_by(venue=other_venue).one()
-    other_link_initial_start_date = other_link.timespan.lower
-
-    offerers_api.delete_business_unit(business_unit)
-
-    assert business_unit.status == finance_models.BusinessUnitStatus.DELETED
-    assert venue.businessUnit is None
-    assert link.timespan.lower == link_initial_start_date
-    assert link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
-
-    assert previous_link.timespan.upper == previous_link_initial_start_date
-    assert other_link.timespan.lower == other_link_initial_start_date
-    assert other_link.timespan.upper is None  # unchanged
 
 
 class LinkVenueToPricingPointTest:

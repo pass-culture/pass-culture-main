@@ -16,7 +16,6 @@ import pcapi.utils.date as date_utils
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: str | None
     bookingEmail: str | None
-    businessUnitId: int | None
     city: str | None
     comment: str | None
     departementCode: str | None

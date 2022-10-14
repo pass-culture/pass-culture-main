@@ -16,7 +16,6 @@ from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
-from pcapi.routes.serialization.finance_serialize import BusinessUnitResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_length_validator
@@ -49,8 +48,6 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
     contact: base.VenueContactModel | None
-    # FUTURE-NEW-BANK-DETAILS: remove businessUnitId when new bank details journey is complete
-    businessUnitId: int | None
 
     class Config:
         extra = "forbid"
@@ -86,7 +83,6 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return siret
 
 
-# FUTURE-NEW-BANK-DETAILS: delete when new bank details journey is complete
 class VenueResponseModel(BaseModel):
     id: str
 
@@ -185,8 +181,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     bannerMeta: BannerMetaModel | None
     bic: str | None
     bookingEmail: str | None
-    businessUnitId: int | None
-    businessUnit: BusinessUnitResponseModel | None
     comment: str | None
     dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
@@ -196,7 +190,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     hasPendingBankInformationApplication: bool | None
     iban: str | None
     idAtProviders: str | None
-    isBusinessUnitMainVenue: bool | None
     lastProviderId: str | None
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: GetVenuePricingPointResponseModel | None
@@ -308,7 +301,6 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     isEmailAppliedOnAllOffers: bool | None
     description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
     contact: base.VenueContactModel | None
-    businessUnitId: int | None
     reimbursementPointId: int | None
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
@@ -342,10 +334,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     isVirtual: bool
     bookingEmail: str | None
     withdrawalDetails: str | None
-    businessUnitId: int | None
-    businessUnit: BusinessUnitResponseModel | None
     siret: str | None
-    isBusinessUnitMainVenue: bool | None
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")

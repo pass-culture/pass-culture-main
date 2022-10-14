@@ -3,7 +3,6 @@
 /* eslint-disable */
 
 import type { BannerMetaModel } from './BannerMetaModel';
-import type { BusinessUnitResponseModel } from './BusinessUnitResponseModel';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
@@ -19,8 +18,6 @@ export type GetVenueResponseModel = {
   bannerUrl?: string | null;
   bic?: string | null;
   bookingEmail?: string | null;
-  businessUnit?: BusinessUnitResponseModel | null;
-  businessUnitId?: number | null;
   city?: string | null;
   collectiveAccessInformation?: string | null;
   collectiveDescription?: string | null;
@@ -45,7 +42,6 @@ export type GetVenueResponseModel = {
   iban?: string | null;
   id: string;
   idAtProviders?: string | null;
-  isBusinessUnitMainVenue?: boolean | null;
   isPermanent?: boolean | null;
   isVirtual: boolean;
   lastProviderId?: string | null;

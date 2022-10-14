@@ -52,7 +52,6 @@ class GetInvoicesTest:
             "cashflowLabels": ["VIR1"],
             "amount": 15.00,
             "url": invoice2.url,
-            "businessUnitName": None,
             "reimbursementPointName": pro_reimbursement_point1.name,
         }
         assert invoices[1]["reference"] == invoice1.reference
@@ -100,7 +99,6 @@ class GetInvoicesTest:
             "amount": 15.0,
             "cashflowLabels": ["VIR1"],
             "url": invoice2.url,
-            "businessUnitName": None,
             "reimbursementPointName": pro_reimbursement_point1.name,
         }
         assert invoices[1] == {
@@ -109,7 +107,6 @@ class GetInvoicesTest:
             "amount": 10.0,
             "cashflowLabels": ["VIR1"],
             "url": invoice1.url,
-            "businessUnitName": None,
             "reimbursementPointName": pro_reimbursement_point1.name,
         }
 

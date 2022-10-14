@@ -81,7 +81,6 @@ def test_basics(client):
                 "audioDisabilityCompliant": False,
                 "address": venue.address,
                 "bookingEmail": venue.bookingEmail,
-                "businessUnitId": venue.businessUnitId,
                 "city": venue.city,
                 "comment": venue.comment,
                 "departementCode": venue.departementCode,

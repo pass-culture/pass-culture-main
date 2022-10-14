@@ -65,16 +65,6 @@ class VenueFactory(BaseFactory):
     dmsToken = factory.LazyFunction(api.generate_dms_token)
 
     @factory.post_generation
-    def business_unit_venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        import pcapi.core.finance.factories as finance_factories
-
-        if not create:
-            return None
-        if not venue.businessUnit:
-            return None
-        return finance_factories.BusinessUnitVenueLinkFactory(venue=venue, businessUnit=venue.businessUnit)
-
-    @factory.post_generation
     def pricing_point(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if not create:
             return None

@@ -1304,43 +1304,6 @@ def test_generate_invoice_file():
     }
 
 
-class EditBusinessUnitTest:
-    def test_edit_siret(self):
-        venue = offerers_factories.VenueFactory(
-            businessUnit__siret=None,
-            managingOfferer__siren="123456789",
-            siret="12345678901234",
-        )
-        business_unit = venue.businessUnit
-
-        api.edit_business_unit(business_unit, siret="12345678901234")
-
-        business_unit = models.BusinessUnit.query.one()
-        assert business_unit.siret == "12345678901234"
-        assert business_unit.name == venue.publicName
-
-    def test_cannot_edit_siret_if_one_is_already_set(self):
-        venue = offerers_factories.VenueFactory(
-            businessUnit__siret="12345678901234",
-            managingOfferer__siren="123456789",
-        )
-        business_unit = venue.businessUnit
-
-        with pytest.raises(ValueError):
-            api.edit_business_unit(business_unit, siret="123456789")
-
-    def test_cannot_edit_siret_if_already_used(self):
-        venue = offerers_factories.VenueFactory(
-            businessUnit__siret=None,
-            managingOfferer__siren="123456789",
-        )
-        business_unit = venue.businessUnit
-        existing = factories.BusinessUnitFactory(siret="12345678901234")
-
-        with pytest.raises(exceptions.InvalidSiret):
-            api.edit_business_unit(business_unit, siret=existing.siret)
-
-
 @pytest.fixture(name="invoice_data")
 def invoice_test_data():
     venue_kwargs = {
