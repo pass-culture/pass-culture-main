@@ -542,12 +542,12 @@ describe('stocks page', () => {
 
               // Then
               expect(api.upsertStocks).toHaveBeenCalledWith({
-                offerId: defaultOffer.id,
+                humanizedOfferId: defaultOffer.id,
                 stocks: [
                   {
                     beginningDatetime: '2020-12-26T23:00:00Z',
                     bookingLimitDatetime: '2020-12-26T02:59:59Z',
-                    id: '2E',
+                    humanizedId: '2E',
                     price: '14.01',
                     quantity: '6',
                   },
@@ -1276,11 +1276,11 @@ describe('stocks page', () => {
 
             // Then
             expect(api.upsertStocks).toHaveBeenCalledWith({
-              offerId: defaultOffer.id,
+              humanizedOfferId: defaultOffer.id,
               stocks: [
                 {
                   bookingLimitDatetime: '2020-12-26T02:59:59Z',
-                  id: '2E',
+                  humanizedId: '2E',
                   price: '14.01',
                   quantity: '6',
                 },

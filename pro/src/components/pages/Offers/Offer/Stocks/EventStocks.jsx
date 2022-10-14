@@ -207,8 +207,16 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
         })
         api
           .upsertStocks({
-            offerId: offer.id,
-            stocks: [...stocksToCreate, ...stocksToUpdate],
+            humanizedOfferId: offer.id,
+            stocks: [
+              ...stocksToCreate,
+              ...stocksToUpdate.map(stock => {
+                const apiStockEdition = { ...stock }
+                apiStockEdition.humanizedId = apiStockEdition.id
+                delete apiStockEdition.id
+                return apiStockEdition
+              }),
+            ],
           })
           .then(async () => {
             const queryParams = queryParamsFromOfferer(location)

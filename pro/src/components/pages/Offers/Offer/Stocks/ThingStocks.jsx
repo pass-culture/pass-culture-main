@@ -160,11 +160,14 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
         setEnableSubmitButtonSpinner(true)
         const stockToCreateOrEdit = {
           ...createThingStockPayload(stock, offer.venue.departementCode),
-          id: stock.id,
+          humanizedId: stock.id,
         }
         const quantityOfActivationCodes = (stock.activationCodes || []).length
         api
-          .upsertStocks({ offerId: offer.id, stocks: [stockToCreateOrEdit] })
+          .upsertStocks({
+            humanizedOfferId: offer.id,
+            stocks: [stockToCreateOrEdit],
+          })
           .then(() => {
             const queryParams = queryParamsFromOfferer(location)
             let queryString = ''
