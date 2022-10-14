@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import {
   CreateOffer,
   CreateVenue,

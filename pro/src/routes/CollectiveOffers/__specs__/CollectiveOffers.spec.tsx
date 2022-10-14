@@ -113,7 +113,7 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-jest.mock('components/hooks/useActiveFeature', () => ({
+jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(true),
 }))

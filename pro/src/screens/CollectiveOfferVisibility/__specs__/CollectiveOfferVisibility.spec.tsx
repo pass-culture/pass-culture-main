@@ -8,8 +8,8 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import * as useNotification from 'components/hooks/useNotification'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
+import * as useNotification from 'hooks/useNotification'
 import { configureTestStore } from 'store/testUtils'
 
 import CollectiveOfferVisibility, {

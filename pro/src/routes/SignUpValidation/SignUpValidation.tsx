@@ -3,8 +3,8 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 type Params = { token: string }

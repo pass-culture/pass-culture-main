@@ -1,12 +1,12 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { Mode, CollectiveOffer } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { useAdapter } from 'hooks'
+import useNotification from 'hooks/useNotification'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'

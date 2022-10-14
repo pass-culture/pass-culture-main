@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'

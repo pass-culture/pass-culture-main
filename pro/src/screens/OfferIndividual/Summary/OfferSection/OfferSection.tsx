@@ -1,14 +1,14 @@
 import React from 'react'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
 import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'

@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
-import useNotification from 'components/hooks/useNotification'
 import { IOfferEducationalFormValues, Mode } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useNotification from 'hooks/useNotification'
 import FormLayout from 'new_components/FormLayout'
 import { Banner, SubmitButton } from 'ui-kit'
 

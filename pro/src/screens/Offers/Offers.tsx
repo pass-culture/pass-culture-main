@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { UserRole } from 'apiClient/v1'
-import useAnalytics from 'components/hooks/useAnalytics'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import ActionsBar from 'components/pages/Offers/Offers/ActionsBar'
@@ -20,6 +19,7 @@ import {
 } from 'core/Offers'
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'

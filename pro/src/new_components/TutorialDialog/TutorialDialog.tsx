@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
-import useAnalytics from 'components/hooks/useAnalytics'
-import useCurrentUser from 'components/hooks/useCurrentUser'
 import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID, Tutorial } from 'new_components/Tutorial'
 import * as pcapi from 'repository/pcapi/pcapi'

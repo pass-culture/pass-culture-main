@@ -6,8 +6,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import * as useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
 import ProfileAndSupport from '../ProfileAndSupport'

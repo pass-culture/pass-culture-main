@@ -1,7 +1,5 @@
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
 import {
   cancelCollectiveBookingAdapter,
   CollectiveOffer,
@@ -11,6 +9,8 @@ import {
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useNotification from 'hooks/useNotification'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import { ButtonLink } from 'ui-kit'

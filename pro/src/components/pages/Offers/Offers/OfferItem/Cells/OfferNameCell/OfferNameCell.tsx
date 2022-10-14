@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -9,6 +8,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_SOLD_OUT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { Tag } from 'ui-kit'

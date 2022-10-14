@@ -1,4 +1,4 @@
-import useLogNavigation from 'components/hooks/useLogNavigation'
+import useLogNavigation from 'hooks/useLogNavigation'
 
 const NavigationLogger = (): null => {
   useLogNavigation()

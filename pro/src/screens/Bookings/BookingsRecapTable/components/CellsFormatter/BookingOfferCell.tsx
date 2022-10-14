@@ -6,14 +6,14 @@ import {
   BookingRecapResponseStockModel,
   CollectiveBookingCollectiveStockResponseModel,
 } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
-import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
+import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 

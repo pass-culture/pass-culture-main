@@ -1,4 +1,4 @@
-import useCurrentUser from 'components/hooks/useCurrentUser'
+import useCurrentUser from 'hooks/useCurrentUser'
 
 const useHomePath = () => {
   const {

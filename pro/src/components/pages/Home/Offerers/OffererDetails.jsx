@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import { Events } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as ClosedEyeSvg } from 'icons/ico-eye-full-close.svg'
 import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'

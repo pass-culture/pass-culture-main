@@ -6,9 +6,6 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -25,6 +22,9 @@ import {
   TPreFilters,
 } from 'core/Bookings'
 import { Audience } from 'core/shared/types'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import NoData from 'new_components/NoData'

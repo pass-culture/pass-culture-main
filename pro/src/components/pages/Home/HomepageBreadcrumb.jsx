@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'

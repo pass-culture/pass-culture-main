@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
-import useNotification from 'components/hooks/useNotification'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
+import useNotification from 'hooks/useNotification'
 import FormLayout from 'new_components/FormLayout'
 import {
   MultiSelectAutocomplete,

@@ -1,7 +1,6 @@
 import React from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   CollectiveOffer,
@@ -11,6 +10,7 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { useAdapter } from 'hooks'
+import useNotification from 'hooks/useNotification'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'

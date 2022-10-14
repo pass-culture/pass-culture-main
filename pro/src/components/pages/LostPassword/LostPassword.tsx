@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import Hero from 'ui-kit/Hero'
 import { IS_DEV } from 'utils/config'

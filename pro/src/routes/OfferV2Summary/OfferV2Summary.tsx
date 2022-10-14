@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   IOfferIndividualContext,
@@ -10,6 +8,8 @@ import {
 } from 'context/OfferIndividualContext'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { useHomePath } from 'hooks'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import getWizardData from 'routes/OfferIndividualWizard/adapters/getWizardData/getWizardData'

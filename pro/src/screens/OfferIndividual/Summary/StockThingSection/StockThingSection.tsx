@@ -1,12 +1,12 @@
 import { format } from 'date-fns-tz'
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'

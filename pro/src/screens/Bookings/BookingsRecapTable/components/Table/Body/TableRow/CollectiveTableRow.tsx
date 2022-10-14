@@ -3,9 +3,9 @@ import type { Row } from 'react-table'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import useAnalytics from 'components/hooks/useAnalytics'
 import Spinner from 'components/layout/Spinner'
 import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 
 import CollectiveBookingDetails from '../CollectiveBookingDetails'
 

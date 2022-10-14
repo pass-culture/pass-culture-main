@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { BannerRGS } from 'new_components/Banner'
 import { Newsletter } from 'new_components/Newsletter'
 import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'

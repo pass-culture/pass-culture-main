@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import useNotification from 'components/hooks/useNotification'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -12,6 +11,7 @@ import {
   CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import useNotification from 'hooks/useNotification'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'

@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 import { Link } from 'react-router-dom'
 
-import * as useAnalytics from 'components/hooks/useAnalytics'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
 import NavigationLogger from '../NavigationLogger'

@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
-import useNotification from 'components/hooks/useNotification'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor, {

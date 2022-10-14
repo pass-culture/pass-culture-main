@@ -2,14 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'

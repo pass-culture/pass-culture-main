@@ -1,12 +1,12 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as ArrowIcon } from 'icons/ico-arrow-up-b.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'
