@@ -25,7 +25,13 @@ import pcapi.utils.db as db_utils
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.bookings.models import Booking
+    import pcapi.core.bookings.models as bookings_models
+    import pcapi.core.educational.models as educational_models
+    import pcapi.core.offerers.models as offerers_models
+    import pcapi.core.offers.models as offers_models
+    import pcapi.core.users.models as users_models
+
+    from . import conf
 
 
 class DepositType(enum.Enum):
@@ -38,9 +44,11 @@ class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     userId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sqla_orm.relationship("User", foreign_keys=[userId], backref="deposits")  # type: ignore [misc]
+    user: "users_models.User" = sqla_orm.relationship("User", foreign_keys=[userId], backref="deposits")
 
-    individual_bookings = sqla_orm.relationship("IndividualBooking", back_populates="deposit")  # type: ignore [misc]
+    individual_bookings: list["bookings_models.IndividualBooking"] = sqla_orm.relationship(
+        "IndividualBooking", back_populates="deposit"
+    )
 
     source: str = sqla.Column(sqla.String(300), nullable=False)
 
@@ -58,7 +66,9 @@ class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         server_default=DepositType.GRANT_18.value,
     )
 
-    recredits = sqla_orm.relationship("Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit")  # type: ignore [misc]
+    recredits: list["Recredit"] = sqla_orm.relationship(
+        "Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit"
+    )
 
     __table_args__ = (
         sqla.UniqueConstraint(
@@ -69,7 +79,7 @@ class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     )
 
     @property
-    def specific_caps(self):  # type: ignore [no-untyped-def]
+    def specific_caps(self) -> "conf.SpecificCaps":
         from . import conf
 
         physical_cap = None
@@ -108,7 +118,7 @@ class RecreditType(enum.Enum):
 class Recredit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     depositId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("deposit.id"), nullable=False)
 
-    deposit = sqla_orm.relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")  # type: ignore [misc]
+    deposit: Deposit = sqla_orm.relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")
 
     dateCreated: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
 
@@ -175,9 +185,13 @@ class BankInformationStatus(enum.Enum):
 
 class BankInformation(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
-    offerer = sqla_orm.relationship("Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False))  # type: ignore [misc]
+    offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
+        "Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False)
+    )
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True, unique=True)
-    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId], back_populates="bankInformation", uselist=False)  # type: ignore [misc]
+    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[venueId], back_populates="bankInformation", uselist=False
+    )
     iban = sqla.Column(sqla.String(27), nullable=True)
     bic = sqla.Column(sqla.String(11), nullable=True)
     applicationId = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
@@ -194,7 +208,7 @@ class BusinessUnit(Base, Model):  # type: ignore [valid-type, misc]
     )
 
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True)
-    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])  # type: ignore [misc]
+    bankAccount: BankInformation | None = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
 
     cashflowFrequency: Frequency = sqla.Column(
         db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS
@@ -203,7 +217,7 @@ class BusinessUnit(Base, Model):  # type: ignore [valid-type, misc]
         db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS
     )
 
-    invoices = sqla_orm.relationship("Invoice", back_populates="businessUnit")  # type: ignore [misc]
+    invoices: list["Invoice"] = sqla_orm.relationship("Invoice", back_populates="businessUnit")
 
 
 class BusinessUnitVenueLink(Base, Model):  # type: ignore [valid-type, misc]
@@ -213,9 +227,11 @@ class BusinessUnitVenueLink(Base, Model):  # type: ignore [valid-type, misc]
 
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     venueId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
-    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
+    venue: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
     businessUnitId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
-    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venue_links")  # type: ignore [misc]
+    businessUnit: BusinessUnit = sqla_orm.relationship(
+        "BusinessUnit", foreign_keys=[businessUnitId], backref="venue_links"
+    )
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the business unit.
@@ -241,21 +257,23 @@ class Pricing(Base, Model):  # type: ignore [valid-type, misc]
     status: PricingStatus = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
-    booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="pricings")  # type: ignore [misc]
+    booking: "bookings_models.Booking | None" = sqla_orm.relationship(
+        "Booking", foreign_keys=[bookingId], backref="pricings"
+    )
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
-    collectiveBooking = sqla_orm.relationship(  # type: ignore [misc]
+    collectiveBooking: "educational_models.CollectiveBooking | None" = sqla_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
     # FIXME (dbaty 2022-08-03): make NOT NULLable once we have populated all rows.
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
+    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
 
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` and `siret`
     # columns once we have fully switched to `pricingPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])  # type: ignore [misc]
+    businessUnit: BusinessUnit | None = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # `siret` is either the SIRET of the venue if it has one, or the
     # SIRET of its business unit (at the time of the creation of the
     # pricing).
@@ -263,7 +281,9 @@ class Pricing(Base, Model):  # type: ignore [valid-type, misc]
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once pricing code
     # has been updated and old data has been migrated.
     pricingPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    pricingPoint = sqla_orm.relationship("Venue", foreign_keys=[pricingPointId])  # type: ignore [misc]
+    pricingPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[pricingPointId]
+    )
 
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     # `valueDate` is `Booking.dateUsed` but it's useful to denormalize
@@ -281,16 +301,22 @@ class Pricing(Base, Model):  # type: ignore [valid-type, misc]
     customRuleId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("custom_reimbursement_rule.id"), index=True, nullable=True
     )
-    customRule = sqla_orm.relationship("CustomReimbursementRule", foreign_keys=[customRuleId])  # type: ignore [misc]
+    customRule: sqla_orm.Mapped["CustomReimbursementRule | None"] = sqla_orm.relationship(
+        "CustomReimbursementRule", foreign_keys=[customRuleId]
+    )
 
     # Revenue is in euro cents. It's the revenue of the business unit
     # as of `pricing.valueDate` (thus including the related booking).
     # It is zero or positive.
     revenue: int = sqla.Column(sqla.Integer, nullable=False)
 
-    cashflows = sqla_orm.relationship("Cashflow", secondary="cashflow_pricing", back_populates="pricings")  # type: ignore [misc]
-    lines = sqla_orm.relationship("PricingLine", back_populates="pricing", order_by="PricingLine.id")  # type: ignore [misc]
-    logs = sqla_orm.relationship("PricingLog", back_populates="pricing")  # type: ignore [misc]
+    cashflows: list["Cashflow"] = sqla_orm.relationship(
+        "Cashflow", secondary="cashflow_pricing", back_populates="pricings"
+    )
+    lines: list["PricingLine"] = sqla_orm.relationship(
+        "PricingLine", back_populates="pricing", order_by="PricingLine.id"
+    )
+    logs: list["PricingLog"] = sqla_orm.relationship("PricingLog", back_populates="pricing")
 
     __table_args__ = (
         sqla.Index("idx_uniq_booking_id", bookingId, postgresql_where=status != PricingStatus.CANCELLED, unique=True),
@@ -314,7 +340,7 @@ class PricingLine(Base, Model):  # type: ignore [valid-type, misc]
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
-    pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")  # type: ignore [misc]
+    pricing: Pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
 
     # See the note about `amount` at the beginning of this module.
     amount: int = sqla.Column(sqla.Integer, nullable=False)
@@ -330,7 +356,7 @@ class PricingLog(Base, Model):  # type: ignore [valid-type, misc]
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=False)
-    pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")  # type: ignore [misc]
+    pricing: Pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
 
     timestamp: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     statusBefore: PricingStatus = sqla.Column(db_utils.MagicEnum(PricingStatus), nullable=False)
@@ -338,31 +364,59 @@ class PricingLog(Base, Model):  # type: ignore [valid-type, misc]
     reason: PricingLogReason = sqla.Column(db_utils.MagicEnum(PricingLogReason), nullable=False)
 
 
+# TODO(fseguin|dbaty, 2022-01-11): maybe merge with core.categories.subcategories.ReimbursementRuleChoices ?
+class RuleGroup(enum.Enum):
+    STANDARD = dict(
+        label="Barème général",
+        position=1,
+    )
+    BOOK = dict(
+        label="Barème livres",
+        position=2,
+    )
+    NOT_REIMBURSED = dict(
+        label="Barème non remboursé",
+        position=3,
+    )
+    CUSTOM = dict(
+        label="Barème dérogatoire",
+        position=4,
+    )
+    DEPRECATED = dict(
+        label="Barème désuet",
+        position=5,
+    )
+
+
 class ReimbursementRule:
     # A `rate` attribute (or property) must be defined by subclasses.
     # It's not defined in this abstract class because SQLAlchemy would
     # then miss the `rate` column in `CustomReimbursementRule`.
 
-    def is_active(self, booking: "Booking") -> bool:
+    def is_active(self, booking: "bookings_models.Booking") -> bool:
         valid_from = self.valid_from or datetime.datetime(datetime.MINYEAR, 1, 1)  # type: ignore [attr-defined]
         valid_until = self.valid_until or datetime.datetime(datetime.MAXYEAR, 1, 1)  # type: ignore [attr-defined]
         return valid_from <= booking.dateUsed < valid_until  # type: ignore [operator]
 
-    def is_relevant(self, booking: "Booking", cumulative_revenue: decimal.Decimal) -> bool:
+    def is_relevant(
+        self,
+        booking: "bookings_models.Booking",
+        cumulative_revenue: decimal.Decimal,
+    ) -> bool:
         raise NotImplementedError()
 
     @property
     def description(self) -> str:
         raise NotImplementedError()
 
-    def matches(self, booking: "Booking", cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
+    def matches(self, booking: "bookings_models.Booking", cumulative_revenue: decimal.Decimal) -> bool:
         return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
 
-    def apply(self, booking: "Booking") -> decimal.Decimal:
+    def apply(self, booking: "bookings_models.Booking") -> decimal.Decimal:
         return decimal.Decimal(booking.total_amount * self.rate)  # type: ignore [attr-defined]
 
     @property
-    def group(self) -> str:
+    def group(self) -> RuleGroup:
         raise NotImplementedError()
 
 
@@ -378,32 +432,36 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [
 
     offerId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offer.id"), nullable=True)
 
-    offer = sqla_orm.relationship("Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules")  # type: ignore [misc]
+    offer: sqla_orm.Mapped["offers_models.Offer | None"] = sqla_orm.relationship(
+        "Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules"
+    )
 
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), nullable=True)
 
-    offerer = sqla_orm.relationship("Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules")  # type: ignore [misc]
+    offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
+        "Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules"
+    )
 
     # FIXME (dbaty, 2021-11-04): remove `categories` column once v161 is deployed
     categories = sqla.Column(sqla_psql.ARRAY(sqla.Text()), server_default="{}")
     # A list of identifiers of subcategories on which the rule applies.
     # If the list is empty, the rule applies on all offers of an
     # offerer.
-    subcategories = sqla.Column(sqla_psql.ARRAY(sqla.Text()), server_default="{}")
+    subcategories: list[str] = sqla.Column(sqla_psql.ARRAY(sqla.Text()), server_default="{}")
 
     # FIXME (dbaty, 2022-09-21): it would be nice to move this to
     # eurocents like other models do.
     # Contrary to other models, this amount is in euros, not eurocents.
-    amount = sqla.Column(sqla.Numeric(10, 2), nullable=True)
+    amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=True)
 
     # rate is between 0 and 1 (included), or NULL if `amount` is set.
-    rate = sqla.Column(sqla.Numeric(5, 4), nullable=True)
+    rate: decimal.Decimal = sqla.Column(sqla.Numeric(5, 4), nullable=True)
 
     # timespan is an interval during which this rule is applicable
     # (see `is_active()` below). The lower bound is inclusive and
     # required. The upper bound is exclusive and optional. If there is
     # no upper bound, it means that the rule is still applicable.
-    timespan = sqla.Column(sqla_psql.TSRANGE)
+    timespan: psycopg2.extras.DateTimeRange = sqla.Column(sqla_psql.TSRANGE)
 
     __table_args__ = (
         # A rule relates to an offer or an offerer, never both.
@@ -416,16 +474,20 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [
         sqla.CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
     )
 
-    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, **kwargs: typing.Any) -> None:
         kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
 
-    def is_active(self, booking: "Booking"):  # type: ignore [no-untyped-def]
-        if booking.dateUsed < self.timespan.lower:  # type: ignore [union-attr]
+    def is_active(self, booking: "bookings_models.Booking") -> bool:
+        if booking.dateUsed < self.timespan.lower:
             return False
-        return self.timespan.upper is None or booking.dateUsed < self.timespan.upper  # type: ignore [union-attr]
+        return self.timespan.upper is None or booking.dateUsed < self.timespan.upper
 
-    def is_relevant(self, booking: "Booking", cumulative_revenue="ignored"):  # type: ignore [no-untyped-def]
+    def is_relevant(
+        self,
+        booking: "bookings_models.Booking",
+        cumulative_revenue: decimal.Decimal = decimal.Decimal(0),  # unused
+    ) -> bool:
         if booking.stock.offerId == self.offerId:
             return True
         if self.subcategories:
@@ -435,20 +497,18 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [
             return True
         return False
 
-    def apply(self, booking: "Booking"):  # type: ignore [no-untyped-def]
+    def apply(self, booking: "bookings_models.Booking") -> decimal.Decimal:
         if self.amount is not None:
             return booking.quantity * self.amount
-        return booking.total_amount * self.rate  # type: ignore [operator]
+        return booking.total_amount * self.rate
 
     @property
-    def description(self):  # type: ignore [no-untyped-def] # implementation of ReimbursementRule.description
+    def description(self) -> str:
         raise TypeError("A custom reimbursement rule does not have any description")
 
     @property
-    def group(self):  # type: ignore [no-untyped-def]
-        from . import conf
-
-        return conf.RuleGroups.CUSTOM
+    def group(self) -> RuleGroup:
+        return RuleGroup.CUSTOM
 
 
 class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
@@ -465,21 +525,23 @@ class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
     # fully switched to `reimbursementPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])  # type: ignore [misc]
+    businessUnit: BusinessUnit | None = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # We denormalize `BusinessUnit.bankAccountId` here because it may
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
     bankAccountId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False
     )
-    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])  # type: ignore [misc]
+    bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once cashflow code
     # has been updated and old data has been migrated.
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    reimbursementPoint = sqla_orm.relationship("Venue", foreign_keys=[reimbursementPointId])  # type: ignore [misc]
+    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[reimbursementPointId]
+    )
 
     batchId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
-    batch = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])  # type: ignore [misc]
+    batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
@@ -493,9 +555,13 @@ class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
         sqla_psql.UUID(as_uuid=True), nullable=False, unique=True, server_default=sqla.func.gen_random_uuid()
     )
 
-    logs = sqla_orm.relationship("CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp")  # type: ignore [misc]
-    pricings = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")  # type: ignore [misc]
-    invoices = sqla_orm.relationship("Invoice", secondary="invoice_cashflow", back_populates="cashflows")  # type: ignore [misc]
+    logs: list["CashflowLog"] = sqla_orm.relationship(
+        "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
+    )
+    pricings: list[Pricing] = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")
+    invoices: list["Invoice"] = sqla_orm.relationship(
+        "Invoice", secondary="invoice_cashflow", back_populates="cashflows"
+    )
 
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
@@ -507,7 +573,7 @@ class CashflowLog(Base, Model):  # type: ignore [valid-type, misc]
 
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, nullable=False)
-    cashflow = sqla_orm.relationship("Cashflow", foreign_keys=[cashflowId], back_populates="logs")  # type: ignore [misc]
+    cashflow: list[Cashflow] = sqla_orm.relationship("Cashflow", foreign_keys=[cashflowId], back_populates="logs")
     timestamp: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     statusBefore: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
     statusAfter: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
@@ -554,7 +620,7 @@ class CashflowBatch(Base, Model):  # type: ignore [valid-type, misc]
 class InvoiceLine(Base, Model):  # type: ignore [valid-type, misc]
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
-    invoice = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")  # type: ignore [misc]
+    invoice: "Invoice" = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
     label: str = sqla.Column(sqla.Text, nullable=False)
     # a group is a dict of label and position, as defined in ..conf.InvoiceLineGroup
     group: dict = sqla.Column(sqla_psql.JSONB, nullable=False)
@@ -573,7 +639,7 @@ class InvoiceLine(Base, Model):  # type: ignore [valid-type, misc]
         return self.contributionAmount - self.reimbursedAmount
 
     @property
-    def contribution_rate(self):  # type: ignore [no-untyped-def]
+    def contribution_rate(self) -> decimal.Decimal:
         return 1 - self.rate
 
 
@@ -598,18 +664,22 @@ class Invoice(Base, Model):  # type: ignore [valid-type, misc]
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
     # fully switched to `reimbursementPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit: "sqla_orm.Mapped[BusinessUnit]" = sqla_orm.relationship(
+    businessUnit: "BusinessUnit | None" = sqla_orm.relationship(
         "BusinessUnit", back_populates="invoices", uselist=False
     )
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once invoice code
     # has been updated and old data has been migrated.
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    reimbursementPoint = sqla_orm.relationship("Venue", foreign_keys=[reimbursementPointId])  # type: ignore [misc]
+    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[reimbursementPointId]
+    )
     # See the note about `amount` at the beginning of this module.
     amount: int = sqla.Column(sqla.Integer, nullable=False)
     token: str = sqla.Column(sqla.Text, unique=True, nullable=False)
-    lines = sqla_orm.relationship("InvoiceLine", back_populates="invoice")  # type: ignore [misc]
-    cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")  # type: ignore [misc]
+    lines: list[InvoiceLine] = sqla_orm.relationship("InvoiceLine", back_populates="invoice")
+    cashflows: list[Cashflow] = sqla_orm.relationship(
+        "Cashflow", secondary="invoice_cashflow", back_populates="invoices"
+    )
 
     @property
     def storage_object_id(self) -> str:
@@ -647,11 +717,15 @@ class InvoiceCashflow(Base, Model):  # type: ignore [valid-type, misc]
 class Payment(Base, Model):  # type: ignore [valid-type, misc]
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
-    booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")  # type: ignore [misc]
+    booking: "bookings_models.Booking" = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
-    collectiveBooking = sqla_orm.relationship("CollectiveBooking", foreign_keys=[collectiveBookingId], backref="payments")  # type: ignore [misc]
+    collectiveBooking: "educational_models.CollectiveBooking" = sqla_orm.relationship(
+        "CollectiveBooking",
+        foreign_keys=[collectiveBookingId],
+        backref="payments",
+    )
     # Contrary to other models, this amount is in euros, not eurocents.
     amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=False)
     reimbursementRule = sqla.Column(sqla.String(200))
@@ -660,7 +734,7 @@ class Payment(Base, Model):  # type: ignore [valid-type, misc]
         sqla.BigInteger,
         sqla.ForeignKey("custom_reimbursement_rule.id"),
     )
-    customReimbursementRule = sqla_orm.relationship(  # type: ignore [misc]
+    customReimbursementRule: CustomReimbursementRule | None = sqla_orm.relationship(
         "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
     )
     recipientName: str = sqla.Column(sqla.String(140), nullable=False)
@@ -676,10 +750,10 @@ class Payment(Base, Model):  # type: ignore [valid-type, misc]
     )
     comment = sqla.Column(sqla.Text, nullable=True)
     author: str = sqla.Column(sqla.String(27), nullable=False)
-    transactionEndToEndId = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)
+    transactionEndToEndId: UUID = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)
     transactionLabel = sqla.Column(sqla.String(140), nullable=True)
     paymentMessageId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment_message.id"), nullable=True)
-    paymentMessage = sqla_orm.relationship(  # type: ignore [misc]
+    paymentMessage: "PaymentMessage" = sqla_orm.relationship(
         "PaymentMessage", foreign_keys=[paymentMessageId], backref=sqla_orm.backref("payments")
     )
     batchDate = sqla.Column(sqla.DateTime, nullable=True, index=True)
@@ -715,10 +789,10 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(Base, Model):  # type: ignore [valid-type, misc]
+class PaymentStatus(Base, Model):  # type: ignore [misc, valid-type]
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
-    payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")  # type: ignore [misc]
+    payment: Payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
     date: datetime.datetime = sqla.Column(
         sqla.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sqla.func.now()
     )

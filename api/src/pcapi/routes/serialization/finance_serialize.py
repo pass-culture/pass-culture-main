@@ -30,8 +30,8 @@ class BusinessUnitResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, business_unit: finance_models.BusinessUnit) -> "BusinessUnitResponseModel":
-        business_unit.iban = business_unit.bankAccount.iban
-        business_unit.bic = business_unit.bankAccount.bic
+        business_unit.iban = business_unit.bankAccount.iban  # type: ignore [union-attr]
+        business_unit.bic = business_unit.bankAccount.bic  # type: ignore [union-attr]
         res = super().from_orm(business_unit)
         return res
 

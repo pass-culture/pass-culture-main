@@ -70,9 +70,15 @@ def add_custom_offer_reimbursement_rule(  # type: ignore [no-untyped-def]
             )
             return
 
-    valid_from = date_utils.get_day_start(datetime.date.fromisoformat(valid_from), finance_utils.ACCOUNTING_TIMEZONE)  # type: ignore [assignment]
-    valid_until = (
-        date_utils.get_day_start(datetime.date.fromisoformat(valid_until), finance_utils.ACCOUNTING_TIMEZONE)  # type: ignore [assignment]
+    valid_from_dt = date_utils.get_day_start(
+        datetime.date.fromisoformat(valid_from),
+        finance_utils.ACCOUNTING_TIMEZONE,
+    )
+    valid_until_dt = (
+        date_utils.get_day_start(
+            datetime.date.fromisoformat(valid_until),
+            finance_utils.ACCOUNTING_TIMEZONE,
+        )
         if valid_until
         else None
     )
@@ -80,7 +86,7 @@ def add_custom_offer_reimbursement_rule(  # type: ignore [no-untyped-def]
     rule = finance_api.create_offer_reimbursement_rule(
         offer_id=offer.id,
         amount=reimbursed_amount,
-        start_date=valid_from,
-        end_date=valid_until,
+        start_date=valid_from_dt,
+        end_date=valid_until_dt,
     )
     print(f"Created new rule: {rule.id}")

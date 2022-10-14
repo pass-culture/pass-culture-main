@@ -66,27 +66,29 @@ class DigitalThingsReimbursementTest:
     def test_relevancy(self):
         rule = reimbursement.DigitalThingsReimbursement()
 
-        assert rule.is_relevant(create_digital_booking())
+        assert rule.is_relevant(create_digital_booking(), cumulative_revenue=0)
         digital_book_booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
-        assert not rule.is_relevant(digital_book_booking)
+        assert not rule.is_relevant(digital_book_booking, cumulative_revenue=0)
         cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
-        assert not rule.is_relevant(cinema_card_booking)
-        assert not rule.is_relevant(create_non_digital_thing_booking())
-        assert not rule.is_relevant(create_event_booking())
+        assert not rule.is_relevant(cinema_card_booking, cumulative_revenue=0)
+        assert not rule.is_relevant(create_non_digital_thing_booking(), cumulative_revenue=0)
+        assert not rule.is_relevant(create_event_booking(), cumulative_revenue=0)
 
 
 @pytest.mark.usefixtures("db_session")
-class EducationalOffersReimbursement:
+class EducationalOffersReimbursementTest:
     def test_apply(self):
-        booking = educational_factories.CollectiveBookingFactory(amount=3000, quantity=2)
+        booking = educational_factories.CollectiveBookingFactory(collectiveStock__price=3000)
         rule = reimbursement.EducationalOffersReimbursement()
-        assert rule.apply(booking) == booking.collectiveStock.price
+        assert rule.apply(booking) == 3000
 
     def test_relevancy(self):
         rule = reimbursement.EducationalOffersReimbursement()
+        collective_booking = educational_factories.CollectiveBookingFactory()
+        individual_booking = bookings_factories.BookingFactory()
 
-        assert rule.is_relevant(educational_factories.CollectiveBookingFactory)
-        assert not rule.is_relevant(bookings_factories.BookingFactory())
+        assert rule.is_relevant(collective_booking, cumulative_revenue=0)
+        assert not rule.is_relevant(individual_booking, cumulative_revenue=0)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -99,13 +101,13 @@ class PhysicalOffersReimbursementTest:
     def test_relevancy(self):
         rule = reimbursement.PhysicalOffersReimbursement()
 
-        assert rule.is_relevant(create_non_digital_thing_booking())
-        assert rule.is_relevant(create_event_booking())
-        assert not rule.is_relevant(create_digital_booking())
+        assert rule.is_relevant(create_non_digital_thing_booking(), cumulative_revenue=0)
+        assert rule.is_relevant(create_event_booking(), cumulative_revenue=0)
+        assert not rule.is_relevant(create_digital_booking(), cumulative_revenue=0)
         digital_book_booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id)
-        assert not rule.is_relevant(digital_book_booking)
+        assert not rule.is_relevant(digital_book_booking, cumulative_revenue=0)
         cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
-        assert rule.is_relevant(cinema_card_booking)
+        assert rule.is_relevant(cinema_card_booking, cumulative_revenue=0)
 
 
 @pytest.mark.usefixtures("db_session")
