@@ -82,7 +82,7 @@ const OfferV2Summary = (): JSX.Element | null => {
 
   if (data.isLoading === true) return <Spinner />
   if (data.error !== undefined || data.offer === undefined) {
-    notify.error(data.error)
+    data.error !== undefined && notify.error(data.error)
     history.push(homePath)
     return null
   }
