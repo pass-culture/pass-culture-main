@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+from decimal import Decimal
 
 import pytest
 import pytz
@@ -8,6 +9,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.db as db_utils
@@ -105,3 +107,26 @@ class CustomReimbursementRuleTest:
 
         assert rule.apply(single) == 8
         assert rule.apply(double) == 16
+
+
+class DepositSpecificCapsTest:
+    def should_have_no_specific_cap_if_underage(self):
+        user = users_factories.UnderageBeneficiaryFactory()
+        specific_caps = user.deposit.specific_caps
+
+        assert specific_caps.DIGITAL_CAP is None
+        assert specific_caps.PHYSICAL_CAP is None
+
+    def should_have_digital_cap_if_grant_18_v2(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        specific_caps = user.deposit.specific_caps
+
+        assert specific_caps.DIGITAL_CAP == Decimal(100)
+        assert specific_caps.PHYSICAL_CAP is None
+
+    def should_have_both_caps_when_18_v1(self):
+        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        specific_caps = user.deposit.specific_caps
+
+        assert specific_caps.DIGITAL_CAP == Decimal(200)
+        assert specific_caps.PHYSICAL_CAP == Decimal(200)
