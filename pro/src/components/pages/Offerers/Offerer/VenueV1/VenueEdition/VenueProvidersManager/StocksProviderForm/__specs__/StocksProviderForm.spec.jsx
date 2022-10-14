@@ -10,6 +10,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -17,9 +19,14 @@ import { configureTestStore } from 'store/testUtils'
 import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  createVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    createVenueProvider: jest.fn(),
+  },
 }))
 
 const renderVenueProvidersManager = async props => {
@@ -84,7 +91,7 @@ describe('src | StocksProviderForm', () => {
   describe('on form submit', () => {
     it('should display the spinner while waiting for server response', async () => {
       // given
-      pcapi.createVenueProvider.mockReturnValue(new Promise(() => {}))
+      api.createVenueProvider.mockReturnValue(new Promise(() => {}))
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -106,7 +113,7 @@ describe('src | StocksProviderForm', () => {
       expect(
         screen.getByText('Vérification de votre rattachement')
       ).toBeInTheDocument()
-      expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
+      expect(api.createVenueProvider).toHaveBeenCalledWith({
         providerId: provider.id,
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
@@ -124,7 +131,7 @@ describe('src | StocksProviderForm', () => {
         lastSyncDate: '2018-01-01T00:00:00Z',
         nOffers: 0,
       }
-      pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+      api.createVenueProvider.mockResolvedValue(createdVenueProvider)
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -154,11 +161,10 @@ describe('src | StocksProviderForm', () => {
 
     it('should display a notification and unselect provider if there is something wrong with the server', async () => {
       // given
-      const apiError = {
-        errors: { provider: ['error message'] },
-        status: 400,
-      }
-      pcapi.createVenueProvider.mockRejectedValue(apiError)
+      const apiError = { provider: ['error message'] }
+      api.createVenueProvider.mockRejectedValue(
+        new ApiError({}, { body: apiError, status: 400 }, '')
+      )
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -177,9 +183,7 @@ describe('src | StocksProviderForm', () => {
       })
       await userEvent.click(confirmImportButton)
 
-      const errorNotification = await screen.findByText(
-        apiError.errors.provider[0]
-      )
+      const errorNotification = await screen.findByText(apiError.provider[0])
       expect(errorNotification).toBeInTheDocument()
       const providersSelect = screen.queryByRole('combobox')
       expect(providersSelect).not.toBeInTheDocument()

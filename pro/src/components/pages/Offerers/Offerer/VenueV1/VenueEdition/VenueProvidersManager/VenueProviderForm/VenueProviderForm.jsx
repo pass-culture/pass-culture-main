@@ -2,8 +2,9 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
+import { api } from 'apiClient/api'
+import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
@@ -17,7 +18,7 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
   const dispatch = useDispatch()
   const createVenueProvider = useCallback(
     payload => {
-      pcapi
+      api
         .createVenueProvider(payload)
         .then(createdVenueProvider => {
           dispatch(
@@ -29,13 +30,15 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
           afterSubmit(createdVenueProvider)
         })
         .catch(error => {
-          dispatch(
-            showNotification({
-              text: getRequestErrorStringFromErrors(error.errors),
-              type: 'error',
-            })
-          )
-          afterSubmit()
+          if (isErrorAPIError(error)) {
+            dispatch(
+              showNotification({
+                text: getRequestErrorStringFromErrors(getError(error)),
+                type: 'error',
+              })
+            )
+            afterSubmit()
+          }
         })
     },
     [afterSubmit, dispatch]
