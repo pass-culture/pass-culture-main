@@ -11,6 +11,8 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import ReactTooltip from 'react-tooltip'
 
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -18,10 +20,13 @@ import { configureTestStore } from 'store/testUtils'
 import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  createVenueProvider: jest.fn(),
   editVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  createVenueProvider: jest.fn(),
 }))
 
 const renderVenueProvidersManager = async props => {
@@ -82,7 +87,7 @@ describe('components | CinemaProviderForm', () => {
         lastSyncDate: '2018-01-01T00:00:00Z',
         nOffers: 0,
       }
-      pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+      api.createVenueProvider.mockResolvedValue(createdVenueProvider)
     })
 
     it('should display the isDuo checkbox checked by default', async () => {
@@ -129,11 +134,10 @@ describe('components | CinemaProviderForm', () => {
 
     it('should display an error notification if there is something wrong with the server', async () => {
       // given
-      const apiError = {
-        errors: { global: ['Le prix ne peut pas être négatif'] },
-        status: 400,
-      }
-      pcapi.createVenueProvider.mockRejectedValue(apiError)
+      const apiError = { global: ['Le prix ne peut pas être négatif'] }
+      api.createVenueProvider.mockRejectedValue(
+        new ApiError({}, { body: apiError, status: 400 }, '')
+      )
       await renderCinemaProviderForm()
       const offerImportButton = screen.getByRole('button', {
         name: 'Importer les offres',
@@ -143,9 +147,7 @@ describe('components | CinemaProviderForm', () => {
       await userEvent.click(offerImportButton)
 
       // then
-      const errorNotification = await screen.findByText(
-        apiError.errors.global[0]
-      )
+      const errorNotification = await screen.findByText(apiError.global[0])
       expect(errorNotification).toBeInTheDocument()
     })
   })
