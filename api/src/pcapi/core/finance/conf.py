@@ -1,6 +1,8 @@
 import decimal
 from enum import Enum
 
+from pcapi.core.offers import models as offers_models
+
 from . import models
 
 
@@ -43,7 +45,15 @@ RECREDIT_TYPE_AMOUNT_MAPPING = {
 }
 
 
-class BaseSpecificCaps:
+def digital_cap_applies_to_offer(offer: offers_models.Offer) -> bool:
+    return offer.isDigital and offer.subcategory.is_digital_deposit
+
+
+def physical_cap_applies_to_offer(offer: offers_models.Offer) -> bool:
+    return not offer.isDigital and offer.subcategory.is_physical_deposit
+
+
+class SpecificCaps:
     DIGITAL_CAP = None
     PHYSICAL_CAP = None
 
@@ -51,47 +61,11 @@ class BaseSpecificCaps:
         self.DIGITAL_CAP = digital_cap
         self.PHYSICAL_CAP = physical_cap
 
-    # fmt: off
-    def digital_cap_applies(self, offer): # type: ignore [no-untyped-def]
-        return (
-            offer.isDigital
-            and bool(self.DIGITAL_CAP)
-            and offer.subcategory.is_digital_deposit
-        )
+    def digital_cap_applies(self, offer: offers_models.Offer) -> bool:
+        return digital_cap_applies_to_offer(offer) and bool(self.DIGITAL_CAP)
 
-    def physical_cap_applies(self, offer): # type: ignore [no-untyped-def]
-        return (
-            not offer.isDigital
-            and bool(self.PHYSICAL_CAP)
-            and offer.subcategory.is_physical_deposit
-        )
-    # fmt: on
-
-
-class GrantUnderageSpecificCaps(BaseSpecificCaps):
-    def __init__(self) -> None:
-        super().__init__(digital_cap=None, physical_cap=None)
-
-
-class Grant18SpecificCapsV1(BaseSpecificCaps):
-    def __init__(self) -> None:
-        super().__init__(digital_cap=decimal.Decimal(200), physical_cap=decimal.Decimal(200))
-
-
-class Grant18SpecificCapsV2(BaseSpecificCaps):
-    def __init__(self) -> None:
-        super().__init__(digital_cap=decimal.Decimal(100), physical_cap=None)
-
-
-SPECIFIC_CAPS = {
-    models.DepositType.GRANT_15_17: {
-        1: GrantUnderageSpecificCaps(),
-    },
-    models.DepositType.GRANT_18: {
-        1: Grant18SpecificCapsV1(),
-        2: Grant18SpecificCapsV2(),
-    },
-}
+    def physical_cap_applies(self, offer: offers_models.Offer) -> bool:
+        return physical_cap_applies_to_offer(offer) and bool(self.PHYSICAL_CAP)
 
 
 # TODO(fseguin|dbaty, 2022-01-11): maybe merge with core.categories.subcategories.ReimbursementRuleChoices ?
