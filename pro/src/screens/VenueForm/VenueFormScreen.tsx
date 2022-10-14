@@ -1,17 +1,24 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useMemo, useState } from 'react'
+import React, { useRef, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 
+import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import useNotification from 'components/hooks/useNotification'
 import { IOfferer } from 'core/Offerers/types'
+import { IProviders, IVenue, IVenueProviderApi } from 'core/Venue/types'
 import {
-  VenueForm,
-  validationSchema,
   IVenueFormValues,
+  validationSchema,
+  VenueForm,
 } from 'new_components/VenueForm'
-import { generateSiretValidationSchema } from 'new_components/VenueForm/Informations/SiretOrCommentFields'
 import { Title } from 'ui-kit'
 
-import { IProviders, IVenue, IVenueProviderApi } from '../../core/Venue/types'
+import { api } from '../../apiClient/api'
 
+import {
+  serializeEditVenueBodyModel,
+  serializePostVenueBodyModel,
+} from './serializers'
 import style from './VenueFormScreen.module.scss'
 
 interface IVenueEditionProps {
@@ -35,25 +42,60 @@ const VenueFormScreen = ({
   venue,
   providers,
 }: IVenueEditionProps): JSX.Element => {
-  const onSubmit = () => {
-    alert('todo submit form !')
+  const history = useHistory()
+  const notify = useNotification()
+  const formRef = useRef(null)
+  const [isSiretValued, setIsSiretValued] = useState(true)
+
+  const onSubmit = async (value: IVenueFormValues) => {
+    const request = isCreatingVenue
+      ? api.postCreateVenue(
+          serializePostVenueBodyModel(value, isSiretValued, offerer.id)
+        )
+      : api.editVenue(
+          venue?.id || '',
+          serializeEditVenueBodyModel(value, venueLabels, !venue?.comment)
+        )
+
+    request
+      .then(() => {
+        history.push(`/structures/${offerer.id}`)
+        notify.success('Vos modifications ont bien été enregistrées')
+      })
+      .catch(error => {
+        let formErrors
+        if (isErrorAPIError(error)) {
+          formErrors = error.body
+        }
+        const apiFieldsMap: Record<string, string> = {
+          venue: 'venueId',
+        }
+
+        if (Object.keys(formErrors).length === 0) {
+          notify.error('Erreur inconnue lors de la sauvegarde du lieu.')
+        } else {
+          notify.error(
+            'Une ou plusieurs erreurs sont présentes dans le formulaire'
+          )
+          formik.setErrors(serializeApiErrors(apiFieldsMap, formErrors))
+          formik.setSubmitting(true)
+        }
+      })
   }
 
-  const [isSiretValued, setIsSiretValued] = useState(false)
-
-  const generateSiretOrCommentValidationSchema: any = useMemo(
+  /*const generateSiretOrCommentValidationSchema: any = useMemo(
     () => generateSiretValidationSchema(offerer.siren, isSiretValued),
     [offerer.siren, isSiretValued]
   )
 
   const formValidationSchema = validationSchema.concat(
     generateSiretOrCommentValidationSchema
-  )
+  )*/
 
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmit,
-    validationSchema: formValidationSchema,
+    validationSchema: validationSchema, // FIXME: Should use formValidationSchema instead
   })
 
   return (
@@ -68,7 +110,7 @@ const VenueFormScreen = ({
       )}
 
       <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} ref={formRef}>
           <VenueForm
             isCreatingVenue={isCreatingVenue}
             updateIsSiretValued={setIsSiretValued}
