@@ -81,43 +81,35 @@ def synchronize_cine_office_stocks() -> None:
     synchronize_venue_providers_for_provider(cine_office_stocks_provider_id)
 
 
-# FIXME (asaunier, 2021-05-25): This clock must be removed once every application from procedure
-#  defined in DMS_NEW_ENROLLMENT_PROCEDURE_ID has been treated
+# TODO (lixxday, 2022-10-14): Remove this command once the corresponding cron is removed
 @blueprint.cli.command("import_dms_users_beneficiaries")
 @log_cron_with_transaction
 def import_dms_users_beneficiaries() -> None:
-    procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
-    dms_script.import_dms_accepted_applications(procedure_id)
-    dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+    pass
 
 
-# FIXME (xordoquy, 2021-06-16): This clock must be removed once every application from procedure
-#  defined in 44623 has been treated
+# TODO (lixxday, 2022-10-14): Remove this command once the corresponding cron is removed
 @blueprint.cli.command("import_dms_users_beneficiaries_from_old_dms")
 @log_cron_with_transaction
 def import_dms_users_beneficiaries_from_old_dms() -> None:
-    if not settings.IS_PROD:
-        return
-    procedure_id = DMS_OLD_PROCEDURE_ID
-    dms_script.import_dms_accepted_applications(procedure_id)
-    dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
-
-
-@blueprint.cli.command("import_beneficiaries_from_dms_v3")
-@log_cron_with_transaction
-def import_beneficiaries_from_dms_v3() -> None:
-    procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
-    dms_script.import_dms_accepted_applications(procedure_id)
-    dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+    pass
 
 
 @blueprint.cli.command("import_beneficiaries_from_dms_v4")
 @log_cron_with_transaction
-def import_beneficiaries_from_dms_v4() -> None:
-    for procedure_name, procedure_id in (
+def import_beneficiaries_from_dms() -> None:
+    procedures = [
         ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
         ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
-    ):
+    ]
+    if settings.IS_PROD:
+        procedures.append(("old_procedure_1", settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID))
+        procedures.append(("old_procedure_2", DMS_OLD_PROCEDURE_ID))
+        procedures.append(
+            ("old_procedure_after_general_opening", settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
+        )
+
+    for procedure_name, procedure_id in procedures:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
