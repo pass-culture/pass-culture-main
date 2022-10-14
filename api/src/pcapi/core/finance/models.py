@@ -86,7 +86,7 @@ class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         if self.user.departementCode == conf.WALLIS_AND_FUTUNA_DEPARTMENT_CODE:
             digital_cap = None
 
-        return conf.BaseSpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
+        return conf.SpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
 
 
 @dataclasses.dataclass
