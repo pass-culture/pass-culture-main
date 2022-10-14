@@ -72,7 +72,18 @@ class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     def specific_caps(self):  # type: ignore [no-untyped-def]
         from . import conf
 
-        return conf.SPECIFIC_CAPS[self.type][self.version]
+        physical_cap = None
+        digital_cap = None
+
+        if self.type == DepositType.GRANT_18:
+            if self.version == 1:
+                physical_cap = conf.GRANT_18_PHYSICAL_CAP_V1
+                digital_cap = conf.GRANT_18_DIGITAL_CAP_V1
+            elif self.version == 2:
+                physical_cap = conf.GRANT_18_PHYSICAL_CAP_V2
+                digital_cap = conf.GRANT_18_DIGITAL_CAP_V2
+
+        return conf.BaseSpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
 
 
 @dataclasses.dataclass
