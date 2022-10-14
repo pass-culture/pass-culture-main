@@ -5,7 +5,7 @@ on:
     branches:
       - master
 jobs:
-  add-annotated-tag:
+  update-jira-issues:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
