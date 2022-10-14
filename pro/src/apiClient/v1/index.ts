@@ -130,6 +130,7 @@ export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyM
 export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
+export type { PostVenueBodyModel } from './models/PostVenueBodyModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { ProUserCreationBodyModel } from './models/ProUserCreationBodyModel';
 export type { ProviderResponse } from './models/ProviderResponse';
@@ -165,6 +166,7 @@ export type { VenueLabelResponseModel } from './models/VenueLabelResponseModel';
 export type { VenueListItemResponseModel } from './models/VenueListItemResponseModel';
 export type { VenueListQueryModel } from './models/VenueListQueryModel';
 export type { VenueProviderResponse } from './models/VenueProviderResponse';
+export type { VenueResponseModel } from './models/VenueResponseModel';
 export type { VenuesEducationalStatusesResponseModel } from './models/VenuesEducationalStatusesResponseModel';
 export type { VenuesEducationalStatusResponseModel } from './models/VenuesEducationalStatusResponseModel';
 export type { VenueStatsResponseModel } from './models/VenueStatsResponseModel';

@@ -60,6 +60,7 @@ import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
+import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
@@ -79,6 +80,7 @@ import type { UserPhoneResponseModel } from '../models/UserPhoneResponseModel';
 import type { UserResetEmailBodyModel } from '../models/UserResetEmailBodyModel';
 import type { VenueLabelListResponseModel } from '../models/VenueLabelListResponseModel';
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
+import type { VenueResponseModel } from '../models/VenueResponseModel';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
 import type { VenueStatsResponseModel } from '../models/VenueStatsResponseModel';
 import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel';
@@ -1817,6 +1819,27 @@ export class DefaultService {
         'activeOfferersOnly': activeOfferersOnly,
         'offererId': offererId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * post_create_venue <POST>
+   * @param requestBody
+   * @returns VenueResponseModel Created
+   * @throws ApiError
+   */
+  public postCreateVenue(
+    requestBody?: PostVenueBodyModel,
+  ): CancelablePromise<VenueResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/venues',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
