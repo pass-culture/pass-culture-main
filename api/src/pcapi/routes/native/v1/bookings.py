@@ -209,6 +209,10 @@ def cancel_booking(user: User, booking_id: int) -> None:
     )
     try:
         bookings_api.cancel_booking_by_beneficiary(user, booking)
+    except bookings_exceptions.BookingIsCancelled:
+        # Do not raise an error, to avoid showing an error in case double-click => double call
+        # Booking is cancelled so a success status is ok
+        return
     except bookings_exceptions.BookingIsAlreadyUsed:
         raise ApiErrors({"code": "ALREADY_USED", "message": "La réservation a déjà été utilisée."})
     except bookings_exceptions.CannotCancelConfirmedBooking:

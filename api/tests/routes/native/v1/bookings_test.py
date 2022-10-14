@@ -12,6 +12,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
@@ -324,6 +325,7 @@ class CancelBookingTest:
         booking = Booking.query.get(booking.id)
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+        assert len(mails_testing.outbox) == 1
 
     def test_cancel_others_booking(self, app):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -354,6 +356,20 @@ class CancelBookingTest:
             "code": "CONFIRMED_BOOKING",
             "message": "La date limite d'annulation est dépassée.",
         }
+
+    def test_cancel_cancelled_booking(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.IndividualBookingFactory(
+            individualBooking__user=user,
+            status=BookingStatus.CANCELLED,
+            cancellationReason=BookingCancellationReasons.BENEFICIARY,
+        )
+
+        response = client.with_token(self.identifier).post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        # successful but it does nothing, so it does not send a new cancellation email
+        assert response.status_code == 204
+        assert len(mails_testing.outbox) == 0
 
 
 class ToggleBookingVisibilityTest:
