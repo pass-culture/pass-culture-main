@@ -1,8 +1,8 @@
 import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
-import { serializeApiErrors, serializePatchOffer } from './serializers'
+import { serializePatchOffer } from './serializers'
 
 type TSuccessPayload = { id: string }
 type TFailurePayload = { errors: Record<string, string> }
@@ -16,6 +16,7 @@ const updateIndividualOffer: TUpdateIndividualOffer = async ({
   offerId,
   formValues,
 }) => {
+  /* istanbul ignore next: DEBT, TO FIX */
   try {
     const response = await api.patchOffer(
       offerId,
@@ -33,11 +34,14 @@ const updateIndividualOffer: TUpdateIndividualOffer = async ({
     if (isErrorAPIError(error)) {
       formErrors = error.body
     }
+    const apiFieldsMap: Record<string, string> = {
+      venue: 'venueId',
+    }
     return {
       isOk: false,
       message: 'Une erreur est survenue lors de la création de votre offre',
       payload: {
-        errors: serializeApiErrors(formErrors),
+        errors: serializeApiErrors(apiFieldsMap, formErrors),
       },
     }
   }

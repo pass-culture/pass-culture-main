@@ -3,22 +3,6 @@ import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
-export const serializeApiErrors = (
-  errors: Record<string, string>
-): Record<string, string> => {
-  const apiFieldsMap: Record<string, string> = {
-    venue: 'venueId',
-  }
-  const formErrors: Record<string, string> = {}
-  let formFieldName
-  for (const apiFieldName in errors) {
-    formFieldName =
-      apiFieldName in apiFieldsMap ? apiFieldsMap[apiFieldName] : apiFieldName
-    formErrors[formFieldName] = errors[apiFieldName]
-  }
-  return formErrors
-}
-
 export const serializeExtraData = (
   formValues: IOfferIndividualFormValues
 ): IOfferExtraData => {

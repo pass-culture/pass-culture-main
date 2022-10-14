@@ -3,22 +3,7 @@ import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
-export const serializeApiErrors = (
-  errors: Record<string, string>
-): Record<string, string> => {
-  const apiFieldsMap: Record<string, string> = {
-    venue: 'venueId',
-  }
-  const formErrors: Record<string, string> = {}
-  let formFieldName
-  for (const apiFieldName in errors) {
-    formFieldName =
-      apiFieldName in apiFieldsMap ? apiFieldsMap[apiFieldName] : apiFieldName
-    formErrors[formFieldName] = errors[apiFieldName]
-  }
-  return formErrors
-}
-
+/* istanbul ignore next: DEBT, TO FIX */
 export const serializeExtraData = (
   formValues: IOfferIndividualFormValues
 ): IOfferExtraData => {
@@ -39,13 +24,17 @@ export const serializeExtraData = (
 }
 
 const serializeDurationMinutes = (durationHour: string): number | null => {
+  /* istanbul ignore next: DEBT, TO FIX */
   if (durationHour.trim().length === 0) {
     return null
   }
+
+  /* istanbul ignore next: DEBT, TO FIX */
   const [hours, minutes] = durationHour
     .split(':')
     .map((s: string) => parseInt(s, 10))
 
+  /* istanbul ignore next: DEBT, TO FIX */
   return minutes + hours * 60
 }
 
