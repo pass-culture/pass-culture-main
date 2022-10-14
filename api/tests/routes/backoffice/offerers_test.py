@@ -413,6 +413,56 @@ class GetOffererOffersStatsTest:
         assert offer_stats["inactive"]["collective"] == 6
 
     @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_offerer_offers_stats_active_only(
+        self,
+        client,
+        offerer,
+        offerer_active_individual_offers,
+        offerer_active_collective_offers,
+    ):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_offerer_offers_stats", offerer_id=offerer.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        offer_stats = response.json["data"]
+        assert offer_stats["active"]["individual"] == 3
+        assert offer_stats["active"]["collective"] == 5
+        assert offer_stats["inactive"]["individual"] == 0
+        assert offer_stats["inactive"]["collective"] == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_offerer_offers_stats_inactive_only(
+        self,
+        client,
+        offerer,
+        offerer_inactive_individual_offers,
+        offerer_inactive_collective_offers,
+    ):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_offerer_offers_stats", offerer_id=offerer.id)
+        )
+
+        # then
+        assert response.status_code == 200
+        offer_stats = response.json["data"]
+        assert offer_stats["active"]["individual"] == 0
+        assert offer_stats["active"]["collective"] == 0
+        assert offer_stats["inactive"]["individual"] == 4
+        assert offer_stats["inactive"]["collective"] == 6
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_offerer_offers_stats_0_if_no_offer(
         self,
         client,
