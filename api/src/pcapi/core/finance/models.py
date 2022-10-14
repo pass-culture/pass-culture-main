@@ -83,6 +83,9 @@ class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
                 physical_cap = conf.GRANT_18_PHYSICAL_CAP_V2
                 digital_cap = conf.GRANT_18_DIGITAL_CAP_V2
 
+        if self.user.departementCode == conf.WALLIS_AND_FUTUNA_DEPARTMENT_CODE:
+            digital_cap = None
+
         return conf.BaseSpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
 
 
