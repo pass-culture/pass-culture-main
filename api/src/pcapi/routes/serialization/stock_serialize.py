@@ -8,10 +8,10 @@ from pydantic.types import NonNegativeInt
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import dehumanize_or_raise
 
 
 class StockResponseModel(BaseModel):
@@ -73,15 +73,17 @@ class StockCreationBodyModel(BaseModel):
 class StockEditionBodyModel(BaseModel):
     beginning_datetime: datetime | None
     booking_limit_datetime: datetime | None
-    id: int
+    humanized_id: str
     price: float
     quantity: int | None
-
-    _dehumanize_id = dehumanize_field("id")
 
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+    @property
+    def id(self) -> int:
+        return dehumanize_or_raise(self.humanized_id)
 
 
 class StockIdResponseModel(BaseModel):
@@ -109,13 +111,15 @@ class EducationalStockIdResponseModel(BaseModel):
 
 
 class StocksUpsertBodyModel(BaseModel):
-    offer_id: int
+    humanized_offer_id: str
     stocks: list[StockCreationBodyModel | StockEditionBodyModel]
-
-    _dehumanize_offer_id = dehumanize_field("offer_id")
 
     class Config:
         alias_generator = to_camel
+
+    @property
+    def offer_id(self) -> int:
+        return dehumanize_or_raise(self.humanized_offer_id)
 
 
 class StockIdsResponseModel(BaseModel):

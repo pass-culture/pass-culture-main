@@ -67,7 +67,9 @@ class UpsertStocksTest:
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
         created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=5, quantity=7)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(
+            humanizedId=humanize(existing_stock.id), price=5, quantity=7
+        )
 
         # When
         stocks_upserted = api.upsert_stocks(
@@ -136,7 +138,7 @@ class UpsertStocksTest:
         existing_stock = factories.StockFactory(offer=offer, price=10)
         beginning = datetime.utcnow() + timedelta(days=10)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id,
+            humanizedId=humanize(existing_stock.id),
             beginningDatetime=beginning,
             bookingLimitDatetime=existing_stock.bookingLimitDatetime,
             price=2,
@@ -175,7 +177,7 @@ class UpsertStocksTest:
         existing_stock = factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
         booking = bookings_factories.BookingFactory(stock=existing_stock, dateCreated=now)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id,
+            humanizedId=humanize(existing_stock.id),
             beginningDatetime=event_reported_in_10_days,
             bookingLimitDatetime=existing_stock.bookingLimitDatetime,
             price=2,
@@ -200,7 +202,7 @@ class UpsertStocksTest:
             stock=existing_stock, dateCreated=booking_made_3_days_ago
         )
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id,
+            humanizedId=humanize(existing_stock.id),
             beginningDatetime=event_reported_in_10_days,
             bookingLimitDatetime=existing_stock.bookingLimitDatetime,
             price=2,
@@ -228,7 +230,7 @@ class UpsertStocksTest:
             stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
         )
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id,
+            humanizedId=humanize(existing_stock.id),
             beginningDatetime=event_reported_in_less_48_hours,
             bookingLimitDatetime=existing_stock.bookingLimitDatetime,
             price=2,
@@ -251,7 +253,7 @@ class UpsertStocksTest:
             offer__lastProviderId=allocine_provider.id,
         )
         stock_data = stock_serialize.StockEditionBodyModel(
-            id=stock.id,
+            humanizedId=humanize(stock.id),
             price=stock.price,
             quantity=50,
         )
@@ -264,7 +266,9 @@ class UpsertStocksTest:
         offer = factories.ThingOfferFactory()
         other_offer = factories.ThingOfferFactory()
         existing_stock_on_other_offer = factories.StockFactory(offer=other_offer, price=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock_on_other_offer.id, price=30)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(
+            humanizedId=humanize(existing_stock_on_other_offer.id), price=30
+        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -282,7 +286,9 @@ class UpsertStocksTest:
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
         created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=-2)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=30, quantity=-4)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(
+            humanizedId=humanize(existing_stock.id), price=30, quantity=-4
+        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -297,7 +303,7 @@ class UpsertStocksTest:
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
         created_stock_data = stock_serialize.StockCreationBodyModel(price=-1)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=-3)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(existing_stock.id), price=-3)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -327,7 +333,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.ProFactory()
         existing_stock = factories.ThingStockFactory(price=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=301)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(existing_stock.id), price=301)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -360,7 +366,7 @@ class UpsertStocksTest:
         existing_stock = factories.EventStockFactory(price=10, offer__bookingEmail="test@bookingEmail.fr")
         now = datetime.utcnow()
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id, price=301, beginningDatetime=now, bookingLimitDatetime=now
+            humanizedId=humanize(existing_stock.id), price=301, beginningDatetime=now, bookingLimitDatetime=now
         )
 
         # When
@@ -374,7 +380,7 @@ class UpsertStocksTest:
         stock = factories.ThingStockFactory(price=10)
         finance_factories.CustomReimbursementRuleFactory(offer=stock.offer)
 
-        data = stock_serialize.StockEditionBodyModel(id=stock.id, price=9)
+        data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(stock.id), price=9)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.upsert_stocks(offer_id=stock.offerId, stock_data_list=[data], user=user)
         assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
@@ -428,7 +434,10 @@ class UpsertStocksTest:
             price=-1, beginningDatetime=beginning_date, bookingLimitDatetime=beginning_date
         )
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id, price=0, beginningDatetime=beginning_date, bookingLimitDatetime=beginning_date
+            humanizedId=humanize(existing_stock.id),
+            price=0,
+            beginningDatetime=beginning_date,
+            bookingLimitDatetime=beginning_date,
         )
 
         # When
@@ -472,7 +481,7 @@ class UpsertStocksTest:
         existing_stock = factories.StockFactory(offer=offer)
         factories.ActivationCodeFactory(expirationDate=datetime.utcnow(), stock=existing_stock)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id, price=0, bookingLimitDatetime=None
+            humanizedId=humanize(existing_stock.id), price=0, bookingLimitDatetime=None
         )
 
         # When
@@ -495,7 +504,9 @@ class UpsertStocksTest:
         offer = factories.ThingOfferFactory()
         booking = bookings_factories.BookingFactory(stock__offer=offer, stock__quantity=10)
         existing_stock = booking.stock
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, quantity=0, price=10)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(
+            humanizedId=humanize(existing_stock.id), quantity=0, price=10
+        )
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -542,7 +553,7 @@ class UpsertStocksTest:
         offer = factories.ThingOfferFactory()
         date_in_the_past = datetime.utcnow() - timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_past)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=4)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(humanizedId=humanize(existing_stock.id), price=4)
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -575,7 +586,7 @@ class UpsertStocksTest:
         date_in_the_future = datetime.utcnow() + timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id,
+            humanizedId=humanize(existing_stock.id),
             beginningDatetime=existing_stock.beginningDatetime,
             bookingLimitDatetime=existing_stock.bookingLimitDatetime,
             price=4,
@@ -598,7 +609,7 @@ class UpsertStocksTest:
         other_date_in_the_future = datetime.utcnow() + timedelta(days=6)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
-            id=existing_stock.id,
+            humanizedId=humanize(existing_stock.id),
             beginningDatetime=other_date_in_the_future,
             bookingLimitDatetime=other_date_in_the_future,
             price=10,
@@ -635,7 +646,9 @@ class UpsertStocksTest:
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
         existing_stock = factories.StockFactory(offer=offer, price=10)
-        edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=5, quantity=7)
+        edited_stock_data = stock_serialize.StockEditionBodyModel(
+            humanizedId=humanize(existing_stock.id), price=5, quantity=7
+        )
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
