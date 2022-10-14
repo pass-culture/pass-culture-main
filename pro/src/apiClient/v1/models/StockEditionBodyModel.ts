@@ -5,7 +5,7 @@
 export type StockEditionBodyModel = {
   beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
-  id: number;
+  humanizedId: string;
   price: number;
   quantity?: number | null;
 };
