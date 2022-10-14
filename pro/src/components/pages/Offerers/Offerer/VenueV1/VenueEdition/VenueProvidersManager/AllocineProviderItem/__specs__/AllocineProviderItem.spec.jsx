@@ -14,9 +14,14 @@ import { queryByTextTrimHtml } from 'utils/testHelpers'
 import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  createVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    createVenueProvider: jest.fn(),
+  },
 }))
 
 const renderVenueProvidersManager = props =>
