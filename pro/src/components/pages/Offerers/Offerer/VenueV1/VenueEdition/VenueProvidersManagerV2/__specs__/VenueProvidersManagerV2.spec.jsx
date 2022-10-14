@@ -11,6 +11,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
@@ -21,8 +22,13 @@ import VenueProvidersManagerV2 from '../VenueProvidersManagerV2'
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
-  deleteVenueProvider: jest.fn(),
   editVenueProvider: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    deleteVenueProvider: jest.fn(),
+  },
 }))
 
 const renderVenueProvidersManager = async props => {
@@ -194,7 +200,7 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
-      pcapi.deleteVenueProvider.mockResolvedValue()
+      api.deleteVenueProvider.mockResolvedValue()
 
       // When
       await renderVenueProvidersManager(props)
@@ -217,7 +223,7 @@ describe('src | VenueProvidersManager', () => {
       await userEvent.click(confirmDeleteButton)
 
       // Then
-      expect(pcapi.deleteVenueProvider).toHaveBeenCalledTimes(1)
+      expect(api.deleteVenueProvider).toHaveBeenCalledTimes(1)
     })
 
     it('should display synchronization parameters when has Allociné provider', async () => {

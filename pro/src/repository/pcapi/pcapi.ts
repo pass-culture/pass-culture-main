@@ -119,10 +119,6 @@ export const submitResetPassword = (newPassword, token) => {
 // Providers
 //
 
-export const deleteVenueProvider = async (venueProviderId: string) => {
-  return await client.delete(`/venueProviders/${venueProviderId}`)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueProvider' implicitly has an 'any' ... Remove this comment to see the full error message
 export const editVenueProvider = async venueProvider => {
   return client.put('/venueProviders', venueProvider)
