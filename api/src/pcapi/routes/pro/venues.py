@@ -113,7 +113,9 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
 
 @private_api.route("/venues", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=venues_serialize.VenueResponseModel, on_success_status=201)
+@spectree_serialize(
+    response_model=venues_serialize.VenueResponseModel, on_success_status=201, api=blueprint.pro_private_schema
+)
 def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_serialize.VenueResponseModel:
     dehumanized_managing_offerer_id = dehumanize(body.managingOffererId)
     check_user_has_access_to_offerer(current_user, dehumanized_managing_offerer_id)  # type: ignore [arg-type]
