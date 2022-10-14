@@ -8,10 +8,11 @@ update:
   customfield_10044: # 'impropre' flag
     - set: "{{ .overrides.customfield_10044 }}"
   {{- end -}}
-  {{if .overrides.customfield_10060 }}
+  {{if .overrides.customfield_10059 }}
   customfield_10059: # commit number
     - set: {{ .overrides.customfield_10059 }}
   {{- end -}}
+  {{if .overrides.customfield_10060 }}
   customfield_10060: # commit hash
     - set: "{{ .overrides.customfield_10060 }}"
   {{- end -}}
