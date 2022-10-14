@@ -114,12 +114,6 @@ export const resetPassword = (token, email) => {
 export const submitResetPassword = (newPassword, token) => {
   return client.post('/users/new-password', { newPassword, token })
 }
-//
-// tutos
-//
-export const setHasSeenTutos = () => {
-  return client.patch(`/users/tuto-seen`)
-}
 
 // RGS Banner
 //
