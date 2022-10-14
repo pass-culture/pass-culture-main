@@ -1236,9 +1236,17 @@ class ListOfferersToBeValidatedTest:
         _validated_offerers = [
             offerers_factories.UserOffererFactory(offerer__validationToken=None).offerer for _ in range(3)
         ]
-        to_be_validated_offerers = [
-            offerers_factories.UserOffererFactory(offerer__validationToken=f"{i:_>27}").offerer for i in range(4)
-        ]
+        to_be_validated_offerers = []
+        for i in range(4):
+            user_offerer = offerers_factories.UserOffererFactory(offerer__validationToken=f"{i:_>27}")
+            history_factories.ActionHistoryFactory(
+                actionType=history_models.ActionType.OFFERER_NEW,
+                authorUser=users_factories.AdminFactory(),
+                offerer=user_offerer.offerer,
+                user=user_offerer.user,
+                comment=None,
+            )
+            to_be_validated_offerers.append(user_offerer.offerer)
 
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -1269,6 +1277,14 @@ class ListOfferersToBeValidatedTest:
         )
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 12, 0),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=commenter,
+            offerer=user_offerer.offerer,
+            user=user_offerer.user,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
             actionType=history_models.ActionType.COMMENT,
             authorUser=commenter,
@@ -1287,6 +1303,7 @@ class ListOfferersToBeValidatedTest:
             actionType=history_models.ActionType.USER_OFFERER_VALIDATED,
             authorUser=commenter,
             offerer=user_offerer.offerer,
+            user=user_offerer.user,
             comment=None,
         )
 

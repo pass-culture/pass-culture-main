@@ -256,7 +256,7 @@ def remove_tag_from_offerer(offerer_id: int, tag_name: str) -> None:
 
 def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer) -> serialization.Comment | None:
     if offerer.action_history:
-        actions_with_comment = filter(lambda a: bool(a.comment), offerer.action_history)
+        actions_with_comment = list(filter(lambda a: bool(a.comment), offerer.action_history))
         if actions_with_comment:
             last = sorted(actions_with_comment, key=lambda a: a.actionDate, reverse=True)[0]
             return serialization.Comment(
