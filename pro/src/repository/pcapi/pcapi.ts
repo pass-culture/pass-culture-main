@@ -119,11 +119,6 @@ export const submitResetPassword = (newPassword, token) => {
 // Providers
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueProvider' implicitly has an 'any' ... Remove this comment to see the full error message
-export const editVenueProvider = async venueProvider => {
-  return client.put('/venueProviders', venueProvider)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
 export const loadProviders = async venueId => {
   return client.get(`/providers/${venueId}`)
