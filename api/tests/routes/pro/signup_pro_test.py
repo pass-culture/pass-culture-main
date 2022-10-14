@@ -189,7 +189,7 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def when_email_is_missing(self, app):
+    def test_when_email_is_missing(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["email"]
@@ -202,7 +202,7 @@ class Returns400Test:
         error = response.json
         assert "email" in error
 
-    def when_email_is_invalid(self, app):
+    def test_when_email_is_invalid(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         data["email"] = "toto"
@@ -215,7 +215,7 @@ class Returns400Test:
         error = response.json
         assert "email" in error
 
-    def when_email_is_already_used(self, app):
+    def test_when_email_is_already_used(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -228,7 +228,7 @@ class Returns400Test:
         error = response.json
         assert "email" in error
 
-    def when_public_name_is_missing(self, app):
+    def test_when_public_name_is_missing(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["publicName"]
@@ -241,7 +241,7 @@ class Returns400Test:
         error = response.json
         assert "publicName" in error
 
-    def when_public_name_is_too_long(self, app):
+    def test_when_public_name_is_too_long(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         data["publicName"] = "x" * 300
@@ -254,7 +254,7 @@ class Returns400Test:
         error = response.json
         assert "publicName" in error
 
-    def when_password_is_missing(self, app):
+    def test_when_password_is_missing(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["password"]
@@ -267,7 +267,7 @@ class Returns400Test:
         error = response.json
         assert "password" in error
 
-    def when_password_is_invalid(self, app):
+    def test_when_password_is_invalid(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         data["password"] = "weakpassword"
@@ -286,7 +286,7 @@ class Returns400Test:
             "- Un caractère spécial"
         ]
 
-    def when_offerer_name_is_missing(self, app):
+    def test_when_offerer_name_is_missing(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["name"]
@@ -299,7 +299,7 @@ class Returns400Test:
         error = response.json
         assert "name" in error
 
-    def when_offerer_city_is_missing(self, app):
+    def test_when_offerer_city_is_missing(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["city"]
@@ -312,7 +312,7 @@ class Returns400Test:
         error = response.json
         assert "city" in error
 
-    def when_postal_code_is_missing(self, app):
+    def test_when_postal_code_is_missing(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["postalCode"]
@@ -325,7 +325,7 @@ class Returns400Test:
         error = response.json
         assert "postalCode" in error
 
-    def when_invalid_postal_code(self, app):
+    def test_when_invalid_postal_code(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         data["postalCode"] = "111"
@@ -338,7 +338,7 @@ class Returns400Test:
         error = response.json
         assert "postalCode" in error
 
-    def when_extra_data_is_given(self, app):
+    def test_when_extra_data_is_given(self, app):
         # Given
         user_json = {
             "email": "toto_pro@example.com",
@@ -364,10 +364,23 @@ class Returns400Test:
         created_user = User.query.filter_by(email="toto_pro@example.com").first()
         assert created_user is None
 
-    def when_invalid_phone_number(self, app):
+    def test_when_bad_format_phone_number(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
         data["phoneNumber"] = "abc 123"
+
+        # When
+        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+
+        # Then
+        assert response.status_code == 400
+        error = response.json
+        assert "phoneNumber" in error
+
+    def test_when_invalid_phone_number(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        data["phoneNumber"] = "0873492896"
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
