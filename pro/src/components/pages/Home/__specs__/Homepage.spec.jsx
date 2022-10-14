@@ -26,7 +26,6 @@ jest.mock('utils/config', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn(),
-  setHasSeenRGSBanner: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -35,6 +34,7 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getOfferer: jest.fn(),
     getVenueStats: jest.fn(),
+    patchProUserRgsSeen: jest.fn(),
   },
 }))
 
@@ -234,7 +234,7 @@ describe('homepage', () => {
     describe('rGS Banner', () => {
       it('should close and register when user clicks close button', async () => {
         const spyRegister = jest
-          .spyOn(pcapi, 'setHasSeenRGSBanner')
+          .spyOn(api, 'patchProUserRgsSeen')
           .mockResolvedValue()
         renderHomePage(store)
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
