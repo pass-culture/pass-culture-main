@@ -13,7 +13,6 @@ from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
@@ -182,7 +181,6 @@ class GetReimbursementPointsTest:
 
 
 class GetInvoicesQueryTest:
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_basics(self):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
@@ -202,7 +200,6 @@ class GetInvoicesQueryTest:
         invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_filter_on_date(self):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
@@ -231,7 +228,6 @@ class GetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice_within]
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_filter_on_reimbursement_point(self):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
@@ -247,7 +243,6 @@ class GetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice1]
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_wrong_reimbursement_point(self):
         # Make sure that specifying a reimbursement point id that belongs to
         # another offerer does not return anything.
@@ -266,7 +261,6 @@ class GetInvoicesQueryTest:
         )
         assert invoices.count() == 0
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_admin_filter_on_reimbursement_point(self):
         reimbursement_point1 = offerers_factories.VenueFactory(reimbursement_point="self")
         invoice1 = factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point1)
@@ -281,7 +275,6 @@ class GetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice1]
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_admin_without_filter(self):
         factories.InvoiceFactory(
             businessUnit=None,
@@ -290,120 +283,6 @@ class GetInvoicesQueryTest:
 
         invoices = repository.get_invoices_query(admin)
         assert invoices.count() == 0
-
-
-class LegacyGetInvoicesQueryTest:
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
-    def test_basics(self):
-        business_unit1 = factories.BusinessUnitFactory()
-        invoice1 = factories.InvoiceFactory(businessUnit=business_unit1, reimbursementPoint=None)
-        business_unit2 = factories.BusinessUnitFactory()
-        invoice2 = factories.InvoiceFactory(businessUnit=business_unit2, reimbursementPoint=None)
-        venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
-        offerer = venue1.managingOfferer
-        pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        _venue2 = offerers_factories.VenueFactory(
-            managingOfferer=offerer,
-            businessUnit=business_unit2,
-        )
-        other_business_unit = factories.BusinessUnitFactory()
-        _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)
-        _other_invoice = factories.InvoiceFactory(businessUnit=other_business_unit)
-
-        business_unit3 = factories.BusinessUnitFactory()
-        factories.InvoiceFactory(businessUnit=business_unit3, amount=-15000000)
-        venue3 = offerers_factories.VenueFactory(businessUnit=business_unit3)
-        offerer2 = venue3.managingOfferer
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
-
-        invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
-        assert list(invoices) == [invoice1, invoice2]
-
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
-    def test_filter_on_date(self):
-        business_unit = factories.BusinessUnitFactory()
-        venue = offerers_factories.VenueFactory(businessUnit=business_unit)
-        pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
-        _invoice_before = factories.InvoiceFactory(
-            businessUnit=business_unit,
-            date=datetime.date(2021, 6, 15),
-        )
-        invoice_within = factories.InvoiceFactory(
-            businessUnit=business_unit,
-            date=datetime.date(2021, 7, 1),
-        )
-        _invoice_after = factories.InvoiceFactory(
-            businessUnit=business_unit,
-            date=datetime.date(2021, 8, 1),
-        )
-
-        invoices = repository.get_invoices_query(
-            pro,
-            date_from=datetime.date(2021, 7, 1),
-            date_until=datetime.date(2021, 8, 1),
-        )
-        assert list(invoices) == [invoice_within]
-
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
-    def test_filter_on_business_unit(self):
-        business_unit1 = factories.BusinessUnitFactory()
-        invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
-        venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
-        pro1 = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro1, offerer=venue1.managingOfferer)
-        business_unit2 = factories.BusinessUnitFactory()
-        _invoice2 = factories.InvoiceFactory(businessUnit=business_unit2)
-
-        invoices = repository.get_invoices_query(
-            pro1,
-            business_unit_id=business_unit1.id,
-        )
-        assert list(invoices) == [invoice1]
-
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
-    def test_wrong_business_unit(self):
-        # Make sure that specifying a business unit id that belongs to
-        # another offerer does not return anything.
-        business_unit1 = factories.BusinessUnitFactory()
-        _invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
-        venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
-        pro1 = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro1, offerer=venue1.managingOfferer)
-
-        other_business_unit = factories.BusinessUnitFactory()
-        _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)
-        _other_invoice = factories.InvoiceFactory(businessUnit=other_business_unit)
-
-        invoices = repository.get_invoices_query(
-            pro1,
-            business_unit_id=other_business_unit.id,
-        )
-        assert not invoices.count()
-
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
-    def test_admin_filter_on_business_unit(self):
-        invoice1 = factories.InvoiceFactory()
-        _venue1 = offerers_factories.VenueFactory(businessUnit=invoice1.businessUnit)
-        invoice2 = factories.InvoiceFactory()
-        _venue2 = offerers_factories.VenueFactory(businessUnit=invoice2.businessUnit)
-        admin = users_factories.AdminFactory()
-
-        invoices = repository.get_invoices_query(
-            admin,
-            business_unit_id=invoice1.businessUnitId,
-        )
-        assert list(invoices) == [invoice1]
-
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=False)
-    def test_admin_without_filter(self):
-        invoice = factories.InvoiceFactory()
-        _venue = offerers_factories.VenueFactory(businessUnit=invoice.businessUnit)
-        admin = users_factories.AdminFactory()
-
-        invoices = repository.get_invoices_query(admin)
-        assert not invoices.count()
 
 
 def test_has_reimbursement():

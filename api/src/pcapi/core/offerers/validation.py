@@ -39,7 +39,6 @@ def validate_coordinates(raw_latitude, raw_longitude):  # type: ignore [no-untyp
         raise api_errors
 
 
-# FUTURE-NEW-BANK-DETAILS: cleanup ifs when new bank details journey is complete
 def check_venue_creation(data):  # type: ignore [no-untyped-def]
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
@@ -55,10 +54,6 @@ def check_venue_creation(data):  # type: ignore [no-untyped-def]
         data.get("visualDisabilityCompliant"),
     ]:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
-    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
-        business_unit_id = data.get("businessUnitId")
-        if business_unit_id:
-            check_existing_business_unit(business_unit_id, offerer)
 
 
 def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
