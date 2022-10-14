@@ -55,10 +55,14 @@ const CollectiveBookingDetails = ({
   const cancelBooking = async () => {
     const response = await cancelCollectiveBookingAdapter({ offerId })
     if (response.isOk) {
-      notify.success(response.message, NOTIFICATION_LONG_SHOW_DURATION)
+      notify.success(response.message, {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
       reloadBookings()
     } else {
-      notify.error(response.message, NOTIFICATION_LONG_SHOW_DURATION)
+      notify.error(response.message, {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
     }
   }
 
