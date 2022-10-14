@@ -14,6 +14,7 @@ import {
 import { Title } from 'ui-kit'
 
 import { api } from '../../apiClient/api'
+import useCurrentUser from '../../components/hooks/useCurrentUser'
 
 import {
   serializeEditVenueBodyModel,
@@ -44,6 +45,7 @@ const VenueFormScreen = ({
 }: IVenueEditionProps): JSX.Element => {
   const history = useHistory()
   const notify = useNotification()
+  const { currentUser } = useCurrentUser()
   const formRef = useRef(null)
   const [isSiretValued, setIsSiretValued] = useState(true)
 
@@ -59,7 +61,9 @@ const VenueFormScreen = ({
 
     request
       .then(() => {
-        history.push(`/structures/${offerer.id}`)
+        history.push(
+          currentUser.isAdmin ? `/structures/${offerer.id}` : '/accueil'
+        )
         notify.success('Vos modifications ont bien été enregistrées')
       })
       .catch(error => {
@@ -71,7 +75,7 @@ const VenueFormScreen = ({
           venue: 'venueId',
         }
 
-        if (Object.keys(formErrors).length === 0) {
+        if (!formErrors || Object.keys(formErrors).length === 0) {
           notify.error('Erreur inconnue lors de la sauvegarde du lieu.')
         } else {
           notify.error(

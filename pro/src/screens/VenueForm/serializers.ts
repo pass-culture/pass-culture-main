@@ -1,8 +1,7 @@
+import { EditVenueBodyModel } from 'apiClient/v1'
 import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
+import { unhumanizeSiret } from 'core/Venue'
 import { IVenueFormValues } from 'new_components/VenueForm'
-
-import { EditVenueBodyModel } from '../../apiClient/v1'
-import { unhumanizeSiret } from '../../core/Venue'
 
 export const serializePostVenueBodyModel = (
   formValues: IVenueFormValues,
@@ -39,7 +38,10 @@ export const serializePostVenueBodyModel = (
 
   if (!isSiretValued) {
     delete model.siret
+  } else {
+    model.comment = ''
   }
+
   return model
 }
 export const serializeEditVenueBodyModel = (
@@ -47,12 +49,7 @@ export const serializeEditVenueBodyModel = (
   venueLabels: SelectOption[],
   isSiretValued: boolean
 ): EditVenueBodyModel => {
-  const labelId: number = parseInt(
-    venueLabels.find((so: SelectOption) => so.label === formValues.venueLabel)
-      ?.label || '',
-    10
-  )
-  const model = {
+  const model: EditVenueBodyModel = {
     address: formValues.address,
     audioDisabilityCompliant: formValues.accessibility.audio,
     bookingEmail: formValues.mail,
@@ -67,7 +64,8 @@ export const serializeEditVenueBodyModel = (
     postalCode: formValues.postalCode,
     publicName: formValues.publicName,
     siret: unhumanizeSiret(formValues.siret),
-    venueLabelId: labelId,
+    // @ts-expect-error string is not assignable to type number
+    venueLabelId: formValues.venueLabel,
     venueTypeCode: formValues.venueType,
     visualDisabilityCompliant: formValues.accessibility.visual,
     withdrawalDetails: formValues.withdrawalDetails,
@@ -83,6 +81,9 @@ export const serializeEditVenueBodyModel = (
   }
   if (!isSiretValued) {
     delete model.siret
+  } else {
+    model.comment = ''
   }
+
   return model
 }
