@@ -1,3 +1,9 @@
+-- Run from /usr/src/app:
+-- psql $DATABASE_URL < src/pcapi/scripts/rebuild_staging/anonymize.sql
+
+\i src/pcapi/scripts/rebuild_staging/first_names.sql
+\i src/pcapi/scripts/rebuild_staging/last_names.sql
+
 CREATE OR REPLACE FUNCTION pg_temp.generate_booking_token_from_id(id BIGINT)
  RETURNS VARCHAR(6) AS $$
 DECLARE
@@ -47,6 +53,12 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION pg_temp.fake_phone_number_from_id(id BIGINT)
+  RETURNS TEXT AS $$
+BEGIN
+  RETURN '+336' || lpad(id::text, 8, '0');
+END; $$
+LANGUAGE plpgsql;
 
 UPDATE offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
 
@@ -90,13 +102,13 @@ UPDATE api_key SET secret = pg_temp.random_text(32)::bytea;
 
 UPDATE "user"
 SET
-    "email" = 'user@' || "id",
-    "publicName" = 'User' || "id",
+    "email" = 'user' || "id" || '@anonymized.email',
+    "publicName" = pg_temp.fake_first_name(id) || ' ' || pg_temp.fake_last_name(id),
     "password" = 'fake-hashed-password'::bytea,
-    "firstName" = 'firstName' || "id",
-    "lastName" = 'lastName' || "id",
+    "firstName" = pg_temp.fake_first_name(id),
+    "lastName" = pg_temp.fake_last_name(id),
     "dateOfBirth" = '01/01/2001',
-    "phoneNumber" = '0606060606',
+    "phoneNumber" = pg_temp.fake_phone_number_from_id(id),
     "validationToken" = NULL
 WHERE email NOT LIKE '%@passculture.app';
 ;
@@ -105,17 +117,17 @@ UPDATE "user"
 SET
     "password" = 'fake-hashed-password'::bytea,
     "dateOfBirth" = '01/01/2001',
-    "phoneNumber" = '0606060606',
+    "phoneNumber" = pg_temp.fake_phone_number_from_id(id),
     "validationToken" = NULL
 WHERE email LIKE '%@passculture.app';
 ;
 
 UPDATE "user_email_history"
 SET
-    "oldUserEmail" = 'old_user',
-    "oldDomainEmail" = "id",
-    "newUserEmail" = 'user',
-    "newDomainEmail" = "id"
+    "oldUserEmail" = 'old_user' || "id",
+    "oldDomainEmail" =  'anonymized.email',
+    "newUserEmail" = 'user' || "id",
+    "newDomainEmail" = 'anonymized.email'
 ;
 
 UPDATE user_offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" IS NOT NULL;
@@ -127,39 +139,43 @@ UPDATE venue SET "validationToken" = pg_temp.random_text(27) WHERE "validationTo
 -- Anonymize beneficiary_fraud_check table content
 UPDATE beneficiary_fraud_check
 SET "resultContent" = "resultContent" || (
-    '{"email": "anonymized@example.com", "address": "42 rue de la ville", "lastName": "lastName' || "userId" || '", "firstName": "firstName' || "userId" || '", "phoneNumber": "+33606060606", "bodyPieceNumber": "000000000000"}'
+    '{"email": "user' || "userId" || '@anonymized.email", "address": "42 rue de la ville", "lastName": "' || pg_temp.fake_last_name("userId") || '", "firstName": "' || pg_temp.fake_first_name("userId") || '", "phoneNumber": "' || pg_temp.fake_phone_number_from_id("userId") || '", "bodyPieceNumber": "000000000000"}'
   )::text::jsonb
 WHERE "type" = 'JOUVE'
 ;
 
 UPDATE beneficiary_fraud_check
 SET "resultContent" = "resultContent" || (
-    '{"last_name": "lastName' || "userId" || '", "first_name": "firstName' || "userId" || '"}'
+    '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '"}'
   )::text::jsonb
 WHERE "type" = 'EDUCONNECT'
 ;
 
 UPDATE beneficiary_fraud_check
 SET "resultContent" = "resultContent" || (
-    '{"last_name": "lastName' || "userId" || '", "first_name": "firstName' || "userId" || '", "married_name": "marriedName", "id_document_number": null, "identification_url": null}'
+    '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "married_name": "marriedName", "id_document_number": null, "identification_url": null}'
   )::text::jsonb
 WHERE "type" = 'UBBLE'
 ;
 
 UPDATE beneficiary_fraud_check
 SET "resultContent" = "resultContent" || (
-    '{"email": "anonymized@example.com", "phone": "0606060606", "address": "42 rue de la ville 44000 Nantes", "last_name": "lastName' || "userId" || '", "first_name": "firstName' || "userId" || '", "id_piece_number": "00000000 1 ZZ0"}'
+    '{"email": "user' || "userId" || '@anonymized.email", "phone": "' || pg_temp.fake_phone_number_from_id("userId") || '", "address": "42 rue de la ville 44000 Nantes", "last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "id_piece_number": "00000000 1 ZZ0"}'
   )::text::jsonb
 WHERE "type" = 'DMS'
 ;
 
 UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || '{"phone_number": "0606060606"}'
+SET "resultContent" = "resultContent" || (
+    '{"phone_number": "' || pg_temp.fake_phone_number_from_id("userId") || '"}'
+  )::text::jsonb
 WHERE "type" in ('INTERNAL_REVIEW', 'PHONE_VALIDATION')
 ;
 
 UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || '{"account_email": "anonymized@example.com"}'
+SET "resultContent" = "resultContent" || (
+    '{"account_email": "user' || "userId" || '@anonymized.email"}'
+  )::text::jsonb
 WHERE "type" = 'USER_PROFILING'
 ;
 
