@@ -29,7 +29,7 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [{"price": 20}],
         }
 
@@ -60,8 +60,8 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
-            "stocks": [{"id": humanize(existing_stock.id), "price": 20}],
+            "humanizedOfferId": humanize(offer.id),
+            "stocks": [{"humanizedId": humanize(existing_stock.id), "price": 20}],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         created_stock = Stock.query.get(dehumanize(response.json["stockIds"][0]["id"]))
@@ -81,7 +81,7 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
                     "price": 20,
@@ -123,10 +123,10 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
-                    "id": humanize(existing_stock.id),
+                    "humanizedId": humanize(existing_stock.id),
                     "price": 20,
                     "quantity": None,
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
@@ -189,7 +189,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"offerId": ["Ce champ est obligatoire"]}
+        assert response.json == {"humanizedOfferId": ["Ce champ est obligatoire"]}
 
     def when_invalid_quantity_or_price_for_edition_and_creation(self, app):
         # Given
@@ -203,10 +203,10 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
-                    "id": humanize(existing_stock.id),
+                    "humanizedId": humanize(existing_stock.id),
                     "price": -3,
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
                 },
@@ -238,8 +238,8 @@ class Returns400Test:
             offerer=pending_validation_offer.venue.managingOfferer,
         )
         stock_data = {
-            "offerId": humanize(pending_validation_offer.id),
-            "stocks": [{"id": humanize(stock.id), "price": 20}],
+            "humanizedOfferId": humanize(pending_validation_offer.id),
+            "stocks": [{"humanizedId": humanize(stock.id), "price": 20}],
         }
 
         response = (
@@ -259,7 +259,7 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
                     "price": 20,
@@ -296,10 +296,10 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
-                    "id": humanize(existing_stock.id),
+                    "humanizedId": humanize(existing_stock.id),
                     "bookingLimitDatetime": "2020-05-2T23:59:59Z",
                     "price": 20.0,
                 }
@@ -329,7 +329,7 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
                     "price": 20,
@@ -359,7 +359,7 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [{"price": float(price_str)}],
         }
 
@@ -372,7 +372,7 @@ class Returns400Test:
 
         response_dict = response.json
         assert response_dict == {
-            "stocks.0.id": ["Ce champ est obligatoire"],
+            "stocks.0.humanizedId": ["Ce champ est obligatoire"],
             "stocks.0.price": [
                 "La valeur n'est pas un nombre décimal valide",
                 "La valeur n'est pas un nombre décimal valide",
@@ -389,7 +389,7 @@ class Returns400Test:
         )
 
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
                     "beginningDatetime": "2022-06-11T08:00:00Z",
@@ -402,7 +402,7 @@ class Returns400Test:
 
         if is_update:
             stock = offers_factories.StockFactory(offer=offer)
-            stock_data["stocks"][0]["id"] = humanize(stock.id)
+            stock_data["stocks"][0]["humanizedId"] = humanize(stock.id)
 
         # When
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
@@ -427,7 +427,7 @@ class Returns403Test:
 
         # When
         stock_data = {
-            "offerId": humanize(offer.id),
+            "humanizedOfferId": humanize(offer.id),
             "stocks": [
                 {
                     "quantity": 10,
