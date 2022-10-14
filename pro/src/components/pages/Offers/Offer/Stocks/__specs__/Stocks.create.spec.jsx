@@ -363,7 +363,7 @@ describe('stocks page', () => {
 
         // then
         expect(api.upsertStocks).toHaveBeenCalledWith({
-          offerId: defaultOffer.id,
+          humanizedOfferId: defaultOffer.id,
           stocks: [
             {
               beginningDatetime: '2020-12-25T23:00:00Z',
@@ -715,7 +715,7 @@ describe('stocks page', () => {
 
         // then
         expect(api.upsertStocks).toHaveBeenCalledWith({
-          offerId: 'AG3A',
+          humanizedOfferId: 'AG3A',
           stocks: [
             {
               bookingLimitDatetime: '2020-12-23T02:59:59Z',
@@ -932,13 +932,13 @@ describe('stocks page', () => {
 
           // Then
           expect(api.upsertStocks).toHaveBeenCalledWith({
-            offerId: defaultOffer.id,
+            humanizedOfferId: defaultOffer.id,
             stocks: [
               {
                 activationCodes: ['ABH', 'JHB'],
                 activationCodesExpirationDatetime: '2020-12-26T02:59:59Z',
                 bookingLimitDatetime: '2020-12-19T02:59:59Z',
-                id: undefined,
+                humanizedId: undefined,
                 price: '14.01',
                 quantity: 2,
               },
@@ -976,13 +976,13 @@ describe('stocks page', () => {
 
           // Then
           expect(api.upsertStocks).toHaveBeenCalledWith({
-            offerId: defaultOffer.id,
+            humanizedOfferId: defaultOffer.id,
             stocks: [
               {
                 activationCodes: ['ABH', 'JHB'],
                 activationCodesExpirationDatetime: null,
                 bookingLimitDatetime: null,
-                id: undefined,
+                humanizedId: undefined,
                 price: '14.01',
                 quantity: 2,
               },
