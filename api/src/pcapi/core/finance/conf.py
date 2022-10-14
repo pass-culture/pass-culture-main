@@ -40,6 +40,10 @@ class BaseSpecificCaps:
     DIGITAL_CAP = None
     PHYSICAL_CAP = None
 
+    def __init__(self, digital_cap: decimal.Decimal | None, physical_cap: decimal.Decimal | None) -> None:
+        self.DIGITAL_CAP = digital_cap
+        self.PHYSICAL_CAP = physical_cap
+
     # fmt: off
     def digital_cap_applies(self, offer): # type: ignore [no-untyped-def]
         return (
@@ -58,18 +62,18 @@ class BaseSpecificCaps:
 
 
 class GrantUnderageSpecificCaps(BaseSpecificCaps):
-    DIGITAL_CAP = None
-    PHYSICAL_CAP = None
+    def __init__(self) -> None:
+        super().__init__(digital_cap=None, physical_cap=None)
 
 
 class Grant18SpecificCapsV1(BaseSpecificCaps):
-    DIGITAL_CAP = decimal.Decimal(200)  # type: ignore [assignment]
-    PHYSICAL_CAP = decimal.Decimal(200)  # type: ignore [assignment]
+    def __init__(self) -> None:
+        super().__init__(digital_cap=decimal.Decimal(200), physical_cap=decimal.Decimal(200))
 
 
 class Grant18SpecificCapsV2(BaseSpecificCaps):
-    DIGITAL_CAP = decimal.Decimal(100)  # type: ignore [assignment]
-    PHYSICAL_CAP = None
+    def __init__(self) -> None:
+        super().__init__(digital_cap=decimal.Decimal(100), physical_cap=None)
 
 
 SPECIFIC_CAPS = {
