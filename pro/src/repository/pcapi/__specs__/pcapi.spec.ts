@@ -1,8 +1,4 @@
-import {
-  getFilteredBookingsCSV,
-  postThumbnail,
-  setHasSeenTutos,
-} from 'repository/pcapi/pcapi'
+import { getFilteredBookingsCSV, postThumbnail } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
@@ -46,16 +42,6 @@ describe('pcapi', () => {
         `/offers/thumbnails`,
         body
       )
-    })
-  })
-
-  describe('hasSeenTutos', () => {
-    it('should call api', () => {
-      // when
-      setHasSeenTutos()
-
-      // then
-      expect(client.patch).toHaveBeenCalledWith('/users/tuto-seen')
     })
   })
 

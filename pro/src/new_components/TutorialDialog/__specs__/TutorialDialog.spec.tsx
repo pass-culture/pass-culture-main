@@ -7,15 +7,15 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
+import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import TutorialDialog from '../TutorialDialog'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  setHasSeenTutos: jest.fn().mockResolvedValue({}),
+jest.mock('apiClient/api', () => ({
+  api: { patchUserTutoSeen: jest.fn().mockResolvedValue({}) },
 }))
 
 const stepTitles = [
@@ -162,7 +162,7 @@ describe('tutorial modal', () => {
 
           expect(screen.getByTestId('tutorial-container')).toBeInTheDocument()
           await userEvent.click(buttonFinish)
-          expect(pcapi.setHasSeenTutos).toHaveBeenCalledWith()
+          expect(api.patchUserTutoSeen).toHaveBeenCalledWith()
         })
       })
 
