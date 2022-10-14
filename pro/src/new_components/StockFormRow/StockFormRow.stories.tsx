@@ -103,9 +103,9 @@ const TemplateWithInitialValues: ComponentStory<typeof StockFormRow> =
       stockId: 'STOCK_ID',
       remainingQuantity: '7',
       bookingsQuantity: '5',
-      price: '10',
+      price: '11',
       bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
-        '2022-10-06T21:59:59z',
+        new Date().toISOString(),
         '75'
       ),
       quantity: '12',

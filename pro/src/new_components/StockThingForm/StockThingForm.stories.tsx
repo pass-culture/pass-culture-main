@@ -75,7 +75,7 @@ const TemplateWithInitialValues: ComponentStory<typeof StockThingForm> =
       bookingsQuantity: '5',
       price: '10',
       bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
-        '2022-10-06T21:59:59z',
+        new Date().toISOString(),
         '75'
       ),
       quantity: '12',
