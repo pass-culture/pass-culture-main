@@ -1,8 +1,8 @@
 import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
-import { serializeApiErrors, serializePostOffer } from './serializers'
+import { serializePostOffer } from './serializers'
 
 type TSuccessPayload = { id: string }
 type TFailurePayload = { errors: Record<string, string> }
@@ -24,14 +24,18 @@ const createIndividualOffer: TCreateIndividualOffer = async formValues => {
     }
   } catch (error) {
     let formErrors = {}
+    /* istanbul ignore next: DEBT, TO FIX */
     if (isErrorAPIError(error)) {
       formErrors = error.body
+    }
+    const apiFieldsMap: Record<string, string> = {
+      venue: 'venueId',
     }
     return {
       isOk: false,
       message: 'Une erreur est survenue lors de la création de votre offre',
       payload: {
-        errors: serializeApiErrors(formErrors),
+        errors: serializeApiErrors(apiFieldsMap, formErrors),
       },
     }
   }

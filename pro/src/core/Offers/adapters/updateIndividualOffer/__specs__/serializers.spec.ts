@@ -1,10 +1,10 @@
+import { serializeApiErrors } from 'apiClient/helpers'
 import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import {
-  serializeApiErrors,
   serializeDurationMinutes,
   serializeExtraData,
   serializePatchOffer,
@@ -17,7 +17,10 @@ describe('test updateIndividualOffer::serializers', () => {
       optIn: 'you must optin our mailing list!',
       venue: 'wrong venue',
     }
-    expect(serializeApiErrors(apiErrors)).toEqual({
+    const apiFieldsMap: Record<string, string> = {
+      venue: 'venueId',
+    }
+    expect(serializeApiErrors(apiFieldsMap, apiErrors)).toEqual({
       name: 'wrong name',
       optIn: 'you must optin our mailing list!',
       venueId: 'wrong venue',
