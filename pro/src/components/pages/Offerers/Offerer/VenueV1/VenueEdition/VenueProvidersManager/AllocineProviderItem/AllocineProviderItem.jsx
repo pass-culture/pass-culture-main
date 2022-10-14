@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
+import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocineProviderFormDialog'
@@ -19,8 +20,8 @@ const AllocineProviderItem = ({
 
   const editVenueProvider = useCallback(
     payload => {
-      pcapi
-        .editVenueProvider(payload)
+      api
+        .updateVenueProvider(payload)
         .then(editedVenueProvider => {
           afterVenueProviderEdit({ editedVenueProvider })
           dispatch(
@@ -31,12 +32,14 @@ const AllocineProviderItem = ({
           )
         })
         .catch(error => {
-          dispatch(
-            showNotification({
-              text: getRequestErrorStringFromErrors(error.errors),
-              type: 'error',
-            })
-          )
+          if (isErrorAPIError(error)) {
+            dispatch(
+              showNotification({
+                text: getRequestErrorStringFromErrors(getError(error)),
+                type: 'error',
+              })
+            )
+          }
         })
     },
     [afterVenueProviderEdit, dispatch]
