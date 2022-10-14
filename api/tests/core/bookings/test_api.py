@@ -528,10 +528,8 @@ class CancelByBeneficiaryTest:
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
 
-        api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
-
-        # cancellation can trigger more than one request to Batch
-        assert len(push_testing.requests) >= 1
+        with pytest.raises(exceptions.BookingIsCancelled):
+            api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
 
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)

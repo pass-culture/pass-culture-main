@@ -245,6 +245,14 @@ class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
+    @hybrid_property
+    def is_cancelled(self) -> bool:
+        return self.status == BookingStatus.CANCELLED
+
+    @is_cancelled.expression  # type: ignore [no-redef]
+    def is_cancelled(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.status == BookingStatus.CANCELLED
+
     @property
     def firstName(self) -> str | None:
         if self.individualBooking is not None:

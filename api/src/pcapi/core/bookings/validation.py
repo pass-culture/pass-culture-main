@@ -94,6 +94,8 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
     if booking.individualBooking is None or booking.individualBooking.userId != user.id:
         raise exceptions.BookingDoesntExist()
+    if booking.is_cancelled:
+        raise exceptions.BookingIsCancelled()
     if booking.is_used_or_reimbursed:
         raise exceptions.BookingIsAlreadyUsed()
     if booking.isConfirmed:
