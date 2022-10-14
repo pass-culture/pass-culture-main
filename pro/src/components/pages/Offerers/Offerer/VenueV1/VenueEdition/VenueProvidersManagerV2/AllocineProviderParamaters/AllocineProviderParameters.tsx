@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -25,9 +25,11 @@ const AllocineProviderParameters = ({
 
   const editVenueProvider = useCallback(
     (payload: IAllocineProviderParametersValues) => {
-      pcapi
-        .editVenueProvider(payload)
+      api
+        // @ts-expect-error missing venueId and providerId
+        .updateVenueProvider(payload)
         .then(editedVenueProvider => {
+          // @ts-expect-error string | undefined is not assignable to string | null
           afterVenueProviderEdit(editedVenueProvider)
           notification.success(
             "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."

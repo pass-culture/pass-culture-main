@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
+import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
@@ -25,8 +26,8 @@ export const CinemaProviderItem = ({
   const dispatch = useDispatch()
   const editVenueProvider = useCallback(
     (payload: any) => {
-      pcapi
-        .editVenueProvider(payload)
+      api
+        .updateVenueProvider(payload)
         .then(editedVenueProvider => {
           // @ts-ignore
           afterVenueProviderEdit({ editedVenueProvider })
@@ -38,12 +39,14 @@ export const CinemaProviderItem = ({
           )
         })
         .catch(error => {
-          dispatch(
-            showNotification({
-              text: getRequestErrorStringFromErrors(error.errors),
-              type: 'error',
-            })
-          )
+          if (isErrorAPIError(error)) {
+            dispatch(
+              showNotification({
+                text: getRequestErrorStringFromErrors(getError(error)),
+                type: 'error',
+              })
+            )
+          }
         })
     },
     [afterVenueProviderEdit, dispatch]

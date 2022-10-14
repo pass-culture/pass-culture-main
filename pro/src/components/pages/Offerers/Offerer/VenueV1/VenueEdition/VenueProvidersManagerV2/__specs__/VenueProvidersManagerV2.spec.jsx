@@ -22,12 +22,12 @@ import VenueProvidersManagerV2 from '../VenueProvidersManagerV2'
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
-  editVenueProvider: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     deleteVenueProvider: jest.fn(),
+    updateVenueProvider: jest.fn(),
   },
 }))
 
@@ -279,7 +279,7 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
-      pcapi.editVenueProvider.mockResolvedValue()
+      api.updateVenueProvider.mockResolvedValue()
 
       // When
       await renderVenueProvidersManager(props)
@@ -299,7 +299,7 @@ describe('src | VenueProvidersManager', () => {
       })
       await userEvent.click(saveEditionButton)
 
-      expect(pcapi.editVenueProvider).toBeCalledWith({
+      expect(api.updateVenueProvider).toBeCalledWith({
         isDuo: true,
         price: 10,
         providerId: 'BC',
@@ -323,7 +323,7 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
-      pcapi.editVenueProvider.mockResolvedValue()
+      api.updateVenueProvider.mockResolvedValue()
 
       // When
       await renderVenueProvidersManager(props)
@@ -343,7 +343,7 @@ describe('src | VenueProvidersManager', () => {
 
       await userEvent.click(saveEditionButton)
 
-      expect(pcapi.editVenueProvider).toBeCalledWith({
+      expect(api.updateVenueProvider).toBeCalledWith({
         isDuo: true,
         venueId: 'venueId',
         providerId: 'BC',
@@ -365,7 +365,7 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
-      pcapi.editVenueProvider.mockResolvedValue()
+      api.updateVenueProvider.mockResolvedValue()
 
       // When
       await renderVenueProvidersManager(props)
@@ -388,7 +388,7 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
-      pcapi.editVenueProvider.mockResolvedValue()
+      api.updateVenueProvider.mockResolvedValue()
 
       // When
       await renderVenueProvidersManager(props)
@@ -412,7 +412,7 @@ describe('src | VenueProvidersManager', () => {
       await userEvent.click(confirmPauseButton)
 
       // Then
-      expect(pcapi.editVenueProvider).toHaveBeenCalledTimes(1)
+      expect(api.updateVenueProvider).toHaveBeenCalledTimes(1)
     })
 
     it('should display reactivate synchronisation button when venueProvider is not active', async () => {
@@ -428,7 +428,7 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
-      pcapi.editVenueProvider.mockResolvedValue()
+      api.updateVenueProvider.mockResolvedValue()
 
       // When
       await renderVenueProvidersManager(props)
@@ -451,7 +451,7 @@ describe('src | VenueProvidersManager', () => {
       await userEvent.click(confirmPauseButton)
 
       // Then
-      expect(pcapi.editVenueProvider).toHaveBeenCalledTimes(1)
+      expect(api.updateVenueProvider).toHaveBeenCalledTimes(1)
     })
   })
 

@@ -20,7 +20,6 @@ import { configureTestStore } from 'store/testUtils'
 import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  editVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
 }))
@@ -28,6 +27,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     createVenueProvider: jest.fn(),
+    updateVenueProvider: jest.fn(),
   },
 }))
 
@@ -400,7 +400,7 @@ describe('components | AllocineProviderForm', () => {
         isDuo: true,
       }
 
-      pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
+      api.updateVenueProvider.mockResolvedValue(editedAllocineProvider)
 
       await renderAllocineProviderForm()
 
@@ -425,7 +425,7 @@ describe('components | AllocineProviderForm', () => {
       await userEvent.click(saveEditioProvider)
 
       // then
-      expect(pcapi.editVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith({
         price: editedAllocineProvider.price,
         quantity: editedAllocineProvider.quantity,
         isDuo: editedAllocineProvider.isDuo,
@@ -450,7 +450,7 @@ describe('components | AllocineProviderForm', () => {
         isDuo: false,
       }
 
-      pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
+      api.updateVenueProvider.mockResolvedValue(editedAllocineProvider)
 
       await renderAllocineProviderForm()
 
@@ -464,7 +464,7 @@ describe('components | AllocineProviderForm', () => {
       await userEvent.click(saveEditioProvider)
 
       // then
-      expect(pcapi.editVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith({
         price: editedAllocineProvider.price,
         quantity: editedAllocineProvider.quantity,
         isDuo: editedAllocineProvider.isDuo,
@@ -488,7 +488,7 @@ describe('components | AllocineProviderForm', () => {
         quantity: 50,
         isDuo: false,
       }
-      pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
+      api.updateVenueProvider.mockResolvedValue(editedAllocineProvider)
 
       await renderAllocineProviderForm()
       const saveEditioProvider = screen.getByRole('button', {
@@ -518,12 +518,11 @@ describe('components | AllocineProviderForm', () => {
         quantity: 50,
         isDuo: false,
       }
-      pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
-      const apiError = {
-        errors: { global: ['Le prix ne peut pas être négatif'] },
-        status: 400,
-      }
-      pcapi.editVenueProvider.mockRejectedValue(apiError)
+      api.updateVenueProvider.mockResolvedValue(editedAllocineProvider)
+      const apiError = { global: ['Le prix ne peut pas être négatif'] }
+      api.updateVenueProvider.mockRejectedValue(
+        new ApiError({}, { body: apiError, status: 400 }, '')
+      )
       await renderAllocineProviderForm()
       const saveEditioProvider = screen.getByRole('button', {
         name: 'Modifier',
@@ -538,9 +537,7 @@ describe('components | AllocineProviderForm', () => {
       await userEvent.click(saveEditioProvider)
 
       // then
-      const errorNotification = await screen.findByText(
-        apiError.errors.global[0]
-      )
+      const errorNotification = await screen.findByText(apiError.global[0])
       expect(errorNotification).toBeInTheDocument()
     })
   })

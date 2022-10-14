@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -30,9 +30,11 @@ const ToggleVenueProviderStatusButton = ({
       ...venueProvider,
       isActive: !venueProvider.isActive,
     }
-    pcapi
-      .editVenueProvider(payload)
+    api
+      // @ts-expect-error boolean | null is not assignable to boolean | undefined
+      .updateVenueProvider(payload)
       .then(editedVenueProvider => {
+        // @ts-expect-error string | undefined is not assignable to string | null
         afterEdit(editedVenueProvider)
       })
       .catch(() => {

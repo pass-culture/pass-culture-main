@@ -20,13 +20,13 @@ import { configureTestStore } from 'store/testUtils'
 import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  editVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   createVenueProvider: jest.fn(),
+  updateVenueProvider: jest.fn(),
 }))
 
 const renderVenueProvidersManager = async props => {
@@ -220,7 +220,7 @@ describe('components | CinemaProviderForm', () => {
         ...cinemaProvider,
         isDuo: true,
       }
-      pcapi.editVenueProvider.mockResolvedValue(editedCinemaProvider)
+      api.updateVenueProvider.mockResolvedValue(editedCinemaProvider)
 
       await renderCinemaProviderForm()
       const saveEditionProvider = screen.getByRole('button', {
