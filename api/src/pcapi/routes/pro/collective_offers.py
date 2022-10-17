@@ -155,7 +155,7 @@ def create_collective_offer(
             error.errors,
             status_code=400,
         )
-    except educational_exceptions.EducationalDomainsNotFound as error:
+    except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not create offer: educational domains not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "domains": body.domains},
@@ -164,7 +164,7 @@ def create_collective_offer(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
-    except educational_exceptions.CollectiveOfferTemplateNotFound as error:
+    except educational_exceptions.CollectiveOfferTemplateNotFound:
         logger.info(
             "Could not create offer: collective offer template not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},
