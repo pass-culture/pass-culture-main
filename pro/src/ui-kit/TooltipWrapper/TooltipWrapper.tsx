@@ -10,6 +10,7 @@ export interface ITooltipWrapperProps {
   className?: string
 }
 
+/* istanbul ignore next: DEBT, TO FIX */
 const TooltipWrapper = ({
   delay = 200,
   title,
