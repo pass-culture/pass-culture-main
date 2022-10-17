@@ -1,3 +1,4 @@
+/* istanbul ignore file: DEBT, TO FIX */
 import { PostOfferBodyModel } from 'apiClient/v1'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'

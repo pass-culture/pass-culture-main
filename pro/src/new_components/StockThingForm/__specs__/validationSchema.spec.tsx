@@ -11,7 +11,11 @@ import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import StockThingForm, { IStockThingFormProps } from '../StockThingForm'
 import { getValidationSchema } from '../validationSchema'
 
-const renderStockThingForm = () => {
+const renderStockThingForm = ({
+  minQuantity = null,
+}: {
+  minQuantity?: number | null
+} = {}) => {
   const props: IStockThingFormProps = { today: new Date() }
   return render(
     <Formik
@@ -97,6 +101,16 @@ describe('StockThingForm:validationSchema', () => {
       expect(errorquantity).toHaveTextContent(error)
     }
   )
+  it('should display quantity error when min quantity is given', async () => {
+    renderStockThingForm({ minQuantity: 10 })
+    const inputQuantity = screen.getByLabelText('Quantité')
+    await userEvent.type(inputQuantity, '9')
+    await userEvent.tab()
+    const errorquantity = screen.queryByTestId('error-quantity')
+    expect(errorquantity).toBeInTheDocument()
+    expect(errorquantity).toHaveTextContent('Quantité trop faible')
+  })
+
   const dataSetquantity = ['0', '100', '350']
   it.each(dataSetquantity)(
     'should not display quantity error',

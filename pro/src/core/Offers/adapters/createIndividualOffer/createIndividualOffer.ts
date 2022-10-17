@@ -1,3 +1,4 @@
+/* istanbul ignore file: DEBT, TO FIX */
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'

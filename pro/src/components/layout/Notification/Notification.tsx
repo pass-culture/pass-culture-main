@@ -59,6 +59,7 @@ const Notification = (): JSX.Element | null => {
         data-testid={`global-notification-${type}`}
         className={cn(
           styles['notification'],
+          /* istanbul ignore next */
           styles[`is-${type || 'success'}`],
           isVisible ? styles['show'] : styles['hide'],
           notification.withStickyActionBar && styles['with-sticky-action-bar']

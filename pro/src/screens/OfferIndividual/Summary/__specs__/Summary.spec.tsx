@@ -1,24 +1,34 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Route } from 'react-router'
 
+import { api } from 'apiClient/api'
+import { CancelablePromise } from 'apiClient/v1'
+import Notification from 'components/layout/Notification/Notification'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
 import Summary, { ISummaryProps } from '../Summary'
 
 const mockLogEvent = jest.fn()
 
-jest.mock('apiClient/api', () => ({
-  api: { patchPublishOffer: jest.fn().mockResolvedValue({}) },
+jest.mock('core/Notification/constants', () => ({
+  NOTIFICATION_TRANSITION_DURATION: 10,
+  NOTIFICATION_SHOW_DURATION: 10,
 }))
 
-const renderSummary = (props: ISummaryProps) => {
+const renderSummary = (
+  props: ISummaryProps,
+  storeOverride: Partial<RootState> = {},
+  url = '/summary'
+) => {
   const store = configureTestStore({
     features: {
       list: [
@@ -37,12 +47,25 @@ const renderSummary = (props: ISummaryProps) => {
         email: 'email@example.com',
       },
     },
+    ...storeOverride,
   })
   return render(
     <Provider store={store}>
-      <MemoryRouter>
-        <Summary {...props} />
+      <MemoryRouter initialEntries={[url]}>
+        <Route path="/summary">
+          <Summary {...props} />
+        </Route>
+        <Route path="/offre/:offerId/individuel/creation/confirmation">
+          <div>Confirmation page: creation</div>
+        </Route>
+        <Route path="/offre/:offerId/individuel/brouillon/confirmation">
+          <div>Confirmation page: draft</div>
+        </Route>
+        <Route path="/offre/:offerId/v3/creation/individuelle/confirmation">
+          <div>Confirmation page: creation</div>
+        </Route>
       </MemoryRouter>
+      <Notification />
     </Provider>
   )
 }
@@ -143,7 +166,6 @@ describe('Summary', () => {
     props = {
       offerId: offer.id,
       formOfferV2: true,
-      isCreation: false,
       providerName: null,
       offerStatus: 'DRAFT',
       offer: offer,
@@ -157,6 +179,7 @@ describe('Summary', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
   })
 
   describe('On edition', () => {
@@ -267,15 +290,61 @@ describe('Summary', () => {
         expect(saveDraftButton).toHaveAttribute('href', '/offres')
         expect(screen.getByText("Publier l'offre")).toBeInTheDocument()
       })
+
+      it('should link to creation confirmation page', async () => {
+        // given
+        props = {
+          ...props,
+          formOfferV2: true,
+          isCreation: true,
+          isDraft: false,
+        }
+
+        // when
+        renderSummary(props)
+
+        await userEvent.click(
+          screen.getByRole('button', { name: /Publier l'offre/ })
+        )
+
+        expect(
+          await screen.findByText(/Confirmation page: creation/)
+        ).toBeInTheDocument()
+      })
+
+      it('should link to draft confirmation page', async () => {
+        // given
+        props = {
+          ...props,
+          formOfferV2: true,
+          isCreation: false,
+          isDraft: true,
+        }
+
+        // when
+        renderSummary(props)
+
+        await userEvent.click(
+          screen.getByRole('button', { name: /Publier l'offre/ })
+        )
+
+        expect(screen.getByText(/Confirmation page: draft/)).toBeInTheDocument()
+      })
     })
 
     describe('When it is form v3', () => {
       it('should render component with right buttons', async () => {
         // given
+        const storeOverride = {
+          features: {
+            initialized: true,
+            list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
+          },
+        }
         props.formOfferV2 = false
 
         // when
-        renderSummary(props)
+        renderSummary(props, storeOverride)
 
         // then
         expect(screen.getByText('Étape précédente')).toBeInTheDocument()
@@ -284,6 +353,87 @@ describe('Summary', () => {
         ).toBeInTheDocument()
         expect(screen.getByText("Publier l'offre")).toBeInTheDocument()
       })
+
+      it('should link to creation confirmation page', async () => {
+        // given
+        const storeOverride = {
+          features: {
+            initialized: true,
+            list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
+          },
+        }
+        props = {
+          ...props,
+          formOfferV2: false,
+          isCreation: true,
+          isDraft: false,
+        }
+
+        // when
+        renderSummary(props, storeOverride)
+
+        await userEvent.click(
+          screen.getByRole('button', { name: /Publier l'offre/ })
+        )
+
+        expect(
+          await screen.findByText(/Confirmation page: creation/)
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should disabled publish button link during submit', async () => {
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
+        },
+      }
+
+      // when
+      renderSummary(props, storeOverride)
+      const buttonPublish = screen.getByRole('button', {
+        name: /Publier l'offre/,
+      })
+      expect(buttonPublish).not.toBeDisabled()
+
+      const mockResponse = new CancelablePromise<void>(async resolve =>
+        setTimeout(() => {
+          resolve(undefined)
+        }, 100)
+      )
+      jest.spyOn(api, 'patchPublishOffer').mockResolvedValue(mockResponse)
+      await userEvent.click(buttonPublish)
+      expect(api.patchPublishOffer).toHaveBeenCalled()
+      expect(buttonPublish).toBeDisabled()
+
+      await waitFor(() => {
+        expect(buttonPublish).not.toBeDisabled()
+      })
+    })
+
+    it('should display notification on api error', async () => {
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
+        },
+      }
+
+      // when
+      renderSummary(props, storeOverride)
+      jest.spyOn(api, 'patchPublishOffer').mockRejectedValue({})
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /Publier l'offre/,
+        })
+      )
+      const notificationError = screen.getByTestId('global-notification-error')
+      expect(notificationError).toBeInTheDocument()
+      expect(notificationError.textContent).toBe(
+        "Une erreur s'est produite, veuillez réessayer"
+      )
     })
   })
 })

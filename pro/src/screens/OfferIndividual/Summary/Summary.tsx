@@ -48,19 +48,22 @@ export interface ISummaryProps {
   preview: IOfferAppPreviewProps
 }
 
-const Summary = ({
-  formOfferV2 = false,
-  isCreation = false,
-  isDraft = false,
-  providerName,
-  offerStatus,
-  offerId,
-  offer,
-  stockThing,
-  stockEventList,
-  subCategories,
-  preview,
-}: ISummaryProps): JSX.Element => {
+const Summary = (
+  /* istanbul ignore next: DEBT, TO FIX */
+  {
+    formOfferV2 = false,
+    isCreation = false,
+    isDraft = false,
+    providerName,
+    offerStatus,
+    offerId,
+    offer,
+    stockThing,
+    stockEventList,
+    subCategories,
+    preview,
+  }: ISummaryProps
+): JSX.Element => {
   const [isDisabled, setIsDisabled] = useState(false)
   const location = useLocation()
   const notification = useNotification()
@@ -100,6 +103,7 @@ const Summary = ({
     history.push(`/offre/${offerId}/v3/creation/individuelle/confirmation`)
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
@@ -134,16 +138,22 @@ const Summary = ({
       {(isCreation || isDisabledOffer || providerName !== null) && (
         <div className={styles['offer-preview-banners']}>
           {isCreation && <BannerSummary />}
-          {isDisabledOffer && (
-            <div className={styles['offer-preview-banner']}>
-              <OfferStatusBanner status={offerStatus} />
-            </div>
-          )}
-          {providerName !== null && (
-            <div className={styles['offer-preview-banner']}>
-              <SynchronizedProviderInformation providerName={providerName} />
-            </div>
-          )}
+          {
+            /* istanbul ignore next: DEBT, TO FIX */
+            isDisabledOffer && (
+              <div className={styles['offer-preview-banner']}>
+                <OfferStatusBanner status={offerStatus} />
+              </div>
+            )
+          }
+          {
+            /* istanbul ignore next: DEBT, TO FIX */
+            providerName !== null && (
+              <div className={styles['offer-preview-banner']}>
+                <SynchronizedProviderInformation providerName={providerName} />
+              </div>
+            )
+          }
         </div>
       )}
       <SummaryLayout>
@@ -199,13 +209,15 @@ const Summary = ({
                 nonHumanizedId={offer.nonHumanizedId}
                 tracking={{
                   isTracked: true,
-                  trackingFunction: () =>
-                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                      from: OfferBreadcrumbStep.SUMMARY,
-                      to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                      used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
-                      isEdition: true,
-                    }),
+                  trackingFunction:
+                    /* istanbul ignore next: DEBT, TO FIX */
+                    () =>
+                      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                        from: OfferBreadcrumbStep.SUMMARY,
+                        to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                        used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
+                        isEdition: true,
+                      }),
                 }}
                 variant={ButtonVariant.SECONDARY}
               />

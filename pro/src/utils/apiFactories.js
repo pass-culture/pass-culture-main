@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
 
 let offerId = 1

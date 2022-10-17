@@ -1,5 +1,5 @@
-import { api, serializeApiErrors } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
+import { api } from 'apiClient/api'
+import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { StockIdResponseModel } from 'apiClient/v1'
 import { IStockThingFormValues } from 'new_components/StockThingForm'
 
@@ -38,6 +38,7 @@ const upsertStocksThingAdapter: TUpdateStocksAdapter = async ({
     }
   } catch (error) {
     let formErrors = {}
+    /* istanbul ignore next */
     if (isErrorAPIError(error)) {
       formErrors = error.body
     }
