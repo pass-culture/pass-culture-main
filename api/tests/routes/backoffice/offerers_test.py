@@ -31,7 +31,7 @@ class GetOffererUsersTest:
         uo2 = offerers_factories.UserOffererFactory(
             offerer=offerer1, user=users_factories.ProFactory(firstName="Jean", lastName="Bon")
         )
-        offerers_factories.UserOffererFactory(
+        uo3 = offerers_factories.NotValidatedUserOffererFactory(
             offerer=offerer1, user=users_factories.ProFactory(), validationToken="not-validated"
         )
 
@@ -53,12 +53,24 @@ class GetOffererUsersTest:
                 "firstName": None,
                 "lastName": None,
                 "email": uo1.user.email,
+                "phoneNumber": uo1.user.phoneNumber,
+                "validationStatus": "VALIDATED",
             },
             {
                 "id": uo2.user.id,
                 "firstName": "Jean",
                 "lastName": "Bon",
                 "email": uo2.user.email,
+                "phoneNumber": uo2.user.phoneNumber,
+                "validationStatus": "VALIDATED",
+            },
+            {
+                "id": uo3.user.id,
+                "firstName": uo3.user.firstName,
+                "lastName": uo3.user.lastName,
+                "email": uo3.user.email,
+                "phoneNumber": uo3.user.phoneNumber,
+                "validationStatus": "NEW",
             },
         ]
 
@@ -1600,4 +1612,62 @@ class SetOffererAttachmentPendingTest:
         # then
         assert response.status_code == 403
         assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+        assert history_models.ActionHistory.query.count() == 0
+
+
+class CommentOffererAttachmentTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_comment_offerer_attchment(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.comment_offerer_attachment", user_offerer_id=user_offerer.id),
+            json={"comment": "Code APE non éligible"},
+        )
+
+        # then
+        assert response.status_code == 204
+        db.session.refresh(user_offerer)
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.COMMENT
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user_offerer.user.id
+        assert action.offererId == user_offerer.offerer.id
+        assert action.venueId is None
+        assert action.comment == "Code APE non éligible"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_comment_offerer_attachment_without_permission(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.comment_offerer_attachment", user_offerer_id=user_offerer.id),
+            json={"comment": "Test"},
+        )
+
+        # then
+        assert response.status_code == 403
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_comment_offerer_attachment_as_anonymous(self, client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.comment_offerer_attachment", user_offerer_id=user_offerer.id),
+            json={"comment": "Test"},
+        )
+
+        # then
+        assert response.status_code == 403
         assert history_models.ActionHistory.query.count() == 0

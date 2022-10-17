@@ -648,6 +648,20 @@ def add_comment_to_offerer(offerer_id: int, author_user: users_models.User, comm
     history_api.log_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
 
 
+def add_comment_to_offerer_attachment(user_offerer_id: int, author_user: users_models.User, comment: str) -> None:
+    user_offerer = offerers_repository.find_user_offerer_by_id(user_offerer_id)
+    if user_offerer is None:
+        raise exceptions.UserOffererNotFoundException()
+
+    history_api.log_action(
+        history_models.ActionType.COMMENT,
+        author_user,
+        user=user_offerer.user,
+        offerer=user_offerer.offerer,
+        comment=comment,
+    )
+
+
 def get_timestamp_from_url(image_url: str) -> str:
     return int(image_url.split("_")[-1])  # type: ignore [return-value]
 
