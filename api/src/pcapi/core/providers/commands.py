@@ -15,11 +15,11 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@blueprint.cli.command("synchronize_venue_providers_apis")
-def synchronize_venue_providers_apis() -> None:
+def _synchronize_venue_providers_apis() -> None:
     providers_apis = models.Provider.query.filter(
         models.Provider.isActive == True, models.Provider.apiUrl != None
     ).all()
+
     for provider in providers_apis:
         venue_provider_ids = [
             id_
@@ -27,7 +27,25 @@ def synchronize_venue_providers_apis() -> None:
             .with_entities(models.VenueProvider.id)
             .all()
         ]
-        tasks.synchronize_venue_providers_task.delay(venue_provider_ids)
+
+        if provider.enableParallelSynchronization:
+            for venue_provider_id in venue_provider_ids:
+                logger.info(
+                    "Enqueuing synchronization with parallel mode",
+                    extra={"provider": provider.name, "venue_provider": venue_provider_id},
+                )
+                tasks.synchronize_venue_providers_task.delay([venue_provider_id])
+        else:
+            logger.info(
+                "Enqueuing synchronization without parallel mode",
+                extra={"provider": provider.name, "venue_count": len(venue_provider_ids)},
+            )
+            tasks.synchronize_venue_providers_task.delay(venue_provider_ids)
+
+
+@blueprint.cli.command("synchronize_venue_providers_apis")
+def synchronize_venue_providers_apis() -> None:
+    _synchronize_venue_providers_apis()
 
 
 @blueprint.cli.command("update_providables")
