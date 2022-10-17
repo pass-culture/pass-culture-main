@@ -27,7 +27,7 @@ const SiretOrCommentFields = ({
   updateIsSiretValued,
 }: SiretOrCommentInterface): JSX.Element => {
   const [isSiretSelected, setIsSiretSelected] = useState(
-    !isToggleDisabled || initialSiret !== null
+    !isToggleDisabled || initialSiret.length > 0
   )
 
   const { setFieldValue, values, errors, touched } =
