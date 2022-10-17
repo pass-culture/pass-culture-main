@@ -12,7 +12,7 @@ from pcapi.core.offers.models import Offer
 import pcapi.core.providers.factories as providers_factories
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
-from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.repository import repository
 
 from tests.local_providers.provider_test_utils import TestLocalProvider
@@ -126,18 +126,18 @@ class SynchronizeVenueProviderTest:
         assert venue_provider_mock_arg.isDuo
 
 
-class SynchronizeVenueProvidersForProviderTest:
+class SynchronizeVenueProvidersTest:
     @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
     @pytest.mark.usefixtures("db_session")
-    def test_should_entirely_synchronize_venue_provider(self, mock_get_provider_class, mock_updateObjects):
+    def test_should_call_update_objects(self, mock_get_provider_class, mock_updateObjects):
         # Given
         allocine = providers_factories.AllocineProviderFactory()
-        providers_factories.VenueProviderFactory(provider=allocine)
+        venue_provider = providers_factories.VenueProviderFactory(provider=allocine)
         mock_get_provider_class.return_value = TestLocalProvider
 
         # When
-        synchronize_venue_providers_for_provider(allocine.id, limit=None)
+        synchronize_venue_providers([venue_provider], limit=None)
 
         # Then
         mock_get_provider_class.assert_called_once()
@@ -149,11 +149,11 @@ class SynchronizeVenueProvidersForProviderTest:
     def test_should_synchronize_venue_provider_with_defined_limit(self, mock_get_provider_class, mock_updateObjects):
         # Given
         allocine = providers_factories.AllocineProviderFactory()
-        providers_factories.VenueProviderFactory(provider=allocine)
+        venue_provider = providers_factories.VenueProviderFactory(provider=allocine)
         mock_get_provider_class.return_value = TestLocalProvider
 
         # When
-        synchronize_venue_providers_for_provider(allocine.id, limit=10)
+        synchronize_venue_providers([venue_provider], limit=10)
 
         # Then
         mock_get_provider_class.assert_called_once()
@@ -162,23 +162,22 @@ class SynchronizeVenueProvidersForProviderTest:
     @patch("pcapi.local_providers.provider_manager.synchronize_venue_provider")
     @pytest.mark.usefixtures("db_session")
     def test_should_call_synchronize_venue_provider(self, mock_synchronize_venue_provider):
-        provider = providers_factories.ProviderFactory()
-        providers_factories.VenueProviderFactory(provider=provider)
+        providers_factories.ProviderFactory()
+        venue_provider = providers_factories.VenueProviderFactory()
 
-        synchronize_venue_providers_for_provider(provider.id, limit=10)
+        synchronize_venue_providers([venue_provider], limit=10)
         mock_synchronize_venue_provider.assert_called_once()
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.synchronize_venue_provider")
     @patch("pcapi.connectors.notion.add_to_synchronization_error_database")
     def test_catch_exception_and_continue(self, mock_add_to_synchronization_error_db, mock_synchronize_venue_provider):
-        provider = providers_factories.ProviderFactory(localClass="Unknown")
-        providers_factories.VenueProviderFactory(provider=provider)
-        providers_factories.VenueProviderFactory(provider=provider)
+        venue_provider_1 = providers_factories.VenueProviderFactory()
+        venue_provider_2 = providers_factories.VenueProviderFactory()
 
         mock_synchronize_venue_provider.side_effect = ValueError()
 
-        synchronize_venue_providers_for_provider(provider.id, 10)
+        synchronize_venue_providers([venue_provider_1, venue_provider_2], 10)
         assert mock_synchronize_venue_provider.call_count == 2
         assert mock_add_to_synchronization_error_db.call_count == 2
 

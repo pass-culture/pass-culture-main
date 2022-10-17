@@ -5,7 +5,6 @@ from urllib3 import exceptions as urllib3_exceptions
 
 import pcapi.connectors.notion as notion_connector
 from pcapi.core.providers.models import VenueProvider
-import pcapi.core.providers.repository as providers_repository
 from pcapi.infrastructure.repository.stock_provider import provider_api
 import pcapi.local_providers
 from pcapi.local_providers.provider_api import synchronize_provider_api
@@ -27,8 +26,7 @@ def synchronize_data_for_provider(provider_name: str, limit: int | None = None) 
         logger.exception(build_cron_log_message(name=provider_name, status=CronStatus.FAILED))
 
 
-def synchronize_venue_providers_for_provider(provider_id: int, limit: int | None = None) -> None:
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(provider_id)
+def synchronize_venue_providers(venue_providers: list[VenueProvider], limit: int | None = None) -> None:
     for venue_provider in venue_providers:
         log_data = {
             "venue_provider": venue_provider.id,

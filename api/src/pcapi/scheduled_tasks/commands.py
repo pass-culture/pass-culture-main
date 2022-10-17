@@ -26,12 +26,13 @@ from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.external import user_automations
 from pcapi.core.users.repository import get_newly_eligible_age_18_users
-from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications import push
@@ -69,7 +70,8 @@ def update_booking_used() -> None:
 def synchronize_allocine_stocks() -> None:
     """Launch AlloCine synchronization."""
     allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
-    synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(allocine_stocks_provider_id)
+    synchronize_venue_providers(venue_providers)
 
 
 @blueprint.cli.command("synchronize_cine_office_stocks")
@@ -78,7 +80,8 @@ def synchronize_allocine_stocks() -> None:
 def synchronize_cine_office_stocks() -> None:
     """Launch Cine Office synchronization."""
     cine_office_stocks_provider_id = get_provider_by_local_class("CDSStocks").id
-    synchronize_venue_providers_for_provider(cine_office_stocks_provider_id)
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(cine_office_stocks_provider_id)
+    synchronize_venue_providers(venue_providers)
 
 
 # TODO (lixxday, 2022-10-14): Remove this command once the corresponding cron is removed
