@@ -48,7 +48,7 @@ const Informations = ({
           <TextInput
             name="name"
             label="Nom du lieu"
-            readOnly={readOnly || isFieldNameFrozen}
+            disabled={readOnly || isFieldNameFrozen}
           />
         </FormLayout.Row>
         <FormLayout.Row>
