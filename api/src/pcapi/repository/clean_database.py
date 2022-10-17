@@ -66,6 +66,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     finance_models.BusinessUnit.query.delete()
     BankInformation.query.delete()
     providers_models.CDSCinemaDetails.query.delete()
+    providers_models.BoostCinemaDetails.query.delete()
     providers_models.CinemaProviderPivot.query.delete()
     providers_models.AllocinePivot.query.delete()
     providers_models.AllocineTheater.query.delete()
