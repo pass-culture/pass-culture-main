@@ -4,13 +4,13 @@ import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 
 interface IDeleteConfirmDialogProps {
-  setIsDeleteDialogOpen: (status: boolean) => void
+  onCancel: () => void
   nbSelectedOffers: number
   handleDelete: () => void
 }
 
 const DeleteConfirmDialog = ({
-  setIsDeleteDialogOpen,
+  onCancel,
   nbSelectedOffers,
   handleDelete,
 }: IDeleteConfirmDialogProps): JSX.Element => {
@@ -19,7 +19,7 @@ const DeleteConfirmDialog = ({
       cancelText={'Annuler'}
       confirmText={'Supprimer ces brouillons'}
       onCancel={() => {
-        setIsDeleteDialogOpen(false)
+        onCancel()
       }}
       onConfirm={() => {
         handleDelete()
