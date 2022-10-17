@@ -22,7 +22,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.payment.add_custom_offer_reimbursement_rule",
         "pcapi.scripts.provider.check_provider_api",
         "pcapi.scripts.sandbox",
-        "pcapi.scripts.update_providables",
         "pcapi.scripts.ubble_archive_past_identifications",
         "pcapi.scripts.backoffice_users.create_backoffice_users",
         "pcapi.utils.human_ids",
