@@ -266,6 +266,8 @@ class OffererAttachedUser(BaseModel):
     firstName: str | None
     lastName: str | None
     email: str
+    phoneNumber: str | None
+    validationStatus: offerers_models.ValidationStatus | None
 
 
 class OffererAttachedUsersResponseModel(BaseModel):
