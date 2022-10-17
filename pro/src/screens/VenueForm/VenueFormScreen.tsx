@@ -4,10 +4,10 @@ import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import useNotification from 'components/hooks/useNotification'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue, IVenueProviderApi } from 'core/Venue/types'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useNotification from 'hooks/useNotification'
 import {
   IVenueFormValues,
   validationSchema,
@@ -45,7 +45,7 @@ const VenueFormScreen = ({
   const history = useHistory()
   const notify = useNotification()
   const { currentUser } = useCurrentUser()
-  const [isSiretValued, setIsSiretValued] = useState(true)
+  const [isSiretValued, setIsSiretValued] = useState(!!venue?.siret)
 
   const onSubmit = async (value: IVenueFormValues) => {
     const request = isCreatingVenue
@@ -57,7 +57,7 @@ const VenueFormScreen = ({
         )
       : api.editVenue(
           venue?.id || '',
-          serializeEditVenueBodyModel(value, { hideSiret: !venue?.comment })
+          serializeEditVenueBodyModel(value, { hideSiret: !!venue?.comment })
         )
 
     request
