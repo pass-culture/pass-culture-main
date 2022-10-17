@@ -122,11 +122,11 @@ def create_collective_offer(
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except educational_exceptions.CulturalPartnerNotFoundException:
         logger.info(
-            "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
+            "Could not create offer: This offerer has not been found in Adage", extra={"venue_id": body.venue_id}
         )
         raise ApiErrors({"offerer": "not found in adage"}, 403)
     except educational_exceptions.AdageException:
-        logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
+        logger.info("Could not create offer: Adage api call failed", extra={"venue_id": body.venue_id})
         raise ApiErrors({"adage_api": "error"}, 500)
     except offers_exceptions.UnknownOfferSubCategory as error:
         logger.info(
@@ -155,7 +155,7 @@ def create_collective_offer(
             error.errors,
             status_code=400,
         )
-    except educational_exceptions.EducationalDomainsNotFound as error:
+    except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not create offer: educational domains not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "domains": body.domains},
@@ -164,7 +164,7 @@ def create_collective_offer(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
-    except educational_exceptions.CollectiveOfferTemplateNotFound as error:
+    except educational_exceptions.CollectiveOfferTemplateNotFound:
         logger.info(
             "Could not create offer: collective offer template not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},

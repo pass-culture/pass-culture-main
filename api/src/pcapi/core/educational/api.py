@@ -768,9 +768,9 @@ def create_collective_offer(
     if offer_data.template_id is not None:
         template = get_collective_offer_template_by_id(dehumanize_or_raise(offer_data.template_id))
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
-    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     venue: offerers_models.Venue = rest.load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    offerers_api.can_offerer_create_educational_offer(venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
