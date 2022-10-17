@@ -174,6 +174,7 @@ class UserOffererFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.ProFactory)
     offerer = factory.SubFactory(OffererFactory)
+    validationStatus = models.ValidationStatus.VALIDATED
 
 
 class NotValidatedUserOffererFactory(UserOffererFactory):

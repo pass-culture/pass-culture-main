@@ -28,16 +28,22 @@ from . import utils
 def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResponseModel:
     """Get the list of all (pro) users attached to the offerer"""
     users_offerer: list[offerers_models.UserOfferer] = (
-        offerers_models.UserOfferer.query.filter(
-            offerers_models.UserOfferer.offererId == offerer_id,
-            offerers_models.UserOfferer.isValidated,
-        )
+        offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.offererId == offerer_id)
         .order_by(offerers_models.UserOfferer.id)
         .all()
     )
-
     return serialization.OffererAttachedUsersResponseModel(
-        data=[serialization.OffererAttachedUser.from_orm(user_offerer.user) for user_offerer in users_offerer]
+        data=[
+            serialization.OffererAttachedUser(
+                id=user_offerer.user.id,
+                firstName=user_offerer.user.firstName,
+                lastName=user_offerer.user.lastName,
+                email=user_offerer.user.email,
+                phoneNumber=user_offerer.user.phoneNumber,
+                validationStatus=user_offerer.validationStatus,
+            )
+            for user_offerer in users_offerer
+        ]
     )
 
 
@@ -163,6 +169,17 @@ def reject_offerer_attachment(user_offerer_id: int, body: serialization.Optional
         offerers_api.reject_offerer_attachment(user_offerer_id, author_user, comment=body.comment)
     except offerers_exceptions.UserOffererNotFoundException:
         raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "Le rattachement n'existe pas"})
+
+
+@blueprint.backoffice_blueprint.route("users_offerers/<int:user_offerer_id>/comment", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def comment_offerer_attachment(user_offerer_id: int, body: serialization.CommentRequest) -> None:
+    author_user = get_current_user()
+    try:
+        offerers_api.add_comment_to_offerer_attachment(user_offerer_id, author_user, comment=body.comment)
+    except offerers_exceptions.UserOffererNotFoundException:
+        raise api_errors.ResourceNotFoundError(errors={"user_offerer_id": "La rattachement n'existe pas"})
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/validate", methods=["POST"])
