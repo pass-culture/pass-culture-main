@@ -3,7 +3,7 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 
-import { getErrorCode } from '../helpers'
+import { getErrorCode, serializeApiErrors } from '../helpers'
 
 describe('test apiClient:helpers', () => {
   describe('test getErrorCode', () => {
@@ -31,5 +31,34 @@ describe('test apiClient:helpers', () => {
       const errorCode = getErrorCode(error)
       expect(errorCode).toBe('UNAUTHORIZED_ACCESS')
     })
+  })
+
+  it('should map api response errors to form one without changes', () => {
+    const initialError: Record<string, string> = {
+      f1: 'e1',
+      f2: 'e2',
+      f3: 'e3',
+    }
+    const serializedError = serializeApiErrors(initialError)
+
+    expect(Object.keys(serializedError)).toContain('f1')
+    expect(Object.keys(serializedError)).toContain('f2')
+    expect(Object.keys(serializedError)).toContain('f3')
+  })
+
+  it('should map api response errors to form one with changes', () => {
+    const initialError: Record<string, string> = {
+      f1: 'e1',
+      f2: 'e2',
+      f3: 'e3',
+    }
+
+    const apiFieldsMap: Record<string, string> = {
+      f1: 'f4',
+    }
+    const serializedError = serializeApiErrors(initialError, apiFieldsMap)
+
+    expect(Object.keys(serializedError)).not.toContain('f1')
+    expect(Object.keys(serializedError)).toContain('f4')
   })
 })

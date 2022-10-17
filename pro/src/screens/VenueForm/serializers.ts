@@ -3,14 +3,21 @@ import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
 import { unhumanizeSiret } from 'core/Venue'
 import { IVenueFormValues } from 'new_components/VenueForm'
 
-interface ISerializePostVenueParams {
+interface VenueBodyModelParams {
   hideSiret: boolean
   offererId: string
 }
-export const serializePostVenueBodyModel = (
+
+type HideSiretParam = Pick<VenueBodyModelParams, 'hideSiret'>
+type VenueBodyModel = Omit<
+  PostVenueBodyModel,
+  'managingOffererId' | 'venueLabelId'
+>
+
+const serializeCommunData = (
   formValues: IVenueFormValues,
-  { hideSiret, offererId }: ISerializePostVenueParams
-): PostVenueBodyModel => {
+  { hideSiret }: HideSiretParam
+): VenueBodyModel => {
   const model = {
     address: formValues.address,
     audioDisabilityCompliant: formValues.accessibility.audio,
@@ -26,7 +33,6 @@ export const serializePostVenueBodyModel = (
     postalCode: formValues.postalCode,
     publicName: formValues.publicName,
     siret: unhumanizeSiret(formValues.siret),
-    venueLabelId: formValues.venueLabel,
     venueTypeCode: formValues.venueType,
     visualDisabilityCompliant: formValues.accessibility.visual,
     withdrawalDetails: formValues.withdrawalDetails,
@@ -36,7 +42,6 @@ export const serializePostVenueBodyModel = (
       website: formValues.webSite,
       socialMedias: null,
     },
-    managingOffererId: offererId,
   }
 
   if (hideSiret) {
@@ -48,49 +53,31 @@ export const serializePostVenueBodyModel = (
   return model
 }
 
-interface ISerializeEditVenueParams {
-  hideSiret: boolean
+export const serializePostVenueBodyModel = (
+  formValues: IVenueFormValues,
+  { hideSiret, offererId }: VenueBodyModelParams
+): PostVenueBodyModel => {
+  const model = serializeCommunData(formValues, {
+    hideSiret,
+  })
+  return {
+    ...model,
+    venueLabelId: formValues.venueLabel,
+    managingOffererId: offererId,
+  }
 }
 
 export const serializeEditVenueBodyModel = (
   formValues: IVenueFormValues,
-  { hideSiret }: ISerializeEditVenueParams
+  { hideSiret }: HideSiretParam
 ): EditVenueBodyModel => {
-  const model: EditVenueBodyModel = {
-    address: formValues.address,
-    audioDisabilityCompliant: formValues.accessibility.audio,
-    bookingEmail: formValues.mail,
-    city: formValues.city,
-    comment: formValues.comment,
-    description: formValues.description,
-    latitude: formValues.latitude,
-    longitude: formValues.longitude,
-    mentalDisabilityCompliant: formValues.accessibility.mental,
-    motorDisabilityCompliant: formValues.accessibility.motor,
-    name: formValues.name,
-    postalCode: formValues.postalCode,
-    publicName: formValues.publicName,
-    siret: unhumanizeSiret(formValues.siret),
+  const model = serializeCommunData(formValues, {
+    hideSiret,
+  })
+  return {
+    ...model,
     // @ts-expect-error string is not assignable to type number
     venueLabelId: formValues.venueLabel,
-    venueTypeCode: formValues.venueType,
-    visualDisabilityCompliant: formValues.accessibility.visual,
-    withdrawalDetails: formValues.withdrawalDetails,
-    contact: {
-      email: formValues.email,
-      phoneNumber: formValues.phoneNumber,
-      website: formValues.webSite,
-      socialMedias: null,
-    },
-    isAccessibilityAppliedOnAllOffers:
-      formValues.isAccessibilityAppliedOnAllOffers,
-    isEmailAppliedOnAllOffers: false,
+    isEmailAppliedOnAllOffers: true,
   }
-  if (hideSiret) {
-    delete model.siret
-  } else {
-    model.comment = ''
-  }
-
-  return model
 }

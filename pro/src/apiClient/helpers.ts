@@ -1,18 +1,16 @@
 import { ApiError } from './v1'
 
-/* istanbul ignore next: DEBT, TO FIX */
 export const serializeApiErrors = (
   errors: Record<string, string>,
   apiFieldsMap: Record<string, string> = {}
 ): Record<string, string> => {
-  const formErrors: Record<string, string> = {}
-  let formFieldName
-  for (const apiFieldName in errors) {
-    formFieldName =
-      apiFieldName in apiFieldsMap ? apiFieldsMap[apiFieldName] : apiFieldName
-    formErrors[formFieldName] = errors[apiFieldName]
-  }
-  return formErrors
+  Object.entries(apiFieldsMap).forEach(([key, value]) => {
+    if (errors[key]) {
+      errors[value] = errors[key]
+      delete errors[key]
+    }
+  })
+  return errors
 }
 
 export const getErrorCode = (error: ApiError): string => {
