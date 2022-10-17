@@ -3,13 +3,6 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .offer-page {
-  .page-subtitle {
-    @include fonts.caption();
-
-    color: colors.$grey-dark;
-    margin-bottom: rem.torem(24px);
-  }
-
   .section {
     margin-bottom: 0;
   }

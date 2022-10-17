@@ -27,6 +27,7 @@ import {
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
+import FormLayout from 'new_components/FormLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SubmitButton } from 'ui-kit'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
@@ -754,9 +755,7 @@ const OfferForm = ({
       {providerName !== null ? (
         <SynchronizedProviderInformation providerName={providerName} />
       ) : (
-        <p className="page-subtitle">
-          Tous les champs sont obligatoires sauf mention contraire.
-        </p>
+        <FormLayout.MandatoryInfo />
       )}
 
       <section className="form-section">

@@ -100,9 +100,7 @@ const OfferEducationalForm = ({
   }, [values.offererId, userOfferers, notify, getIsOffererEligible, mode])
   return (
     <FormLayout className={styles['educational-form']} small>
-      <p className={styles['educational-form-information']}>
-        Tous les champs sont obligatoires sauf mention contraire.
-      </p>
+      <FormLayout.MandatoryInfo />
 
       <Banner
         className={styles['educational-form-banner']}
