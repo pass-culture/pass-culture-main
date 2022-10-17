@@ -35,6 +35,7 @@ const Informations = ({
         <FormLayout.Row>
           {!venueIsVirtual && (
             <SiretOrCommentFields
+              initialSiret={initialValues.siret}
               siretLabel={siretLabel}
               readOnly={readOnly || !!initialValues.siret}
               isToggleDisabled={!isCreatedEntity}
