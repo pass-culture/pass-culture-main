@@ -48,7 +48,10 @@ const formValues: IVenueFormValues = {
 describe('screen | VenueForm | serializers', () => {
   it('Serialize form value for venue creation with siret', async () => {
     // Given
-    const result = serializePostVenueBodyModel(formValues, true, 'EA')
+    const result = serializePostVenueBodyModel(formValues, {
+      hideSiret: false,
+      offererId: 'EA',
+    })
 
     // Then
     expect(result.siret).toBeDefined()
@@ -57,7 +60,10 @@ describe('screen | VenueForm | serializers', () => {
 
   it('Serialize form value for venue creation with comment', async () => {
     // Given
-    const result = serializePostVenueBodyModel(formValues, false, 'EA')
+    const result = serializePostVenueBodyModel(formValues, {
+      hideSiret: true,
+      offererId: 'EA',
+    })
 
     // Then
     expect(result.siret).toBeUndefined()
@@ -65,7 +71,7 @@ describe('screen | VenueForm | serializers', () => {
   })
 
   it('Serialize form value for venue updating with siret', async () => {
-    const result = serializeEditVenueBodyModel(formValues, [], true)
+    const result = serializeEditVenueBodyModel(formValues, { hideSiret: false })
 
     // Then
     expect(result.siret).not.toBeUndefined()
@@ -73,7 +79,7 @@ describe('screen | VenueForm | serializers', () => {
   })
 
   it('Serialize form value for venue updating with comment', async () => {
-    const result = serializeEditVenueBodyModel(formValues, [], false)
+    const result = serializeEditVenueBodyModel(formValues, { hideSiret: true })
 
     // Then
     expect(result.siret).toBeUndefined()

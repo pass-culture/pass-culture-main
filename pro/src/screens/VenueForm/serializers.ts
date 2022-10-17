@@ -3,10 +3,13 @@ import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
 import { unhumanizeSiret } from 'core/Venue'
 import { IVenueFormValues } from 'new_components/VenueForm'
 
+interface ISerializePostVenueParams {
+  hideSiret: boolean
+  offererId: string
+}
 export const serializePostVenueBodyModel = (
   formValues: IVenueFormValues,
-  isSiretValued: boolean,
-  offererId: string
+  { hideSiret, offererId }: ISerializePostVenueParams
 ): PostVenueBodyModel => {
   const model = {
     address: formValues.address,
@@ -36,7 +39,7 @@ export const serializePostVenueBodyModel = (
     managingOffererId: offererId,
   }
 
-  if (!isSiretValued) {
+  if (hideSiret) {
     delete model.siret
   } else {
     model.comment = ''
@@ -44,10 +47,14 @@ export const serializePostVenueBodyModel = (
 
   return model
 }
+
+interface ISerializeEditVenueParams {
+  hideSiret: boolean
+}
+
 export const serializeEditVenueBodyModel = (
   formValues: IVenueFormValues,
-  venueLabels: SelectOption[],
-  isSiretValued: boolean
+  { hideSiret }: ISerializeEditVenueParams
 ): EditVenueBodyModel => {
   const model: EditVenueBodyModel = {
     address: formValues.address,
@@ -79,7 +86,7 @@ export const serializeEditVenueBodyModel = (
       formValues.isAccessibilityAppliedOnAllOffers,
     isEmailAppliedOnAllOffers: false,
   }
-  if (!isSiretValued) {
+  if (hideSiret) {
     delete model.siret
   } else {
     model.comment = ''
