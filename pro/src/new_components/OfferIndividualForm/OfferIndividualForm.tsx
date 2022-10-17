@@ -12,6 +12,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
+import FormLayout from 'new_components/FormLayout'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
@@ -22,7 +23,6 @@ import { useFilteredVenueList } from './hooks'
 import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
-import styles from './OfferIndividualForm.module.scss'
 import { OptionDuo } from './OptionDuo'
 import { UsefulInformations } from './UsefulInformations'
 
@@ -78,9 +78,7 @@ const OfferIndividualForm = ({
 
   return (
     <>
-      <p className={styles['information']}>
-        Tous les champs sont obligatoires sauf mention contraire.
-      </p>
+      <FormLayout.MandatoryInfo />
       <Categories
         categories={categories}
         subCategories={subCategories}

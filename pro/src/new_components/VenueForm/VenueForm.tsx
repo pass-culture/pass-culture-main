@@ -16,7 +16,6 @@ import { EACInformation } from './EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { OffersSynchronization } from './OffersSynchronization'
-import styles from './VenueForm.module.scss'
 import { WithdrawalDetails } from './WithdrawalDetails'
 
 import { IVenueFormValues } from '.'
@@ -51,10 +50,8 @@ const VenueForm = ({
 
   return (
     <div>
-      <FormLayout className={styles['venue-form']} small>
-        <p className={styles['venue-form-description']}>
-          Tous les champs sont obligatoires sauf mention contraire.
-        </p>
+      <FormLayout small>
+        <FormLayout.MandatoryInfo />
         {!isCreatingVenue && provider && venueProvider && venue && (
           <OffersSynchronization
             provider={provider}
