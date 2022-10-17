@@ -16,7 +16,7 @@ from pcapi.models import db
 
 
 class CineOfficePivotForm(SecureForm):
-    venue_id = IntegerField("Identifiant lieu (pass Culture)", [DataRequired()])
+    venue_id = IntegerField("Identifiant numérique du lieu (pass Culture)", [DataRequired()])
     account_id = StringField("Nom de compte (CDS)", [DataRequired()])
     cinema_id = StringField("Identifiant cinéma (CDS)", [DataRequired()])
     api_token = StringField("Clé API (CDS)", [DataRequired()])
@@ -103,6 +103,7 @@ class CineOfficePivotView(BaseAdminView):
         cds_cinema_details = providers_models.CDSCinemaDetails(
             cinemaProviderPivot=cinema_provider_pivot, accountId=account_id, cinemaApiToken=api_token
         )
+
         db.session.add(cinema_provider_pivot)
         db.session.add(cds_cinema_details)
         db.session.commit()
@@ -116,7 +117,7 @@ class CineOfficePivotView(BaseAdminView):
             venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
         ).one_or_none()
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce CDS pivot", "error")
+            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CDS", "error")
             return False
         db.session.delete(cds_cinema_details)
         db.session.delete(cinema_provider_pivot)

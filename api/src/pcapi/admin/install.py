@@ -38,6 +38,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.providers.models import AllocinePivot
+from pcapi.core.providers.models import BoostCinemaDetails
 from pcapi.core.providers.models import CDSCinemaDetails
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
@@ -47,6 +48,7 @@ from pcapi.models.feature import Feature
 
 from . import base_configuration
 from . import templating
+from .custom_views.boost_pivot_view import BoostPivotView
 from .custom_views.cine_office_pivot_view import CineOfficePivotView
 from .custom_views.suspend_fraudulent_users_by_ids import SuspendFraudulentUsersByUserIdsView
 
@@ -183,6 +185,15 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Pivot Ciné Office",
             endpoint="cine-office",
+            category=Category.OFFRES_STRUCTURES_LIEUX,
+        )
+    )
+    admin.add_view(
+        BoostPivotView(
+            BoostCinemaDetails,
+            session,
+            name="Pivot Boost",
+            endpoint="boost",
             category=Category.OFFRES_STRUCTURES_LIEUX,
         )
     )
