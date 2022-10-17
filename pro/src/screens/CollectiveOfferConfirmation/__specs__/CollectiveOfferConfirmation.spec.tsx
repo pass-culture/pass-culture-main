@@ -8,6 +8,12 @@ import { OfferStatus } from 'apiClient/v1'
 
 import CollectiveOfferConfirmation from '../CollectiveOfferConfirmation'
 
+// TO REMOVE WHEN WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE IS REMOVED
+jest.mock('components/hooks/useActiveFeature', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(true),
+}))
+
 describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is pending', () => {
     render(
@@ -77,5 +83,22 @@ describe('CollectiveOfferConfirmation', () => {
     )
 
     expect(screen.getByText('Offre créée avec succès !')).toBeInTheDocument()
+  })
+
+  it('should render banner at the bottom of the page', () => {
+    render(
+      <Router history={createBrowserHistory()}>
+        <CollectiveOfferConfirmation
+          offererId=""
+          offerStatus={OfferStatus.ACTIVE}
+          isShowcase={true}
+          institutionDisplayName=""
+        />
+      </Router>
+    )
+
+    expect(
+      screen.getByText('Quelle est la prochaine étape ?')
+    ).toBeInTheDocument()
   })
 })

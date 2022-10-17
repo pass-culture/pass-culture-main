@@ -3,6 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { Banner, Title } from 'ui-kit'
@@ -92,6 +93,10 @@ const CollectiveOfferConfirmation = ({
     institutionDisplayName
   )
 
+  const isCollectiveOfferDuplicationActive = useActiveFeature(
+    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
+  )
+
   return (
     <div className={styles['confirmation-wrapper']}>
       <div className={styles['confirmation']}>
@@ -121,32 +126,34 @@ const CollectiveOfferConfirmation = ({
           </Link>
         </div>
       </div>
-      <Banner
-        type="notification-info"
-        className={styles['confirmation-banner']}
-      >
-        <h2 className={styles['confirmation-banner-title']}>
-          Quelle est la prochaine étape ?
-        </h2>
-        {isShowcase ? (
-          <>
-            Les enseignants intéressés par votre offre vitrine vous contacterons
-            par mail ou téléphone. <br />
-            Après un accord mutuel, vous pourrez créer une offre réservable en
-            complétant la date, le prix et l’établissement convenus avec
-            l’enseignant. <br />
-            Cette nouvelle offre apparaitra sur ADAGE et pourra être
-            pré-réservée par l’enseignant.
-          </>
-        ) : (
-          <>
-            L’enseignant doit préréserver votre offre depuis son compte ADAGE.
-            <br />
-            Une fois la préréservation faite, vous verrez une réservation
-            portant le statut préréservé.
-          </>
-        )}
-      </Banner>
+      {isCollectiveOfferDuplicationActive && (
+        <Banner
+          type="notification-info"
+          className={styles['confirmation-banner']}
+        >
+          <h2 className={styles['confirmation-banner-title']}>
+            Quelle est la prochaine étape ?
+          </h2>
+          {isShowcase ? (
+            <>
+              Les enseignants intéressés par votre offre vitrine vous
+              contacterons par mail ou téléphone. <br />
+              Après un accord mutuel, vous pourrez créer une offre réservable en
+              complétant la date, le prix et l’établissement convenus avec
+              l’enseignant. <br />
+              Cette nouvelle offre apparaitra sur ADAGE et pourra être
+              pré-réservée par l’enseignant.
+            </>
+          ) : (
+            <>
+              L’enseignant doit préréserver votre offre depuis son compte ADAGE.
+              <br />
+              Une fois la préréservation faite, vous verrez une réservation
+              portant le statut préréservé.
+            </>
+          )}
+        </Banner>
+      )}
     </div>
   )
 }
