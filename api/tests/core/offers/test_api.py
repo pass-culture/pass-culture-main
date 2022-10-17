@@ -1240,15 +1240,18 @@ class BatchUpdateOffersTest:
         assert not models.Offer.query.get(pending_offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
 
-        assert len(caplog.records) == 1
-        record = caplog.records[0]
+        assert len(caplog.records) == 2
+        first_record = caplog.records[0]
+        second_record = caplog.records[1]
 
-        assert record.message == "Batch update of offers"
-        assert record.extra == {
+        assert first_record.message == "Batch update of offers"
+        assert first_record.extra == {
             "nb_offers": 0,
             "updated_fields": {"isActive": True},
             "venue_ids": [],
         }
+        assert second_record.message == "Offers has been activated"
+        assert second_record.extra == {"offer_ids": [], "venue_id": []}
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate(self, mocked_async_index_offer_ids, caplog):
@@ -1272,14 +1275,20 @@ class BatchUpdateOffersTest:
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
-        assert len(caplog.records) == 1
-        record = caplog.records[0]
+        assert len(caplog.records) == 2
+        first_record = caplog.records[0]
+        second_record = caplog.records[1]
 
-        assert record.message == "Batch update of offers"
-        assert record.extra == {
+        assert first_record.message == "Batch update of offers"
+        assert first_record.extra == {
             "nb_offers": 2,
             "updated_fields": {"isActive": True},
             "venue_ids": [offer1.venueId, offer2.venueId],
+        }
+        assert second_record.message == "Offers has been activated"
+        assert second_record.extra == {
+            "offer_ids": (offer1.id, offer2.id),
+            "venue_id": [offer1.venueId, offer2.venueId],
         }
 
     def test_deactivate(self, caplog):
@@ -1295,14 +1304,20 @@ class BatchUpdateOffersTest:
         assert not models.Offer.query.get(offer2.id).isActive
         assert models.Offer.query.get(offer3.id).isActive
 
-        assert len(caplog.records) == 1
-        record = caplog.records[0]
+        assert len(caplog.records) == 2
+        first_record = caplog.records[0]
+        second_record = caplog.records[1]
 
-        assert record.message == "Batch update of offers"
-        assert record.extra == {
+        assert first_record.message == "Batch update of offers"
+        assert first_record.extra == {
             "nb_offers": 2,
             "updated_fields": {"isActive": False},
             "venue_ids": [offer1.venueId, offer2.venueId],
+        }
+        assert second_record.message == "Offers has been deactivated"
+        assert second_record.extra == {
+            "offer_ids": (offer1.id, offer2.id),
+            "venue_id": [offer1.venueId, offer2.venueId],
         }
 
 
