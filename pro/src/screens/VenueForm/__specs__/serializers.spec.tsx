@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom'
-import React from 'react'
 
 import { IVenueFormValues } from 'new_components/VenueForm'
 
