@@ -8,6 +8,17 @@ import pcapi.core.users.factories as users_factories
 from pcapi.utils.mailing import make_offerer_internal_validation_email
 
 
+def generate_siren_info() -> sirene.SirenInfo:
+    return sirene.SirenInfo(
+        siren="123456789",
+        name="whatever",
+        head_office_siret="12345678900001",
+        ape_code="16.64Z",
+        legal_category_code="???",
+        address=None,
+    )
+
+
 def test_write_object_validation_email():
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -24,14 +35,7 @@ def test_write_object_validation_email():
         validationToken=validation_token,
     )
 
-    siren_info = sirene.SirenInfo(
-        siren="123456789",
-        name="whatever",
-        head_office_siret="12345678900001",
-        ape_code="16.64Z",
-        legal_category_code="???",
-        address=None,
-    )
+    siren_info = generate_siren_info()
 
     # When
     email = make_offerer_internal_validation_email(offerer, user_offerer, siren_info)
@@ -61,14 +65,7 @@ def test_write_object_validation_email():
 
 def test_no_validation_link_if_user_offerer_is_already_validated():
     user_offerer = offerers_factories.UserOffererFactory.build()
-    siren_info = sirene.SirenInfo(
-        siren="123456789",
-        name="whatever",
-        head_office_siret="12345678900001",
-        ape_code="16.64Z",
-        legal_category_code="???",
-        address=None,
-    )
+    siren_info = generate_siren_info()
     email = make_offerer_internal_validation_email(
         user_offerer.offerer,
         user_offerer,
@@ -79,14 +76,7 @@ def test_no_validation_link_if_user_offerer_is_already_validated():
 
 def test_no_validation_link_if_offerer_is_already_validated():
     user_offerer = offerers_factories.UserOffererFactory.build()
-    siren_info = sirene.SirenInfo(
-        siren="123456789",
-        name="whatever",
-        head_office_siret="12345678900001",
-        ape_code="16.64Z",
-        legal_category_code="???",
-        address=None,
-    )
+    siren_info = generate_siren_info()
     email = make_offerer_internal_validation_email(
         user_offerer.offerer,
         user_offerer,
@@ -101,14 +91,7 @@ def test_should_return_subject_with_correct_departement_code():
         offerer__name="Le Petit Rintintin",
         offerer__postalCode="95000",
     )
-    siren_info = sirene.SirenInfo(
-        siren="123456789",
-        name="whatever",
-        head_office_siret="12345678900001",
-        ape_code="16.64Z",
-        legal_category_code="???",
-        address=None,
-    )
+    siren_info = generate_siren_info()
 
     # When
     email_object = make_offerer_internal_validation_email(
