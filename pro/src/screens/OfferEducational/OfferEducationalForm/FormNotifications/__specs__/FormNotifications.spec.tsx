@@ -114,7 +114,9 @@ describe('FormNotifications', () => {
     let mailInputs = await screen.getAllByRole('textbox', {
       name: 'E-mail auquel envoyer les notifications',
     })
-    const removeInputIcon = await screen.getByTitle("Supprimer l'email")
+    const removeInputIcon = await screen.getByRole('button', {
+      name: "Supprimer l'email",
+    })
     expect(mailInputs.length).toEqual(2)
     await userEvent.click(removeInputIcon)
     mailInputs = await screen.getAllByRole('textbox', {

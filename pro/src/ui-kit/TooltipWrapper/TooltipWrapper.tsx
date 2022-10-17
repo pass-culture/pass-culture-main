@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 
 import styles from './TooltipWrapper.module.scss'
@@ -6,12 +7,14 @@ export interface ITooltipWrapperProps {
   delay?: number
   title: string
   children: React.ReactNode | React.ReactNode[]
+  className?: string
 }
 
 const TooltipWrapper = ({
   delay = 200,
   title,
   children,
+  className,
 }: ITooltipWrapperProps) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const [height, setHeight] = useState(0)
@@ -37,7 +40,7 @@ const TooltipWrapper = ({
     <div
       onMouseEnter={showTip}
       onMouseLeave={hideTip}
-      className={styles['tooltip-wrapper']}
+      className={cn(styles['tooltip-wrapper'], className)}
     >
       <div
         className={styles['tooltip-wrapper-title']}
