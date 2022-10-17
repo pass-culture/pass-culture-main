@@ -86,6 +86,17 @@ describe('FormNotifications', () => {
     ).toBeInTheDocument()
   })
 
+  it('should render notification mail with pro email value if provided', () => {
+    initialValues = {
+      notifications: true,
+      notificationEmails: [''],
+      email: 'test@example.com',
+    }
+    renderFormNotifications({ initialValues, onSubmit })
+
+    expect(screen.getByDisplayValue('test@example.com')).toBeInTheDocument()
+  })
+
   it('should add notification mail input when button is clicked', async () => {
     initialValues = {
       notifications: true,
