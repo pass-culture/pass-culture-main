@@ -317,6 +317,9 @@ def link_venue_to_reimbursement_point(
 
 
 def generate_and_save_api_key(offerer_id: int) -> str:
+    # This is a soft limit for visual purposes only (not for security
+    # reasons). A user could create more than MAX_API_KEY_PER_OFFERER
+    # keys through a race condition. It's fine.
     if models.ApiKey.query.filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
         raise exceptions.ApiKeyCountMaxReached()
     model_api_key, clear_api_key = generate_api_key(offerer_id)
