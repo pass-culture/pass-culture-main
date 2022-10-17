@@ -15,7 +15,7 @@ interface IConfirmDialogProps {
   confirmText: string
   cancelText: string
   isLoading?: boolean
-  children: React.ReactNode | React.ReactNode[]
+  children?: React.ReactNode | React.ReactNode[]
   icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   hideIcon?: boolean
   extraClassNames?: string
@@ -48,7 +48,9 @@ const ConfirmDialog = ({
         <strong>{title}</strong>
         <strong>{secondTitle}</strong>
       </div>
-      <div className={styles['confirm-dialog-explanation']}>{children}</div>
+      {children && (
+        <div className={styles['confirm-dialog-explanation']}>{children}</div>
+      )}
       <div className={styles['confirm-dialog-actions']}>
         <Button
           className="secondary-button"

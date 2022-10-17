@@ -50,9 +50,7 @@ const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
             onCancel={closeDeleteDraftDialog}
             onConfirm={onConfirmDeleteDraftOffer}
             title={`Voulez-vous supprimer le brouillon : "${offer.name}"`}
-          >
-            <></>
-          </ConfirmDialog>
+          />
         )}
         <TooltipWrapper title="Supprimer le brouillon" delay={0}>
           <Button
