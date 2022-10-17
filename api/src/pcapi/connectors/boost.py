@@ -1,5 +1,6 @@
 import datetime
 import enum
+import json
 import logging
 from typing import Any
 
@@ -47,8 +48,11 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = False) -> st
         raise BoostAPIException(f"Network error on Boost API: {url}") from exc
 
     if response.status_code != 200:
-        content = response.json()
-        message = content.get("message", "")
+        try:
+            content = response.json()
+            message = content.get("message", "")
+        except json.JSONDecodeError:
+            message = response.content
         raise BoostAPIException(
             f"Unexpected {response.status_code} response from Boost API on {response.request.url}: {message}"
         )
@@ -147,8 +151,12 @@ def _extract_reason_from_response(response: requests.Response) -> str:
 
 
 def _extract_message_from_response(response: requests.Response) -> str:
-    content = response.json()
-    return content.get("message", "")
+    try:
+        content = response.json()
+        message = content.get("message", "")
+    except json.JSONDecodeError:
+        message = response.content
+    return message
 
 
 def _filter_token(error_message: str, token: str | None) -> str:
