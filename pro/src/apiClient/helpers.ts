@@ -1,8 +1,9 @@
 import { ApiError } from './v1'
 
+/* istanbul ignore next: DEBT, TO FIX */
 export const serializeApiErrors = (
-  apiFieldsMap: Record<string, string>,
-  errors: Record<string, string>
+  errors: Record<string, string>,
+  apiFieldsMap: Record<string, string> = {}
 ): Record<string, string> => {
   const formErrors: Record<string, string> = {}
   let formFieldName

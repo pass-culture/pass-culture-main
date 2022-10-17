@@ -218,6 +218,41 @@ describe('screen | VenueForm', () => {
       ).toBeInTheDocument()
     })
 
+    it('Submit update form', async () => {
+      // Given
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: true,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        undefined
+      )
+
+      const editVenue = jest.spyOn(api, 'editVenue').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            body: {
+              siret: ['ensure this value has at least 14 characters'],
+            },
+          } as ApiResult,
+          ''
+        )
+      )
+
+      // When
+      await userEvent.click(screen.getByText('Valider'))
+
+      // Then
+      expect(editVenue).toHaveBeenCalled()
+      expect(
+        screen.getByText('ensure this value has at least 14 characters')
+      ).toBeInTheDocument()
+    })
+
     it('Submit creation form that fails with unknown error', async () => {
       // Given
       renderForm(

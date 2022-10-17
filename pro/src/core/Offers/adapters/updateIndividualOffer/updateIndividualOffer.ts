@@ -41,7 +41,7 @@ const updateIndividualOffer: TUpdateIndividualOffer = async ({
       isOk: false,
       message: 'Une erreur est survenue lors de la création de votre offre',
       payload: {
-        errors: serializeApiErrors(apiFieldsMap, formErrors),
+        errors: serializeApiErrors(formErrors, apiFieldsMap),
       },
     }
   }
