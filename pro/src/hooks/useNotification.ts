@@ -1,4 +1,4 @@
-/* istanbul ignore file */
+/* istanbul ignore file: RomainC, I think testing is ok with this file*/
 import { useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 

@@ -42,6 +42,8 @@ const Offerers = () => {
 
   useEffect(
     function fetchData() {
+      // RomainC: Challenge this function it is called each times
+      // offererId change, this doesn't seem necessary
       api.listOfferersNames().then(receivedOffererNames => {
         const initialOffererOptions = sortByDisplayName(
           receivedOffererNames.offerersNames.map(item => ({

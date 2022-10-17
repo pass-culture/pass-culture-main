@@ -3,7 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
-import useActiveFeature from 'components/hooks/useActiveFeature'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { Banner, Title } from 'ui-kit'
