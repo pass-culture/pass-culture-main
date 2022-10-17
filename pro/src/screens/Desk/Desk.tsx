@@ -2,7 +2,7 @@ import cx from 'classnames'
 import React, { useRef, useState } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Titles from 'components/layout/Titles/Titles'
+
 import { Banner, Button } from 'ui-kit'
 
 import { BookingDetails } from './BookingDetails'
@@ -127,7 +127,7 @@ const Desk = ({
 
   return (
     <div className={styles['desk-screen']}>
-      <Titles title="Guichet" />
+      <h6>Guichet</h6>
       <p className="advice">
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.

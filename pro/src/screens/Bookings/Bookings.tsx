@@ -235,7 +235,7 @@ const Bookings = <
   return (
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
-      <Titles title="Réservations" />
+      <h6 title="Réservations" />
       <Tabs
         selectedKey={audience}
         tabs={[
