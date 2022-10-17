@@ -57,6 +57,10 @@ class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-
 
     pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
+    enableParallelSynchronization: bool = Column(
+        Boolean, nullable=False, default=False, server_default=expression.false()
+    )
+
     @property
     def isAllocine(self) -> bool:
         from pcapi import local_providers  # avoid import loop
