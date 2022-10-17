@@ -413,6 +413,24 @@ class CustomRuleFinderTest:
         assert finder.get_rule(booking3) is None  # outside `rule.timespan`
         assert finder.get_rule(booking4) is None  # no rule for this offerer
 
+    def test_rule_offer_rule_priority(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        far_in_the_past = datetime.utcnow() - timedelta(days=800)
+        yesterday_booking = bookings_factories.UsedBookingFactory()
+        offerer = yesterday_booking.offerer
+        offer = yesterday_booking.stock.offer
+        ancient_booking = bookings_factories.UsedBookingFactory(stock=yesterday_booking.stock, dateUsed=far_in_the_past)
+        another_booking = bookings_factories.UsedBookingFactory()
+        offer_rule = finance_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(yesterday, None))
+        _offerer_rule = finance_factories.CustomReimbursementRuleFactory(offerer=offerer, timespan=(yesterday, None))
+
+        finder = reimbursement.CustomRuleFinder()
+
+        # Custom rule on Offer has priority over rule on Offerer
+        assert finder.get_rule(yesterday_booking) == offer_rule
+        assert finder.get_rule(ancient_booking) is None  # outside `rule.timespan`
+        assert finder.get_rule(another_booking) is None  # no rule for this offer
+
 
 def assert_total_reimbursement(booking_reimbursement, rule, booking):
     assert booking_reimbursement.booking == booking
