@@ -47,18 +47,14 @@ const EACInformation = ({
           to: `/structures/${offererId}/lieux/${venue?.id}/eac`,
           isExternal: false,
         }}
+        Icon={collectiveDataIsNotEmpty ? EditIcon : undefined}
         variant={ButtonVariant.SECONDARY}
         isDisabled={isCreatingVenue}
         className={cn({ [styles['button']]: collectiveDataIsNotEmpty })}
       >
-        {collectiveDataIsNotEmpty ? (
-          <>
-            <EditIcon className={styles['edit-icon']} />
-            Modifier mes informations
-          </>
-        ) : (
-          'Renseigner mes informations'
-        )}
+        {collectiveDataIsNotEmpty
+          ? 'Modifier mes informations'
+          : 'Renseigner mes informations'}
       </ButtonLink>
     </div>
   )
