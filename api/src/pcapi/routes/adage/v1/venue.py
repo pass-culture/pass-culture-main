@@ -18,14 +18,14 @@ from . import blueprint
 @blueprint.adage_v1.route("/venues/<string:venues_siret>", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=venue_serialization.GetVenuesBySiretResponseModel,
+    response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[404, 422],
     tags=("get venues",),
 )
 @adage_api_key_required
 def get_venues_from_siret(
     venues_siret: str, query: venue_serialization.GetRelativeVenuesQueryModel
-) -> venue_serialization.GetVenuesBySiretResponseModel:
+) -> venue_serialization.GetVenuesResponseModel:
 
     if query.getRelative:
         venues = api.get_relative_venues_by_siret(venues_siret)
@@ -37,22 +37,22 @@ def get_venues_from_siret(
     if not venues:
         raise ApiErrors({"code": "VENUES_NOT_FOUND"}, status_code=404)
 
-    return venue_serialization.GetVenuesBySiretResponseModel(
-        venues=[venue_serialization.VenueModelWithRequiredSiret.from_orm(venue) for venue in venues]
+    return venue_serialization.GetVenuesResponseModel(
+        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
     )
 
 
 @blueprint.adage_v1.route("/venues/name/<string:venues_name>", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=venue_serialization.GetVenuesWithOptionalSiretResponseModel,
+    response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[404, 422],
     tags=("get venues",),
 )
 @adage_api_key_required
 def get_venues_from_name(
     venues_name: str, query: venue_serialization.GetRelativeVenuesQueryModel
-) -> venue_serialization.GetVenuesWithOptionalSiretResponseModel:
+) -> venue_serialization.GetVenuesResponseModel:
     if query.getRelative:
         venues = api.get_relative_venues_by_name(venues_name)
     else:
@@ -60,57 +60,57 @@ def get_venues_from_name(
     if len(venues) == 0:
         raise ApiErrors({"code": "VENUES_NOT_FOUND"}, status_code=404)
 
-    return venue_serialization.GetVenuesWithOptionalSiretResponseModel(
-        venues=[venue_serialization.VenueModelWithOptionalSiret.from_orm(venue) for venue in venues]
+    return venue_serialization.GetVenuesResponseModel(
+        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
     )
 
 
 @blueprint.adage_v1.route("/venues", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=venue_serialization.GetVenuesWithOptionalSiretResponseModel,
+    response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[422],
     tags=("get all venues",),
 )
 @adage_api_key_required
 def get_all_venues(
     query: venue_serialization.GetAllVenuesQueryModel,
-) -> venue_serialization.GetVenuesWithOptionalSiretResponseModel:
+) -> venue_serialization.GetVenuesResponseModel:
     venues = api.get_all_venues(query.page, query.per_page)
 
-    return venue_serialization.GetVenuesWithOptionalSiretResponseModel(
-        venues=[venue_serialization.VenueModelWithOptionalSiret.from_orm(venue) for venue in venues]
+    return venue_serialization.GetVenuesResponseModel(
+        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
     )
 
 
 @blueprint.adage_v1.route("/venues/id/<int:venue_id>", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=venue_serialization.VenueModelWithOptionalSiret,
+    response_model=venue_serialization.VenueModel,
     on_error_statuses=[404, 422],
     tags=("get venue",),
 )
 @adage_api_key_required
-def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModelWithOptionalSiret:
+def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModel:
     venue = offerers_repository.get_permanent_venue_by_id(venue_id)
     if not venue:
         raise ApiErrors({"code": "VENUE_NOT_FOUND"}, status_code=404)
-    return venue_serialization.VenueModelWithOptionalSiret.from_orm(venue)
+    return venue_serialization.VenueModel.from_orm(venue)
 
 
 @blueprint.adage_v1.route("/venues/relative/id/<int:venue_id>", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=venue_serialization.GetVenuesWithOptionalSiretResponseModel,
+    response_model=venue_serialization.GetVenuesResponseModel,
     on_error_statuses=[404, 422],
     tags=("get venue",),
 )
 @adage_api_key_required
-def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesWithOptionalSiretResponseModel:
+def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesResponseModel:
     venues = offerers_repository.find_relative_venue_by_id(venue_id)
     if not venues:
         raise ApiErrors({"code": "VENUE_NOT_FOUND"}, status_code=404)
 
-    return venue_serialization.GetVenuesWithOptionalSiretResponseModel(
-        venues=[venue_serialization.VenueModelWithOptionalSiret.from_orm(venue) for venue in venues]
+    return venue_serialization.GetVenuesResponseModel(
+        venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
     )
