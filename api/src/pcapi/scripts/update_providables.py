@@ -6,7 +6,7 @@ import click
 import pcapi.core.providers.repository as providers_repository
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
-from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -54,4 +54,5 @@ def update_providables(provider_name: str, venue_provider_id: int, limit: int): 
     "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
 )
 def update_providables_by_provider_id(provider_id: int, limit: int | None) -> None:
-    synchronize_venue_providers_for_provider(provider_id, limit)
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(provider_id)
+    synchronize_venue_providers(venue_providers, limit)
