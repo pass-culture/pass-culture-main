@@ -24,7 +24,6 @@ export const createCollectiveOfferPayload = (
   offer: IOfferEducationalFormValues,
   offerTemplateId?: string
 ): PostCollectiveOfferBodyModel => ({
-  offererId: offer.offererId,
   venueId: offer.venueId,
   subcategoryId: offer.subCategory,
   name: offer.title,
