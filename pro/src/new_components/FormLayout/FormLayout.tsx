@@ -3,6 +3,7 @@ import React from 'react'
 
 import style from './FormLayout.module.scss'
 import Actions from './FormLayoutActions'
+import MandatoryInfo from './FormLayoutMandatoryInfo'
 import Row from './FormLayoutRow'
 import RowWithInfo from './FormLayoutRowWithInfo'
 import Section from './FormLayoutSection'
@@ -31,5 +32,6 @@ FormLayout.Row = Row
 FormLayout.SubSection = SubSection
 FormLayout.Section = Section
 FormLayout.Actions = Actions
+FormLayout.MandatoryInfo = MandatoryInfo
 
 export default FormLayout

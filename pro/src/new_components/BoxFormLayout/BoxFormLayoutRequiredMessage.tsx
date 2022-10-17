@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
 
+import FormLayout from 'new_components/FormLayout'
+
 import style from './BoxFormLayout.module.scss'
 
 interface BoxFormLayoutRequiredMessageProps {
@@ -10,9 +12,9 @@ interface BoxFormLayoutRequiredMessageProps {
 const RequiredMessage = ({
   className,
 }: BoxFormLayoutRequiredMessageProps): JSX.Element => (
-  <div className={cn(style['box-form-layout-required-message'], className)}>
-    Tous les champs sont obligatoires sauf mention contraire.
-  </div>
+  <FormLayout.MandatoryInfo
+    className={cn(style['box-form-layout-required-message'], className)}
+  />
 )
 
 export default RequiredMessage
