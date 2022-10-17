@@ -339,7 +339,6 @@ def is_intervention_area_valid(
 
 
 class PostCollectiveOfferBodyModel(BaseModel):
-    offerer_id: str
     venue_id: str
     subcategory_id: str
     name: str
