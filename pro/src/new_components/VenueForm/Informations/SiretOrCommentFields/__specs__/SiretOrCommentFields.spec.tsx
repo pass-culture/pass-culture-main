@@ -163,8 +163,47 @@ describe('components | SiretOrCommentFields', () => {
       ).not.toBeInTheDocument()
       await userEvent.click(buttonSubmit)
 
-      expect(await screen.findByText('Veuillez renseigner un SIRET'))
-        .toBeInTheDocument
+      expect(
+        await screen.findByText('Veuillez renseigner un SIRET')
+      ).toBeInTheDocument()
+    })
+    it('user should not be able to enter non number characters', async () => {
+      await renderSiretOrComment({
+        initialValues,
+        onSubmit,
+        props,
+        validationSchema,
+      })
+
+      const siretInput: HTMLInputElement = screen.getByLabelText(
+        'Siret field',
+        {
+          exact: false,
+        }
+      )
+
+      await userEvent.type(siretInput, 'abc')
+
+      expect(siretInput.value).toEqual('')
+    })
+    it('user should be able to enter number characters', async () => {
+      await renderSiretOrComment({
+        initialValues,
+        onSubmit,
+        props,
+        validationSchema,
+      })
+
+      const siretInput: HTMLInputElement = screen.getByLabelText(
+        'Siret field',
+        {
+          exact: false,
+        }
+      )
+
+      await userEvent.type(siretInput, '123')
+
+      expect(siretInput.value).toEqual('123')
     })
     it('should display too short message if siret is not 14 characters', async () => {
       const { buttonSubmit } = await renderSiretOrComment({
@@ -184,7 +223,7 @@ describe('components | SiretOrCommentFields', () => {
       const errorMessage = await screen.findByText(
         'Le SIRET doit comporter 14 charactères'
       )
-      expect(errorMessage).toBeInTheDocument
+      expect(errorMessage).toBeInTheDocument()
     })
     it('should display error message if siret does not match siren', async () => {
       const { buttonSubmit } = await renderSiretOrComment({
@@ -204,7 +243,7 @@ describe('components | SiretOrCommentFields', () => {
       const errorMessage = await screen.findByText(
         'Le code SIRET doit correspondre à un établissement de votre structure'
       )
-      expect(errorMessage).toBeInTheDocument
+      expect(errorMessage).toBeInTheDocument()
     })
     it('should call api validation and display error message if siret is not valid', async () => {
       jest
@@ -226,7 +265,7 @@ describe('components | SiretOrCommentFields', () => {
       const errorMessage = await screen.findByText(
         'Le code SIRET saisi n’est pas valide'
       )
-      expect(errorMessage).toBeInTheDocument
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 })
