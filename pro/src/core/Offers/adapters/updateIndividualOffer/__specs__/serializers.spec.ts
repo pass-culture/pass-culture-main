@@ -20,7 +20,7 @@ describe('test updateIndividualOffer::serializers', () => {
     const apiFieldsMap: Record<string, string> = {
       venue: 'venueId',
     }
-    expect(serializeApiErrors(apiFieldsMap, apiErrors)).toEqual({
+    expect(serializeApiErrors(apiErrors, apiFieldsMap)).toEqual({
       name: 'wrong name',
       optIn: 'you must optin our mailing list!',
       venueId: 'wrong venue',

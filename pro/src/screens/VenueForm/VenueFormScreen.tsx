@@ -1,8 +1,10 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue, IVenueProviderApi } from 'core/Venue/types'
@@ -12,9 +14,6 @@ import {
   VenueForm,
 } from 'new_components/VenueForm'
 import { Title } from 'ui-kit'
-
-import { api } from '../../apiClient/api'
-import useCurrentUser from '../../components/hooks/useCurrentUser'
 
 import {
   serializeEditVenueBodyModel,
@@ -46,7 +45,6 @@ const VenueFormScreen = ({
   const history = useHistory()
   const notify = useNotification()
   const { currentUser } = useCurrentUser()
-  const formRef = useRef(null)
   const [isSiretValued, setIsSiretValued] = useState(true)
 
   const onSubmit = async (value: IVenueFormValues) => {
@@ -61,10 +59,10 @@ const VenueFormScreen = ({
 
     request
       .then(() => {
+        notify.success('Vos modifications ont bien été enregistrées')
         history.push(
           currentUser.isAdmin ? `/structures/${offerer.id}` : '/accueil'
         )
-        notify.success('Vos modifications ont bien été enregistrées')
       })
       .catch(error => {
         let formErrors
@@ -81,7 +79,7 @@ const VenueFormScreen = ({
           notify.error(
             'Une ou plusieurs erreurs sont présentes dans le formulaire'
           )
-          formik.setErrors(serializeApiErrors(apiFieldsMap, formErrors))
+          formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
           formik.setSubmitting(true)
         }
       })
@@ -109,12 +107,15 @@ const VenueFormScreen = ({
       </Title>
       {!isCreatingVenue && (
         <Title level={2} className={style['venue-form-heading']}>
-          {initialValues.publicName || initialValues.name}
+          {
+            /* istanbul ignore next: DEBT, TO FIX */
+            initialValues.publicName || initialValues.name
+          }
         </Title>
       )}
 
       <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} ref={formRef}>
+        <form onSubmit={formik.handleSubmit}>
           <VenueForm
             isCreatingVenue={isCreatingVenue}
             updateIsSiretValued={setIsSiretValued}
