@@ -1,19 +1,9 @@
-from typing import TYPE_CHECKING
-
 from pydantic import PositiveInt
 
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.routes.serialization import BaseModel
-
-
-if TYPE_CHECKING:
-    from typing import Type
-    from typing import TypeVar
-
-    # Create a generic variable that can be 'BaseVenueModel', or any subclass.
-    VenueModel = TypeVar("VenueModel", bound="BaseVenueModel")
 
 
 class GetRelativeVenuesQueryModel(BaseModel):
@@ -41,8 +31,9 @@ class VenueLabelModel(BaseModel):
         orm_mode = True
 
 
-class BaseVenueModel(BaseModel):
+class VenueModel(BaseModel):
     name: str
+    siret: str | None
     address: str | None
     latitude: float | None
     longitude: float | None
@@ -66,7 +57,7 @@ class BaseVenueModel(BaseModel):
     label: VenueLabelModel | None
 
     @classmethod
-    def from_orm(cls: "Type[VenueModel]", venue: Venue) -> "VenueModel":
+    def from_orm(cls, venue: Venue) -> "VenueModel":
         contact: VenueContact | None = venue.contact
 
         if venue.collectiveEmail:
@@ -99,20 +90,8 @@ class BaseVenueModel(BaseModel):
         orm_mode = True
 
 
-class VenueModelWithOptionalSiret(BaseVenueModel):
-    siret: str | None
-
-
-class VenueModelWithRequiredSiret(BaseVenueModel):
-    siret: str
-
-
-class GetVenuesBySiretResponseModel(BaseModel):
-    venues: list[VenueModelWithRequiredSiret]
-
-
-class GetVenuesWithOptionalSiretResponseModel(BaseModel):
-    venues: list[VenueModelWithOptionalSiret]
+class GetVenuesResponseModel(BaseModel):
+    venues: list[VenueModel]
 
 
 class GetAllVenuesQueryModel(BaseModel):
