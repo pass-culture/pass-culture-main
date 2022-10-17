@@ -325,12 +325,12 @@ def offerer_tags():
 def offerers_to_be_validated(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
-    no_tag = offerers_factories.OffererFactory(name="A", validationStatus="NEW", validationToken="1" + "0" * 26)
-    top = offerers_factories.OffererFactory(name="B", validationStatus="NEW", validationToken="2" + "0" * 26)
-    collec = offerers_factories.OffererFactory(name="C", validationStatus="NEW", validationToken="3" + "0" * 26)
-    public = offerers_factories.OffererFactory(name="D", validationStatus="NEW", validationToken="4" + "0" * 26)
-    top_collec = offerers_factories.OffererFactory(name="E", validationStatus="NEW", validationToken="5" + "0" * 26)
-    top_public = offerers_factories.OffererFactory(name="F", validationStatus="NEW", validationToken="6" + "0" * 26)
+    no_tag = offerers_factories.NotValidatedOffererFactory(name="A")
+    top = offerers_factories.NotValidatedOffererFactory(name="B")
+    collec = offerers_factories.NotValidatedOffererFactory(name="C")
+    public = offerers_factories.NotValidatedOffererFactory(name="D")
+    top_collec = offerers_factories.NotValidatedOffererFactory(name="E")
+    top_public = offerers_factories.NotValidatedOffererFactory(name="F")
 
     for offerer in (top, top_collec, top_public):
         offerers_factories.OffererTagMappingFactory(tagId=top_tag.id, offererId=offerer.id)

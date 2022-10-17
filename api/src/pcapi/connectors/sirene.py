@@ -120,6 +120,7 @@ class TestingBackend(BaseBackend):
         if siren == "000000000":
             raise UnknownEntityException()
 
+        # allows to get an offerer with a specific APE code using specific siren
         siren_ape = defaultdict(
             lambda: "90.03A",
             {
