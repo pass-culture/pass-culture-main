@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
 import sqlalchemy.exc
 
@@ -387,7 +386,6 @@ class CheckIsUsableTest:
         booking = factories.IndividualBookingFactory(stock__beginningDatetime=next_week, dateCreated=three_days_ago)
         validation.check_is_usable(booking)
 
-    @freeze_time("2020-10-15 09:00:00")
     def should_not_validate_when_event_booking_not_confirmed(self):
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
