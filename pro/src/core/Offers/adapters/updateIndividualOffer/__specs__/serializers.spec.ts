@@ -1,4 +1,4 @@
-import { serializeApiErrors } from 'apiClient/helpers'
+/* istanbul ignore file: DEBT, TO FIX */
 import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
@@ -11,21 +11,6 @@ import {
 } from '../serializers'
 
 describe('test updateIndividualOffer::serializers', () => {
-  it('test serializeApiErrors', () => {
-    const apiErrors = {
-      name: 'wrong name',
-      optIn: 'you must optin our mailing list!',
-      venue: 'wrong venue',
-    }
-    const apiFieldsMap: Record<string, string> = {
-      venue: 'venueId',
-    }
-    expect(serializeApiErrors(apiErrors, apiFieldsMap)).toEqual({
-      name: 'wrong name',
-      optIn: 'you must optin our mailing list!',
-      venueId: 'wrong venue',
-    })
-  })
   it('test serializeDurationMinutes', () => {
     expect(serializeDurationMinutes('2:15')).toEqual(135)
   })
@@ -135,11 +120,15 @@ describe('test updateIndividualOffer::serializers', () => {
         ...formValues,
         receiveNotificationEmails: false,
         durationMinutes: undefined,
+        externalTicketOfficeUrl: '',
+        url: '',
       }
       patchBody = {
         ...patchBody,
         bookingEmail: null,
         durationMinutes: null,
+        externalTicketOfficeUrl: null,
+        url: null,
       }
       expect(serializePatchOffer(formValues)).toEqual(patchBody)
     })

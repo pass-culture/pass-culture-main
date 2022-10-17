@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -74,6 +76,7 @@ export const setOfferValues = async values => {
     if (checkboxes.includes(field)) {
       await userEvent.click(input)
     } else if (offerTypeRadio.includes(field)) {
+      /* istanbul ignore next: DEBT, TO FIX */
       if (value) {
         await userEvent.click(input)
       } else {
@@ -81,7 +84,9 @@ export const setOfferValues = async values => {
       }
     } else if (input.type.includes('select')) {
       await userEvent.selectOptions(input, value)
+      /* istanbul ignore next: DEBT, TO FIX */
     } else if (field === 'durationMinutes') {
+      /* istanbul ignore next: DEBT, TO FIX */
       await userEvent.type(input, value)
     } else if (value === '') {
       await userEvent.clear(input)

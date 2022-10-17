@@ -29,7 +29,10 @@ const VenueProviderItem = ({
         )}
 
         <div className="provider-name-container">
-          {providerInfo?.name ?? provider.name}
+          {
+            /* istanbul ignore next: DEBT, TO FIX */
+            providerInfo?.name ?? provider.name
+          }
         </div>
 
         {!lastSyncDate ? (

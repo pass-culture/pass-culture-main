@@ -51,6 +51,7 @@ const getActiveStepFromLocation = location => {
     urlMatch = location.pathname.match(/\/[a-z]+\/brouillon$/)
     stepName = urlMatch && urlMatch[0].split('/individuel/')[1]
   }
+  /* istanbul ignore next: DEBT, TO FIX */
   return stepName ? mapPathToStep[stepName] : null
 }
 
@@ -63,6 +64,7 @@ const OfferLayout = () => {
   const [offer, setOffer] = useState(null)
 
   const loadOffer = async offerId => {
+    /* istanbul ignore next: DEBT, TO FIX */
     try {
       const existingOffer = await api.getOffer(offerId)
       setOffer(existingOffer)
@@ -74,6 +76,7 @@ const OfferLayout = () => {
   const activeStep = getActiveStepFromLocation(location)
 
   const reloadOffer = useCallback(
+    /* istanbul ignore next: DEBT, TO FIX */
     async () => (offer.id ? await loadOffer(offer.id) : false),
     [offer?.id]
   )
@@ -92,10 +95,14 @@ const OfferLayout = () => {
   }
 
   if (isCompletingDraft) pageTitle = "Compléter l'offre"
-  else if (!isCreatingOffer)
-    if (activeStep in editPageTitleByStep)
+  else if (!isCreatingOffer) {
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (activeStep in editPageTitleByStep) {
       pageTitle = editPageTitleByStep[activeStep]
-    else pageTitle = "Éditer l'offre"
+    } else {
+      pageTitle = "Éditer l'offre"
+    }
+  }
 
   const offerHeader =
     !isCreatingOffer &&

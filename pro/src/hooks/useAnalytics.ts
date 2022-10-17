@@ -1,3 +1,4 @@
+/* istanbul ignore file: DEBT, TO FIX */
 import {
   getAnalytics,
   initializeAnalytics,

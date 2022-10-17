@@ -58,6 +58,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
   const history = useHistory()
   const location = useLocation()
   const notification = useNotification()
+  /* istanbul ignore next: DEBT, TO FIX */
   const summaryStepUrl = isOfferDraft
     ? isCompletingDraft
       ? `/offre/${offer.id}/individuel/brouillon/recapitulatif`
@@ -175,6 +176,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     return !hasErrors
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const onCancelClick = () => {
     if (isOfferDraft) return
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -222,10 +224,12 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
             const queryParams = queryParamsFromOfferer(location)
             let queryString = ''
 
+            /* istanbul ignore next: DEBT, TO FIX */
             if (queryParams.structure !== '') {
               queryString = `?structure=${queryParams.structure}`
             }
 
+            /* istanbul ignore next: DEBT, TO FIX */
             if (queryParams.lieu !== '') {
               queryString += `&lieu=${queryParams.lieu}`
             }
@@ -278,9 +282,11 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     return null
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const hasNoStock = stocks.length === 0
   const hasAtLeastOneStock = stocks.length > 0
+  /* istanbul ignore next: DEBT, TO FIX */
   const cancelUrl = isOfferDraft
     ? isCompletingDraft
       ? `/offre/${offerId}/individuel/brouillon`

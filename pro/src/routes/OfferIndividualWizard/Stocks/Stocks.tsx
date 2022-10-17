@@ -12,6 +12,8 @@ const Stocks = (): JSX.Element | null => {
   const { offer } = useOfferIndividualContext()
   const navigate = useNavigate()
 
+  // if we've no offer, we are redirect from parent route.
+  /* istanbul ignore next: DEBT, TO FIX */
   if (offer === null) {
     navigate('/offer/creation/individuelle/informations')
     return null

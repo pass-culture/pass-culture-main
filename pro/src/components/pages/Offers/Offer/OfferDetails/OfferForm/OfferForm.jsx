@@ -1,3 +1,4 @@
+/* istanbul ignore file: DEBT, TO FIX */
 import cn from 'classnames'
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
@@ -204,6 +205,7 @@ const OfferForm = ({
     ) {
       mandatoryFields.push('withdrawalType')
 
+      /* istanbul ignore next: DEBT, TO FIX */
       if (
         formValues.withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE ||
         formValues.withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL
@@ -491,6 +493,7 @@ const OfferForm = ({
         'Veuillez renseigner une URL valide. Ex : https://exemple.com'
     }
 
+    /* istanbul ignore next: DEBT, TO FIX */
     if (
       WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
         formValues.subcategoryId

@@ -22,3 +22,4 @@ export const buildInitialValues = (
     price: offer.stocks[0].price.toString(),
   }
 }
+export default buildInitialValues

@@ -28,6 +28,7 @@ const VenueProvidersManager = ({ venue }) => {
 
   const afterVenueProviderEdit = ({ editedVenueProvider }) => {
     const newVenueProviders = venueProviders.map(venueProvider =>
+      /* istanbul ignore next: DEBT, TO FIX */
       venueProvider.id === editedVenueProvider.id
         ? editedVenueProvider
         : venueProvider
