@@ -6,6 +6,7 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -28,6 +29,8 @@ const ThumbCell = ({
       to: OfferBreadcrumbStep.SUMMARY,
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
       isEdition: true,
+      isOfferDraft: offer.status === OFFER_STATUS_DRAFT,
+      offerId: offer.id,
     })
   }
 

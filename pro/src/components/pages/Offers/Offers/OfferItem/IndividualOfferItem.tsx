@@ -51,15 +51,16 @@ const IndividualOfferItem = ({
       <OfferVenueCell venue={venue} />
       <OfferRemainingStockCell stocks={offer.stocks} />
       <OfferStatusCell status={offer.status} />
-      {offer.status == OFFER_STATUS_DRAFT ? (
+      {offer.status === OFFER_STATUS_DRAFT ? (
         <DeleteDraftCell offer={offer} refreshOffers={refreshOffers} />
       ) : (
-        <EditStocksCell editionStockLink={editionStockLink} />
+        <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
       )}
 
       <EditOfferCell
         isOfferEditable={isOfferEditable}
         editionOfferLink={editionOfferLink}
+        offer={offer}
       />
     </>
   )

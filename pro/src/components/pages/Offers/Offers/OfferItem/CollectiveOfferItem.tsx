@@ -59,9 +59,10 @@ const CollectiveOfferItem = ({
           templateOfferId={offer.id}
         />
       ) : (
-        <EditStocksCell editionStockLink={editionStockLink} />
+        <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
       )}
       <EditOfferCell
+        offer={offer}
         isOfferEditable={isOfferEditable}
         editionOfferLink={editionOfferLink}
       />
