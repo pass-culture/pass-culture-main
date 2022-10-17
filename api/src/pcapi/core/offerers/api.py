@@ -407,7 +407,7 @@ def _auto_tag_new_offerer(offerer: offerers_models.Offerer, siren_info: sirene.S
             db.session.add(mapping)
             db.session.commit()
         else:
-            logger.warning(
+            logger.error(
                 "Could not assign tag to offerer: tag not found in DB",
                 extra={"offerer": offerer.id, "tag": tag_label},
             )
@@ -417,7 +417,7 @@ def create_offerer(
     user: users_models.User, offerer_informations: offerers_serialize.CreateOffererQueryModel
 ) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
-    new = False
+    is_new = False
 
     if offerer is not None:
         user_offerer = grant_user_offerer_access(offerer, user)
@@ -446,16 +446,14 @@ def create_offerer(
                 ),
             ]
         repository.save(*objects_to_save)
+
     else:
-        new = True
+        is_new = True
         offerer = models.Offerer()
         _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
-        action = history_api.log_action(
-            history_models.ActionType.OFFERER_NEW, user, user=user, offerer=offerer, save=False
-        )
-        repository.save(offerer, digital_venue, user_offerer, action)
+        repository.save(offerer, digital_venue, user_offerer)
 
     assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
     try:
@@ -464,8 +462,13 @@ def create_offerer(
         logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
         siren_info = None
 
-    if new and siren_info:
-        _auto_tag_new_offerer(offerer, siren_info)
+    if is_new:
+        extra_data = {}
+        if siren_info:
+            _auto_tag_new_offerer(offerer, siren_info)
+            extra_data = {"sirene_info": dict(siren_info)}
+
+        history_api.log_action(history_models.ActionType.OFFERER_NEW, user, user=user, offerer=offerer, **extra_data)  # type: ignore[arg-type]
 
     if not admin_emails.maybe_send_offerer_validation_email(offerer, user_offerer, siren_info):
         logger.warning(

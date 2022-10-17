@@ -1418,12 +1418,7 @@ class ListOfferersToBeValidatedTest:
         (
             (["Top acteur"], ["B", "E", "F"]),
             (["Collectivité"], ["C", "E"]),
-            (
-                [
-                    "Établissement public",
-                ],
-                ["D", "F"],
-            ),
+            (["Établissement public"], ["D", "F"]),
             (["Établissement public", "Top acteur"], ["F"]),
         ),
     )
