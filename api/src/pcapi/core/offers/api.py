@@ -352,6 +352,19 @@ def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]
         "Batch update of offers",
         extra={"updated_fields": update_fields, "nb_offers": len(offer_ids), "venue_ids": venue_ids},
     )
+    if "isActive" in update_fields.keys():
+        if update_fields["isActive"]:
+            logger.info(
+                "Offers has been activated",
+                extra={"offer_ids": offer_ids, "venue_id": venue_ids},
+                technical_message_id="offers.activated",
+            )
+        else:
+            logger.info(
+                "Offers has been deactivated",
+                extra={"offer_ids": offer_ids, "venue_id": venue_ids},
+                technical_message_id="offers.deactivated",
+            )
 
     number_of_offers_to_update = len(offer_ids)
     batch_size = 1000
@@ -615,6 +628,11 @@ def publish_offer(offer_id: int, user: User) -> Offer:
     offer.isActive = True
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
+    logger.info(  # type: ignore [call-arg]
+        "Offer has been published",
+        extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+        technical_message_id="offer.published",
+    )
     return offer
 
 
@@ -967,7 +985,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
     elif isinstance(offer, educational_models.CollectiveOfferTemplate):
         search.async_index_collective_offer_template_ids([offer.id])
     template = f"{type(offer)} validation status updated"
-    logger.info(template, extra={"offer": offer.id})
+    logger.info(template, extra={"offer": offer.id}, technical_message_id="offers.validation_updated")  # type: ignore [call-arg]
     return True
 
 
