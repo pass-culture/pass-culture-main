@@ -50,11 +50,14 @@ const VenueFormScreen = ({
   const onSubmit = async (value: IVenueFormValues) => {
     const request = isCreatingVenue
       ? api.postCreateVenue(
-          serializePostVenueBodyModel(value, isSiretValued, offerer.id)
+          serializePostVenueBodyModel(value, {
+            hideSiret: !isSiretValued,
+            offererId: offerer.id,
+          })
         )
       : api.editVenue(
           venue?.id || '',
-          serializeEditVenueBodyModel(value, venueLabels, !venue?.comment)
+          serializeEditVenueBodyModel(value, { hideSiret: !venue?.comment })
         )
 
     request

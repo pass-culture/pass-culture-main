@@ -125,8 +125,7 @@ const formValues: IVenueFormValues = {
 
 describe('screen | VenueForm', () => {
   describe('Navigation', () => {
-    it('Submit creation form as admin', async () => {
-      // Given
+    it('administrators should be redirected to the list of structures after creating a venue', async () => {
       const { history } = renderForm(
         {
           id: 'EY',
@@ -137,23 +136,16 @@ describe('screen | VenueForm', () => {
         true,
         undefined
       )
-      const postCreateVenue = jest
-        .spyOn(api, 'postCreateVenue')
-        .mockResolvedValue({ id: '56' })
+      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
 
-      // When
       await userEvent.click(screen.getByText('Valider'))
-
-      // Then
-      expect(postCreateVenue).toHaveBeenCalled()
 
       await waitFor(() => {
         expect(history.location.pathname).toBe('/structures/AE')
       })
     })
 
-    it('Submit creation form as non admin', async () => {
-      // Given
+    it('non administrators should be redirected to home page after creating a venue', async () => {
       const { history } = renderForm(
         {
           id: 'EY',
@@ -164,15 +156,10 @@ describe('screen | VenueForm', () => {
         true,
         undefined
       )
-      const postCreateVenue = jest
-        .spyOn(api, 'postCreateVenue')
-        .mockResolvedValue({ id: '56' })
 
-      // When
+      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
+
       await userEvent.click(screen.getByText('Valider'))
-
-      // Then
-      expect(postCreateVenue).toHaveBeenCalled()
 
       await waitFor(() => {
         expect(history.location.pathname).toBe('/accueil')
@@ -180,9 +167,8 @@ describe('screen | VenueForm', () => {
     })
   })
 
-  describe('Validation', () => {
-    it('Submit creation form that fails with explicit error', async () => {
-      // Given
+  describe('Errors displaying', () => {
+    it('should display an error when the venue could not be created', async () => {
       renderForm(
         {
           id: 'EY',
@@ -194,44 +180,7 @@ describe('screen | VenueForm', () => {
         undefined
       )
 
-      const postCreateVenue = jest
-        .spyOn(api, 'postCreateVenue')
-        .mockRejectedValue(
-          new ApiError(
-            {} as ApiRequestOptions,
-            {
-              body: {
-                siret: ['ensure this value has at least 14 characters'],
-              },
-            } as ApiResult,
-            ''
-          )
-        )
-
-      // When
-      await userEvent.click(screen.getByText('Valider'))
-
-      // Then
-      expect(postCreateVenue).toHaveBeenCalled()
-      expect(
-        screen.getByText('ensure this value has at least 14 characters')
-      ).toBeInTheDocument()
-    })
-
-    it('Submit update form', async () => {
-      // Given
-      renderForm(
-        {
-          id: 'EY',
-          isAdmin: true,
-          publicName: 'USER',
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        undefined
-      )
-
-      const editVenue = jest.spyOn(api, 'editVenue').mockRejectedValue(
+      jest.spyOn(api, 'postCreateVenue').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -243,18 +192,45 @@ describe('screen | VenueForm', () => {
         )
       )
 
-      // When
       await userEvent.click(screen.getByText('Valider'))
 
-      // Then
-      expect(editVenue).toHaveBeenCalled()
+      expect(
+        screen.getByText('ensure this value has at least 14 characters')
+      ).toBeInTheDocument()
+    })
+
+    it('should display an error when the venue could not be updated', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: true,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        undefined
+      )
+
+      jest.spyOn(api, 'editVenue').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            body: {
+              siret: ['ensure this value has at least 14 characters'],
+            },
+          } as ApiResult,
+          ''
+        )
+      )
+
+      await userEvent.click(screen.getByText('Valider'))
+
       expect(
         screen.getByText('ensure this value has at least 14 characters')
       ).toBeInTheDocument()
     })
 
     it('Submit creation form that fails with unknown error', async () => {
-      // Given
       renderForm(
         {
           id: 'EY',
@@ -266,15 +242,10 @@ describe('screen | VenueForm', () => {
         undefined
       )
 
-      const postCreateVenue = jest
-        .spyOn(api, 'postCreateVenue')
-        .mockRejectedValue({})
+      jest.spyOn(api, 'postCreateVenue').mockRejectedValue({})
 
-      // When
       await userEvent.click(screen.getByText('Valider'))
 
-      // Then
-      expect(postCreateVenue).toHaveBeenCalled()
       await waitFor(() => {
         expect(
           screen.getByText('Erreur inconnue lors de la sauvegarde du lieu.')
