@@ -10,6 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { NOTIFICATIONS_LABEL } from '../../constants/labels'
 
 import EmailInputRow from './EmailInputRow/EmailInputRow'
+import styles from './FormNotifications.module.scss'
 
 const FormNotifications = ({
   disableForm,
@@ -56,6 +57,7 @@ const FormNotifications = ({
                 Icon={PlusCircleIcon}
                 onClick={() => push('')}
                 disabled={values.notificationEmails.length >= 5}
+                className={styles['add-notification-button']}
               >
                 Ajouter un e-mail de notification
               </Button>

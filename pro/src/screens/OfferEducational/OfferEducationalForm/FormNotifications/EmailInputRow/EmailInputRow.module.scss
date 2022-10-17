@@ -1,14 +1,21 @@
 @use 'styles/mixins/_rem.scss' as rem;
 @use 'styles/variables/_colors.scss' as colors;
 
-.notification-mail-input {
-  width: 90%;
+.notification-mail {
+  position: relative;
+  &-input {
+    width: 90%;
+  }
 }
 
-.trash-icon {
-  height: rem.torem(24px);
-  width: rem.torem(24px);
+.trash {
+  position: absolute;
+  // Center icon on input : label height (20px) + label margin(8px) + (input height(40px) - icon size(20px))/2
+  top: rem.torem(38px);
+  right: rem.torem(4px);
   &:hover {
-    fill: colors.$primary;
+    svg {
+      fill: colors.$primary;
+    }
   }
 }
