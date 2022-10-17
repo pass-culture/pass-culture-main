@@ -5,6 +5,8 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import { OFFER_STATUS_DRAFT } from 'core/Offers'
+import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as PenIcon } from 'icons/ico-pen.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -16,9 +18,11 @@ import styles from '../../OfferItem.module.scss'
 const EditOfferCell = ({
   isOfferEditable,
   editionOfferLink,
+  offer,
 }: {
   isOfferEditable: boolean
   editionOfferLink: string
+  offer: Offer
 }) => {
   const { logEvent } = useAnalytics()
   return (
@@ -32,6 +36,8 @@ const EditOfferCell = ({
               to: OfferBreadcrumbStep.SUMMARY,
               used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_PEN,
               isEdition: true,
+              isOfferDraft: offer.status === OFFER_STATUS_DRAFT,
+              offerId: offer.id,
             })
           }
           link={{ isExternal: false, to: editionOfferLink }}

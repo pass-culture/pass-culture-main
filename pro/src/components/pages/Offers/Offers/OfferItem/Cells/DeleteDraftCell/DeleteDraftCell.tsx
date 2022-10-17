@@ -1,12 +1,18 @@
 import React, { useCallback, useState } from 'react'
 
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { Button } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { IconPositionEnum, ButtonVariant } from 'ui-kit/Button/types'
 
 import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'
 import styles from '../../OfferItem.module.scss'
@@ -18,8 +24,10 @@ interface IDeleteDraftOffers {
 
 const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const { logEvent } = useAnalytics()
   const notification = useNotification()
   const closeDeleteDraftDialog = useCallback(() => {
+    /* istanbul ignore next */
     setIsConfirmDialogOpen(false)
   }, [])
 
@@ -32,6 +40,11 @@ const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
       notification.error(message)
     } else {
       notification.success(message)
+      logEvent?.(Events.DELETE_DRAFT_OFFER, {
+        from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
+        offerId: offer.id,
+      })
       refreshOffers()
     }
 

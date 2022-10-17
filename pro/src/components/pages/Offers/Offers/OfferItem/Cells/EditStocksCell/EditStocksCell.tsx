@@ -5,6 +5,7 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -13,7 +14,13 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from '../../OfferItem.module.scss'
 
-const EditStocksCell = ({ editionStockLink }: { editionStockLink: string }) => {
+const EditStocksCell = ({
+  editionStockLink,
+  offer,
+}: {
+  editionStockLink: string
+  offer: Offer
+}) => {
   const { logEvent } = useAnalytics()
 
   return (
@@ -26,6 +33,7 @@ const EditStocksCell = ({ editionStockLink }: { editionStockLink: string }) => {
             to: OfferBreadcrumbStep.STOCKS,
             used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
             isEdition: true,
+            offerId: offer.id,
           })
         }
         link={{ isExternal: false, to: editionStockLink }}

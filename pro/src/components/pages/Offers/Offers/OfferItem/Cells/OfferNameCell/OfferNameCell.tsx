@@ -6,7 +6,7 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_SOLD_OUT } from 'core/Offers'
+import { OFFER_STATUS_DRAFT, OFFER_STATUS_SOLD_OUT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
@@ -32,6 +32,8 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
       to: OfferBreadcrumbStep.SUMMARY,
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
       isEdition: true,
+      isOfferDraft: offer.status === OFFER_STATUS_DRAFT,
+      offerId: offer.id,
     })
   }
 
