@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
 import { Events } from 'core/FirebaseEvents/constants'
+import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -16,6 +17,15 @@ import { configureTestStore } from 'store/testUtils'
 import OfferItem, { OfferItemProps } from '../OfferItem'
 
 const mockLogEvent = jest.fn()
+jest.mock('apiClient/api', () => ({
+  api: {
+    deleteDraftOffers: jest.fn().mockResolvedValue({
+      isOk: true,
+      message: 'youpi draft deleted !',
+      payload: null,
+    }),
+  },
+}))
 
 const renderOfferItem = (props: OfferItemProps, store: Store) => {
   return render(
@@ -87,8 +97,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           isEdition: true,
+          isOfferDraft: false,
           to: 'recapitulatif',
           used: 'OffersThumb',
+          offerId: 'M4',
         }
       )
     })
@@ -108,6 +120,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           isEdition: true,
           to: 'stocks',
           used: 'OffersStocks',
+          offerId: 'M4',
         }
       )
     })
@@ -116,8 +129,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
       // when
       renderOfferItem(props, store)
       // then
-      const editLink = screen.getByRole('link', { name: 'Stocks' })
-      await userEvent.click(editLink)
+      const editLink = screen.getAllByRole('link')
+      await userEvent.click(editLink[3])
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -125,8 +138,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           isEdition: true,
-          to: 'stocks',
-          used: 'OffersStocks',
+          isOfferDraft: false,
+          to: 'recapitulatif',
+          used: 'OffersPen',
+          offerId: 'M4',
         }
       )
     })
@@ -148,9 +163,64 @@ describe('src | components | pages | Offers | OfferItem', () => {
       {
         from: 'Offers',
         isEdition: true,
+        isOfferDraft: false,
         to: 'recapitulatif',
         used: 'OffersTitle',
+        offerId: 'M4',
       }
     )
+  })
+
+  describe('draft offers', () => {
+    it('should track with draft informations', async () => {
+      // when
+      props.offer.status = OFFER_STATUS_DRAFT
+      renderOfferItem(props, store)
+
+      // then
+      const offerTitle = screen.getByText(props.offer.name as string, {
+        selector: 'a',
+      })
+      await userEvent.click(offerTitle)
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'Offers',
+          isEdition: true,
+          isOfferDraft: true,
+          to: 'recapitulatif',
+          used: 'OffersTitle',
+          offerId: 'M4',
+        }
+      )
+    })
+
+    it('should track with draft informations', async () => {
+      // when
+      props.offer.status = OFFER_STATUS_DRAFT
+      renderOfferItem(props, store)
+
+      // then
+      const deleteDraftOfferButton = screen.getByRole('button', {
+        name: 'Supprimer le brouillon',
+      })
+      await userEvent.click(deleteDraftOfferButton)
+      const confirmDeleteButton = screen.getByRole('button', {
+        name: 'Supprimer ce brouillon',
+      })
+      await userEvent.click(confirmDeleteButton)
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.DELETE_DRAFT_OFFER,
+        {
+          from: 'Offers',
+          used: 'OffersTrashicon',
+          offerId: 'M4',
+        }
+      )
+    })
   })
 })

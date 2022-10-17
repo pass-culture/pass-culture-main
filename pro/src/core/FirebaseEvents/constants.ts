@@ -44,6 +44,7 @@ export enum Events {
   SIGNUP_FORM_SUCCESS = 'signupFormSuccess',
   TUTO_PAGE_VIEW = 'tutoPageView',
   UTM_TRACKING_CAMPAIGN = 'UtmTrackingCampaign',
+  DELETE_DRAFT_OFFER = 'DeleteDraftOffer',
 }
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
@@ -66,6 +67,7 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   CONFIRMATION_BUTTON_NEW_OFFER = 'ConfirmationButtonNewOffer',
   CONFIRMATION_BUTTON_OFFER_LIST = 'ConfirmationButtonOfferList',
   DETAILS_PREVIEW = 'DetailsPreview',
+  OFFERS_TRASH_ICON = 'OffersTrashicon',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
