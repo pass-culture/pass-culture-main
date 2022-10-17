@@ -17,7 +17,7 @@ export interface IStockThingSectionProps {
   bookingLimitDatetime: string | null
 }
 
-interface IStockThingSummarySection extends IStockThingSectionProps {
+export interface IStockThingSummarySection extends IStockThingSectionProps {
   isCreation: boolean
   offerId: string
 }

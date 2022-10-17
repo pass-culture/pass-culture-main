@@ -1,3 +1,6 @@
+// it's not realy usefull to check that history is called.
+// This will hook be removed on react-router-v6 migration
+/* istanbul ignore file */
 import { useHistory } from 'react-router'
 
 interface INaviateFunction {

@@ -4,7 +4,7 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import { getProviderInfo } from 'core/Providers/utils'
 
-interface ISynchronizedProviderInformation {
+export interface ISynchronizedProviderInformation {
   providerName: string
 }
 
@@ -16,7 +16,10 @@ const SynchronizedProviderInformation = ({
   if (providerInfo === undefined) return null
 
   return (
-    <div className="provider-information">
+    <div
+      className="provider-information"
+      data-testid="synchronized-provider-information"
+    >
       <Icon alt={providerInfo.name} svg={providerInfo.icon} />
       {providerInfo.synchronizedOfferMessage}
     </div>

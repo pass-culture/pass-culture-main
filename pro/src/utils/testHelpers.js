@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import omit from 'lodash.omit'
 
 export const queryCallbacks = {

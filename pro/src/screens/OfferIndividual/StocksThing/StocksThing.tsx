@@ -23,7 +23,7 @@ import { ActionBar } from '../ActionBar'
 
 import { upsertStocksThingAdapter } from './adapters'
 
-interface IStocksThingProps {
+export interface IStocksThingProps {
   offer: IOfferIndividual
 }
 
@@ -53,6 +53,9 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   }
 
   let minQuantity = null
+  // validation is test in getValidationSchema
+  // and it's not possible as is to test it here
+  /* istanbul ignore next: DEBT, TO FIX */
   if (offer.stocks.length > 0) {
     minQuantity = offer.stocks[0].bookingsQuantity
   }
