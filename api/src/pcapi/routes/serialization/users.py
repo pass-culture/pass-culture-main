@@ -15,7 +15,6 @@ from pcapi.domain.password import check_password_strength
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
-from pcapi.serialization.utils import validate_phone_number_format
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email
@@ -106,8 +105,6 @@ class ProUserCreationBodyModel(BaseModel):
     @validator("contact_ok", pre=True, always=True)
     def cast_contact_ok_to_bool(cls, contact_ok: bool | None) -> bool:
         return bool(contact_ok)
-
-    _validate_phone_number_format = validate_phone_number_format("phone_number")
 
     class Config:
         alias_generator = to_camel

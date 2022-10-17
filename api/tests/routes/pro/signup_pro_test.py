@@ -8,8 +8,6 @@ from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
 
-from tests.conftest import TestClient
-
 
 BASE_DATA_PRO = {
     "email": "toto_pro@example.com",
@@ -29,12 +27,12 @@ BASE_DATA_PRO = {
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    def test_when_user_data_is_valid(self, app):
+    def test_when_user_data_is_valid(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 204
@@ -72,13 +70,13 @@ class Returns204Test:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == offerer
 
-    def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, app):
+    def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, client):
         # Given
         data_pro = BASE_DATA_PRO.copy()
         data_pro["contactOk"] = "true"
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data_pro)
+        response = client.post("/users/signup/pro", json=data_pro)
 
         # Then
         assert response.status_code == 204
@@ -97,7 +95,7 @@ class Returns204Test:
         assert user_offerer is not None
         assert user_offerer.validationToken is None
 
-    def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, app):
+    def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, client):
         # Given
         offerer = offerers_factories.OffererFactory(siren="349974931", validationToken="not_validated")
         pro = ProFactory(email="bobby@test.com", publicName="bobby")
@@ -106,7 +104,7 @@ class Returns204Test:
         data = BASE_DATA_PRO.copy()
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 204
@@ -119,14 +117,14 @@ class Returns204Test:
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
 
-    def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, app):
+    def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, client):
         # Given
         offerers_factories.OffererFactory(siren="349974931")
 
         data = BASE_DATA_PRO.copy()
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 204
@@ -139,21 +137,21 @@ class Returns204Test:
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
 
-    def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, app):
+    def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, client):
         # Given
         offerers_factories.OffererFactory(siren="349974931")
 
         data = BASE_DATA_PRO.copy()
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 204
         user = User.query.filter_by(email="toto_pro@example.com").first()
         assert user.needsToFillCulturalSurvey == False
 
-    def test_when_offerer_was_previously_rejected(self, app):
+    def test_when_offerer_was_previously_rejected(self, client):
         # Given
         offerers_factories.OffererFactory(
             name="Rejected Offerer",
@@ -164,7 +162,7 @@ class Returns204Test:
         data = BASE_DATA_PRO.copy()
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 204
@@ -189,91 +187,91 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_when_email_is_missing(self, app):
+    def test_when_email_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["email"]
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "email" in error
 
-    def test_when_email_is_invalid(self, app):
+    def test_when_email_is_invalid(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         data["email"] = "toto"
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "email" in error
 
-    def test_when_email_is_already_used(self, app):
+    def test_when_email_is_already_used(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
-        TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        client.post("/users/signup/pro", json=data)
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "email" in error
 
-    def test_when_public_name_is_missing(self, app):
+    def test_when_public_name_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["publicName"]
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "publicName" in error
 
-    def test_when_public_name_is_too_long(self, app):
+    def test_when_public_name_is_too_long(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         data["publicName"] = "x" * 300
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "publicName" in error
 
-    def test_when_password_is_missing(self, app):
+    def test_when_password_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["password"]
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "password" in error
 
-    def test_when_password_is_invalid(self, app):
+    def test_when_password_is_invalid(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         data["password"] = "weakpassword"
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
@@ -286,59 +284,59 @@ class Returns400Test:
             "- Un caractère spécial"
         ]
 
-    def test_when_offerer_name_is_missing(self, app):
+    def test_when_offerer_name_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["name"]
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "name" in error
 
-    def test_when_offerer_city_is_missing(self, app):
+    def test_when_offerer_city_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["city"]
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "city" in error
 
-    def test_when_postal_code_is_missing(self, app):
+    def test_when_postal_code_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         del data["postalCode"]
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "postalCode" in error
 
-    def test_when_invalid_postal_code(self, app):
+    def test_when_invalid_postal_code(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         data["postalCode"] = "111"
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "postalCode" in error
 
-    def test_when_extra_data_is_given(self, app):
+    def test_when_extra_data_is_given(self, client):
         # Given
         user_json = {
             "email": "toto_pro@example.com",
@@ -357,35 +355,37 @@ class Returns400Test:
         }
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=user_json)
+        response = client.post("/users/signup/pro", json=user_json)
 
         # Then
         assert response.status_code == 400
         created_user = User.query.filter_by(email="toto_pro@example.com").first()
         assert created_user is None
 
-    def test_when_bad_format_phone_number(self, app):
+    def test_when_bad_format_phone_number(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         data["phoneNumber"] = "abc 123"
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "phoneNumber" in error
+        assert "Le numéro de téléphone est invalide" in error["phoneNumber"]
 
-    def test_when_invalid_phone_number(self, app):
+    def test_when_invalid_phone_number(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
         data["phoneNumber"] = "0873492896"
 
         # When
-        response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+        response = client.post("/users/signup/pro", json=data)
 
         # Then
         assert response.status_code == 400
         error = response.json
         assert "phoneNumber" in error
+        assert "Le numéro de téléphone est invalide" in error["phoneNumber"]

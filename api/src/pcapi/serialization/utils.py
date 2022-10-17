@@ -1,4 +1,3 @@
-import re
 from typing import Any
 from typing import Callable
 
@@ -86,14 +85,6 @@ def check_string_is_not_empty(string: str) -> str:
     return string
 
 
-def check_phone_number_format(string: str) -> str:
-    spaceless_string = string.replace(" ", "")
-    if not re.match(r"^0\d{9}$", spaceless_string):
-        raise ValueError("Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06")
-
-    return spaceless_string
-
-
 # No functools.partial here as it has no __name__ and threfore is not compatible with pydantic
 def check_string_length_wrapper(length: int) -> Callable:
     def check_string_length(string: str) -> str:
@@ -125,10 +116,6 @@ def dehumanize_list_field(field_name: str) -> classmethod:
 
 def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
-
-
-def validate_phone_number_format(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(check_phone_number_format)
 
 
 def string_to_boolean_field(field_name: str) -> classmethod:
