@@ -9,7 +9,7 @@ import { OfferStatus } from 'apiClient/v1'
 import CollectiveOfferConfirmation from '../CollectiveOfferConfirmation'
 
 // TO REMOVE WHEN WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE IS REMOVED
-jest.mock('components/hooks/useActiveFeature', () => ({
+jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(true),
 }))
