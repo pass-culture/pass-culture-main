@@ -2305,7 +2305,6 @@ class SoonExpiringBookingsTest:
             list(booking_repository.get_soon_expiring_bookings(remaining_days))
 
 
-@freeze_time("2020-10-15 09:00:00")
 class GetTomorrowEventOfferTest:
     def test_find_tomorrow_event_offer(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
