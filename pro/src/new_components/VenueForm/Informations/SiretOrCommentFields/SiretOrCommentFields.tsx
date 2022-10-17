@@ -32,6 +32,8 @@ const SiretOrCommentFields = ({
 
   const { setFieldValue, values, errors, touched } =
     useFormikContext<IVenueFormValues>()
+
+  /* istanbul ignore next: DEBT, TO FIX */
   const handleToggleClick = () => {
     if (isSiretSelected) {
       setIsFieldNameFrozen(false)
@@ -43,6 +45,7 @@ const SiretOrCommentFields = ({
   const formatSiret = async (siret: string): Promise<void> => {
     // remove character when when it's not a number
     // this way we're sure that this field only accept number
+    /* istanbul ignore next: DEBT, TO FIX */
     if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
       setFieldValue('siret', humanizeSiret(siret))
     }
@@ -79,7 +82,7 @@ const SiretOrCommentFields = ({
         <TextInput
           name="siret"
           label={siretLabel}
-          readOnly={readOnly}
+          disabled={readOnly}
           type="text"
           onChange={e => formatSiret(e.target.value)}
         />
