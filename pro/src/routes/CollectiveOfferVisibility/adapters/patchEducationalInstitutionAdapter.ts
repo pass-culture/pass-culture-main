@@ -5,20 +5,18 @@ export type PatchEducationalInstitutionAdapter = Adapter<
   {
     offerId: string
     institutionId: string | null
-    isCreatingOffer: boolean
   },
   CollectiveOffer,
   null
 >
 
 export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdapter =
-  async ({ offerId, institutionId, isCreatingOffer }) => {
+  async ({ offerId, institutionId }) => {
     try {
       const collectiveOffer =
         await api.patchCollectiveOffersEducationalInstitution(offerId, {
           // @ts-expect-error string is not assignable to type number
           educationalInstitutionId: institutionId,
-          isCreatingOffer,
         })
 
       return {

@@ -60,7 +60,6 @@ const CollectiveOfferVisibility = ({
     const result = await patchInstitution({
       offerId,
       institutionId: values.visibility === 'all' ? null : values.institution,
-      isCreatingOffer: mode === Mode.CREATION,
     })
 
     if (!result.isOk) {
