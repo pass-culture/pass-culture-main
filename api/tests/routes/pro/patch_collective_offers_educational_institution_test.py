@@ -26,7 +26,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution.id, "isCreatingOffer": True}
+        data = {"educationalInstitutionId": institution.id}
         response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
 
         # Then
@@ -48,7 +48,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution2.id, "isCreatingOffer": False}
+        data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
 
         # Then
@@ -65,32 +65,13 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": None, "isCreatingOffer": False}
+        data = {"educationalInstitutionId": None}
         response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 200
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
-
-        assert len(adage_api_testing.adage_requests) == 0
-
-    def test_add_institution_link_on_pending_offer(self, client: Any) -> None:
-        # Given
-        institution = EducationalInstitutionFactory()
-        stock = CollectiveStockFactory(collectiveOffer__validation="PENDING")
-        offer = stock.collectiveOffer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
-
-        # When
-        client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution.id, "isCreatingOffer": True}
-        response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
-
-        # Then
-        assert response.status_code == 200
-        offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution == institution
 
         assert len(adage_api_testing.adage_requests) == 0
 
@@ -107,7 +88,7 @@ class Returns404Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution.id, "isCreatingOffer": False}
+        data = {"educationalInstitutionId": institution.id}
         response = client.patch("/collective/offers/0/educational_institution", json=data)
 
         # Then
@@ -123,7 +104,7 @@ class Returns404Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": 0, "isCreatingOffer": False}
+        data = {"educationalInstitutionId": 0}
         response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
 
         # Then
@@ -147,7 +128,7 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution2.id, "isCreatingOffer": False}
+        data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
 
         # Then
@@ -167,7 +148,7 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution2.id, "isCreatingOffer": False}
+        data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
 
         # Then
@@ -187,10 +168,29 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"educationalInstitutionId": institution2.id, "isCreatingOffer": False}
+        data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
 
         # Then
         assert response.status_code == 403
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
+
+    def test_add_institution_link_on_pending_offer(self, client: Any) -> None:
+        # Given
+        institution = EducationalInstitutionFactory()
+        stock = CollectiveStockFactory(collectiveOffer__validation="PENDING")
+        offer = stock.collectiveOffer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        client = client.with_session_auth("pro@example.com")
+        data = {"educationalInstitutionId": institution.id}
+        response = client.patch(f"/collective/offers/{humanize(offer.id)}/educational_institution", json=data)
+
+        # Then
+        assert response.status_code == 403
+        offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
+        assert offer_db.institution == None
+
+        assert len(adage_api_testing.adage_requests) == 0
