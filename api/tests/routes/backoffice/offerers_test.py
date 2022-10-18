@@ -1475,10 +1475,12 @@ class ListOfferersToBeValidatedTest:
 
         # when
         name_asc = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated", sort="name")
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", sort='[{"field": "name"}]')
         )
         creation_date_desc = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated", sort="-dateCreated")
+            url_for(
+                "backoffice_blueprint.list_offerers_to_be_validated", sort='[{"field": "dateCreated", "order": "desc"}]'
+            )
         )
 
         # then
@@ -1514,6 +1516,29 @@ class ListOfferersToBeValidatedTest:
         assert response.status_code == 200
         data = response.json["data"]
         assert sorted(o["name"] for o in data) == sorted(expected_offerer_names)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    @pytest.mark.parametrize(
+        "sorts",
+        (
+            "this is not even a JSON string",
+            '{"field": "id"}',  # not a list
+            '[{"field": "fancifulField"}]',
+            '[{"order": "asc"}]',
+        ),
+    )
+    def test_fanciful_filtering_return_a_400_status(self, client, sorts):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", sort=sorts)
+        )
+
+        # then
+        assert response.status_code == 400
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_without_permission(self, client):

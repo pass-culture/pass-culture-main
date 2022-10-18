@@ -1,4 +1,5 @@
 import typing
+import urllib
 
 from sqlalchemy.orm import exc as orm_exc
 
@@ -309,8 +310,15 @@ def list_offerers_to_be_validated(
 ) -> serialization.ListOffererToBeValidatedResponseModel:
     offerers = offerers_api.list_offerers_to_be_validated([dict(f) for f in query.filter])
 
-    sorts = query.sort.split(",") if query.sort else ["-id"]
-    sorted_offerers = utils.sort_query(offerers, db_utils.get_ordering_clauses(offerers_models.Offerer, sorts))
+    sorts = urllib.parse.unquote_plus(query.sort or "[]")
+    try:
+        sorted_offerers = utils.sort_query(
+            offerers,
+            db_utils.get_ordering_clauses_from_json(offerers_models.Offerer, sorts),
+            default_ordering=offerers_models.Offerer.id,
+        )
+    except db_utils.BadSortError as err:
+        raise api_errors.ApiErrors(errors={"sort": f"unable to process provided sorting options: {err}"})
     paginated_offerers = sorted_offerers.paginate(
         page=query.page,
         per_page=query.perPage,
