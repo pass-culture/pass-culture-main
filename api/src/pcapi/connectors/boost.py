@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 class ResourceBoost(enum.Enum):
     EXAMPLE = "example"
     FILMS = "films"
+    SHOWTIMES = "showtimes"
 
 
 LOGIN_ENDPOINT = "api/vendors/login"
