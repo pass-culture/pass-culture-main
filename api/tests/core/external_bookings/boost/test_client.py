@@ -8,7 +8,7 @@ import pcapi.core.providers.factories as providers_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class CineDigitalServiceGetMoviesTest:
+class GetVenueMoviesTest:
     def test_should_return_movies_information(self, requests_mock):
         page_1_json_data = {
             "data": [
@@ -64,7 +64,7 @@ class CineDigitalServiceGetMoviesTest:
             "totalCount": 4,
         }
 
-        cinema_details = providers_factories.BoostCinemaDetailsFactory()
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get("https://cinema-0.example.com/films?page=1&per_page=2", json=page_1_json_data)
         requests_mock.get("https://cinema-0.example.com/films?page=2&per_page=2", json=page_2_json_data)
