@@ -1,5 +1,12 @@
+import datetime
+
+import pydantic
+
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.routes.serialization import BaseModel
+
+
+BOOST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 
 class LoginBoost(BaseModel):
@@ -41,3 +48,28 @@ class Collection(BaseModel):
 
 class FilmCollection(Collection):
     data: list[Film2]
+
+
+def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> datetime.datetime:
+    return datetime_with_tz_offset.astimezone(tz=datetime.timezone.utc)
+
+
+class ShowTime3(BaseModel):
+    id: int
+    showDate: datetime.datetime
+    showEndDate: datetime.datetime
+    soldOut: bool
+    authorizedAccess: bool
+    numberSeatsRemaining: int
+    film: Film2
+    format: dict
+    version: dict
+    screen: dict
+
+    @pydantic.validator("showDate", "showEndDate")
+    def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
+        return _convert_to_utc_datetime(value)
+
+
+class ShowTimeCollection(Collection):
+    data: list[ShowTime3]
