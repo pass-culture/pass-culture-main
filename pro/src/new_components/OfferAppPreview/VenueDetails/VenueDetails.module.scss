@@ -42,6 +42,8 @@
 
   margin-bottom: rem.torem(16px);
 
+  word-break: break-word;
+
   &:last-child {
     margin-bottom: 0;
   }
