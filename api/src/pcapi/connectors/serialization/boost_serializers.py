@@ -29,11 +29,15 @@ class Film2(BaseModel):
         )
 
 
-class FilmCollection(BaseModel):
-    data: list[Film2]
+class Collection(BaseModel):
+    data: list
     message: str
     page: int
     previousPage: int
     nextPage: int
     totalPages: int
     totalCount: int
+
+
+class FilmCollection(Collection):
+    data: list[Film2]
