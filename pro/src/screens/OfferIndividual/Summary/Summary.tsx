@@ -33,7 +33,6 @@ import { IOfferSectionProps, OfferSection } from './OfferSection'
 import { IStockEventItemProps, StockEventSection } from './StockEventSection'
 import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
 import styles from './Summary.module.scss'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 export interface ISummaryProps {
   offerId: string
