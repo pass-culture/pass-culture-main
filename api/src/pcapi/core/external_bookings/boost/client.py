@@ -26,13 +26,13 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         while current_page <= next_page:
             params = {"page": current_page, "per_page": per_page}
-            json_data = boost.get_resource(self.cinema_str_id, boost.ResourceBoost.MEDIA, params=params)
-            media_list_page: boost_serializers.FilmCollection = parse_obj_as(
+            json_data = boost.get_resource(self.cinema_str_id, boost.ResourceBoost.FILMS, params=params)
+            film_collection: boost_serializers.FilmCollection = parse_obj_as(
                 boost_serializers.FilmCollection, json_data
             )
-            venue_movies.extend([movie.to_generic_movie() for movie in media_list_page.data])
-            total_pages = media_list_page.totalPages
-            next_page = media_list_page.nextPage
+            venue_movies.extend([film.to_generic_movie() for film in film_collection.data])
+            total_pages = film_collection.totalPages
+            next_page = film_collection.nextPage
             current_page += 1
             if total_pages < current_page:
                 break
