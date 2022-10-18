@@ -24,8 +24,8 @@ class AdageLoggerClient(AdageClient):
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         logger.info("Adage has been called at %s, with siren: %s", f"{self.base_url}/v1/partenaire-culturel", siren)
 
-        if siren in ["950469494", "881457238", "851924100", "832321053"]:
-            return [AdageVenue.parse_obj({"siret": "95046949400021"})]
+        if siren in ["123456782", "881457238", "851924100", "832321053"]:
+            return [AdageVenue.parse_obj({"siret": "12345678200010"})]
 
         raise exceptions.CulturalPartnerNotFoundException("Requested siren is not a known cultural partner for Adage")
 
@@ -104,7 +104,7 @@ class AdageLoggerClient(AdageClient):
 
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/etablissement-culturel/{siret}")
-        if siret == "95046949400021":
+        if siret == "12345678200010":
             return venues_serialize.AdageCulturalPartner(
                 id="128028",
                 venueId=None,

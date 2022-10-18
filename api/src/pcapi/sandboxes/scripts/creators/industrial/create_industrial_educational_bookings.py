@@ -360,7 +360,7 @@ def create_industrial_educational_bookings() -> None:
         ),
     ]
     offerer_with_right_siren = offerers_factories.CollectiveOffererFactory(
-        siren="950469494",
+        siren="123456782",
         name="Bonne structure pour l'EAC (siren)",
     )
 
@@ -371,7 +371,7 @@ def create_industrial_educational_bookings() -> None:
     venues.append(
         offerers_factories.CollectiveVenueFactory(
             name="[EAC] Opéra Royal de Versailles - Salle 1",
-            siret="95046949400021",
+            siret="12345678200010",
             managingOfferer=offerer_with_right_siren,
             adageId=None,
             venueEducationalStatusId=(1 % len(VENUE_EDUCATIONAL_STATUS)) + 2,
@@ -385,7 +385,7 @@ def create_industrial_educational_bookings() -> None:
     venues.append(
         offerers_factories.CollectiveVenueFactory(
             name="[EAC] Opéra Royal de Versailles - Salle 2",
-            siret="95046949400022",
+            siret="12345678200028",
             managingOfferer=offerer_with_right_siren,
             adageId=None,
             venueEducationalStatusId=(2 % len(VENUE_EDUCATIONAL_STATUS)) + 2,
@@ -399,7 +399,7 @@ def create_industrial_educational_bookings() -> None:
     venues.append(
         offerers_factories.CollectiveVenueFactory(
             name="[EAC] Opéra Royal de Versailles - Salle 3",
-            siret="95046949400023",
+            siret="12345678200036",
             managingOfferer=offerer_with_right_siren,
             adageId=None,
             venueEducationalStatusId=(3 % len(VENUE_EDUCATIONAL_STATUS)) + 2,
