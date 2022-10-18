@@ -368,6 +368,29 @@ export class DefaultService {
   }
 
   /**
+   * patch_collective_offer_template_publication <PATCH>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public patchCollectiveOfferTemplatePublication(
+    offerId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/collective/offers-template/{offer_id}/publish',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * transform_collective_offer_template_into_collective_offer <PATCH>
    * @param offerId
    * @param requestBody
@@ -526,6 +549,29 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * patch_collective_offer_publication <PATCH>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public patchCollectiveOfferPublication(
+    offerId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/collective/offers/{offer_id}/publish',
+      path: {
+        'offer_id': offerId,
+      },
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
