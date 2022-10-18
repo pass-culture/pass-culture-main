@@ -337,6 +337,7 @@ class OffererBasicInfo(BaseModel):
     region: str
     bankInformationStatus: OffererBankInformationStatus
     isCollectiveEligible: bool
+    isTopActor: bool
 
 
 class VenueDmsStats(BaseModel):
@@ -437,3 +438,7 @@ class OptionalCommentRequest(BaseModel):
 
 class CommentRequest(BaseModel):
     comment: str
+
+
+class IsTopActorRequest(BaseModel):
+    isTopActor: bool
