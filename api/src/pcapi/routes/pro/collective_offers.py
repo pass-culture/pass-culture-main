@@ -386,7 +386,6 @@ def patch_collective_offers_educational_institution(
         offer = educational_api.update_collective_offer_educational_institution(
             offer_id=dehumanized_id,
             educational_institution_id=body.educational_institution_id,
-            is_creating_offer=body.is_creating_offer,
             user=current_user,
         )
     except educational_exceptions.EducationalInstitutionNotFound:
@@ -396,3 +395,44 @@ def patch_collective_offers_educational_institution(
         raise ApiErrors({"offer": ["L'offre n'est plus modifiable"]}, status_code=403)
 
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers/<offer_id>/publish", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    on_error_statuses=[403, 404],
+    api=blueprint.pro_private_schema,
+)
+def patch_collective_offer_publication(offer_id: str) -> None:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offer = educational_api.get_collective_offer_by_id(dehumanized_id)
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    educational_api.publish_collective_offer(
+        offer=offer,
+        user=current_user,
+    )
+
+
+@private_api.route("/collective/offers-template/<offer_id>/publish", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    on_error_statuses=[403, 404],
+    api=blueprint.pro_private_schema,
+)
+def patch_collective_offer_template_publication(offer_id: str) -> None:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offer = educational_api.get_collective_offer_template_by_id(dehumanized_id)
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    educational_api.publish_collective_offer_template(offer_template=offer, user=current_user)
