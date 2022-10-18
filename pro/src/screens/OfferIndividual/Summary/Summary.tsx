@@ -33,6 +33,7 @@ import { IOfferSectionProps, OfferSection } from './OfferSection'
 import { IStockEventItemProps, StockEventSection } from './StockEventSection'
 import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
 import styles from './Summary.module.scss'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 export interface ISummaryProps {
   offerId: string
@@ -131,6 +132,7 @@ const Summary = ({
 
   return (
     <>
+      <PageTitle title="Récapitulatif" />
       {(isCreation || isDisabledOffer || providerName !== null) && (
         <div className={styles['offer-preview-banners']}>
           {isCreation && <BannerSummary />}
