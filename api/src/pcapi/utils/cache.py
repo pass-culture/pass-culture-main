@@ -76,7 +76,7 @@ def get_from_cache(
 def cached_view(
     *,
     prefix: str = "default",
-    expire: int | None = None,
+    expire: int | None = 60 * 60 * 24,  # 24h
     cache_only_if_no_arguments: bool = True,
     ignore_args: bool = False,
 ) -> Callable:
@@ -86,8 +86,8 @@ def cached_view(
     By default it only caches the case where no arguments are passed to the view and the cache liftime is set to 24h.
 
     :param prefix: String to differentiate multiple view with the same name.
-    :param expire: The number of seconds before the cache expire. If None it will be set to 24h (default behavior). if
-        it is not strictly positive (> 0) the cache will be permanent
+    :param expire: The number of seconds before the cache expires. If None it will be set to never expire.
+        It's default value is 86400 (24h).
     :param cache_only_if_no_arguments: When True only the case when there are no args or kwargs is cached, any other
         case will be a passthrough. Default to True
     :param: ignore_args: If True, the decorator will not look a the args to generate the key and it will always
