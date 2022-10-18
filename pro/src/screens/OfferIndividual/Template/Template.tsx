@@ -10,7 +10,7 @@ import styles from './Template.module.scss'
 export interface ITemplateProps {
   title?: string
   withStepper?: boolean
-  children: JSX.Element
+  children: JSX.Element | JSX.Element[]
 }
 
 const Template = ({ title, children, withStepper = true }: ITemplateProps) => {

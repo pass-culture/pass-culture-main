@@ -1,5 +1,6 @@
 import React from 'react'
 
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { IOfferIndividual } from 'core/Offers/types'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
@@ -34,6 +35,7 @@ const Summary = (): JSX.Element | null => {
 
   return (
     <WizardTemplate title="Récapitulatif" withStepper={isCreation}>
+      <PageTitle title="Récapitulatif" />
       <SummaryScreen
         offerId={offer.id}
         providerName={providerName}
