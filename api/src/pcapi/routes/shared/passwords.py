@@ -17,12 +17,14 @@ from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 
+from pcapi.routes.pro import blueprint
+
 
 logger = logging.getLogger(__name__)
 
 
 @private_api.route("/users/reset-password", methods=["POST"])
-@spectree_serialize(on_success_status=204)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def post_for_password_token(body: ResetPasswordBodyModel) -> None:
     try:
         check_webapp_recaptcha_token(
@@ -49,7 +51,7 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
 
 
 @private_api.route("/users/new-password", methods=["POST"])
-@spectree_serialize(on_success_status=204, on_error_statuses=[400])
+@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_new_password(body: NewPasswordBodyModel) -> None:
     token = body.token
     new_password = body.newPassword
