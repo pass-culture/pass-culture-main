@@ -410,10 +410,22 @@ class ValidationBaseView(BaseAdminView):
     can_edit = True
     can_delete = False
     list_template = "admin/offer_validation_list.html"
-    column_sortable_list = ["id", "name", "validation", "dateCreated"]
-    column_filters = ["name", "venue.name", "id", "dateCreated"]
+    column_sortable_list = ["id", "name", "validation", "dateCreated", "isEvent"]
+    column_filters = ["name", "venue.name", "id", "dateCreated", "isEvent"]
     column_default_sort = ("id", True)
     page_size = 100
+
+    column_labels = {
+        "name": "Nom",
+        "validation": "Validation",
+        "venue": "Lieu",
+        "offerer": "Structure",
+        "offer": "Offre",
+        "offers": "Offres",
+        "metabase": "Metabase",
+        "dateCreated": "Date de création",
+        "isEvent": "Evènement",
+    }
 
     def is_accessible(self):  # type: ignore [no-untyped-def]
         return super().is_accessible() and self.check_super_admins()
@@ -559,72 +571,17 @@ class ValidationBaseView(BaseAdminView):
 
 
 class ValidationOfferView(ValidationBaseView):
-    column_list = [
-        "id",
-        "name",
-        "validation",
-        "venue",
-        "offerer",
-        "offer",
-        "offers",
-        "dateCreated",
-    ]
+    column_list = ["id", "name", "validation", "venue", "offerer", "offer", "offers", "dateCreated", "isEvent"]
     if IS_PROD:
         column_list.append("metabase")
-    column_labels = {
-        "name": "Nom",
-        "validation": "Validation",
-        "venue": "Lieu",
-        "offerer": "Structure",
-        "offer": "Offre",
-        "offers": "Offres",
-        "metabase": "Metabase",
-        "dateCreated": "Date de création",
-    }
 
 
 class ValidationCollectiveOfferView(ValidationBaseView):
-    column_list = [
-        "id",
-        "name",
-        "validation",
-        "venue",
-        "offerer",
-        "offer",
-        "offers",
-        "dateCreated",
-    ]
-    column_labels = {
-        "name": "Nom",
-        "validation": "Validation",
-        "venue": "Lieu",
-        "offerer": "Structure",
-        "offer": "Offre",
-        "offers": "Offres",
-        "dateCreated": "Date de création",
-    }
+    column_list = ["id", "name", "validation", "venue", "offerer", "offer", "offers", "dateCreated", "isEvent"]
 
 
 class ValidationCollectiveOfferTemplateView(ValidationBaseView):
-    column_list = [
-        "id",
-        "name",
-        "validation",
-        "venue",
-        "offerer",
-        "offer",
-        "offers",
-        "dateCreated",
-    ]
-    column_labels = {
-        "name": "Nom",
-        "validation": "Validation",
-        "venue": "Lieu",
-        "offerer": "Structure",
-        "offer": "Offre",
-        "offers": "Offres",
-        "dateCreated": "Date de création",
-    }
+    column_list = ["id", "name", "validation", "venue", "offerer", "offer", "offers", "dateCreated", "isEvent"]
 
 
 def yaml_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
