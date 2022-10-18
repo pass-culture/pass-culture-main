@@ -11,7 +11,6 @@ describe('patchEducationalInstitutionAdapter', () => {
     const response = await patchEducationalInstitutionAdapter({
       offerId: '12',
       institutionId: '24',
-      isCreatingOffer: true,
     })
     expect(response.isOk).toBe(false)
     expect(response.message).toBe(
@@ -26,7 +25,6 @@ describe('patchEducationalInstitutionAdapter', () => {
     const response = await patchEducationalInstitutionAdapter({
       offerId: '12',
       institutionId: '24',
-      isCreatingOffer: true,
     })
     expect(response.isOk).toBeTruthy()
   })
