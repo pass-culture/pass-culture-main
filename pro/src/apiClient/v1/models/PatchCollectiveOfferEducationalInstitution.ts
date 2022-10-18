@@ -4,6 +4,5 @@
 
 export type PatchCollectiveOfferEducationalInstitution = {
   educationalInstitutionId?: number | null;
-  isCreatingOffer: boolean;
 };
 
