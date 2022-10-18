@@ -7,7 +7,7 @@ import { TextArea, TextInput } from 'ui-kit'
 import { IOfferIndividualFormValues } from '../types'
 
 export interface IInformationsProps {
-  readOnlyFields: string[]
+  readOnlyFields?: string[]
 }
 
 const Informations = ({

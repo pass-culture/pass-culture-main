@@ -157,9 +157,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         await userEvent.type(durationMinutesInput, durationMinutesValue)
         await userEvent.click(buttonSubmit)
         expect(
-          screen.queryByText(
-            'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
-          )
+          screen.queryByTestId('error-durationMinutes')
         ).not.toBeInTheDocument()
       }
     )
