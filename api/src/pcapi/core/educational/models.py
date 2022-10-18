@@ -224,6 +224,14 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
+    @sa.ext.hybrid.hybrid_property
+    def isEvent(self) -> bool:
+        return self.subcategory.is_event
+
+    @isEvent.expression  # type: ignore [no-redef]
+    def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+
     @property
     def is_cancellable_from_offerer(self) -> bool:
         if self.collectiveStock is None:
@@ -364,6 +372,14 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer template {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+
+    @sa.ext.hybrid.hybrid_property
+    def isEvent(self) -> bool:
+        return self.subcategory.is_event
+
+    @isEvent.expression  # type: ignore [no-redef]
+    def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
     def is_cancellable_from_offerer(self) -> bool:
