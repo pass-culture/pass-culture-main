@@ -1,5 +1,7 @@
 import typing
 
+from sqlalchemy.orm import exc as orm_exc
+
 from pcapi.core.auth.utils import get_current_user
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import api as offerers_api
@@ -72,6 +74,7 @@ def get_offerer_basic_info(offerer_id: int) -> serialization.OffererBasicInfoRes
                 **{stat: (offerer_basic_info.bank_informations or {}).get(stat, 0) for stat in ("ko", "ok")}
             ),
             isCollectiveEligible=offerer_basic_info.is_collective_eligible,
+            isTopActor=offerer_basic_info.is_top_actor,
         ),
     )
 
@@ -345,3 +348,28 @@ def list_offerers_to_be_validated(
     )
 
     return response
+
+
+@blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/is_top_actor", methods=["PUT"])
+@spectree_serialize(on_success_status=200, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def toggle_top_actor(offerer_id: int, body: serialization.IsTopActorRequest) -> None:
+    try:
+        tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
+    except orm_exc.NoResultFound:
+        raise api_errors.ResourceNotFoundError(errors={"offerer_id": "Le tag top-acteur n'existe pas"})
+
+    # Add the tag if it doesn't already exist
+    if body.isTopActor:
+        if not offerers_api.get_is_top_actor(offerer_id):
+            offerer_tag_mapping = offerers_models.OffererTagMapping(offererId=offerer_id, tagId=tag.id)
+            repository.save(offerer_tag_mapping)
+
+    # Remove the tag if it exists
+    else:
+        if offerers_api.get_is_top_actor(offerer_id):
+            mapping_to_delete = offerers_models.OffererTagMapping.query.filter(
+                offerers_models.OffererTagMapping.offererId == offerer_id,
+                offerers_models.OffererTagMapping.tagId == tag.id,
+            ).one_or_none()
+            repository.delete(mapping_to_delete)
