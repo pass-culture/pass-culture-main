@@ -29,6 +29,8 @@ import useAnalytics from 'hooks/useAnalytics'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
+import { SaveDraftLeavingGuard } from 'new_components/SaveDraftLeavingGuard'
 import { SubmitButton } from 'ui-kit'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
@@ -79,6 +81,7 @@ const OfferForm = ({
   const [offerSubCategory, setOfferSubCategory] = useState(null)
   const [receiveNotificationEmails, setReceiveNotificationEmails] =
     useState(false)
+  const isDraftOfferEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const [venue, setVenue] = useState(null)
   const [formValues, setFormValues] = useState({})
   const [venueOptions, setVenueOptions] = useState(
@@ -751,466 +754,479 @@ const OfferForm = ({
   }
 
   return (
-    <form className="offer-form" ref={formRef}>
-      {providerName !== null ? (
-        <SynchronizedProviderInformation providerName={providerName} />
-      ) : (
-        <FormLayout.MandatoryInfo />
+    <>
+      {isDraftOfferEnabled && (
+        <RouteLeavingGuardOfferIndividual
+          when={!isEdition}
+          onSubmit={onSubmit}
+          isValid={isValid}
+        />
       )}
+      <form className="offer-form" ref={formRef}>
+        {providerName !== null ? (
+          <SynchronizedProviderInformation providerName={providerName} />
+        ) : (
+          <FormLayout.MandatoryInfo />
+        )}
 
-      <section className="form-section">
-        <h3 className="section-title">Type d’offre</h3>
-        <p className="section-description">
-          Le type de l’offre permet de la caractériser et de la valoriser au
-          mieux dans l’application.
-        </p>
+        <section className="form-section">
+          <h3 className="section-title">Type d’offre</h3>
+          <p className="section-description">
+            Le type de l’offre permet de la caractériser et de la valoriser au
+            mieux dans l’application.
+          </p>
 
-        <div className="form-row">
-          <OfferCategories
-            categories={categories}
-            categoriesFormValues={{
-              categoryId: formValues.categoryId,
-              subcategoryId: formValues.subcategoryId,
-              musicType: formValues.musicType,
-              musicSubType: formValues.musicSubType,
-              showType: formValues.showType,
-              showSubType: formValues.showSubType,
-            }}
-            getErrorMessage={getErrorMessage}
-            isTypeOfflineButOnlyVirtualVenues={
-              isTypeOfflineButOnlyVirtualVenues
-            }
-            isVirtualOffer={initialValues.isVirtualVenue}
-            readOnlyFields={readOnlyFields}
-            resetFormError={resetFormError}
-            subCategories={subCategories}
-            updateCategoriesFormValues={handleFormUpdate}
-            updateFormErrors={setFormErrors}
-          />
-          {isTypeOfflineButOnlyVirtualVenues && (
-            <InternalBanner
-              extraClassName="no-physical-venue"
-              to={`/structures/${formValues.offererId}/lieux/creation`}
-              linkTitle="+ Ajouter un lieu"
-              subtitle="Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures."
-              type="notification-info"
+          <div className="form-row">
+            <OfferCategories
+              categories={categories}
+              categoriesFormValues={{
+                categoryId: formValues.categoryId,
+                subcategoryId: formValues.subcategoryId,
+                musicType: formValues.musicType,
+                musicSubType: formValues.musicSubType,
+                showType: formValues.showType,
+                showSubType: formValues.showSubType,
+              }}
+              getErrorMessage={getErrorMessage}
+              isTypeOfflineButOnlyVirtualVenues={
+                isTypeOfflineButOnlyVirtualVenues
+              }
+              isVirtualOffer={initialValues.isVirtualVenue}
+              readOnlyFields={readOnlyFields}
+              resetFormError={resetFormError}
+              subCategories={subCategories}
+              updateCategoriesFormValues={handleFormUpdate}
+              updateFormErrors={setFormErrors}
             />
-          )}
-        </div>
-      </section>
+            {isTypeOfflineButOnlyVirtualVenues && (
+              <InternalBanner
+                extraClassName="no-physical-venue"
+                to={`/structures/${formValues.offererId}/lieux/creation`}
+                linkTitle="+ Ajouter un lieu"
+                subtitle="Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures."
+                type="notification-info"
+              />
+            )}
+          </div>
+        </section>
 
-      {formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId &&
-        !isTypeOfflineButOnlyVirtualVenues && (
-          <Fragment>
-            <section className="form-section">
-              <h3 className="section-title">Informations artistiques</h3>
+        {formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId &&
+          !isTypeOfflineButOnlyVirtualVenues && (
+            <Fragment>
+              <section className="form-section">
+                <h3 className="section-title">Informations artistiques</h3>
 
-              <div className="form-row">
+                <div className="form-row">
+                  <TextInput
+                    countCharacters
+                    disabled={readOnlyFields.includes('name')}
+                    error={getErrorMessage('name')}
+                    label="Titre de l'offre"
+                    maxLength={90}
+                    name="name"
+                    onChange={handleSingleFormUpdate}
+                    required
+                    subLabel={
+                      !mandatoryFields.includes('name') ? 'Optionnel' : ''
+                    }
+                    value={formValues.name}
+                  />
+                </div>
+                <div className="form-row">
+                  <TextareaInput
+                    countCharacters
+                    disabled={readOnlyFields.includes('description')}
+                    error={getErrorMessage('description')}
+                    label="Description"
+                    maxLength={1000}
+                    name="description"
+                    onChange={handleSingleFormUpdate}
+                    rows={6}
+                    subLabel={
+                      !mandatoryFields.includes('description')
+                        ? 'Optionnel'
+                        : ''
+                    }
+                    value={formValues.description}
+                  />
+                </div>
+                {offerFormFields.includes('speaker') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('speaker')}
+                      error={getErrorMessage('speaker')}
+                      label="Intervenant"
+                      name="speaker"
+                      onChange={handleSingleFormUpdate}
+                      subLabel={
+                        !mandatoryFields.includes('speaker') ? 'Optionnel' : ''
+                      }
+                      value={formValues.speaker}
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('author') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('author')}
+                      error={getErrorMessage('author')}
+                      label="Auteur"
+                      name="author"
+                      onChange={handleSingleFormUpdate}
+                      subLabel={
+                        !mandatoryFields.includes('author') ? 'Optionnel' : ''
+                      }
+                      type="text"
+                      value={formValues.author}
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('visa') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('visa')}
+                      error={getErrorMessage('visa')}
+                      label="Visa d’exploitation"
+                      name="visa"
+                      onChange={handleSingleFormUpdate}
+                      subLabel={
+                        !mandatoryFields.includes('visa') ? 'Optionnel' : ''
+                      }
+                      type="text"
+                      value={formValues.visa}
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('isbn') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('isbn')}
+                      error={getIsbnErrorMessage()}
+                      label="ISBN"
+                      name="isbn"
+                      onChange={handleSingleFormUpdate}
+                      required={isIsbnRequiredInLivreEditionEnabled}
+                      subLabel={
+                        !mandatoryFields.includes('isbn') ? 'Optionnel' : ''
+                      }
+                      type="text"
+                      value={formValues.isbn}
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('stageDirector') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('stageDirector')}
+                      error={getErrorMessage('stageDirector')}
+                      label="Metteur en scène"
+                      name="stageDirector"
+                      onChange={handleSingleFormUpdate}
+                      subLabel={
+                        !mandatoryFields.includes('stageDirector')
+                          ? 'Optionnel'
+                          : ''
+                      }
+                      type="text"
+                      value={formValues.stageDirector}
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('performer') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('performer')}
+                      error={getErrorMessage('perforer')}
+                      label="Interprète"
+                      name="performer"
+                      onChange={handleSingleFormUpdate}
+                      subLabel={
+                        !mandatoryFields.includes('performer')
+                          ? 'Optionnel'
+                          : ''
+                      }
+                      type="text"
+                      value={formValues.performer}
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('durationMinutes') && (
+                  <div className="form-row">
+                    <DurationInput
+                      disabled={readOnlyFields.includes('durationMinutes')}
+                      error={getErrorMessage('durationMinutes')}
+                      initialDurationInMinutes={formValues.durationMinutes}
+                      label="Durée"
+                      name="durationMinutes"
+                      onChange={handleDurationChange}
+                      placeholder="HH:MM"
+                      subLabel={
+                        !mandatoryFields.includes('durationMinutes')
+                          ? 'Optionnel'
+                          : ''
+                      }
+                    />
+                  </div>
+                )}
+              </section>
+
+              <section className="form-section">
+                <h3 className="section-title">Informations pratiques</h3>
+                <p className="section-description">
+                  Les informations pratiques permettent de donner aux
+                  utilisateurs des informations sur le retrait de leur commande.
+                </p>
+
+                <div className="form-row">
+                  <Select
+                    defaultOption={{
+                      displayName: 'Sélectionnez une structure',
+                      id: DEFAULT_FORM_VALUES.offererId,
+                    }}
+                    error={getErrorMessage('offererId')}
+                    handleSelection={selectOfferer}
+                    isDisabled={readOnlyFields.includes('offererId')}
+                    label="Structure"
+                    name="offererId"
+                    options={offererOptions}
+                    selectedValue={
+                      formValues.offererId || DEFAULT_FORM_VALUES.offererId
+                    }
+                    subLabel={
+                      !mandatoryFields.includes('offererId') ? 'Optionnel' : ''
+                    }
+                  />
+                </div>
+
+                <div className="form-row">
+                  <Select
+                    defaultOption={{
+                      displayName: 'Sélectionnez un lieu',
+                      id: DEFAULT_FORM_VALUES.venueId,
+                    }}
+                    error={getErrorMessage('venueId')}
+                    handleSelection={handleChangeVenue}
+                    isDisabled={
+                      readOnlyFields.includes('venueId') || venue?.isVirtual
+                    }
+                    label="Lieu"
+                    name="venueId"
+                    options={venueOptions}
+                    selectedValue={
+                      formValues.venueId || DEFAULT_FORM_VALUES.venueId
+                    }
+                    subLabel={
+                      !mandatoryFields.includes('venueId') ? 'Optionnel' : ''
+                    }
+                  />
+                </div>
+                {displayNoRefundWarning && (
+                  <div className="form-row">
+                    <OfferRefundWarning />
+                  </div>
+                )}
+
+                {!offerSubCategory?.isEvent && venue && !venue.isVirtual && (
+                  <div className="form-row">
+                    <WithdrawalReminder />
+                  </div>
+                )}
+
+                {WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
+                  formValues.subcategoryId
+                ) && (
+                  <>
+                    <OfferWithdrawalTypeOptions
+                      error={getErrorMessage('withdrawalType')}
+                      updateWithdrawalType={updateWithdrawalType}
+                      withdrawalType={formValues.withdrawalType}
+                    />
+                    {formValues.withdrawalType ===
+                      OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE && (
+                      <div className="form-row">
+                        <Select
+                          error={getErrorMessage('withdrawalDelay')}
+                          handleSelection={handleSingleFormUpdate}
+                          label="Heure de retrait"
+                          name="withdrawalDelay"
+                          options={WITHDRAWAL_ON_SITE_DELAY_OPTIONS}
+                          rightLabel="avant le début de l’évènement"
+                          selectedValue={formValues.withdrawalDelay}
+                        />
+                      </div>
+                    )}
+                    {formValues.withdrawalType ===
+                      OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL && (
+                      <div className="form-row">
+                        <Select
+                          error={getErrorMessage('withdrawalDelay')}
+                          handleSelection={handleSingleFormUpdate}
+                          label="Date d'envoi"
+                          name="withdrawalDelay"
+                          options={WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS}
+                          rightLabel="avant le début de l’évènement"
+                          selectedValue={formValues.withdrawalDelay}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                <div className="form-row">
+                  <TextareaInput
+                    countCharacters
+                    disabled={readOnlyFields.includes('withdrawalDetails')}
+                    error={getErrorMessage('withdrawalDetails')}
+                    label="Informations de retrait"
+                    maxLength={500}
+                    name="withdrawalDetails"
+                    onChange={handleSingleFormUpdate}
+                    rows={6}
+                    subLabel={
+                      !mandatoryFields.includes('withdrawalDetails')
+                        ? 'Optionnel'
+                        : ''
+                    }
+                    value={formValues.withdrawalDetails}
+                  />
+                </div>
+
+                {offerFormFields.includes('url') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('url')}
+                      error={getErrorMessage('url')}
+                      label="URL d’accès à l’offre"
+                      longDescription="Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre"
+                      name="url"
+                      onChange={handleUrlUpdate}
+                      required
+                      type="text"
+                      value={formValues.url}
+                      placeholder="https://exemple.com"
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('isNational') && (
+                  <div className="form-row">
+                    <CheckboxInput
+                      checked={formValues.isNational || false}
+                      disabled={
+                        readOnlyFields.includes('isNational') ? 'disabled' : ''
+                      }
+                      isLabelDisable={isDisabled}
+                      label="Rayonnement national"
+                      name="isNational"
+                      onChange={handleSingleFormUpdate}
+                    />
+                  </div>
+                )}
+              </section>
+
+              <section className="form-section accessibility-section">
+                <h3 className="section-title">Accessibilité</h3>
+                <p className="section-description">
+                  Cette offre est-elle accessible aux publics en situation de
+                  handicaps :
+                </p>
+                <AccessibilityCheckboxList
+                  disabled={isDisabled}
+                  formValues={formValues}
+                  isInError={Boolean(getErrorMessage('disabilityCompliant'))}
+                  onChange={handleDisabilityCompliantUpdate}
+                  readOnly={isDisabilityFieldsReadOnly}
+                />
+              </section>
+
+              <OfferOptions
+                canOfferBeDuo={offerFormFields.includes('isDuo')}
+                isDuo={formValues.isDuo}
+                isDuoDisabled={readOnlyFields.includes('isDuo')}
+                updateForm={handleFormUpdate}
+              />
+
+              <section className="form-section">
+                <h3 className="section-title">Lien pour le grand public</h3>
+                <p className="section-description">
+                  {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
+                    'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
+                </p>
                 <TextInput
-                  countCharacters
-                  disabled={readOnlyFields.includes('name')}
-                  error={getErrorMessage('name')}
-                  label="Titre de l'offre"
-                  maxLength={90}
-                  name="name"
-                  onChange={handleSingleFormUpdate}
-                  required
+                  disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
+                  error={getErrorMessage('externalTicketOfficeUrl')}
+                  label="URL de votre site ou billetterie"
+                  name="externalTicketOfficeUrl"
+                  onChange={handleExternalTicketOfficeUrlUpdate}
                   subLabel={
-                    !mandatoryFields.includes('name') ? 'Optionnel' : ''
-                  }
-                  value={formValues.name}
-                />
-              </div>
-              <div className="form-row">
-                <TextareaInput
-                  countCharacters
-                  disabled={readOnlyFields.includes('description')}
-                  error={getErrorMessage('description')}
-                  label="Description"
-                  maxLength={1000}
-                  name="description"
-                  onChange={handleSingleFormUpdate}
-                  rows={6}
-                  subLabel={
-                    !mandatoryFields.includes('description') ? 'Optionnel' : ''
-                  }
-                  value={formValues.description}
-                />
-              </div>
-              {offerFormFields.includes('speaker') && (
-                <div className="form-row">
-                  <TextInput
-                    disabled={readOnlyFields.includes('speaker')}
-                    error={getErrorMessage('speaker')}
-                    label="Intervenant"
-                    name="speaker"
-                    onChange={handleSingleFormUpdate}
-                    subLabel={
-                      !mandatoryFields.includes('speaker') ? 'Optionnel' : ''
-                    }
-                    value={formValues.speaker}
-                  />
-                </div>
-              )}
-
-              {offerFormFields.includes('author') && (
-                <div className="form-row">
-                  <TextInput
-                    disabled={readOnlyFields.includes('author')}
-                    error={getErrorMessage('author')}
-                    label="Auteur"
-                    name="author"
-                    onChange={handleSingleFormUpdate}
-                    subLabel={
-                      !mandatoryFields.includes('author') ? 'Optionnel' : ''
-                    }
-                    type="text"
-                    value={formValues.author}
-                  />
-                </div>
-              )}
-
-              {offerFormFields.includes('visa') && (
-                <div className="form-row">
-                  <TextInput
-                    disabled={readOnlyFields.includes('visa')}
-                    error={getErrorMessage('visa')}
-                    label="Visa d’exploitation"
-                    name="visa"
-                    onChange={handleSingleFormUpdate}
-                    subLabel={
-                      !mandatoryFields.includes('visa') ? 'Optionnel' : ''
-                    }
-                    type="text"
-                    value={formValues.visa}
-                  />
-                </div>
-              )}
-
-              {offerFormFields.includes('isbn') && (
-                <div className="form-row">
-                  <TextInput
-                    disabled={readOnlyFields.includes('isbn')}
-                    error={getIsbnErrorMessage()}
-                    label="ISBN"
-                    name="isbn"
-                    onChange={handleSingleFormUpdate}
-                    required={isIsbnRequiredInLivreEditionEnabled}
-                    subLabel={
-                      !mandatoryFields.includes('isbn') ? 'Optionnel' : ''
-                    }
-                    type="text"
-                    value={formValues.isbn}
-                  />
-                </div>
-              )}
-
-              {offerFormFields.includes('stageDirector') && (
-                <div className="form-row">
-                  <TextInput
-                    disabled={readOnlyFields.includes('stageDirector')}
-                    error={getErrorMessage('stageDirector')}
-                    label="Metteur en scène"
-                    name="stageDirector"
-                    onChange={handleSingleFormUpdate}
-                    subLabel={
-                      !mandatoryFields.includes('stageDirector')
-                        ? 'Optionnel'
-                        : ''
-                    }
-                    type="text"
-                    value={formValues.stageDirector}
-                  />
-                </div>
-              )}
-
-              {offerFormFields.includes('performer') && (
-                <div className="form-row">
-                  <TextInput
-                    disabled={readOnlyFields.includes('performer')}
-                    error={getErrorMessage('perforer')}
-                    label="Interprète"
-                    name="performer"
-                    onChange={handleSingleFormUpdate}
-                    subLabel={
-                      !mandatoryFields.includes('performer') ? 'Optionnel' : ''
-                    }
-                    type="text"
-                    value={formValues.performer}
-                  />
-                </div>
-              )}
-
-              {offerFormFields.includes('durationMinutes') && (
-                <div className="form-row">
-                  <DurationInput
-                    disabled={readOnlyFields.includes('durationMinutes')}
-                    error={getErrorMessage('durationMinutes')}
-                    initialDurationInMinutes={formValues.durationMinutes}
-                    label="Durée"
-                    name="durationMinutes"
-                    onChange={handleDurationChange}
-                    placeholder="HH:MM"
-                    subLabel={
-                      !mandatoryFields.includes('durationMinutes')
-                        ? 'Optionnel'
-                        : ''
-                    }
-                  />
-                </div>
-              )}
-            </section>
-
-            <section className="form-section">
-              <h3 className="section-title">Informations pratiques</h3>
-              <p className="section-description">
-                Les informations pratiques permettent de donner aux utilisateurs
-                des informations sur le retrait de leur commande.
-              </p>
-
-              <div className="form-row">
-                <Select
-                  defaultOption={{
-                    displayName: 'Sélectionnez une structure',
-                    id: DEFAULT_FORM_VALUES.offererId,
-                  }}
-                  error={getErrorMessage('offererId')}
-                  handleSelection={selectOfferer}
-                  isDisabled={readOnlyFields.includes('offererId')}
-                  label="Structure"
-                  name="offererId"
-                  options={offererOptions}
-                  selectedValue={
-                    formValues.offererId || DEFAULT_FORM_VALUES.offererId
-                  }
-                  subLabel={
-                    !mandatoryFields.includes('offererId') ? 'Optionnel' : ''
-                  }
-                />
-              </div>
-
-              <div className="form-row">
-                <Select
-                  defaultOption={{
-                    displayName: 'Sélectionnez un lieu',
-                    id: DEFAULT_FORM_VALUES.venueId,
-                  }}
-                  error={getErrorMessage('venueId')}
-                  handleSelection={handleChangeVenue}
-                  isDisabled={
-                    readOnlyFields.includes('venueId') || venue?.isVirtual
-                  }
-                  label="Lieu"
-                  name="venueId"
-                  options={venueOptions}
-                  selectedValue={
-                    formValues.venueId || DEFAULT_FORM_VALUES.venueId
-                  }
-                  subLabel={
-                    !mandatoryFields.includes('venueId') ? 'Optionnel' : ''
-                  }
-                />
-              </div>
-              {displayNoRefundWarning && (
-                <div className="form-row">
-                  <OfferRefundWarning />
-                </div>
-              )}
-
-              {!offerSubCategory?.isEvent && venue && !venue.isVirtual && (
-                <div className="form-row">
-                  <WithdrawalReminder />
-                </div>
-              )}
-
-              {WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
-                formValues.subcategoryId
-              ) && (
-                <>
-                  <OfferWithdrawalTypeOptions
-                    error={getErrorMessage('withdrawalType')}
-                    updateWithdrawalType={updateWithdrawalType}
-                    withdrawalType={formValues.withdrawalType}
-                  />
-                  {formValues.withdrawalType ===
-                    OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE && (
-                    <div className="form-row">
-                      <Select
-                        error={getErrorMessage('withdrawalDelay')}
-                        handleSelection={handleSingleFormUpdate}
-                        label="Heure de retrait"
-                        name="withdrawalDelay"
-                        options={WITHDRAWAL_ON_SITE_DELAY_OPTIONS}
-                        rightLabel="avant le début de l’évènement"
-                        selectedValue={formValues.withdrawalDelay}
-                      />
-                    </div>
-                  )}
-                  {formValues.withdrawalType ===
-                    OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL && (
-                    <div className="form-row">
-                      <Select
-                        error={getErrorMessage('withdrawalDelay')}
-                        handleSelection={handleSingleFormUpdate}
-                        label="Date d'envoi"
-                        name="withdrawalDelay"
-                        options={WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS}
-                        rightLabel="avant le début de l’évènement"
-                        selectedValue={formValues.withdrawalDelay}
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              <div className="form-row">
-                <TextareaInput
-                  countCharacters
-                  disabled={readOnlyFields.includes('withdrawalDetails')}
-                  error={getErrorMessage('withdrawalDetails')}
-                  label="Informations de retrait"
-                  maxLength={500}
-                  name="withdrawalDetails"
-                  onChange={handleSingleFormUpdate}
-                  rows={6}
-                  subLabel={
-                    !mandatoryFields.includes('withdrawalDetails')
+                    !mandatoryFields.includes('externalTicketOfficeUrl')
                       ? 'Optionnel'
                       : ''
                   }
-                  value={formValues.withdrawalDetails}
+                  type="text"
+                  value={formValues.externalTicketOfficeUrl}
+                  placeholder="https://exemple.com"
                 />
-              </div>
+              </section>
 
-              {offerFormFields.includes('url') && (
-                <div className="form-row">
-                  <TextInput
-                    disabled={readOnlyFields.includes('url')}
-                    error={getErrorMessage('url')}
-                    label="URL d’accès à l’offre"
-                    longDescription="Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre"
-                    name="url"
-                    onChange={handleUrlUpdate}
-                    required
-                    type="text"
-                    value={formValues.url}
-                    placeholder="https://exemple.com"
-                  />
-                </div>
-              )}
+              <section className="form-section">
+                <h3 className="section-title">Notifications</h3>
 
-              {offerFormFields.includes('isNational') && (
                 <div className="form-row">
                   <CheckboxInput
-                    checked={formValues.isNational || false}
-                    disabled={
-                      readOnlyFields.includes('isNational') ? 'disabled' : ''
-                    }
-                    isLabelDisable={isDisabled}
-                    label="Rayonnement national"
-                    name="isNational"
-                    onChange={handleSingleFormUpdate}
-                  />
-                </div>
-              )}
-            </section>
-
-            <section className="form-section accessibility-section">
-              <h3 className="section-title">Accessibilité</h3>
-              <p className="section-description">
-                Cette offre est-elle accessible aux publics en situation de
-                handicaps :
-              </p>
-              <AccessibilityCheckboxList
-                disabled={isDisabled}
-                formValues={formValues}
-                isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-                onChange={handleDisabilityCompliantUpdate}
-                readOnly={isDisabilityFieldsReadOnly}
-              />
-            </section>
-
-            <OfferOptions
-              canOfferBeDuo={offerFormFields.includes('isDuo')}
-              isDuo={formValues.isDuo}
-              isDuoDisabled={readOnlyFields.includes('isDuo')}
-              updateForm={handleFormUpdate}
-            />
-
-            <section className="form-section">
-              <h3 className="section-title">Lien pour le grand public</h3>
-              <p className="section-description">
-                {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
-                  'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
-              </p>
-              <TextInput
-                disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
-                error={getErrorMessage('externalTicketOfficeUrl')}
-                label="URL de votre site ou billetterie"
-                name="externalTicketOfficeUrl"
-                onChange={handleExternalTicketOfficeUrlUpdate}
-                subLabel={
-                  !mandatoryFields.includes('externalTicketOfficeUrl')
-                    ? 'Optionnel'
-                    : ''
-                }
-                type="text"
-                value={formValues.externalTicketOfficeUrl}
-                placeholder="https://exemple.com"
-              />
-            </section>
-
-            <section className="form-section">
-              <h3 className="section-title">Notifications</h3>
-
-              <div className="form-row">
-                <CheckboxInput
-                  checked={receiveNotificationEmails}
-                  disabled={readOnlyFields.includes('bookingEmail')}
-                  isLabelDisable={isDisabled}
-                  label="Être notifié par email des réservations"
-                  name="receiveNotificationEmails"
-                  onChange={toggleReceiveNotification}
-                />
-              </div>
-
-              {offerFormFields.includes('bookingEmail') && (
-                <div className="form-row">
-                  <TextInput
+                    checked={receiveNotificationEmails}
                     disabled={readOnlyFields.includes('bookingEmail')}
-                    error={getErrorMessage('bookingEmail')}
-                    label="Email auquel envoyer les notifications :"
-                    name="bookingEmail"
-                    onChange={handleBookingEmailUpdate}
-                    placeholder="email@exemple.com"
-                    required
-                    type="email"
-                    value={formValues.bookingEmail}
+                    isLabelDisable={isDisabled}
+                    label="Être notifié par email des réservations"
+                    name="receiveNotificationEmails"
+                    onChange={toggleReceiveNotification}
                   />
                 </div>
-              )}
-            </section>
-          </Fragment>
-        )}
 
-      <section
-        className={
-          isEdition ? 'actions-section edit-buttons' : 'actions-section'
-        }
-      >
-        <Link className="secondary-link" to={backUrl} onClick={onCancelClick}>
-          {'Annuler et quitter'}
-        </Link>
-        <SubmitButton
-          className="primary-button"
-          disabled={isDisabled}
-          isLoading={isSubmitLoading}
-          onClick={submitForm}
+                {offerFormFields.includes('bookingEmail') && (
+                  <div className="form-row">
+                    <TextInput
+                      disabled={readOnlyFields.includes('bookingEmail')}
+                      error={getErrorMessage('bookingEmail')}
+                      label="Email auquel envoyer les notifications :"
+                      name="bookingEmail"
+                      onChange={handleBookingEmailUpdate}
+                      placeholder="email@exemple.com"
+                      required
+                      type="email"
+                      value={formValues.bookingEmail}
+                    />
+                  </div>
+                )}
+              </section>
+            </Fragment>
+          )}
+
+        <section
+          className={
+            isEdition ? 'actions-section edit-buttons' : 'actions-section'
+          }
         >
-          {isEdition ? 'Enregistrer les modifications' : 'Étape suivante'}
-        </SubmitButton>
-      </section>
-    </form>
+          <Link className="secondary-link" to={backUrl} onClick={onCancelClick}>
+            {'Annuler et quitter'}
+          </Link>
+          <SubmitButton
+            className="primary-button"
+            disabled={isDisabled}
+            isLoading={isSubmitLoading}
+            onClick={submitForm}
+          >
+            {isEdition ? 'Enregistrer les modifications' : 'Étape suivante'}
+          </SubmitButton>
+        </section>
+      </form>
+    </>
   )
 }
 

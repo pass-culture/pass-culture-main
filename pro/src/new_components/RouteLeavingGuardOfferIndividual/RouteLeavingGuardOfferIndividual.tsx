@@ -1,9 +1,11 @@
 import React, { useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import useActiveFeature from 'hooks/useActiveFeature'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
+import { SaveDraftLeavingGuard } from 'new_components/SaveDraftLeavingGuard'
 
 const STEP_OFFER = 'offer'
 const STEP_STOCKS = 'stocks'
@@ -20,12 +22,17 @@ const urlPatterns: { [key: string]: RegExp } = {
 
 export interface RouteLeavingGuardOfferIndividualProps {
   when?: boolean
+  onSubmit?: () => void
+  isValid?: () => boolean
 }
 
 const RouteLeavingGuardOfferIndividual = ({
   when = true,
+  onSubmit,
+  isValid,
 }: RouteLeavingGuardOfferIndividualProps): JSX.Element => {
   const location = useLocation()
+  const isDraftOfferEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
       let redirectPath = null
@@ -82,16 +89,26 @@ const RouteLeavingGuardOfferIndividual = ({
     [location]
   )
   return (
-    <RouteLeavingGuard
-      shouldBlockNavigation={shouldBlockNavigation}
-      when={when}
-      dialogTitle="Voulez-vous quitter la création d’offre ?"
-    >
-      <p>
-        Votre offre ne sera pas sauvegardée et toutes les informations seront
-        perdues.
-      </p>
-    </RouteLeavingGuard>
+    <>
+      {isDraftOfferEnabled && onSubmit ? (
+        <SaveDraftLeavingGuard
+          shouldBlockNavigation={shouldBlockNavigation}
+          when={when}
+          onSubmit={onSubmit}
+        />
+      ) : (
+        <RouteLeavingGuard
+          shouldBlockNavigation={shouldBlockNavigation}
+          when={when}
+          dialogTitle="Voulez-vous quitter la création d’offre ?"
+        >
+          <p>
+            Votre offre ne sera pas sauvegardée et toutes les informations
+            seront perdues.
+          </p>
+        </RouteLeavingGuard>
+      )}
+    </>
   )
 }
 

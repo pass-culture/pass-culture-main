@@ -12,6 +12,7 @@ import { api } from 'apiClient/api'
 import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
+import useActiveFeature from 'hooks/useActiveFeature'
 import OfferBreadcrumb, {
   OfferBreadcrumbStep,
 } from 'new_components/OfferBreadcrumb'
@@ -60,6 +61,7 @@ const OfferLayout = () => {
   const match = useRouteMatch()
   const isCreatingOffer = location.pathname.includes('creation')
   const isCompletingDraft = useIsCompletingDraft()
+  const isDraftOfferEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const [offer, setOffer] = useState(null)
 
   const loadOffer = async offerId => {
@@ -202,7 +204,9 @@ const OfferLayout = () => {
           ></Route>
         </Switch>
       </div>
-      <RouteLeavingGuardOfferIndividual when={isCreatingOffer} />
+      {!isDraftOfferEnabled && (
+        <RouteLeavingGuardOfferIndividual when={isCreatingOffer} />
+      )}
     </div>
   )
 }
