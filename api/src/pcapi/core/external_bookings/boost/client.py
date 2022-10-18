@@ -1,3 +1,5 @@
+import typing
+
 from pydantic import parse_obj_as
 
 from pcapi.connectors import boost
@@ -19,22 +21,33 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def book_ticket(self, show_id: int, quantity: int) -> list[external_bookings_models.Ticket]:
         pass
 
-    def get_venue_movies(self, per_page: int = 30) -> list[external_bookings_models.Movie]:
+    def get_collection_items(
+        self,
+        resource: boost.ResourceBoost,
+        collection_class: typing.Type[boost_serializers.Collection],
+        per_page: int = 30,
+    ) -> list:
         # XXX: per_page max value seems to be 200
-        venue_movies = []
+        items = []
         current_page = next_page = 1
 
         while current_page <= next_page:
             params = {"page": current_page, "per_page": per_page}
-            json_data = boost.get_resource(self.cinema_str_id, boost.ResourceBoost.FILMS, params=params)
-            film_collection: boost_serializers.FilmCollection = parse_obj_as(
-                boost_serializers.FilmCollection, json_data
-            )
-            venue_movies.extend([film.to_generic_movie() for film in film_collection.data])
-            total_pages = film_collection.totalPages
-            next_page = film_collection.nextPage
+            json_data = boost.get_resource(self.cinema_str_id, resource, params=params)
+            collection = parse_obj_as(collection_class, json_data)
+            items.extend(collection.data)
+            total_pages = collection.totalPages
+            next_page = collection.nextPage
             current_page += 1
             if total_pages < current_page:
                 break
 
-        return venue_movies
+        return items
+
+    def get_venue_movies(self, per_page: int = 30) -> list[external_bookings_models.Movie]:
+        films = self.get_collection_items(
+            resource=boost.ResourceBoost.FILMS,
+            collection_class=boost_serializers.FilmCollection,
+            per_page=per_page,
+        )
+        return [film.to_generic_movie() for film in films]
