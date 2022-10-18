@@ -41,39 +41,13 @@ class ListCollectiveOffersQueryModel(BaseModel):
 
 
 class OfferVenueModel(BaseModel):
-    addressType: collective_offers_serialize.OfferAddressType
     venueId: int | None
     otherAddress: str | None
+    addressType: collective_offers_serialize.OfferAddressType
 
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-    @validator("venueId")
-    def validate_venueId(cls, venueId: int | None, values: dict) -> int | None:
-        if values["addressType"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE and venueId is None:
-            raise ValueError(
-                f"Ce champ est obligatoire si 'addressType' vaut '{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
-            )
-        if values["addressType"] != collective_offers_serialize.OfferAddressType.OFFERER_VENUE and venueId is not None:
-            raise ValueError(
-                f"Ce champ est interdit si 'addressType' ne vaut pas '{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
-            )
-
-        return venueId
-
-    @validator("otherAddress")
-    def validate_otherAddress(cls, otherAddress: str | None, values: dict) -> str | None:
-        if values["addressType"] == collective_offers_serialize.OfferAddressType.OTHER and not otherAddress:
-            raise ValueError(
-                f"Ce champ est obligatoire si 'addressType' vaut '{collective_offers_serialize.OfferAddressType.OTHER.value}'"
-            )
-        if values["addressType"] != collective_offers_serialize.OfferAddressType.OTHER and otherAddress:
-            raise ValueError(
-                f"Ce champ est interdit si 'addressType' ne vaut pas '{collective_offers_serialize.OfferAddressType.OTHER.value}'"
-            )
-
-        return otherAddress
 
 
 def validate_email(email: str) -> str:

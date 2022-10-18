@@ -1,10 +1,12 @@
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import validation as educational_validation
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.pro import blueprint
+from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import public_api_collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -223,6 +225,7 @@ def patch_collective_offer_public(
     """Édition d'une offre collective."""
     new_values = body.dict(exclude_unset=True)
     # checking data
+    educational_validation.validate_offer_venue(body.offerVenue)
     non_nullable_fields = [
         "name",
         "venueId",
@@ -285,10 +288,21 @@ def patch_collective_offer_public(
         if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):  # type: ignore [attr-defined]
             raise ApiErrors(
                 errors={
-                    "venueId": ["Ce lieu n'à pas été trouvée."],
+                    "venueId": ["Ce lieu n'a pas été trouvé."],
                 },
                 status_code=404,
             )
+
+    if new_values.get("offerVenue"):
+        if new_values["offerVenue"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value:
+            venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
+            if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):  # type: ignore [attr-defined]
+                raise ApiErrors(
+                    errors={
+                        "offerVenue.venueId": ["Ce lieu n'a pas été trouvé."],
+                    },
+                    status_code=404,
+                )
 
     # real edition
     try:
