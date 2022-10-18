@@ -47,6 +47,7 @@ import type { ListFeatureResponseModel } from '../models/ListFeatureResponseMode
 import type { ListOffersResponseModel } from '../models/ListOffersResponseModel';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
+import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferResponseIdModel } from '../models/OfferResponseIdModel';
 import type { OfferType } from '../models/OfferType';
@@ -65,6 +66,7 @@ import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
+import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
 import type { SirenInfo } from '../models/SirenInfo';
@@ -1483,6 +1485,28 @@ export class DefaultService {
   }
 
   /**
+   * post_new_password <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public postNewPassword(
+    requestBody?: NewPasswordBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/new-password',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: `Bad Request`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * post_change_password <POST>
    * @param requestBody
    * @returns void
@@ -1516,6 +1540,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/phone',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * post_for_password_token <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public postForPasswordToken(
+    requestBody?: ResetPasswordBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/reset-password',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
