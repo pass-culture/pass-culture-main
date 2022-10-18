@@ -991,6 +991,7 @@ def create_collective_offer_public(
 
     offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
+    validation.validate_offer_venue(body.offer_venue)
     validation.check_intervention_area(body.intervention_area)
 
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
