@@ -8,10 +8,10 @@ import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
+import Notification from 'components/layout/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
-import * as useNotification from 'hooks/useNotification'
 import { configureTestStore } from 'store/testUtils'
 
 import ActionsBar, { IActionBarProps } from '../ActionsBar'
@@ -26,6 +26,7 @@ const renderActionsBar = ({ props, store }: IRenderActionsBar) =>
     <Provider store={store}>
       <MemoryRouter initialEntries={['/offres']}>
         <ActionsBar {...props} />
+        <Notification />
       </MemoryRouter>
     </Provider>
   )
@@ -45,13 +46,6 @@ const mockCanDeleteOffers = jest.fn().mockReturnValue(true)
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props: IActionBarProps
   let store: Store
-  const mockUseNotification = {
-    close: jest.fn(),
-    error: jest.fn(),
-    pending: jest.fn(),
-    information: jest.fn(),
-    success: jest.fn(),
-  }
 
   beforeEach(() => {
     props = {
@@ -72,6 +66,15 @@ describe('src | components | pages | Offers | ActionsBar', () => {
           venueId: 'E3',
           offererId: 'A4',
         },
+      },
+      features: {
+        list: [
+          {
+            isActive: true,
+            name: 'OFFER_DRAFT_ENABLED',
+            nameKey: 'OFFER_DRAFT_ENABLED',
+          },
+        ],
       },
     })
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -134,11 +137,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
   describe('on click on "Publier" button', () => {
     it('should activate selected offers', async () => {
       // given
-      const notifySuccess = jest.fn()
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...mockUseNotification,
-        success: notifySuccess,
-      }))
       renderActionsBar({ props, store })
 
       // when
@@ -151,17 +149,12 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       })
       expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
       expect(props.refreshOffers).toHaveBeenCalled()
-      expect(notifySuccess).toHaveBeenCalledWith(
-        '2 offres ont bien été publiées'
-      )
+      expect(
+        screen.getByText('2 offres ont bien été publiées')
+      ).toBeInTheDocument()
     })
     it('should not activate offers when a draft is selected', async () => {
       // given
-      const notifyError = jest.fn()
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...mockUseNotification,
-        error: notifyError,
-      }))
       mockCanUpdatedOfferStatus.mockReturnValueOnce(false)
 
       renderActionsBar({ props, store })
@@ -173,19 +166,16 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
       expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
       expect(props.refreshOffers).not.toHaveBeenCalled()
-      expect(notifyError).toHaveBeenCalledWith(
-        'Vous ne pouvez pas publier des brouillons depuis cette liste'
-      )
+      expect(
+        screen.getByText(
+          'Vous ne pouvez pas publier des brouillons depuis cette liste'
+        )
+      ).toBeInTheDocument()
     })
   })
   describe('on click on "Supprimer" button', () => {
     it('should delete selected draft offers', async () => {
       // given
-      const notifySuccess = jest.fn()
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...mockUseNotification,
-        success: notifySuccess,
-      }))
       renderActionsBar({ props, store })
 
       // when
@@ -198,17 +188,13 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       })
       expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
       expect(props.refreshOffers).toHaveBeenCalled()
-      expect(notifySuccess).toHaveBeenCalledWith(
-        '1 brouillon a bien été supprimé'
-      )
+      expect(
+        screen.getByText('1 brouillon a bien été supprimé')
+      ).toBeInTheDocument()
     })
     it('should not delete offers when a non draft is selected', async () => {
       // given
-      const notifyError = jest.fn()
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...mockUseNotification,
-        error: notifyError,
-      }))
+
       mockCanDeleteOffers.mockReturnValueOnce(false)
 
       renderActionsBar({ props, store })
@@ -220,9 +206,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
       expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
       expect(props.refreshOffers).not.toHaveBeenCalled()
-      expect(notifyError).toHaveBeenCalledWith(
-        'Seuls les brouillons peuvent être supprimés'
-      )
+      expect(
+        screen.getByText('Seuls les brouillons peuvent être supprimés')
+      ).toBeInTheDocument()
     })
   })
 
@@ -230,11 +216,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     it('should deactivate selected offers', async () => {
       // given
       props.areAllOffersSelected = false
-      const notifySuccess = jest.fn()
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...mockUseNotification,
-        success: notifySuccess,
-      }))
       renderActionsBar({ props, store })
 
       // when
@@ -259,9 +240,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
       expect(props.refreshOffers).toHaveBeenCalledWith()
 
-      expect(notifySuccess).toHaveBeenCalledWith(
-        '2 offres ont bien été désactivées'
-      )
+      expect(
+        screen.getByText('2 offres ont bien été désactivées')
+      ).toBeInTheDocument()
     })
   })
 

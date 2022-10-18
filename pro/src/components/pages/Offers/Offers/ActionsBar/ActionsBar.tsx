@@ -5,6 +5,7 @@ import useNotification from 'components/hooks/useNotification'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
@@ -94,6 +95,7 @@ const ActionsBar = ({
     showModal: showDeleteDialog,
     hideModal: hideDeleteDialog,
   } = useModal()
+  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
 
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
@@ -187,7 +189,7 @@ const ActionsBar = ({
       <Button onClick={() => showConfirmDialog()} Icon={StatusInactiveIcon}>
         Désactiver
       </Button>
-      {audience == Audience.INDIVIDUAL && (
+      {audience == Audience.INDIVIDUAL && isDraftEnabled && (
         <Button onClick={() => handleOpenDeleteDialog()} Icon={TrashFilledIcon}>
           Supprimer
         </Button>
