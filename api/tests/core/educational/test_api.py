@@ -508,28 +508,6 @@ class CreateCollectiveOfferStocksTest:
         assert not mocked_offer_creation_notification_to_admin.called
 
 
-@freeze_time("2020-11-17 15:00:00")
-@pytest.mark.usefixtures("db_session")
-class EditEducationalInstitutionTest:
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
-        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
-    ) -> None:
-        # Given
-        user = users_factories.ProFactory()
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer__validation=OfferValidationStatus.DRAFT)
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = OfferValidationStatus.APPROVED
-
-        # When
-        educational_api.update_collective_offer_educational_institution(
-            offer_id=stock.collectiveOfferId, educational_institution_id=None, is_creating_offer=True, user=user
-        )
-
-        # Then
-        mocked_offer_creation_notification_to_admin.assert_called_once_with(stock.collectiveOffer)
-
-
 @freeze_time("2020-01-05 10:00:00")
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
