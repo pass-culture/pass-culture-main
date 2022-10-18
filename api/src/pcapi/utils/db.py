@@ -1,5 +1,6 @@
 import datetime
 import enum
+import json
 import typing
 
 import psycopg2.extras
@@ -156,5 +157,53 @@ def get_ordering_clauses(
 
     if bad_sorts:
         raise BadSortError("bad sort provided: " ", ".join((f"{sort}: {message}" for sort, message in bad_sorts)))
+
+    return ordering_clauses
+
+
+def get_ordering_clauses_from_json(
+    model: Model,  # type: ignore[valid-type]
+    sorts: str,
+) -> list[sqla.sql.ColumnElement | sqla.sql.expression.UnaryExpression]:  # type: ignore [name-defined]
+    """
+    `sorts` should contain a JSON string specifying a list of dicts containing the following keys:
+    - field: the name of a field
+    - order: `asc` or `desc` (optional, `asc` by default)
+
+    example:
+    - [{"field": "city", "order", "desc"}] for the `model.city` field in descending order
+    - [{"field": "email"}] for the `model.email` field in ascending order
+    """
+    try:
+        parsed_sorts = json.loads(sorts)
+    except json.JSONDecodeError:
+        raise BadSortError("bad sort provided: invalid JSON")
+
+    ordering_clauses = []
+    bad_sorts = []
+    for sort in parsed_sorts:
+        try:
+            field_name = sort["field"]
+        except KeyError:
+            bad_sorts.append("a sort clause is missing the 'field' key")
+            continue
+        except TypeError:
+            bad_sorts.append("bad sort format")
+            continue
+        else:
+
+            try:
+                field = getattr(model, field_name)
+            except AttributeError:
+                bad_sorts.append(
+                    f"model `{model.__name__}` does not have a `{field_name}` attribute"  # type: ignore [attr-defined]
+                )
+            else:
+                if sort.get("order", "asc") == "desc":
+                    field = field.desc()
+                ordering_clauses.append(field)
+
+    if bad_sorts:
+        raise BadSortError("bad sort provided: " ", ".join((f"{message}" for message in bad_sorts)))
 
     return ordering_clauses
