@@ -131,7 +131,6 @@ const Summary = ({
 
   return (
     <>
-      <PageTitle title="Récapitulatif" />
       {(isCreation || isDisabledOffer || providerName !== null) && (
         <div className={styles['offer-preview-banners']}>
           {isCreation && <BannerSummary />}
