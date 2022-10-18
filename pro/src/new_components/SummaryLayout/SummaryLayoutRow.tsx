@@ -19,7 +19,9 @@ const Row = ({
       {title}
       {title && ' : '}
     </span>
-    <span>{description}</span>
+    <span className={style['summary-layout-row-description']}>
+      {description}
+    </span>
   </div>
 )
 
