@@ -72,6 +72,10 @@
       flex-shrink: 0;
     }
 
+    &-description {
+      word-break: break-word;
+    }
+
     &:last-child {
       margin-bottom: 0 !important;
     }
