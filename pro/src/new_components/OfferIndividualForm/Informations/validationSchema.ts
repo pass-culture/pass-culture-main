@@ -23,8 +23,9 @@ export const validationSchema = {
         name: 'IsValidMinutes',
         message: 'Une heure ne peut pas avoir plus de 59 minutes',
         test: (value?: string) => {
+          if (!value) return true
           const [, minutes] = value ? value.split(':') : []
-          return !!(!minutes || parseInt(minutes, 10) > 60)
+          return !!(minutes && parseInt(minutes, 10) < 60)
         },
       }),
 
