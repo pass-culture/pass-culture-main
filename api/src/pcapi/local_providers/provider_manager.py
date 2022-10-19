@@ -61,7 +61,8 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None 
         assert venue_provider.provider.localClass in [
             "AllocineStocks",
             "CDSStocks",
-        ], "Only AllocineStocks or CDSStocks should reach this code"
+            "BoostStocks",
+        ], "Only AllocineStocks, CDSStocks or BoostStocks should reach this code"
         provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
 
         logger.info(
