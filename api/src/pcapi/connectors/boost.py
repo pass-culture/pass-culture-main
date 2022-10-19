@@ -23,6 +23,7 @@ class ResourceBoost(enum.Enum):
     EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
     FILMS = "films"
     SHOWTIMES = "showtimes"
+    SHOWTIME = "showtimes/{id}"
 
 
 LOGIN_ENDPOINT = "api/vendors/login"

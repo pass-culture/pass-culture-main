@@ -162,3 +162,18 @@ class GetShowtimesTest:
                 screen={"id": 6, "auditoriumNumber": 6, "name": "SALLE 06", "capacity": 174, "seatingAllowed": True},
             ),
         ]
+
+
+class GetShowtimeRemainingSeatsTest:
+    def test_number_of_remaining_seats_for_showtime(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/showtimes/35278",
+            json=fixtures.ShowtimeDetailsEndpointResponse.DATA,
+        )
+        boost = BoostClientAPI(cinema_str_id)
+
+        nb_remaining_online_seats = boost.get_showtime_remaining_online_seats(35278)
+
+        assert nb_remaining_online_seats == 122
