@@ -15,7 +15,7 @@ class Movie:
     duration: int  # duration in minutes
     description: str
     posterpath: str | None
-    visa: str
+    visa: str | None
 
 
 class ExternalBookingsClientAPI:
