@@ -22,7 +22,7 @@ import { FieldValues } from 'react-hook-form'
 
 import { Colors } from '../../../layout/Colors'
 import {
-  getErrorMessage,
+  getGenericHttpErrorMessage,
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
@@ -76,7 +76,9 @@ export const AddRoleModal = ({
         if (error instanceof PcApiHttpError) {
           notify(getHttpApiErrorMessage(error), { type: 'error' })
         } else {
-          notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+          notify(await getGenericHttpErrorMessage(error as Response), {
+            type: 'error',
+          })
         }
         handleCloseModal()
         captureException(error)

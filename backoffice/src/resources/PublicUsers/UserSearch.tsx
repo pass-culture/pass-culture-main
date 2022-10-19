@@ -13,6 +13,7 @@ import {
   Stack,
   Typography,
   CircularProgress,
+  Backdrop,
 } from '@mui/material'
 import { captureException } from '@sentry/react'
 import React, { ClassAttributes, HTMLAttributes, useState } from 'react'
@@ -21,7 +22,7 @@ import { FieldValues } from 'react-hook-form'
 
 import { Colors } from '../../layout/Colors'
 import {
-  getErrorMessage,
+  getGenericHttpErrorMessage,
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
@@ -129,7 +130,9 @@ export const UserSearch = () => {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
       } else {
-        notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+        notify(await getGenericHttpErrorMessage(error as Response), {
+          type: 'error',
+        })
       }
       captureException(error)
     }
@@ -167,7 +170,7 @@ export const UserSearch = () => {
 
   return (
     <>
-      <CircularProgress
+      {/* <CircularProgress
         size={250}
         thickness={2}
         style={{
@@ -176,7 +179,13 @@ export const UserSearch = () => {
           marginLeft: 'auto',
           marginRight: 'auto',
         }}
-      />
+      />*/}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Grid
         visibility={isLoading ? 'hidden' : 'visible'}
         container
