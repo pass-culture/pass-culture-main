@@ -3,7 +3,9 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
+import type { Store } from 'redux'
 
+import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferEducationalStock, {
@@ -11,11 +13,12 @@ import OfferEducationalStock, {
 } from '../OfferEducationalStock'
 
 export const renderOfferEducationalStock = (
-  props: IOfferEducationalStockProps
+  props: IOfferEducationalStockProps,
+  store: Store<RootState> = configureTestStore({})
 ) => {
   const history = createBrowserHistory()
   return render(
-    <Provider store={configureTestStore({})}>
+    <Provider store={store}>
       <Router history={history}>
         <OfferEducationalStock {...props} />
       </Router>

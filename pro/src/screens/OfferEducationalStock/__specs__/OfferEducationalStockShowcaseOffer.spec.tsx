@@ -7,6 +7,7 @@ import {
   EducationalOfferType,
   Mode,
 } from 'core/OfferEducational'
+import { configureTestStore } from 'store/testUtils'
 
 import {
   collectiveOfferTemplateFactory,
@@ -125,6 +126,102 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
     const showCaseOptionRadioButton = queryShowcaseOfferRadio()
     const classicOptionRadioButton = queryClassicOfferRadio()
 
+    expect(showCaseOptionRadioButton).not.toBeInTheDocument()
+    expect(classicOptionRadioButton).not.toBeInTheDocument()
+  })
+
+  describe('radio buttons', () => {
+    it('should display radio button when creating offer', async () => {
+      renderOfferEducationalStock(props)
+      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
+      const classicOptionRadioButton = queryClassicOfferRadio()
+      expect(showCaseOptionRadioButton).toBeInTheDocument()
+      expect(classicOptionRadioButton).toBeInTheDocument()
+    })
+
+    it('should display radio button when editing offer if duplication FF is off and offer is showcase', async () => {
+      renderOfferEducationalStock({
+        ...props,
+        mode: Mode.EDITION,
+        offer: collectiveOfferTemplateFactory({}),
+        initialValues: {
+          ...DEFAULT_EAC_STOCK_FORM_VALUES,
+          educationalOfferType: EducationalOfferType.SHOWCASE,
+        },
+      })
+      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
+      const classicOptionRadioButton = queryClassicOfferRadio()
+      expect(showCaseOptionRadioButton).toBeInTheDocument()
+      expect(classicOptionRadioButton).toBeInTheDocument()
+    })
+
+    it('should not display radio button when editing offer when offer is not showcase', async () => {
+      renderOfferEducationalStock({
+        ...props,
+        mode: Mode.EDITION,
+      })
+
+      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
+      const classicOptionRadioButton = queryClassicOfferRadio()
+      expect(showCaseOptionRadioButton).not.toBeInTheDocument()
+      expect(classicOptionRadioButton).not.toBeInTheDocument()
+    })
+
+    it('should not display radio button when editing offer if duplication FF is on and offer is showcase', async () => {
+      renderOfferEducationalStock(
+        {
+          ...props,
+          mode: Mode.EDITION,
+          offer: collectiveOfferTemplateFactory({}),
+          initialValues: {
+            ...DEFAULT_EAC_STOCK_FORM_VALUES,
+            educationalOfferType: EducationalOfferType.SHOWCASE,
+          },
+        },
+        configureTestStore({
+          features: {
+            list: [
+              {
+                isActive: true,
+                nameKey: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
+              },
+            ],
+          },
+        })
+      )
+
+      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
+      const classicOptionRadioButton = queryClassicOfferRadio()
+      expect(showCaseOptionRadioButton).not.toBeInTheDocument()
+      expect(classicOptionRadioButton).not.toBeInTheDocument()
+    })
+  })
+
+  it('should nos display radio button when duplication offer', async () => {
+    renderOfferEducationalStock(
+      {
+        ...props,
+        isCreatingFromTemplate: true,
+        mode: Mode.EDITION,
+        initialValues: {
+          ...DEFAULT_EAC_STOCK_FORM_VALUES,
+          educationalOfferType: EducationalOfferType.SHOWCASE,
+        },
+      },
+      configureTestStore({
+        features: {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
+            },
+          ],
+        },
+      })
+    )
+
+    const showCaseOptionRadioButton = queryShowcaseOfferRadio()
+    const classicOptionRadioButton = queryClassicOfferRadio()
     expect(showCaseOptionRadioButton).not.toBeInTheDocument()
     expect(classicOptionRadioButton).not.toBeInTheDocument()
   })
