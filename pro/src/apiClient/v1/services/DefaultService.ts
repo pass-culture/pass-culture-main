@@ -1479,6 +1479,22 @@ export class DefaultService {
   }
 
   /**
+   * patch_other_user_tuto_seen <PATCH>
+   * @returns void
+   * @throws ApiError
+   */
+  public patchOtherUserTutoSeen(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/users/other-tuto-seen',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * post_change_password <POST>
    * @param requestBody
    * @returns void
