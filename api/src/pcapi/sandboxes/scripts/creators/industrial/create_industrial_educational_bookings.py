@@ -380,6 +380,7 @@ def create_industrial_educational_bookings() -> None:
             collectiveInterventionArea=ALL_INTERVENTION_AREA,
             pricing_point="self",
             reimbursement_point="self",
+            venueLabelId=7,
         )
     )
     venues.append(
@@ -394,6 +395,7 @@ def create_industrial_educational_bookings() -> None:
             collectiveInterventionArea=MAINLAND_INTERVENTION_AREA,
             pricing_point="self",
             reimbursement_point="self",
+            venueLabelId=24,
         )
     )
     venues.append(
@@ -407,6 +409,7 @@ def create_industrial_educational_bookings() -> None:
             collectiveNetwork=["126531", "130079"],
             pricing_point="self",
             reimbursement_point="self",
+            venueLabelId=22,
         )
     )
 
@@ -421,6 +424,7 @@ def create_industrial_educational_bookings() -> None:
                 venueEducationalStatusId=(i + 3) if (i + 3) in VENUE_EDUCATIONAL_STATUS else None,
                 pricing_point="self",
                 reimbursement_point="self",
+                venueLabelId=None,
             )
         )
 
