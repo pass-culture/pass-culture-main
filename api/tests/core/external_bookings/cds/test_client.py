@@ -1223,6 +1223,13 @@ class CineDigitalServiceGetMoviesTest:
                 "storyline": "Test description #2",
                 "visanumber": "456",
             },
+            {
+                "id": 2,
+                "title": "Test movie #2",
+                "duration": 5400,
+                "storyline": "Test description #2",
+                # No visanumber
+            },
         ]
 
         mocked_get_resource.return_value = json_movies
@@ -1238,7 +1245,7 @@ class CineDigitalServiceGetMoviesTest:
 
         # then
         mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource)
-        assert len(movies) == 2
+        assert len(movies) == 3
 
 
 class CineDigitalServiceGetHardcodedSeatmapTest:
