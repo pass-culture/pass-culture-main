@@ -80,3 +80,11 @@ SUSPENSION_EVENT_TYPE_CHOICES = (
 )
 
 assert set(_t[0] for _t in SUSPENSION_EVENT_TYPE_CHOICES) == set(SuspensionEventType)
+
+
+class YoungStatusType(enum.Enum):
+    ELIGIBLE = "eligible"
+    NON_ELIGIBLE = "non_eligible"
+    BENEFICIARY = "beneficiary"
+    EX_BENEFICIARY = "ex_beneficiary"
+    SUSPENDED = "suspended"
