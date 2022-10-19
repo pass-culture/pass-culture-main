@@ -41,9 +41,11 @@ describe('test apiClient:helpers', () => {
     }
     const serializedError = serializeApiErrors(initialError)
 
-    expect(Object.keys(serializedError)).toContain('f1')
-    expect(Object.keys(serializedError)).toContain('f2')
-    expect(Object.keys(serializedError)).toContain('f3')
+    expect(serializedError).toEqual({
+      f1: 'e1',
+      f2: 'e2',
+      f3: 'e3',
+    })
   })
 
   it('should map api response errors to form one with changes', () => {
@@ -58,7 +60,10 @@ describe('test apiClient:helpers', () => {
     }
     const serializedError = serializeApiErrors(initialError, apiFieldsMap)
 
-    expect(Object.keys(serializedError)).not.toContain('f1')
-    expect(Object.keys(serializedError)).toContain('f4')
+    expect(serializedError).toEqual({
+      f4: 'e1',
+      f2: 'e2',
+      f3: 'e3',
+    })
   })
 })
