@@ -1,4 +1,6 @@
 from datetime import datetime
+import decimal
+import typing
 
 from pydantic import Field
 from pydantic import condecimal
@@ -131,9 +133,13 @@ class UpdateVenueStockBodyModel(BaseModel):
 
     ref: str = Field(title="ISBN", description="Format: EAN13")
     available: NonNegativeInt
-    price: condecimal(decimal_places=2) = Field(  # type: ignore [valid-type]
-        None, description="(Optionnel) Prix en Euros avec 2 décimales possibles"
-    )
+    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
+        price: decimal.Decimal
+    else:
+        price: condecimal(decimal_places=2) = Field(
+            None,
+            description="(Optionnel) Prix en Euros avec 2 décimales possibles",
+        )
 
     @validator("price", pre=True)
     def empty_string_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def]

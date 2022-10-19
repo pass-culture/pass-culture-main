@@ -44,7 +44,53 @@ class VenueContactModel(BaseModel):
         raise ValueError(f"url du site web invalide: {website}")
 
 
-VenueImageCredit = pydantic.constr(strip_whitespace=True, min_length=1, max_length=255)
+class RequiredStrippedString(pydantic.ConstrainedStr):
+    strip_whitespace = True
+    min_length = 1
+
+
+class VenueImageCredit(RequiredStrippedString):
+    max_length = 255
+
+
+class VenueName(RequiredStrippedString):
+    max_length = 140
+
+
+class VenuePublicName(pydantic.ConstrainedStr):
+    strip_whitespace = True
+    # optional, hence no `min_length`
+    max_length = 255
+
+
+class VenueDescription(pydantic.ConstrainedStr):
+    strip_whitespace = True
+    # optional, hence no `min_length`
+    max_length = 1000
+
+
+class VenueBookingEmail(pydantic.ConstrainedStr):
+    strip_whitespace = True
+    # optional, hence no `min_length`
+    max_length = 120
+
+
+class VenueAddress(RequiredStrippedString):
+    max_length = 200
+
+
+class VenueCity(RequiredStrippedString):
+    max_length = 200
+
+
+class VenuePostalCode(RequiredStrippedString):
+    min_length = 4
+    max_length = 6
+
+
+class VenueSiret(RequiredStrippedString):
+    min_length = 14
+    max_length = 14
 
 
 class BaseVenueResponse(BaseModel):
@@ -55,7 +101,7 @@ class BaseVenueResponse(BaseModel):
     bannerUrl: str | None
     contact: VenueContactModel | None
     city: str | None
-    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
+    description: VenueDescription | None
     isPermanent: bool | None
     latitude: float | None
     longitude: float | None
