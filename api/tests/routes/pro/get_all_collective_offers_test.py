@@ -212,3 +212,57 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["id"] == humanize(offer.id)
+
+    def test_select_only_collective_offer(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1)
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user.email)
+        response = client.get("/collective/offers?collectiveOfferType=offer")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["venueId"] == humanize(venue.id)
+        assert response_json[0]["id"] == humanize(offer.id)
+        assert len(response_json[0]["stocks"]) == 1
+        assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
+        assert response_json[0]["isShowcase"] == False
+
+    def test_select_only_collective_offer_template(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
+        )
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
+        )
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user.email)
+        response = client.get("/collective/offers?collectiveOfferType=template")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["venueId"] == humanize(venue.id)
+        assert response_json[0]["id"] == humanize(template.id)
+        assert len(response_json[0]["stocks"]) == 1
+        assert response_json[0]["stocks"][0]["id"] == ""
+        assert response_json[0]["isShowcase"] == True
