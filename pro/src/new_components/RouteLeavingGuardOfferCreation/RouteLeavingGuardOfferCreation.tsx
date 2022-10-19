@@ -9,6 +9,7 @@ const STEP_OFFER = 'offer'
 const STEP_STOCKS = 'stocks'
 const STEP_VISIBILITY = 'visibility'
 const STEP_CONFIRMATION = 'confirmation'
+const STEP_RECAP = 'summary'
 
 const individualUrlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/([A-Z0-9]+\/)?individuel\/creation/g,
@@ -21,6 +22,8 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_STOCKS]: /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/stocks/g,
   [STEP_VISIBILITY]:
     /\/offre(\/([A-Z0-9]+|duplication))\/collectif(\/[A-Z,0-9]+)?\/visibilite/g,
+  [STEP_RECAP]:
+    /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/creation\/recapitulatif/g,
   [STEP_CONFIRMATION]:
     /\/offre\/(((T-){0,1}[A-Z0-9]+)|duplication)\/collectif(\/[A-Z,0-9]+)?\/confirmation/g,
 }
@@ -85,6 +88,8 @@ const RouteLeavingGuardOfferCreation = ({
         (isCollectiveFlow && to === STEP_VISIBILITY) ||
         // or to confirmation
         to === STEP_CONFIRMATION ||
+        // or to recap
+        to === STEP_RECAP ||
         // or from collective to individual or reverse
         (from === STEP_OFFER && to === STEP_OFFER)
       ) {
