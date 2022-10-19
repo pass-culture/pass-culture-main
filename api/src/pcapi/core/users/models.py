@@ -169,6 +169,36 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
+@dataclass(frozen=True)
+class YoungStatus:
+    status_type: constants.YoungStatusType
+
+
+class Eligible(YoungStatus):
+    def __init__(self) -> None:
+        super().__init__(status_type=constants.YoungStatusType.ELIGIBLE)
+
+
+class NonEligible(YoungStatus):
+    def __init__(self) -> None:
+        super().__init__(status_type=constants.YoungStatusType.NON_ELIGIBLE)
+
+
+class Beneficiary(YoungStatus):
+    def __init__(self) -> None:
+        super().__init__(status_type=constants.YoungStatusType.BENEFICIARY)
+
+
+class ExBeneficiary(YoungStatus):
+    def __init__(self) -> None:
+        super().__init__(status_type=constants.YoungStatusType.EX_BENEFICIARY)
+
+
+class Suspended(YoungStatus):
+    def __init__(self) -> None:
+        super().__init__(status_type=constants.YoungStatusType.SUSPENDED)
+
+
 class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     __tablename__ = "user"
 
@@ -474,6 +504,22 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
         )
+
+    @property
+    def young_status(self) -> YoungStatus:
+        if not self.isActive:
+            return Suspended()
+
+        if self.is_beneficiary:  # pylint: disable=using-constant-test
+            if self.deposit_expiration_date and self.deposit_expiration_date < datetime.utcnow():
+                return ExBeneficiary()
+
+            return Beneficiary()
+
+        if self.eligibility is not None:
+            return Eligible()
+
+        return NonEligible()
 
     @hybrid_property
     def has_remaining_credit(self) -> bool:

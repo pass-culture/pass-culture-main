@@ -1486,6 +1486,7 @@ def test_public_api(client):
                         "recreditAmountToShow": {"nullable": True, "title": "Recreditamounttoshow", "type": "integer"},
                         "roles": {"items": {"$ref": "#/components/schemas/UserRole"}, "type": "array"},
                         "showEligibleCard": {"title": "Showeligiblecard", "type": "boolean"},
+                        "youngStatus": {"$ref": "#/components/schemas/YoungStatusResponse"},
                         "subscriptionMessage": {
                             "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessage"}],
                             "nullable": True,
@@ -1503,6 +1504,7 @@ def test_public_api(client):
                         "roles",
                         "showEligibleCard",
                         "subscriptions",
+                        "youngStatus",
                     ],
                     "title": "UserProfileResponse",
                     "type": "object",
@@ -1549,6 +1551,23 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["ADMIN", "BENEFICIARY", "PRO", "UNDERAGE_BENEFICIARY", "TEST"],
                     "title": "UserRole",
+                },
+                "YoungStatusResponse": {
+                    "properties": {"statusType": {"$ref": "#/components/schemas/YoungStatusType"}},
+                    "required": ["statusType"],
+                    "title": "YoungStatusResponse",
+                    "type": "object",
+                },
+                "YoungStatusType": {
+                    "description": "An enumeration.",
+                    "enum": [
+                        "eligible",
+                        "non_eligible",
+                        "beneficiary",
+                        "ex_beneficiary",
+                        "suspended",
+                    ],
+                    "title": "YoungStatusType",
                 },
                 "UserSuspensionDateResponse": {
                     "properties": {

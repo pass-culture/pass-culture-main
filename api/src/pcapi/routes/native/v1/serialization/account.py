@@ -119,6 +119,16 @@ class ChangeEmailTokenContent(BaseModel):
         return cls(current_email=current_email, new_email=new_email)
 
 
+class YoungStatusResponse(BaseModel):
+    status_type: users_constants.YoungStatusType
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        allow_mutation = False
+        orm_mode = True
+
+
 class UserProfileResponse(BaseModel):
     booked_offers: dict[str, int]
     birth_date: datetime.date | None
@@ -144,6 +154,7 @@ class UserProfileResponse(BaseModel):
     show_eligible_card: bool
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     subscriptionMessage: subscription_serialization.SubscriptionMessage | None
+    young_status: YoungStatusResponse
 
     _convert_recredit_amount_to_show = validator("recreditAmountToShow", pre=True, allow_reuse=True)(convert_to_cent)
 
