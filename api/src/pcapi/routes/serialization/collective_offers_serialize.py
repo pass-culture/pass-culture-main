@@ -31,6 +31,11 @@ T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
 )
 
 
+class CollectiveOfferType(enum.Enum):
+    offer = "offer"
+    template = "template"
+
+
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
@@ -40,6 +45,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: str | None
     period_ending_date: str | None
+    collective_offer_type: CollectiveOfferType | None
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
