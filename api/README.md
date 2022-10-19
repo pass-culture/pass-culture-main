@@ -1,7 +1,5 @@
 # pass-culture-api
 
-[![Coverage Status](https://coveralls.io/repos/github/betagouv/pass-culture-api/badge.svg?branch=master)](https://coveralls.io/github/betagouv/pass-culture-api?branch=master)
-
 Voici le backend de l'application Pass Culture; il est lancé via `docker-compose` en utilisant le fichier
 `docker-compose-app.yml` du répertoire parent de `api`: `pass-culture-main`.
 

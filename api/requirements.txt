@@ -10,7 +10,6 @@ black
 blinker==1.4
 boto3==1.21.9
 click-option-group==0.5.3
-coveralls==2.1.2
 debugpy
 factory-boy
 Flask==2.0.*
