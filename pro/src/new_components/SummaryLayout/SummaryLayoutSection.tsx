@@ -10,7 +10,7 @@ interface ISummaryLayoutSectionProps {
   title: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
-  editLink: string
+  editLink?: string // FIXME(MathildeDuboille - 18/10/22): make this props mandatory when we can modify collective offer during its creation
   onLinkClick?: () => void
 }
 
@@ -27,14 +27,16 @@ const Section = ({
         <Title as="h3" level={3}>
           {title}
         </Title>
-        <ButtonLink
-          link={{ to: editLink, isExternal: false }}
-          className={style['summary-layout-section-header-edit-link']}
-          Icon={BlackPen}
-          onClick={onLinkClick ? onLinkClick : undefined}
-        >
-          Modifier
-        </ButtonLink>
+        {editLink && (
+          <ButtonLink
+            link={{ to: editLink, isExternal: false }}
+            className={style['summary-layout-section-header-edit-link']}
+            Icon={BlackPen}
+            onClick={onLinkClick ? onLinkClick : undefined}
+          >
+            Modifier
+          </ButtonLink>
+        )}
       </div>
       <div className={style['summary-layout-section-header-separator']}></div>
     </div>
