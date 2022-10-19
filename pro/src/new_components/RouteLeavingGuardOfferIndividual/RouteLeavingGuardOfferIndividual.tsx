@@ -23,7 +23,7 @@ const urlPatterns: { [key: string]: RegExp } = {
 export interface RouteLeavingGuardOfferIndividualProps {
   when?: boolean
   onSubmit?: () => void
-  isValid?: () => boolean
+  isValid?: () => Promise<boolean>
 }
 
 const RouteLeavingGuardOfferIndividual = ({
@@ -90,11 +90,12 @@ const RouteLeavingGuardOfferIndividual = ({
   )
   return (
     <>
-      {isDraftOfferEnabled && onSubmit ? (
+      {isDraftOfferEnabled && onSubmit && isValid ? (
         <SaveDraftLeavingGuard
           shouldBlockNavigation={shouldBlockNavigation}
           when={when}
           onSubmit={onSubmit}
+          isValid={isValid}
         />
       ) : (
         <RouteLeavingGuard
