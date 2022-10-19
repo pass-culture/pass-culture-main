@@ -338,7 +338,6 @@ class OffererBasicInfo(BaseModel):
     region: str
     bankInformationStatus: OffererBankInformationStatus
     isCollectiveEligible: bool
-    isTopActor: bool
 
 
 class VenueDmsStats(BaseModel):
@@ -427,6 +426,7 @@ class OffererToBeValidated(BaseModel):
     phoneNumber: str | None
     email: str | None
     lastComment: Comment | None
+    isTopActor: bool
 
 
 class ListOffererToBeValidatedResponseModel(PaginatedResponse):

@@ -147,7 +147,6 @@ class GetOffererBasicInfoTest:
         assert "ko" in payload["bankInformationStatus"]
         assert "ok" in payload["bankInformationStatus"]
         assert "isCollectiveEligible" in payload
-        assert "isTopActor" in payload
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_offerer_detail_basic_info(self, client, offerer):
@@ -234,65 +233,6 @@ class GetOffererBasicInfoTest:
         # then
         assert response.status_code == 200
         assert response.json["data"]["isCollectiveEligible"] is False
-
-    @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_offerer_with_top_actor_tag_is_top_actor(
-        self,
-        client,
-        offerer,
-    ):
-        # given
-        admin = users_factories.UserFactory()
-        tag = offerers_factories.OffererTagFactory(name="top-acteur", label="Top Actor")
-
-        # the offerer has no tags
-        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer.id)
-        )
-        assert response.status_code == 200
-        assert response.json["data"]["isTopActor"] is False
-
-        # add top-actor tag
-        auth_token = generate_token(admin, [Permissions.MANAGE_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).post(
-            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
-        )
-
-        # when
-        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer.id)
-        )
-
-        # then
-        assert response.status_code == 200
-        assert response.json["data"]["isTopActor"] is True
-
-    @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_offerer_without_top_actor_tag_is_not_top_actor(
-        self,
-        client,
-        offerer,
-    ):
-        # given
-        # we create a tag and add it to the offerer
-        admin = users_factories.UserFactory()
-        tag = offerers_factories.OffererTagFactory(name="hello-world-tag", label="Hello World")
-        auth_token = generate_token(admin, [Permissions.MANAGE_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).post(
-            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
-        )
-        auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
-
-        # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer.id)
-        )
-
-        # then
-        assert response.status_code == 200
-        assert response.json["data"]["isTopActor"] is False
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_offerer_returns_404_if_offerer_is_not_found(self, client):
@@ -1382,6 +1322,7 @@ class ListOfferersToBeValidatedTest:
             user=user_offerer.user,
             comment=None,
         )
+        tag = offerers_factories.OffererTagFactory(name="top-acteur", label="Top Actor")
 
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -1415,6 +1356,7 @@ class ListOfferersToBeValidatedTest:
             "content": "Houlala",
             "date": "2022-10-03T14:02:00",
         }
+        assert payload["isTopActor"] == (tag in user_offerer.offerer.tags)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(
@@ -1568,6 +1510,64 @@ class ListOfferersToBeValidatedTest:
 
         # then
         assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_offerer_with_top_actor_tag_is_top_actor(self, client):
+        # given
+        admin = users_factories.UserFactory()
+        tag = offerers_factories.OffererTagFactory(name="top-acteur", label="Top Actor")
+        offerer = offerers_factories.UserOffererFactory(
+            offerer__validationToken="0" * 27, offerer__validationStatus=offerers_models.ValidationStatus.NEW
+        ).offerer
+
+        # the offerer has no top-acteur tag
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+        assert response.status_code == 200
+        assert response.json["data"][0]["isTopActor"] is False
+
+        # add top-acteur tag
+        auth_token = generate_token(admin, [Permissions.MANAGE_PRO_ENTITY])
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # when
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["data"][0]["isTopActor"] is True
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_offerer_without_top_actor_tag_is_not_top_actor(self, client):
+        # given
+        # we create a tag and add it to the offerer
+        admin = users_factories.UserFactory()
+        tag = offerers_factories.OffererTagFactory(name="hello-world-tag", label="Hello World")
+        offerer = offerers_factories.UserOffererFactory(
+            offerer__validationToken="0" * 27, offerer__validationStatus=offerers_models.ValidationStatus.NEW
+        ).offerer
+
+        auth_token = generate_token(admin, [Permissions.MANAGE_PRO_ENTITY])
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.add_tag_to_offerer", offerer_id=offerer.id, tag_name=tag.name)
+        )
+
+        # when
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["data"][0]["isTopActor"] is False
 
 
 class ValidateOffererAttachmentTest:
@@ -1861,33 +1861,29 @@ class ToggleTopActorTagTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_toggle_is_top_actor(self, client):
         # given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.OffererTagFactory(name="top-acteur", label="Top acteur")
+        admin = users_factories.UserFactory()
+        offerer = offerers_factories.UserOffererFactory(
+            offerer__validationToken="0" * 27, offerer__validationStatus=offerers_models.ValidationStatus.NEW
+        ).offerer
+        tag = offerers_factories.OffererTagFactory(name="top-acteur", label="Top acteur")
 
         # when
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).put(
+        auth_token = generate_token(admin, [Permissions.MANAGE_PRO_ENTITY])
+        client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.toggle_top_actor", offerer_id=offerer.id), json={"isTopActor": True}
         )
 
         # then
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer.id)
-        )
-        assert response.status_code == 200
-        assert response.json["data"]["isTopActor"] == True
+        offerer_mappings = offerers_models.OffererTagMapping.query.all()
+        assert len(offerer_mappings) == 1
+        assert offerer_mappings[0].tagId == tag.id
+        assert offerer_mappings[0].offererId == offerer.id
 
         # when
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).put(
+        auth_token = generate_token(admin, [Permissions.MANAGE_PRO_ENTITY])
+        client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.toggle_top_actor", offerer_id=offerer.id), json={"isTopActor": False}
         )
 
         # then
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer.id)
-        )
-        assert response.status_code == 200
-        assert response.json["data"]["isTopActor"] == False
+        assert len(offerers_models.OffererTagMapping.query.all()) == 0
