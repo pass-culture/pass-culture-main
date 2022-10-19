@@ -434,6 +434,7 @@ class ValidationBaseView(BaseAdminView):
         "dateCreated": "Date de création",
         "isEvent": "Evènement ?",
         "firstBeginningDatetime": "Date de début",
+        "collectiveStock.beginningDatetime": "Date de l'évènement",
     }
 
     def is_accessible(self) -> bool:
@@ -611,7 +612,24 @@ class ValidationOfferView(ValidationBaseView):
 
 
 class ValidationCollectiveOfferView(ValidationBaseView):
-    column_list = ["id", "name", "validation", "venue", "offerer", "offer", "offers", "dateCreated", "isEvent"]
+    column_list = [
+        "id",
+        "name",
+        "validation",
+        "venue",
+        "offerer",
+        "offer",
+        "offers",
+        "dateCreated",
+        "isEvent",
+        "collectiveStock.beginningDatetime",
+    ]
+    column_sortable_list = ["id", "name", "validation", "dateCreated", "isEvent", "collectiveStock.beginningDatetime"]
+    column_filters = ["name", "venue.name", "id", "dateCreated", "isEvent", "collectiveStock.beginningDatetime"]
+
+    def get_query(self) -> BaseQuery:
+        base_query = super().get_query()
+        return base_query.options(sqla_orm.joinedload(self.model.collectiveStock))
 
 
 class ValidationCollectiveOfferTemplateView(ValidationBaseView):
