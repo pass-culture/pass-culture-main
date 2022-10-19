@@ -92,6 +92,18 @@
       }
     }
   },
+  "toggleTopActor": {
+    "200": "OK",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
   "getOffererOffersStats": {
     "200": {
       "data": {
@@ -179,14 +191,7 @@
   },
   "getOffererUsers": {
     "200": {
-      "data": [
-        {
-          "email": "email",
-          "firstName": "firstName",
-          "id": 0,
-          "lastName": "lastName"
-        }
-      ]
+      "data": [{}]
     },
     "403": "Forbidden",
     "422": {
@@ -505,6 +510,54 @@
         }
       ]
     },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "commentOffererAttachment": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "setOffererAttachmentPending": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "rejectOffererAttachment": {
+    "204": "No Content",
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
+  "validateOffererAttachment": {
+    "204": "No Content",
     "403": "Forbidden",
     "422": {
       "0": {

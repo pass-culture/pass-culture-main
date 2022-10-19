@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime'
+import {
+  ValidationStatus,
+  ValidationStatusFromJSON,
+  ValidationStatusFromJSONTyped,
+  ValidationStatusToJSON,
+} from './'
+
 /**
  *
  * @export
@@ -43,6 +50,24 @@ export interface OffererAttachedUser {
    * @memberof OffererAttachedUser
    */
   lastName?: string | null
+  /**
+   *
+   * @type {string}
+   * @memberof OffererAttachedUser
+   */
+  phoneNumber?: string | null
+  /**
+   *
+   * @type {number}
+   * @memberof OffererAttachedUser
+   */
+  userOffererId: number
+  /**
+   *
+   * @type {ValidationStatus}
+   * @memberof OffererAttachedUser
+   */
+  validationStatus?: ValidationStatus | null
 }
 
 export function OffererAttachedUserFromJSON(json: any): OffererAttachedUser {
@@ -61,6 +86,11 @@ export function OffererAttachedUserFromJSONTyped(
     firstName: !exists(json, 'firstName') ? undefined : json['firstName'],
     id: json['id'],
     lastName: !exists(json, 'lastName') ? undefined : json['lastName'],
+    phoneNumber: !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
+    userOffererId: json['user_offerer_id'],
+    validationStatus: !exists(json, 'validationStatus')
+      ? undefined
+      : ValidationStatusFromJSON(json['validationStatus']),
   }
 }
 
@@ -78,5 +108,8 @@ export function OffererAttachedUserToJSON(
     firstName: value.firstName,
     id: value.id,
     lastName: value.lastName,
+    phoneNumber: value.phoneNumber,
+    user_offerer_id: value.userOffererId,
+    validationStatus: ValidationStatusToJSON(value.validationStatus),
   }
 }

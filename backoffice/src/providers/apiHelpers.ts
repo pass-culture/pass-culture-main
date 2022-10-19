@@ -27,6 +27,18 @@ export function getHttpApiErrorMessage(error: PcApiHttpError) {
   return Object.values(error.body)[0]
 }
 
+export async function getGenericHttpErrorMessage(error: Response) {
+  return await (error.body as ReadableStream)
+    .getReader()
+    .read()
+    .then(e => {
+      const message: object = JSON.parse(
+        String.fromCharCode.apply(null, e.value)
+      )
+      return Object.values(message)[0].toString()
+    })
+}
+
 export const getErrorMessage = (message: string) => {
   const i18nContext = i18nProvider
   return i18nContext.translate(message, null)

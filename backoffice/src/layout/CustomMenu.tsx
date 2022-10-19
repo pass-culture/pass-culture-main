@@ -113,6 +113,14 @@ export const Menu = ({ dense = false }: MenuProps) => {
             })}
             dense={dense}
           />
+          <MenuItemLink
+            to="/offerers/to_validate"
+            state={{ _scrollToTop: true }}
+            primaryText={translate('menu.offerers', {
+              smart_count: 2,
+            })}
+            dense={dense}
+          />
         </SubMenu>
       )}
       {/*  <MenuItemLink*/}
