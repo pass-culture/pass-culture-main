@@ -204,7 +204,7 @@ const CollectiveOfferVisibility = ({
               isLoading={false}
             >
               {mode === Mode.CREATION
-                ? 'Valider et créer l’offre'
+                ? 'Étape suivante'
                 : 'Valider et enregistrer l’offre'}
             </SubmitButton>
           </FormLayout.Actions>

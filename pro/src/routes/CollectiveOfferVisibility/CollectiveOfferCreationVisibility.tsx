@@ -35,7 +35,7 @@ const CollectiveOfferVisibility = ({
     payload: CollectiveOffer
   }) => {
     setOffer(payload)
-    const successUrl = `/offre/duplication/collectif/${offerId}/confirmation`
+    const successUrl = `/offre/${offerId}/collectif/creation/recapitulatif`
     history.push(successUrl)
   }
 
