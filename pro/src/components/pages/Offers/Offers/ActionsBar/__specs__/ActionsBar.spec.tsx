@@ -187,9 +187,13 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         ids: ['testId1', 'testId2'],
       })
       expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
-      expect(props.refreshOffers).toHaveBeenCalled()
+      expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
+        ids: ['testId1', 'testId2'],
+      })
+      expect(props.refreshOffers).toHaveBeenCalledTimes(1)
+      expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
       expect(
-        screen.getByText('1 brouillon a bien été supprimé')
+        screen.getByText('2 brouillons ont bien été supprimés')
       ).toBeInTheDocument()
     })
     it('should not delete offers when a non draft is selected', async () => {

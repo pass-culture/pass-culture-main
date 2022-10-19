@@ -164,15 +164,17 @@ const ActionsBar = ({
     }
     const { isOk, message } = await deleteDraftOffersAdapter({
       ids: selectedOfferIds,
+      nbSelectedOffers,
     })
     if (!isOk) {
       notify.error(message)
     } else {
       notify.success(message)
       refreshOffers()
+      clearSelectedOfferIds()
     }
     hideDeleteDialog()
-  }, [])
+  }, [selectedOfferIds, nbSelectedOffers])
 
   const handleOpenDeleteDialog = () => {
     if (!canDeleteOffers(selectedOfferIds)) {
