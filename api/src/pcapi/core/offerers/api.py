@@ -1047,18 +1047,6 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
         )
         .exists()
     )
-    is_top_actor_query = (
-        sa.select(offerers_models.OffererTag)
-        .join(
-            offerers_models.OffererTagMapping,
-            offerers_models.OffererTagMapping.tagId == offerers_models.OffererTag.id,
-        )
-        .filter(
-            offerers_models.OffererTag.name == "top-acteur",
-            offerers_models.OffererTagMapping.offererId == offerer_id,
-        )
-        .exists()
-    )
     offerer_query = sa.select(
         offerers_models.Offerer.id,
         offerers_models.Offerer.name,
@@ -1067,7 +1055,6 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
         offerers_models.Offerer.postalCode,
         bank_informations_query.scalar_subquery().label("bank_informations"),
         is_collective_eligible_query.label("is_collective_eligible"),
-        is_top_actor_query.label("is_top_actor"),
     ).filter(offerers_models.Offerer.id == offerer_id)
 
     offerer = db.session.execute(offerer_query).one_or_none()
@@ -1329,16 +1316,8 @@ def list_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.or
     return query
 
 
-def get_is_top_actor(offerer_id: int) -> bool:
-    tag_query = (
-        sa.select(offerers_models.OffererTag)
-        .join(
-            offerers_models.OffererTagMapping,
-            offerers_models.OffererTagMapping.tagId == offerers_models.OffererTag.id,
-        )
-        .filter(
-            offerers_models.OffererTag.name == "top-acteur",
-            offerers_models.OffererTagMapping.offererId == offerer_id,
-        )
-    )
-    return bool(db.session.execute(tag_query).one_or_none())
+def is_top_actor(offerer: offerers_models.Offerer) -> bool:
+    for tag in offerer.tags:
+        if tag.name == "top-acteur":
+            return True
+    return False

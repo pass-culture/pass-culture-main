@@ -11,6 +11,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import db as db_utils
@@ -76,7 +77,6 @@ def get_offerer_basic_info(offerer_id: int) -> serialization.OffererBasicInfoRes
                 **{stat: (offerer_basic_info.bank_informations or {}).get(stat, 0) for stat in ("ko", "ok")}
             ),
             isCollectiveEligible=offerer_basic_info.is_collective_eligible,
-            isTopActor=offerer_basic_info.is_top_actor,
         ),
     )
 
@@ -350,6 +350,7 @@ def list_offerers_to_be_validated(
                     phoneNumber=(offerer.UserOfferers[0].user.phoneNumber if offerer.UserOfferers else None),
                     email=(offerer.UserOfferers[0].user.email if offerer.UserOfferers else None),
                     lastComment=_get_serialized_offerer_last_comment(offerer),
+                    isTopActor=offerers_api.is_top_actor(offerer),
                 )
                 for offerer in paginated_offerers.items
             ],
@@ -366,19 +367,17 @@ def toggle_top_actor(offerer_id: int, body: serialization.IsTopActorRequest) -> 
     try:
         tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
     except orm_exc.NoResultFound:
-        raise api_errors.ResourceNotFoundError(errors={"offerer_id": "Le tag top-acteur n'existe pas"})
+        raise api_errors.ResourceNotFoundError(errors={"global": "Le tag top-acteur n'existe pas"})
 
     # Add the tag if it doesn't already exist
     if body.isTopActor:
-        if not offerers_api.get_is_top_actor(offerer_id):
-            offerer_tag_mapping = offerers_models.OffererTagMapping(offererId=offerer_id, tagId=tag.id)
-            repository.save(offerer_tag_mapping)
+        offerer_tag_mapping = offerers_models.OffererTagMapping(offererId=offerer_id, tagId=tag.id)
+        repository.save(offerer_tag_mapping)
 
     # Remove the tag if it exists
     else:
-        if offerers_api.get_is_top_actor(offerer_id):
-            mapping_to_delete = offerers_models.OffererTagMapping.query.filter(
-                offerers_models.OffererTagMapping.offererId == offerer_id,
-                offerers_models.OffererTagMapping.tagId == tag.id,
-            ).one_or_none()
-            repository.delete(mapping_to_delete)
+        offerers_models.OffererTagMapping.query.filter(
+            offerers_models.OffererTagMapping.offererId == offerer_id,
+            offerers_models.OffererTagMapping.tagId == tag.id,
+        ).delete()
+        db.session.commit()
