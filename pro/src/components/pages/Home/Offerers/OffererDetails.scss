@@ -58,10 +58,4 @@
   .banner {
     margin: rem.torem(24px) 0;
   }
-
-  .banner-title {
-    @include fonts.button();
-    line-height: rem.torem(20px);
-    margin-bottom: rem.torem(4px);
-  }
 }
