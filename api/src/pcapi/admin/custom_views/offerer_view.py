@@ -17,6 +17,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
+from pcapi.core.offerers.models import ValidationStatus
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import zendesk_sell
@@ -47,6 +48,21 @@ def _format_venues_link(view: BaseAdminView, context: Context, model: Offerer, n
     return Markup('<a href="{}">Lieux associés</a>').format(escape(url))
 
 
+def _format_validation_status(view: BaseAdminView, context: Context, model: Offerer, name: str) -> Markup:
+    match model.validationStatus:
+        case ValidationStatus.NEW:
+            text = "Nouvelle structure"
+        case ValidationStatus.PENDING:
+            text = "En attente"
+        case ValidationStatus.VALIDATED:
+            text = "Validée"
+        case ValidationStatus.REJECTED:
+            text = "Rejetée"
+        case _:  # this case should not happen
+            text = str(model.validationStatus)
+    return Markup("<span>{text}</span>").format(text=text)
+
+
 class OffererTagFilter(fa_filters.BaseSQLAFilter):
     """
     Filter offerers based on tag (offerer_tag) name.
@@ -66,7 +82,18 @@ class OffererTagFilter(fa_filters.BaseSQLAFilter):
 class OffererView(BaseAdminView):
     can_edit = True
     can_delete = True
-    column_list = ["id", "name", "siren", "city", "postalCode", "address", "tags", "venues", "isActive"]
+    column_list = [
+        "id",
+        "name",
+        "siren",
+        "city",
+        "postalCode",
+        "address",
+        "tags",
+        "venues",
+        "validationStatus",
+        "isActive",
+    ]
     column_labels = dict(
         name="Nom",
         siren="SIREN",
@@ -75,16 +102,27 @@ class OffererView(BaseAdminView):
         address="Adresse",
         tags="Tags",
         venues="Lieux",
+        validationStatus="État de validation",
         isActive="Active",
     )
     column_searchable_list = ["name", "siren"]
-    column_filters = ["postalCode", "city", "id", "name", OffererTagFilter(Offerer.id, "Tag"), "isActive"]
+    column_filters = [
+        "postalCode",
+        "city",
+        "id",
+        "name",
+        OffererTagFilter(Offerer.id, "Tag"),
+        "validationStatus",
+        "isActive",
+    ]
     form_columns = ["name", "siren", "city", "postalCode", "address", "tags", "isActive"]
 
     @property
     def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
-        formatters.update(name=_format_offerer_name, venues=_format_venues_link)
+        formatters.update(
+            name=_format_offerer_name, venues=_format_venues_link, validationStatus=_format_validation_status
+        )
         return formatters
 
     def delete_model(self, offerer: Offerer) -> bool:
