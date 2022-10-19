@@ -7,7 +7,6 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
-import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
 import {
   ALL_CATEGORIES,
@@ -72,15 +71,6 @@ const proVenuesOptions = [
   },
 ]
 
-jest.mock('apiClient/api', () => ({
-  api: {
-    listOffers: jest.fn(),
-    getCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
-  },
-}))
-
-jest.mock('routes/Offers/adapters/getFilteredOffersAdapter', () => jest.fn())
-
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
   getToday: jest
@@ -116,9 +106,11 @@ describe('screen Offers', () => {
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
+      features: {
+        list: [{ isActive: true, nameKey: 'OFFER_DRAFT_ENABLED' }],
+      },
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
-    ;(api.listOffers as jest.Mock).mockResolvedValue(offersRecap)
 
     props = {
       currentPageNumber: 1,
@@ -392,6 +384,7 @@ describe('screen Offers', () => {
           expect(screen.getByLabelText('Désactivée')).not.toBeChecked()
           expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
           expect(screen.getByLabelText('Expirée')).not.toBeChecked()
+          expect(screen.getByLabelText('Brouillon')).not.toBeChecked()
           expect(
             screen.getByLabelText('Validation en attente')
           ).not.toBeChecked()
@@ -415,7 +408,9 @@ describe('screen Offers', () => {
             })
           )
           // Then
-          expect(screen.queryByText('Afficher les statuts')).toBeNull()
+          expect(
+            screen.queryByText('Afficher les statuts')
+          ).not.toBeInTheDocument()
         })
 
         it('should indicate that user has no offers yet', async () => {

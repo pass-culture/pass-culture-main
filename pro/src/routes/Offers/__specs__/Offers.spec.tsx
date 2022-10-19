@@ -176,6 +176,32 @@ describe('route Offers', () => {
           )
         })
 
+        it('should filter draft offers given status filter when clicking on "Appliquer"', async () => {
+          // Given
+          await renderOffers(store)
+
+          // When
+          await userEvent.click(
+            screen.getByAltText('Afficher ou masquer le filtre par statut')
+          )
+          await userEvent.click(screen.getByLabelText('Brouillon'))
+
+          await userEvent.click(screen.getByText('Appliquer'))
+
+          // Then
+          expect(api.listOffers).toHaveBeenCalledTimes(2)
+          expect(api.listOffers).toHaveBeenLastCalledWith(
+            undefined,
+            undefined,
+            'DRAFT',
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          )
+        })
+
         it('should indicate that no offers match selected filters', async () => {
           // Given
           jest

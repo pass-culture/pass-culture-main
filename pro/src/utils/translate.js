@@ -1,13 +1,6 @@
 import invert from 'lodash.invert'
 
-import {
-  OFFER_STATUS_ACTIVE,
-  OFFER_STATUS_EXPIRED,
-  OFFER_STATUS_INACTIVE,
-  OFFER_STATUS_PENDING,
-  OFFER_STATUS_REJECTED,
-  OFFER_STATUS_SOLD_OUT,
-} from 'core/Offers/constants'
+import { OfferStatus } from 'apiClient/v1'
 
 export function collectionToPath(collectionName) {
   switch (collectionName) {
@@ -101,12 +94,13 @@ export const mapBrowserToApi = {
   reservations: 'bookings',
   structure: 'offererId',
   stock: 'stockIdOrNew',
-  active: OFFER_STATUS_ACTIVE,
-  inactive: OFFER_STATUS_INACTIVE,
-  epuisee: OFFER_STATUS_SOLD_OUT,
-  expiree: OFFER_STATUS_EXPIRED,
-  'en-attente': OFFER_STATUS_PENDING,
-  refusee: OFFER_STATUS_REJECTED,
+  active: OfferStatus.ACTIVE,
+  inactive: OfferStatus.INACTIVE,
+  epuisee: OfferStatus.SOLD_OUT,
+  expiree: OfferStatus.EXPIRED,
+  'en-attente': OfferStatus.PENDING,
+  refusee: OfferStatus.REJECTED,
+  draft: OfferStatus.DRAFT,
   statut: 'status',
   creation: 'creationMode',
   manuelle: 'manual',
