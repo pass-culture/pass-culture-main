@@ -1,8 +1,8 @@
-import { Box, Button, Modal, Stack, Typography } from '@mui/material'
+import { Box, Button, MenuItem, Modal, Stack, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
-import { useCallback, useState } from 'react'
 import * as React from 'react'
-import { Form, SaveButton, TextInput, useNotify, useRefresh } from 'react-admin'
+import { useState } from 'react'
+import { Form, SaveButton, TextInput, useNotify } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
 import { Colors } from '../../../layout/Colors'
@@ -12,15 +12,16 @@ import {
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
 import { apiProvider } from '../../../providers/apiProvider'
-import { CommentOffererRequest } from '../../../TypesFromApi'
+import { SetOffererAttachmentPendingRequest } from '../../../TypesFromApi'
 import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
 
-type Props = {
-  offererId: number
-}
-export const CommentOfferer = ({ offererId }: Props) => {
-  const notify = useNotify()
+export const SetPendingUserOffererModal = ({
+  userOffererId,
+}: {
+  userOffererId: number
+}) => {
   const [openModal, setOpenModal] = useState(false)
+  const notify = useNotify()
 
   const styleModal = {
     position: 'absolute',
@@ -28,7 +29,7 @@ export const CommentOfferer = ({ offererId }: Props) => {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 800,
-    height: 400,
+    height: 600,
     bgcolor: 'background.paper',
     border: `1px solid ${Colors.GREY}`,
     borderRadius: '5px',
@@ -36,25 +37,19 @@ export const CommentOfferer = ({ offererId }: Props) => {
     p: 4,
   }
 
-  const handleOpenModal = useCallback(() => {
+  const handleOpenModal = () => {
     setOpenModal(true)
-  }, [])
+  }
+  const handleCloseModal = () => setOpenModal(false)
 
-  const handleCloseModal = useCallback(() => {
-    setOpenModal(false)
-  }, [])
-
-  const refresh = useRefresh()
   const formSubmit = async (params: FieldValues) => {
     try {
-      const formData: CommentOffererRequest = {
-        offererId: offererId,
-        commentRequest: { comment: params.comment },
+      const formData: SetOffererAttachmentPendingRequest = {
+        userOffererId: userOffererId,
+        optionalCommentRequest: { comment: params.reason },
       }
-      await apiProvider().commentOfferer(formData)
-
-      notify('Le commentaire a été envoyé avec succès !', { type: 'success' })
-      refresh()
+      await apiProvider().setOffererAttachmentPending(formData)
+      notify('La revue a été envoyée avec succès !', { type: 'success' })
       handleCloseModal()
     } catch (error) {
       if (error instanceof PcApiHttpError) {
@@ -68,16 +63,10 @@ export const CommentOfferer = ({ offererId }: Props) => {
       captureException(error)
     }
   }
+
   return (
     <>
-      <Button
-        variant={'text'}
-        size={'small'}
-        onClick={handleOpenModal}
-        sx={{ mb: 3 }}
-      >
-        Ajouter un commentaire
-      </Button>
+      <MenuItem onClick={handleOpenModal}>Mettre en attente</MenuItem>
       <Modal
         open={openModal}
         onClose={handleCloseModal}
@@ -96,11 +85,11 @@ export const CommentOfferer = ({ offererId }: Props) => {
           <Form onSubmit={formSubmit}>
             <Stack spacing={2} direction={'row'}>
               <Typography color={Colors.GREY} variant={'body2'} sx={{ mr: 1 }}>
-                Commentaire interne pour l'offerer
+                Raison du changement
               </Typography>
               <TextInput
-                label="Commentaire"
-                source="comment"
+                label="Raison"
+                source="reason"
                 variant={'outlined'}
                 fullWidth
                 multiline
@@ -108,13 +97,16 @@ export const CommentOfferer = ({ offererId }: Props) => {
               />
             </Stack>
             <Stack direction={'row-reverse'} spacing={3} sx={{ mt: 5 }}>
-              <SaveButton label={'COMMENTER'} variant={'outlined'} />
+              <SaveButton
+                label={'METTRE EN ATTENTE LE RATTACHEMENT'}
+                variant={'outlined'}
+              />
               <Button
                 variant={'outlined'}
                 onClick={handleCloseModal}
                 color={'inherit'}
               >
-                ANNULER LE COMMENTAIRE
+                ANNULER LA MODIFICATION
               </Button>
             </Stack>
           </Form>

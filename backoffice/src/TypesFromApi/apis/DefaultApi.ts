@@ -35,6 +35,9 @@ import {
   HistoryResponseModel,
   HistoryResponseModelFromJSON,
   HistoryResponseModelToJSON,
+  IsTopActorRequest,
+  IsTopActorRequestFromJSON,
+  IsTopActorRequestToJSON,
   ListOffererToBeValidatedResponseModel,
   ListOffererToBeValidatedResponseModelFromJSON,
   ListOffererToBeValidatedResponseModelToJSON,
@@ -86,6 +89,9 @@ import {
   SearchProResponseModel,
   SearchProResponseModelFromJSON,
   SearchProResponseModelToJSON,
+  ToBeValidatedOffererFilter,
+  ToBeValidatedOffererFilterFromJSON,
+  ToBeValidatedOffererFilterToJSON,
   ValidationErrorElement,
   ValidationErrorElementFromJSON,
   ValidationErrorElementToJSON,
@@ -98,6 +104,11 @@ export interface AddTagToOffererRequest {
 
 export interface CommentOffererRequest {
   offererId: number
+  commentRequest?: CommentRequest
+}
+
+export interface CommentOffererAttachmentRequest {
+  userOffererId: number
   commentRequest?: CommentRequest
 }
 
@@ -162,6 +173,7 @@ export interface GetVenueTotalRevenueRequest {
 }
 
 export interface ListOfferersToBeValidatedRequest {
+  filter?: Array<ToBeValidatedOffererFilter>
   page?: number | null
   perPage?: number | null
   sort?: string | null
@@ -169,6 +181,11 @@ export interface ListOfferersToBeValidatedRequest {
 
 export interface RejectOffererRequest {
   offererId: number
+  optionalCommentRequest?: OptionalCommentRequest
+}
+
+export interface RejectOffererAttachmentRequest {
+  userOffererId: number
   optionalCommentRequest?: OptionalCommentRequest
 }
 
@@ -205,6 +222,11 @@ export interface SendPhoneValidationCodeRequest {
   userId: number
 }
 
+export interface SetOffererAttachmentPendingRequest {
+  userOffererId: number
+  optionalCommentRequest?: OptionalCommentRequest
+}
+
 export interface SetOffererPendingRequest {
   offererId: number
   optionalCommentRequest?: OptionalCommentRequest
@@ -212,6 +234,11 @@ export interface SetOffererPendingRequest {
 
 export interface SkipPhoneValidationRequest {
   userId: number
+}
+
+export interface ToggleTopActorRequest {
+  offererId: number
+  isTopActorRequest?: IsTopActorRequest
 }
 
 export interface UpdatePublicAccountRequest {
@@ -226,6 +253,10 @@ export interface UpdateRoleRequest {
 
 export interface ValidateOffererRequest {
   offererId: number
+}
+
+export interface ValidateOffererAttachmentRequest {
+  userOffererId: number
 }
 
 /**
@@ -350,6 +381,60 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: CommentOffererRequest
   ): Promise<void> {
     await this.commentOffererRaw(requestParameters)
+  }
+
+  /**
+   * comment_offerer_attachment <POST>
+   */
+  async commentOffererAttachmentRaw(
+    requestParameters: CommentOffererAttachmentRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.userOffererId === null ||
+      requestParameters.userOffererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'userOffererId',
+        'Required parameter requestParameters.userOffererId was null or undefined when calling commentOffererAttachment.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/users_offerers/{user_offerer_id}/comment`.replace(
+        `{${'user_offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.userOffererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+      body: CommentRequestToJSON(requestParameters.commentRequest),
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * comment_offerer_attachment <POST>
+   */
+  async commentOffererAttachment(
+    requestParameters: CommentOffererAttachmentRequest
+  ): Promise<void> {
+    await this.commentOffererAttachmentRaw(requestParameters)
   }
 
   /**
@@ -1186,6 +1271,10 @@ export class DefaultApi extends runtime.BaseAPI {
   ): Promise<runtime.ApiResponse<ListOffererToBeValidatedResponseModel>> {
     const queryParameters: runtime.HTTPQuery = {}
 
+    if (requestParameters.filter) {
+      //queryParameters['filter'] = requestParameters.filter
+    }
+
     if (requestParameters.page !== undefined) {
       queryParameters['page'] = requestParameters.page
     }
@@ -1359,6 +1448,62 @@ export class DefaultApi extends runtime.BaseAPI {
    */
   async rejectOfferer(requestParameters: RejectOffererRequest): Promise<void> {
     await this.rejectOffererRaw(requestParameters)
+  }
+
+  /**
+   * reject_offerer_attachment <POST>
+   */
+  async rejectOffererAttachmentRaw(
+    requestParameters: RejectOffererAttachmentRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.userOffererId === null ||
+      requestParameters.userOffererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'userOffererId',
+        'Required parameter requestParameters.userOffererId was null or undefined when calling rejectOffererAttachment.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/users_offerers/{user_offerer_id}/reject`.replace(
+        `{${'user_offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.userOffererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+      body: OptionalCommentRequestToJSON(
+        requestParameters.optionalCommentRequest
+      ),
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * reject_offerer_attachment <POST>
+   */
+  async rejectOffererAttachment(
+    requestParameters: RejectOffererAttachmentRequest
+  ): Promise<void> {
+    await this.rejectOffererAttachmentRaw(requestParameters)
   }
 
   /**
@@ -1731,6 +1876,62 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * set_offerer_attachment_pending <POST>
+   */
+  async setOffererAttachmentPendingRaw(
+    requestParameters: SetOffererAttachmentPendingRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.userOffererId === null ||
+      requestParameters.userOffererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'userOffererId',
+        'Required parameter requestParameters.userOffererId was null or undefined when calling setOffererAttachmentPending.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/users_offerers/{user_offerer_id}/pending`.replace(
+        `{${'user_offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.userOffererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+      body: OptionalCommentRequestToJSON(
+        requestParameters.optionalCommentRequest
+      ),
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * set_offerer_attachment_pending <POST>
+   */
+  async setOffererAttachmentPending(
+    requestParameters: SetOffererAttachmentPendingRequest
+  ): Promise<void> {
+    await this.setOffererAttachmentPendingRaw(requestParameters)
+  }
+
+  /**
    * set_offerer_pending <POST>
    */
   async setOffererPendingRaw(
@@ -1835,6 +2036,60 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: SkipPhoneValidationRequest
   ): Promise<void> {
     await this.skipPhoneValidationRaw(requestParameters)
+  }
+
+  /**
+   * toggle_top_actor <PUT>
+   */
+  async toggleTopActorRaw(
+    requestParameters: ToggleTopActorRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.offererId === null ||
+      requestParameters.offererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'offererId',
+        'Required parameter requestParameters.offererId was null or undefined when calling toggleTopActor.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    headerParameters['Content-Type'] = 'application/json'
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/{offerer_id}/is_top_actor`.replace(
+        `{${'offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.offererId))
+      ),
+      method: 'PUT',
+      headers: headerParameters,
+      query: queryParameters,
+      body: IsTopActorRequestToJSON(requestParameters.isTopActorRequest),
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * toggle_top_actor <PUT>
+   */
+  async toggleTopActor(
+    requestParameters: ToggleTopActorRequest
+  ): Promise<void> {
+    await this.toggleTopActorRaw(requestParameters)
   }
 
   /**
@@ -1997,5 +2252,56 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: ValidateOffererRequest
   ): Promise<void> {
     await this.validateOffererRaw(requestParameters)
+  }
+
+  /**
+   * validate_offerer_attachment <POST>
+   */
+  async validateOffererAttachmentRaw(
+    requestParameters: ValidateOffererAttachmentRequest
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.userOffererId === null ||
+      requestParameters.userOffererId === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'userOffererId',
+        'Required parameter requestParameters.userOffererId was null or undefined when calling validateOffererAttachment.'
+      )
+    }
+
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/users_offerers/{user_offerer_id}/validate`.replace(
+        `{${'user_offerer_id'}}`,
+        encodeURIComponent(String(requestParameters.userOffererId))
+      ),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.VoidApiResponse(response)
+  }
+
+  /**
+   * validate_offerer_attachment <POST>
+   */
+  async validateOffererAttachment(
+    requestParameters: ValidateOffererAttachmentRequest
+  ): Promise<void> {
+    await this.validateOffererAttachmentRaw(requestParameters)
   }
 }

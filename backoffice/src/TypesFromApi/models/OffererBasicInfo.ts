@@ -52,6 +52,12 @@ export interface OffererBasicInfo {
   isCollectiveEligible: boolean
   /**
    *
+   * @type {boolean}
+   * @memberof OffererBasicInfo
+   */
+  isTopActor: boolean
+  /**
+   *
    * @type {string}
    * @memberof OffererBasicInfo
    */
@@ -88,6 +94,7 @@ export function OffererBasicInfoFromJSONTyped(
     id: json['id'],
     isActive: json['isActive'],
     isCollectiveEligible: json['isCollectiveEligible'],
+    isTopActor: json['isTopActor'],
     name: json['name'],
     region: json['region'],
     siren: json['siren'],
@@ -108,6 +115,7 @@ export function OffererBasicInfoToJSON(value?: OffererBasicInfo | null): any {
     id: value.id,
     isActive: value.isActive,
     isCollectiveEligible: value.isCollectiveEligible,
+    isTopActor: value.isTopActor,
     name: value.name,
     region: value.region,
     siren: value.siren,

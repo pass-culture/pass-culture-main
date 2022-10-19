@@ -26,7 +26,7 @@ import { searchPermission } from '../../helpers/functions'
 import { Colors } from '../../layout/Colors'
 import { theme } from '../../layout/theme'
 import {
-  getErrorMessage,
+  getGenericHttpErrorMessage,
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
@@ -97,7 +97,9 @@ export const RolesList = () => {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
       } else {
-        notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+        notify(await getGenericHttpErrorMessage(error as Response), {
+          type: 'error',
+        })
       }
       captureException(error)
     }
@@ -122,7 +124,9 @@ export const RolesList = () => {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
       } else {
-        notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+        notify(await getGenericHttpErrorMessage(error as Response), {
+          type: 'error',
+        })
       }
       captureException(error)
     }

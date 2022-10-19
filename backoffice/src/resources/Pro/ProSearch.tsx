@@ -15,6 +15,7 @@ import {
   CircularProgress,
   TextField,
   MenuItem,
+  Backdrop,
 } from '@mui/material'
 import { captureException } from '@sentry/react'
 import React, { ClassAttributes, HTMLAttributes, useState } from 'react'
@@ -30,7 +31,7 @@ import { FieldValues } from 'react-hook-form'
 import { searchPermission } from '../../helpers/functions'
 import { Colors } from '../../layout/Colors'
 import {
-  getErrorMessage,
+  getGenericHttpErrorMessage,
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../providers/apiHelpers'
@@ -199,7 +200,9 @@ export const ProSearch = () => {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
       } else {
-        notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+        notify(await getGenericHttpErrorMessage(error as Response), {
+          type: 'error',
+        })
       }
       captureException(error)
     }
@@ -242,16 +245,12 @@ export const ProSearch = () => {
   }
   return (
     <>
-      <CircularProgress
-        size={250}
-        thickness={2}
-        style={{
-          display: isLoading ? 'block' : 'none',
-          marginTop: '3rem',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-        }}
-      />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Grid
         visibility={isLoading ? 'hidden' : 'visible'}
         container

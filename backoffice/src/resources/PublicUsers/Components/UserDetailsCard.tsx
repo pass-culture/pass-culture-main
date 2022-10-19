@@ -6,7 +6,7 @@ import { Form, useNotify, TextInput, SaveButton } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
 import {
-  getErrorMessage,
+  getGenericHttpErrorMessage,
   getHttpApiErrorMessage,
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
@@ -41,7 +41,9 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
       } else {
-        notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+        notify(await getGenericHttpErrorMessage(error as Response), {
+          type: 'error',
+        })
       }
       captureException(error)
     }
@@ -61,7 +63,9 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
       if (error instanceof PcApiHttpError) {
         notify(getHttpApiErrorMessage(error), { type: 'error' })
       } else {
-        notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+        notify(await getGenericHttpErrorMessage(error as Response), {
+          type: 'error',
+        })
       }
       captureException(error)
     }
@@ -103,7 +107,9 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
         if (error instanceof PcApiHttpError) {
           notify(getHttpApiErrorMessage(error), { type: 'error' })
         } else {
-          notify(getErrorMessage('errors.api.generic'), { type: 'error' })
+          notify(await getGenericHttpErrorMessage(error as Response), {
+            type: 'error',
+          })
         }
         captureException(error)
       }

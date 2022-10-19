@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  Chip,
   CircularProgress,
   Grid,
   Paper,
@@ -36,6 +37,7 @@ import { StatusBadge } from '../../PublicUsers/Components/StatusBadge'
 import { PermissionsEnum } from '../../PublicUsers/types'
 import { BankAccountStatusBadge } from '../Components/BankAccountStatusBadge'
 import { CommentOfferer } from '../Components/CommentOfferer'
+import { OffererUserssToValidateContextTableMenu } from '../Components/OffererUsersToValidateContextTableMenu'
 import { ProTypeBadge } from '../Components/ProTypeBadge'
 import { ProTypeEnum } from '../types'
 
@@ -371,6 +373,7 @@ export const OffererDetail = () => {
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                       <TableRow>
+                        <TableCell></TableCell>
                         <TableCell>ID</TableCell>
                         <TableCell>Nom</TableCell>
                         <TableCell align="right">Prénom</TableCell>
@@ -385,7 +388,15 @@ export const OffererDetail = () => {
                             '&:last-child td, &:last-child th': { border: 0 },
                           }}
                         >
+                          <TableCell>
+                            <OffererUserssToValidateContextTableMenu
+                              id={user.userOffererId}
+                            />
+                          </TableCell>
                           <TableCell>{user.id}</TableCell>
+                          <TableCell>
+                            <Chip label={user.validationStatus} />
+                          </TableCell>
                           <TableCell component="th" scope="row">
                             {user.lastName}
                           </TableCell>
