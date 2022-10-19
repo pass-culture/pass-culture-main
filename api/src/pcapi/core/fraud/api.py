@@ -601,8 +601,8 @@ def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int
         user_ids_and_latest_events, users_models.User.id == user_ids_and_latest_events.c.id
     ).filter(
         user_ids_and_latest_events.c.eventDate <= start,
-        user_ids_and_latest_events.c.eventType == users_models.SuspensionEventType.SUSPENDED,
-        user_ids_and_latest_events.c.reasonCode == users_models.SuspensionReason.UPON_USER_REQUEST,
+        user_ids_and_latest_events.c.eventType == constants.SuspensionEventType.SUSPENDED,
+        user_ids_and_latest_events.c.reasonCode == constants.SuspensionReason.UPON_USER_REQUEST,
     )
 
     return query

@@ -1,5 +1,5 @@
 import datetime
-from enum import Enum
+import enum
 
 
 RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
@@ -23,7 +23,7 @@ TOKEN_DELETION_AFTER_EXPIRATION_DELAY = datetime.timedelta(days=7)
 EDUCONNECT_SAML_REQUEST_ID_TTL = 24 * 60 * 60  # 1 day in seconds
 
 
-class SuspensionReason(Enum):
+class SuspensionReason(enum.Enum):
     def __str__(self) -> str:
         return str(self.value)
 
@@ -69,7 +69,7 @@ SUSPENSION_REASON_CHOICES = (
 assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
 
 
-class SuspensionEventType(Enum):
+class SuspensionEventType(enum.Enum):
     SUSPENDED = "SUSPENDED"
     UNSUSPENDED = "UNSUSPENDED"
 

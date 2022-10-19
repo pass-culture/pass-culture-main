@@ -35,7 +35,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.api import create_phone_validation_token
 import pcapi.core.users.constants as users_constants
-from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
@@ -1383,7 +1382,7 @@ class SuspendAccountTest:
         assert booking.status == BookingStatus.CANCELLED
         db.session.refresh(user)
         assert not user.isActive
-        assert user.suspension_reason == SuspensionReason.UPON_USER_REQUEST
+        assert user.suspension_reason == users_constants.SuspensionReason.UPON_USER_REQUEST
         assert user.suspension_date
         assert len(user.suspension_history) == 1
         assert user.suspension_history[0].userId == user.id

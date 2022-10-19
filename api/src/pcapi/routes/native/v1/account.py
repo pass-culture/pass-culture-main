@@ -321,7 +321,7 @@ def suspend_account(user: users_models.User) -> None:
 @authenticated_maybe_inactive_user_required
 def get_account_suspension_date(user: users_models.User) -> serializers.UserSuspensionDateResponse:
     reason = user.suspension_reason
-    if reason != users_models.SuspensionReason.UPON_USER_REQUEST:
+    if reason != constants.SuspensionReason.UPON_USER_REQUEST:
         # If the account has not been suspended upon user request, it
         # has no reason to ask for its suspension date.
         raise api_errors.ForbiddenError()

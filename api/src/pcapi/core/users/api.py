@@ -340,7 +340,7 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     user.isActive = False
     user_suspension = models.UserSuspension(
         user=user,
-        eventType=models.SuspensionEventType.SUSPENDED,
+        eventType=constants.SuspensionEventType.SUSPENDED,
         actorUser=actor,  # type: ignore [arg-type]
         reasonCode=reason,
     )
@@ -392,7 +392,7 @@ def unsuspend_account(user: models.User, actor: models.User, send_email: bool = 
     user.isActive = True
     user_suspension = models.UserSuspension(
         user=user,
-        eventType=models.SuspensionEventType.UNSUSPENDED,
+        eventType=constants.SuspensionEventType.UNSUSPENDED,
         actorUser=actor,
     )
     repository.save(user)
@@ -420,7 +420,7 @@ def bulk_unsuspend_account(user_ids: list[int], actor: models.User) -> None:
         db.session.add(
             models.UserSuspension(
                 userId=user_id,
-                eventType=models.SuspensionEventType.UNSUSPENDED,
+                eventType=constants.SuspensionEventType.UNSUSPENDED,
                 actorUser=actor,
             )
         )
@@ -945,8 +945,8 @@ EMAIL_CHANGE_ACTIONS = defaultdict(
 SUSPENSION_ACTIONS = defaultdict(
     lambda: "action de suspension inconnue",
     {
-        models.SuspensionEventType.SUSPENDED: "désactivation de compte",
-        models.SuspensionEventType.UNSUSPENDED: "réactivation de compte",
+        constants.SuspensionEventType.SUSPENDED: "désactivation de compte",
+        constants.SuspensionEventType.UNSUSPENDED: "réactivation de compte",
     },
 )
 
