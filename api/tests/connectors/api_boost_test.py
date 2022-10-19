@@ -11,14 +11,14 @@ import pcapi.core.providers.factories as providers_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class CineDigitalServiceBuildUrlTest:
+class BoostBuildUrlTest:
     def test_build_url(self):
         cinema_url = "https://cinema.example.com/"
-        resource = boost.ResourceBoost.EXAMPLE
+        resource = boost.ResourceBoost.EXAMPLE_WITH_PATTERNS
 
-        url = boost._build_url(cinema_url, resource)
+        url = boost.build_url(cinema_url, resource, {"start": 1, "end": 5})
 
-        assert url == "https://cinema.example.com/example"
+        assert url == "https://cinema.example.com/example/1/5"
 
 
 @freeze_time("2022-10-12 17:09:25")

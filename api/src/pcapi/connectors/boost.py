@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class ResourceBoost(enum.Enum):
     EXAMPLE = "example"
+    EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
     FILMS = "films"
     SHOWTIMES = "showtimes"
 
@@ -27,8 +28,11 @@ class ResourceBoost(enum.Enum):
 LOGIN_ENDPOINT = "api/vendors/login"
 
 
-def build_url(cinema_url: str, resource: ResourceBoost) -> str:
+def build_url(cinema_url: str, resource: ResourceBoost, pattern_values: dict[str, Any] | None = None) -> str:
     resource_url = resource.value
+    if pattern_values:
+        for key, value in pattern_values.items():
+            resource_url = resource_url.replace("{" + key + "}", str(value))
     return f"{cinema_url}{resource_url}"
 
 
@@ -84,16 +88,19 @@ def get_resource(
     cinema_str_id: str,
     resource: ResourceBoost,
     params: dict[str, Any] | None = None,
+    pattern_values: dict[str, Any] | None = None,
 ) -> dict | list[dict] | list:
     cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
     token = cinema_details.token if check_token_validity(cinema_details) else login(cinema_details)
     assert token  # for typing
     if params:
         response = requests.get(
-            url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token), params=params
+            url=build_url(cinema_details.cinemaUrl, resource, pattern_values), headers=headers(token), params=params
         )
     else:
-        response = requests.get(url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token))
+        response = requests.get(
+            url=build_url(cinema_details.cinemaUrl, resource, pattern_values), headers=headers(token)
+        )
 
     _check_response_is_ok(response, token, f"GET {resource}")
 
@@ -165,15 +172,3 @@ def _filter_token(error_message: str, token: str | None) -> str:
     if isinstance(token, str) and token in error_message:
         error_message = error_message.replace(token, "")
     return error_message
-
-
-def _build_url(
-    api_url: str,
-    resource: ResourceBoost,
-    path_params: dict[str, Any] | None = None,
-) -> str:
-    resource_url = resource.value
-    if path_params:
-        for key, value in path_params.items():
-            resource_url = resource_url.replace(":" + key, str(value))
-    return f"{api_url}{resource_url}"
