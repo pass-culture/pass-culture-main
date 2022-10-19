@@ -121,6 +121,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
     WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE = "Active la duplication d'offres sur le portail pro"
     DISABLE_STORE_REVIEW = "Désactive la demande de notation sur les stores à la suite d’une réservation"
+    TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER = "Activer la bannière pour les Temps forts métiers"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -184,6 +185,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_OFFERER_STATS,
     FeatureToggle.WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE,
     FeatureToggle.DISABLE_STORE_REVIEW,
+    FeatureToggle.TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER,
 )
 
 
