@@ -8,6 +8,8 @@ import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/ge
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOfferStockCreation from 'routes/CollectiveOfferStockCreation'
+import CollectiveOfferSummaryCreation from 'routes/CollectiveOfferSummaryCreation'
+import CollectiveOfferTemplateSummaryCreation from 'routes/CollectiveOfferTemplateSummaryCreation'
 import CollectiveOfferVisibilityCreation from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 
@@ -85,6 +87,20 @@ const CollectiveOfferCreationRoutes = ({
                 <CollectiveOfferVisibilityCreation
                   setOffer={setCollectiveOffer}
                 />
+              ) : (
+                <Spinner />
+              )}
+            </Route>
+            <Route path="offre/:offerId(T-[A-Z0-9]+)/collectif/creation/recapitulatif">
+              {offer ? (
+                <>
+                  {!offer.isTemplate && (
+                    <CollectiveOfferSummaryCreation offer={offer} />
+                  )}
+                  {offer.isTemplate && (
+                    <CollectiveOfferTemplateSummaryCreation offer={offer} />
+                  )}
+                </>
               ) : (
                 <Spinner />
               )}
