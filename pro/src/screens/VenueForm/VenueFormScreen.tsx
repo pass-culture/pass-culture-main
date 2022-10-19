@@ -45,7 +45,9 @@ const VenueFormScreen = ({
   const history = useHistory()
   const notify = useNotification()
   const { currentUser } = useCurrentUser()
-  const [isSiretValued, setIsSiretValued] = useState(!!venue?.siret)
+  const [isSiretValued, setIsSiretValued] = useState(
+    isCreatingVenue || !!venue?.siret
+  )
 
   const onSubmit = async (value: IVenueFormValues) => {
     const request = isCreatingVenue
