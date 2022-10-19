@@ -11,6 +11,7 @@ from flask import url_for
 from flask_admin.actions import action
 from flask_admin.base import expose
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
+from flask_admin.contrib.sqla.filters import DateTimeBetweenFilter
 from flask_admin.contrib.sqla.filters import FilterEqual
 from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
@@ -51,6 +52,7 @@ from pcapi.core.offers.api import import_offer_validation_config
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
@@ -405,6 +407,12 @@ class OfferValidationForm(SecureForm):
     )
 
 
+class BeginningDatetimeFilter(DateTimeBetweenFilter):
+    def apply(self, query, value, alias=None):  # type: ignore [no-untyped-def]
+        start, end = value
+        return query.join(Stock).filter(Stock.beginningDatetime.between(start, end))
+
+
 class ValidationBaseView(BaseAdminView):
     can_create = False
     can_edit = True
@@ -424,10 +432,11 @@ class ValidationBaseView(BaseAdminView):
         "offers": "Offres",
         "metabase": "Metabase",
         "dateCreated": "Date de création",
-        "isEvent": "Evènement",
+        "isEvent": "Evènement ?",
+        "firstBeginningDatetime": "Date de début",
     }
 
-    def is_accessible(self):  # type: ignore [no-untyped-def]
+    def is_accessible(self) -> bool:
         return super().is_accessible() and self.check_super_admins()
 
     @property
@@ -440,7 +449,7 @@ class ValidationBaseView(BaseAdminView):
         formatters.update(venue=_venue_link)
         return formatters
 
-    def get_query(self):  # type: ignore [no-untyped-def]
+    def get_query(self) -> BaseQuery:
         return (
             self.model.query.join(Venue)
             .join(Offerer)
@@ -449,7 +458,7 @@ class ValidationBaseView(BaseAdminView):
             .filter(self.model.validation == OfferValidationStatus.PENDING)
         )
 
-    def get_count_query(self):  # type: ignore [no-untyped-def]
+    def get_count_query(self) -> BaseQuery:
         return (
             self.session.query(func.count(self.model.id))
             .join(Venue)
@@ -571,9 +580,34 @@ class ValidationBaseView(BaseAdminView):
 
 
 class ValidationOfferView(ValidationBaseView):
-    column_list = ["id", "name", "validation", "venue", "offerer", "offer", "offers", "dateCreated", "isEvent"]
+    column_list = [
+        "id",
+        "name",
+        "validation",
+        "venue",
+        "offerer",
+        "offer",
+        "offers",
+        "dateCreated",
+        "isEvent",
+        "firstBeginningDatetime",
+    ]
+    column_sortable_list = ["id", "name", "validation", "dateCreated", "isEvent", "firstBeginningDatetime"]
+    column_filters = [
+        "name",
+        "venue.name",
+        "id",
+        "dateCreated",
+        "isEvent",
+        BeginningDatetimeFilter(column="beginningDatetime", name="Date d'un des évènements"),
+    ]
+
     if IS_PROD:
         column_list.append("metabase")
+
+    def get_query(self) -> BaseQuery:
+        base_query = super().get_query()
+        return base_query.options(sqla_orm.joinedload(self.model.stocks))
 
 
 class ValidationCollectiveOfferView(ValidationBaseView):
