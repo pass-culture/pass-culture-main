@@ -80,6 +80,8 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_bookings(offers_by_name, users_by_name)
 
+    create_venue_labels(sandbox=True)
+
     create_industrial_educational_bookings()
 
     # Now that they booked, we can expire these users' deposit.
@@ -97,8 +99,6 @@ def save_industrial_sandbox() -> None:
     create_industrial_activation_offers()
 
     create_industrial_search_indexed_objects()
-
-    create_venue_labels(sandbox=True)
 
     create_industrial_offer_validation_config()
 
