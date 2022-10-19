@@ -1,4 +1,4 @@
-import simplejson as json
+import json
 
 from pcapi.sandboxes.scripts import getters
 

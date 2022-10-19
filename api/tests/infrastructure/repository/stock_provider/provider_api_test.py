@@ -1,6 +1,7 @@
+import json
+
 import pytest
 import requests_mock
-import simplejson
 
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPIException
@@ -81,7 +82,7 @@ class StocksTest:
     def should_raise_error_if_content_is_not_json(self):
         siret = "1234"
 
-        with pytest.raises(simplejson.JSONDecodeError):
+        with pytest.raises(json.JSONDecodeError):
             with requests_mock.Mocker() as mock:
                 mock.get(f"{self.api_url}/{siret}?limit=1000", content=b"invalid JSON")
                 self.provider_api.stocks(siret=siret)

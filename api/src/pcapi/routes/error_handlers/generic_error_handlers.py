@@ -1,10 +1,10 @@
+import json
 import logging
 
 from flask import Response
 from flask import current_app as app
 from flask import jsonify
 from flask import request
-import simplejson as json
 from sqlalchemy.exc import DatabaseError
 from werkzeug import exceptions as werkzeug_exceptions
 from werkzeug.exceptions import HTTPException
