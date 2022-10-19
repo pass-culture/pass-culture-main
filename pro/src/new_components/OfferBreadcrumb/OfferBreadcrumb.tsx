@@ -93,19 +93,19 @@ const OfferBreadcrumb = ({
         id: OfferBreadcrumbStep.STOCKS,
         label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
       },
-      ...(isOfferEducational
-        ? {
-            [OfferBreadcrumbStep.VISIBILITY]: {
-              id: OfferBreadcrumbStep.VISIBILITY,
-              label: 'Visibilité',
-            },
-          }
-        : {
-            [OfferBreadcrumbStep.SUMMARY]: {
-              id: OfferBreadcrumbStep.SUMMARY,
-              label: 'Récapitulatif',
-            },
-          }),
+      ...(isOfferEducational &&
+        !isTemplateId && {
+          [OfferBreadcrumbStep.VISIBILITY]: {
+            id: OfferBreadcrumbStep.VISIBILITY,
+            label: 'Visibilité',
+          },
+        }),
+
+      [OfferBreadcrumbStep.SUMMARY]: {
+        id: OfferBreadcrumbStep.SUMMARY,
+        label: 'Récapitulatif',
+      },
+
       [OfferBreadcrumbStep.CONFIRMATION]: {
         id: OfferBreadcrumbStep.CONFIRMATION,
         label: 'Confirmation',
