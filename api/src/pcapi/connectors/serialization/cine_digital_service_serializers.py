@@ -71,7 +71,7 @@ class MediaCDS(BaseModel):
     duration: int  # CDS api returns duration in seconds
     posterpath: str | None
     storyline: str
-    visanumber: str
+    visanumber: str | None
 
     class Config:
         allow_population_by_field_name = True
