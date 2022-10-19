@@ -7,17 +7,17 @@ import {
   CollectiveOffer,
 } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferSummaryScreen from 'screens/CollectiveOfferSummary'
+import CollectiveOfferSummaryEditionScreen from 'screens/CollectiveOfferSummaryEdition'
 
-interface CollectiveOfferSummaryProps {
+interface CollectiveOfferSummaryEditionProps {
   offer: CollectiveOffer
   reloadCollectiveOffer: () => void
 }
 
-const CollectiveOfferSummary = ({
+const CollectiveOfferSummaryEdition = ({
   offer,
   reloadCollectiveOffer,
-}: CollectiveOfferSummaryProps) => {
+}: CollectiveOfferSummaryEditionProps) => {
   const notify = useNotification()
 
   const [categories, setCategories] = useState<EducationalCategories | null>(
@@ -43,7 +43,7 @@ const CollectiveOfferSummary = ({
   return !isReady ? (
     <Spinner />
   ) : (
-    <CollectiveOfferSummaryScreen
+    <CollectiveOfferSummaryEditionScreen
       offer={offer}
       categories={categories}
       reloadCollectiveOffer={reloadCollectiveOffer}
@@ -51,4 +51,4 @@ const CollectiveOfferSummary = ({
   )
 }
 
-export default CollectiveOfferSummary
+export default CollectiveOfferSummaryEdition

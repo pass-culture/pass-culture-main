@@ -8,7 +8,7 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
-import CollectiveOfferTemplateSummary from 'routes/CollectiveOfferTemplateSummary'
+import CollectiveOfferTemplateSummaryEdition from 'routes/CollectiveOfferTemplateSummaryEdition'
 
 import { getActiveStep } from '../utils/getActiveStep'
 
@@ -69,7 +69,7 @@ const CollectiveOfferTemplateEditionRoutes = ({
           />
         </Route>
         <Route path="/offre/:offerId(T-[A-Z0-9]+)/collectif/recapitulatif">
-          <CollectiveOfferTemplateSummary offer={offer} />
+          <CollectiveOfferTemplateSummaryEdition offer={offer} />
         </Route>
       </Switch>
     </CollectiveOfferLayout>
