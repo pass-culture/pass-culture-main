@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, {
@@ -7,7 +8,6 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { Link } from 'react-router-dom'
 
 import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
@@ -29,7 +29,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { SubmitButton } from 'ui-kit'
+import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { sortByDisplayName } from 'utils/strings'
@@ -51,6 +51,7 @@ import AccessibilityCheckboxList, {
   getAccessibilityValues,
 } from './AccessibilityCheckboxList'
 import OfferCategories from './OfferCategories'
+import { OfferFormActions } from './OfferFormActions'
 import OfferOptions from './OfferOptions'
 import { OfferWithdrawalTypeOptions } from './OfferWithdrawalTypeOptions'
 import SynchronizedProviderInformation from './SynchronisedProviderInfos'
@@ -89,6 +90,7 @@ const OfferForm = ({
       }))
     )
   )
+  const isCreation = useIsCreation()
   const [offerFormFields, setOfferFormFields] = useState(
     Object.keys(DEFAULT_FORM_VALUES)
   )
@@ -589,16 +591,6 @@ const OfferForm = ({
       showErrorNotification,
     ]
   )
-
-  const onCancelClick = () => {
-    if (isEdition)
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OfferBreadcrumbStep.DETAILS,
-        to: OfferBreadcrumbStep.SUMMARY,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: isEdition,
-      })
-  }
 
   const handleChangeVenue = useCallback(
     event => {
@@ -1194,21 +1186,20 @@ const OfferForm = ({
         )}
 
       <section
-        className={
-          isEdition ? 'actions-section edit-buttons' : 'actions-section'
-        }
+        className={cn('actions-section', {
+          'edit-buttons': isEdition,
+          'draft-buttons': isCreation && formValues.subcategoryId,
+        })}
       >
-        <Link className="secondary-link" to={backUrl} onClick={onCancelClick}>
-          {'Annuler et quitter'}
-        </Link>
-        <SubmitButton
-          className="primary-button"
-          disabled={isDisabled}
-          isLoading={isSubmitLoading}
-          onClick={submitForm}
-        >
-          {isEdition ? 'Enregistrer les modifications' : 'Étape suivante'}
-        </SubmitButton>
+        <OfferFormActions
+          canSaveDraft={isCreation && formValues.subcategoryId}
+          isDisabled={isDisabled}
+          isSubmitLoading={isSubmitLoading}
+          isEdition={isEdition}
+          cancelUrl={backUrl}
+          onClickNext={submitForm}
+          onClickSaveDraft={submitForm}
+        />
       </section>
     </form>
   )
