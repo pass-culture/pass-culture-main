@@ -21,9 +21,8 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
+from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
-from pcapi.core.users.constants import SuspensionEventType
-from pcapi.core.users.constants import SuspensionReason
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -420,7 +419,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         if (
             not self.isActive
             and self.suspension_history
-            and self.suspension_history[-1].eventType == SuspensionEventType.SUSPENDED
+            and self.suspension_history[-1].eventType == constants.SuspensionEventType.SUSPENDED
         ):
             return self.suspension_history[-1].reasonCode
         return None
@@ -434,7 +433,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         if (
             not self.isActive
             and self.suspension_history
-            and self.suspension_history[-1].eventType == SuspensionEventType.SUSPENDED
+            and self.suspension_history[-1].eventType == constants.SuspensionEventType.SUSPENDED
         ):
             return self.suspension_history[-1].eventDate
         return None
@@ -447,11 +446,11 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         if self.suspension_history:
             suspension_event = self.suspension_history[-1]
 
-            if suspension_event.eventType == SuspensionEventType.SUSPENDED:
+            if suspension_event.eventType == constants.SuspensionEventType.SUSPENDED:
 
-                if suspension_event.reasonCode == SuspensionReason.DELETED:
+                if suspension_event.reasonCode == constants.SuspensionReason.DELETED:
                     return AccountState.DELETED
-                if suspension_event.reasonCode == SuspensionReason.UPON_USER_REQUEST:
+                if suspension_event.reasonCode == constants.SuspensionReason.UPON_USER_REQUEST:
                     return AccountState.SUSPENDED_UPON_USER_REQUEST
 
                 return AccountState.SUSPENDED
@@ -689,7 +688,7 @@ class UserSuspension(PcObject, Base, Model):
         ),
     )
 
-    eventType: SuspensionEventType = sa.Column(sa.Enum(SuspensionEventType), nullable=False)
+    eventType: constants.SuspensionEventType = sa.Column(sa.Enum(constants.SuspensionEventType), nullable=False)
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
     eventDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now())
@@ -700,7 +699,7 @@ class UserSuspension(PcObject, Base, Model):
     actorUser = orm.relationship("User", foreign_keys=[actorUserId])  # type: ignore [misc]
 
     # Reason is filled in only when suspended but could be useful also when unsuspended for support traceability
-    reasonCode = sa.Column(sa.Enum(SuspensionReason), nullable=True)
+    reasonCode = sa.Column(sa.Enum(constants.SuspensionReason), nullable=True)
 
 
 class UserSession(PcObject, Base, Model):

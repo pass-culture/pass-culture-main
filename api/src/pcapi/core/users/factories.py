@@ -396,7 +396,7 @@ class UserSuspensionBaseFactory(BaseFactory):
 
     user = factory.SubFactory(UserFactory, isActive=False)
     actorUser = factory.SubFactory(AdminFactory)
-    eventType = users_models.SuspensionEventType.SUSPENDED
+    eventType = users_constants.SuspensionEventType.SUSPENDED
     eventDate = factory.LazyFunction(lambda: datetime.utcnow() - relativedelta(days=1))
 
 

@@ -6,9 +6,9 @@ from pcapi import settings
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.users import constants as user_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
-from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import PhoneValidationStatusType
 
 
@@ -73,7 +73,7 @@ class ZendeskWebhookTest:
             isActive=False,
         )
         users_factories.UserSuspensionByFraudFactory(
-            user=user, eventDate=datetime(2022, 3, 22, 15), reasonCode=SuspensionReason.FRAUD_HACK
+            user=user, eventDate=datetime(2022, 3, 22, 15), reasonCode=user_constants.SuspensionReason.FRAUD_HACK
         )
 
         response = client.post(
