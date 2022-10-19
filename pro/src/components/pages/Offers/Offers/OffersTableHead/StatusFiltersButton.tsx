@@ -1,10 +1,12 @@
 import React, { Fragment, useState } from 'react'
 
+import { OfferStatus } from 'apiClient/v1'
 import Icon from 'components/layout/Icon'
 import {
   ADMINS_DISABLED_FILTERS_MESSAGE,
   OFFER_STATUS_LIST,
 } from 'core/Offers/constants'
+import { Audience } from 'core/shared'
 
 import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
 
@@ -12,7 +14,8 @@ type StatusFiltersButtonProps = {
   applyFilters: () => void
   disabled?: boolean
   status?: string
-  updateStatusFilter: (status: string) => void
+  updateStatusFilter: (status: OfferStatus | 'all') => void
+  audience: Audience
 }
 
 const StatusFiltersButton = ({
@@ -20,6 +23,7 @@ const StatusFiltersButton = ({
   applyFilters,
   status,
   updateStatusFilter,
+  audience,
 }: StatusFiltersButtonProps) => {
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
@@ -56,6 +60,7 @@ const StatusFiltersButton = ({
         setIsVisible={setIsStatusFiltersVisible}
         status={status}
         updateStatusFilter={updateStatusFilter}
+        audience={audience}
       />
     </Fragment>
   )

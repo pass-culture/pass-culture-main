@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
 
+import { OfferStatus } from 'apiClient/v1'
 import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import { ALL_STATUS } from 'core/Offers/constants'
+import { Audience } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
 
 export const OffersStatusFiltersModal = ({
   isVisible,
@@ -10,8 +13,10 @@ export const OffersStatusFiltersModal = ({
   status,
   setIsVisible,
   updateStatusFilter,
+  audience,
 }) => {
   const modalRef = useRef(null)
+  const isDraftOfferEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
 
   const handleStatusFilterChange = useCallback(
     event => {
@@ -60,43 +65,52 @@ export const OffersStatusFiltersModal = ({
         onChange={handleStatusFilterChange}
         value={ALL_STATUS}
       />
+      {isDraftOfferEnabled && audience === Audience.INDIVIDUAL && (
+        <RadioInput
+          checked={status === OfferStatus.DRAFT}
+          label="Brouillon"
+          name="status"
+          onChange={handleStatusFilterChange}
+          value="DRAFT"
+        />
+      )}
       <RadioInput
-        checked={status === 'ACTIVE'}
+        checked={status === OfferStatus.ACTIVE}
         label="Publiée"
         name="status"
         onChange={handleStatusFilterChange}
         value="ACTIVE"
       />
       <RadioInput
-        checked={status === 'INACTIVE'}
+        checked={status === OfferStatus.INACTIVE}
         label="Désactivée"
         name="status"
         onChange={handleStatusFilterChange}
         value="INACTIVE"
       />
       <RadioInput
-        checked={status === 'SOLD_OUT'}
+        checked={status === OfferStatus.SOLD_OUT}
         label="Épuisée"
         name="status"
         onChange={handleStatusFilterChange}
         value="SOLD_OUT"
       />
       <RadioInput
-        checked={status === 'EXPIRED'}
+        checked={status === OfferStatus.EXPIRED}
         label="Expirée"
         name="status"
         onChange={handleStatusFilterChange}
         value="EXPIRED"
       />
       <RadioInput
-        checked={status === 'PENDING'}
+        checked={status === OfferStatus.PENDING}
         label="Validation en attente"
         name="status"
         onChange={handleStatusFilterChange}
         value="PENDING"
       />
       <RadioInput
-        checked={status === 'REJECTED'}
+        checked={status === OfferStatus.REJECTED}
         label="Refusée"
         name="status"
         onChange={handleStatusFilterChange}
