@@ -10,9 +10,8 @@ from flask import request
 from flask import url_for
 from flask_admin.actions import action
 from flask_admin.base import expose
-from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
-from flask_admin.contrib.sqla.filters import DateTimeBetweenFilter
-from flask_admin.contrib.sqla.filters import FilterEqual
+from flask_admin.contrib.sqla import fields
+from flask_admin.contrib.sqla import filters
 from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
 from flask_admin.helpers import get_redirect_target
@@ -48,11 +47,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
-from pcapi.core.offers.api import import_offer_validation_config
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationConfig
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers import models
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
@@ -62,38 +57,36 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
-from pcapi.utils.urls import build_pc_pro_offer_link
-from pcapi.utils.urls import build_pc_pro_offerer_link
-from pcapi.utils.urls import build_pc_pro_venue_link
+from pcapi.utils import urls
 from pcapi.workers import push_notification_job
 
 
 logger = logging.getLogger(__name__)
 
 
-def offer_category_formatter(view: BaseAdminView, context: Context, model: Offer, name: str) -> str:
+def offer_category_formatter(view: BaseAdminView, context: Context, model: models.Offer, name: str) -> str:
     if model.subcategoryId is None:
         return ""
     return subcategories.ALL_SUBCATEGORIES_DICT[model.subcategoryId].category.id
 
 
-def offer_name_formatter(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
-    url = build_pc_pro_offer_link(model)
+def offer_name_formatter(view: BaseAdminView, context: Context, model: models.Offer, name: str) -> Markup:
+    url = urls.build_pc_pro_offer_link(model)
     return Markup('<a href="{url}">{name}</a>').format(url=url, name=model.name)
 
 
-class ExtraDataFilterEqual(FilterEqual):
+class ExtraDataFilterEqual(filters.FilterEqual):
     def get_column(self, alias: str) -> str:
         return super().get_column(alias).astext
 
 
-class SubcategoryFilterEqual(FilterEqual):
+class SubcategoryFilterEqual(filters.FilterEqual):
     def __init__(self, *args, **kwargs):  # type: ignore [no-untyped-def]
         options = [(subcategory.id, subcategory.id) for subcategory in subcategories.ALL_SUBCATEGORIES]
         super().__init__(*args, **kwargs, options=options)
 
 
-class CategoryFilterEqual(FilterEqual):
+class CategoryFilterEqual(filters.FilterEqual):
     def __init__(self, *args, **kwargs):  # type: ignore [no-untyped-def]
         options = [(category.id, category.id) for category in categories.ALL_CATEGORIES]
         super().__init__(*args, **kwargs, options=options)
@@ -109,7 +102,7 @@ class CategoryFilterEqual(FilterEqual):
 
 class OfferChangeForm(Form):
     ids = HiddenField()
-    tags = QuerySelectMultipleField(
+    tags = fields.QuerySelectMultipleField(
         get_label="name",
         query_factory=lambda: criteria_models.Criterion.query.all(),  # pylint: disable=unnecessary-lambda
         allow_blank=True,
@@ -159,16 +152,18 @@ class OfferView(BaseAdminView):
     column_filters = [
         "id",
         "name",
-        CategoryFilterEqual(column=Offer.subcategoryId, name="Catégorie"),
-        SubcategoryFilterEqual(column=Offer.subcategoryId, name="Sous-catégories"),
+        CategoryFilterEqual(column=models.Offer.subcategoryId, name="Catégorie"),
+        SubcategoryFilterEqual(column=models.Offer.subcategoryId, name="Sous-catégories"),
         "criteria.name",
         "rankingWeight",
         "validation",
         "lastValidationDate",
         "lastValidationType",
-        ExtraDataFilterEqual(column=Offer.extraData["isbn"], name="ISBN"),
-        ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
-        ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_movie_id"], name="Identifiant Allociné"),
+        ExtraDataFilterEqual(column=models.Offer.extraData["isbn"], name="ISBN"),
+        ExtraDataFilterEqual(column=models.Offer.extraData["visa"], name="Visa d'exploitation"),
+        ExtraDataFilterEqual(
+            column=models.Offer.extraData["theater"]["allocine_movie_id"], name="Identifiant Allociné"
+        ),
     ]
     form_columns = ["criteria", "rankingWeight"]
     simple_list_pager = True
@@ -239,7 +234,7 @@ class OfferView(BaseAdminView):
         if has_app_context() and self.check_super_admins():
             form.validation = wtforms.SelectField(
                 "Validation",
-                choices=[(s.name, s.value) for s in OfferValidationStatus],
+                choices=[(s.name, s.value) for s in models.OfferValidationStatus],
                 coerce=str,
                 description="Vous pouvez choisir uniquement APPROVED ou REJECTED",
             )
@@ -261,17 +256,17 @@ class OfferView(BaseAdminView):
             current_offer = self.session.query(self.model).get(id)
             form.validation.data = current_offer.validation.value
 
-    def on_model_change(self, form: wtforms.Form, model: Offer, is_created: bool) -> None:
+    def on_model_change(self, form: wtforms.Form, model: models.Offer, is_created: bool) -> None:
         if hasattr(form, "validation"):
             previous_validation = form._fields["validation"].object_data
-            new_validation = OfferValidationStatus[form.validation.data]
+            new_validation = models.OfferValidationStatus[form.validation.data]
             if previous_validation != new_validation and new_validation in (
-                OfferValidationStatus.DRAFT,
-                OfferValidationStatus.PENDING,
+                models.OfferValidationStatus.DRAFT,
+                models.OfferValidationStatus.PENDING,
             ):
                 raise ValidationError("Le statut de validation ne peut pas être changé vers DRAFT ou PENDING")
 
-    def update_model(self, form: wtforms.Form, offer: Offer) -> bool:
+    def update_model(self, form: wtforms.Form, offer: models.Offer) -> bool:
         """
         Immediately index offer if tags are updated: tags are used by
         other tools (eg. building playlists for the home page) and
@@ -291,7 +286,7 @@ class OfferView(BaseAdminView):
 
         return res
 
-    def after_model_change(self, form: wtforms.Form, offer: Offer, is_created: bool = False) -> None:
+    def after_model_change(self, form: wtforms.Form, offer: models.Offer, is_created: bool = False) -> None:
         if hasattr(form, "validation"):
             previous_validation = form._fields["validation"].object_data
             new_validation = offer.validation
@@ -299,9 +294,9 @@ class OfferView(BaseAdminView):
             if previous_validation != new_validation:
                 offer.lastValidationDate = datetime.utcnow()
                 offer.lastValidationType = OfferValidationType.MANUAL
-                if new_validation == OfferValidationStatus.APPROVED:
+                if new_validation == models.OfferValidationStatus.APPROVED:
                     offer.isActive = True
-                if new_validation == OfferValidationStatus.REJECTED:
+                if new_validation == models.OfferValidationStatus.REJECTED:
                     offer.isActive = False
                     cancelled_bookings = cancel_bookings_from_rejected_offer(offer)
                     if cancelled_bookings:
@@ -324,7 +319,11 @@ class OfferView(BaseAdminView):
         search.async_index_offer_ids([offer.id])
 
     def get_query(self) -> BaseQuery:
-        return self.session.query(self.model).filter(self.model.validation != OfferValidationStatus.DRAFT).from_self()
+        return (
+            self.session.query(self.model)
+            .filter(self.model.validation != models.OfferValidationStatus.DRAFT)
+            .from_self()
+        )
 
 
 class OfferForVenueSubview(OfferView):
@@ -353,7 +352,7 @@ class OfferForVenueSubview(OfferView):
         if venue_id is None:
             abort(400, "Venue id required")
 
-        return query_to_override.filter(Offer.venueId == venue_id)
+        return query_to_override.filter(models.Offer.venueId == venue_id)
 
     def _get_venue_name(self) -> str:
         venue_id = request.args.get("id")
@@ -372,29 +371,29 @@ def _metabase_offer_url(offer_id: int) -> str:
     return f"https://support.internal-passculture.app/question/115?offer_id={offer_id}"
 
 
-def _pro_offer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
-    url = build_pc_pro_offer_link(model)
+def _pro_offer_link(view: BaseAdminView, context: Context, model: models.Offer, name: str) -> Markup:
+    url = urls.build_pc_pro_offer_link(model)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre PC</a>').format(escape(url))
 
 
-def _related_offers_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
+def _related_offers_link(view: BaseAdminView, context: Context, model: models.Offer, name: str) -> Markup:
     url = url_for("offer_for_venue.index", id=model.venue.id)
     return Markup('<a href="{}">Offres associées</a>').format(escape(url))
 
 
-def _metabase_offer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
+def _metabase_offer_link(view: BaseAdminView, context: Context, model: models.Offer, name: str) -> Markup:
     url = _metabase_offer_url(model.id)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre</a>').format(escape(url))
 
 
-def _offerer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
-    url = build_pc_pro_offerer_link(model.venue.managingOfferer)
+def _offerer_link(view: BaseAdminView, context: Context, model: models.Offer, name: str) -> Markup:
+    url = urls.build_pc_pro_offerer_link(model.venue.managingOfferer)
     link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
     return link.format(url=escape(url), name=escape(model.venue.managingOfferer.name))
 
 
-def _venue_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
-    url = build_pc_pro_venue_link(model.venue)
+def _venue_link(view: BaseAdminView, context: Context, model: models.Offer, name: str) -> Markup:
+    url = urls.build_pc_pro_venue_link(model.venue)
     link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
     return link.format(url=escape(url), name=escape(model.venue.publicName or model.venue.name))
 
@@ -402,15 +401,15 @@ def _venue_link(view: BaseAdminView, context: Context, model: Offer, name: str) 
 class OfferValidationForm(SecureForm):
     validation = wtforms.SelectField(
         "validation",
-        choices=[(choice.name, choice.value) for choice in OfferValidationStatus if choice.name != "DRAFT"],
+        choices=[(choice.name, choice.value) for choice in models.OfferValidationStatus if choice.name != "DRAFT"],
         coerce=str,
     )
 
 
-class BeginningDatetimeFilter(DateTimeBetweenFilter):
+class BeginningDatetimeFilter(filters.DateTimeBetweenFilter):
     def apply(self, query, value, alias=None):  # type: ignore [no-untyped-def]
         start, end = value
-        return query.join(Stock).filter(Stock.beginningDatetime.between(start, end))
+        return query.join(models.Stock).filter(models.Stock.beginningDatetime.between(start, end))
 
 
 class ValidationBaseView(BaseAdminView):
@@ -456,7 +455,7 @@ class ValidationBaseView(BaseAdminView):
             .join(Offerer)
             .options(sqla_orm.contains_eager(self.model.venue).contains_eager(Venue.managingOfferer))
             .filter(Offerer.isValidated)
-            .filter(self.model.validation == OfferValidationStatus.PENDING)
+            .filter(self.model.validation == models.OfferValidationStatus.PENDING)
         )
 
     def get_count_query(self) -> BaseQuery:
@@ -465,7 +464,7 @@ class ValidationBaseView(BaseAdminView):
             .join(Venue)
             .join(Offerer)
             .filter(Offerer.isValidated)
-            .filter(self.model.validation == OfferValidationStatus.PENDING)
+            .filter(self.model.validation == models.OfferValidationStatus.PENDING)
         )
 
     def _batch_validate(self, offers, validation_status):  # type: ignore [no-untyped-def]
@@ -507,12 +506,12 @@ class ValidationBaseView(BaseAdminView):
     @action("approve", "Approuver", "Etes-vous sûr(e) de vouloir approuver les offres sélectionnées ?")
     def action_approve(self, ids):  # type: ignore [no-untyped-def]
         offers_to_approve = self.model.query.filter(self.model.id.in_(ids))
-        self._batch_validate(offers_to_approve, OfferValidationStatus.APPROVED)
+        self._batch_validate(offers_to_approve, models.OfferValidationStatus.APPROVED)
 
     @action("reject", "Rejeter", "Etes-vous sûr(e) de vouloir rejeter les offres sélectionnées ?")
     def action_reject(self, ids):  # type: ignore [no-untyped-def]
         offers_to_reject = self.model.query.filter(self.model.id.in_(ids))
-        self._batch_validate(offers_to_reject, OfferValidationStatus.REJECTED)
+        self._batch_validate(offers_to_reject, models.OfferValidationStatus.REJECTED)
 
     @expose("/edit/", methods=["GET", "POST"])
     def edit(self) -> Response:
@@ -522,9 +521,9 @@ class ValidationBaseView(BaseAdminView):
         if request.method == "POST":
             form = OfferValidationForm(request.form)
             if form.validate():
-                validation_status = OfferValidationStatus[form.validation.data]
+                validation_status = models.OfferValidationStatus[form.validation.data]
                 is_offer_updated = offers_api.update_pending_offer_validation(
-                    offer, OfferValidationStatus[form.validation.data]
+                    offer, models.OfferValidationStatus[form.validation.data]
                 )
                 if is_offer_updated:
                     flash("Le statut de l'offre a bien été modifié", "success")
@@ -544,7 +543,7 @@ class ValidationBaseView(BaseAdminView):
 
                     if request.form["action"] == "save-and-go-next":
                         next_offer_query = (
-                            self.model.query.filter(self.model.validation == OfferValidationStatus.PENDING)
+                            self.model.query.filter(self.model.validation == models.OfferValidationStatus.PENDING)
                             .filter(self.model.id < offer_id)
                             .order_by(self.model.id.desc())
                             .limit(1)
@@ -568,14 +567,14 @@ class ValidationBaseView(BaseAdminView):
             "cancel_link_url": url_for(f"{self.endpoint}.index_view"),
             "legal_category_code": legal_category["code"],
             "legal_category_label": legal_category["label"],
-            "pc_offer_url": build_pc_pro_offer_link(offer),
+            "pc_offer_url": urls.build_pc_pro_offer_link(offer),
             "metabase_offer_url": _metabase_offer_url(offer.id) if IS_PROD else None,
             "offer_name": offer.name,
             "offer_score": compute_offer_validation_score(validation_items),
             "venue_name": offer.venue.publicName or offer.venue.name,
             "offerer_name": offer.venue.managingOfferer.name,
-            "venue_url": build_pc_pro_venue_link(offer.venue),
-            "offerer_url": build_pc_pro_offerer_link(offer.venue.managingOfferer),
+            "venue_url": urls.build_pc_pro_venue_link(offer.venue),
+            "offerer_url": urls.build_pc_pro_offerer_link(offer.venue.managingOfferer),
         }
         return self.render("admin/edit_offer_validation.html", **context)
 
@@ -691,7 +690,7 @@ class ImportConfigValidationOfferView(BaseSuperAdminView):
 
         return OfferValidationConfigForm(get_form_data())
 
-    def create_model(self, form: wtforms.Form) -> None | OfferValidationConfig:
+    def create_model(self, form: wtforms.Form) -> None | models.OfferValidationConfig:
         check_user_can_load_config(current_user)
-        config = import_offer_validation_config(form.specs.data, current_user)
+        config = offers_api.import_offer_validation_config(form.specs.data, current_user)
         return config
