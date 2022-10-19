@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 
 import click
 import sqlalchemy.orm as sqla_orm
@@ -7,12 +8,45 @@ import sqlalchemy.orm as sqla_orm
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
+from pcapi.models.feature import FeatureToggle
+import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils import human_ids
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
 
 
 blueprint = Blueprint(__name__, __name__)
+logger = logging.getLogger(__name__)
+
+
+@blueprint.cli.command("price_bookings")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.PRICE_BOOKINGS)
+def price_bookings() -> None:
+    """Price bookings that have been recently marked as used."""
+    finance_api.price_bookings()
+
+
+@blueprint.cli.command("generate_cashflows_and_payment_files")
+@click.option("--override-feature-flag", help="Override feature flag", is_flag=True, default=False)
+@cron_decorators.log_cron_with_transaction
+def generate_cashflows_and_payment_files(override_feature_flag: bool) -> None:
+    flag = FeatureToggle.GENERATE_CASHFLOWS_BY_CRON
+    if not override_feature_flag and not flag.is_active():
+        logger.info("%s is not active, cronjob will not run.", flag.name)
+        return
+    last_day = datetime.date.today() - datetime.timedelta(days=1)
+    cutoff = finance_utils.get_cutoff_as_datetime(last_day)
+    finance_api.generate_cashflows_and_payment_files(cutoff)
+
+
+@blueprint.cli.command("generate_invoices")
+def generate_invoices() -> None:
+    """Generate (and store) all invoices.
+
+    This command can be run multiple times.
+    """
+    finance_api.generate_invoices()
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")
@@ -23,18 +57,18 @@ blueprint = Blueprint(__name__, __name__)
 @click.option("--valid-from", required=True)
 @click.option("--valid-until", required=False)
 @click.option("--force", required=False, is_flag=True, help="Ignore warnings and create rule anyway")
-def add_custom_offer_reimbursement_rule(  # type: ignore [no-untyped-def]
+def add_custom_offer_reimbursement_rule(
     offer_humanized_id: str,
-    offer_original_amount: decimal.Decimal,
+    offer_original_amount: str,
     offerer_id: int,
-    reimbursed_amount: decimal.Decimal,
+    reimbursed_amount: str,
     valid_from: str,
     valid_until: str = None,
     force: bool = False,
-):
+) -> None:
     """Add a custom reimbursement rule that is linked to an offer."""
-    offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))  # type: ignore [attr-defined]
-    reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore [attr-defined]
+    offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))  # type: ignore [assignment]
+    reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore [assignment]
 
     offer_id = human_ids.dehumanize(offer_humanized_id)
     offer = (
@@ -85,7 +119,7 @@ def add_custom_offer_reimbursement_rule(  # type: ignore [no-untyped-def]
 
     rule = finance_api.create_offer_reimbursement_rule(
         offer_id=offer.id,
-        amount=reimbursed_amount,
+        amount=reimbursed_amount,  # type: ignore [arg-type]
         start_date=valid_from_dt,
         end_date=valid_until_dt,
     )
