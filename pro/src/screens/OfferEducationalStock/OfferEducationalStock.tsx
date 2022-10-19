@@ -40,21 +40,6 @@ const showcaseOfferRadios = [
   },
 ]
 
-const getNextButtonWording = (
-  mode: Mode,
-  offerType: EducationalOfferType
-): string => {
-  if (mode === Mode.EDITION) {
-    return 'Enregistrer'
-  }
-
-  if (offerType === EducationalOfferType.CLASSIC) {
-    return 'Étape suivante'
-  }
-
-  return 'Valider et créer l’offre'
-}
-
 export interface IOfferEducationalStockProps<
   T = CollectiveOffer | CollectiveOfferTemplate
 > {
@@ -202,7 +187,7 @@ const OfferEducationalStock = <
                 disabled={offerIsDisabled || mode === Mode.READ_ONLY}
                 isLoading={isLoading}
               >
-                {getNextButtonWording(mode, formik.values.educationalOfferType)}
+                {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
               </SubmitButton>
             </FormLayout.Actions>
           </FormLayout>

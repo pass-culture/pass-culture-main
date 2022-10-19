@@ -66,7 +66,7 @@ const CollectiveOfferStockCreation = ({
     if (!isTemplate) {
       url = `${url}/visibilite`
     } else {
-      url = `${url}/confirmation`
+      url = `${url}/creation/recapitulatif`
     }
     history.push(url)
   }
