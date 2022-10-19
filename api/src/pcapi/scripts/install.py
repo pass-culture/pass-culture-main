@@ -6,6 +6,7 @@ import flask
 def install_commands(app: flask.Flask) -> None:
     module_paths = (
         "pcapi.core.educational.commands",
+        "pcapi.core.finance.commands",
         "pcapi.core.providers.commands",
         "pcapi.scheduled_tasks.search_commands",
         "pcapi.scheduled_tasks.commands",
@@ -15,11 +16,9 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.clean_database",
         "pcapi.scripts.external_users.commands",
         "pcapi.scripts.full_index_offers",
-        "pcapi.scripts.generate_invoices",
         "pcapi.scripts.install_data",
         "pcapi.scripts.booking.commands",
         "pcapi.scripts.offerer.commands",
-        "pcapi.scripts.payment.add_custom_offer_reimbursement_rule",
         "pcapi.scripts.provider.check_provider_api",
         "pcapi.scripts.sandbox",
         "pcapi.scripts.ubble_archive_past_identifications",

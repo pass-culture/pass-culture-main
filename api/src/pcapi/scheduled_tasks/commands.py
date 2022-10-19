@@ -12,8 +12,6 @@ from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 import pcapi.core.bookings.repository as bookings_repository
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.utils as finance_utils
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.repository import (
@@ -291,27 +289,6 @@ def clean_past_draft_offers() -> None:
 @log_cron_with_transaction
 def recredit_underage_users() -> None:
     user_recredit.recredit_underage_users()
-
-
-@blueprint.cli.command("price_bookings")
-@log_cron_with_transaction
-@cron_require_feature(FeatureToggle.PRICE_BOOKINGS)
-def price_bookings() -> None:
-    """Price bookings that have been recently marked as used."""
-    finance_api.price_bookings()
-
-
-@blueprint.cli.command("generate_cashflows_and_payment_files")
-@click.option("--override-feature-flag", help="Override feature flag", is_flag=True, default=False)
-@log_cron_with_transaction
-def generate_cashflows_and_payment_files(override_feature_flag: bool) -> None:
-    flag = FeatureToggle.GENERATE_CASHFLOWS_BY_CRON
-    if not override_feature_flag and not flag.is_active():
-        logger.info("%s is not active, cronjob will not run.", flag.name)
-        return
-    last_day = datetime.date.today() - datetime.timedelta(days=1)
-    cutoff = finance_utils.get_cutoff_as_datetime(last_day)
-    finance_api.generate_cashflows_and_payment_files(cutoff)
 
 
 @blueprint.cli.command("users_turned_eighteen_automation")
