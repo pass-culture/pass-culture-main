@@ -546,6 +546,21 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
             .where(Stock.hasBookingLimitDatetimePassed.is_(False)),
         )
 
+    @sa.ext.hybrid.hybrid_property
+    def firstBeginningDatetime(self) -> datetime | None:
+        stocks_with_date = [
+            stock.beginningDatetime for stock in self.activeStocks if stock.beginningDatetime is not None
+        ]
+        return min(stocks_with_date) if stocks_with_date else None
+
+    @firstBeginningDatetime.expression  # type: ignore [no-redef]
+    def firstBeginningDatetime(cls) -> datetime | None:  # pylint: disable=no-self-argument
+        return (
+            sa.select(sa.func.min(Stock.beginningDatetime))
+            .where(Stock.offerId == cls.id)
+            .where(Stock.isSoftDeleted.is_(False))
+        )
+
     @property
     def activeStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
