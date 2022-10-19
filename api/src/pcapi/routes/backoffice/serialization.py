@@ -292,11 +292,12 @@ class OffererAttachedUser(BaseModel):
     class Config:
         orm_mode = True
 
-    id: int
+    id: int  # user id
     firstName: str | None
     lastName: str | None
     email: str
     phoneNumber: str | None
+    user_offerer_id: int
     validationStatus: offerers_models.ValidationStatus | None
 
 

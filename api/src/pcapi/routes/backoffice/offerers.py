@@ -40,6 +40,7 @@ def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResp
                 lastName=user_offerer.user.lastName,
                 email=user_offerer.user.email,
                 phoneNumber=user_offerer.user.phoneNumber,
+                user_offerer_id=user_offerer.id,
                 validationStatus=user_offerer.validationStatus,
             )
             for user_offerer in users_offerer
