@@ -73,3 +73,13 @@ class ShowTime3(BaseModel):
 
 class ShowTimeCollection(Collection):
     data: list[ShowTime3]
+
+
+class ShowTimeRemainingOnlineSeats(BaseModel):
+    id: int
+    numberRemainingSeatsForOnlineSale: int
+
+
+class ShowTimeDetails(BaseModel):
+    message: str
+    data: ShowTimeRemainingOnlineSeats
