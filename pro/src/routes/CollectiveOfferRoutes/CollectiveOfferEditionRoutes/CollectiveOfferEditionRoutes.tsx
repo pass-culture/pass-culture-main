@@ -7,7 +7,7 @@ import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollect
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOfferStockEdition from 'routes/CollectiveOfferStockEdition'
-import CollectiveOfferSummary from 'routes/CollectiveOfferSummary'
+import CollectiveOfferSummaryEdition from 'routes/CollectiveOfferSummaryEdition'
 import CollectiveOfferVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 
 import { getActiveStep } from '../utils/getActiveStep'
@@ -73,7 +73,7 @@ const CollectiveOfferEditionRoutes = ({
           />
         </Route>
         <Route path="/offre/:offerId/collectif/recapitulatif">
-          <CollectiveOfferSummary
+          <CollectiveOfferSummaryEdition
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
