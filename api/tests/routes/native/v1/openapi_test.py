@@ -1647,7 +1647,12 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "VenueContactModel",
                         },
-                        "description": {"maxLength": 1000, "nullable": True, "title": "Description", "type": "string"},
+                        "description": {
+                            "maxLength": 1000,
+                            "nullable": True,
+                            "title": "Description",
+                            "type": "string",
+                        },
                         "id": {"title": "Id", "type": "integer"},
                         "isPermanent": {"nullable": True, "title": "Ispermanent", "type": "boolean"},
                         "isVirtual": {"title": "Isvirtual", "type": "boolean"},

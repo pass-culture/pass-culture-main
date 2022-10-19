@@ -32,22 +32,21 @@ MAX_LATITUDE = 90
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    # pydantic constrained types do not work well with Mypy, see https://github.com/samuelcolvin/pydantic/issues/156
-    address: pydantic.constr(max_length=200)  # type: ignore [valid-type]
-    bookingEmail: pydantic.constr(max_length=120)  # type: ignore [valid-type]
-    city: pydantic.constr(max_length=50)  # type: ignore [valid-type]
+    address: base.VenueAddress
+    bookingEmail: base.VenueBookingEmail
+    city: base.VenueCity
     comment: str | None
     latitude: float
     longitude: float
     managingOffererId: str
-    name: pydantic.constr(max_length=140)  # type: ignore [valid-type]
-    publicName: pydantic.constr(max_length=255) | None  # type: ignore [valid-type]
-    postalCode: pydantic.constr(min_length=4, max_length=6)  # type: ignore [valid-type]
-    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore [valid-type]
+    name: base.VenueName
+    publicName: base.VenuePublicName | None
+    postalCode: base.VenuePostalCode
+    siret: base.VenueSiret | None
     venueLabelId: str | None
     venueTypeCode: str
     withdrawalDetails: str | None
-    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
+    description: base.VenueDescription | None
     contact: base.VenueContactModel | None
     # FUTURE-NEW-BANK-DETAILS: remove businessUnitId when new bank details journey is complete
     businessUnitId: int | None
@@ -131,7 +130,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(BaseModel):
-    image_credit: base.VenueImageCredit | None  # type: ignore [valid-type]
+    image_credit: base.VenueImageCredit | None
     original_image_url: str | None
     crop_params: CropParams = CropParams()
 
@@ -290,15 +289,15 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    name: pydantic.constr(max_length=140) | None  # type: ignore [valid-type]
-    address: pydantic.constr(max_length=200) | None  # type: ignore [valid-type]
-    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore [valid-type]
+    name: base.VenueName | None
+    address: base.VenueAddress | None
+    siret: base.VenueSiret | None
     latitude: float | str | None
     longitude: float | str | None
-    bookingEmail: pydantic.constr(max_length=120) | None  # type: ignore [valid-type]
-    postalCode: pydantic.constr(min_length=4, max_length=6) | None  # type: ignore [valid-type]
-    city: pydantic.constr(max_length=50) | None  # type: ignore [valid-type]
-    publicName: pydantic.constr(max_length=255) | None  # type: ignore [valid-type]
+    bookingEmail: base.VenueBookingEmail | None
+    postalCode: base.VenuePostalCode | None
+    city: base.VenueCity | None
+    publicName: base.VenuePublicName | None
     comment: str | None
     venueTypeCode: str | None
     venueLabelId: int | None
@@ -306,7 +305,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     isAccessibilityAppliedOnAllOffers: bool | None
     isWithdrawalAppliedOnAllOffers: bool | None
     isEmailAppliedOnAllOffers: bool | None
-    description: pydantic.constr(max_length=1000, strip_whitespace=True) | None  # type: ignore [valid-type]
+    description: base.VenueDescription | None
     contact: base.VenueContactModel | None
     businessUnitId: int | None
     reimbursementPointId: int | None
@@ -372,8 +371,11 @@ class VenueListQueryModel(BaseModel):
 
 
 class VenueBannerContentModel(BaseModel):
-    content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)  # type: ignore [valid-type]
-    image_credit: base.VenueImageCredit | None  # type: ignore [valid-type]
+    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
+        content: bytes
+    else:
+        content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)
+    image_credit: base.VenueImageCredit | None
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
@@ -413,7 +415,7 @@ class VenueBannerContentModel(BaseModel):
 
         file = request.files["banner"]
         return VenueBannerContentModel(
-            content=file.read(VENUE_BANNER_MAX_SIZE),
+            content=file.read(VENUE_BANNER_MAX_SIZE),  # type: ignore [call-arg]
             image_credit=request.args.get("image_credit"),
             x_crop_percent=request.args.get("x_crop_percent"),
             y_crop_percent=request.args.get("y_crop_percent"),

@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import Any
+import typing
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
@@ -222,7 +222,10 @@ class UserProfileUpdateRequest(BaseModel):
 
 class UserProfileEmailUpdate(BaseModel):
     email: pydantic.EmailStr
-    password: pydantic.constr(strip_whitespace=True, min_length=8, strict=True)  # type: ignore [valid-type]
+    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
+        password: str
+    else:
+        password: pydantic.constr(strip_whitespace=True, min_length=8, strict=True)
 
 
 class ValidateEmailRequest(BaseModel):
@@ -261,7 +264,7 @@ class UserProfilingFraudRequest(BaseModel):
     agentType: AgentType | None
 
     @root_validator()
-    def session_id_alphanumerics(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def session_id_alphanumerics(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
         session_id = values.get("sessionId") or values.get("session_id")
         if not session_id:
             raise ValueError("L'identifiant de session est manquant")

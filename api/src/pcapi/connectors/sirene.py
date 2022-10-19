@@ -6,6 +6,7 @@ Documentation of the API: https://api.insee.fr/catalogue/site/themes/wso2/subthe
 from collections import defaultdict
 import logging
 import re
+import typing
 
 import pydantic
 
@@ -42,22 +43,36 @@ class NonPublicDataException(SireneException):
 
 
 class _Address(pydantic.BaseModel):
-    street: pydantic.constr(strip_whitespace=True)  # type: ignore[valid-type]
-    postal_code: pydantic.constr(strip_whitespace=True)  # type: ignore[valid-type]
-    city: pydantic.constr(strip_whitespace=True)  # type: ignore[valid-type]
+    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
+        street: str
+        postal_code: str
+        city: str
+    else:
+        street: pydantic.constr(strip_whitespace=True)
+        postal_code: pydantic.constr(strip_whitespace=True)
+        city: pydantic.constr(strip_whitespace=True)
 
 
 class SirenInfo(pydantic.BaseModel):
-    siren: pydantic.constr(strip_whitespace=True, min_length=9, max_length=9)  # type: ignore[valid-type]
+    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
+        siren: str
+    else:
+        siren: pydantic.constr(strip_whitespace=True, min_length=9, max_length=9)
     name: str
-    head_office_siret: pydantic.constr(strip_whitespace=True, min_length=14, max_length=14)  # type: ignore[valid-type]
+    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
+        head_office_siret: str
+    else:
+        head_office_siret: pydantic.constr(strip_whitespace=True, min_length=14, max_length=14)
     ape_code: str
     legal_category_code: str
     address: _Address | None
 
 
 class SiretInfo(pydantic.BaseModel):
-    siret: pydantic.constr(strip_whitespace=True, min_length=14, max_length=14)  # type: ignore[valid-type]
+    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
+        siret: str
+    else:
+        siret: pydantic.constr(strip_whitespace=True, min_length=14, max_length=14)
     active: bool
     name: str
     address: _Address

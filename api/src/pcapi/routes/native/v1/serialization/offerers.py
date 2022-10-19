@@ -6,7 +6,7 @@ from pcapi.routes.serialization import base
 
 
 class BannerMetaModel(TypedDict, total=False):
-    image_credit: base.VenueImageCredit | None  # type: ignore [valid-type]
+    image_credit: base.VenueImageCredit | None
 
 
 class VenueAccessibilityModel(BaseModel):
