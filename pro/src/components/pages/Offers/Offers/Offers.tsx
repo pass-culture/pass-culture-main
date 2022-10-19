@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 
+import { OfferStatus } from 'apiClient/v1'
 import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
@@ -72,7 +73,7 @@ const Offers = ({
   )
 
   const updateStatusFilter = useCallback(
-    (selectedStatus: string) => {
+    (selectedStatus: OfferStatus | 'all') => {
       setSearchFilters((currentSearchFilters: TSearchFilters) => ({
         ...currentSearchFilters,
         status: selectedStatus,
