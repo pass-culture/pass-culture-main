@@ -246,7 +246,6 @@ def _silence_noisy_loggers() -> None:
     logging.getLogger("spectree.config").setLevel(logging.WARNING)
     logging.getLogger("xmlschema").setLevel(logging.WARNING)
     logging.getLogger("saml2").setLevel(logging.WARNING)
-    logging.getLogger("transitions").setLevel(logging.ERROR)
     logging.getLogger("gql.transport.requests").setLevel(logging.WARNING)
     # fontTools is used by weasyprint
     logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
