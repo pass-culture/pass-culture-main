@@ -55,6 +55,7 @@ class GetOffererUsersTest:
                 "lastName": None,
                 "email": uo1.user.email,
                 "phoneNumber": uo1.user.phoneNumber,
+                "user_offerer_id": uo1.id,
                 "validationStatus": "VALIDATED",
             },
             {
@@ -63,6 +64,7 @@ class GetOffererUsersTest:
                 "lastName": "Bon",
                 "email": uo2.user.email,
                 "phoneNumber": uo2.user.phoneNumber,
+                "user_offerer_id": uo2.id,
                 "validationStatus": "VALIDATED",
             },
             {
@@ -71,6 +73,7 @@ class GetOffererUsersTest:
                 "lastName": uo3.user.lastName,
                 "email": uo3.user.email,
                 "phoneNumber": uo3.user.phoneNumber,
+                "user_offerer_id": uo3.id,
                 "validationStatus": "NEW",
             },
         ]
