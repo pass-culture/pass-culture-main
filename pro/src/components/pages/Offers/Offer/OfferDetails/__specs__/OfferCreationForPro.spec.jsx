@@ -56,6 +56,11 @@ const store = configureTestStore({
         name: 'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION',
         nameKey: 'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION',
       },
+      {
+        isActive: true,
+        name: 'OFFER_DRAFT_ENABLED',
+        nameKey: 'OFFER_DRAFT_ENABLED',
+      },
     ],
   },
   user: {
@@ -126,6 +131,7 @@ describe('offerDetails - Creation - pro user', () => {
         offererName: 'La structure',
         bookingEmail: 'lieu@example.com',
         withdrawalDetails: 'Modalité retrait 1',
+        managingOfferer: { name: 'My offerer', id: 'ID' },
       },
       {
         id: 'ABC',
@@ -1916,6 +1922,94 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       expect(submitButton).toBeDisabled()
+    })
+    it('should save offer and redirect to draft page on save draft button', async () => {
+      api.getVenue.mockReturnValue(venues[0])
+      await renderOffers(props)
+
+      await userEvent.selectOptions(
+        await screen.findByLabelText(/Catégorie/),
+        'MUSIQUE_LIVE'
+      )
+      await userEvent.selectOptions(
+        await screen.findByLabelText(/Sous-catégorie/),
+        'CONCERT'
+      )
+      await userEvent.click(
+        await screen.findByLabelText(/Évènement sans billet/)
+      )
+      await userEvent.type(
+        await screen.findByLabelText(/Titre de l'offre/),
+        'Ma petite offre'
+      )
+      await userEvent.type(
+        screen.getByLabelText(/Description/),
+        'Pas si petite que ça'
+      )
+      await userEvent.selectOptions(screen.getByLabelText(/Lieu/), venues[0].id)
+      await userEvent.click(screen.getByLabelText(/Visuel/))
+      await userEvent.type(screen.getByLabelText(/Durée/), '1:30')
+      await userEvent.type(
+        screen.getByLabelText(/URL de votre site ou billetterie/),
+        'http://example.net'
+      )
+      await userEvent.selectOptions(
+        screen.getByLabelText(/Genre musical/),
+        '501'
+      )
+      await userEvent.selectOptions(screen.getByLabelText(/Sous genre/), '502')
+      await userEvent.click(screen.getByLabelText(/Aucune/))
+      await userEvent.type(
+        screen.getByLabelText(/Interprète/),
+        'TEST PERFORMER NAME'
+      )
+      await userEvent.type(
+        screen.getByLabelText(/Informations de retrait/),
+        'À venir chercher sur place.'
+      )
+
+      await sidebarDisplayed()
+
+      const createdOffer = {
+        name: 'Ma petite offre',
+        description: 'Pas si petite que ça',
+        venueId: venues[0].id,
+        durationMinutes: '1:30',
+        isDuo: false,
+        audioDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        externalTicketOfficeUrl: 'http://example.net',
+        subcategoryId: 'CONCERT',
+        extraData: {
+          musicType: '501',
+          musicSubType: '502',
+          performer: 'TEST PERFORMER NAME',
+        },
+        withdrawalDetails: 'À venir chercher sur place.',
+        withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET,
+        id: 'CREATED',
+        stocks: [],
+        venue: venues[0],
+        status: 'ACTIVE',
+        bookingEmail: null,
+      }
+
+      api.postOffer.mockResolvedValue(createdOffer)
+      api.getOffer.mockResolvedValue(createdOffer)
+      const submitButton = screen.getByText('Enregistrer un brouillon')
+
+      // When
+      await userEvent.click(submitButton)
+
+      expect(api.postOffer).toHaveBeenCalledTimes(1)
+      expect(
+        screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { name: "Compléter l'offre", level: 1 })
+      ).toBeInTheDocument()
     })
 
     it('should submit externalTicketOfficeUrl as null when no value was provided', async () => {

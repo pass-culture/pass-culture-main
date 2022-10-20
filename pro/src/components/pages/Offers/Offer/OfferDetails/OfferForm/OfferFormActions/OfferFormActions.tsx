@@ -1,11 +1,11 @@
 import cn from 'classnames'
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
@@ -33,6 +33,7 @@ const OfferFormActions = ({
   onClickSaveDraft,
 }: IOfferFormActionsProps) => {
   const { logEvent } = useAnalytics()
+  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const onCancelClick = () => {
     if (isEdition)
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -46,7 +47,7 @@ const OfferFormActions = ({
   return (
     <div className={cn(styles['form-actions'])}>
       <ButtonLink
-        className={cn(styles['action'], styles['action-cancel'])}
+        className={styles['action']}
         link={{
           to: cancelUrl,
           isExternal: false,
@@ -57,7 +58,7 @@ const OfferFormActions = ({
         {'Annuler et quitter'}
       </ButtonLink>
 
-      {canSaveDraft && (
+      {canSaveDraft && isDraftEnabled && (
         <Button
           className={styles['action']}
           disabled={isDisabled || isSubmitLoading}
@@ -68,6 +69,7 @@ const OfferFormActions = ({
         </Button>
       )}
       <SubmitButton
+        className={styles['last-action']}
         disabled={isDisabled}
         isLoading={isSubmitLoading}
         onClick={onClickNext}
