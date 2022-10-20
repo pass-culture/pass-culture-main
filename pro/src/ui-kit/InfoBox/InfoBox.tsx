@@ -5,25 +5,18 @@ import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
 import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ButtonLink } from 'ui-kit/Button'
-import type {
-  InternalLinkProps,
-  ExternalLinkProps,
-} from 'ui-kit/Button/ButtonLink'
+import type { LinkProps } from 'ui-kit/Button/ButtonLink'
 
 import styles from './InfoBox.module.scss'
 
-interface TInternalLink extends InternalLinkProps {
-  text: string
-}
-
-interface TExternalLink extends ExternalLinkProps {
+export interface IInfoBoxLinkProps extends LinkProps {
   text: string
 }
 
 export interface IInfoBoxProps {
   type: 'info' | 'important'
   text: string
-  link?: TInternalLink | TExternalLink
+  link?: IInfoBoxLinkProps
 }
 
 const InfoBox = ({ type, text, link }: IInfoBoxProps): JSX.Element => {

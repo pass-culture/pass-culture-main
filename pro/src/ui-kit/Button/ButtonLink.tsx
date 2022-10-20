@@ -1,34 +1,26 @@
 import cn from 'classnames'
-import type { LocationDescriptor } from 'history'
-import React, { MouseEventHandler, HTMLProps } from 'react'
+import React, { MouseEventHandler, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
+import useTooltipMargin from './useTooltipMargin'
 
-export type InternalLinkProps = Omit<HTMLProps<HTMLLinkElement>, 'onClick'> & {
-  isExternal: false
-  to: LocationDescriptor
-}
-
-export type ExternalLinkProps = Omit<
-  HTMLProps<HTMLAnchorElement>,
-  'onClick'
-> & {
-  isExternal: true
+export type LinkProps = {
+  isExternal: boolean
   to: string
+  rel?: string
+  target?: string
+  'aria-label'?: string
 }
 interface IButtonProps extends SharedButtonProps {
-  link: InternalLinkProps | ExternalLinkProps
+  link: LinkProps
   children?: React.ReactNode | React.ReactNode[]
   className?: string
   isDisabled?: boolean
   onClick?: MouseEventHandler<HTMLAnchorElement>
+  hasTooltip?: boolean
 }
-
-const linkIsExternal = (
-  link: InternalLinkProps | ExternalLinkProps
-): link is ExternalLinkProps => link.isExternal
 
 const ButtonLink = ({
   className,
@@ -39,80 +31,68 @@ const ButtonLink = ({
   variant = ButtonVariant.TERNARY,
   link,
   iconPosition = IconPositionEnum.LEFT,
+  hasTooltip = false,
 }: IButtonProps): JSX.Element => {
+  const tooltipRef = useRef<HTMLDivElement>(null)
+  const tooltipMargin = useTooltipMargin(tooltipRef, children)
+
   const classNames = cn(
     styles['button'],
     styles[`button-${variant}`],
     { [styles[`button-disabled`]]: isDisabled },
     className
   )
+  const renderBody = () => (
+    <>
+      {Icon && iconPosition !== IconPositionEnum.RIGHT && (
+        <Icon className={styles['button-icon']} />
+      )}
+      {hasTooltip ? (
+        <div
+          className={styles.tooltip}
+          ref={tooltipRef}
+          style={{ marginTop: tooltipMargin }}
+        >
+          {children}
+        </div>
+      ) : (
+        children
+      )}
+      {Icon && iconPosition === IconPositionEnum.RIGHT && (
+        <Icon className={styles['button-icon']} />
+      )}
+    </>
+  )
+  const { to, isExternal, ...linkProps } = link
+  const callback: MouseEventHandler<HTMLAnchorElement> = e =>
+    isDisabled ? e.preventDefault() : onClick?.(e)
 
-  if (linkIsExternal(link)) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { to, isExternal, ...linkProps } = link
-    return (
-      <a
-        className={classNames}
-        href={to}
-        onClick={e => {
-          /* istanbul ignore next: Graphic variations */
-          isDisabled ? e.preventDefault() : onClick?.(e)
-        }}
-        {...(isDisabled
-          ? /* istanbul ignore next: Graphic variations */ {
-              'aria-disabled': true,
-            }
-          : /* istanbul ignore next: Graphic variations */ {})}
-        {...linkProps}
-      >
-        {
-          /* istanbul ignore next: Graphic variations */
-          Icon && iconPosition === IconPositionEnum.LEFT && (
-            <Icon
-              className={cn(styles['button-icon'], styles['button-icon-left'])}
-            />
-          )
-        }
-        {children}
-        {
-          /* istanbul ignore next: Graphic variations */
-          Icon && iconPosition === IconPositionEnum.RIGHT && (
-            <Icon
-              className={cn(styles['button-icon'], styles['button-icon-right'])}
-            />
-          )
-        }
-      </a>
-    )
-  }
-
-  return (
-    <Link
+  return isExternal ? (
+    <a
       className={classNames}
-      onClick={e =>
-        /* istanbul ignore next: Graphic variations */
-        isDisabled ? e.preventDefault() : onClick?.(e)
-      }
-      to={link.to}
-      {...(isDisabled ? { 'aria-disabled': true } : {})}
+      href={to}
+      onClick={callback}
+      {...(isDisabled
+        ? {
+            'aria-disabled': true,
+          }
+        : {})}
+      {...linkProps}
     >
-      {
-        /* istanbul ignore next: Graphic variations */
-        Icon && iconPosition === IconPositionEnum.LEFT && (
-          <Icon
-            className={cn(styles['button-icon'], styles['button-icon-left'])}
-          />
-        )
-      }
-      {children}
-      {
-        /* istanbul ignore next: Graphic variations */
-        Icon && iconPosition === IconPositionEnum.RIGHT && (
-          <Icon
-            className={cn(styles['button-icon'], styles['button-icon-right'])}
-          />
-        )
-      }
+      {renderBody()}
+    </a>
+  ) : (
+    /* istanbul ignore next : no need to test react navigation */ <Link
+      className={classNames}
+      onClick={callback}
+      to={to}
+      {...(isDisabled
+        ? {
+            'aria-disabled': true,
+          }
+        : {})}
+    >
+      {renderBody()}
     </Link>
   )
 }
