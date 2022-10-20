@@ -125,7 +125,7 @@ class BadSortError(Exception):
 
 
 def get_ordering_clauses(
-    model: Model,  # type: ignore[valid-type]
+    model: typing.Type[Model],
     sorts: typing.Iterable[str],
 ) -> list[sqla.sql.ColumnElement | sqla.sql.expression.UnaryExpression]:  # type: ignore [name-defined]
     """
@@ -147,7 +147,7 @@ def get_ordering_clauses(
             bad_sorts.append(
                 (
                     sort,
-                    f"model `{model.__name__}` does not have a `{field_name}` attribute",  # type: ignore [attr-defined]
+                    f"model `{model.__name__}` does not have a `{field_name}` attribute",
                 )
             )
         else:
@@ -162,7 +162,7 @@ def get_ordering_clauses(
 
 
 def get_ordering_clauses_from_json(
-    model: Model,  # type: ignore[valid-type]
+    model: typing.Type[Model],
     sorts: str,
 ) -> list[sqla.sql.ColumnElement | sqla.sql.expression.UnaryExpression]:  # type: ignore [name-defined]
     """
@@ -195,9 +195,7 @@ def get_ordering_clauses_from_json(
             try:
                 field = getattr(model, field_name)
             except AttributeError:
-                bad_sorts.append(
-                    f"model `{model.__name__}` does not have a `{field_name}` attribute"  # type: ignore [attr-defined]
-                )
+                bad_sorts.append(f"model `{model.__name__}` does not have a `{field_name}` attribute")
             else:
                 if sort.get("order", "asc") == "desc":
                     field = field.desc()
