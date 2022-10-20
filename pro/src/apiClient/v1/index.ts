@@ -41,6 +41,7 @@ export type { CollectiveOfferResponseModel } from './models/CollectiveOfferRespo
 export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
 export type { CollectiveOfferTemplateBodyModel } from './models/CollectiveOfferTemplateBodyModel';
 export type { CollectiveOfferTemplateResponseIdModel } from './models/CollectiveOfferTemplateResponseIdModel';
+export { CollectiveOfferType } from './models/CollectiveOfferType';
 export type { CollectiveOfferVenueBodyModel } from './models/CollectiveOfferVenueBodyModel';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';

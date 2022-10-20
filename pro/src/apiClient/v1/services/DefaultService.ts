@@ -16,6 +16,7 @@ import type { CollectiveOfferFromTemplateResponseModel } from '../models/Collect
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
 import type { CollectiveOfferTemplateBodyModel } from '../models/CollectiveOfferTemplateBodyModel';
 import type { CollectiveOfferTemplateResponseIdModel } from '../models/CollectiveOfferTemplateResponseIdModel';
+import type { CollectiveOfferType } from '../models/CollectiveOfferType';
 import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel';
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
 import type { CollectiveStockIdResponseModel } from '../models/CollectiveStockIdResponseModel';
@@ -210,6 +211,7 @@ export class DefaultService {
    * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
+   * @param collectiveOfferType
    * @returns ListCollectiveOffersResponseModel OK
    * @throws ApiError
    */
@@ -222,6 +224,7 @@ export class DefaultService {
     creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
+    collectiveOfferType?: CollectiveOfferType | null,
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -235,6 +238,7 @@ export class DefaultService {
         'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
+        'collectiveOfferType': collectiveOfferType,
       },
       errors: {
         403: `Forbidden`,
