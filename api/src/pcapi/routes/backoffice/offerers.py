@@ -1,7 +1,7 @@
 import typing
 import urllib
 
-from sqlalchemy.orm import exc as orm_exc
+from sqlalchemy import exc as sa_exceptions
 
 from pcapi.core.auth.utils import get_current_user
 from pcapi.core.history import repository as history_repository
@@ -362,18 +362,22 @@ def list_offerers_to_be_validated(
 
 
 @blueprint.backoffice_blueprint.route("offerers/<int:offerer_id>/is_top_actor", methods=["PUT"])
-@spectree_serialize(on_success_status=200, api=blueprint.api)
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def toggle_top_actor(offerer_id: int, body: serialization.IsTopActorRequest) -> None:
     try:
         tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
-    except orm_exc.NoResultFound:
+    except sa_exceptions.NoResultFound:
         raise api_errors.ResourceNotFoundError(errors={"global": "Le tag top-acteur n'existe pas"})
 
     # Add the tag if it doesn't already exist
     if body.isTopActor:
-        offerer_tag_mapping = offerers_models.OffererTagMapping(offererId=offerer_id, tagId=tag.id)
-        repository.save(offerer_tag_mapping)
+        try:
+            db.session.add(offerers_models.OffererTagMapping(offererId=offerer_id, tagId=tag.id))
+            db.session.commit()
+        except sa_exceptions.IntegrityError:
+            # Already in database
+            db.session.rollback()
 
     # Remove the tag if it exists
     else:
