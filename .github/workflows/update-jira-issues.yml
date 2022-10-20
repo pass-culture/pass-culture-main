@@ -14,22 +14,6 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
 
-      - name: Annotate 🚀
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          create_annotated_tag: true
-          tag_prefix: RC-
-          default_bump: major
-          fetch_all_tags: true
-
-      - name: Get release version
-        id: get_release_version
-        run: |
-          VERSION=$(echo ${{ steps.tag_version.outputs.new_version }} | cut -d "." -f 1)
-          echo "::set-output name=value::$VERSION"
-
       - name: Get commit info
         id: get_commit_info
         run: |
@@ -42,6 +26,7 @@ jobs:
         uses: atlassian/gajira-cli@master
         with:
           version: 1.0.20
+
       - name: Login
         uses: atlassian/gajira-login@master
         env:
@@ -55,36 +40,34 @@ jobs:
         with:
           from: commits
 
-      - name: Get jira previous release version
-        id: get_previous_release_version
+      - name: Get jira previous commit number
+        id: get_previous_commit_number
         if: ${{ steps.get_jira_key.outputs.issue != null }}
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         # The jira view command uses .jira.d/templates/view template by default
-        run: echo "::set-output name=RC::$(jira view ${{ steps.get_jira_key.outputs.issue }})"
+        run: echo "::set-output name=value::$(jira view ${{ steps.get_jira_key.outputs.issue }})"
 
       - name: Mark issue as not deployable
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        if: ${{ steps.get_previous_release_version.outputs.RC != null && steps.get_previous_release_version.outputs.RC != '<no value>' }}
-        # If previous_release_version is not null, it means this push-to-master is a fix.
-        # All commits with number between previous_release_version and this release version are therefore not safe to deploy.
+        if: ${{ steps.get_previous_commit_number.outputs.value != null && steps.get_previous_commit_number.outputs.value != '<no value>' }}
+        # If previous_commit_number is not null, it means this push-to-master is a fix.
+        # All commits with number between previous_commit_number and this commit number are therefore not safe to deploy.
         # So mark them as "impropre: true".
 
         # The echo command is to clear jira config.yml file set in get jira issue step
         # The jira edit command uses .jira.d/templates/edit template by default
         run: |
           echo "issue:" >> $HOME/.jira.d/config.yml
-          jira edit --query='"Release Candidate[Number]" > ${{ steps.get_previous_release_version.outputs.RC }}' --override customfield_10044=true --noedit
+          jira edit --query='"Numéro de commit[Number]" > ${{ steps.get_previous_commit_number.outputs.value }}' --override customfield_10044=true --noedit
 
-      - name: Push release version and commit hash to jira issue
-        # TODO: push commit number as release version instead of release candidate tag
+      - name: Push commit number and commit hash to jira issue
         if: ${{ steps.get_jira_key.outputs.issue != null }}
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
           jira edit ${{ steps.get_jira_key.outputs.issue }} \
-            --override customfield_10045=${{ steps.get_release_version.outputs.value }} \
             --override customfield_10059=${{ steps.get_commit_info.outputs.number }} \
             --override customfield_10060=${{ steps.get_commit_info.outputs.hash }} \
             --noedit
