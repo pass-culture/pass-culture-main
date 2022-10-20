@@ -1,19 +1,19 @@
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { CinemaProviderFormDialog } from '../../VenueProvidersManager/CinemaProviderFormDialog/CinemaProviderFormDialog'
-import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 
 import style from './CinemaProviderParameters.module.scss'
 import { ICinemaProviderParametersValues } from './types'
 
 export interface ICinemaProviderParametersProps {
-  venueProvider: IVenueProviderApi
-  afterVenueProviderEdit: (editedVenueProvider: IVenueProviderApi) => void
+  venueProvider: VenueProviderResponse
+  afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
 }
 
 const CinemaProviderParameters = ({
@@ -26,10 +26,8 @@ const CinemaProviderParameters = ({
   const editVenueProvider = useCallback(
     (payload: ICinemaProviderParametersValues) => {
       api
-        // @ts-expect-error missing providerId and venueId
         .updateVenueProvider(payload)
         .then(editedVenueProvider => {
-          // @ts-expect-error string | undefined is not assignable to string | null
           afterVenueProviderEdit(editedVenueProvider)
           notification.success(
             "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
