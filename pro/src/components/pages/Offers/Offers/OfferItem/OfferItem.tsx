@@ -44,6 +44,7 @@ const OfferItem = ({
   const editionStockLink = useOfferStockEditionURL(
     isEducational,
     id,
+    isOfferFormV3,
     !!isShowcase
   )
 
