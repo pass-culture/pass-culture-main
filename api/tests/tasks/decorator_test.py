@@ -16,11 +16,12 @@ from pcapi.utils import requests
 from tests.conftest import TestClient
 
 
+class VoidTaskPayload(BaseModel):
+    chouquette_price: int
+
+
 def generate_task(f):
     TEST_QUEUE = "test-queue"
-
-    class VoidTaskPayload(BaseModel):
-        chouquette_price: int
 
     @task(TEST_QUEUE, "/void_task")
     def test_task(payload: VoidTaskPayload):
@@ -41,7 +42,7 @@ class CloudTaskDecoratorTest:
     def test_calling_task(self):
         inner_task = MagicMock()
         test_task = generate_task(inner_task)
-        payload = {"chouquette_price": 12}
+        payload = VoidTaskPayload(chouquette_price=12)
 
         # Synchronous call
         test_task(payload)
@@ -56,7 +57,7 @@ class CloudTaskDecoratorTest:
     def test_calling_task_in_dev(self, requests_post):
         inner_task = MagicMock()
         test_task = generate_task(inner_task)
-        payload = {"chouquette_price": 12}
+        payload = VoidTaskPayload(chouquette_price=12)
 
         # Synchronous call
         test_task(payload)
@@ -76,7 +77,7 @@ class CloudTaskDecoratorTest:
     def test_calling_google_cloud_task_client(self, cloud_task_client):
         inner_task = MagicMock()
         test_task = generate_task(inner_task)
-        payload = {"chouquette_price": 12}
+        payload = VoidTaskPayload(chouquette_price=12)
 
         test_task.delay(payload)
 
