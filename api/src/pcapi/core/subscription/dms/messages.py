@@ -77,16 +77,14 @@ def get_error_not_updatable_message(
     call_to_action = None
 
     if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        user_message += " : il y a déjà un compte à ton nom sur le pass Culture. "
-        user_message += subscription_messages.build_duplicate_error_message(
+        user_message = subscription_messages.build_duplicate_error_message(
             user, fraud_models.FraudReasonCode.DUPLICATE_USER, application_content
         )
         call_to_action = subscription_messages.compute_support_call_to_action(user.id)
         pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
-        user_message += " : il y a déjà un compte associé à ce numéro de pièce d'identité. "
-        user_message += subscription_messages.build_duplicate_error_message(
+        user_message = subscription_messages.build_duplicate_error_message(
             user, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, application_content
         )
         call_to_action = subscription_messages.compute_support_call_to_action(user.id)
