@@ -725,7 +725,11 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Connecte-toi avec l'adresse jea***@doublon.com ou contacte le support si tu penses qu'il s'agit d'une erreur.",
+            user_message=(
+                "Ton dossier a été refusé car il y a déjà un compte bénéficiaire à ton nom. "
+                "Connecte-toi avec l’adresse mail jea***@doublon.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
+                "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
+            ),
             call_to_action=subscription_models.CallToActionMessage(
                 title="Contacter le support",
                 link=f"mailto:support@example.com?subject=%23{applicant.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",

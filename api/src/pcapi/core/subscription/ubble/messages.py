@@ -82,15 +82,13 @@ def get_ubble_not_retryable_message(
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        user_message = "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. "
-        user_message += subscription_messages.build_duplicate_error_message(
+        user_message = subscription_messages.build_duplicate_error_message(
             fraud_check.user, fraud_models.FraudReasonCode.DUPLICATE_USER, identity_content
         )
         call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
-        user_message = "Ton dossier a été refusé : il y a déjà un compte associé à ce numéro de pièce d’identité. "
-        user_message += subscription_messages.build_duplicate_error_message(
+        user_message = subscription_messages.build_duplicate_error_message(
             fraud_check.user, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, identity_content
         )
         call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)

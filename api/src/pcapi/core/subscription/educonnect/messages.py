@@ -24,16 +24,12 @@ def get_educonnect_failure_subscription_message(
         user_message = f"Ton dossier a été refusé. La date de naissance sur ton compte Éduconnect ({birth_date.strftime('%d/%m/%Y')}) indique que tu n'as pas entre {users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]} et {users_constants.ELIGIBILITY_UNDERAGE_RANGE[-1]} ans."
 
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
-        user_message = "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. "
-        user_message += subscription_messages.build_duplicate_error_message(
+        user_message = subscription_messages.build_duplicate_error_message(
             educonnect_fraud_check.user, fraud_models.FraudReasonCode.DUPLICATE_USER, educonnect_content
         )
 
     elif fraud_models.FraudReasonCode.DUPLICATE_INE in reason_codes:
-        user_message = (
-            "Ton dossier a été refusé : il y a déjà un compte associé aux identifiants ÉduConnect que tu as fournis. "
-        )
-        user_message += subscription_messages.build_duplicate_error_message(
+        user_message = subscription_messages.build_duplicate_error_message(
             educonnect_fraud_check.user, fraud_models.FraudReasonCode.DUPLICATE_INE, educonnect_content
         )
 

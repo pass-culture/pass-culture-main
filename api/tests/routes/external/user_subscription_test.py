@@ -1669,9 +1669,10 @@ class UbbleWebhookTest:
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
-        assert (
-            message.user_message
-            == "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Connecte-toi avec l'adresse sho***@me.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
+        assert message.user_message == (
+            "Ton dossier a été refusé car il y a déjà un compte bénéficiaire à ton nom. "
+            "Connecte-toi avec l’adresse mail sho***@me.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
+            "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
         assert (
             message.call_to_action.link
@@ -1745,9 +1746,10 @@ class UbbleWebhookTest:
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check, False)
-        assert (
-            message.user_message
-            == "Ton dossier a été refusé : il y a déjà un compte associé à ce numéro de pièce d’identité. Connecte-toi avec l'adresse pre***@me.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
+        assert message.user_message == (
+            "Ton dossier a été refusé car il y a déjà un compte bénéficiaire associé à ce numéro de pièce d’identité. "
+            "Connecte-toi avec l’adresse mail pre***@me.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
+            "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
         assert (
             message.call_to_action.link
