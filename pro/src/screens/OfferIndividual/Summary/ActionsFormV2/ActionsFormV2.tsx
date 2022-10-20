@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
@@ -7,11 +8,19 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl } from 'core/Offers'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import {
+  searchFiltersSelector,
+  searchPageNumberSelector,
+} from 'store/offers/selectors'
 import { RootState } from 'store/reducers'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
+import styles from './ActionsFormsV2.module.scss'
 
 interface IActionsFormV2Props {
   isCreation: boolean
@@ -31,35 +40,57 @@ const ActionsFormV2 = ({
   disablePublish = false,
 }: IActionsFormV2Props): JSX.Element => {
   const { logEvent } = useAnalytics()
-  let cancelUrl = `/offre/${offerId}/individuel/creation/stocks`
-  if (isDraft) cancelUrl = `/offre/${offerId}/individuel/brouillon/stocks`
+  const offersSearchFilters = useSelector(searchFiltersSelector)
+  const offersPageNumber = useSelector(searchPageNumberSelector)
+  const quitUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
+  const notification = useNotification()
+  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
+  let backOfferUrl = `/offre/${offerId}/individuel/creation/stocks`
+  if (isDraft) backOfferUrl = `/offre/${offerId}/individuel/brouillon/stocks`
 
   const renderCreationActions = (): JSX.Element => (
-    <div className={className}>
-      <ButtonLink
-        variant={ButtonVariant.SECONDARY}
-        link={{
-          to: cancelUrl,
-          isExternal: false,
-        }}
-        onClick={() =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OfferBreadcrumbStep.SUMMARY,
-            to: OfferBreadcrumbStep.STOCKS,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-            isEdition: !isCreation,
-          })
-        }
-      >
-        Étape précédente
-      </ButtonLink>
-      <Button
-        variant={ButtonVariant.PRIMARY}
-        onClick={publishOffer}
-        disabled={disablePublish}
-      >
-        Publier l'offre
-      </Button>
+    <div className={cn(className, styles['draft-actions'])}>
+      <div>
+        <ButtonLink
+          variant={ButtonVariant.SECONDARY}
+          link={{
+            to: backOfferUrl,
+            isExternal: false,
+          }}
+          onClick={() =>
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.SUMMARY,
+              to: OfferBreadcrumbStep.STOCKS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+              isEdition: !isCreation,
+            })
+          }
+        >
+          Étape précédente
+        </ButtonLink>
+      </div>
+      <div className={styles['actions-last']}>
+        {isDraftEnabled && (
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{ to: quitUrl, isExternal: false }}
+            onClick={() =>
+              notification.success(
+                'Brouillon sauvegardé dans la liste des offres'
+              )
+            }
+          >
+            Sauvegarder le brouillon et quitter
+          </ButtonLink>
+        )}
+        <Button
+          variant={ButtonVariant.PRIMARY}
+          onClick={publishOffer}
+          disabled={disablePublish}
+        >
+          Publier l'offre
+        </Button>
+      </div>
     </div>
   )
 
