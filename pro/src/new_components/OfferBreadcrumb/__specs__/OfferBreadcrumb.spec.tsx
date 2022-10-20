@@ -2,7 +2,10 @@ import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
 
 import OfferBreadcrumb, {
   OfferBreadcrumbStep,
@@ -10,9 +13,12 @@ import OfferBreadcrumb, {
 } from '../OfferBreadcrumb'
 
 const renderOfferBreadcrumb = (props: IOfferBreadcrumb) => {
+  const store = configureTestStore()
   return render(
     <MemoryRouter>
-      <OfferBreadcrumb {...props} />
+      <Provider store={store}>
+        <OfferBreadcrumb {...props} />
+      </Provider>
     </MemoryRouter>
   )
 }
