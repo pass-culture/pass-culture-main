@@ -1050,6 +1050,7 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
     offerer_query = sa.select(
         offerers_models.Offerer.id,
         offerers_models.Offerer.name,
+        offerers_models.Offerer.validationStatus,
         offerers_models.Offerer.isActive,
         offerers_models.Offerer.siren,
         offerers_models.Offerer.postalCode,

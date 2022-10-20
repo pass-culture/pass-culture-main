@@ -140,6 +140,7 @@ class GetOffererBasicInfoTest:
         payload = response.json["data"]
         assert "id" in payload
         assert "name" in payload
+        assert "validationStatus" in payload
         assert "isActive" in payload
         assert "siren" in payload
         assert "region" in payload
@@ -164,6 +165,7 @@ class GetOffererBasicInfoTest:
         payload = response.json["data"]
         assert payload["id"] == offerer.id
         assert payload["name"] == offerer.name
+        assert payload["validationStatus"] == offerers_models.ValidationStatus.VALIDATED.value
         assert payload["isActive"] == offerer.isActive
         assert payload["siren"] == offerer.siren
         assert payload["region"] == "Occitanie"
