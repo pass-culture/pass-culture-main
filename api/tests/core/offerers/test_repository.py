@@ -57,7 +57,7 @@ class GetAllOfferersForUserTest:
     def should_return_non_validated_offerers(self) -> None:
         # Given
         pro = users_factories.ProFactory()
-        pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro, offerer__validationToken="Token")
+        pro_offerer_attachment = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
         # When
         offerers = repository.get_all_offerers_for_user(user=pro).all()
@@ -69,7 +69,7 @@ class GetAllOfferersForUserTest:
 
     def should_not_return_offerers_with_non_validated_attachment_to_given_pro(self) -> None:
         pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, validationToken="token")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro)
         assert repository.get_all_offerers_for_user(user=pro).all() == []
 
     def should_not_return_deactivated_offerers(self) -> None:
@@ -114,9 +114,7 @@ class GetAllOfferersForUserTest:
             # Given
             pro = users_factories.ProFactory()
             pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
-            pro_attachment_to_unvalidated_offerer = offerers_factories.UserOffererFactory(
-                user=pro, offerer__validationToken="Token"
-            )
+            pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
             # When
             offerers = repository.get_all_offerers_for_user(user=pro).all()
@@ -131,9 +129,7 @@ class GetAllOfferersForUserTest:
             # Given
             pro = users_factories.ProFactory()
             pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
-            pro_attachment_to_unvalidated_offerer = offerers_factories.UserOffererFactory(
-                user=pro, offerer__validationToken="Token"
-            )
+            pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
             # When
             offerers = repository.get_all_offerers_for_user(user=pro, validated=True).all()
@@ -148,9 +144,7 @@ class GetAllOfferersForUserTest:
             # Given
             pro = users_factories.ProFactory()
             pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
-            pro_attachment_to_unvalidated_offerer = offerers_factories.UserOffererFactory(
-                user=pro, offerer__validationToken="Token"
-            )
+            pro_attachment_to_unvalidated_offerer = offerers_factories.UserNotValidatedOffererFactory(user=pro)
 
             # When
             offerers = repository.get_all_offerers_for_user(user=pro, validated=False).all()
@@ -165,7 +159,7 @@ class GetAllOfferersForUserTest:
 class FindUserOffererByValidationTokenTest:
     def test_return_user_offerer_given_validation_token(self):
         # Given
-        user_offerer_expected = offerers_factories.UserOffererFactory(validationToken="TOKEN")
+        user_offerer_expected = offerers_factories.NotValidatedUserOffererFactory()
 
         # When
         user_offerer_received = repository.find_user_offerer_by_validation_token(user_offerer_expected.validationToken)
@@ -175,7 +169,7 @@ class FindUserOffererByValidationTokenTest:
 
     def test_return_nothing_when_validation_token_does_not_exist(self):
         # Given
-        offerers_factories.UserOffererFactory(validationToken="TOKEN")
+        offerers_factories.NotValidatedUserOffererFactory()
 
         # When
         user_offerer_received = repository.find_user_offerer_by_validation_token("ANOTHER TOKEN")
@@ -187,7 +181,7 @@ class FindUserOffererByValidationTokenTest:
 class FindOffererByValidationTokenTest:
     def test_return_offerer_given_validation_token(self):
         # Given
-        user_offerer_expected = offerers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
+        user_offerer_expected = offerers_factories.UserNotValidatedOffererFactory()
 
         # When
         offerer_received = repository.find_offerer_by_validation_token(user_offerer_expected.offerer.validationToken)
@@ -197,7 +191,7 @@ class FindOffererByValidationTokenTest:
 
     def test_return_nothing_when_validation_token_does_not_exist(self):
         # Given
-        offerers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
+        offerers_factories.UserNotValidatedOffererFactory()
 
         # When
         offerer_received = repository.find_offerer_by_validation_token("ANOTHER TOKEN")
