@@ -259,3 +259,27 @@ class OffererViewTest:
 
         assert len(offerers_models.Offerer.query.all()) == 1
         assert len(external_testing.sendinblue_requests) == 0
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_delete_offerer_rejected_because_of_princing_point(self, mocked_validate_csrf_token, client):
+        admin = users_factories.AdminFactory()
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenueFactory(pricing_point=venue)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            "/pc/back-office/offerer/delete/", form={"id": venue.managingOfferer.id, "url": "/pc/back-office/offerer/"}
+        )
+
+        assert response.status_code == 302
+
+        list_response = api_client.get(response.headers["location"])
+        assert (
+            "Impossible d&#39;effacer une structure juridique dont un lieu est utilisé comme point de valorisation"
+            in list_response.data.decode("utf8")
+        )
+
+        assert len(offerers_models.Offerer.query.all()) == 2
+        assert len(offerers_models.Venue.query.all()) == 2
+        assert len(external_testing.sendinblue_requests) == 0

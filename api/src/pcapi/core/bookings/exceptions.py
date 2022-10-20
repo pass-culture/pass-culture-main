@@ -108,22 +108,6 @@ class CannotDeleteBookingWithReimbursementException(ClientError):
         )
 
 
-class CannotDeleteOffererWithBookingsException(ClientError):
-    def __init__(self) -> None:
-        super().__init__(
-            "cannotDeleteOffererWithBookingsException",
-            "Structure juridique non supprimable car elle contient des réservations",
-        )
-
-
-class CannotDeleteVenueWithBookingsException(ClientError):
-    def __init__(self) -> None:
-        super().__init__(
-            "cannotDeleteVenueWithBookingsException",
-            "Lieu non supprimable car il contient des réservations",
-        )
-
-
 class ConfirmationLimitDateHasPassed(Exception):
     pass
 
