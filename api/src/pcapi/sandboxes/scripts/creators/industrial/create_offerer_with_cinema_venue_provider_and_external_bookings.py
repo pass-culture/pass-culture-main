@@ -31,9 +31,6 @@ def create_offerer_with_cinema_venue_provider_and_external_bookings() -> None:
     )
     stock_duo = EventStockFactory(offer=offer_duo)
 
-    cds_provider.isActive = True
-    cds_provider.enabledForPro = True
-
     cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
         venue=venue, provider=cds_provider, idAtProvider="cdsdemorc1"
     )

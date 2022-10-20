@@ -106,7 +106,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 pricing_point="self" if siret else None,
                 reimbursement_point="self" if siret else None,
             )
-            providers_factories.VenueProviderFactory(venue=venue)
+            providers_factories.VenueProviderFactory(venue=venue, provider__name=f"API Provider for {venue_name}")
 
             if image_venue_counter < DEFAULT_VENUE_IMAGES:
                 add_default_image_to_venue(image_venue_counter, offerer, venue)
@@ -149,10 +149,6 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     )
     providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
     venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine
-
-    # FIXME (viconnex): understand why these properties are not set with right values in factories
-    allocine_provider.isActive = True
-    allocine_provider.enabledForPro = True
 
     logger.info("created %d venues", len(venue_by_name))
 
