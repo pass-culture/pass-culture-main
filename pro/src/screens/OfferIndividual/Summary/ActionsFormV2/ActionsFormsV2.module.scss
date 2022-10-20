@@ -1,0 +1,10 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
+.draft-actions {
+    width: rem.torem(828px);
+    display: flex;
+    justify-content: space-between;
+    .actions-last {
+        z-index: 1;
+    }
+}
