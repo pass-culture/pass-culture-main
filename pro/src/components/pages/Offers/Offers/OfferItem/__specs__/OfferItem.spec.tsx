@@ -553,9 +553,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         renderOfferItem(props, store)
 
-        const duplicateButton = screen.getByTitle(
-          'Créer une offre réservable pour un établissement'
-        )
+        const duplicateButton = screen.getByRole('button', {
+          name: 'Créer une offre réservable pour un établissement',
+        })
         await userEvent.click(duplicateButton)
 
         const modalTitle = screen.getByText(
@@ -581,9 +581,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         renderOfferItem(props, store)
 
-        const duplicateButton = screen.getByTitle(
-          'Créer une offre réservable pour un établissement'
-        )
+        const duplicateButton = screen.getByRole('button', {
+          name: 'Créer une offre réservable pour un établissement',
+        })
         await userEvent.click(duplicateButton)
 
         const modalTitle = screen.queryByText(
