@@ -615,6 +615,8 @@ class GetOffererHistoryTest:
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": None,
+                "accountId": user_offerer.user.id,
+                "accountName": user_offerer.user.publicName,
             },
             {
                 "type": "Commentaire interne",
@@ -622,6 +624,8 @@ class GetOffererHistoryTest:
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": "Documents reçus",
+                "accountId": user_offerer.user.id,
+                "accountName": user_offerer.user.publicName,
             },
             {
                 "type": "Structure mise en attente",
@@ -629,6 +633,8 @@ class GetOffererHistoryTest:
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": "Documents complémentaires demandés",
+                "accountId": user_offerer.user.id,
+                "accountName": user_offerer.user.publicName,
             },
             {
                 "type": "Nouvelle structure",
@@ -636,6 +642,8 @@ class GetOffererHistoryTest:
                 "authorId": user_offerer.user.id,
                 "authorName": user_offerer.user.publicName,
                 "comment": None,
+                "accountId": user_offerer.user.id,
+                "accountName": user_offerer.user.publicName,
             },
         ]
 
