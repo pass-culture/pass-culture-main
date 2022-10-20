@@ -1,4 +1,4 @@
-name: '[Deployment] Create a hotfix release'
+name: "[Deployment] Create a hotfix release"
 
 on:
   workflow_dispatch:
@@ -21,3 +21,4 @@ jobs:
     with:
       base_ref: maint/v${{ github.event.inputs.releaseNumber }}
       tag_number: ${{ github.event.inputs.releaseVersion }}
+      base_ref_is_a_branch: true
