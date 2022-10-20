@@ -2,6 +2,8 @@ import React, { Fragment, useCallback, useState } from 'react'
 import { Field, Form } from 'react-final-form'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError, getError } from 'apiClient/helpers'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import Logo from 'components/layout/Logo'
@@ -9,7 +11,6 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { setPassword } from 'repository/pcapi/pcapi'
 
 const INVALID_FORM_MESSAGE =
   "Une erreur s'est produite, veuillez corriger le formulaire."
@@ -42,19 +43,24 @@ const SetPassword = () => {
 
   const submitSetFirstPassword = useCallback(
     values =>
-      setPassword(token, values.password)
+      api
+        .postNewPassword({ token, newPassword: values.password })
         .then(() => {
           history.push('/creation-de-mot-de-passe-confirmation')
         })
         .catch(error => {
-          if (error.errors.newPassword) {
-            notification.error(INVALID_FORM_MESSAGE)
-            setBackendErrors(error.errors)
-            return
-          }
-          if (error.errors.token) {
-            redirectOnTokenError()
-            return
+          if (isErrorAPIError(error)) {
+            const errors = getError(error)
+
+            if (errors.newPassword) {
+              notification.error(INVALID_FORM_MESSAGE)
+              setBackendErrors(error.errors)
+              return
+            }
+            if (errors.token) {
+              redirectOnTokenError()
+              return
+            }
           }
           notification.error(UNKNOWN_ERROR_MESSAGE)
         }),
