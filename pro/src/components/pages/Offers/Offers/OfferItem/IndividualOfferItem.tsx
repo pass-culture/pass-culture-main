@@ -59,7 +59,6 @@ const IndividualOfferItem = ({
 
       <EditOfferCell
         isOfferEditable={isOfferEditable}
-        name={offer.name}
         editionOfferLink={editionOfferLink}
       />
     </>

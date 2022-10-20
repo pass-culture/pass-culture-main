@@ -3,8 +3,8 @@ import React from 'react'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import FormLayout from 'new_components/FormLayout'
 import { NOTIFICATIONS_EMAIL_LABEL } from 'screens/OfferEducational/constants/labels'
-import { TextInput } from 'ui-kit'
-import TooltipWrapper from 'ui-kit/TooltipWrapper'
+import { Button, TextInput } from 'ui-kit'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import styles from './EmailInputRow.module.scss'
 
@@ -30,19 +30,16 @@ const EmailInputRow = ({
         className={styles['notification-mail-input']}
       />
       {displayTrash && (
-        <TooltipWrapper
-          title="Supprimer l'email"
-          delay={0}
+        <Button
+          onClick={onDelete}
+          Icon={TrashFilledIcon}
+          iconPosition={IconPositionEnum.CENTER}
           className={styles['trash']}
+          variant={ButtonVariant.TERNARY}
+          hasTooltip
         >
-          <button
-            onClick={onDelete}
-            className={styles['trash-button']}
-            aria-label="Supprimer l'email"
-          >
-            <TrashFilledIcon className={styles['trash-button-icon']} />
-          </button>
-        </TooltipWrapper>
+          Supprimer l'email
+        </Button>
       )}
     </FormLayout.Row>
   )
