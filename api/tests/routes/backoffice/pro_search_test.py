@@ -20,6 +20,7 @@ def assert_user_equals(found_user: dict, expected_user: users_models.User):
     assert found_user["payload"]["lastName"] == expected_user.lastName
     assert found_user["payload"]["email"] == expected_user.email
     assert found_user["payload"]["phoneNumber"] == expected_user.phoneNumber
+    assert found_user["payload"]["isActive"] is True
 
 
 def assert_offerer_equals(found_offerer: dict, expected_offerer: offerers_models.Offerer):
@@ -27,6 +28,8 @@ def assert_offerer_equals(found_offerer: dict, expected_offerer: offerers_models
     assert found_offerer["id"] == expected_offerer.id
     assert found_offerer["payload"]["siren"] == expected_offerer.siren
     assert found_offerer["payload"]["name"] == expected_offerer.name
+    assert found_offerer["payload"]["validationStatus"] == expected_offerer.validationStatus.value
+    assert found_offerer["payload"]["isActive"] is expected_offerer.isActive
 
 
 def assert_venue_equals(found_venue: dict, expected_venue: offerers_models.Venue):
@@ -40,6 +43,8 @@ def assert_venue_equals(found_venue: dict, expected_venue: offerers_models.Venue
         else expected_venue.bookingEmail
     )
     assert found_venue["payload"]["permanent"] == expected_venue.isPermanent
+    assert found_venue["payload"]["validationStatus"] == expected_venue.managingOfferer.validationStatus.value
+    assert found_venue["payload"]["isActive"] is expected_venue.managingOfferer.isActive
 
 
 class ProSearchUserTest:
@@ -200,11 +205,14 @@ class ProSearchOffererTest:
         name_part1: list[str] = ("Librairie", "Cinéma", "Théâtre"),
         name_part2: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
     ) -> None:
+        validation_statuses = list(offerers_models.ValidationStatus)
         self.offerers = []
         for i in range(number):
             offerer = offerers_factories.OffererFactory(
                 name=f"{name_part1[i % len(name_part1)]} {name_part2[i % len(name_part2)]}",
                 siren=str(123456000 + i),
+                validationStatus=validation_statuses[i % len(validation_statuses)],
+                isActive=bool(i % 4),
             )
             self.offerers.append(offerer)
 
@@ -330,6 +338,7 @@ class ProSearchVenueTest:
         name_part2_public: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
         domains: list[str] = ("librairie.fr", "cinema.com", "theatre.net"),
     ) -> None:
+        validation_statuses = list(offerers_models.ValidationStatus)
         self.venues = []
         for i in range(number):
             venue = offerers_factories.VenueFactory(
@@ -338,6 +347,8 @@ class ProSearchVenueTest:
                 siret=f"123456{i:03}{i:05}",
                 isPermanent=bool(i % 2 == 0),
                 contact=None,
+                managingOfferer__validationStatus=validation_statuses[i % len(validation_statuses)],
+                managingOfferer__isActive=bool(i % 3),
             )
             if i % 2:
                 offerers_factories.VenueContactFactory(

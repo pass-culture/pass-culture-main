@@ -70,6 +70,7 @@ def get_offerer_basic_info(offerer_id: int) -> serialization.OffererBasicInfoRes
         data=serialization.OffererBasicInfo(
             id=offerer_basic_info.id,
             name=offerer_basic_info.name,
+            validationStatus=offerer_basic_info.validationStatus,
             isActive=offerer_basic_info.isActive,
             siren=offerer_basic_info.siren,
             region=regions_utils.get_region_name_from_postal_code(offerer_basic_info.postalCode),
