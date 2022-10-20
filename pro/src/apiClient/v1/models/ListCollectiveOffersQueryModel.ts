@@ -2,8 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CollectiveOfferType } from './CollectiveOfferType';
+
 export type ListCollectiveOffersQueryModel = {
   categoryId?: string | null;
+  collectiveOfferType?: CollectiveOfferType | null;
   creationMode?: string | null;
   nameOrIsbn?: string | null;
   offererId?: number | null;
