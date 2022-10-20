@@ -157,17 +157,23 @@ const OfferDetails = ({
   )
 
   const handleSubmitOffer = useCallback(
-    async offerValues => {
+    async (offerValues, isSavingDraft) => {
       try {
         if (offer) {
           await api.patchOffer(offer.id, offerValues)
-          if (!isCreatingOffer)
+          if (isSavingDraft) {
+            notification.success(
+              'Brouillon sauvegardé dans la liste des offres'
+            )
+          } else if (!isCreatingOffer)
             notification.success('Vos modifications ont bien été enregistrées')
           reloadOffer()
           setFormErrors({})
           setThumbnailError(false)
           setThumbnailMsgError('')
-          if (isCreatingOffer || isCompletingDraft) {
+          if (isSavingDraft) {
+            return Promise.resolve(null)
+          } else if (isCreatingOffer || isCompletingDraft) {
             return Promise.resolve(() => goToStockAndPrice(offer.id))
           } else {
             return Promise.resolve(() =>
@@ -178,6 +184,14 @@ const OfferDetails = ({
           const response = await api.postOffer(offerValues)
           const createdOfferId = response.id
           await postThumbnail(createdOfferId, thumbnailInfo)
+          if (isSavingDraft) {
+            notification.success(
+              'Brouillon sauvegardé dans la liste des offres'
+            )
+            return Promise.resolve(() =>
+              history.push(`/offre/${createdOfferId}/individuel/brouillon`)
+            )
+          }
           if (Object.keys(thumbnailInfo).length === 0) {
             return Promise.resolve(() => goToStockAndPrice(createdOfferId))
           }

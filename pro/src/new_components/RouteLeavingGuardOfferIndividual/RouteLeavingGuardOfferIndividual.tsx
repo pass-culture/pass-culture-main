@@ -10,6 +10,8 @@ const STEP_STOCKS = 'stocks'
 const STEP_SUMMARY = 'recapitulatif'
 const STEP_CONFIRMATION = 'confirmation'
 
+const DRAFT_STATE = 'brouillon'
+
 const urlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/([A-Z0-9]+\/)?individuel\/creation/g,
   [STEP_STOCKS]: /\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks/g,
@@ -29,6 +31,12 @@ const RouteLeavingGuardOfferIndividual = ({
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
       let redirectPath = null
+
+      const urlMatch = nextLocation.pathname.match(/[a-z]+$/)
+      const stateName = urlMatch && urlMatch[0]
+      if (stateName === DRAFT_STATE) {
+        return { shouldBlock: false }
+      }
 
       // when multiples url match (example: offer and stocks),
       // we're keeping the last one (example: stocks)

@@ -29,6 +29,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
@@ -91,6 +92,7 @@ const OfferForm = ({
     )
   )
   const isCreation = useIsCreation()
+  const isCompletingDraft = useIsCompletingDraft()
   const [offerFormFields, setOfferFormFields] = useState(
     Object.keys(DEFAULT_FORM_VALUES)
   )
@@ -508,8 +510,10 @@ const OfferForm = ({
     return Object.keys(newFormErrors).length === 0
   }, [offerFormFields, mandatoryFields, formValues])
 
+  const submitDraft = event => submitForm(event, true)
+
   const submitForm = useCallback(
-    async event => {
+    async (event, isSavingDraft) => {
       event.preventDefault()
       setIsSubmitLoading(true)
 
@@ -564,14 +568,15 @@ const OfferForm = ({
           submittedValues.withdrawalDelay = null
         }
 
-        const nextStepRedirect = await onSubmit(submittedValues)
+        const nextStepRedirect = await onSubmit(submittedValues, isSavingDraft)
         if (nextStepRedirect !== null) {
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OfferBreadcrumbStep.DETAILS,
-            to: OfferBreadcrumbStep.STOCKS,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-            isEdition: isEdition,
-          })
+          if (!isSavingDraft)
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.DETAILS,
+              to: OfferBreadcrumbStep.STOCKS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+              isEdition: isEdition,
+            })
           await nextStepRedirect()
           return
         }
@@ -1188,17 +1193,20 @@ const OfferForm = ({
       <section
         className={cn('actions-section', {
           'edit-buttons': isEdition,
-          'draft-buttons': isCreation && formValues.subcategoryId,
+          'draft-buttons':
+            (isCreation && formValues.subcategoryId) || isCompletingDraft,
         })}
       >
         <OfferFormActions
-          canSaveDraft={isCreation && formValues.subcategoryId}
+          canSaveDraft={
+            (isCreation && formValues.subcategoryId) || isCompletingDraft
+          }
           isDisabled={isDisabled}
           isSubmitLoading={isSubmitLoading}
           isEdition={isEdition}
           cancelUrl={backUrl}
           onClickNext={submitForm}
-          onClickSaveDraft={submitForm}
+          onClickSaveDraft={submitDraft}
         />
       </section>
     </form>
