@@ -122,6 +122,10 @@ class FeatureToggle(enum.Enum):
     WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE = "Active la duplication d'offres sur le portail pro"
     DISABLE_STORE_REVIEW = "Désactive la demande de notation sur les stores à la suite d’une réservation"
     TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER = "Activer la bannière pour les Temps forts métiers"
+    TEMP_DISABLE_OFFERER_VALIDATION_EMAIL = (
+        "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
+    )
+    # TEMP_ prefix should be used for temporary feature flags (work in progress, testing, transition...)
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -186,6 +190,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE,
     FeatureToggle.DISABLE_STORE_REVIEW,
     FeatureToggle.TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER,
+    FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
 )
 
 
