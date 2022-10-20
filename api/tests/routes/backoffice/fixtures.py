@@ -9,6 +9,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
@@ -45,7 +46,9 @@ __all__ = (
 
 @pytest.fixture
 def offerer():
-    offerer = offerers_factories.OffererFactory(postalCode="46150")
+    offerer = offerers_factories.OffererFactory(
+        postalCode="46150", validationStatus=offerers_models.ValidationStatus.VALIDATED
+    )
     return offerer
 
 

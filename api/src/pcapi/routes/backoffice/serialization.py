@@ -255,11 +255,14 @@ class ProUserPayload(ProResultPayload):
     lastName: str | None
     email: str
     phoneNumber: str | None
+    isActive: bool
 
 
 class OffererPayload(ProResultPayload):
     name: str | None
     siren: str | None
+    validationStatus: offerers_models.ValidationStatus
+    isActive: bool
 
 
 class VenuePayload(ProResultPayload):
@@ -267,6 +270,8 @@ class VenuePayload(ProResultPayload):
     email: str | None
     siret: str | None
     permanent: bool
+    validationStatus: offerers_models.ValidationStatus
+    isActive: bool
 
     @classmethod
     def from_orm(cls: typing.Type["VenuePayload"], venue: offerers_models.Venue) -> "VenuePayload":
@@ -275,6 +280,8 @@ class VenuePayload(ProResultPayload):
         else:
             venue.email = venue.bookingEmail
         venue.permanent = venue.isPermanent
+        venue.validationStatus = venue.managingOfferer.validationStatus
+        venue.isActive = venue.managingOfferer.isActive
         return super().from_orm(venue)
 
 
@@ -291,6 +298,7 @@ class SearchProResponseModel(PaginatedResponse):
 class OffererAttachedUser(BaseModel):
     class Config:
         orm_mode = True
+        use_enum_values = True
 
     id: int  # user id
     firstName: str | None
@@ -298,7 +306,7 @@ class OffererAttachedUser(BaseModel):
     email: str
     phoneNumber: str | None
     user_offerer_id: int
-    validationStatus: offerers_models.ValidationStatus | None
+    validationStatus: offerers_models.ValidationStatus
 
 
 class OffererAttachedUsersResponseModel(BaseModel):
@@ -331,8 +339,12 @@ class ReimbursementsStats(BaseModel):
 
 
 class OffererBasicInfo(BaseModel):
+    class Config:
+        use_enum_values = True
+
     id: int
     name: str
+    validationStatus: offerers_models.ValidationStatus
     isActive: bool
     siren: str
     region: str
