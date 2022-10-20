@@ -7,6 +7,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.mailing import make_offer_creation_notification_email
 from pcapi.utils.mailing import make_offer_rejection_notification_email
 from pcapi.utils.mailing import make_offerer_internal_validation_email
@@ -18,6 +19,8 @@ def maybe_send_offerer_validation_email(
     user_offerer: offerers_models.UserOfferer,
     siren_info: sirene.SirenInfo | None,
 ) -> bool:
+    if FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL.is_active():
+        return True
     if offerer.isValidated and user_offerer.isValidated:
         return True
     email = make_offerer_internal_validation_email(offerer, user_offerer, siren_info)
