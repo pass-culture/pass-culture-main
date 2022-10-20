@@ -31,7 +31,12 @@ const Template: Story<{
   variant: ButtonVariant
   Icon?: SharedButtonProps['Icon']
   iconPosition?: IconPositionEnum
-}> = args => <Button {...args}>{args.children}</Button>
+  hasTooltip?: boolean
+}> = args => (
+  <div style={{ margin: '50px', display: 'flex' }}>
+    <Button {...args}>{args.children}</Button>
+  </div>
+)
 
 const TemplateLink: Story<{
   children: string
@@ -42,7 +47,11 @@ const TemplateLink: Story<{
   }
   Icon?: SharedButtonProps['Icon']
   isDisabled: boolean
-}> = args => <ButtonLink {...args}>{args.children}</ButtonLink>
+}> = args => (
+  <div style={{ margin: '50px', display: 'flex' }}>
+    <ButtonLink {...args}>{args.children}</ButtonLink>
+  </div>
+)
 
 export const DefaultButton = Template.bind({})
 
@@ -82,4 +91,15 @@ export const LinkButtonWithIcon = TemplateLink.bind({})
 LinkButtonWithIcon.args = {
   ...LinkButton.args,
   Icon: PenIcon,
+}
+
+export const WithTooltip = Template.bind({})
+
+WithTooltip.args = {
+  ...DefaultButton.args,
+  children: 'Créer une offre réservable pour un établissement',
+  Icon: PenIcon,
+  iconPosition: IconPositionEnum.CENTER,
+  variant: ButtonLink.variant.SECONDARY,
+  hasTooltip: true,
 }
