@@ -2,11 +2,11 @@ from abc import abstractmethod
 from collections.abc import Iterator
 from datetime import datetime
 import logging
+import typing
 
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.chunk_manager import get_existing_pc_obj
@@ -50,7 +50,13 @@ class LocalProvider(Iterator):
         pass
 
     def create_providable_info(
-        self, pc_object: Model, id_at_providers: str, date_modified_at_provider: datetime, new_id_at_provider: str  # type: ignore [valid-type]
+        self,
+        pc_object: typing.Type[offers_models.Product]
+        | typing.Type[offers_models.Offer]
+        | typing.Type[offers_models.Stock],
+        id_at_providers: str,
+        date_modified_at_provider: datetime,
+        new_id_at_provider: str,
     ) -> ProvidableInfo:
         if "|" in id_at_providers:
             raise Exception("Invalid character in idAtProviders field")
@@ -268,8 +274,8 @@ def _save_same_thumb_from_thumb_count_to_index(
 def _reindex_offers(created_or_updated_objects):  # type: ignore [no-untyped-def]
     offer_ids = set()
     for obj in created_or_updated_objects:
-        if isinstance(obj, Stock):
+        if isinstance(obj, offers_models.Stock):
             offer_ids.add(obj.offerId)
-        elif isinstance(obj, Offer):
+        elif isinstance(obj, offers_models.Offer):
             offer_ids.add(obj.id)
     search.async_index_offer_ids(offer_ids)
