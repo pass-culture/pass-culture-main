@@ -8,6 +8,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
@@ -64,6 +65,30 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     maybe_send_offerer_validation_email(offerer, user_offerer, siren_info)
 
     # Then
+    assert not mails_testing.outbox
+
+
+@override_features(TEMP_DISABLE_OFFERER_VALIDATION_EMAIL=True)
+@pytest.mark.usefixtures("db_session")
+def test_maybe_send_offerer_validation_email_disabled(app):
+    # Given
+    user = users_factories.UserFactory()
+    offerer = offerers_factories.NotValidatedOffererFactory()
+    user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer, user=user)
+    siren_info = sirene.SirenInfo(
+        siren="123456789",
+        name="whatever",
+        head_office_siret="12345678900001",
+        ape_code="16.64Z",
+        legal_category_code="???",
+        address=None,
+    )
+
+    # When
+    result = maybe_send_offerer_validation_email(offerer, user_offerer, siren_info)
+
+    # Then
+    assert result is True
     assert not mails_testing.outbox
 
 
