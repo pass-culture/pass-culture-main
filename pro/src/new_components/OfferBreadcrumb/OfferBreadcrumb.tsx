@@ -4,6 +4,7 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import type { Step } from 'new_components/Breadcrumb'
@@ -39,7 +40,12 @@ const OfferBreadcrumb = ({
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+  const stockEditionUrl = useOfferStockEditionURL(
+    isOfferEducational,
+    offerId,
+    isOfferFormV3
+  )
 
   const isTemplateId = offerId.startsWith('T-')
   let steps: Step[] = []

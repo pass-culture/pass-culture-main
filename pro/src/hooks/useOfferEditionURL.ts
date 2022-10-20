@@ -23,6 +23,7 @@ export const useOfferEditionURL = (
 export const useOfferStockEditionURL = (
   isOfferEducational: boolean,
   offerId: string,
+  isOfferFormV3: boolean,
   isShowcase?: boolean
 ): string => {
   if (isOfferEducational) {
@@ -30,5 +31,7 @@ export const useOfferStockEditionURL = (
     return `/offre/${id}/collectif/stocks/edition`
   }
 
-  return `/offre/${offerId}/individuel/stocks`
+  return isOfferFormV3
+    ? `/offre/${offerId}/v3/individuelle/stocks`
+    : `/offre/${offerId}/individuel/stocks`
 }
