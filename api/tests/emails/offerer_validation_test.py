@@ -22,14 +22,14 @@ def generate_siren_info() -> sirene.SirenInfo:
 def test_write_object_validation_email():
     # Given
     validation_token = secrets.token_urlsafe(20)
-    offerer = offerers_factories.OffererFactory.build(
+    offerer = offerers_factories.NotValidatedOffererFactory.build(
         id=123,
         validationToken=validation_token,
     )
 
     user = users_factories.ProFactory.build()
 
-    user_offerer = offerers_factories.UserOffererFactory.build(
+    user_offerer = offerers_factories.NotValidatedUserOffererFactory.build(
         user=user,
         offerer=offerer,
         validationToken=validation_token,

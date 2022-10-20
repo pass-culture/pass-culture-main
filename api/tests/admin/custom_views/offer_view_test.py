@@ -495,7 +495,7 @@ class OfferValidationViewTest:
     def test_get_query_and_count(self, db_session):
         offer_view = ValidationOfferView(model=Offer, session=db_session)
         validated_offerer = offerers_factories.OffererFactory()
-        non_validated_offerer = offerers_factories.OffererFactory(validationToken="token")
+        non_validated_offerer = offerers_factories.NotValidatedOffererFactory()
         offer_1 = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
             venue__managingOfferer=validated_offerer,
@@ -740,7 +740,7 @@ class OfferValidationViewTest:
             model=educational_models.CollectiveOfferTemplate, session=db_session
         )
         validated_offerer = offerers_factories.OffererFactory()
-        non_validated_offerer = offerers_factories.OffererFactory(validationToken="token")
+        non_validated_offerer = offerers_factories.NotValidatedOffererFactory()
         offer_1 = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.PENDING,
             venue__managingOfferer=validated_offerer,
@@ -956,7 +956,7 @@ class OfferValidationViewTest:
     def test_get_query_and_count_on_collective_offer(self, db_session):
         offer_view = ValidationCollectiveOfferView(model=educational_models.CollectiveOffer, session=db_session)
         validated_offerer = offerers_factories.OffererFactory()
-        non_validated_offerer = offerers_factories.OffererFactory(validationToken="token")
+        non_validated_offerer = offerers_factories.NotValidatedOffererFactory()
         offer_1 = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.PENDING,
             venue__managingOfferer=validated_offerer,

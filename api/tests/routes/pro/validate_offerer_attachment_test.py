@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns202Test:
     def expect_user_offerer_attachment_to_be_validated(self, client):
         # Given
-        user_offerer = offerers_factories.UserOffererFactory(validationToken="TOKEN")
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # When
         response = client.with_session_auth(user_offerer.user.email).get(

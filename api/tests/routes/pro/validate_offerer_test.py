@@ -18,7 +18,7 @@ class Returns202Test:
     def expect_offerer_to_be_validated(self, app):
         with freeze_time("2021-06-22 14:48:00") as frozen_time:
             # Given
-            user_offerer = offerers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
             # When
             frozen_time.move_to("2021-06-23 11:00:00")
@@ -36,9 +36,9 @@ class Returns202Test:
 
     def expect_offerer_to_be_validated_even_when_user_offerer_has_already_been_activated(self, app):
         # Given
-        offerer = offerers_factories.OffererFactory(validationToken="TOKEN")
+        offerer = offerers_factories.NotValidatedOffererFactory()
         user_offerer1 = offerers_factories.UserOffererFactory(offerer=offerer)
-        user_offerer2 = offerers_factories.UserOffererFactory(validationToken=None, offerer=offerer)
+        user_offerer2 = offerers_factories.UserOffererFactory(offerer=offerer)
 
         # When
         response = TestClient(app.test_client()).get(f"/validate/offerer/{offerer.validationToken}")

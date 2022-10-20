@@ -244,11 +244,11 @@ class OffererBankInformationTest:
 class IsValidatedTest:
     def test_is_validated_property(self):
         offerer = factories.OffererFactory()
-        factories.UserOffererFactory(offerer=offerer, validationToken="token")
+        factories.NotValidatedUserOffererFactory(offerer=offerer)
         assert offerer.isValidated
 
     def test_is_validated_property_when_still_offerer_has_validation_token(self):
-        offerer = factories.OffererFactory(validationToken="token")
+        offerer = factories.NotValidatedOffererFactory()
         factories.UserOffererFactory(offerer=offerer)
         assert not offerer.isValidated
 

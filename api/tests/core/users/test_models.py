@@ -288,7 +288,7 @@ class HasAccessTest:
         assert not user.has_access(offerer.id)
 
     def test_does_not_have_access_if_not_validated(self):
-        user_offerer = offerers_factories.UserOffererFactory(validationToken="token")
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
         offerer = user_offerer.offerer
         user = user_offerer.user
 

@@ -33,9 +33,8 @@ class GetOffererUsersTest:
         uo2 = offerers_factories.UserOffererFactory(
             offerer=offerer1, user=users_factories.ProFactory(firstName="Jean", lastName="Bon")
         )
-        uo3 = offerers_factories.NotValidatedUserOffererFactory(
-            offerer=offerer1, user=users_factories.ProFactory(), validationToken="not-validated"
-        )
+        uo3 = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer1, user=users_factories.ProFactory())
+
         offerer1_id = offerer1.id  # request from offerer outside assert_num_queries
 
         offerer2 = offerers_factories.OffererFactory()
@@ -1296,12 +1295,10 @@ class ListOfferersToBeValidatedTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_list_only_offerers_to_be_validated(self, client):
         # given
-        _validated_offerers = [
-            offerers_factories.UserOffererFactory(offerer__validationToken=None).offerer for _ in range(3)
-        ]
+        _validated_offerers = [offerers_factories.UserOffererFactory().offerer for _ in range(3)]
         to_be_validated_offerers = []
-        for i in range(4):
-            user_offerer = offerers_factories.UserOffererFactory(offerer__validationToken=f"{i:_>27}")
+        for _ in range(4):
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
             history_factories.ActionHistoryFactory(
                 actionType=history_models.ActionType.OFFERER_NEW,
                 authorUser=users_factories.AdminFactory(),
@@ -1340,9 +1337,7 @@ class ListOfferersToBeValidatedTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_payload_content(self, client, validation_status, expected_status):
         # given
-        user_offerer = offerers_factories.UserOffererFactory(
-            offerer__validationToken="0" * 27, offerer__validationStatus=validation_status
-        )
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer__validationStatus=validation_status)
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 12, 0),
@@ -1427,10 +1422,7 @@ class ListOfferersToBeValidatedTest:
         self, client, total_items, pagination_config, expected_total_pages, expected_page, expected_items
     ):
         # given
-        _validated_offerers = [
-            offerers_factories.UserOffererFactory(offerer__validationToken=f"{i:_>27}").offerer
-            for i in range(total_items)
-        ]
+        _validated_offerers = [offerers_factories.UserNotValidatedOffererFactory().offerer for i in range(total_items)]
 
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -1450,16 +1442,14 @@ class ListOfferersToBeValidatedTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_list_sorting(self, client):
         # given
-        offerer_1 = offerers_factories.UserOffererFactory(
-            offerer__validationToken="1" * 27,
+        offerer_1 = offerers_factories.UserNotValidatedOffererFactory(
             offerer__name="A",
             offerer__dateCreated=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         ).offerer
-        offerer_2 = offerers_factories.UserOffererFactory(
-            offerer__validationToken="2" * 27, offerer__name="B", offerer__dateCreated=datetime.datetime.utcnow()
+        offerer_2 = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__name="B", offerer__dateCreated=datetime.datetime.utcnow()
         ).offerer
-        offerer_3 = offerers_factories.UserOffererFactory(
-            offerer__validationToken="3" * 27,
+        offerer_3 = offerers_factories.UserNotValidatedOffererFactory(
             offerer__name="C",
             offerer__dateCreated=datetime.datetime.utcnow() - datetime.timedelta(hours=2),
         ).offerer
@@ -1551,7 +1541,7 @@ class ListOfferersToBeValidatedTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_as_anonymous(self, client):
         # given
-        offerers_factories.UserOffererFactory(offerer__validationToken="0" * 27)
+        offerers_factories.UserNotValidatedOffererFactory()
 
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.VALIDATE_OFFERER])
 
@@ -1568,9 +1558,7 @@ class ListOfferersToBeValidatedTest:
         # given
         admin = users_factories.UserFactory()
         tag = offerers_factories.OffererTagFactory(name="top-acteur", label="Top Actor")
-        offerer = offerers_factories.UserOffererFactory(
-            offerer__validationToken="0" * 27, offerer__validationStatus=offerers_models.ValidationStatus.NEW
-        ).offerer
+        offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
 
         # the offerer has no top-acteur tag
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -1602,9 +1590,7 @@ class ListOfferersToBeValidatedTest:
         # we create a tag and add it to the offerer
         admin = users_factories.UserFactory()
         tag = offerers_factories.OffererTagFactory(name="hello-world-tag", label="Hello World")
-        offerer = offerers_factories.UserOffererFactory(
-            offerer__validationToken="0" * 27, offerer__validationStatus=offerers_models.ValidationStatus.NEW
-        ).offerer
+        offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
 
         auth_token = generate_token(admin, [Permissions.MANAGE_PRO_ENTITY])
         response = client.with_explicit_token(auth_token).post(

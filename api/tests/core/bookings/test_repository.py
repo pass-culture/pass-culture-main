@@ -591,7 +591,7 @@ class FindByProUserTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken="token")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
@@ -1359,7 +1359,7 @@ class GetCsvReportTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken="token")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")

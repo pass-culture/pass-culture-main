@@ -90,7 +90,7 @@ class GetInvoicesFalseFFTest:
 
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
         client = client.with_session_auth(pro.email)
         response = client.get("/finance/invoices")
@@ -261,7 +261,7 @@ class GetInvoicesTest:
             businessUnit=None, reimbursementPoint=reimbursement_point3, amount=-15000000
         )
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="pasEncoreValidé")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
         client = client.with_session_auth(pro.email)
         response = client.get("/finance/invoices")

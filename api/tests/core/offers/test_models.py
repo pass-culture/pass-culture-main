@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 import pcapi.core.providers.factories as providers_factories
@@ -510,7 +511,9 @@ class StockIsBookableTest:
         assert not stock.isBookable
 
     def test_not_bookable_if_offerer_is_not_validated(self):
-        stock = factories.StockFactory(offer__venue__managingOfferer__validationToken="token")
+        stock = factories.StockFactory(
+            offer__venue__managingOfferer__validationStatus=offerers_models.ValidationStatus.NEW
+        )
         assert not stock.isBookable
 
     def test_not_bookable_if_offerer_is_not_active(self):
