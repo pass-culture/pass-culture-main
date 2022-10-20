@@ -27,12 +27,12 @@ from wtforms.fields import IntegerField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import sirene
 from pcapi.core import search
-from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 import pcapi.core.criteria.api as criteria_api
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.validation as finance_validation
 import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offerers.exceptions as offerers_exception
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
@@ -233,8 +233,10 @@ class VenueView(BaseAdminView):
             for email in emails:
                 update_external_pro(email)
             return True
-        except CannotDeleteVenueWithBookingsException:
+        except offerers_exception.CannotDeleteVenueWithBookingsException:
             flash("Impossible d'effacer un lieu pour lequel il existe des réservations.", "error")
+        except offerers_exception.CannotDeleteVenueUsedAsPricingPointException:
+            flash("Impossible d'effacer un lieu utilisé comme point de valorisation d'un autre lieu.", "error")
         return False
 
     def update_model(self, edit_venue_form: Form, venue: Venue) -> bool:

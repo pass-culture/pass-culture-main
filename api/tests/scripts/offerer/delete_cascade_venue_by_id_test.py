@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.factories as criteria_factories
@@ -9,6 +8,7 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformation
+import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
@@ -35,7 +35,7 @@ def test_delete_cascade_venue_should_abort_when_venue_has_any_bookings():
     venue_to_delete = booking.venue
 
     # When
-    with pytest.raises(CannotDeleteVenueWithBookingsException) as exception:
+    with pytest.raises(offerers_exceptions.CannotDeleteVenueWithBookingsException) as exception:
         delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
@@ -53,7 +53,7 @@ def test_delete_cascade_venue_should_abort_when_venue_has_any_collective_booking
     venue_to_delete = booking.venue
 
     # When
-    with pytest.raises(CannotDeleteVenueWithBookingsException) as exception:
+    with pytest.raises(offerers_exceptions.CannotDeleteVenueWithBookingsException) as exception:
         delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
@@ -63,6 +63,25 @@ def test_delete_cascade_venue_should_abort_when_venue_has_any_collective_booking
     assert Venue.query.count() == 1
     assert educational_models.CollectiveStock.query.count() == 1
     assert educational_models.CollectiveBooking.query.count() == 1
+
+
+@pytest.mark.usefixtures("db_session")
+def test_delete_cascade_venue_should_abort_when_pricing_point_for_another_venue():
+    # Given
+    venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+    offerers_factories.VenueFactory(pricing_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer)
+
+    # When
+    with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException) as exception:
+        delete_cascade_venue_by_id(venue_to_delete.id)
+
+    # Then
+    assert exception.value.errors["cannotDeleteVenueUsedAsPricingPointException"] == [
+        "Lieu non supprimable car il est utilisé comme point de valorisation d'un autre lieu"
+    ]
+    assert offerers_models.Offerer.query.count() == 1
+    assert offerers_models.Venue.query.count() == 2
+    assert offerers_models.VenuePricingPointLink.query.count() == 2
 
 
 @pytest.mark.usefixtures("db_session")

@@ -3,11 +3,11 @@ import logging
 import sqlalchemy as sqla
 
 from pcapi.core import search
-from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
+import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -32,7 +32,21 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
     offerer_has_bookings = db.session.query(Booking.query.filter(Booking.offererId == offerer_id).exists()).scalar()
 
     if offerer_has_bookings:
-        raise CannotDeleteOffererWithBookingsException()
+        raise offerers_exceptions.CannotDeleteOffererWithBookingsException()
+
+    venue_ids = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
+        offerers_models.Venue.id
+    )
+
+    managed_venue_used_as_pricing_point = db.session.query(
+        offerers_models.VenuePricingPointLink.query.filter(
+            offerers_models.VenuePricingPointLink.venueId.not_in(venue_ids),
+            offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
+        ).exists()
+    ).scalar()
+
+    if managed_venue_used_as_pricing_point:
+        raise offerers_exceptions.CannotDeleteOffererUsedAsPricingPointException()
 
     deleted_activation_codes_count = ActivationCode.query.filter(
         ActivationCode.stockId == Stock.id,
@@ -137,9 +151,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         BankInformation.id.in_(bank_information_ids_to_delete)
     ).delete(synchronize_session=False)
 
-    venue_ids = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
-        offerers_models.Venue.id
-    )
     # Warning: we should only delete rows where the "venueId" is the
     # venue to delete. We should NOT delete rows where the
     # "pricingPointId" or the "reimbursementId" is the venue to

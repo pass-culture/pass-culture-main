@@ -11,10 +11,10 @@ from markupsafe import escape
 from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.repository import offerer_has_ongoing_bookings
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
 from pcapi.core.offerers.models import ValidationStatus
@@ -132,8 +132,15 @@ class OffererView(BaseAdminView):
 
         try:
             delete_cascade_offerer_by_id(offerer.id)
-        except CannotDeleteOffererWithBookingsException:
+        except offerers_exceptions.CannotDeleteOffererWithBookingsException:
             flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations.", "error")
+            return False
+        except offerers_exceptions.CannotDeleteOffererUsedAsPricingPointException:
+            flash(
+                "Impossible d'effacer une structure juridique dont un lieu est utilisé comme point de valorisation "
+                "pour un lieu d'une autre structure.",
+                "error",
+            )
             return False
 
         for email in emails:

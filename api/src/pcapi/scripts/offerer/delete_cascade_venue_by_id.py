@@ -1,12 +1,12 @@
 import logging
 
 from pcapi.core import search
-from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
+import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import ActivationCode
@@ -32,7 +32,17 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     ).scalar()
 
     if venue_has_bookings or venue_has_collective_bookings:
-        raise CannotDeleteVenueWithBookingsException()
+        raise offerers_exceptions.CannotDeleteVenueWithBookingsException()
+
+    venue_used_as_pricing_point = db.session.query(
+        offerers_models.VenuePricingPointLink.query.filter(
+            offerers_models.VenuePricingPointLink.venueId != venue_id,
+            offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
+        ).exists()
+    ).scalar()
+
+    if venue_used_as_pricing_point:
+        raise offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException()
 
     deleted_activation_codes_count = ActivationCode.query.filter(
         ActivationCode.stockId == Stock.id,

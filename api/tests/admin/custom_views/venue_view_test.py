@@ -489,6 +489,29 @@ class DeleteVenueTest:
         assert len(Venue.query.all()) == 1
         assert len(external_testing.sendinblue_requests) == 0
 
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_delete_venue_rejected_because_of_princing_point(self, mocked_validate_csrf_token, client):
+        admin = AdminFactory()
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenueFactory(pricing_point=venue, managingOfferer=venue.managingOfferer)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            "/pc/back-office/venue/delete/", form={"id": venue.id, "url": "/pc/back-office/venue/"}
+        )
+
+        assert response.status_code == 302
+
+        list_response = api_client.get(response.headers["location"])
+        assert (
+            "Impossible d&#39;effacer un lieu utilisé comme point de valorisation d&#39;un autre lieu."
+            in list_response.data.decode("utf8")
+        )
+
+        assert len(Venue.query.all()) == 2
+        assert len(external_testing.sendinblue_requests) == 0
+
 
 class GetVenueProviderLinkTest:
     @pytest.mark.usefixtures("db_session")
