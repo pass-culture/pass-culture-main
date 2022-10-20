@@ -463,9 +463,10 @@ class RunIntegrationTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert (
-            message.user_message
-            == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Connecte-toi avec l'adresse joh***@example.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
+        assert message.user_message == (
+            "Ton dossier a été refusé car il y a déjà un compte bénéficiaire à ton nom. "
+            "Connecte-toi avec l’adresse mail joh***@example.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
+            "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
 

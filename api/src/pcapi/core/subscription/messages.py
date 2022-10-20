@@ -1,9 +1,14 @@
+import logging
+
 from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import models
 from pcapi.core.users import models as users_models
+
+
+logger = logging.getLogger(__name__)
 
 
 MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
@@ -49,14 +54,27 @@ def build_duplicate_error_message(
     reason_code: fraud_models.FraudReasonCode,
     application_content: common_fraud_models.IdentityCheckContent | None,
 ) -> str:
+    match reason_code:
+        case fraud_models.FraudReasonCode.DUPLICATE_INE:
+            message_start = "Ton dossier a été refusé car il y a déjà un compte bénéficiaire associé aux identifiants ÉduConnect que tu as fournis."
+        case fraud_models.FraudReasonCode.DUPLICATE_USER:
+            message_start = "Ton dossier a été refusé car il y a déjà un compte bénéficiaire à ton nom."
+        case fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
+            message_start = "Ton dossier a été refusé car il y a déjà un compte bénéficiaire associé à ce numéro de pièce d’identité."
+        case _:
+            logger.error("Duplicate error with no matching body message %s", reason_code)
+            message_start = "Ton dossier a été refusé car tu as déjà un compte bénéficiaire"
+
+    contact_support_message = "Contacte le support si tu penses qu’il s’agit d’une erreur."
+    message_end = "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
+
+    default_message = f"{message_start} {contact_support_message} {message_end}"
+
     if not application_content:
-        return "Contacte le support si tu penses qu'il s'agit d'une erreur."
+        return default_message
 
     anonymized_email = fraud_api.get_duplicate_beneficiary_anonymized_email(user, application_content, reason_code)
-
     if anonymized_email is None:
-        return "Contacte le support si tu penses qu'il s'agit d'une erreur."
+        return default_message
 
-    return (
-        f"Connecte-toi avec l'adresse {anonymized_email} ou contacte le support si tu penses qu'il s'agit d'une erreur."
-    )
+    return f"{message_start} Connecte-toi avec l’adresse mail {anonymized_email} ou {contact_support_message.lower()} {message_end}"

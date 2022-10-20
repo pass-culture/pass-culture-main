@@ -350,9 +350,10 @@ class EduconnectTest:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
 
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
-        assert (
-            message.user_message
-            == "Ton dossier a été refusé : il y a déjà un compte à ton nom sur le pass Culture. Connecte-toi avec l'adresse tit***@quartier-latin.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
+        assert message.user_message == (
+            "Ton dossier a été refusé car il y a déjà un compte bénéficiaire à ton nom. "
+            "Connecte-toi avec l’adresse mail tit***@quartier-latin.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
+            "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
@@ -374,9 +375,10 @@ class EduconnectTest:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_INE]
 
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
-        assert (
-            message.user_message
-            == "Ton dossier a été refusé : il y a déjà un compte associé aux identifiants ÉduConnect que tu as fournis. Connecte-toi avec l'adresse sho***@ine.com ou contacte le support si tu penses qu'il s'agit d'une erreur."
+        assert message.user_message == (
+            "Ton dossier a été refusé car il y a déjà un compte bénéficiaire associé aux identifiants ÉduConnect que tu as fournis. "
+            "Connecte-toi avec l’adresse mail sho***@ine.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
+            "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
