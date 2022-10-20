@@ -49,7 +49,7 @@ class APIProviderFactory(BaseFactory):
     class Meta:
         model = models.Provider
 
-    name = factory.Sequence("Provider {}".format)
+    name = factory.Sequence("API Provider {}".format)
     apiUrl = factory.Sequence("https://{}.example.org/stocks".format)
     enabledForPro = True
     isActive = True
@@ -100,7 +100,7 @@ class AllocineProviderFactory(BaseFactory):
         model = models.Provider
         sqlalchemy_get_or_create = ["localClass"]
 
-    name = factory.Sequence("Provider {}".format)
+    name = factory.Sequence("Allociné Provider {}".format)
     localClass = "AllocineStocks"
     enabledForPro = True
     isActive = True
