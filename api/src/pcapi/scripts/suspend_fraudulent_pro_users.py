@@ -1,4 +1,4 @@
-from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
+from pcapi.core.offerers.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.users.api import suspend_account
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
