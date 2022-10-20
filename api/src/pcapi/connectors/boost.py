@@ -6,6 +6,7 @@ from typing import Any
 
 from pydantic import parse_obj_as
 
+from pcapi import settings
 from pcapi.connectors.serialization.boost_serializers import LoginBoost
 from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
 from pcapi.core.providers.models import BoostCinemaDetails
@@ -19,8 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 class ResourceBoost(enum.Enum):
-    EXAMPLE = "example"
-    EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
+    if settings.IS_RUNNING_TESTS:
+        EXAMPLE = "example"
+        EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
     FILMS = "api/films"
     SHOWTIMES = "api/showtimes"
     SHOWTIME = "api/showtimes/{id}"
