@@ -20,6 +20,15 @@ jest.mock('apiClient/api', () => ({
 
 const renderSummary = (props: ISummaryProps) => {
   const store = configureTestStore({
+    features: {
+      list: [
+        {
+          isActive: true,
+          name: 'OFFER_DRAFT_ENABLED',
+          nameKey: 'OFFER_DRAFT_ENABLED',
+        },
+      ],
+    },
     user: {
       initialized: true,
       currentUser: {
@@ -251,6 +260,11 @@ describe('Summary', () => {
 
         // then
         expect(screen.getByText('Étape précédente')).toBeInTheDocument()
+        const saveDraftButton = screen.getByText(
+          'Sauvegarder le brouillon et quitter'
+        )
+        expect(saveDraftButton).toBeInTheDocument()
+        expect(saveDraftButton).toHaveAttribute('href', '/offres')
         expect(screen.getByText("Publier l'offre")).toBeInTheDocument()
       })
     })
