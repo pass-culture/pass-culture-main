@@ -30,12 +30,14 @@ def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int 
 
         @wraps(f)
         def delay(payload: payload_in_kwargs):  # type: ignore [no-untyped-def]
+            if not isinstance(payload, pydantic.BaseModel):
+                raise ValueError("Task payload must be a pydantic model")
+
             if settings.IS_RUNNING_TESTS:
                 f(payload)
                 return
 
-            if isinstance(payload, pydantic.BaseModel):
-                payload = json.loads(payload.json())  # type: ignore [attr-defined]
+            payload = json.loads(payload.json())  # type: ignore [attr-defined]
 
             cloud_task.enqueue_internal_task(
                 queue, path, payload, deduplicate=deduplicate, delayed_seconds=delayed_seconds
