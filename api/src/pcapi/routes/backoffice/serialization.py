@@ -388,9 +388,11 @@ class HistoryItem(BaseModel):
 
     type: history_models.ActionType
     date: datetime.datetime
-    authorId: int | None
+    authorId: int | None  # backoffice user OR pro user who made the action
     authorName: str | None
     comment: str | None
+    accountId: int | None  # pro user attached to the offerer
+    accountName: str | None
 
 
 class HistoryResponseModel(Response):
