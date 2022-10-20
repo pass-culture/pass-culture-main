@@ -27,7 +27,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
         }
     )
     user = users_factories.UserFactory()
-    offerer = offerers_factories.OffererFactory(validationToken="12356")
+    offerer = offerers_factories.NotValidatedOffererFactory()
     user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, user=user)
     siren_info = sirene.SirenInfo(
         siren="123456789",

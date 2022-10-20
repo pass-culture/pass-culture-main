@@ -97,7 +97,7 @@ class Returns204Test:
 
     def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory(siren="349974931", validationToken="not_validated")
+        offerer = offerers_factories.NotValidatedOffererFactory(siren="349974931")
         pro = ProFactory(email="bobby@test.com", publicName="bobby")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 

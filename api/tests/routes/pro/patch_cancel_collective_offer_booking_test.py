@@ -78,7 +78,7 @@ class Returns403Test:
     def test_user_does_not_have_access_to_offerer(self, client):
         user = user_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer, validationToken="validationToken")
+        offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer)
 
         offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
 
