@@ -1,4 +1,3 @@
-import type { LocationDescriptor } from 'history'
 import React, { FunctionComponent, SVGProps } from 'react'
 
 import { ButtonLink } from 'ui-kit/Button'
@@ -16,7 +15,7 @@ interface IInternalBannerProps extends IBannerLayoutProps {
   >
   linkTitle: string
   subtitle?: string
-  to?: LocationDescriptor
+  to?: string
 }
 
 const InternalBanner = ({

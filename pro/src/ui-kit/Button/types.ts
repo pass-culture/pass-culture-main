@@ -9,6 +9,7 @@ export enum ButtonVariant {
 export enum IconPositionEnum {
   RIGHT = 'right',
   LEFT = 'left',
+  CENTER = 'center',
 }
 
 export type SharedButtonProps = {
