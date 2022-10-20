@@ -12,10 +12,11 @@ import {
   GetOffererResponseModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
+  VenueProviderResponse,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { IProviders, IVenueProviderApi } from 'core/Venue/types'
+import { IProviders } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -60,7 +61,7 @@ describe('route VenueEdition', () => {
   let currentUser: SharedCurrentUserResponseModel
   let store: Store
   let venue: GetVenueResponseModel
-  let venueProviders: IVenueProviderApi[]
+  let venueProviders: VenueProviderResponse[]
   let providers: IProviders[]
   let offerer: GetOffererResponseModel
 
@@ -79,12 +80,12 @@ describe('route VenueEdition', () => {
     venueProviders = [
       {
         id: 'BY',
-        idAtProviders: null,
+        idAtProviders: undefined,
         dateModifiedAtLastProvider: '2022-09-19T12:01:18.708794Z',
         isActive: true,
         isFromAllocineProvider: false,
-        lastProviderId: null,
-        lastSyncDate: null,
+        lastProviderId: undefined,
+        lastSyncDate: undefined,
         nOffers: 0,
         providerId: 'BY',
         venueId: 'DE',
@@ -99,6 +100,7 @@ describe('route VenueEdition', () => {
         quantity: 0,
         isDuo: true,
         price: 0,
+        fieldsUpdated: [],
       },
     ]
 

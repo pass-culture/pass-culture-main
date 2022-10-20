@@ -1,8 +1,8 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { VenueProviderResponse } from 'apiClient/v1'
 import ReimbursementFields from 'components/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { IVenueProviderApi } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/CinemaProviderItem/types'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
@@ -27,7 +27,7 @@ interface IVenueForm {
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   provider?: IProviders[]
-  venueProvider?: IVenueProviderApi[]
+  venueProvider?: VenueProviderResponse[]
   venue?: IVenue
 }
 

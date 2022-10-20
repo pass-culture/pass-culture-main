@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 
+import { VenueProviderResponse } from 'apiClient/v1'
 import Spinner from 'components/layout/Spinner'
 import AddVenueProviderButton from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AddVenueProviderButton'
-import { IVenueProviderApi } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/CinemaProviderItem/types'
 import VenueProviderListV2 from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManagerV2/VenueProviderListV2/VenueProviderListV2'
 import { IProviders, IVenue } from 'core/Venue/types'
 import FormLayout from 'new_components/FormLayout'
 
 interface IOffersSynchronization {
   provider: IProviders[]
-  venueProvider: IVenueProviderApi[]
+  venueProvider: VenueProviderResponse[]
   venue: IVenue
 }
 
@@ -21,14 +21,16 @@ const OffersSynchronization = ({
   const [isLoading, setIsLoading] = useState(false)
   const [providers, setProviders] = useState(provider)
   const [venueProviders, setVenueProviders] =
-    useState<IVenueProviderApi[]>(venueProvider)
+    useState<VenueProviderResponse[]>(venueProvider)
   useEffect(() => {
     setProviders(providers)
     setVenueProviders(venueProviders)
     setIsLoading(false)
   }, [venue])
 
-  const afterVenueProviderEdit = (editedVenueProvider: IVenueProviderApi) => {
+  const afterVenueProviderEdit = (
+    editedVenueProvider: VenueProviderResponse
+  ) => {
     const newVenueProviders = venueProviders.map(venueProvider =>
       venueProvider.id === editedVenueProvider.id
         ? editedVenueProvider

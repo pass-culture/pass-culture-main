@@ -1,11 +1,11 @@
 import React from 'react'
 
+import { VenueProviderResponse } from 'apiClient/v1'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 import AllocineProviderParameters from '../AllocineProviderParamaters/AllocineProviderParameters'
 import CinemaProviderParameters from '../CinemaProviderParameters/CinemaProviderParameters'
 import DeleteVenueProviderButton from '../DeleteVenueProviderButton/DeleteVenueProviderButton'
@@ -15,8 +15,8 @@ import style from './VenueProviderItemV2.module.scss'
 
 export interface IVenueProviderItemV2Props {
   afterDelete: (deletedVenueProvider: string) => void
-  afterSubmit: (editedVenueProvider: IVenueProviderApi) => void
-  venueProvider: IVenueProviderApi
+  afterSubmit: (editedVenueProvider: VenueProviderResponse) => void
+  venueProvider: VenueProviderResponse
   venueDepartmentCode: string
 }
 

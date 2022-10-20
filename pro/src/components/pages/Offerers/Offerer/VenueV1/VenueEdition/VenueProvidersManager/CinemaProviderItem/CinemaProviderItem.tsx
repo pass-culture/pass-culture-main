@@ -3,17 +3,20 @@ import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
+import { VenueProviderResponse } from 'apiClient/v1'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
-import { IVenueProviderApi as VenueProvider } from './types'
-
 interface ICinemaProviderItemProps {
-  afterVenueProviderEdit: (editedVenueProvider: VenueProvider) => void
-  venueProvider: VenueProvider
+  afterVenueProviderEdit: ({
+    editedVenueProvider,
+  }: {
+    editedVenueProvider: VenueProviderResponse
+  }) => void
+  venueProvider: VenueProviderResponse
   venueDepartementCode: string
 }
 
@@ -29,7 +32,6 @@ export const CinemaProviderItem = ({
       api
         .updateVenueProvider(payload)
         .then(editedVenueProvider => {
-          // @ts-ignore
           afterVenueProviderEdit({ editedVenueProvider })
           dispatch(
             showNotification({

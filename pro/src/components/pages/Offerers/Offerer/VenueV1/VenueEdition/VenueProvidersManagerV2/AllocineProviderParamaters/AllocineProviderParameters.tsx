@@ -1,19 +1,19 @@
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import AllocineProviderFormDialog from '../../VenueProvidersManager/AllocineProviderFormDialog/AllocineProviderFormDialog'
-import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 
 import style from './AllocineProviderParameters.module.scss'
 import { IAllocineProviderParametersValues } from './types'
 
 export interface IAllocineProviderParametersProps {
-  venueProvider: IVenueProviderApi
-  afterVenueProviderEdit: (editedVenueProvider: IVenueProviderApi) => void
+  venueProvider: VenueProviderResponse
+  afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
 }
 
 const AllocineProviderParameters = ({
@@ -26,10 +26,8 @@ const AllocineProviderParameters = ({
   const editVenueProvider = useCallback(
     (payload: IAllocineProviderParametersValues) => {
       api
-        // @ts-expect-error missing venueId and providerId
         .updateVenueProvider(payload)
         .then(editedVenueProvider => {
-          // @ts-expect-error string | undefined is not assignable to string | null
           afterVenueProviderEdit(editedVenueProvider)
           notification.success(
             "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
@@ -76,10 +74,12 @@ const AllocineProviderParameters = ({
         <div className={style['parameter-item']}>
           Prix de vente/place :{' '}
           <span>
-            {`${new Intl.NumberFormat('fr-FR', {
-              style: 'currency',
-              currency: 'EUR',
-            }).format(venueProvider.price)}`}
+            {venueProvider.price
+              ? `${new Intl.NumberFormat('fr-FR', {
+                  style: 'currency',
+                  currency: 'EUR',
+                }).format(venueProvider.price)}`
+              : ''}
           </span>
         </div>
         <div className={style['parameter-item']}>
