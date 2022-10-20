@@ -10,7 +10,7 @@ BOOST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 
 class LoginBoost(BaseModel):
-    code: int
+    code: int | None
     message: str
     token: str | None
 
