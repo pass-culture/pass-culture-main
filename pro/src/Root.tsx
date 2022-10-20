@@ -7,19 +7,23 @@ import NavigationLogger from 'components/router/NavigationLogger'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
+import { RemoteAnalyticsContextProvider } from './context/remoteConfigContext'
+
 const Root = (): JSX.Element => {
   return (
     <StoreProvider>
       <AnalyticsContextProvider>
-        <BrowserRouter>
-          <NavigationLogger />
-          <App>
-            <>
-              <AppRouter />
-              <Notification />
-            </>
-          </App>
-        </BrowserRouter>
+        <RemoteAnalyticsContextProvider>
+          <BrowserRouter>
+            <NavigationLogger />
+            <App>
+              <>
+                <AppRouter />
+                <Notification />
+              </>
+            </App>
+          </BrowserRouter>
+        </RemoteAnalyticsContextProvider>
       </AnalyticsContextProvider>
     </StoreProvider>
   )

@@ -1,3 +1,4 @@
+import { getValue } from '@firebase/remote-config'
 import React, { useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
@@ -7,11 +8,12 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import { BannerRGS } from 'new_components/Banner'
 import { Newsletter } from 'new_components/Newsletter'
 
+import useRemoteConfig from '../../../hooks/useRemoteConfig'
+
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
-
 const Homepage = (): JSX.Element => {
   const profileRef = useRef(null)
   const statsRef = useRef(null)
@@ -27,6 +29,11 @@ const Homepage = (): JSX.Element => {
       setHasClosedRGSBanner(true)
     })
   }
+  const { remoteConfig } = useRemoteConfig()
+  const coucou = useCurrentUser()
+  console.log({ coucou })
+  // eslint-disable-next-line no-console
+  remoteConfig && console.log(getValue(remoteConfig, 'only500BiggerActors'))
 
   return (
     <div className="homepage">
