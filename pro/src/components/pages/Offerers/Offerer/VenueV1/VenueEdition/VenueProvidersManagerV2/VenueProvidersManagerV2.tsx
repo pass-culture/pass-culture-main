@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
+import { VenueProviderResponse } from 'apiClient/v1'
 import Spinner from 'components/layout/Spinner'
 import { IVenue } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import AddVenueProviderButton from '../VenueProvidersManager/AddVenueProviderButton'
-import { IVenueProviderApi } from '../VenueProvidersManager/CinemaProviderItem/types'
 
 import VenueProviderListV2 from './VenueProviderListV2/VenueProviderListV2'
 import styles from './VenueProvidersManagerV2.module.scss'
@@ -19,7 +19,9 @@ const VenueProvidersManagerV2 = ({
   venue,
 }: IVenueProvidersManagerV2Props): JSX.Element | null => {
   const [providers, setProviders] = useState([])
-  const [venueProviders, setVenueProviders] = useState<IVenueProviderApi[]>([])
+  const [venueProviders, setVenueProviders] = useState<VenueProviderResponse[]>(
+    []
+  )
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -34,7 +36,9 @@ const VenueProvidersManagerV2 = ({
     fetchData()
   }, [venue.id])
 
-  const afterVenueProviderEdit = (editedVenueProvider: IVenueProviderApi) => {
+  const afterVenueProviderEdit = (
+    editedVenueProvider: VenueProviderResponse
+  ) => {
     const newVenueProviders = venueProviders.map(venueProvider =>
       venueProvider.id === editedVenueProvider.id
         ? editedVenueProvider

@@ -4,9 +4,10 @@ import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import { VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'components/hooks/useNotification'
 import { IOfferer } from 'core/Offerers/types'
-import { IProviders, IVenue, IVenueProviderApi } from 'core/Venue/types'
+import { IProviders, IVenue } from 'core/Venue/types'
 import useCurrentUser from 'hooks/useCurrentUser'
 import {
   IVenueFormValues,
@@ -28,7 +29,7 @@ interface IVenueEditionProps {
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   providers?: IProviders[]
-  venueProviders?: IVenueProviderApi[]
+  venueProviders?: VenueProviderResponse[]
   venue?: IVenue
 }
 

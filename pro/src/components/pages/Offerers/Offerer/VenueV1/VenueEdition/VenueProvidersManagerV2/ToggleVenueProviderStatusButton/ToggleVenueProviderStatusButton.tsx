@@ -1,19 +1,19 @@
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { VenueProviderResponse } from 'apiClient/v1'
 import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
 import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'
 
 export interface IToggleVenueProviderStatusButtonProps {
-  venueProvider: IVenueProviderApi
-  afterEdit: (venueProvider: IVenueProviderApi) => void
+  venueProvider: VenueProviderResponse
+  afterEdit: (venueProvider: VenueProviderResponse) => void
 }
 
 const ToggleVenueProviderStatusButton = ({
@@ -34,7 +34,6 @@ const ToggleVenueProviderStatusButton = ({
       // @ts-expect-error boolean | null is not assignable to boolean | undefined
       .updateVenueProvider(payload)
       .then(editedVenueProvider => {
-        // @ts-expect-error string | undefined is not assignable to string | null
         afterEdit(editedVenueProvider)
       })
       .catch(() => {
