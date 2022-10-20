@@ -64,8 +64,13 @@ describe('stocks page', () => {
         initialized: true,
       },
       features: {
-        initialized: true,
-        list: [],
+        list: [
+          {
+            isActive: true,
+            name: 'OFFER_DRAFT_ENABLED',
+            nameKey: 'OFFER_DRAFT_ENABLED',
+          },
+        ],
       },
     }
     props = {}
@@ -707,6 +712,38 @@ describe('stocks page', () => {
 
         // when
         await userEvent.click(screen.getByText('Étape suivante'))
+
+        // then
+        expect(api.upsertStocks).toHaveBeenCalledWith({
+          offerId: 'AG3A',
+          stocks: [
+            {
+              bookingLimitDatetime: '2020-12-23T02:59:59Z',
+              price: '15',
+              quantity: '15',
+            },
+          ],
+        })
+      })
+
+      it('should save stocks when clicking on save draft button', async () => {
+        // given
+        api.upsertStocks.mockResolvedValue({})
+        renderOffers(props, store, '/offre/AG3A/individuel/creation/stocks')
+
+        await userEvent.click(await screen.findByText('Ajouter un stock'))
+
+        await userEvent.type(screen.getByLabelText('Prix'), '15')
+
+        await userEvent.click(
+          screen.getByLabelText('Date limite de réservation')
+        )
+        await userEvent.click(screen.getByText('22'))
+
+        await userEvent.type(screen.getByLabelText('Quantité'), '15')
+
+        // when
+        await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
         // then
         expect(api.upsertStocks).toHaveBeenCalledWith({

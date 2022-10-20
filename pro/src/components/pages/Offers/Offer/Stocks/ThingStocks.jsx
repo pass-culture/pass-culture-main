@@ -151,84 +151,94 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     })
   }
 
-  const submitStocks = useCallback(() => {
-    if (checkStockIsValid(stock, offer.isEvent, offer.isEducational)) {
-      setEnableSubmitButtonSpinner(true)
-      const stockToCreateOrEdit = {
-        ...createThingStockPayload(stock, offer.venue.departementCode),
-        id: stock.id,
-      }
-      const quantityOfActivationCodes = (stock.activationCodes || []).length
-      api
-        .upsertStocks({ offerId: offer.id, stocks: [stockToCreateOrEdit] })
-        .then(() => {
-          const queryParams = queryParamsFromOfferer(location)
-          let queryString = ''
+  const submitDraft = e => submitStocks(e, true)
 
-          if (queryParams.structure !== '') {
-            queryString = `?structure=${queryParams.structure}`
-          }
+  const submitStocks = useCallback(
+    (e, isSavingDraft = false) => {
+      e.preventDefault()
+      if (checkStockIsValid(stock, offer.isEvent, offer.isEducational)) {
+        setEnableSubmitButtonSpinner(true)
+        const stockToCreateOrEdit = {
+          ...createThingStockPayload(stock, offer.venue.departementCode),
+          id: stock.id,
+        }
+        const quantityOfActivationCodes = (stock.activationCodes || []).length
+        api
+          .upsertStocks({ offerId: offer.id, stocks: [stockToCreateOrEdit] })
+          .then(() => {
+            const queryParams = queryParamsFromOfferer(location)
+            let queryString = ''
 
-          if (queryParams.lieu !== '') {
-            queryString += `&lieu=${queryParams.lieu}`
-          }
-          if (isOfferDraft) {
-            reloadOffer(true)
-            if (quantityOfActivationCodes) {
-              notification.success(
-                `${quantityOfActivationCodes} ${
-                  quantityOfActivationCodes > 1
-                    ? ' Codes d’activation ont été ajoutés'
-                    : ' Code d’activation a été ajouté'
-                }`
-              )
+            if (queryParams.structure !== '') {
+              queryString = `?structure=${queryParams.structure}`
             }
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OfferBreadcrumbStep.STOCKS,
-              to: OfferBreadcrumbStep.SUMMARY,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-              isEdition: !isOfferDraft,
-            })
-          } else {
-            loadStocks()
-            reloadOffer()
-            if (quantityOfActivationCodes) {
-              notification.success(
-                `${quantityOfActivationCodes} ${
-                  quantityOfActivationCodes > 1
-                    ? ' Codes d’activation ont été ajoutés'
-                    : ' Code d’activation a été ajouté'
-                }`
-              )
+
+            if (queryParams.lieu !== '') {
+              queryString += `&lieu=${queryParams.lieu}`
+            }
+            if (isOfferDraft) {
+              reloadOffer(true)
+              if (quantityOfActivationCodes) {
+                notification.success(
+                  `${quantityOfActivationCodes} ${
+                    quantityOfActivationCodes > 1
+                      ? ' Codes d’activation ont été ajoutés'
+                      : ' Code d’activation a été ajouté'
+                  }`
+                )
+              }
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OfferBreadcrumbStep.STOCKS,
+                to: OfferBreadcrumbStep.SUMMARY,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                isEdition: !isOfferDraft,
+              })
+              if (isSavingDraft)
+                notification.success(
+                  'Brouillon sauvegardé dans la liste des offres'
+                )
             } else {
-              notification.success(
-                'Vos modifications ont bien été enregistrées'
-              )
+              loadStocks()
+              reloadOffer()
+              if (quantityOfActivationCodes) {
+                notification.success(
+                  `${quantityOfActivationCodes} ${
+                    quantityOfActivationCodes > 1
+                      ? ' Codes d’activation ont été ajoutés'
+                      : ' Code d’activation a été ajouté'
+                  }`
+                )
+              } else {
+                notification.success(
+                  'Vos modifications ont bien été enregistrées'
+                )
+              }
             }
-          }
-          history.push(`${summaryStepUrl}${queryString}`)
-        })
-        .catch(() =>
-          notification.error(
-            'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+            if (!isSavingDraft) history.push(`${summaryStepUrl}${queryString}`)
+          })
+          .catch(() =>
+            notification.error(
+              'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+            )
           )
-        )
-        .finally(() => {
-          setEnableSubmitButtonSpinner(false)
-        })
-    }
-  }, [
-    stock,
-    history,
-    location,
-    offer.id,
-    offer.isEducational,
-    offer.isEvent,
-    isOfferDraft,
-    offer.venue.departementCode,
-    loadStocks,
-    reloadOffer,
-  ])
+          .finally(() => {
+            setEnableSubmitButtonSpinner(false)
+          })
+      }
+    },
+    [
+      stock,
+      history,
+      location,
+      offer.id,
+      offer.isEducational,
+      offer.isEvent,
+      isOfferDraft,
+      offer.venue.departementCode,
+      loadStocks,
+      reloadOffer,
+    ]
+  )
 
   if (isLoading) {
     return null
@@ -349,6 +359,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               isSubmiting={enableSubmitButtonSpinner}
               onSubmit={submitStocks}
               onCancelClick={onCancelClick}
+              onSubmitDraft={submitDraft}
             />
           </section>
         </Fragment>
