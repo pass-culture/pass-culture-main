@@ -19,7 +19,7 @@ import VenueCreationLinks from './VenueCreationLinks'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
-const Offerers = () => {
+const Offerers = ({ offererNames }) => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
@@ -41,32 +41,26 @@ const Offerers = () => {
   }
 
   useEffect(
-    function fetchData() {
-      // RomainC: Challenge this function it is called each times
-      // offererId change, this doesn't seem necessary
-      api.listOfferersNames().then(receivedOffererNames => {
-        const initialOffererOptions = sortByDisplayName(
-          receivedOffererNames.offerersNames.map(item => ({
-            id: item['id'].toString(),
-            displayName: item['name'],
-          }))
-        )
+    function sortOffererName() {
+      const initialOffererOptions = sortByDisplayName(
+        offererNames.offerersNames.map(item => ({
+          id: item['id'].toString(),
+          displayName: item['name'],
+        }))
+      )
 
-        if (initialOffererOptions.length > 0) {
-          setSelectedOffererId(offererId || initialOffererOptions[0].id)
-          setOffererOptions([
-            ...initialOffererOptions,
-            {
-              displayName: '+ Ajouter une structure',
-              id: CREATE_OFFERER_SELECT_ID,
-            },
-          ])
-        } else {
-          setIsLoading(false)
-        }
-      })
+      if (initialOffererOptions.length > 0) {
+        setSelectedOffererId(offererId || initialOffererOptions[0].id)
+        setOffererOptions([
+          ...initialOffererOptions,
+          {
+            displayName: '+ Ajouter une structure',
+            id: CREATE_OFFERER_SELECT_ID,
+          },
+        ])
+      }
     },
-    [offererId]
+    [offererId, offererNames]
   )
 
   useEffect(() => {

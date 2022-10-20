@@ -2,11 +2,12 @@
 import {
   getAnalytics,
   initializeAnalytics,
-  setUserId,
-  logEvent as analyticsLogEvent,
   isSupported,
+  logEvent as analyticsLogEvent,
+  setUserId,
 } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
+import { fetchAndActivate, getRemoteConfig } from '@firebase/remote-config'
 import { useContext, useEffect, useState } from 'react'
 
 import { firebaseConfig } from 'config/firebase'
@@ -14,10 +15,14 @@ import { AnalyticsContext } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useUtmQueryParams from 'hooks/useUtmQueryParams'
 
+import useRemoteConfig from './useRemoteConfig'
+
 export const useConfigureAnalytics = (currentUserId: string | undefined) => {
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
+
   const { logEvent, setLogEvent } = useAnalytics()
+  const { setRemoteConfig } = useRemoteConfig()
   const utmParameters = useUtmQueryParams()
 
   useEffect(() => {
@@ -37,7 +42,10 @@ export const useConfigureAnalytics = (currentUserId: string | undefined) => {
             send_page_view: false,
           },
         })
-
+      const remoteConfig = getRemoteConfig(initializeApp)
+      fetchAndActivate(remoteConfig).then(() => {
+        setRemoteConfig && setRemoteConfig(remoteConfig)
+      })
       setLogEvent &&
         setLogEvent(
           () =>

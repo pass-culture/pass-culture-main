@@ -1,9 +1,12 @@
-import React, { useRef, useState } from 'react'
+import { getValue } from '@firebase/remote-config'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { GetOfferersNamesResponseModel } from 'apiClient/v1'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useRemoteConfig from 'hooks/useRemoteConfig'
 import { BannerRGS } from 'new_components/Banner'
 import { Newsletter } from 'new_components/Newsletter'
 
@@ -21,12 +24,31 @@ const Homepage = (): JSX.Element => {
   const [hasClosedRGSBanner, setHasClosedRGSBanner] = useState<boolean>(
     Boolean(hasSeenProRgs)
   )
+  const [canSeeStats, setCanSeeStats] = useState<boolean>(false)
+  const [offerersNames, setOfferersNames] =
+    useState<GetOfferersNamesResponseModel>({ offerersNames: [] })
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const handleCloseRGSBanner = () => {
     api.patchProUserRgsSeen().finally(() => {
       setHasClosedRGSBanner(true)
     })
   }
+  const { remoteConfig } = useRemoteConfig()
+
+  useEffect(() => {
+    remoteConfig &&
+      api.listOfferersNames().then(receivedOffererNames => {
+        const biggest500 = getValue(remoteConfig, 'only500BiggerActors')
+          .asString()
+          .split(',')
+        setOfferersNames(receivedOffererNames)
+        setCanSeeStats(
+          receivedOffererNames.offerersNames.some(v =>
+            biggest500.includes(v.id)
+          )
+        )
+      })
+  }, [remoteConfig])
 
   return (
     <div className="homepage">
@@ -37,20 +59,18 @@ const Homepage = (): JSX.Element => {
       )}
       <HomepageBreadcrumb
         activeStep={STEP_ID_OFFERERS}
-        isOffererStatsActive={isOffererStatsActive}
+        isOffererStatsActive={isOffererStatsActive && canSeeStats}
         profileRef={profileRef}
         statsRef={statsRef}
       />
-
       <section className="h-section">
-        <Offerers />
+        <Offerers offererNames={offerersNames} />
       </section>
-      {isOffererStatsActive && (
+      {isOffererStatsActive && canSeeStats && (
         <section className="h-section" ref={statsRef}>
           <OffererStats />
         </section>
       )}
-
       <section className="h-section" ref={profileRef}>
         <ProfileAndSupport />
         <div className="newsletter">

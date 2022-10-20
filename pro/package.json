@@ -42,6 +42,7 @@
   "dependencies": {
     "@firebase/analytics": "^0.8.2",
     "@firebase/app": "^0.8.1",
+    "@firebase/remote-config": "0.3.14",
     "@reach/dialog": "^0.16.2",
     "@reach/menu-button": "^0.15.1",
     "@reduxjs/toolkit": "^1.8.5",
