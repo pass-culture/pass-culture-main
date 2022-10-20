@@ -1,18 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useLocation, useParams } from 'react-router-dom'
+import { Route, Switch, useLocation } from 'react-router-dom'
 
 import Spinner from 'components/layout/Spinner'
 import { CollectiveOffer } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOfferStockEdition from 'routes/CollectiveOfferStockEdition'
 import CollectiveOfferSummary from 'routes/CollectiveOfferSummary'
 import CollectiveOfferVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 
-const CollectiveOfferEditionRoutes = (): JSX.Element => {
-  const { offerId } = useParams<{ offerId: string }>()
+import { getActiveStep } from '../utils/getActiveStep'
+
+interface CollectiveOfferEditionRoutesProps {
+  offerId: string
+}
+
+const CollectiveOfferEditionRoutes = ({
+  offerId,
+}: CollectiveOfferEditionRoutesProps): JSX.Element => {
   const location = useLocation()
   const [offer, setOffer] = useState<CollectiveOffer>()
 
@@ -29,17 +35,6 @@ const CollectiveOfferEditionRoutes = (): JSX.Element => {
 
   if (!offer) {
     return <Spinner />
-  }
-
-  const getActiveStep = (pathname: string) => {
-    if (pathname.includes('stocks')) {
-      return OfferBreadcrumbStep.STOCKS
-    }
-    if (pathname.includes('visibilite')) {
-      return OfferBreadcrumbStep.VISIBILITY
-    }
-
-    return OfferBreadcrumbStep.DETAILS
   }
 
   const isSummaryPage = location.pathname.includes('recapitulatif')
@@ -59,25 +54,25 @@ const CollectiveOfferEditionRoutes = (): JSX.Element => {
       }
     >
       <Switch>
-        <Route path="/offre/:offerId([A-Z0-9]+)/collectif/edition">
+        <Route path="/offre/:offerId/collectif/edition">
           <CollectiveOfferEdition
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>
-        <Route path="/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition">
+        <Route path="/offre/:offerId/collectif/stocks/edition">
           <CollectiveOfferStockEdition
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>
-        <Route path="/offre/:offerId([A-Z0-9]+)/collectif/visibilite/edition">
+        <Route path="/offre/:offerId/collectif/visibilite/edition">
           <CollectiveOfferVisibility
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}
           />
         </Route>
-        <Route path="/offre/:offerId([A-Z0-9]+)/collectif/recapitulatif">
+        <Route path="/offre/:offerId/collectif/recapitulatif">
           <CollectiveOfferSummary
             offer={offer}
             reloadCollectiveOffer={loadCollectiveOffer}

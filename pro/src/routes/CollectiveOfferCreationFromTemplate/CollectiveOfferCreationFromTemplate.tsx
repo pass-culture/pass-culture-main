@@ -12,8 +12,6 @@ import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/ge
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducational from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
@@ -40,7 +38,7 @@ const CollectiveOfferCreationFromTemplate = () => {
     if (!isOk) {
       return notify.error(message)
     }
-    history.push(`/offre/duplication/collectif/${payload.offerId}/stock`)
+    history.push(`/offre/duplication/collectif/${payload.offerId}/stocks`)
   }
 
   useEffect(() => {
@@ -93,20 +91,12 @@ const CollectiveOfferCreationFromTemplate = () => {
   }
 
   return (
-    <CollectiveOfferLayout
-      title="Créer une offre pour un établissement scolaire"
-      breadCrumpProps={{
-        activeStep: OfferBreadcrumbStep.DETAILS,
-        isCreatingOffer: true,
-      }}
-    >
-      <OfferEducational
-        {...screenProps}
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        mode={Mode.CREATION}
-      />
-    </CollectiveOfferLayout>
+    <OfferEducational
+      {...screenProps}
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      mode={Mode.CREATION}
+    />
   )
 }
 
