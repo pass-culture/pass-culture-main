@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 class ResourceBoost(enum.Enum):
     EXAMPLE = "example"
     EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
-    FILMS = "films"
-    SHOWTIMES = "showtimes"
-    SHOWTIME = "showtimes/{id}"
+    FILMS = "api/films"
+    SHOWTIMES = "api/showtimes"
+    SHOWTIME = "api/showtimes/{id}"
 
 
 LOGIN_ENDPOINT = "api/vendors/login"
