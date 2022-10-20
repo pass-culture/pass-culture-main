@@ -18,11 +18,11 @@ class GetVenueMoviesTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/films?page=1&per_page=2",
+            "https://cinema-0.example.com/api/films?page=1&per_page=2",
             json=fixtures.FilmsEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/films?page=2&per_page=2",
+            "https://cinema-0.example.com/api/films?page=2&per_page=2",
             json=fixtures.FilmsEndpointResponse.PAGE_2_JSON_DATA,
         )
         boost = BoostClientAPI(cinema_str_id)
@@ -69,11 +69,11 @@ class GetShowtimesTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/showtimes?page=1&per_page=2",
+            "https://cinema-0.example.com/api/showtimes?page=1&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/showtimes?page=2&per_page=2",
+            "https://cinema-0.example.com/api/showtimes?page=2&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         boost = BoostClientAPI(cinema_str_id)
@@ -169,7 +169,7 @@ class GetShowtimeRemainingSeatsTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/showtimes/35278",
+            "https://cinema-0.example.com/api/showtimes/35278",
             json=fixtures.ShowtimeDetailsEndpointResponse.DATA,
         )
         boost = BoostClientAPI(cinema_str_id)
