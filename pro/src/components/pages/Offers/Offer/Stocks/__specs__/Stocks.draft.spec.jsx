@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -18,6 +19,12 @@ jest.mock('apiClient/api', () => ({
     upsertStocks: jest.fn(),
     listOfferersNames: jest.fn(),
   },
+}))
+jest.mock('utils/date', () => ({
+  ...jest.requireActual('utils/date'),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const renderOffers = async (
@@ -50,8 +57,13 @@ describe('stocks page - Brouillon', () => {
         initialized: true,
       },
       features: {
-        initialized: true,
-        list: [],
+        list: [
+          {
+            isActive: true,
+            name: 'OFFER_DRAFT_ENABLED',
+            nameKey: 'OFFER_DRAFT_ENABLED',
+          },
+        ],
       },
     }
     props = {}
@@ -142,6 +154,37 @@ describe('stocks page - Brouillon', () => {
     it('should render a form with the right title', async () => {
       renderOffers(props, store)
       expect(await screen.findByText("Compléter l'offre")).toBeInTheDocument()
+    })
+
+    it('should save stocks when clicking on save draft button', async () => {
+      // given
+      api.upsertStocks.mockResolvedValue({})
+      api.getStocks.mockResolvedValueOnce({ stocks: [] })
+      renderOffers(props, store)
+
+      await userEvent.click(await screen.findByText('Ajouter un stock'))
+
+      await userEvent.type(screen.getByLabelText('Prix'), '15')
+
+      await userEvent.click(screen.getByLabelText('Date limite de réservation'))
+      await userEvent.click(screen.getByText('22'))
+
+      await userEvent.type(screen.getByLabelText('Quantité'), '15')
+
+      // when
+      await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+
+      // then
+      expect(api.upsertStocks).toHaveBeenCalledWith({
+        offerId: 'AG3A',
+        stocks: [
+          {
+            bookingLimitDatetime: '2020-12-23T02:59:59Z',
+            price: '15',
+            quantity: '15',
+          },
+        ],
+      })
     })
   })
 })
