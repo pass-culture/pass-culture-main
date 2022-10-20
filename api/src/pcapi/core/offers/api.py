@@ -121,7 +121,7 @@ def create_offer(
     user: User,
 ) -> Offer:
     venue = load_or_raise_error(Venue, offer_data.venue_id)
-    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [attr-defined]
+    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     _check_offer_data_is_valid(offer_data)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer_data.subcategory_id]
     if _is_able_to_create_book_offer_from_isbn(subcategory):
@@ -135,11 +135,11 @@ def create_offer(
 
     logger.info(  # type: ignore [call-arg]
         "Offer has been created",
-        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},  # type: ignore [attr-defined]
+        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
         technical_message_id="offer.created",
     )
 
-    update_external_pro(venue.bookingEmail)  # type: ignore [attr-defined]
+    update_external_pro(venue.bookingEmail)
 
     return offer
 

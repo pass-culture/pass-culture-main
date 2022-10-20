@@ -80,7 +80,7 @@ class CollectiveBookingStatusFilter(enum.Enum):
     REIMBURSED = "reimbursed"
 
 
-class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Model):  # type: ignore[valid-type, misc]
+class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Model):
     __tablename__ = "collective_offer"
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
@@ -272,7 +272,9 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         )
 
 
-class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Base, Model):  # type: ignore[valid-type, misc]
+class CollectiveOfferTemplate(
+    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Base, Model
+):
     __tablename__ = "collective_offer_template"
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
@@ -420,7 +422,7 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
         )
 
 
-class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class CollectiveStock(PcObject, Base, Model):
     __tablename__ = "collective_stock"
 
     stockId = sa.Column(sa.BigInteger, nullable=True)
@@ -508,7 +510,7 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         return False
 
 
-class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class EducationalInstitution(PcObject, Base, Model):
     __tablename__ = "educational_institution"
 
     institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
@@ -528,7 +530,7 @@ class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type
     collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="institution")
 
 
-class EducationalYear(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class EducationalYear(PcObject, Base, Model):
     __tablename__ = "educational_year"
 
     adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
@@ -538,7 +540,7 @@ class EducationalYear(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
 
-class EducationalDeposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class EducationalDeposit(PcObject, Base, Model):
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
@@ -583,7 +585,7 @@ class EducationalDeposit(PcObject, Base, Model):  # type: ignore [valid-type, mi
         return
 
 
-class EducationalRedactor(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class EducationalRedactor(PcObject, Base, Model):
 
     __tablename__ = "educational_redactor"
 
@@ -600,7 +602,7 @@ class EducationalRedactor(PcObject, Base, Model):  # type: ignore [valid-type, m
     )
 
 
-class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class CollectiveBooking(PcObject, Base, Model):
     __tablename__ = "collective_booking"
 
     bookingId = sa.Column(sa.BigInteger)
@@ -756,7 +758,7 @@ class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
         )
 
 
-class CollectiveOfferTemplateDomain(Base, Model):  # type: ignore [valid-type, misc]
+class CollectiveOfferTemplateDomain(Base, Model):
     """An association table between CollectiveOfferTemplate and
     EducationalDomain for their many-to-many relationship.
     """
@@ -771,7 +773,7 @@ class CollectiveOfferTemplateDomain(Base, Model):  # type: ignore [valid-type, m
     )
 
 
-class CollectiveOfferDomain(Base, Model):  # type: ignore [valid-type, misc]
+class CollectiveOfferDomain(Base, Model):
     """An association table between CollectiveOffer and
     EducationalDomain for their many-to-many relationship.
     """
@@ -786,7 +788,7 @@ class CollectiveOfferDomain(Base, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class EducationalDomainVenue(Base, Model):  # type: ignore[valid-type, misc]
+class EducationalDomainVenue(Base, Model):
     __tablename__ = "educational_domain_venue"
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
     educationalDomainId: int = sa.Column(
@@ -803,7 +805,7 @@ class EducationalDomainVenue(Base, Model):  # type: ignore[valid-type, misc]
     )
 
 
-class EducationalDomain(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class EducationalDomain(PcObject, Base, Model):
     __tablename__ = "educational_domain"
 
     name: str = sa.Column(sa.Text, nullable=False)

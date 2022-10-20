@@ -54,7 +54,7 @@ class BookFormat(enum.Enum):
 UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
-class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):  # type: ignore [valid-type, misc]
+class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     description = sa.Column(sa.Text, nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
@@ -102,7 +102,7 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
         )
 
 
-class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
+class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
     credit = sa.Column(sa.String(255), nullable=True)
@@ -120,7 +120,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     thumb_path_component = "mediations"
 
 
-class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type: ignore [valid-type, misc]
+class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
     dateCreated: datetime = sa.Column(
@@ -333,7 +333,7 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
-class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):  # type: ignore [valid-type, misc]
+class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
     __tablename__ = "offer"
 
     productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
@@ -620,7 +620,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
             return 0
 
 
-class ActivationCode(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class ActivationCode(PcObject, Base, Model):
     __tablename__ = "activation_code"
 
     code: str = sa.Column(sa.Text, nullable=False)
@@ -644,7 +644,7 @@ class ActivationCode(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class OfferValidationConfig(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class OfferValidationConfig(PcObject, Base, Model):
     __tablename__ = "offer_validation_config"
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
@@ -708,7 +708,7 @@ OR (
 """
 
 
-class OfferReport(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class OfferReport(PcObject, Base, Model):
     __tablename__ = "offer_report"
 
     __table_args__ = (

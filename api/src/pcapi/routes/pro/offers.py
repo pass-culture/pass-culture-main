@@ -182,7 +182,7 @@ def patch_all_offers_active_status(
 )
 def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     offer = rest.load_or_404(Offer, human_id=offer_id)
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)  # type: ignore [attr-defined]
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 

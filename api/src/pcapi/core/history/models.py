@@ -27,7 +27,7 @@ class ActionType(enum.Enum):
     USER_OFFERER_REJECTED = "Rattachement rejeté"
 
 
-class ActionHistory(PcObject, Base, Model, ExtraDataMixin):  # type: ignore [valid-type, misc]
+class ActionHistory(PcObject, Base, Model, ExtraDataMixin):
     """
     This table aims at logging all actions that should appear in a resource history for support, fraud team, etc.
 
