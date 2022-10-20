@@ -100,19 +100,10 @@ export const postThumbnail = (
 //
 // password
 //
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'token' implicitly has an 'any' type.
-export const setPassword = (token, newPassword) => {
-  return client.post('/users/new-password', { token, newPassword })
-}
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'token' implicitly has an 'any' type.
 export const resetPassword = (token, email) => {
   return client.post('/users/reset-password', { token, email })
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'newPassword' implicitly has an 'any' ty... Remove this comment to see the full error message
-export const submitResetPassword = (newPassword, token) => {
-  return client.post('/users/new-password', { newPassword, token })
 }
 
 //
