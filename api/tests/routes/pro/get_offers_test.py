@@ -1,4 +1,3 @@
-import secrets
 from unittest.mock import patch
 
 from pcapi.core import testing
@@ -331,7 +330,7 @@ class Returns404Test:
         # Given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken=secrets.token_urlsafe(20))
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.ThingOfferFactory(venue=venue)
 

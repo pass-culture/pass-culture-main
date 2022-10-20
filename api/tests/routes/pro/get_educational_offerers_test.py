@@ -12,7 +12,7 @@ class GetEducationalOfferersTest:
         pro_user = users_factories.ProFactory()
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
-        not_validated_offerer = offerers_factories.OffererFactory(validationToken="validationToken")
+        not_validated_offerer = offerers_factories.NotValidatedOffererFactory()
         venue_offerer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1, collectiveInterventionArea=None)
         venue_offerer_2 = offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
@@ -75,7 +75,7 @@ class GetEducationalOfferersTest:
         admin_user = users_factories.AdminFactory()
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
-        offerers_factories.OffererFactory(validationToken="validationToken")
+        offerers_factories.NotValidatedOffererFactory()
         offerers_factories.VenueFactory(managingOfferer=offerer_1)
         offerers_factories.VenueFactory(managingOfferer=offerer_2)
 

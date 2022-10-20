@@ -547,7 +547,9 @@ class CreateOffererTest:
         offerer_informations = CreateOffererQueryModel(
             name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
         )
-        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren, validationToken="TOKEN")
+        offerer = offerers_factories.NotValidatedOffererFactory(
+            siren=offerer_informations.siren, validationStatus=offerers_models.ValidationStatus.PENDING
+        )
 
         # When
         created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
@@ -555,7 +557,8 @@ class CreateOffererTest:
         # Then
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer.name
-        assert created_offerer.validationToken == "TOKEN"
+        assert created_offerer.validationToken == offerer.validationToken
+        assert created_offerer.validationStatus == offerers_models.ValidationStatus.PENDING
         assert not created_offerer.isValidated
 
         assert created_user_offerer.userId == user.id
@@ -664,7 +667,7 @@ class ValidateOffererAttachmentTest:
     def test_offerer_attachment_is_validated(self):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
@@ -676,7 +679,7 @@ class ValidateOffererAttachmentTest:
     def test_pro_role_is_added_to_user(self):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
@@ -688,7 +691,7 @@ class ValidateOffererAttachmentTest:
     def test_send_validation_confirmation_email(self, mocked_send_validation_confirmation_email_to_pro):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_attachment_by_token(user_offerer.validationToken)
@@ -699,7 +702,7 @@ class ValidateOffererAttachmentTest:
     def test_do_not_validate_attachment_if_token_does_not_exist(self):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant, validationToken="TOKEN")
 
         # When
         with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
@@ -798,7 +801,7 @@ class ValidateOffererByTokenTest:
     def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
@@ -812,11 +815,9 @@ class ValidateOffererByTokenTest:
     def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
         another_applicant = users_factories.UserFactory()
-        another_user_on_same_offerer = offerers_factories.UserOffererFactory(
-            user=another_applicant, validationToken="TOKEN"
-        )
+        another_user_on_same_offerer = offerers_factories.NotValidatedUserOffererFactory(user=another_applicant)
 
         # When
         offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
@@ -830,7 +831,7 @@ class ValidateOffererByTokenTest:
     def test_managed_venues_are_reindexed(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
         venue_1 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         venue_2 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
@@ -849,7 +850,7 @@ class ValidateOffererByTokenTest:
     ):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_by_token(user_offerer.offerer.validationToken)
@@ -877,7 +878,9 @@ class ValidateOffererByTokenTest:
     def test_do_not_validate_attachment_if_token_does_not_exist(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
+            user=applicant, offerer__validationToken="TOKEN"
+        )
 
         # When
         with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
@@ -911,9 +914,7 @@ class ValidateOffererByIdTest:
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
         another_applicant = users_factories.UserFactory()
-        another_user_on_same_offerer = offerers_factories.UserOffererFactory(
-            user=another_applicant, validationToken="TOKEN"
-        )
+        another_user_on_same_offerer = offerers_factories.NotValidatedUserOffererFactory(user=another_applicant)
 
         # When
         offerers_api.validate_offerer_by_id(user_offerer.offerer.id, admin)
@@ -1420,7 +1421,9 @@ class HasVenueAtLeastOneBookableOfferTest:
 
     @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_managing_offerer_not_validated(self):
-        venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer__validationToken="not_validated_yet")
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True, managingOfferer=offerers_factories.NotValidatedOffererFactory()
+        )
         offers_factories.EventStockFactory(offer__venue=venue)
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)

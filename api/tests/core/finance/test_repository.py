@@ -47,7 +47,7 @@ class GetBusinessUnitsTest:
         venue2 = offerers_factories.VenueFactory(businessUnit=business_unit2)
         offerer2 = venue2.managingOfferer
 
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
         business_units = list(repository.get_business_units_query(pro))
         assert business_units == [business_unit1]
 
@@ -197,7 +197,7 @@ class GetInvoicesQueryTest:
         reimbursement_point3 = offerers_factories.VenueFactory(reimbursement_point="self")
         factories.InvoiceFactory(businessUnit=None, reimbursementPoint=reimbursement_point3, amount=-15000000)
         offerer2 = reimbursement_point3.managingOfferer
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
         invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
@@ -315,7 +315,7 @@ class LegacyGetInvoicesQueryTest:
         factories.InvoiceFactory(businessUnit=business_unit3, amount=-15000000)
         venue3 = offerers_factories.VenueFactory(businessUnit=business_unit3)
         offerer2 = venue3.managingOfferer
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
         invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]

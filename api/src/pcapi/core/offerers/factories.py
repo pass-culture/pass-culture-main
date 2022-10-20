@@ -20,6 +20,7 @@ class OffererFactory(BaseFactory):
     city = "Paris"
     siren = factory.Sequence(lambda n: f"{n + 1:09}")
     isActive = True
+    validationStatus = models.ValidationStatus.VALIDATED
 
 
 class NotValidatedOffererFactory(OffererFactory):
@@ -178,7 +179,7 @@ class UserOffererFactory(BaseFactory):
 
 
 class NotValidatedUserOffererFactory(UserOffererFactory):
-    validationToken = factory.Sequence(lambda n: f"attachment-notvalidated-{n}")
+    validationToken = factory.Sequence(lambda n: f"uo-not-validated-{n}")
     validationStatus = models.ValidationStatus.NEW
 
 

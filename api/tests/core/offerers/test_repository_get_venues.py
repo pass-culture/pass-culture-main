@@ -11,7 +11,7 @@ class GetFilteredVenuesForProUserTest:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(name="owned_venue_validated", managingOfferer=offerer)
 
-        offerer_not_validated = offerers_factories.OffererFactory(validationToken="token")
+        offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer_not_validated)
         venue_not_validated = offerers_factories.VenueFactory(
             name="owned_venue_not_validated", managingOfferer=offerer_not_validated
@@ -26,11 +26,7 @@ class GetFilteredVenuesForProUserTest:
 
         offerer_not_validated_for_user = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer_not_validated_for_user)
-        offerers_factories.UserOffererFactory(
-            user=user,
-            offerer=offerer_not_validated_for_user,
-            validationToken="user_token",
-        )
+        offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer_not_validated_for_user)
         venue_not_validated_for_user = offerers_factories.VenueFactory(
             name="owned_venue_not_validated_for_user",
             managingOfferer=offerer_not_validated_for_user,
@@ -50,7 +46,7 @@ class GetFilteredVenuesForProUserTest:
             managingOfferer=other_offerer,
         )
 
-        other_offerer_not_validated = offerers_factories.OffererFactory(validationToken="other_token")
+        other_offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
         other_venue_not_validated = offerers_factories.VenueFactory(
             name="other_venue_not_validated",
@@ -220,7 +216,7 @@ class GetFilteredVenuesForAdminTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(name="venue", managingOfferer=offerer)
 
-        offerer_not_validated = offerers_factories.OffererFactory(validationToken="token")
+        offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user_offerer.user, offerer=offerer_not_validated)
         venue_not_validated = offerers_factories.VenueFactory(
             name="venue_not_validated", managingOfferer=offerer_not_validated
@@ -230,7 +226,7 @@ class GetFilteredVenuesForAdminTest:
         other_user_offerer = offerers_factories.UserOffererFactory(offerer=other_offerer)
         other_venue = offerers_factories.VenueFactory(name="other_venue", managingOfferer=other_offerer)
 
-        other_offerer_not_validated = offerers_factories.OffererFactory(validationToken="other_token")
+        other_offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
         other_venue_not_validated = offerers_factories.VenueFactory(
             name="other_venue_not_validated",

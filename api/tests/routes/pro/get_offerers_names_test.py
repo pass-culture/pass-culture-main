@@ -12,7 +12,7 @@ class Returns200ForProUserTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        offerer_not_validated = offerers_factories.OffererFactory(validationToken="token")
+        offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer_not_validated)
 
         offerer_validated_for_user = offerers_factories.OffererFactory()
@@ -21,16 +21,12 @@ class Returns200ForProUserTest:
 
         offerer_not_validated_for_user = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer_not_validated_for_user)
-        offerers_factories.UserOffererFactory(
-            user=user,
-            offerer=offerer_not_validated_for_user,
-            validationToken="user_token",
-        )
+        offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer_not_validated_for_user)
 
         other_offerer = offerers_factories.OffererFactory()
         other_user_offerer = offerers_factories.UserOffererFactory(offerer=other_offerer)
 
-        other_offerer_not_validated = offerers_factories.OffererFactory(validationToken="other_token")
+        other_offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
 
         return {
@@ -144,13 +140,13 @@ class Returns200ForAdminTest:
         offerer = offerers_factories.OffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
 
-        offerer_not_validated = offerers_factories.OffererFactory(validationToken="token")
+        offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user_offerer.user, offerer=offerer_not_validated)
 
         other_offerer = offerers_factories.OffererFactory()
         other_user_offerer = offerers_factories.UserOffererFactory(offerer=other_offerer)
 
-        other_offerer_not_validated = offerers_factories.OffererFactory(validationToken="other_token")
+        other_offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
         return {
             "offerer": offerer,

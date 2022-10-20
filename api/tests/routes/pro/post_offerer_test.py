@@ -103,7 +103,7 @@ def test_new_user_offerer_has_validation_token(client):
     # Given
     pro = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
-    offerers_factories.UserOffererFactory(offerer=offerer, validationToken=None)
+    offerers_factories.UserOffererFactory(offerer=offerer)
     offerers_factories.VirtualVenueTypeFactory()
     body = {
         "name": offerer.name,

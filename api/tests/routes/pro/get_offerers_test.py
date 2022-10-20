@@ -30,7 +30,7 @@ def test_access_by_pro(client):
     offerers_factories.UserOffererFactory(offerer=offerer2, user=pro)
     offerers_factories.UserOffererFactory(offerer=inactive, user=pro)
     # Non-validated offerers should not be included.
-    offerers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken="TOKEN")
+    offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer3)
     # Offerer that belongs to another user should not be returned.
     offerers_factories.OffererFactory(name="not returned")
 
