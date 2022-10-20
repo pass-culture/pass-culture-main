@@ -7,14 +7,16 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router'
 
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import SetPassword from '../SetPassword'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  setPassword: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: { postNewPassword: jest.fn() },
 }))
 
 const renderSetPassword = (store, history) =>
@@ -86,7 +88,7 @@ describe('src | components | pages | SetPassword', () => {
     history = createBrowserHistory()
     history.push('/creation-de-mot-de-passe/fakeToken')
     historyPushSpy = jest.spyOn(history, 'push')
-    pcapi.setPassword.mockResolvedValue()
+    api.postNewPassword.mockResolvedValue()
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
@@ -100,12 +102,15 @@ describe('src | components | pages | SetPassword', () => {
     await userEvent.click(submitButton)
 
     // Then
-    expect(pcapi.setPassword).toHaveBeenCalledWith('fakeToken', 'password1')
+    expect(api.postNewPassword).toHaveBeenCalledWith({
+      token: 'fakeToken',
+      newPassword: 'password1',
+    })
   })
 
   it('should display the success message and redirect to login page', async () => {
     // Given
-    pcapi.setPassword.mockResolvedValue()
+    api.postNewPassword.mockResolvedValue()
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
@@ -127,9 +132,15 @@ describe('src | components | pages | SetPassword', () => {
   it('should display the form error', async () => {
     // Given
     const passwordErrorMessage = 'Ton mot de passe est trop faible'
-    pcapi.setPassword.mockRejectedValue({
-      errors: { newPassword: [passwordErrorMessage] },
-    })
+    api.postNewPassword.mockRejectedValue(
+      new ApiError(
+        {},
+        {
+          body: { newPassword: [passwordErrorMessage] },
+        },
+        ''
+      )
+    )
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
@@ -157,9 +168,15 @@ describe('src | components | pages | SetPassword', () => {
 
   it('should display the token error', async () => {
     // Given
-    pcapi.setPassword.mockRejectedValue({
-      errors: { token: ['token problem'] },
-    })
+    api.postNewPassword.mockRejectedValue(
+      new ApiError(
+        {},
+        {
+          body: { token: ['token problem'] },
+        },
+        ''
+      )
+    )
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(
@@ -180,9 +197,15 @@ describe('src | components | pages | SetPassword', () => {
 
   it('should display the unknown error', async () => {
     // Given
-    pcapi.setPassword.mockRejectedValue({
-      errors: { unknownField: ['unknown problem'] },
-    })
+    api.postNewPassword.mockRejectedValue(
+      new ApiError(
+        {},
+        {
+          body: { unknownField: ['unknown problem'] },
+        },
+        ''
+      )
+    )
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
     const confirmationPasswordInput = screen.getByLabelText(

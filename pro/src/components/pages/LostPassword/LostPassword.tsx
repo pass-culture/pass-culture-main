@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
@@ -57,8 +58,8 @@ const LostPassword = (): JSX.Element => {
 
   const submitChangePassword = (values: Record<string, string>) => {
     const { newPasswordValue } = values
-    pcapi
-      .submitResetPassword(newPasswordValue, token)
+    api
+      .postNewPassword({ newPassword: newPasswordValue, token })
       .then(() => setPasswordChanged(true))
       .catch(() => {
         notification.error(
