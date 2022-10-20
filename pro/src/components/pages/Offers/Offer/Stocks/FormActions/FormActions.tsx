@@ -1,7 +1,10 @@
 import React from 'react'
 
+import useActiveFeature from 'hooks/useActiveFeature'
+import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
+import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { SubmitButton } from 'ui-kit'
-import { ButtonLink } from 'ui-kit/Button'
+import { Button, ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 interface IFormActionsProps {
@@ -11,6 +14,7 @@ interface IFormActionsProps {
   isSubmiting: boolean
   onSubmit: () => void
   onCancelClick?: () => void
+  onSubmitDraft: () => void
 }
 
 const FormActions = ({
@@ -19,8 +23,13 @@ const FormActions = ({
   canSubmit,
   isSubmiting,
   onSubmit,
+  onSubmitDraft,
   onCancelClick,
 }: IFormActionsProps): JSX.Element => {
+  const isCreation = useIsCreation()
+  const isCompletingDraft = useIsCompletingDraft()
+  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
+
   return (
     <>
       {cancelUrl && (
@@ -33,13 +42,25 @@ const FormActions = ({
         </ButtonLink>
       )}
 
-      <SubmitButton
-        disabled={!canSubmit}
-        isLoading={isSubmiting}
-        onClick={onSubmit}
-      >
-        {isDraft ? 'Étape suivante' : 'Enregistrer les modifications'}
-      </SubmitButton>
+      <div>
+        {(isCreation || isCompletingDraft) && isDraftEnabled && (
+          <Button
+            disabled={!canSubmit}
+            onClick={onSubmitDraft}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Sauvegarder le brouillon
+          </Button>
+        )}
+
+        <SubmitButton
+          disabled={!canSubmit}
+          isLoading={isSubmiting}
+          onClick={onSubmit}
+        >
+          {isDraft ? 'Étape suivante' : 'Enregistrer les modifications'}
+        </SubmitButton>
+      </div>
     </>
   )
 }

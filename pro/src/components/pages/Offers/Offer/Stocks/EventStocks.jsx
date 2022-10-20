@@ -185,8 +185,10 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     })
   }
 
+  const submitDraft = e => submitStocks(e, true)
+
   const submitStocks = useCallback(
-    e => {
+    (e, isSavingDraft = false) => {
       e.preventDefault()
       const updatedStocks = existingStocks.filter(stock => stock.updated)
       if (areValid([...stocksInCreation, ...updatedStocks], offer.isEvent)) {
@@ -228,22 +230,25 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
                 isEdition: !isOfferDraft,
               })
+              if (isSavingDraft)
+                notification.success(
+                  'Brouillon sauvegardé dans la liste des offres'
+                )
             } else {
               await loadStocks()
               await reloadOffer()
               notification.success(
                 'Vos modifications ont bien été enregistrées'
               )
-              setIsSendingStocksOfferCreation(false)
             }
-            history.push(`${summaryStepUrl}${queryString}`)
+            if (!isSavingDraft) history.push(`${summaryStepUrl}${queryString}`)
           })
           .catch(() => {
             notification.error(
               'Une ou plusieurs erreurs sont présentes dans le formulaire.'
             )
-            setIsSendingStocksOfferCreation(false)
           })
+          .finally(() => setIsSendingStocksOfferCreation(false))
       }
     },
     [
@@ -383,6 +388,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               isDraft={isOfferDraft}
               isSubmiting={isSendingStocksOfferCreation}
               onSubmit={submitStocks}
+              onSubmitDraft={submitDraft}
               onCancelClick={onCancelClick}
             />
           </section>
