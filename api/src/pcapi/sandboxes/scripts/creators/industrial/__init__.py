@@ -87,8 +87,8 @@ def save_industrial_sandbox() -> None:
     # Now that they booked, we can expire these users' deposit.
     for name, user in users_by_name.items():
         if "has-booked-some-but-deposit-expired" in name:
-            if user.deposit:
-                user.deposit.expirationDate = datetime.utcnow()
+            assert user.deposit  # helps mypy
+            user.deposit.expirationDate = datetime.utcnow()
             repository.save(user.deposit)
 
     create_industrial_invoices()
