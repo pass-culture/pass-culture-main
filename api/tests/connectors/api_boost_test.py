@@ -25,7 +25,7 @@ class BoostBuildUrlTest:
 class BoostLoginTest:
     def test_login(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema.example.com/")
-        response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        response_json = {"message": "Login successful", "token": "new-token"}
         requests_mock.post("https://cinema.example.com/api/vendors/login", json=response_json)
 
         token = boost.login(cinema_details)
