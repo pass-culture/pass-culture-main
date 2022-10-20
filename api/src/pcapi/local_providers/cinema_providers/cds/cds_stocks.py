@@ -72,7 +72,7 @@ class CDSStocks(LocalProvider):
 
         return providable_information_list
 
-    def fill_object_attributes(self, pc_object: Model) -> None:  # type: ignore [valid-type]
+    def fill_object_attributes(self, pc_object: Model) -> None:
         if isinstance(pc_object, Product):
             self.fill_product_attributes(pc_object)
 

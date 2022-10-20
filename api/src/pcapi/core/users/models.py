@@ -61,7 +61,7 @@ class TokenExtraData:
     phone_number: str | None
 
 
-class Token(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Token(PcObject, Base, Model):
     __tablename__ = "token"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
@@ -170,7 +170,7 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
-class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
+class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     __tablename__ = "user"
 
     activity = sa.Column(sa.String(128), nullable=True)
@@ -578,7 +578,7 @@ class DomainsCredit:
     physical: Credit | None = None
 
 
-class Favorite(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Favorite(PcObject, Base, Model):
     __tablename__ = "favorite"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
@@ -616,7 +616,7 @@ class EmailHistoryEventTypeEnum(enum.Enum):
     ADMIN_UPDATE_REQUEST = "ADMIN_UPDATE_REQUEST"
 
 
-class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class UserEmailHistory(PcObject, Base, Model):
     __tablename__ = "user_email_history"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
@@ -679,7 +679,7 @@ class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 
 
-class UserSuspension(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class UserSuspension(PcObject, Base, Model):
     __tablename__ = "user_suspension"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
@@ -705,6 +705,6 @@ class UserSuspension(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     reasonCode = sa.Column(sa.Enum(SuspensionReason), nullable=True)
 
 
-class UserSession(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)
     uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)

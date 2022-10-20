@@ -60,7 +60,7 @@ class BookingExportType(enum.Enum):
     EXCEL = "excel"
 
 
-class IndividualBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class IndividualBooking(PcObject, Base, Model):
     __tablename__ = "individual_booking"
 
     userId: int = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
@@ -84,7 +84,7 @@ class IndividualBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
     )
 
 
-class ExternalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class ExternalBooking(PcObject, Base, Model):
     bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
     booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")  # type: ignore [misc]
@@ -94,7 +94,7 @@ class ExternalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     seat = Column(String)
 
 
-class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Booking(PcObject, Base, Model):
     __tablename__ = "booking"
 
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)

@@ -26,7 +26,7 @@ class ImportStatus(enum.Enum):
     WITHOUT_CONTINUATION = "WITHOUT_CONTINUATION"
 
 
-class BeneficiaryImportStatus(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class BeneficiaryImportStatus(PcObject, Base, Model):
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 

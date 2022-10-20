@@ -130,7 +130,7 @@ def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_seria
 def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venues_serialize.GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
 
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     not_venue_fields = {
         "isAccessibilityAppliedOnAllOffers",
         "isEmailAppliedOnAllOffers",
@@ -149,7 +149,7 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
         (field in update_venue_attrs and update_venue_attrs[field] != venue_attrs[field])
         for field in accessibility_fields
     )
-    have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails  # type: ignore [attr-defined]
+    have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
     venue = offerers_api.update_venue(venue, contact_data=body.contact, **update_venue_attrs)
     venue_attrs = as_dict(venue)
 
@@ -190,7 +190,7 @@ def link_venue_to_pricing_point(venue_id: str, body: venues_serialize.LinkVenueT
     if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
         raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
     venue = load_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         offerers_api.link_venue_to_pricing_point(venue, body.pricingPointId)
     except exceptions.CannotLinkVenueToPricingPoint as exc:
@@ -203,7 +203,7 @@ def link_venue_to_pricing_point(venue_id: str, body: venues_serialize.LinkVenueT
 def upsert_venue_banner(venue_id: str) -> venues_serialize.GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
 
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
         venue_banner = venues_serialize.VenueBannerContentModel.from_request(request)
@@ -234,7 +234,7 @@ def upsert_venue_banner(venue_id: str) -> venues_serialize.GetVenueResponseModel
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_banner(venue_id: str) -> None:
     venue = load_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     offerers_api.delete_venue_banner(venue)
 

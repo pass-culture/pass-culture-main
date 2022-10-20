@@ -144,7 +144,7 @@ class FeatureToggle(enum.Enum):
         return value
 
 
-class Feature(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
+class Feature(PcObject, Base, Model, DeactivableMixin):
     name: str = Column(Text, unique=True, nullable=False)
     description: str = Column(String(300), nullable=False)
 

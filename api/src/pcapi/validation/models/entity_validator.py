@@ -19,7 +19,7 @@ from pcapi.validation.models import venue
 from pcapi.validation.models.generic import validate_generic
 
 
-def validate(model: Model) -> ApiErrors:  # type: ignore [valid-type]
+def validate(model: Model) -> ApiErrors:
     api_errors = validate_generic(model)
 
     if api_errors.errors:

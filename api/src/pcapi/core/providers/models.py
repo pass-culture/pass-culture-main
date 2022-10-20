@@ -35,7 +35,7 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 
 
-class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
+class Provider(PcObject, Base, Model, DeactivableMixin):
     name: str = Column(String(90), index=True, nullable=False)
 
     localClass = Column(
@@ -83,7 +83,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-
         )
 
 
-class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
+class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
     """Stores specific sync settings for a Venue, and whether it is active"""
 
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
@@ -148,7 +148,7 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):  
         )
 
 
-class CinemaProviderPivot(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class CinemaProviderPivot(PcObject, Base, Model):
     """Stores whether a Venue has requested to be synced with a Provider"""
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
@@ -170,7 +170,7 @@ class CinemaProviderPivot(PcObject, Base, Model):  # type: ignore [valid-type, m
     )
 
 
-class CDSCinemaDetails(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class CDSCinemaDetails(PcObject, Base, Model):
     """Stores info on the specific login details of a cinema synced with CDS"""
 
     cinemaProviderPivotId = Column(
@@ -200,7 +200,7 @@ class AllocineVenueProvider(VenueProvider):
     }
 
 
-class AllocineVenueProviderPriceRule(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class AllocineVenueProviderPriceRule(PcObject, Base, Model):
     priceRule: PriceRule = Column(Enum(PriceRule), nullable=False)
 
     allocineVenueProviderId: int = Column(
@@ -254,7 +254,7 @@ class StockDetail:
     price: float | None
 
 
-class AllocinePivot(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class AllocinePivot(PcObject, Base, Model):
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue = relationship(Venue, foreign_keys=[venueId])  # type: ignore [misc]
@@ -264,7 +264,7 @@ class AllocinePivot(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     internalId: str = Column(Text, nullable=False, unique=True)
 
 
-class AllocineTheater(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class AllocineTheater(PcObject, Base, Model):
     siret = Column(String(14), nullable=True, unique=True)
 
     theaterId: str = Column(String(20), nullable=False, unique=True)
@@ -282,7 +282,7 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-class LocalProviderEvent(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class LocalProviderEvent(PcObject, Base, Model):
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
     provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
     date: datetime.datetime = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -290,7 +290,7 @@ class LocalProviderEvent(PcObject, Base, Model):  # type: ignore [valid-type, mi
     payload = Column(String(50), nullable=True)
 
 
-class BoostCinemaDetails(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class BoostCinemaDetails(PcObject, Base, Model):
     """Stores info on the specific login details of a cinema synced with Boost"""
 
     cinemaProviderPivotId = Column(

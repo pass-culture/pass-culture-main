@@ -401,7 +401,7 @@ class FraudCheckStatus(enum.Enum):
     SUSPICIOUS = "suspiscious"
 
 
-class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class BeneficiaryFraudCheck(PcObject, Base, Model):
     __tablename__ = "beneficiary_fraud_check"
 
     dateCreated: datetime.datetime = sa.Column(
@@ -465,7 +465,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type,
         return [self.eligibilityType] if self.eligibilityType else []
 
 
-class OrphanDmsApplication(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class OrphanDmsApplication(PcObject, Base, Model):
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
     application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
@@ -479,7 +479,7 @@ class OrphanDmsApplication(PcObject, Base, Model):  # type: ignore [valid-type, 
     process_id = sa.Column(sa.BigInteger)
 
 
-class BeneficiaryFraudReview(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class BeneficiaryFraudReview(PcObject, Base, Model):
     __tablename__ = "beneficiary_fraud_review"
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")  # type: ignore [misc]

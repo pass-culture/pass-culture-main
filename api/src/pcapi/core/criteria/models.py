@@ -5,7 +5,7 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 
-class Criterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Criterion(PcObject, Base, Model):
     name: str = sqla.Column(sqla.String(140), nullable=False, unique=True)
     description = sqla.Column(sqla.Text, nullable=True)
     startDateTime = sqla.Column(sqla.DateTime, nullable=True)
@@ -15,7 +15,7 @@ class Criterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         return self.name
 
 
-class VenueCriterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class VenueCriterion(PcObject, Base, Model):
     venueId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
     )
@@ -32,7 +32,7 @@ class VenueCriterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class OfferCriterion(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class OfferCriterion(PcObject, Base, Model):
     __table_name__ = "offer_criterion"
     offerId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False

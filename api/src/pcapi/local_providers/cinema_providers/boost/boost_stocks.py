@@ -10,5 +10,5 @@ class BoostStocks(LocalProvider):
     def __next__(self) -> list[ProvidableInfo]:
         pass
 
-    def fill_object_attributes(self, pc_object: Model) -> None:  # type: ignore [valid-type]
+    def fill_object_attributes(self, pc_object: Model) -> None:
         pass

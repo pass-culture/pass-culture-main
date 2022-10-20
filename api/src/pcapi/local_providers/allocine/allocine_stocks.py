@@ -99,7 +99,7 @@ class AllocineStocks(LocalProvider):
 
         return providable_information_list
 
-    def fill_object_attributes(self, pc_object: Model):  # type: ignore [no-untyped-def, valid-type]
+    def fill_object_attributes(self, pc_object: Model) -> None:
         if isinstance(pc_object, Product):
             self.fill_product_attributes(pc_object)
 

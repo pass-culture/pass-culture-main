@@ -140,7 +140,7 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 )
 
 
-class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
+class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
     name: str = Column(String(140), nullable=False)
@@ -437,7 +437,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         )
 
 
-class VenueLabel(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class VenueLabel(PcObject, Base, Model):
     __tablename__ = "venue_label"
 
     label: str = Column(String(100), nullable=False)
@@ -445,13 +445,13 @@ class VenueLabel(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     venue = relationship(Venue, back_populates="venueLabel", uselist=False)
 
 
-class VenueType(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class VenueType(PcObject, Base, Model):
     label: str = Column(String(100), nullable=False)
 
     venue = relationship("Venue", back_populates="venueType")  # type: ignore [misc]
 
 
-class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class VenueContact(PcObject, Base, Model):
     __tablename__ = "venue_contact"
 
     venueId: int = Column(
@@ -514,7 +514,7 @@ ts_indexes = [
 (Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
 
 
-class VenuePricingPointLink(Base, Model):  # type: ignore [valid-type, misc]
+class VenuePricingPointLink(Base, Model):
     """At any given time, the bookings of a venue are priced against a
     particular venue that we call the "pricing point" of the venue.
     There should only ever be one pricing point for each venue, but
@@ -545,7 +545,7 @@ class VenuePricingPointLink(Base, Model):  # type: ignore [valid-type, misc]
         super().__init__(**kwargs)
 
 
-class VenueReimbursementPointLink(Base, Model):  # type: ignore [valid-type, misc]
+class VenueReimbursementPointLink(Base, Model):
     """At any given time, all bookings of a venue are reimbursed to a bank
     account that is attached to a particular venue that we call the
     "reimbursement point" of the venue. It may be the venue itself or
@@ -575,7 +575,7 @@ class VenueReimbursementPointLink(Base, Model):  # type: ignore [valid-type, mis
         super().__init__(**kwargs)
 
 
-class VenueEducationalStatus(Base, Model):  # type: ignore [valid-type, misc]
+class VenueEducationalStatus(Base, Model):
     __tablename__ = "venue_educational_status"
     id: int = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name: str = Column(String(256), nullable=False)
@@ -585,7 +585,7 @@ class VenueEducationalStatus(Base, Model):  # type: ignore [valid-type, misc]
 class Offerer(
     PcObject,
     Base,
-    Model,  # type: ignore [valid-type, misc]
+    Model,
     HasThumbMixin,
     HasAddressMixin,
     ProvidableMixin,
@@ -709,7 +709,7 @@ offerer_ts_indexes = [
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
 
 
-class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusMixin):  # type: ignore [valid-type, misc]
+class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusMixin):
     __table_name__ = "user_offerer"
     userId: int = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
     user = relationship("User", foreign_keys=[userId], back_populates="UserOfferers")  # type: ignore [misc]
@@ -725,7 +725,7 @@ class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusM
     )
 
 
-class ApiKey(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class ApiKey(PcObject, Base, Model):
     # FIXME (dbaty, 2022-10-25): remove column once v211 is deployed
     value = Column(CHAR(64), index=True, nullable=True)
 
@@ -743,7 +743,7 @@ class ApiKey(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         return crypto.check_password(clear_text, self.secret)
 
 
-class OffererTag(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class OffererTag(PcObject, Base, Model):
     """
     Tags on offerers are only used in backoffice, set to help for filtering and analytics in metabase.
     There is currently no display or impact in mobile and web apps.
@@ -759,7 +759,7 @@ class OffererTag(PcObject, Base, Model):  # type: ignore [valid-type, misc]
         return "%s" % self.name
 
 
-class OffererTagMapping(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class OffererTagMapping(PcObject, Base, Model):
     __tablename__ = "offerer_tag_mapping"
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)

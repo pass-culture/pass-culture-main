@@ -39,7 +39,7 @@ class DepositType(enum.Enum):
     GRANT_18 = "GRANT_18"
 
 
-class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Deposit(PcObject, Base, Model):
     amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=False)
 
     userId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
@@ -115,7 +115,7 @@ class RecreditType(enum.Enum):
     MANUAL_MODIFICATION = "ManualModification"
 
 
-class Recredit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Recredit(PcObject, Base, Model):
     depositId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("deposit.id"), nullable=False)
 
     deposit: Deposit = sqla_orm.relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")
@@ -183,7 +183,7 @@ class BankInformationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
-class BankInformation(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class BankInformation(PcObject, Base, Model):
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
     offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False)
@@ -199,7 +199,7 @@ class BankInformation(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
 
 
-class BusinessUnit(Base, Model):  # type: ignore [valid-type, misc]
+class BusinessUnit(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name = sqla.Column(sqla.Text)
     siret = sqla.Column(sqla.String(14), unique=True)
@@ -220,7 +220,7 @@ class BusinessUnit(Base, Model):  # type: ignore [valid-type, misc]
     invoices: list["Invoice"] = sqla_orm.relationship("Invoice", back_populates="businessUnit")
 
 
-class BusinessUnitVenueLink(Base, Model):  # type: ignore [valid-type, misc]
+class BusinessUnitVenueLink(Base, Model):
     """Represent the period of time during which a venue was linked to a
     specific business unit.
     """
@@ -251,7 +251,7 @@ class BusinessUnitVenueLink(Base, Model):  # type: ignore [valid-type, misc]
         super().__init__(**kwargs)
 
 
-class Pricing(Base, Model):  # type: ignore [valid-type, misc]
+class Pricing(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     status: PricingStatus = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
@@ -336,7 +336,7 @@ class Pricing(Base, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class PricingLine(Base, Model):  # type: ignore [valid-type, misc]
+class PricingLine(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
@@ -348,7 +348,7 @@ class PricingLine(Base, Model):  # type: ignore [valid-type, misc]
     category: PricingLineCategory = sqla.Column(db_utils.MagicEnum(PricingLineCategory), nullable=False)
 
 
-class PricingLog(Base, Model):  # type: ignore [valid-type, misc]
+class PricingLog(Base, Model):
     """A pricing log is created whenever the status of a pricing
     changes.
     """
@@ -420,7 +420,7 @@ class ReimbursementRule:
         raise NotImplementedError()
 
 
-class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [valid-type, misc]
+class CustomReimbursementRule(ReimbursementRule, Base, Model):
     """Some offers are linked to custom reimbursement rules that overrides
     standard reimbursement rules.
 
@@ -511,7 +511,7 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [
         return RuleGroup.CUSTOM
 
 
-class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
+class Cashflow(Base, Model):
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
 
@@ -566,7 +566,7 @@ class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
 
-class CashflowLog(Base, Model):  # type: ignore [valid-type, misc]
+class CashflowLog(Base, Model):
     """A cashflow log is created whenever the status of a cashflow
     changes.
     """
@@ -580,7 +580,7 @@ class CashflowLog(Base, Model):  # type: ignore [valid-type, misc]
     details = sqla.Column(db_utils.SafeJsonB, nullable=True, default={}, server_default="{}")
 
 
-class CashflowPricing(Base, Model):  # type: ignore [valid-type, misc]
+class CashflowPricing(Base, Model):
     """An association table between cashflows and pricings for their
     many-to-many relationship.
 
@@ -606,7 +606,7 @@ class CashflowPricing(Base, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class CashflowBatch(Base, Model):  # type: ignore [valid-type, misc]
+class CashflowBatch(Base, Model):
     """A cashflow batch groups cashflows that are sent to the bank at the
     same time (in a single file).
     """
@@ -617,7 +617,7 @@ class CashflowBatch(Base, Model):  # type: ignore [valid-type, misc]
     label: str = sqla.Column(sqla.Text, nullable=False, unique=True)
 
 
-class InvoiceLine(Base, Model):  # type: ignore [valid-type, misc]
+class InvoiceLine(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
     invoice: "Invoice" = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
@@ -653,7 +653,7 @@ class InvoiceLineGroup:
     reimbursed_amount_subtotal: float
 
 
-class Invoice(Base, Model):  # type: ignore [valid-type, misc]
+class Invoice(Base, Model):
     """An invoice is linked to one or more cashflows and shows a summary
     of their related pricings.
     """
@@ -695,7 +695,7 @@ class Invoice(Base, Model):  # type: ignore [valid-type, misc]
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 
-class InvoiceCashflow(Base, Model):  # type: ignore [valid-type, misc]
+class InvoiceCashflow(Base, Model):
     """An association table between invoices and cashflows for their many-to-many relationship."""
 
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, primary_key=True)
@@ -714,7 +714,7 @@ class InvoiceCashflow(Base, Model):  # type: ignore [valid-type, misc]
 # were used in the "old" reimbursement system. No new data is created
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
-class Payment(Base, Model):  # type: ignore [valid-type, misc]
+class Payment(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: "bookings_models.Booking" = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
@@ -789,7 +789,7 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(Base, Model):  # type: ignore [misc, valid-type]
+class PaymentStatus(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
     payment: Payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
@@ -802,7 +802,7 @@ class PaymentStatus(Base, Model):  # type: ignore [misc, valid-type]
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
-class PaymentMessage(Base, Model):  # type: ignore [valid-type, misc]
+class PaymentMessage(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name: str = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum: bytes = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)

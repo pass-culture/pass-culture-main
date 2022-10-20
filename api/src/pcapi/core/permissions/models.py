@@ -79,7 +79,7 @@ role_permission_table = sa.Table(
 )
 
 
-class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Permission(PcObject, Base, Model):
     __tablename__ = "permission"
 
     name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
@@ -89,7 +89,7 @@ class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class Role(PcObject, Base, Model):  # type: ignore [valid-type, misc]
+class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
