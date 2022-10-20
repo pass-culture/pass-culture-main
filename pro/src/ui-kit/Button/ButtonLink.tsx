@@ -44,12 +44,16 @@ const ButtonLink = ({
   )
   const renderBody = () => (
     <>
-      {Icon && iconPosition !== IconPositionEnum.RIGHT && (
-        <Icon className={styles['button-icon']} />
-      )}
+      {
+        /* istanbul ignore next: graphic variation */
+        Icon && iconPosition !== IconPositionEnum.RIGHT && (
+          <Icon className={styles['button-icon']} />
+        )
+      }
       {hasTooltip ? (
         <div
           className={styles.tooltip}
+          data-testid="tooltip"
           ref={tooltipRef}
           style={{ marginTop: tooltipMargin }}
         >
@@ -58,39 +62,41 @@ const ButtonLink = ({
       ) : (
         children
       )}
-      {Icon && iconPosition === IconPositionEnum.RIGHT && (
-        <Icon className={styles['button-icon']} />
-      )}
+      {
+        /* istanbul ignore next: graphic variation */
+        Icon && iconPosition === IconPositionEnum.RIGHT && (
+          <Icon className={styles['button-icon']} />
+        )
+      }
     </>
   )
   const { to, isExternal, ...linkProps } = link
+
   const callback: MouseEventHandler<HTMLAnchorElement> = e =>
     isDisabled ? e.preventDefault() : onClick?.(e)
+
+  const disabled = isDisabled
+    ? {
+        'aria-disabled': true,
+      }
+    : {}
 
   return isExternal ? (
     <a
       className={classNames}
       href={to}
       onClick={callback}
-      {...(isDisabled
-        ? {
-            'aria-disabled': true,
-          }
-        : {})}
+      {...disabled}
       {...linkProps}
     >
       {renderBody()}
     </a>
   ) : (
-    /* istanbul ignore next : no need to test react navigation */ <Link
+    /* istanbul ignore next: graphic variation */ <Link
       className={classNames}
       onClick={callback}
       to={to}
-      {...(isDisabled
-        ? {
-            'aria-disabled': true,
-          }
-        : {})}
+      {...disabled}
     >
       {renderBody()}
     </Link>
