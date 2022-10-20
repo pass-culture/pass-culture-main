@@ -3,8 +3,7 @@ import { useHistory } from 'react-router'
 
 import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
 import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import TooltipWrapper from 'ui-kit/TooltipWrapper'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import styles from '../../OfferItem.module.scss'
 
@@ -35,21 +34,16 @@ const DuplicateOfferCell = ({
     <>
       <td className={styles['duplicate-offer-column']}>
         {isTemplate ? (
-          <TooltipWrapper
-            delay={0}
-            title="Créer une offre réservable pour un établissement"
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            className={styles['button']}
+            onClick={() => setIsModalOpen(true)}
+            Icon={PlusIcon}
+            iconPosition={IconPositionEnum.CENTER}
+            hasTooltip
           >
-            <Button
-              variant={ButtonVariant.SECONDARY}
-              className={styles['button']}
-              onClick={() => setIsModalOpen(true)}
-            >
-              <PlusIcon
-                className={styles['button-icon']}
-                title="Créer une offre réservable pour un établissement"
-              />
-            </Button>
-          </TooltipWrapper>
+            Créer une offre réservable pour un établissement
+          </Button>
         ) : null}
         {isModalOpen && shouldDisplayModal && (
           <DuplicateOfferDialog
