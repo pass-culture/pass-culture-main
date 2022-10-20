@@ -1,23 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useLocation, useParams } from 'react-router-dom'
+import { Route, Switch, useLocation } from 'react-router-dom'
 
 import Spinner from 'components/layout/Spinner'
-import {
-  CollectiveOfferTemplate,
-  extractOfferIdAndOfferTypeFromRouteParams,
-} from 'core/OfferEducational'
+import { CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferTemplateSummary from 'routes/CollectiveOfferTemplateSummary'
 
+import { getActiveStep } from '../utils/getActiveStep'
+
+interface CollectiveOfferTemplateRoutesProps {
+  offerId: string
+}
+
 /* istanbul ignore next: DEBT, TO FIX */
-const CollectiveOfferTemplateEditionRoutes = (): JSX.Element => {
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
-  const { offerId } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
+const CollectiveOfferTemplateEditionRoutes = ({
+  offerId,
+}: CollectiveOfferTemplateRoutesProps): JSX.Element => {
   const location = useLocation()
   const [offer, setOffer] = useState<CollectiveOfferTemplate>()
 
@@ -36,14 +38,6 @@ const CollectiveOfferTemplateEditionRoutes = (): JSX.Element => {
     return <Spinner />
   }
 
-  const getActiveStep = (pathname: string) => {
-    if (pathname.includes('stocks')) {
-      return OfferBreadcrumbStep.STOCKS
-    }
-
-    return OfferBreadcrumbStep.DETAILS
-  }
-
   const isSummaryPage = location.pathname.includes('recapitulatif')
 
   return (
@@ -56,7 +50,7 @@ const CollectiveOfferTemplateEditionRoutes = (): JSX.Element => {
           ? undefined
           : {
               activeStep: getActiveStep(location.pathname),
-              offerId: `T-${offer.id}`,
+              offerId: computeURLCollectiveOfferId(offerId, true),
               isCreatingOffer: false,
             }
       }

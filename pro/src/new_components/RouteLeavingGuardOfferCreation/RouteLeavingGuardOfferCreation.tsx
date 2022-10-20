@@ -20,9 +20,9 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/creation\/collectif/g,
   [STEP_STOCKS]: /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/stocks/g,
   [STEP_VISIBILITY]:
-    /\/offre(\/duplication)?\/((T-){0,1}[A-Z0-9]+)\/collectif\/visibilite/g,
+    /\/offre(\/([A-Z0-9]+|duplication))\/collectif(\/[A-Z,0-9]+)?\/visibilite/g,
   [STEP_CONFIRMATION]:
-    /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/confirmation/g,
+    /\/offre\/(((T-){0,1}[A-Z0-9]+)|duplication)\/collectif(\/[A-Z,0-9]+)?\/confirmation/g,
 }
 
 export interface RouteLeavingGuardOfferCreationProps {

@@ -14,8 +14,6 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
@@ -79,29 +77,19 @@ const OfferEducationalCreation = (): JSX.Element => {
     }
   }, [isReady, venueId, offererId])
 
-  return (
-    <CollectiveOfferLayout
-      breadCrumpProps={{
-        activeStep: OfferBreadcrumbStep.DETAILS,
-        isCreatingOffer: true,
-      }}
-      title="Créer une offre collective"
-    >
-      {isReady && screenProps ? (
-        <>
-          <OfferEducationalScreen
-            {...screenProps}
-            getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
-            initialValues={initialValues}
-            mode={Mode.CREATION}
-            onSubmit={createOffer}
-          />
-          <RouteLeavingGuardOfferCreation isCollectiveFlow />
-        </>
-      ) : (
-        <Spinner />
-      )}
-    </CollectiveOfferLayout>
+  return isReady && screenProps ? (
+    <>
+      <OfferEducationalScreen
+        {...screenProps}
+        getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
+        initialValues={initialValues}
+        mode={Mode.CREATION}
+        onSubmit={createOffer}
+      />
+      <RouteLeavingGuardOfferCreation isCollectiveFlow />
+    </>
+  ) : (
+    <Spinner />
   )
 }
 
