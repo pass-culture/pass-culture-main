@@ -18,6 +18,11 @@ on:
         required: true
         type: string
 
+      base_ref_is_a_branch:
+        required: false
+        type: boolean
+        default: false
+
 env:
   DOCKER_REGISTRY_PROJECT_ID: passculture-infra-prod
   DOCKER_REGISTRY_REGION: europe-west1
@@ -110,7 +115,6 @@ jobs:
           git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
           git push origin "$TAG_NAME"
 
-      - name: Push back to base ref
-        # In case the base ref is a branch (hotfix workflow for example)
-        run: |
-          git push origin "${{ inputs.base_ref }}"
+      - name: Push tag to base ref
+        if: ${{ inputs.base_ref_is_a_branch }}
+        run: git push origin "${{ inputs.base_ref }}"
