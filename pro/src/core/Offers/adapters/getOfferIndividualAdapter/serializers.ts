@@ -104,8 +104,15 @@ export const serializeOfferApiImage = (
       return {
         originalUrl: mediation.thumbUrl,
         url: mediation.thumbUrl,
-        credit: mediation.credit || '',
+        credit: mediation?.credit || '',
       }
+    }
+  } else if (apiOffer.thumbUrl) {
+    // synchronized offers have thumbUrl but no mediation
+    return {
+      originalUrl: apiOffer.thumbUrl,
+      url: apiOffer.thumbUrl,
+      credit: '',
     }
   }
   return undefined

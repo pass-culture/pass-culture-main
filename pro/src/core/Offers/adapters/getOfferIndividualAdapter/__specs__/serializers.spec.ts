@@ -158,7 +158,7 @@ describe('serializer', () => {
     },
   ]
   it.each(serializeOfferApiImageDataSet)(
-    'serializeOfferApiImage',
+    'serializeOfferApiImage from mediation',
     ({ mediations, expectedImage }) => {
       const offerApi = {
         mediations,
@@ -167,6 +167,18 @@ describe('serializer', () => {
       expect(serializeOfferApiImage(offerApi)).toEqual(expectedImage)
     }
   )
+  it('serializeOfferApiImage from thumbUrl', () => {
+    const offerApi = {
+      thumbUrl: 'http://image.url',
+      mediations: [],
+    } as unknown as GetIndividualOfferResponseModel
+
+    expect(serializeOfferApiImage(offerApi)).toEqual({
+      originalUrl: 'http://image.url',
+      url: 'http://image.url',
+      credit: '',
+    })
+  })
   it('serializeOffererApi', async () => {
     const offerApi = {
       venue: {
