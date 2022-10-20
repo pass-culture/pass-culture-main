@@ -1,54 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React from 'react'
 
-import Spinner from 'components/layout/Spinner'
-import {
-  GetStockOfferSuccessPayload,
-  extractOfferIdAndOfferTypeFromRouteParams,
-  getStockCollectiveOfferAdapter,
-} from 'core/OfferEducational'
-import { getStockCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferTemplateAdapter'
-import useNotification from 'hooks/useNotification'
+import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 
-const CollectiveOfferConfirmation = (): JSX.Element => {
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
-  const { offerId, isShowcase } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
-  const [offer, setOffer] = useState<GetStockOfferSuccessPayload>()
-  const notify = useNotification()
+interface CollectiveOfferConfirmationProps {
+  offer: CollectiveOffer | CollectiveOfferTemplate
+}
 
-  useEffect(() => {
-    const loadOffer = async () => {
-      const getOfferAdapter = isShowcase
-        ? getStockCollectiveOfferTemplateAdapter
-        : getStockCollectiveOfferAdapter
+const CollectiveOfferConfirmation = ({
+  offer,
+}: CollectiveOfferConfirmationProps): JSX.Element => {
+  const getInstitutionDisplayName = () => {
+    if (offer.isTemplate) return ''
 
-      const offerResponse = await getOfferAdapter(offerId)
+    if (!offer.institution) return ''
 
-      if (!offerResponse.isOk) {
-        return notify.error(offerResponse.message)
-      }
-
-      setOffer(offerResponse.payload)
-    }
-
-    loadOffer()
-  }, [offerId, notify])
-
-  if (!offer) {
-    return <Spinner />
+    return `${offer.institution.institutionType ?? ''} ${
+      offer.institution.name ?? ''
+    }`.trim()
   }
-
-  const { institutionType, name } = offer?.institution ?? {}
-  const institutionDisplayName = `${institutionType ?? ''} ${name ?? ''}`.trim()
 
   return (
     <CollectiveOfferConfirmationScreen
-      isShowcase={offer?.isShowcase}
+      isShowcase={offer.isTemplate}
       offerStatus={offer?.status}
-      offererId={offer?.managingOffererId}
-      institutionDisplayName={institutionDisplayName}
+      offererId={offer.venue.managingOffererId}
+      institutionDisplayName={getInstitutionDisplayName()}
     />
   )
 }

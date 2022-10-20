@@ -98,6 +98,16 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should not display confirmation modal and redirect to offers when from confirmation to stocks', async () => {
+    history.push('/offre/AE/individuel/creation/confirmation')
+    renderRouteLeavingGuardOfferCreation(props, history)
+    await userEvent.click(screen.getByText('Stocks'))
+    expect(
+      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+    ).not.toBeInTheDocument()
+    expect(location.pathname).toBe('/offres')
+  })
+
   describe('CollectiveOffer', () => {
     beforeEach(() => {
       props.isCollectiveFlow = true
@@ -119,6 +129,67 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when leaving offer creation', () => {
+      history.push('/offre/creation/collectif')
+      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal when going from offer creation to stock creation', () => {
+      history.push('/offre/creation/collectif')
+      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+      history.push('/offre/AE/collectif/stocks')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal when going from stock creation to visibility creation', () => {
+      history.push('/offre/AE/collectif/stocks')
+      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+      history.push('/offre/AE/collectif/visibilite')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal when going from stock creation to confirmation', () => {
+      history.push('/offre/AE/collectif/stocks')
+      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+      history.push('/offre/T-AE/collectif/confirmation')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal when going from visibility creation to confirmation', () => {
+      history.push('/offre/AE/collectif/visibilite')
+      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+      history.push('/offre/AE/collectif/confirmation')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal and redirect to offers when going from confirmation to visibility', () => {
+      history.push('/offre/AE/collectif/confirmation')
+      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+      history.push('/offre/AE/collectif/visibilite')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+      expect(location.pathname).toBe('/offres')
     })
   })
 })

@@ -20,14 +20,10 @@ import Signup from 'components/pages/Signup/Signup'
 import Bookings from 'routes/Bookings'
 import BusinessUnitList from 'routes/BusinessUnitList'
 import CollectiveBookings from 'routes/CollectiveBookings'
-import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOffers from 'routes/CollectiveOffers'
-import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import CsvTable from 'routes/CsvTable'
 import Desk from 'routes/Desk'
 import { EmailChangeValidation } from 'routes/EmailChangeValidation'
-import OfferEducationalCreation from 'routes/OfferEducationalCreation'
-import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import { OfferIndividualWizard } from 'routes/OfferIndividualWizard'
 import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
@@ -37,10 +33,7 @@ import { VenueCreation } from 'routes/VenueCreation'
 import { VenueEdition } from 'routes/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-import CollectiveOfferCreationFromTemplate from './CollectiveOfferCreationFromTemplate'
-import CollectiveOfferEditionRoutes from './CollectiveOfferEditionRoutes'
-import CollectiveOfferStockCreationFromTemplate from './CollectiveOfferStockCreationFromTemplate'
-import CollectiveOfferTemplateEditionRoutes from './CollectiveOfferTemplateEditionRoutes'
+import CollectiveOfferRoutes from './CollectiveOfferRoutes'
 import { OffererStats } from './OffererStats'
 
 interface ILayoutConfig {
@@ -265,19 +258,6 @@ const routes: IRoute[] = [
     title: 'Offre',
   },
   {
-    component: OfferEducationalCreation,
-    exact: true,
-    path: '/offre/creation/collectif',
-    title: 'Offre collective',
-  },
-  {
-    component: CollectiveOfferCreationFromTemplate,
-    exact: true,
-    path: '/offre/duplication/collectif/:templateId([A-Z0-9]+)',
-    title: 'Offre collective',
-    featureName: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
-  },
-  {
     component: Offers,
     exact: true,
     path: '/offres',
@@ -290,43 +270,13 @@ const routes: IRoute[] = [
     title: 'Offres',
   },
   {
-    component: OfferEducationalStockCreation,
-    exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks',
-    title: 'Stock lié à une offre collective',
-  },
-  {
-    component: CollectiveOfferStockCreationFromTemplate,
-    exact: true,
-    path: '/offre/duplication/collectif/:offerId([A-Z0-9]+)/stock',
-    title: 'Stock lié à une offre collective',
-    featureName: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
-  },
-  {
-    component: CollectiveOfferCreationVisibility,
-    exact: true,
+    component: CollectiveOfferRoutes,
+    exact: false,
     path: [
-      '/offre/:offerId([A-Z0-9]+)/collectif/visibilite',
-      '/offre/duplication/:offerId([A-Z0-9]+)/collectif/visibilite',
+      '/offre/:offerId/collectif',
+      '/offre/duplication/collectif',
+      '/offre/creation/collectif',
     ],
-    title: 'Visibilité d’une offre collective',
-  },
-  {
-    component: CollectiveOfferConfirmation,
-    exact: true,
-    path: '/offre/:offerId/collectif/confirmation',
-    title: 'Page de confirmation de création d’offre',
-  },
-  {
-    component: CollectiveOfferEditionRoutes,
-    exact: false,
-    path: '/offre/:offerId([A-Z0-9]+)/collectif',
-    title: 'Edition d’une offre collective',
-  },
-  {
-    component: CollectiveOfferTemplateEditionRoutes,
-    exact: false,
-    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif',
     title: 'Edition d’une offre collective',
   },
   {

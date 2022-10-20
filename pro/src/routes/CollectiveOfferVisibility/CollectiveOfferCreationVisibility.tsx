@@ -1,40 +1,43 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useHistory } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
-import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
-import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
-import { useAdapter } from 'hooks'
-import useNotification from 'hooks/useNotification'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
+import {
+  CollectiveOffer,
+  DEFAULT_VISIBILITY_FORM_VALUES,
+  Mode,
+} from 'core/OfferEducational'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
 
-const CollectiveOfferVisibility = () => {
+interface CollectiveOfferVisibilityProps {
+  setOffer: (offer: CollectiveOffer) => void
+}
+
+const CollectiveOfferVisibility = ({
+  setOffer,
+}: CollectiveOfferVisibilityProps) => {
   const history = useHistory()
-  const notify = useNotification()
-  const { offerId } = useParams<{ offerId: string }>()
 
   const [institutions, setInstitutions] = useState<
     EducationalInstitutionResponseModel[]
   >([])
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
 
-  const onSuccess = ({ offerId }: { offerId: string }) => {
-    const successUrl = `/offre/${offerId}/collectif/confirmation`
+  const onSuccess = ({
+    offerId,
+    payload,
+  }: {
+    offerId: string
+    payload: CollectiveOffer
+  }) => {
+    setOffer(payload)
+    const successUrl = `/offre/duplication/collectif/${offerId}/confirmation`
     history.push(successUrl)
   }
-
-  const {
-    error,
-    data: offer,
-    isLoading,
-  } = useAdapter(() => getCollectiveOfferAdapter(offerId))
 
   useEffect(() => {
     getEducationalInstitutionsAdapter().then(result => {
@@ -45,23 +48,8 @@ const CollectiveOfferVisibility = () => {
     })
   }, [])
 
-  if (error) {
-    notify.error(error.message)
-    return null
-  }
-  if (isLoading) {
-    return <Spinner />
-  }
-
   return (
-    <CollectiveOfferLayout
-      breadCrumpProps={{
-        activeStep: OfferBreadcrumbStep.VISIBILITY,
-        isCreatingOffer: true,
-      }}
-      title="Créer une offre réservable"
-      subTitle={offer.name}
-    >
+    <>
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}
         patchInstitution={patchEducationalInstitutionAdapter}
@@ -71,7 +59,7 @@ const CollectiveOfferVisibility = () => {
         isLoadingInstitutions={isLoadingInstitutions}
       />
       <RouteLeavingGuardOfferCreation isCollectiveFlow />
-    </CollectiveOfferLayout>
+    </>
   )
 }
 
