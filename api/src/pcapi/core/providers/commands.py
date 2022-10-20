@@ -28,7 +28,7 @@ def _synchronize_venue_providers_apis() -> None:
     for provider in providers_apis:
         venue_provider_ids = [
             id_
-            for id_, in models.VenueProvider.query.filter_by(providerId=provider.id)
+            for id_, in models.VenueProvider.query.filter_by(providerId=provider.id, isActive=True)
             .with_entities(models.VenueProvider.id)
             .all()
         ]
