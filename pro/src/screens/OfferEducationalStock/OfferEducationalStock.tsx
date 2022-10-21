@@ -13,6 +13,7 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import FormLayout from 'new_components/FormLayout'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
@@ -64,8 +65,6 @@ export interface IOfferEducationalStockProps<
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
-  // TODO : remove this props once FF is enabled in production
-  shouldDisableTurnTemplateIntoCollectiveOfferFeature?: boolean
 }
 
 const OfferEducationalStock = <
@@ -78,10 +77,13 @@ const OfferEducationalStock = <
   mode,
   cancelActiveBookings,
   setIsOfferActive,
-  shouldDisableTurnTemplateIntoCollectiveOfferFeature = false,
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
+
+  const isCollectiveOfferDuplicationActive = useActiveFeature(
+    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
+  )
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -139,7 +141,7 @@ const OfferEducationalStock = <
             <FormLayout.MandatoryInfo />
             <FormLayout.Section title="Date et prix">
               {shouldDisplayShowcaseScreen &&
-                !shouldDisableTurnTemplateIntoCollectiveOfferFeature && (
+                !isCollectiveOfferDuplicationActive && (
                   <FormLayout.Row>
                     <RadioGroup
                       group={showcaseOfferRadios}
