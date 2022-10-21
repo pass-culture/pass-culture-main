@@ -11,7 +11,31 @@ const ShowcaseBannerInfo = (): JSX.Element => {
     'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
   )
 
-  return !isOfferDuplicationEnabled ? (
+  return isOfferDuplicationEnabled ? (
+    <Banner
+      type="notification-info"
+      links={[
+        {
+          isExternal: true,
+          href: 'https://aide.passculture.app/hc/fr/articles/4416082284945',
+          linkTitle:
+            'Consultez l’article “Quel est le cycle de vie de mon offre collective, de sa création à son remboursement ?”',
+        },
+      ]}
+    >
+      1) À sa création, votre offre vitrine sera visible sur ADAGE, la
+      plateforme des enseignants
+      <br />
+      2) L’enseignant vous contactera pour discuter des détails de l'offre
+      <br />
+      3) Vous créerez une offre réservable en complétant la date, le prix et
+      l’établissement vus avec l’enseignant
+      <br />
+      4) Une fois cette nouvelle offre publiée, elle sera préréservable sur
+      ADAGE par l'enseignant
+      <br />
+    </Banner>
+  ) : (
     <div className={styles['showcase-banner-info']}>
       <b>Dans ce cas là :</b>
       <br />
@@ -42,30 +66,6 @@ const ShowcaseBannerInfo = (): JSX.Element => {
         </a>
       </p>
     </div>
-  ) : (
-    <Banner
-      type="notification-info"
-      links={[
-        {
-          isExternal: true,
-          href: 'https://aide.passculture.app/hc/fr/articles/4416082284945',
-          linkTitle:
-            'Consultez l’article “Quel est le cycle de vie de mon offre collective, de sa création à son remboursement ?”',
-        },
-      ]}
-    >
-      1) À sa création, votre offre vitrine sera visible sur ADAGE, la
-      plateforme des enseignants
-      <br />
-      2) L’enseignant vous contactera pour discuter des détails de l'offre
-      <br />
-      3) Vous créerez une offre réservable en complétant la date, le prix et
-      l’établissement vus avec l’enseignant
-      <br />
-      4) Une fois cette nouvelle offre publiée, elle sera préréservable sur
-      ADAGE par l'enseignant
-      <br />
-    </Banner>
   )
 }
 
