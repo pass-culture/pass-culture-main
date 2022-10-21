@@ -32,6 +32,7 @@ const Notifications = (): JSX.Element => {
           label="Être notifié par e-mail des réservations"
           name="receiveNotificationEmails"
           value=""
+          hideFooter={receiveNotificationEmails}
         />
       </FormLayout.Row>
 
