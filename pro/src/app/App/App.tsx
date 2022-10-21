@@ -1,7 +1,7 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useLocation, Redirect } from 'react-router-dom'
 
 import { useConfigureAnalytics } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -16,7 +16,6 @@ interface IAppProps {
 const App = ({ children }: IAppProps): JSX.Element | null => {
   const { currentUser } = useCurrentUser()
   const location = useLocation()
-  const history = useHistory()
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   const [isRoutePublic, fromUrl] = useIsRoutePublic()
 
@@ -26,16 +25,14 @@ const App = ({ children }: IAppProps): JSX.Element | null => {
     window.scrollTo(0, 0)
   }, [location.pathname])
 
-  useEffect(() => {
-    if (currentUser !== null) {
-      setSentryUser({ id: currentUser.id })
-    } else if (!isRoutePublic) {
-      const loginUrl = fromUrl.includes('logout')
-        ? '/connexion'
-        : `/connexion?de=${fromUrl}`
-      history.push(loginUrl)
-    }
-  }, [currentUser, isRoutePublic])
+  if (currentUser !== null) {
+    setSentryUser({ id: currentUser.id })
+  } else if (!isRoutePublic) {
+    const loginUrl = fromUrl.includes('logout')
+      ? '/connexion'
+      : `/connexion?de=${fromUrl}`
+    return <Redirect to={loginUrl} />
+  }
 
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
