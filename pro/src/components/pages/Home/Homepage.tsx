@@ -6,6 +6,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useStats from 'hooks/useStats'
 import { BannerRGS } from 'new_components/Banner'
+import JobHighlightsBanner from 'new_components/JobHighlightsBanner'
 import { Newsletter } from 'new_components/Newsletter'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
@@ -30,10 +31,15 @@ const Homepage = (): JSX.Element => {
     })
   }
 
+  const isJobHighlightBannerEnabled = useActiveFeature(
+    'TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER'
+  )
+
   return (
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
+      {isJobHighlightBannerEnabled && <JobHighlightsBanner />}
       {!hasClosedRGSBanner && (
         <BannerRGS closable onClose={handleCloseRGSBanner} />
       )}

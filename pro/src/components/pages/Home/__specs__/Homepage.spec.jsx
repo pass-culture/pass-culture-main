@@ -251,7 +251,7 @@ describe('homepage', () => {
         renderHomePage(store)
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
         await userEvent.click(
-          screen.getByRole('button', { name: /Masquer le bandeau/ })
+          screen.getByRole('button', { name: 'ico-clear.svg' })
         )
         expect(spyRegister).toHaveBeenCalledTimes(1)
         expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
@@ -268,6 +268,57 @@ describe('homepage', () => {
         renderHomePage(store)
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
         expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
+      })
+    })
+
+    describe('Job Highlights Banner', () => {
+      beforeEach(() => {
+        store = configureTestStore({
+          user: {
+            currentUser: {
+              id: 'fake_id',
+              firstName: 'John',
+              lastName: 'Do',
+              email: 'john.do@dummy.xyz',
+              phoneNumber: '01 00 00 00 00',
+            },
+            initialized: true,
+          },
+          features: {
+            list: [
+              {
+                isActive: true,
+                nameKey: 'TEMP_ENABLE_JOB_HIGHLIGHTS_BANNER',
+              },
+            ],
+          },
+        })
+      })
+      it('should close the banner', async () => {
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        expect(
+          screen.queryByLabelText(/des métiers de la culture/)
+        ).toBeInTheDocument()
+
+        await userEvent.click(
+          screen.getByRole('button', { name: 'icons-close.svg' })
+        )
+        expect(
+          screen.queryByLabelText(/des métiers de la culture/)
+        ).not.toBeInTheDocument()
+      })
+
+      it('should not display if user has already seen', async () => {
+        localStorage.setItem('iscloseJobHighlights', true)
+
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        expect(
+          screen.queryByLabelText(/des métiers de la culture/)
+        ).not.toBeInTheDocument()
       })
     })
 

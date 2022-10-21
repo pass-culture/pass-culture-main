@@ -13,7 +13,7 @@ import newStyles from './NewBannerLayout.module.scss'
 export interface IBannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   linkNode?: React.ReactNode | React.ReactNode[]
-  type?: 'notification-info' | 'attention' | 'light' | 'new'
+  type?: 'notification-info' | 'attention' | 'light' | 'new' | 'image'
   closable?: boolean
   minimalStyle?: boolean
   handleOnClick?: () => void
@@ -45,7 +45,10 @@ const BannerLayout = ({
       <span className={styles['border-cut']}>
         {closable && (
           <button onClick={handleOnClick} type="button">
-            {isNewStyles && type != 'new' && type != 'light' ? (
+            {isNewStyles &&
+            type != 'new' &&
+            type != 'light' &&
+            type != 'image' ? (
               <IcoClearIcon
                 title="Masquer le bandeau"
                 className={cn(styles['close-icon-banner'])}
