@@ -15,10 +15,12 @@ import patchEducationalInstitutionAdapter from './adapters/patchEducationalInsti
 
 interface CollectiveOfferVisibilityProps {
   setOffer: (offer: CollectiveOffer) => void
+  isDuplicatingOffer?: boolean
 }
 
 const CollectiveOfferVisibility = ({
   setOffer,
+  isDuplicatingOffer = false,
 }: CollectiveOfferVisibilityProps) => {
   const history = useHistory()
 
@@ -35,7 +37,9 @@ const CollectiveOfferVisibility = ({
     payload: CollectiveOffer
   }) => {
     setOffer(payload)
-    const successUrl = `/offre/${offerId}/collectif/creation/recapitulatif`
+    const successUrl = isDuplicatingOffer
+      ? `/offre/duplication/collectif/${offerId}/recapitulatif`
+      : `/offre/${offerId}/collectif/creation/recapitulatif`
     history.push(successUrl)
   }
 
