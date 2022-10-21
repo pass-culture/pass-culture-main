@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named
 import { RemoteConfig } from '@firebase/remote-config'
 import React, { createContext, useState } from 'react'
 
@@ -13,7 +14,7 @@ type IRemoteConfigContextProviderProps = {
   children: React.ReactNode
 }
 
-export function RemoteAnalyticsContextProvider({
+export function RemoteContextProvider({
   children,
 }: IRemoteConfigContextProviderProps) {
   const [remoteConfig, setRemoteConfig] = useState<RemoteConfig | null>(null)

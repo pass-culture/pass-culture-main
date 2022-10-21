@@ -20,6 +20,15 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
+jest.mock('@firebase/remote-config', () => ({
+  getValue: () => ({ asString: () => 'A1' }),
+}))
+
+jest.mock('hooks/useRemoteConfig', () => ({
+  __esModule: true,
+  default: () => ({ remoteConfig: {} }),
+}))
+
 const renderOffererStats = (store: Store) => {
   render(
     <Provider store={store}>

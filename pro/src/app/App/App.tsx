@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, Redirect } from 'react-router-dom'
 
-import { useConfigureAnalytics } from 'hooks/useAnalytics'
+import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
 import { useIsRoutePublic } from 'routes/hooks'
@@ -19,7 +19,7 @@ const App = ({ children }: IAppProps): JSX.Element | null => {
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   const [isRoutePublic, fromUrl] = useIsRoutePublic()
 
-  useConfigureAnalytics(currentUser?.nonHumanizedId)
+  useConfigureFirebase(currentUser?.nonHumanizedId)
 
   useEffect(() => {
     window.scrollTo(0, 0)
