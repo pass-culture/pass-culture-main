@@ -54,7 +54,7 @@ const SetPassword = () => {
 
             if (errors.newPassword) {
               notification.error(INVALID_FORM_MESSAGE)
-              setBackendErrors(error.errors)
+              setBackendErrors(errors)
               return
             }
             if (errors.token) {
