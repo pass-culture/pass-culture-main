@@ -10,7 +10,6 @@ import { Route, Router } from 'react-router'
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import SetPassword from '../SetPassword'
