@@ -22,6 +22,7 @@ const OptionDuo = (): JSX.Element | null => {
           label="Accepter les réservations “duo“"
           description="En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l‘accompagnateur."
           name="isDuo"
+          hideFooter
         />
       </FormLayout.Row>
     </FormLayout.Section>
