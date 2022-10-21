@@ -8,6 +8,7 @@ import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOfferCreationFromTemplate from 'routes/CollectiveOfferCreationFromTemplate'
 import CollectiveOfferStockCreationFromTemplate from 'routes/CollectiveOfferStockCreationFromTemplate'
+import CollectiveOfferSummaryCreation from 'routes/CollectiveOfferSummaryCreation'
 import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 
 import { getActiveStep } from '../utils/getActiveStep'
@@ -61,7 +62,17 @@ const CollectiveOfferCreationRoutes = (): JSX.Element => {
         </Route>
         <Route path="/offre/duplication/collectif/:offerId/visibilite">
           {collectiveOffer ? (
-            <CollectiveOfferCreationVisibility setOffer={setCollectiveOffer} />
+            <CollectiveOfferCreationVisibility
+              setOffer={setCollectiveOffer}
+              isDuplicatingOffer
+            />
+          ) : (
+            <Spinner />
+          )}
+        </Route>
+        <Route path="/offre/duplication/collectif/:offerId/recapitulatif">
+          {collectiveOffer ? (
+            <CollectiveOfferSummaryCreation offer={collectiveOffer} />
           ) : (
             <Spinner />
           )}

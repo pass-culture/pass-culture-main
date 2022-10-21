@@ -4,13 +4,14 @@ import Spinner from 'components/layout/Spinner'
 import {
   getEducationalCategoriesAdapter,
   CollectiveOffer,
+  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummaryCreationScreen from 'screens/CollectiveOfferSummaryCreation'
 
 interface CollectiveOfferSummaryCreationProps {
-  offer: CollectiveOffer
+  offer: CollectiveOffer | CollectiveOfferTemplate
 }
 
 const CollectiveOfferSummaryCreation = ({
@@ -25,7 +26,8 @@ const CollectiveOfferSummaryCreation = ({
   } = useAdapter(getEducationalCategoriesAdapter)
 
   if (error) {
-    return notify.error(error.message)
+    notify.error(error.message)
+    return <></>
   }
 
   return isLoading ? (

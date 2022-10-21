@@ -6,8 +6,6 @@ import {
   EducationalCategories,
 } from 'core/OfferEducational'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { ButtonLink } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
 import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
