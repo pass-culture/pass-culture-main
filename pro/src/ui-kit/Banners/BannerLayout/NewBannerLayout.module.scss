@@ -1,5 +1,6 @@
 @use 'styles/mixins/_rem.scss' as rem;
 @use 'styles/variables/_colors.scss' as colors;
+@use 'styles/variables/_size.scss' as size;
 
 .bi-banner {
   &.attention,
@@ -111,6 +112,28 @@
     .close-icon,
     path {
       fill: colors.$white;
+    }
+  }
+
+  &.image {
+    position: relative;
+    box-sizing: content-box;
+    padding: 0;
+
+    &, .bi-banner-text, .content svg {
+      height: size.$image-banner-height;
+      width: size.$image-banner-width;
+    }
+
+    button {
+      position: absolute;
+      right: rem.torem(16px);
+      top: rem.torem(8px);
+
+      .close-icon-banner, path {
+        fill: colors.$white;
+        stroke: colors.$white;
+      }
     }
   }
 
