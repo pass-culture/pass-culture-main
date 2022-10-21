@@ -1,3 +1,4 @@
+import json
 import typing
 import urllib
 
@@ -309,7 +310,10 @@ def _get_offerer_status(offerer: offerers_models.Offerer) -> str:
 def list_offerers_to_be_validated(
     query: serialization.OffererToBeValidatedQuery,
 ) -> serialization.ListOffererToBeValidatedResponseModel:
-    offerers = offerers_api.list_offerers_to_be_validated([dict(f) for f in query.filter])
+    filters = []
+    if query.filter:
+        filters = json.loads(urllib.parse.unquote_plus(query.filter))
+    offerers = offerers_api.list_offerers_to_be_validated(filters)
 
     sorts = urllib.parse.unquote_plus(query.sort or "[]")
     try:

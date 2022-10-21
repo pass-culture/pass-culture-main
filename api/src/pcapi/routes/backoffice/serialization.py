@@ -1,6 +1,5 @@
 import datetime
 import typing
-import urllib
 
 import pydantic
 
@@ -77,10 +76,7 @@ class PaginableQuery(BaseModel):
 
 
 class FilterableQuery(BaseModel):
-    filter: pydantic.Json[list[dict]] = []  # pylint: disable=unsubscriptable-object
-
-    def validate_filter(self, value: str) -> str:
-        return urllib.parse.unquote_plus(value)
+    filter: str | None = None
 
 
 class OffererToBeValidatedQuery(PaginableQuery, FilterableQuery):
