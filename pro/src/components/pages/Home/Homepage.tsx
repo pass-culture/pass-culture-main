@@ -1,19 +1,21 @@
 import { getValue } from '@firebase/remote-config'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useRemoteConfig from 'hooks/useRemoteConfig'
 import { BannerRGS } from 'new_components/Banner'
 import { Newsletter } from 'new_components/Newsletter'
 import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
 
-import useRemoteConfig from '../../../hooks/useRemoteConfig'
+import { api } from '../../../apiClient/api'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
+
 const Homepage = (): JSX.Element => {
   const profileRef = useRef(null)
   const statsRef = useRef(null)
@@ -23,6 +25,7 @@ const Homepage = (): JSX.Element => {
   const [hasClosedRGSBanner, setHasClosedRGSBanner] = useState<boolean>(
     Boolean(hasSeenProRgs)
   )
+  const [canSeeStats, setCanSeeStats] = useState<boolean>(false)
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const handleCloseRGSBanner = () => {
     setHasSeenRGSBanner().finally(() => {
@@ -30,10 +33,23 @@ const Homepage = (): JSX.Element => {
     })
   }
   const { remoteConfig } = useRemoteConfig()
-  const coucou = useCurrentUser()
-  console.log({ coucou })
-  // eslint-disable-next-line no-console
-  remoteConfig && console.log(getValue(remoteConfig, 'only500BiggerActors'))
+  useEffect(() => {
+    if (isOffererStatsActive) {
+      api.listOfferersNames().then(receivedOffererNames => {
+        let biggest500: string[] = []
+        if (remoteConfig) {
+          biggest500 = getValue(remoteConfig, 'only500BiggerActors')
+            .asString()
+            .split(',')
+        }
+        setCanSeeStats(
+          receivedOffererNames.offerersNames.some(v =>
+            biggest500.includes(v.id)
+          )
+        )
+      })
+    }
+  }, [remoteConfig])
 
   return (
     <div className="homepage">
@@ -44,20 +60,18 @@ const Homepage = (): JSX.Element => {
       )}
       <HomepageBreadcrumb
         activeStep={STEP_ID_OFFERERS}
-        isOffererStatsActive={isOffererStatsActive}
+        isOffererStatsActive={isOffererStatsActive && canSeeStats}
         profileRef={profileRef}
         statsRef={statsRef}
       />
-
       <section className="h-section">
         <Offerers />
       </section>
-      {isOffererStatsActive && (
+      {isOffererStatsActive && canSeeStats && (
         <section className="h-section" ref={statsRef}>
           <OffererStats />
         </section>
       )}
-
       <section className="h-section" ref={profileRef}>
         <ProfileAndSupport />
         <div className="newsletter">

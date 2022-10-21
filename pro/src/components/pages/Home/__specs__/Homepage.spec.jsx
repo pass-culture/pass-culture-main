@@ -17,6 +17,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
+import { RemoteContextProvider } from '../../../../context/remoteConfigContext'
 import Homepage from '../Homepage'
 
 jest.mock('utils/config', () => ({
@@ -42,12 +43,23 @@ jest.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: jest.fn(),
 }))
 
+jest.mock('@firebase/remote-config', () => ({
+  getValue: () => ({ asString: () => 'GE' }),
+}))
+
+jest.mock('hooks/useRemoteConfig', () => ({
+  __esModule: true,
+  default: () => ({ remoteConfig: {} }),
+}))
+
 const renderHomePage = store => {
   render(
     <Provider store={store}>
-      <MemoryRouter>
-        <Homepage />
-      </MemoryRouter>
+      <RemoteContextProvider>
+        <MemoryRouter>
+          <Homepage />
+        </MemoryRouter>
+      </RemoteContextProvider>
     </Provider>
   )
 }
