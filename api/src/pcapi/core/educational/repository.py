@@ -218,6 +218,19 @@ def find_educational_deposit_by_institution_id_and_year(
     ).one_or_none()
 
 
+def get_educational_deposit_with_uai_code_by_year(year_id: str) -> list[tuple[int, str, bool]]:
+    query = db.session.query(
+        educational_models.EducationalDeposit.amount,
+        educational_models.EducationalInstitution.institutionId,
+        educational_models.EducationalDeposit.isFinal,
+    )
+    query = query.join(
+        educational_models.EducationalInstitution, educational_models.EducationalDeposit.educationalInstitution
+    )
+    query = query.filter(educational_models.EducationalDeposit.educationalYearId == year_id)
+    return query.all()
+
+
 def get_educational_year_beginning_at_given_year(year: int) -> educational_models.EducationalYear:
     educational_year = educational_models.EducationalYear.query.filter(
         extract("year", educational_models.EducationalYear.beginningDate) == year
