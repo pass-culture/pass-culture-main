@@ -11,6 +11,8 @@ import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 import { App } from '../App'
 
+jest.mock('hooks/useAnalytics')
+
 const renderApp = ({ props, store: storeOverride, initialEntries = '/' }) => {
   const store = configureTestStore(storeOverride)
   return render(
@@ -82,7 +84,7 @@ describe('src | App', () => {
       expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
   })
-  it('should render a Redirect component when route is private and user not logged in', async () => {
+  it('should render a Redirect component when route is private and user not logged in', () => {
     store = {
       ...store,
       user: { initialized: false, currentUser: null },
@@ -91,7 +93,7 @@ describe('src | App', () => {
 
     expect(screen.getByText('Sub component')).toBeInTheDocument()
   })
-  it('should render a Redirect component when loging out', async () => {
+  it('should render a Redirect component when loging out', () => {
     store = {
       ...store,
       user: { initialized: false, currentUser: null },
