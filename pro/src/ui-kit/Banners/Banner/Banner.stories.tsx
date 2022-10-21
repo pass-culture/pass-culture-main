@@ -1,6 +1,8 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
+import { ReactComponent as BannerImage } from 'new_components/JobHighlightsBanner/assets/job_highlights_banner.svg'
+
 import Banner, { IBannerProps } from './Banner'
 
 export default {
@@ -15,6 +17,12 @@ const Template: Story<IBannerProps> = props => (
   </Banner>
 )
 
+const ImageTemplate: Story<IBannerProps> = props => (
+  <Banner {...props}>
+    <BannerImage />
+  </Banner>
+)
+
 export const Attention = Template.bind({})
 Attention.args = { type: 'attention', closable: true }
 
@@ -26,6 +34,9 @@ Light.args = { type: 'light', closable: true }
 
 export const Minimal = Template.bind({})
 Minimal.args = { minimalStyle: true }
+
+export const Image = ImageTemplate.bind({})
+Image.args = { type: 'image', closable: true }
 
 export const WithLink = Template.bind({})
 WithLink.args = {
