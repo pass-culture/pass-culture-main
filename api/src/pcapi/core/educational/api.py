@@ -30,6 +30,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.utils import as_utc_without_timezone
@@ -330,27 +331,63 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     return [venue]
 
 
-def get_relative_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
+def get_relative_venues_by_siret(siret: str, permanent_only: bool = True) -> list[offerers_models.Venue]:
     aliased_venue = sa.orm.aliased(offerers_models.Venue)
-
     query = db.session.query(offerers_models.Venue)
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        offerers_models.Venue.isPermanent == True,
         offerers_models.Venue.isVirtual == False,
         # constraint on searched venue
-        aliased_venue.isPermanent == True,
         aliased_venue.isVirtual == False,
         aliased_venue.siret == siret,
     )
+    if permanent_only:
+        query = query.filter(
+            offerers_models.Venue.isPermanent == True,
+            aliased_venue.isPermanent == True,
+        )
     query = query.options(sa.orm.joinedload(offerers_models.Venue.contact))
     query = query.options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
     # group venues by offerer
     query = query.order_by(offerers_models.Venue.managingOffererId, offerers_models.Venue.name)
 
     return query.all()
+
+
+def get_venue_by_siret_for_adage_iframe(
+    siret: str, search_relative: bool
+) -> tuple[offerers_models.Venue | None, list[int]]:
+    relative = []
+    venue = None
+    if search_relative:
+        venues = get_relative_venues_by_siret(siret, permanent_only=False)
+        for candidate in venues:
+            if candidate.siret == siret:
+                venue = candidate
+            else:
+                relative.append(candidate.id)
+    else:
+        venue = offerers_repository.find_venue_by_siret(siret)
+    return venue, relative
+
+
+def get_venue_by_id_for_adage_iframe(
+    venue_id: int, search_relative: bool
+) -> tuple[offerers_models.Venue | None, list[int]]:
+    relative = []
+    venue = None
+    if search_relative:
+        venues = offerers_repository.find_relative_venue_by_id(venue_id, permanent_only=False)
+        for candidate in venues:
+            if candidate.id == venue_id:
+                venue = candidate
+            else:
+                relative.append(candidate.id)
+    else:
+        venue = offerers_repository.find_venue_by_id(venue_id)
+    return venue, relative
 
 
 def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_models.Venue]:

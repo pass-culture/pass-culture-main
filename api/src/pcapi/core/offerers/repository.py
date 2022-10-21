@@ -239,7 +239,7 @@ def get_permanent_venue_by_id(venue_id: int) -> models.Venue | None:
     )
 
 
-def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
+def find_relative_venue_by_id(venue_id: int, permanent_only: bool = True) -> list[models.Venue]:
     aliased_venue = sqla.orm.aliased(models.Venue)
 
     query = db.session.query(models.Venue)
@@ -247,13 +247,16 @@ def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
     query = query.join(aliased_venue, models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        models.Venue.isPermanent == True,
         models.Venue.isVirtual == False,
         # constraint on seached venue
-        aliased_venue.isPermanent == True,
         aliased_venue.isVirtual == False,
         aliased_venue.id == venue_id,
     )
+    if permanent_only:
+        query = query.filter(
+            models.Venue.isPermanent == True,
+            aliased_venue.isPermanent == True,
+        )
     query = query.options(sqla.orm.joinedload(models.Venue.contact))
     query = query.options(sqla.orm.joinedload(models.Venue.venueLabel))
     # group venues by offerer
