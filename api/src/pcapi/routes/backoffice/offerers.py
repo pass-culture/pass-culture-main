@@ -2,7 +2,7 @@ import json
 import typing
 import urllib
 
-from sqlalchemy import exc as sa_exceptions
+import sqlalchemy as sa
 
 from pcapi.core.auth.utils import get_current_user
 from pcapi.core.history import repository as history_repository
@@ -34,6 +34,7 @@ def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResp
     """Get the list of all (pro) users attached to the offerer"""
     users_offerer: list[offerers_models.UserOfferer] = (
         offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.offererId == offerer_id)
+        .options(sa.orm.joinedload(offerers_models.UserOfferer.user))
         .order_by(offerers_models.UserOfferer.id)
         .all()
     )
@@ -373,7 +374,7 @@ def list_offerers_to_be_validated(
 def toggle_top_actor(offerer_id: int, body: serialization.IsTopActorRequest) -> None:
     try:
         tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
-    except sa_exceptions.NoResultFound:
+    except sa.exc.NoResultFound:
         raise api_errors.ResourceNotFoundError(errors={"global": "Le tag top-acteur n'existe pas"})
 
     # Add the tag if it doesn't already exist
@@ -381,7 +382,7 @@ def toggle_top_actor(offerer_id: int, body: serialization.IsTopActorRequest) -> 
         try:
             db.session.add(offerers_models.OffererTagMapping(offererId=offerer_id, tagId=tag.id))
             db.session.commit()
-        except sa_exceptions.IntegrityError:
+        except sa.exc.IntegrityError:
             # Already in database
             db.session.rollback()
 

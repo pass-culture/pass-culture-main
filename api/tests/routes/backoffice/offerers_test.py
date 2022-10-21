@@ -11,6 +11,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions.models import Permissions
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -35,16 +36,21 @@ class GetOffererUsersTest:
         uo3 = offerers_factories.NotValidatedUserOffererFactory(
             offerer=offerer1, user=users_factories.ProFactory(), validationToken="not-validated"
         )
+        offerer1_id = offerer1.id  # request from offerer outside assert_num_queries
 
         offerer2 = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer2, user=users_factories.ProFactory())
 
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
 
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_users", offerer_id=offerer1.id)
-        )
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.get_offerer_users", offerer_id=offerer1_id)
+            )
 
         # then
         assert response.status_code == 200
@@ -129,10 +135,16 @@ class GetOffererBasicInfoTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
 
+        offerer_id = offerer.id  # request id from offerer outside assert_num_queries
+
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer.id)
-        )
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.get_offerer_basic_info", offerer_id=offerer_id)
+            )
 
         # then
         assert response.status_code == 200
@@ -291,10 +303,16 @@ class GetOffererTotalRevenueTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
 
+        offerer_id = offerer.id  # request id from offerer outside assert_num_queries
+
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_total_revenue", offerer_id=offerer.id)
-        )
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.get_offerer_total_revenue", offerer_id=offerer_id)
+            )
 
         # then
         assert response.status_code == 200
@@ -417,10 +435,16 @@ class GetOffererOffersStatsTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.READ_PRO_ENTITY])
 
+        offerer_id = offerer.id  # request id from offerer outside assert_num_queries
+
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_offers_stats", offerer_id=offerer.id)
-        )
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.get_offerer_offers_stats", offerer_id=offerer_id)
+            )
 
         # then
         assert response.status_code == 200
@@ -601,10 +625,17 @@ class GetOffererHistoryTest:
             comment="Commentaire sur une autre structure",
         )
 
+        offerer_id = user_offerer.offerer.id
+
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+        n_queries += 1  # count() for pagination
+
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.get_offerer_history", offerer_id=user_offerer.offerer.id)
-        )
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.get_offerer_history", offerer_id=offerer_id)
+            )
 
         # then
         assert response.status_code == 200
@@ -1020,8 +1051,14 @@ class GetOfferersTagsTest:
         tag2 = offerers_factories.OffererTagFactory(name="test-type-ei", label="Entreprise individuelle")
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PRO_ENTITY])
 
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+
         # when
-        response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_tags_list"))
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.get_offerers_tags_list")
+            )
 
         # then
         assert response.status_code == 200
@@ -1277,10 +1314,15 @@ class ListOfferersToBeValidatedTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+        n_queries += 1  # count() for pagination
+
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated")
-        )
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.list_offerers_to_be_validated")
+            )
 
         # then
         assert response.status_code == 200
