@@ -139,16 +139,19 @@ const Informations = ({
   }
 
   const onImageDelete = async () => {
-    // ImageUploader isn't display when we've no offerId
-    /* istanbul ignore next */
-    if (!offerId) return Promise.resolve()
-    const response = await deleteThumbnailAdapter({ offerId })
-    if (response.isOk) {
+    if (!offerId) {
       setImageOffer(undefined)
+      setImageOfferCreationArgs(undefined)
+    } else {
+      const response = await deleteThumbnailAdapter({ offerId })
+      if (response.isOk) {
+        setImageOffer(undefined)
+      } else {
+        notify.error('Une erreur est survenue. Merci de réessayer plus tard.', {
+          withStickyActionBar: true,
+        })
+      }
     }
-    notify.error('Une erreur est survenue. Merci de réessayer plus tard.', {
-      withStickyActionBar: true,
-    })
     Promise.resolve()
   }
 
