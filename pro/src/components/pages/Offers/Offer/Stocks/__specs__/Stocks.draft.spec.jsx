@@ -56,15 +56,6 @@ describe('stocks page - Brouillon', () => {
         currentUser: { publicName: 'François', isAdmin: false },
         initialized: true,
       },
-      features: {
-        list: [
-          {
-            isActive: true,
-            name: 'OFFER_DRAFT_ENABLED',
-            nameKey: 'OFFER_DRAFT_ENABLED',
-          },
-        ],
-      },
     }
     props = {}
 
@@ -160,6 +151,18 @@ describe('stocks page - Brouillon', () => {
       // given
       api.upsertStocks.mockResolvedValue({})
       api.getStocks.mockResolvedValueOnce({ stocks: [] })
+      store = {
+        ...store,
+        features: {
+          list: [
+            {
+              isActive: true,
+              name: 'OFFER_DRAFT_ENABLED',
+              nameKey: 'OFFER_DRAFT_ENABLED',
+            },
+          ],
+        },
+      }
       renderOffers(props, store)
 
       await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -176,10 +179,11 @@ describe('stocks page - Brouillon', () => {
 
       // then
       expect(api.upsertStocks).toHaveBeenCalledWith({
-        offerId: 'AG3A',
+        humanizedOfferId: 'AG3A',
         stocks: [
           {
             bookingLimitDatetime: '2020-12-23T02:59:59Z',
+            humanizedId: undefined,
             price: '15',
             quantity: '15',
           },
