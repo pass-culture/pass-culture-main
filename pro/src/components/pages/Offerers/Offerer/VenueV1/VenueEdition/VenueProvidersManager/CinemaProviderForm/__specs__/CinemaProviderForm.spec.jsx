@@ -25,8 +25,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 jest.mock('apiClient/api', () => ({
-  createVenueProvider: jest.fn(),
-  updateVenueProvider: jest.fn(),
+  api: {
+    createVenueProvider: jest.fn(),
+    updateVenueProvider: jest.fn(),
+  },
 }))
 
 const renderVenueProvidersManager = async props => {

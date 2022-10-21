@@ -13,11 +13,10 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
+from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
-
-from pcapi.routes.pro import blueprint
 
 
 logger = logging.getLogger(__name__)
