@@ -9,7 +9,6 @@ import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOfferStockCreation from 'routes/CollectiveOfferStockCreation'
 import CollectiveOfferSummaryCreation from 'routes/CollectiveOfferSummaryCreation'
-import CollectiveOfferTemplateSummaryCreation from 'routes/CollectiveOfferTemplateSummaryCreation'
 import CollectiveOfferVisibilityCreation from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 
@@ -53,6 +52,7 @@ const CollectiveOfferCreationRoutes = ({
   }, [offerId])
 
   const offer = isTemplate ? collectiveOfferTemplate : collectiveOffer
+  const activeStep = getActiveStep(location.pathname)
 
   return (
     <Switch>
@@ -67,7 +67,7 @@ const CollectiveOfferCreationRoutes = ({
           title="Créer une nouvelle offre collective"
           subTitle={collectiveOffer?.name}
           breadCrumpProps={{
-            activeStep: getActiveStep(location.pathname),
+            activeStep: activeStep,
             isCreatingOffer: true,
           }}
         >
@@ -91,16 +91,9 @@ const CollectiveOfferCreationRoutes = ({
                 <Spinner />
               )}
             </Route>
-            <Route path="offre/:offerId(T-[A-Z0-9]+)/collectif/creation/recapitulatif">
+            <Route path="/offre/:offerId/collectif/creation/recapitulatif">
               {offer ? (
-                <>
-                  {!offer.isTemplate && (
-                    <CollectiveOfferSummaryCreation offer={offer} />
-                  )}
-                  {offer.isTemplate && (
-                    <CollectiveOfferTemplateSummaryCreation offer={offer} />
-                  )}
-                </>
+                <CollectiveOfferSummaryCreation offer={offer} />
               ) : (
                 <Spinner />
               )}
