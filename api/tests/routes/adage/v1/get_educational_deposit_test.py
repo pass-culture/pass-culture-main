@@ -34,7 +34,8 @@ class Returns200Test:
         assert response.json == {
             "deposits": [
                 {
-                    "uai": "0470009E",
+                    "uai": educational_institution1.institutionId,
+                    # "uai": "0470009E",
                     "deposit": 2000.0,
                     "isFinal": True,
                 }
@@ -47,7 +48,7 @@ class Returns200Test:
         assert response.json == {
             "deposits": [
                 {
-                    "uai": "1470009E",
+                    "uai": educational_institution2.institutionId,
                     "deposit": 3000.0,
                     "isFinal": False,
                 }
