@@ -4,7 +4,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 
-from tests.conftest import TestClient
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
 
 
@@ -21,17 +20,17 @@ class Returns200Test:
             uai=None,
         )
 
-    def test_return_venue_with_publicName_of_given_id(self, app):
+    def test_return_venue_with_publicName_of_given_id(self, client):
         # Given
         requested_venue = offerers_factories.VenueFactory(publicName="Un petit surnom", isPermanent=True)
+        offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
         offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
+        client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
 
         # When
-        response = test_client.get(f"/adage-iframe/venues/{requested_venue.id}")
+        response = client.get(f"/adage-iframe/venues/{requested_venue.id}")
 
         # Then
         assert response.status_code == 200
@@ -39,19 +38,20 @@ class Returns200Test:
             "id": requested_venue.id,
             "name": requested_venue.name,
             "publicName": requested_venue.publicName,
+            "relative": [],
         }
 
-    def test_return_venue_without_publicName_of_given_id(self, app):
+    def test_return_venue_without_publicName_of_given_id(self, client):
         # Given
         requested_venue = offerers_factories.VenueFactory(publicName=None, isPermanent=True)
+        offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
         offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
+        client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
 
         # When
-        response = test_client.get(f"/adage-iframe/venues/{requested_venue.id}")
+        response = client.get(f"/adage-iframe/venues/{requested_venue.id}")
 
         # Then
         assert response.status_code == 200
@@ -59,6 +59,29 @@ class Returns200Test:
             "id": requested_venue.id,
             "name": requested_venue.name,
             "publicName": None,
+            "relative": [],
+        }
+
+    def test_relative_venue(self, client):
+        # Given
+        requested_venue = offerers_factories.VenueFactory(publicName=None, isPermanent=True)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
+        venue3 = offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=False)
+        offerers_factories.VenueFactory(isPermanent=True)
+        valid_encoded_token = self._create_adage_valid_token()
+
+        client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
+
+        # When
+        response = client.get(f"/adage-iframe/venues/{requested_venue.id}?getRelative=true")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json == {
+            "id": requested_venue.id,
+            "name": requested_venue.name,
+            "publicName": None,
+            "relative": [venue2.id, venue3.id],
         }
 
 
@@ -72,16 +95,15 @@ class ReturnsErrorTest:
             uai=None,
         )
 
-    def test_return_error_if_venue_does_not_exist(self, app):
+    def test_return_error_if_venue_does_not_exist(self, client):
         # Given
         offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
+        client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
 
         # When
-        response = test_client.get("/adage-iframe/venues/123456789")
+        response = client.get("/adage-iframe/venues/123456789")
 
         # Then
         assert response.status_code == 404
