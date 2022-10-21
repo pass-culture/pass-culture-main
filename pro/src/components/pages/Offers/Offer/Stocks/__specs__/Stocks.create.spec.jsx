@@ -63,15 +63,6 @@ describe('stocks page', () => {
         currentUser: { publicName: 'François', isAdmin: false },
         initialized: true,
       },
-      features: {
-        list: [
-          {
-            isActive: true,
-            name: 'OFFER_DRAFT_ENABLED',
-            nameKey: 'OFFER_DRAFT_ENABLED',
-          },
-        ],
-      },
     }
     props = {}
 
@@ -729,6 +720,18 @@ describe('stocks page', () => {
       it('should save stocks when clicking on save draft button', async () => {
         // given
         api.upsertStocks.mockResolvedValue({})
+        store = {
+          ...store,
+          features: {
+            list: [
+              {
+                isActive: true,
+                name: 'OFFER_DRAFT_ENABLED',
+                nameKey: 'OFFER_DRAFT_ENABLED',
+              },
+            ],
+          },
+        }
         renderOffers(props, store, '/offre/AG3A/individuel/creation/stocks')
 
         await userEvent.click(await screen.findByText('Ajouter un stock'))
@@ -747,11 +750,12 @@ describe('stocks page', () => {
 
         // then
         expect(api.upsertStocks).toHaveBeenCalledWith({
-          offerId: 'AG3A',
+          humanizedOfferId: 'AG3A',
           stocks: [
             {
               bookingLimitDatetime: '2020-12-23T02:59:59Z',
               price: '15',
+              humanizedId: undefined,
               quantity: '15',
             },
           ],
