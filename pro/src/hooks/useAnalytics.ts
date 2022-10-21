@@ -17,10 +17,9 @@ import useUtmQueryParams from 'hooks/useUtmQueryParams'
 
 import useRemoteConfig from './useRemoteConfig'
 
-export const useConfigureAnalytics = (currentUserId: string | undefined) => {
+export const useConfigureFirebase = (currentUserId: string | undefined) => {
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
-  const [actors, setActors] = useState<boolean>(false)
 
   const { logEvent, setLogEvent } = useAnalytics()
   const { setRemoteConfig } = useRemoteConfig()

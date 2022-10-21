@@ -9,7 +9,7 @@ import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
 
-import { useConfigureAnalytics } from '../useAnalytics'
+import { useConfigureFirebase } from '../useAnalytics'
 
 const mockSetLogEvent = jest.fn()
 
@@ -27,8 +27,13 @@ jest.mock('@firebase/app', () => ({
   initializeApp: jest.fn().mockReturnValue({ setup: true }),
 }))
 
+jest.mock('@firebase/remote-config', () => ({
+  fetchAndActivate: jest.fn().mockResolvedValue({}),
+  getRemoteConfig: jest.fn(),
+}))
+
 const FakeApp = (): JSX.Element => {
-  useConfigureAnalytics('userId')
+  useConfigureFirebase('userId')
   return <h1>Fake App</h1>
 }
 
@@ -95,7 +100,7 @@ interface IFakeAppProps {
   children: JSX.Element
 }
 const FakeAppWithTrackedLinks = ({ children }: IFakeAppProps): JSX.Element => {
-  useConfigureAnalytics('userId')
+  useConfigureFirebase('userId')
   return children
 }
 
