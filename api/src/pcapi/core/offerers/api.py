@@ -1288,7 +1288,9 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
 
 def list_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
     query = offerers_models.Offerer.query.filter(offerers_models.Offerer.isWaitingForValidation).options(
-        sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
+        sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
+        sa.orm.joinedload(offerers_models.Offerer.tags),
+        sa.orm.joinedload(offerers_models.Offerer.action_history),
     )
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
