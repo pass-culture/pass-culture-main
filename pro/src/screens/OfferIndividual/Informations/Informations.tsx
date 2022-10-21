@@ -56,6 +56,13 @@ const Informations = ({
   >(offer && offer.image ? offer.image : undefined)
 
   const handleNextStep = () => {
+    if (Object.keys(formik.errors).length !== 0)
+      notify.error(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire',
+        {
+          withStickyActionBar: true,
+        }
+      )
     formik.handleSubmit()
   }
 

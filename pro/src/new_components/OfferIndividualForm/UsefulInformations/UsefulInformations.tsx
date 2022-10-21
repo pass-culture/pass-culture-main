@@ -9,6 +9,7 @@ import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
 
+import styles from '../OfferIndividualForm.module.scss'
 import { IOfferIndividualFormValues } from '../types'
 
 import { TicketWithdrawal } from './TicketWithdrawal'
@@ -50,12 +51,12 @@ const UsefulInformations = ({
       />
 
       {displayNoRefundWarning && (
-        <FormLayout.Row>
+        <FormLayout.Row className={styles['info-banners']}>
           <OfferRefundWarning />
         </FormLayout.Row>
       )}
       {displayWithdrawalReminder && (
-        <FormLayout.Row>
+        <FormLayout.Row className={styles['info-banners']}>
           <WithdrawalReminder />
         </FormLayout.Row>
       )}
