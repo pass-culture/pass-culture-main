@@ -38,13 +38,13 @@
   margin-bottom: rem.torem(8px);
 }
 
-.edit-column,
-.draft-column {
+.edit-column {
   width: rem.torem(40px);
 }
 
-.switch-column {
-  width: rem.torem(96px);
+.switch-column,
+.draft-column {
+  width: rem.torem(136px);
 }
 
 .stock-column,
