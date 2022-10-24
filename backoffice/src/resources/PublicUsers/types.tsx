@@ -13,6 +13,8 @@ export enum PermissionsEnum {
   searchPublicAccount = 'SEARCH_PUBLIC_ACCOUNT',
   searchProAccount = 'SEARCH_PRO_ACCOUNT',
   readProEntity = 'READ_PRO_ENTITY',
+  manageProEntity = 'MANAGE_PRO_ENTITY',
+  validateOfferer = 'VALIDATE_OFFERER',
 }
 
 export interface UserApiResponse extends RaRecord {
