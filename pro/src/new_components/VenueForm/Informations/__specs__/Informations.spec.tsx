@@ -114,7 +114,7 @@ describe('components | Informations', () => {
       onSubmit,
       props,
     })
-    const siretInput = screen.getByLabelText('SIRET de ce lieu', {
+    const siretInput = screen.getByLabelText('SIRET du lieu', {
       exact: false,
     })
     const mailInput = screen.getByLabelText('Mail', {
@@ -139,7 +139,7 @@ describe('components | Informations', () => {
       onSubmit,
       props,
     })
-    const nameInput = screen.getByText('Nom du lieu')
+    const nameInput = screen.getByText('Nom juridique')
     const mailInput = screen.getByLabelText('Mail', {
       exact: false,
     })
