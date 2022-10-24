@@ -105,10 +105,12 @@ const OfferLayout = () => {
   }
 
   const offerHeader =
-    !isCreatingOffer &&
-    !isCompletingDraft &&
-    !location.pathname.includes('/confirmation') ? (
-      <OfferHeader offer={offer} reloadOffer={reloadOffer} />
+    !isCreatingOffer && !location.pathname.includes('/confirmation') ? (
+      <OfferHeader
+        offer={offer}
+        reloadOffer={reloadOffer}
+        canDeactivate={!isCompletingDraft}
+      />
     ) : null
 
   let offerHaveStock = false
