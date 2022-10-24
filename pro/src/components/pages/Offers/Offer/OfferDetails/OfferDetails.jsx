@@ -189,7 +189,7 @@ const OfferDetails = ({
               'Brouillon sauvegardé dans la liste des offres'
             )
             return Promise.resolve(() =>
-              history.push(`/offre/${createdOfferId}/individuel/brouillon`)
+              history.push(`/offre/${createdOfferId}/individuel/creation`)
             )
           }
           if (Object.keys(thumbnailInfo).length === 0) {

@@ -65,7 +65,7 @@ const OfferFormActions = ({
           onClick={onClickSaveDraft}
           variant={ButtonVariant.SECONDARY}
         >
-          Enregistrer un brouillon
+          Sauvegarder le brouillon
         </Button>
       )}
       <SubmitButton

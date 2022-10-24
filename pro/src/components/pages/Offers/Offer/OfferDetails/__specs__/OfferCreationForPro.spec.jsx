@@ -1923,7 +1923,7 @@ describe('offerDetails - Creation - pro user', () => {
       // Then
       expect(submitButton).toBeDisabled()
     })
-    it('should save offer and redirect to draft page on save draft button', async () => {
+    it('should save offer on save draft button click', async () => {
       api.getVenue.mockReturnValue(venues[0])
       await renderOffers(props)
 
@@ -1998,7 +1998,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       api.postOffer.mockResolvedValue(createdOffer)
       api.getOffer.mockResolvedValue(createdOffer)
-      const submitButton = screen.getByText('Enregistrer un brouillon')
+      const submitButton = screen.getByText('Sauvegarder le brouillon')
 
       // When
       await userEvent.click(submitButton)
@@ -2008,7 +2008,7 @@ describe('offerDetails - Creation - pro user', () => {
         screen.getByText('Brouillon sauvegardé dans la liste des offres')
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('heading', { name: "Compléter l'offre", level: 1 })
+        screen.getByRole('heading', { name: 'Créer une offre', level: 1 })
       ).toBeInTheDocument()
     })
 

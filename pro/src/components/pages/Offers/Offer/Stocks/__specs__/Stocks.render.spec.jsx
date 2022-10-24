@@ -642,7 +642,6 @@ describe('stocks page', () => {
         await userEvent.click(submitButton)
 
         // Then
-        expect(submitButton.firstChild).toBeEmptyDOMElement()
         expect(submitButton).toBeDisabled()
       })
 
