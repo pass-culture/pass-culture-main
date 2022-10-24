@@ -106,7 +106,6 @@ class FeatureToggle(enum.Enum):
     )
     # FIXME (dbaty, 2022-09-21): remove USE_INSEE_SIRENE_API once v207 is deployed.
     USE_INSEE_SIRENE_API = "Utiliser la nouvelle API Sirene de l'Insee"
-    APP_ENABLE_COOKIES_V2 = "Activer la gestion conforme des cookies"
     VENUE_FORM_V2 = "Afficher la version 2 du formulaire de lieu"
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
@@ -171,7 +170,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
-    FeatureToggle.APP_ENABLE_COOKIES_V2,
     FeatureToggle.VENUE_FORM_V2,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ENABLE_BOOST_API_INTEGRATION,

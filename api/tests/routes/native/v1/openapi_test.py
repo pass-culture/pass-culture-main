@@ -1163,7 +1163,6 @@ def test_public_api(client):
                         "accountCreationMinimumAge": {"title": "Accountcreationminimumage", "type": "integer"},
                         "accountUnsuspensionLimit": {"title": "Accountunsuspensionlimit", "type": "integer"},
                         "appEnableAutocomplete": {"title": "Appenableautocomplete", "type": "boolean"},
-                        "appEnableCookiesV2": {"title": "Appenablecookiesv2", "type": "boolean"},
                         "depositAmountsByAge": {
                             "allOf": [{"$ref": "#/components/schemas/DepositAmountsByAge"}],
                             "default": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
@@ -1195,7 +1194,6 @@ def test_public_api(client):
                         "objectStorageUrl",
                         "proDisableEventsQrcode",
                         "accountUnsuspensionLimit",
-                        "appEnableCookiesV2",
                     ],
                     "title": "SettingsResponse",
                     "type": "object",
