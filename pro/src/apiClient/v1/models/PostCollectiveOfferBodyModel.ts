@@ -18,6 +18,7 @@ export type PostCollectiveOfferBodyModel = {
   motorDisabilityCompliant?: boolean;
   name: string;
   offerVenue: CollectiveOfferVenueBodyModel;
+  offererId?: string | null;
   students: Array<StudentLevels>;
   subcategoryId: string;
   templateId?: string | null;
