@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react'
-
-/* istanbul ignore next: DEBT, TO FIX */
 export const getImageBitmap = async (
   file: File
 ): Promise<ImageBitmap | null> => {
@@ -18,21 +15,4 @@ export const getImageBitmap = async (
       })
   }
   return await createImageBitmap(file).catch(() => null)
-}
-
-/* istanbul ignore next: DEBT, TO FIX */
-export const useGetImageBitmap = (file: File) => {
-  const [width, setWidth] = useState<number>(0)
-  const [height, setHeight] = useState<number>(0)
-
-  useEffect(() => {
-    getImageBitmap(file).then(data => {
-      if (data) {
-        setWidth(data.width)
-        setHeight(data.height)
-      }
-    })
-  }, [])
-
-  return { width, height }
 }
