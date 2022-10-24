@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 
-import useNotification from 'components/hooks/useNotification'
 import { Offer } from 'core/Offers/types'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'

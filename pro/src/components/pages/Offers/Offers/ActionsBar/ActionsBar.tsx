@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 
-import useNotification from 'components/hooks/useNotification'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
+import useNotification from 'hooks/useNotification'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
