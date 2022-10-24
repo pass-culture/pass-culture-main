@@ -1,5 +1,6 @@
 import {
   Backdrop,
+  Button,
   Card,
   Chip,
   CircularProgress,
@@ -13,8 +14,14 @@ import {
 } from '@mui/material'
 import { captureException } from '@sentry/react'
 import React, { useEffect, useState } from 'react'
-import { useAuthenticated, useNotify, useRedirect } from 'react-admin'
+import {
+  useAuthenticated,
+  useNotify,
+  usePermissions,
+  useRedirect,
+} from 'react-admin'
 
+import { searchPermission } from '../../../helpers/functions'
 import { Colors } from '../../../layout/Colors'
 import {
   getGenericHttpErrorMessage,
@@ -23,6 +30,7 @@ import {
 } from '../../../providers/apiHelpers'
 import { apiProvider } from '../../../providers/apiProvider'
 import { OffererToBeValidated } from '../../../TypesFromApi'
+import { PermissionsEnum } from '../../PublicUsers/types'
 import { OfferersToValidateContextTableMenu } from '../Components/OfferersToValidateContextTableMenu'
 
 export const OfferersToValidate = () => {
@@ -37,6 +45,12 @@ export const OfferersToValidate = () => {
   })
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
+  const { permissions } = usePermissions()
+  const formattedAuthorizations: PermissionsEnum[] = permissions
+  const permissionGranted = !!searchPermission(
+    formattedAuthorizations,
+    PermissionsEnum.validateOfferer
+  )
 
   async function getOfferersToBeValidated(page: number) {
     try {
@@ -95,72 +109,88 @@ export const OfferersToValidate = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Card sx={{ padding: 2, mt: 5 }}>
-        <Typography variant={'h4'} color={Colors.GREY}>
-          Structures à valider
-        </Typography>
-        {data.total === 0 && (
-          <>Il n'y a pas de structure à valider pour le moment</>
-        )}
+      {permissionGranted && (
+        <>
+          <Card sx={{ padding: 2, mt: 5 }}>
+            <Typography variant={'h4'} color={Colors.GREY}>
+              Structures à valider
+            </Typography>
+            {data.total === 0 && (
+              <>Il n'y a pas de structure à valider pour le moment</>
+            )}
 
-        {data.total > 0 && (
-          <>
-            <Table size="small" sx={{ mt: 3 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Nom de la structure</TableCell>
-                  <TableCell>Statut</TableCell>
-                  <TableCell>Dernier Commentaire</TableCell>
-                  <TableCell>SIREN</TableCell>
-                  <TableCell>Responsable Structure</TableCell>
-                  <TableCell>Adresse</TableCell>
-                  <TableCell>CP</TableCell>
-                  <TableCell>Ville</TableCell>
-                  <TableCell>Tél</TableCell>
-                  <TableCell>Mail</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.offerers.map(offerer => (
-                  <TableRow key={offerer.id}>
-                    <TableCell>
-                      <OfferersToValidateContextTableMenu id={offerer.id} />
-                    </TableCell>
-                    <TableCell>{offerer.id}</TableCell>
-                    <TableCell>{offerer.name}</TableCell>
-                    <TableCell>
-                      <Chip label={offerer.status} />
-                    </TableCell>
-                    <TableCell>
-                      {offerer.lastComment && offerer.lastComment.content}
-                    </TableCell>
-                    <TableCell>{offerer.siren}</TableCell>
-                    <TableCell>{offerer.owner}</TableCell>
-                    <TableCell>{offerer.address}</TableCell>
-                    <TableCell>{offerer.postalCode}</TableCell>
-                    <TableCell>{offerer.city}</TableCell>
-                    <TableCell>{offerer.phoneNumber}</TableCell>
-                    <TableCell>{offerer.email}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-              <TablePagination
-                count={data.total}
-                page={currentPage}
-                onPageChange={onChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={onChangeRowsPerPage}
-                labelRowsPerPage={'Structures par page'}
-                labelDisplayedRows={({ from, to, count }) =>
-                  from + ' à ' + to + ' sur ' + count
-                }
-              />
-            </Table>
-          </>
-        )}
-      </Card>
+            {data.total > 0 && (
+              <>
+                <Table size="small" sx={{ mt: 3 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell></TableCell>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Nom de la structure</TableCell>
+                      <TableCell>Statut</TableCell>
+                      <TableCell>Dernier Commentaire</TableCell>
+                      <TableCell>SIREN</TableCell>
+                      <TableCell>Responsable Structure</TableCell>
+                      <TableCell>Adresse</TableCell>
+                      <TableCell>CP</TableCell>
+                      <TableCell>Ville</TableCell>
+                      <TableCell>Tél</TableCell>
+                      <TableCell>Mail</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {data.offerers.map(offerer => (
+                      <TableRow key={offerer.id}>
+                        <TableCell>
+                          <OfferersToValidateContextTableMenu id={offerer.id} />
+                        </TableCell>
+                        <TableCell>{offerer.id}</TableCell>
+                        <TableCell>{offerer.name}</TableCell>
+                        <TableCell>
+                          <Chip label={offerer.status} />
+                        </TableCell>
+                        <TableCell>
+                          {offerer.lastComment && offerer.lastComment.content}
+                        </TableCell>
+                        <TableCell>{offerer.siren}</TableCell>
+                        <TableCell>{offerer.owner}</TableCell>
+                        <TableCell>{offerer.address}</TableCell>
+                        <TableCell>{offerer.postalCode}</TableCell>
+                        <TableCell>{offerer.city}</TableCell>
+                        <TableCell>{offerer.phoneNumber}</TableCell>
+                        <TableCell>{offerer.email}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TablePagination
+                    count={data.total}
+                    page={currentPage}
+                    onPageChange={onChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={onChangeRowsPerPage}
+                    labelRowsPerPage={'Structures par page'}
+                    labelDisplayedRows={({ from, to, count }) =>
+                      from + ' à ' + to + ' sur ' + count
+                    }
+                  />
+                </Table>
+              </>
+            )}
+          </Card>
+        </>
+      )}
+      {!permissionGranted && (
+        <>
+          <Typography variant={'h5'} color={Colors.GREY} sx={{ mb: 3, mt: 3 }}>
+            Vous n'avez pas accès à cette page !
+          </Typography>
+          <div>
+            <Button variant={'outlined'} onClick={() => history.back()}>
+              Retour à la page précédente
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   )
 }
