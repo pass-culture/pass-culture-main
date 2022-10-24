@@ -26,7 +26,7 @@ Default.args = {
   cropBorderColor: '#FFF',
   cropBorderHeight: 30,
   cropBorderWidth: 40,
-  image: sampleImage,
+  image: sampleImage as unknown as File,
 }
 
 export const WithInitialScale = Template.bind({})
@@ -36,6 +36,6 @@ WithInitialScale.args = {
   cropBorderColor: '#FFF',
   cropBorderHeight: 30,
   cropBorderWidth: 40,
-  image: sampleImage,
+  image: sampleImage as unknown as File,
   initialScale: 1.5,
 }

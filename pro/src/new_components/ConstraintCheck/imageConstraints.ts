@@ -1,3 +1,5 @@
+import { getImageBitmap } from 'utils/image'
+
 type FileChecker = (file: File) => Promise<boolean>
 
 export type Constraint = {
@@ -6,30 +8,11 @@ export type Constraint = {
   asyncValidator: FileChecker
 }
 
-/* istanbul ignore next: DEBT, TO FIX */
-const getImageBitmap = async (file: File): Promise<ImageBitmap | null> => {
-  // Polyfill for Safari and IE not supporting createImageBitmap
-  if (!('createImageBitmap' in window)) {
-    window.createImageBitmap = async (
-      blob: ImageBitmapSource
-    ): Promise<ImageBitmap> =>
-      new Promise(resolve => {
-        const img = document.createElement('img')
-        img.addEventListener('load', function () {
-          resolve(this as any)
-        })
-        img.src = URL.createObjectURL(blob as Blob)
-      })
-  }
-  return await createImageBitmap(file).catch(() => null)
-}
-
 export const imageConstraints = {
   formats: (supportedImageTypes: string[]): Constraint => {
     const isNotAnImage: FileChecker = async file =>
       supportedImageTypes.includes(file.type) &&
       (await getImageBitmap(file)) !== null
-
     return {
       id: 'formats',
       description: 'Formats supportés : JPG, PNG',
