@@ -19,7 +19,7 @@ export interface IVenueFormValues {
   isVenueVirtual: boolean
   latitude: number
   longitude: number
-  mail: string
+  bookingEmail: string
   name: string
   phoneNumber: string
   postalCode: string
