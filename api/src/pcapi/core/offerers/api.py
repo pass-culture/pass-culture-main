@@ -1286,6 +1286,19 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
     return db.session.execute(offers_stats_query).one_or_none()
 
 
+def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
+    stats = (
+        offerers_models.Offerer.query.with_entities(
+            offerers_models.Offerer.validationStatus,
+            sa.func.count(offerers_models.Offerer.validationStatus).label("count"),
+        )
+        .group_by(offerers_models.Offerer.validationStatus)
+        .all()
+    )
+
+    return dict(stats)
+
+
 def list_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
     query = offerers_models.Offerer.query.filter(offerers_models.Offerer.isWaitingForValidation).options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),

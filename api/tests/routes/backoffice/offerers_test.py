@@ -1291,6 +1291,75 @@ class RemoveOffererTagTest:
         assert offerer_tag_mapping[0].id == mapping.id
 
 
+class OfferersStatsTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_stats(self, client):
+        # given
+        offerers_factories.UserOffererFactory(offerer__validationStatus=offerers_models.ValidationStatus.NEW)
+        offerers_factories.UserOffererFactory.create_batch(
+            2, offerer__validationStatus=offerers_models.ValidationStatus.PENDING
+        )
+        offerers_factories.UserOffererFactory.create_batch(
+            3, offerer__validationStatus=offerers_models.ValidationStatus.VALIDATED
+        )
+        offerers_factories.UserOffererFactory.create_batch(
+            4, offerer__validationStatus=offerers_models.ValidationStatus.REJECTED
+        )
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+
+        # when
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_stats"))
+
+        # then
+        assert response.status_code == 200
+        data = response.json["data"]
+        assert data == {"NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_offerer_stats_zero(self, client):
+        # given
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.VALIDATE_OFFERER])
+
+        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
+        n_queries += 1  # query should load all data in a single query
+
+        # when
+        with assert_num_queries(n_queries):
+            response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_stats"))
+
+        # then
+        assert response.status_code == 200
+        data = response.json["data"]
+        assert data == {"NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_offerer_stats_without_permission(self, client):
+        # given
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_stats"))
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_offerer_stats_as_anonymous(self, client):
+        # given
+        offerers_factories.UserNotValidatedOffererFactory()
+
+        # when
+        response = client.get(url_for("backoffice_blueprint.get_offerers_stats"))
+
+        # then
+        assert response.status_code == 403
+
+
 class ListOfferersToBeValidatedTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_list_only_offerers_to_be_validated(self, client):
