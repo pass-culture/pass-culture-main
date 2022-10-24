@@ -179,14 +179,12 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
 @private_api.route("/offerers/api_keys/<api_key_prefix>", methods=["DELETE"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def delete_api_key(api_key_prefix: str):  # type: ignore [no-untyped-def]
+def delete_api_key(api_key_prefix: str) -> None:
     with transaction():
         try:
             api.delete_api_key_by_user(current_user, api_key_prefix)
-        except sqla_orm.exc.NoResultFound:
+        except (sqla_orm.exc.NoResultFound, ApiKeyDeletionDenied):
             raise ApiErrors({"prefix": "not found"}, 404)
-        except ApiKeyDeletionDenied:
-            raise ApiErrors({"api_key": "deletion forbidden"}, 403)
 
 
 @private_api.route("/offerers", methods=["POST"])

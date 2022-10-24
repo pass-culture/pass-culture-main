@@ -66,4 +66,4 @@ def test_delete_api_key_not_allowed(client):
     client.with_session_auth(user_offerer.user.email)
     response = client.delete(f"/offerers/api_keys/{api_key.prefix}")
 
-    assert response.status_code == 403
+    assert response.status_code == 404  # not 403, which would imply that the prefix exists
