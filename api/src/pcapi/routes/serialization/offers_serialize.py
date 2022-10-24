@@ -12,6 +12,7 @@ from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
@@ -258,6 +259,7 @@ class ListOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: str | None
     period_ending_date: str | None
+    collective_offer_type: CollectiveOfferType | None
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
