@@ -76,6 +76,12 @@ export const getProviderInfo = (
       name: 'Ciné Office',
       synchronizedOfferMessage: 'Offre synchronisée avec Ciné Office',
     },
+    {
+      id: 'boost',
+      icon: 'logo-boost',
+      name: 'Boost',
+      synchronizedOfferMessage: 'Offre synchronisée avec Boost',
+    },
   ]
 
   return providers.find(providerInfo =>
