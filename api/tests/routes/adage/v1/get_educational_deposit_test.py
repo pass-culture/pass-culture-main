@@ -35,7 +35,6 @@ class Returns200Test:
             "deposits": [
                 {
                     "uai": educational_institution1.institutionId,
-                    # "uai": "0470009E",
                     "deposit": 2000.0,
                     "isFinal": True,
                 }
