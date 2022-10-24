@@ -281,6 +281,17 @@ def remove_tag_from_offerer(offerer_id: int, tag_name: str) -> None:
     repository.delete(mapping_to_delete)
 
 
+@blueprint.backoffice_blueprint.route("offerers/stats", methods=["GET"])
+@spectree_serialize(response_model=serialization.OfferersStatsResponseModel, on_success_status=200, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_offerers_stats() -> serialization.OfferersStatsResponseModel:
+    stats = offerers_api.get_offerers_stats()
+
+    return serialization.OfferersStatsResponseModel(
+        data={status.name: stats.get(status, 0) for status in offerers_models.ValidationStatus}
+    )
+
+
 def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer) -> serialization.Comment | None:
     if offerer.action_history:
         actions_with_comment = list(filter(lambda a: bool(a.comment), offerer.action_history))
