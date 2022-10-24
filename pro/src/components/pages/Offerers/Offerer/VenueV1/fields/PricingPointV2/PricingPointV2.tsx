@@ -102,11 +102,12 @@ const PricingPointV2 = ({
           onConfirm={handleClick}
           icon={ValidIcon}
           title="Êtes-vous sûr de vouloir sélectionner"
-          secondTitle="ce lieu avec SIRET\u00a0?"
+          secondTitle={`ce lieu avec SIRET\u00a0?`}
         >
           <p className={styles['text-dialog']}>
             Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
-            calcul de votre barème de remboursement. <br />
+            calcul de vos remboursements
+            <br />
             Ce choix ne pourra pas être modifié.
           </p>
           <ButtonLink
@@ -147,6 +148,7 @@ const PricingPointV2 = ({
             defaultValue={venue.pricingPoint?.id}
             label={''}
             options={pricingPointOptions}
+            hideFooter
           />
         </div>
         {!readOnly && !isInputDisabled && !venue.pricingPoint && (

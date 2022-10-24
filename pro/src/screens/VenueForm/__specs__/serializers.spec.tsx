@@ -43,6 +43,7 @@ const formValues: IVenueFormValues = {
   bannerUrl: '',
   withdrawalDetails: 'Oui',
   isWithdrawalAppliedOnAllOffers: false,
+  reimbursementPointId: 91,
 }
 
 describe('screen | VenueForm | serializers', () => {
@@ -119,6 +120,7 @@ describe('screen | VenueForm | serializers', () => {
       bannerUrl: '',
       withdrawalDetails: 'Oui',
       isWithdrawalAppliedOnAllOffers: false,
+      reimbursementPointId: 91,
     }
     const result = serializePostVenueBodyModel(formValues, {
       hideSiret: true,

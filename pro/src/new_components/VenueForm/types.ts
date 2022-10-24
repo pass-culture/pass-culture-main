@@ -2,6 +2,7 @@ import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1
 import { IAccessibiltyFormValues } from 'core/shared'
 
 export interface IVenueFormValues {
+  reimbursementPointId: number | null
   accessibility: IAccessibiltyFormValues
   address: string
   addressAutocomplete: string
