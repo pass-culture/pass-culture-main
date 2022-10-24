@@ -251,7 +251,7 @@ describe('homepage', () => {
         renderHomePage(store)
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
         await userEvent.click(
-          screen.getByRole('button', { name: 'ico-clear.svg' })
+          screen.getByRole('button', { name: /Masquer le bandeau/ })
         )
         expect(spyRegister).toHaveBeenCalledTimes(1)
         expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
@@ -281,6 +281,7 @@ describe('homepage', () => {
               lastName: 'Do',
               email: 'john.do@dummy.xyz',
               phoneNumber: '01 00 00 00 00',
+              hasSeenProRgs: true,
             },
             initialized: true,
           },
@@ -299,11 +300,11 @@ describe('homepage', () => {
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
         expect(
-          screen.queryByLabelText(/des métiers de la culture/)
+          screen.getByLabelText(/des métiers de la culture/)
         ).toBeInTheDocument()
 
         await userEvent.click(
-          screen.getByRole('button', { name: 'icons-close.svg' })
+          screen.getByRole('button', { name: /Masquer le bandeau/ })
         )
         expect(
           screen.queryByLabelText(/des métiers de la culture/)
