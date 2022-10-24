@@ -37,7 +37,6 @@ class SettingsTest:
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": False,
             "accountUnsuspensionLimit": 60,
-            "appEnableCookiesV2": False,
         }
 
     @override_features(
@@ -50,7 +49,6 @@ class SettingsTest:
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         PRO_DISABLE_EVENTS_QRCODE=True,
         APP_ENABLE_AUTOCOMPLETE=False,
-        APP_ENABLE_COOKIES_V2=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -69,5 +67,4 @@ class SettingsTest:
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": True,
             "accountUnsuspensionLimit": 60,
-            "appEnableCookiesV2": True,
         }
