@@ -46,36 +46,38 @@ const OfferFormActions = ({
 
   return (
     <div className={cn(styles['form-actions'])}>
-      <ButtonLink
-        className={styles['action']}
-        link={{
-          to: cancelUrl,
-          isExternal: false,
-        }}
-        variant={ButtonVariant.SECONDARY}
-        onClick={onCancelClick}
-      >
-        {'Annuler et quitter'}
-      </ButtonLink>
-
-      {canSaveDraft && isDraftEnabled && (
-        <Button
+      <div>
+        <ButtonLink
           className={styles['action']}
-          disabled={isDisabled || isSubmitLoading}
-          onClick={onClickSaveDraft}
+          link={{
+            to: cancelUrl,
+            isExternal: false,
+          }}
           variant={ButtonVariant.SECONDARY}
+          onClick={onCancelClick}
         >
-          Sauvegarder le brouillon
-        </Button>
-      )}
-      <SubmitButton
-        className={styles['last-action']}
-        disabled={isDisabled}
-        isLoading={isSubmitLoading}
-        onClick={onClickNext}
-      >
-        {isEdition ? 'Enregistrer les modifications' : 'Étape suivante'}
-      </SubmitButton>
+          {'Annuler et quitter'}
+        </ButtonLink>
+      </div>
+      <div className={styles['right-actions']}>
+        {canSaveDraft && isDraftEnabled && (
+          <Button
+            className={styles['action']}
+            disabled={isDisabled || isSubmitLoading}
+            onClick={onClickSaveDraft}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Sauvegarder le brouillon
+          </Button>
+        )}
+        <SubmitButton
+          disabled={isDisabled}
+          isLoading={isSubmitLoading}
+          onClick={onClickNext}
+        >
+          {isEdition ? 'Enregistrer les modifications' : 'Étape suivante'}
+        </SubmitButton>
+      </div>
     </div>
   )
 }
