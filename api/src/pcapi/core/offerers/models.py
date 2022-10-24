@@ -726,7 +726,7 @@ class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusM
 
 
 class ApiKey(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    # TODO: remove value colum when legacy keys are migrated
+    # FIXME (dbaty, 2022-10-25): remove column once v211 is deployed
     value = Column(CHAR(64), index=True, nullable=True)
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
