@@ -6,5 +6,6 @@ export type VenueResponse = {
   id: number;
   name: string;
   publicName?: string | null;
+  relative: Array<number>;
 };
 

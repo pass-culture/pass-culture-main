@@ -22,6 +22,7 @@ export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOf
 export type { Coordinates } from './models/Coordinates';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
+export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQueryModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferDomain } from './models/OfferDomain';
