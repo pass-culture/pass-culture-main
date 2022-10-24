@@ -405,6 +405,10 @@ class Comment(BaseModel):
     content: str
 
 
+class OfferersStatsResponseModel(BaseModel):
+    data: dict[str, int]  # keys are validationStatus names
+
+
 class OffererToBeValidated(BaseModel):
     id: int
     name: str
