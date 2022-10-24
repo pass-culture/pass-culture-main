@@ -273,17 +273,22 @@ export class DefaultService {
   /**
    * get_venue_by_siret <GET>
    * @param siret
+   * @param getRelative
    * @returns VenueResponse OK
    * @throws ApiError
    */
   public getVenueBySiret(
     siret: string,
+    getRelative: boolean = false,
   ): CancelablePromise<VenueResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/venues/siret/{siret}',
       path: {
         'siret': siret,
+      },
+      query: {
+        'getRelative': getRelative,
       },
       errors: {
         403: `Forbidden`,
@@ -295,17 +300,22 @@ export class DefaultService {
   /**
    * get_venue_by_id <GET>
    * @param venueId
+   * @param getRelative
    * @returns VenueResponse OK
    * @throws ApiError
    */
   public getVenueById(
     venueId: number,
+    getRelative: boolean = false,
   ): CancelablePromise<VenueResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/venues/{venue_id}',
       path: {
         'venue_id': venueId,
+      },
+      query: {
+        'getRelative': getRelative,
       },
       errors: {
         403: `Forbidden`,
