@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
+import { useGetImageBitmap } from 'hooks/useGetBitmap'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
@@ -11,7 +12,6 @@ import { coordonateToPosition } from 'new_components/ImageEditor/utils'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
 import { Button, Divider } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { useGetImageBitmap } from 'utils/image'
 
 import style from './ModalImageCrop.module.scss'
 
