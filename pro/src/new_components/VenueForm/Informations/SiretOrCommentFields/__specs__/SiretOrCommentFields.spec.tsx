@@ -68,7 +68,6 @@ describe('components | SiretOrCommentFields', () => {
   const onSubmit = jest.fn()
 
   beforeEach(() => {
-    const siretLabel = 'Siret field'
     const setIsFieldNameFrozen = jest.fn()
     const updateIsSiretValued = jest.fn()
     validationSchema = generateSiretValidationSchema('012345678', true)
@@ -76,20 +75,19 @@ describe('components | SiretOrCommentFields', () => {
     props = {
       isCreatedEntity: true,
       setIsFieldNameFrozen: setIsFieldNameFrozen,
-      siretLabel: siretLabel,
       readOnly: false,
       updateIsSiretValued: updateIsSiretValued,
     }
   })
 
-  it('should display siret field by default', async () => {
+  it('should display Siret by default', async () => {
     await renderSiretOrComment({
       initialValues,
       onSubmit,
       props,
       validationSchema,
     })
-    const siretField = screen.getByLabelText('Siret field')
+    const siretField = screen.getByLabelText('SIRET du lieu')
     expect(siretField).toBeInTheDocument()
     const commentField = screen.queryByText('Commentaire du lieu sans SIRET')
     expect(commentField).not.toBeInTheDocument()
@@ -104,10 +102,10 @@ describe('components | SiretOrCommentFields', () => {
     })
 
     const toggle = screen.getByRole('button', {
-      name: 'Je veux créer un lieu avec SIRET',
+      name: 'Ce lieu possède un SIRET',
     })
     await userEvent.click(toggle)
-    const siretField = screen.queryByText('Siret field')
+    const siretField = screen.queryByText('SIRET du lieu')
     expect(siretField).not.toBeInTheDocument()
     const commentField = screen.getByLabelText(
       'Commentaire du lieu sans SIRET',
@@ -128,7 +126,7 @@ describe('components | SiretOrCommentFields', () => {
     })
 
     const toggle = screen.getByRole('button', {
-      name: 'Je veux créer un lieu avec SIRET',
+      name: 'Ce lieu possède un SIRET',
     })
     expect(toggle).toBeDisabled()
   })
@@ -142,7 +140,7 @@ describe('components | SiretOrCommentFields', () => {
         validationSchema,
       })
 
-      const siretInput = screen.getByLabelText('Siret field', {
+      const siretInput = screen.getByLabelText('SIRET du lieu', {
         exact: false,
       })
       await userEvent.type(siretInput, '01234567800000')
@@ -176,7 +174,7 @@ describe('components | SiretOrCommentFields', () => {
       })
 
       const siretInput: HTMLInputElement = screen.getByLabelText(
-        'Siret field',
+        'SIRET du lieu',
         {
           exact: false,
         }
@@ -195,7 +193,7 @@ describe('components | SiretOrCommentFields', () => {
       })
 
       const siretInput: HTMLInputElement = screen.getByLabelText(
-        'Siret field',
+        'SIRET du lieu',
         {
           exact: false,
         }
@@ -213,7 +211,7 @@ describe('components | SiretOrCommentFields', () => {
         validationSchema,
       })
 
-      const siretInput = screen.getByLabelText('Siret field', {
+      const siretInput = screen.getByLabelText('SIRET du lieu', {
         exact: false,
       })
       await userEvent.click(siretInput)
@@ -233,7 +231,7 @@ describe('components | SiretOrCommentFields', () => {
         validationSchema,
       })
 
-      const siretInput = screen.getByLabelText('Siret field', {
+      const siretInput = screen.getByLabelText('SIRET du lieu', {
         exact: false,
       })
       await userEvent.click(siretInput)
@@ -255,7 +253,7 @@ describe('components | SiretOrCommentFields', () => {
         props,
         validationSchema,
       })
-      const siretInput = screen.getByLabelText('Siret field', {
+      const siretInput = screen.getByLabelText('SIRET du lieu', {
         exact: false,
       })
       await userEvent.click(siretInput)

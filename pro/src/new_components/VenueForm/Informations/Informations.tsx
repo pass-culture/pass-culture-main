@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
-import { Select, TextArea, TextInput } from 'ui-kit'
+import { InfoBox, Select, TextArea, TextInput } from 'ui-kit'
 
 import { IVenueFormValues } from '..'
 
@@ -27,7 +27,6 @@ const Informations = ({
 }: IInformations) => {
   const { initialValues } = useFormikContext<IVenueFormValues>()
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
-  const siretLabel = isCreatedEntity ? 'SIRET de ce lieu' : 'SIRET'
 
   return (
     <>
@@ -36,7 +35,6 @@ const Informations = ({
           {!venueIsVirtual && (
             <SiretOrCommentFields
               initialSiret={initialValues.siret}
-              siretLabel={siretLabel}
               readOnly={readOnly || !!initialValues.siret}
               isToggleDisabled={!isCreatedEntity}
               isCreatedEntity={isCreatedEntity}
@@ -48,16 +46,19 @@ const Informations = ({
         <FormLayout.Row>
           <TextInput
             name="name"
-            label="Nom du lieu"
+            label="Nom juridique"
             disabled={readOnly || isFieldNameFrozen}
           />
         </FormLayout.Row>
-        <FormLayout.Row>
-          <TextInput
-            name="publicName"
-            label="Nom d'affichage du lieu"
-            isOptional
-          />
+        <FormLayout.Row
+          sideComponent={
+            <InfoBox
+              type="info"
+              text="C’est ce nom qui sera visible par le grand public et affiché sur votre justificatif de remboursement."
+            />
+          }
+        >
+          <TextInput name="publicName" label="Nom d’affichage" isOptional />
         </FormLayout.Row>
         <FormLayout.Row>
           <TextInput
