@@ -19,8 +19,15 @@ const validationSchema = {
   webSiteAddress: yup.string().test({
     name: 'matchWebsiteUrl',
     message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-    test: (url?: string) => (url ? url.match(urlRegex) !== null : true),
+    test: (url?: string) => {
+      /* istanbul ignore next: DEBT, TO FIX */
+      return url ? url.match(urlRegex) !== null : true
+    },
   }),
+  bookingEmail: yup
+    .string()
+    .required('Veuillez renseigner une adresse e-mail')
+    .email('Veuillez renseigner un e-mail valide'),
 }
 
 export default validationSchema

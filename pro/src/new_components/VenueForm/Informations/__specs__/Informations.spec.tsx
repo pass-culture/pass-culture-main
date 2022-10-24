@@ -117,15 +117,11 @@ describe('components | Informations', () => {
     const siretInput = screen.getByLabelText('SIRET du lieu', {
       exact: false,
     })
-    const mailInput = screen.getByLabelText('Mail', {
-      exact: false,
-    })
     const venueTypeSelect = screen.getByLabelText('Type de lieu', {
       exact: false,
     })
 
     await userEvent.type(siretInput, '12345678912345')
-    await userEvent.type(mailInput, 'superCine@example.com')
     await userEvent.selectOptions(venueTypeSelect, 'CINEMA')
 
     await userEvent.click(buttonSubmit)
@@ -140,9 +136,6 @@ describe('components | Informations', () => {
       props,
     })
     const nameInput = screen.getByText('Nom juridique')
-    const mailInput = screen.getByLabelText('Mail', {
-      exact: false,
-    })
     const venueTypeSelect = screen.getByLabelText('Type de lieu', {
       exact: false,
     })
@@ -150,12 +143,6 @@ describe('components | Informations', () => {
     await userEvent.click(nameInput)
     await userEvent.tab()
     expect(screen.getByText('Veuillez renseigner un nom')).toBeInTheDocument()
-
-    await userEvent.click(mailInput)
-    await userEvent.tab()
-    expect(
-      screen.getByText('Veuillez renseigner une adresse e-mail')
-    ).toBeInTheDocument()
 
     await userEvent.selectOptions(
       venueTypeSelect,

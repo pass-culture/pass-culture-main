@@ -22,7 +22,7 @@ const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
     isVenueVirtual: venue.isVenueVirtual,
     latitude: venue.latitude,
     longitude: venue.longitude,
-    mail: venue.mail,
+    bookingEmail: venue.mail,
     name: venue.name,
     phoneNumber: venue.contact.phoneNumber,
     postalCode: venue.postalCode,

@@ -90,7 +90,7 @@ const formValues: IVenueFormValues = {
   comment: '',
   description: '',
   isVenueVirtual: false,
-  mail: 'em@ail.fr',
+  bookingEmail: 'em@ail.fr',
   name: 'MINISTERE DE LA CULTURE',
   publicName: 'Melodie Sims',
   siret: '881 457 238 23022',
