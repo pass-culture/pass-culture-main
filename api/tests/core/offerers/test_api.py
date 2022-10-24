@@ -15,7 +15,6 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.exceptions as offerers_exceptions
-from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
@@ -411,7 +410,6 @@ class EditVenueContactTest:
 class ApiKeyTest:
     def test_generate_and_save_api_key(self):
         offerer = offerers_factories.OffererFactory()
-
         generated_key = offerers_api.generate_and_save_api_key(offerer.id)
 
         found_api_key = offerers_api.find_api_key(generated_key)
@@ -419,16 +417,16 @@ class ApiKeyTest:
         assert found_api_key.offerer == offerer
 
     def test_legacy_api_key(self):
-        offerer = offerers_factories.OffererFactory()
-        value = "a very secret key"
-        ApiKey(value=value, offerer=offerer)
+        value = "a very secret legacy key"
+        key = offerers_factories.ApiKeyFactory(prefix="development_a very s", secret="ecret legacy key")
 
         found_api_key = offerers_api.find_api_key(value)
 
-        assert found_api_key.offerer == offerer
+        assert found_api_key == key
 
     def test_no_key_found(self):
-        assert not offerers_api.find_api_key("legacy-key")
+        assert not offerers_api.find_api_key("")
+        assert not offerers_api.find_api_key("idonotexist")
         assert not offerers_api.find_api_key("development_prefix_value")
 
 

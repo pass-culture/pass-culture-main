@@ -351,12 +351,17 @@ def _generate_api_key_prefix() -> str:
 
 
 def find_api_key(key: str) -> models.ApiKey | None:
-    try:
+    if key.count(API_KEY_SEPARATOR) != 2:
+        # Handle legacy keys that did not have any prefix. They were
+        # plain 64-characters strings. They have been migrated so that
+        # their prefix is their first 8 characters (and the rest is
+        # their secret).
+        env = settings.ENV
+        prefix_identifier, clear_secret = key[:8], key[8:]
+        prefix = _create_prefix(env, prefix_identifier)
+    else:
         env, prefix_identifier, clear_secret = key.split(API_KEY_SEPARATOR)
         prefix = _create_prefix(env, prefix_identifier)
-    except ValueError:
-        # TODO: remove this legacy behaviour once we forbid old keys
-        return models.ApiKey.query.filter_by(value=key).one_or_none()
 
     api_key = models.ApiKey.query.filter_by(prefix=prefix).one_or_none()
 
