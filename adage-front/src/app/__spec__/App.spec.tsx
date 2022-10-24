@@ -111,6 +111,7 @@ describe('app', () => {
         id: 1436,
         name: 'Librairie de Paris',
         publicName: "Lib de Par's",
+        relative: [],
       }
 
       mockedApi.authenticate.mockResolvedValue({
