@@ -1587,6 +1587,57 @@ class ListOfferersToBeValidatedTest:
         assert sorted(o["name"] for o in data) == sorted(expected_offerer_names)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_list_search_by_siren(self, client, offerers_to_be_validated):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", q="123004004")
+        )
+
+        # then
+        assert response.status_code == 200
+        data = response.json["data"]
+        assert len(data) == 1
+        assert data[0]["name"] == "D"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    @pytest.mark.parametrize(
+        "search_filter, expected_offerer_names",
+        (
+            ("cinema de la plage", ["Cinéma de la Petite Plage", "Cinéma de la Grande Plage"]),
+            ("cinéma", ["Cinéma de la Petite Plage", "Cinéma de la Grande Plage", "Cinéma du Centre"]),
+            ("Plage", ["Librairie de la Plage", "Cinéma de la Petite Plage", "Cinéma de la Grande Plage"]),
+            ("Librairie du Centre", []),
+        ),
+    )
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_list_search_by_name(self, search_filter, expected_offerer_names, client):
+        # given
+        for name in (
+            "Librairie de la Plage",
+            "Cinéma de la Petite Plage",
+            "Cinéma du Centre",
+            "Cinéma de la Grande Plage",
+        ):
+            offerers_factories.NotValidatedOffererFactory(name=name)
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", q=search_filter)
+        )
+
+        # then
+        assert response.status_code == 200
+        data = response.json["data"]
+        assert len(data) == len(expected_offerer_names)
+        assert sorted(o["name"] for o in data) == sorted(expected_offerer_names)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(
         "status_filter, expected_offerer_names",
         (
