@@ -69,6 +69,10 @@ class UserOffererAlreadyValidatedException(Exception):
     pass
 
 
+class InvalidSiren(Exception):
+    pass
+
+
 class CannotDeleteOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
