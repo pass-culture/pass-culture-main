@@ -3,13 +3,12 @@ import logging
 from pcapi.core.educational.repository import get_educational_deposit_with_uai_code_by_year
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
+from pcapi.routes.adage.v1 import blueprint
 from pcapi.routes.adage.v1.serialization import educational_deposit as deposit_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
 
 logger = logging.getLogger(__name__)
-
-from . import blueprint
 
 
 @blueprint.adage_v1.route("years/<string:year_id>/deposits", methods=["GET"])
