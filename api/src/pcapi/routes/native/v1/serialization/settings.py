@@ -25,7 +25,6 @@ class SettingsResponse(BaseModel):
     object_storage_url: str
     pro_disable_events_qrcode: bool
     account_unsuspension_limit: int
-    app_enable_cookies_v2: bool
 
     class Config:
         alias_generator = to_camel
