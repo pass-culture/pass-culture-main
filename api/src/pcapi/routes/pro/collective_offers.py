@@ -114,6 +114,10 @@ def get_collective_offer_template(offer_id: str) -> collective_offers_serialize.
 def create_collective_offer(
     body: collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
+    # sometimes offerer_id is sent in body but it should not be there
+    if body.offerer_id is not None:
+        logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
+
     try:
         offer = educational_api.create_collective_offer(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
