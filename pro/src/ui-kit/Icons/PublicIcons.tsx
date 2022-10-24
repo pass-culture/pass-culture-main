@@ -573,6 +573,12 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
+          <Icon svg="logo-boost" />
+        </td>
+        <td>public/icons/logo-boost</td>
+      </tr>
+      <tr>
+        <td>
           <Icon svg="logo-decitre" />
         </td>
         <td>public/icons/logo-decitre</td>
