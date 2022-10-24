@@ -20,10 +20,11 @@ export interface IImageEditorConfig {
   cropBorderColor: string
   cropBorderHeight: number
   cropBorderWidth: number
+  maxScale: number
 }
 
 export interface IImageEditorProps extends IImageEditorConfig {
-  image: string | File
+  image: File
   saveInitialScale?: (scale: number) => void
   initialPosition?: Position
   initialScale?: number
@@ -42,6 +43,7 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
       saveInitialScale,
       initialPosition = { x: 0.5, y: 0.5 },
       initialScale,
+      maxScale = 4,
     },
     ref
   ) => {
@@ -121,7 +123,7 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
           <span className={style['image-editor-scale-input']}>
             <ThemeProvider theme={theme}>
               <CustomSlider
-                max={4}
+                max={maxScale > 1 ? maxScale : 1}
                 min={1}
                 onChange={onScaleChange}
                 step={0.01}
