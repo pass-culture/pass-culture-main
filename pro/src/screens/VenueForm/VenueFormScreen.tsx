@@ -5,10 +5,10 @@ import { useHistory } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
-import useNotification from 'components/hooks/useNotification'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import {
   IVenueFormValues,
   validationSchema,
