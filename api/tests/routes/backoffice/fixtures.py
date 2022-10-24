@@ -328,17 +328,17 @@ def offerer_tags():
 def offerers_to_be_validated(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
-    no_tag = offerers_factories.NotValidatedOffererFactory(name="A", address=None)
+    no_tag = offerers_factories.NotValidatedOffererFactory(name="A", siren="123001001", address=None)
     top = offerers_factories.NotValidatedOffererFactory(
-        name="B", validationStatus=offerers_models.ValidationStatus.PENDING
+        name="B", siren="123002002", validationStatus=offerers_models.ValidationStatus.PENDING
     )
-    collec = offerers_factories.NotValidatedOffererFactory(name="C")
+    collec = offerers_factories.NotValidatedOffererFactory(name="C", siren="123003003")
     public = offerers_factories.NotValidatedOffererFactory(
-        name="D", validationStatus=offerers_models.ValidationStatus.PENDING
+        name="D", siren="123004004", validationStatus=offerers_models.ValidationStatus.PENDING
     )
-    top_collec = offerers_factories.NotValidatedOffererFactory(name="E")
+    top_collec = offerers_factories.NotValidatedOffererFactory(name="E", siren="123005005")
     top_public = offerers_factories.NotValidatedOffererFactory(
-        name="F", validationStatus=offerers_models.ValidationStatus.PENDING
+        name="F", siren="123006006", validationStatus=offerers_models.ValidationStatus.PENDING
     )
 
     for offerer in (top, top_collec, top_public):

@@ -80,7 +80,7 @@ class FilterableQuery(BaseModel):
 
 
 class OffererToBeValidatedQuery(PaginableQuery, FilterableQuery):
-    pass
+    q: str | None
 
 
 class SearchQuery(PaginableQuery):
