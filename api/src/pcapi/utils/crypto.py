@@ -9,8 +9,8 @@ def _hash_password_with_bcrypt(clear_text: str) -> bytes:
     return bcrypt.hashpw(clear_text.encode("utf-8"), bcrypt.gensalt())
 
 
-def _check_password_with_bcrypt(clear_text: str, hashed: str) -> bool:
-    return bcrypt.checkpw(clear_text.encode("utf-8"), hashed)  # type: ignore [arg-type]
+def _check_password_with_bcrypt(clear_text: str, hashed: bytes) -> bool:
+    return bcrypt.checkpw(clear_text.encode("utf-8"), hashed)
 
 
 def _hash_password_with_md5(clear_text: str) -> bytes:
@@ -19,10 +19,10 @@ def _hash_password_with_md5(clear_text: str) -> bytes:
     return md5(clear_text.encode("utf-8")).hexdigest().encode("utf-8")
 
 
-def _check_password_with_md5(clear_text: str, hashed: str) -> bool:
+def _check_password_with_md5(clear_text: str, hashed: bytes) -> bool:
     if not settings.IS_DEV:
         raise RuntimeError("This password hasher should not be used outside tests.")
-    # non constant-time comparison because it's test-only
+    # non constant-time comparison is fine, it's only used in tests
     return _hash_password_with_md5(clear_text) == hashed
 
 
@@ -31,6 +31,6 @@ def hash_password(clear_text: str) -> bytes:
     return hasher(clear_text)
 
 
-def check_password(clear_text: str, hashed: str) -> bool:
+def check_password(clear_text: str, hashed: bytes) -> bool:
     checker = _check_password_with_md5 if settings.IS_DEV else _check_password_with_bcrypt
     return checker(clear_text, hashed)

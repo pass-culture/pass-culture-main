@@ -29,7 +29,7 @@ def check_user_and_credentials(user: models.User | None, password: str, allow_in
         # Hash the given password, just like we would do if the user
         # existed. This avoids user enumeration by comparing server
         # response time.
-        crypto.check_password(password, HASHED_PLACEHOLDER)  # type: ignore [arg-type]
+        crypto.check_password(password, HASHED_PLACEHOLDER)
         raise exceptions.InvalidIdentifier()
     if not (user.checkPassword(password) and (user.isActive or allow_inactive)):
         logging.info("Failed authentication attempt", extra={"user": user.id, "avoid_current_user": True})
