@@ -104,7 +104,7 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByLabelText(/Un établissement en particulier/)
     )
     expect(
-      screen.getByRole('button', { name: /Valider et créer l’offre/ })
+      screen.getByRole('button', { name: /Étape suivante/ })
     ).toBeDisabled()
   })
 
@@ -147,7 +147,7 @@ describe('CollectiveOfferVisibility', () => {
     )
     await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     await userEvent.click(
-      screen.getByRole('button', { name: /Valider et créer l’offre/ })
+      screen.getByRole('button', { name: /Étape suivante/ })
     )
     expect(spyPatch).toHaveBeenCalledTimes(1)
     expect(props.onSuccess).toHaveBeenCalledWith({
@@ -179,7 +179,7 @@ describe('CollectiveOfferVisibility', () => {
     )
     await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     await userEvent.click(
-      screen.getByRole('button', { name: /Valider et créer l’offre/ })
+      screen.getByRole('button', { name: /Étape suivante/ })
     )
     expect(spyPatch).toHaveBeenCalledTimes(1)
     await waitFor(() => expect(notifyError).toHaveBeenNthCalledWith(1, 'Ooops'))

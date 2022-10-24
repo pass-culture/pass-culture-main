@@ -130,11 +130,12 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
       const listItems = await screen.findAllByRole('listitem')
 
-      expect(listItems).toHaveLength(4)
+      expect(listItems).toHaveLength(5)
       expect(listItems[0]).toHaveTextContent("Détails de l'offre")
       expect(listItems[1]).toHaveTextContent('Date et prix')
       expect(listItems[2]).toHaveTextContent('Visibilité')
-      expect(listItems[3]).toHaveTextContent('Confirmation')
+      expect(listItems[3]).toHaveTextContent('Récapitulatif')
+      expect(listItems[4]).toHaveTextContent('Confirmation')
     })
 
     it('should generate link with offerId when user is editing an offer', async () => {
