@@ -24,6 +24,7 @@ import {
   OFFER_STATUS_DRAFT,
 } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
@@ -55,6 +56,8 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
   const history = useHistory()
   const location = useLocation()
   const notification = useNotification()
+  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
+
   const summaryStepUrl = isOfferDraft
     ? isCompletingDraft
       ? `/offre/${offer.id}/individuel/brouillon/recapitulatif`
@@ -200,7 +203,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
                 isEdition: !isOfferDraft,
               })
-              if (isSavingDraft)
+              if (isDraftEnabled)
                 notification.success(
                   'Brouillon sauvegardé dans la liste des offres'
                 )
