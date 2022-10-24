@@ -47,6 +47,7 @@ export const ALL_OFFERERS = 'all'
 export const ALL_CATEGORIES = 'all'
 export const ALL_STATUS = 'all'
 export const ALL_CREATION_MODES = 'all'
+export const ALL_COLLECTIVE_OFFER_TYPE = 'all'
 export const ALL_EVENT_PERIODS = ''
 export const DEFAULT_PAGE = 1
 export const NUMBER_OF_OFFERS_PER_PAGE = 10
@@ -60,6 +61,7 @@ export const DEFAULT_SEARCH_FILTERS: TSearchFilters = {
   categoryId: ALL_CATEGORIES,
   status: ALL_STATUS,
   creationMode: ALL_CREATION_MODES,
+  collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
 }
@@ -77,8 +79,19 @@ const CREATION_MODES_OPTIONS = [
   { displayName: 'Manuelle', id: 'manual' },
   { displayName: 'Importée', id: 'imported' },
 ]
+const COLLECTIVE_OFFER_TYPES_OPTIONS = [
+  { displayName: 'Tout', id: ALL_CREATION_MODES },
+  { displayName: 'Offre vitrine', id: 'template' },
+  { displayName: 'Offre réservable', id: 'offer' },
+]
+
 export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] =
   CREATION_MODES_OPTIONS
+
+export const [
+  DEFAULT_COLLECTIVE_OFFER_TYPE,
+  ...COLLECTIVE_OFFER_TYPES_FILTERS
+] = COLLECTIVE_OFFER_TYPES_OPTIONS
 export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'
 

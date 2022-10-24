@@ -9,13 +9,16 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES_OPTION,
+  COLLECTIVE_OFFER_TYPES_FILTERS,
   CREATION_MODES_FILTERS,
+  DEFAULT_COLLECTIVE_OFFER_TYPE,
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -94,6 +97,13 @@ const SearchFilters = ({
     [updateSearchFilters]
   )
 
+  const storeCollectiveOfferType = useCallback(
+    (event: FormEvent<HTMLSelectElement>) => {
+      updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
+    },
+    [updateSearchFilters]
+  )
+
   const changePeriodBeginningDateValue = useCallback(
     (periodBeginningDate: Date) => {
       const dateToFilter = periodBeginningDate
@@ -133,6 +143,11 @@ const SearchFilters = ({
   const resetFilterButtonProps = !hasSearchFilters(selectedFilters)
     ? { 'aria-current': 'page', isDisabled: true }
     : {}
+
+  const isCollectiveOfferDuplicationActive = useActiveFeature(
+    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
+  )
+
   return (
     <>
       {offerer && (
@@ -154,7 +169,8 @@ const SearchFilters = ({
         />
         <div
           className={
-            audience === Audience.INDIVIDUAL
+            audience === Audience.INDIVIDUAL ||
+            isCollectiveOfferDuplicationActive
               ? 'form-row'
               : 'collective-form-row'
           }
@@ -188,6 +204,18 @@ const SearchFilters = ({
               selectedValue={selectedFilters.creationMode}
             />
           )}
+          {audience === Audience.COLLECTIVE &&
+            isCollectiveOfferDuplicationActive && (
+              <Select
+                defaultOption={DEFAULT_COLLECTIVE_OFFER_TYPE}
+                handleSelection={storeCollectiveOfferType}
+                isDisabled={disableAllFilters}
+                label="Type de l'offre"
+                name="collectiveOfferType"
+                options={COLLECTIVE_OFFER_TYPES_FILTERS}
+                selectedValue={selectedFilters.collectiveOfferType}
+              />
+            )}
           <PeriodSelector
             changePeriodBeginningDateValue={changePeriodBeginningDateValue}
             changePeriodEndingDateValue={changePeriodEndingDateValue}
