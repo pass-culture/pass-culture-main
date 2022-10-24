@@ -1825,7 +1825,7 @@
   dependencies:
     tslib "^2.1.0"
 
-"@firebase/remote-config@^0.8.2":
+"@firebase/remote-config@0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@firebase/remote-config/-/remote-config-0.3.14.tgz#44b2e6174b82b9729ab0893ab80eadcc7b3c830c"
   integrity sha512-wEOz3Tasxhr5lCGioe0WNZwDOoQhNZK2qGAm5+AlHAPaAhWIWvqUTkKsk3nFRztyRZzj3r9k5Gc2OSpEcQKP1A==
