@@ -327,7 +327,7 @@ def list_offerers_to_be_validated(
     filters = []
     if query.filter:
         filters = json.loads(urllib.parse.unquote_plus(query.filter))
-    offerers = offerers_api.list_offerers_to_be_validated(filters)
+    offerers = offerers_api.list_offerers_to_be_validated(query.q, filters)
 
     sorts = urllib.parse.unquote_plus(query.sort or "[]")
     try:
