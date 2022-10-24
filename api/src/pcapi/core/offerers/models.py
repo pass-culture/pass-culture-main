@@ -737,10 +737,10 @@ class ApiKey(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     prefix = Column(Text, nullable=True, unique=True)
 
-    secret = Column(LargeBinary, nullable=True)
+    secret: bytes = Column(LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
-        return crypto.check_password(clear_text, self.secret)  # type: ignore [arg-type]
+        return crypto.check_password(clear_text, self.secret)
 
 
 class OffererTag(PcObject, Base, Model):  # type: ignore [valid-type, misc]
