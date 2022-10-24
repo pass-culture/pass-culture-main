@@ -14,6 +14,7 @@ export type TSearchFilters = {
   categoryId: string
   status: string
   creationMode: string
+  collectiveOfferType: string
   periodBeginningDate: string
   periodEndingDate: string
 }

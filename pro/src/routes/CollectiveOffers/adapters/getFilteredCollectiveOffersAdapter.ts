@@ -35,6 +35,7 @@ export const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdap
         creationMode,
         periodBeginningDate,
         periodEndingDate,
+        collectiveOfferType,
       } = serializeApiFilters(apiFilters)
 
       const offers = await api.getCollectiveOffers(
@@ -45,7 +46,8 @@ export const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdap
         categoryId,
         creationMode,
         periodBeginningDate,
-        periodEndingDate
+        periodEndingDate,
+        collectiveOfferType
       )
 
       return {

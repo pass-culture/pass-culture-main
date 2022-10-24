@@ -189,6 +189,7 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
+            undefined,
             undefined
           )
         })
@@ -266,6 +267,7 @@ describe('route CollectiveOffers', () => {
               undefined,
               undefined,
               undefined,
+              undefined,
               undefined
             )
           })
@@ -298,6 +300,7 @@ describe('route CollectiveOffers', () => {
               undefined,
               undefined,
               undefined,
+              undefined,
               undefined
             )
           })
@@ -322,6 +325,7 @@ describe('route CollectiveOffers', () => {
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+              undefined,
               undefined,
               undefined,
               undefined,
@@ -359,6 +363,7 @@ describe('route CollectiveOffers', () => {
               undefined,
               'INACTIVE',
               venueId,
+              undefined,
               undefined,
               undefined,
               undefined,
@@ -411,6 +416,7 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
+            undefined,
             undefined
           )
         })
@@ -431,6 +437,7 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             proVenues[0].id,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -459,6 +466,7 @@ describe('route CollectiveOffers', () => {
             'CINEMA',
             undefined,
             undefined,
+            undefined,
             undefined
           )
         })
@@ -483,6 +491,7 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             '2020-12-25T00:00:00Z',
+            undefined,
             undefined
           )
         })
@@ -507,7 +516,28 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            '2020-12-27T23:59:59Z'
+            '2020-12-27T23:59:59Z',
+            undefined
+          )
+        })
+        it('should load offers with selected offer type', async () => {
+          // Given
+          await renderOffers(store)
+          const offerTypeSelect = screen.getByLabelText("Type de l'offre")
+          await userEvent.selectOptions(offerTypeSelect, 'template')
+          // When
+          await userEvent.click(screen.getByText('Lancer la recherche'))
+          // Then
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'template'
           )
         })
       })
@@ -563,6 +593,7 @@ describe('route CollectiveOffers', () => {
       // Then
       expect(api.getCollectiveOffers).toHaveBeenCalledWith(
         'search string',
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -766,6 +797,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
         undefined
       )
     })
@@ -898,6 +930,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
         undefined
       )
 
@@ -913,6 +946,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
         undefined
       )
 
@@ -923,6 +957,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -963,6 +998,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
         undefined
       )
 
@@ -977,6 +1013,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
         undefined
       )
 
@@ -984,6 +1021,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
+        undefined,
         undefined,
         undefined,
         undefined,

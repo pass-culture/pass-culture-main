@@ -16,6 +16,7 @@ import {
   ALL_STATUS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
+  DEFAULT_COLLECTIVE_OFFER_TYPE,
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
@@ -148,6 +149,7 @@ describe('screen Offers', () => {
         creationMode: DEFAULT_CREATION_MODE.id,
         periodBeginningDate: ALL_EVENT_PERIODS,
         periodEndingDate: ALL_EVENT_PERIODS,
+        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.id,
       })
     })
 
@@ -643,6 +645,7 @@ describe('screen Offers', () => {
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
+        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.id,
       })
     })
   })
