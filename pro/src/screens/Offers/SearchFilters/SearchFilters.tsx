@@ -66,33 +66,29 @@ const SearchFilters = ({
   )
 
   const storeNameOrIsbnSearchValue = useCallback(
-    (event: Event) => {
-      const target = event.target as HTMLSelectElement
-      updateSearchFilters({ nameOrIsbn: target.value })
+    (event: FormEvent<HTMLSelectElement>) => {
+      updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
     },
     [updateSearchFilters]
   )
 
   const storeSelectedVenue = useCallback(
-    (event: Event) => {
-      const target = event.target as HTMLSelectElement
-      updateSearchFilters({ venueId: target.value })
+    (event: FormEvent<HTMLSelectElement>) => {
+      updateSearchFilters({ venueId: event.currentTarget.value })
     },
     [updateSearchFilters]
   )
 
   const storeSelectedCategory = useCallback(
-    (event: Event) => {
-      const target = event.target as HTMLSelectElement
-      updateSearchFilters({ categoryId: target.value })
+    (event: FormEvent<HTMLSelectElement>) => {
+      updateSearchFilters({ categoryId: event.currentTarget.value })
     },
     [updateSearchFilters]
   )
 
   const storeCreationMode = useCallback(
-    (event: Event) => {
-      const target = event.target as HTMLSelectElement
-      updateSearchFilters({ creationMode: target.value })
+    (event: FormEvent<HTMLSelectElement>) => {
+      updateSearchFilters({ creationMode: event.currentTarget.value })
     },
     [updateSearchFilters]
   )
