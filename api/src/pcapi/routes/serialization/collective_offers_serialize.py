@@ -12,6 +12,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -29,11 +30,6 @@ from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
     "T_GetCollectiveOfferBaseResponseModel", bound="GetCollectiveOfferBaseResponseModel"
 )
-
-
-class CollectiveOfferType(enum.Enum):
-    offer = "offer"
-    template = "template"
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
