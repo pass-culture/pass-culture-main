@@ -30,6 +30,7 @@ const BannerLayout = ({
   linkNode,
 }: IBannerLayoutProps): JSX.Element => {
   const isNewStyles = true
+  /* istanbul ignore next: graphic variation */
   const styles = isNewStyles ? newStyles : oldStyles
   return (
     <div
@@ -45,27 +46,30 @@ const BannerLayout = ({
       <span className={styles['border-cut']}>
         {closable && (
           <button onClick={handleOnClick} type="button">
-            {isNewStyles &&
-            type != 'new' &&
-            type != 'light' &&
-            type != 'image' ? (
-              <IcoClearIcon
-                title="Masquer le bandeau"
-                className={cn(styles['close-icon-banner'])}
-              />
-            ) : (
-              <CloseIcon
-                title="Masquer le bandeau"
-                className={styles['close-icon']}
-              />
-            )}
+            {
+              /* istanbul ignore next: graphic variation */
+              isNewStyles && type != 'new' && type != 'light' ? (
+                <IcoClearIcon
+                  title="Masquer le bandeau"
+                  className={cn(styles['close-icon-banner'])}
+                />
+              ) : (
+                <CloseIcon
+                  title="Masquer le bandeau"
+                  className={styles['close-icon']}
+                />
+              )
+            }
           </button>
         )}
 
         <div className={styles['content']}>
-          {type === 'new' && (
-            <Icon svg="ico-star" className={styles['ico-new']} />
-          )}
+          {
+            /* istanbul ignore next: graphic variation */
+            type === 'new' && (
+              <Icon svg="ico-star" className={styles['ico-new']} />
+            )
+          }
           <div>
             {children && (
               <div

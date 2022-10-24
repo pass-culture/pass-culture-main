@@ -127,8 +127,13 @@
 
     button {
       position: absolute;
-      right: rem.torem(16px);
+      right: rem.torem(8px);
       top: rem.torem(8px);
+
+      .close-icon-banner {
+        height: rem.torem(20px);
+        width: rem.torem(20px);
+      }
 
       .close-icon-banner, path {
         fill: colors.$white;
