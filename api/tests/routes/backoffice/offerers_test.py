@@ -101,7 +101,9 @@ class GetOffererUsersTest:
     def test_cannot_get_offerer_users_without_permission(self, client):
         # given
         offerer1 = offerers_factories.OffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.READ_PRO_ENTITY]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -265,7 +267,7 @@ class GetOffererBasicInfoTest:
     def test_cannot_get_offerer_without_permission(self, client):
         # given
         user = users_factories.UserFactory()
-        auth_token = generate_token(user, [])
+        auth_token = generate_token(user, [perm for perm in Permissions if perm != Permissions.READ_PRO_ENTITY])
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -395,7 +397,7 @@ class GetOffererTotalRevenueTest:
     def test_cannot_get_offerer_without_permission(self, client):
         # given
         user = users_factories.UserFactory()
-        auth_token = generate_token(user, [])
+        auth_token = generate_token(user, [perm for perm in Permissions if perm != Permissions.READ_PRO_ENTITY])
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -552,7 +554,7 @@ class GetOffererOffersStatsTest:
     def test_cannot_get_offerer_offers_stats_without_permission(self, client):
         # given
         user = users_factories.UserFactory()
-        auth_token = generate_token(user, [])
+        auth_token = generate_token(user, [perm for perm in Permissions if perm != Permissions.READ_PRO_ENTITY])
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -718,7 +720,7 @@ class GetOffererHistoryTest:
     def test_cannot_get_offerer_history_without_permission(self, client, offerer):
         # given
         user = users_factories.UserFactory()
-        auth_token = generate_token(user, [])
+        auth_token = generate_token(user, [perm for perm in Permissions if perm != Permissions.READ_PRO_ENTITY])
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -799,7 +801,9 @@ class ValidateOffererTest:
     def test_cannot_validate_offerer_without_permission(self, client):
         # given
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -893,7 +897,9 @@ class RejectOffererTest:
     def test_cannot_reject_offerer_without_permission(self, client):
         # given
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -957,7 +963,9 @@ class SetOffererPendingTest:
     def test_cannot_set_offerer_pending_without_permission(self, client):
         # given
         offerer = offerers_factories.NotValidatedOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1015,7 +1023,9 @@ class CommentOffererTest:
     def test_cannot_comment_offerer_without_permission(self, client):
         # given
         offerer = offerers_factories.NotValidatedOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1078,7 +1088,9 @@ class GetOfferersTagsTest:
     def test_cannot_get_offerers_tags_list_without_permission(self, client):
         # given
         offerers_factories.OffererTagFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.MANAGE_PRO_ENTITY]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).get(url_for("backoffice_blueprint.get_offerers_tags_list"))
@@ -1143,7 +1155,9 @@ class AddOffererTagTest:
         # given
         offerer = offerers_factories.OffererFactory()
         tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.MANAGE_PRO_ENTITY]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1259,7 +1273,9 @@ class RemoveOffererTagTest:
         offerer = offerers_factories.OffererFactory()
         tag = offerers_factories.OffererTagFactory(name="test-tag", label="Test Tag")
         mapping = offerers_factories.OffererTagMappingFactory(offererId=offerer.id, tagId=tag.id)
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.MANAGE_PRO_ENTITY]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).delete(
@@ -1597,7 +1613,7 @@ class ListOfferersToBeValidatedTest:
     def test_cannot_list_without_permission(self, client):
         # given
         user = users_factories.UserFactory()
-        auth_token = generate_token(user, [])
+        auth_token = generate_token(user, [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER])
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -1737,7 +1753,9 @@ class ValidateOffererAttachmentTest:
     def test_cannot_validate_offerer_attachment_without_permission(self, client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1811,7 +1829,9 @@ class RejectOffererAttachmentTest:
     def test_cannot_reject_offerer_attachment_without_permission(self, client):
         # given
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1875,7 +1895,9 @@ class SetOffererAttachmentPendingTest:
     def test_cannot_set_offerer_pending_without_permission(self, client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -1935,7 +1957,9 @@ class CommentOffererAttachmentTest:
     def test_cannot_comment_offerer_attachment_without_permission(self, client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PRO_ENTITY])
+        auth_token = generate_token(
+            users_factories.UserFactory(), [perm for perm in Permissions if perm != Permissions.VALIDATE_OFFERER]
+        )
 
         # when
         response = client.with_explicit_token(auth_token).post(
