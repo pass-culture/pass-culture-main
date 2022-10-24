@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react'
 
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
+import FormLayout from 'new_components/FormLayout'
 import { IVenueFormValues } from 'new_components/VenueForm/types'
-import { TextArea, TextInput } from 'ui-kit'
+import { InfoBox, TextArea, TextInput } from 'ui-kit'
 import Toggle from 'ui-kit/Toggle'
 
 export interface SiretOrCommentInterface {
@@ -13,7 +14,6 @@ export interface SiretOrCommentInterface {
   isToggleDisabled?: boolean
   readOnly: boolean
   setIsFieldNameFrozen: (isNameFrozen: boolean) => void
-  siretLabel: string
   updateIsSiretValued: (isSiretValued: boolean) => void
 }
 
@@ -23,7 +23,6 @@ const SiretOrCommentFields = ({
   isToggleDisabled = false,
   setIsFieldNameFrozen,
   readOnly,
-  siretLabel,
   updateIsSiretValued,
 }: SiretOrCommentInterface): JSX.Element => {
   const [isSiretSelected, setIsSiretSelected] = useState(
@@ -67,20 +66,36 @@ const SiretOrCommentFields = ({
       })
   }, [touched.siret, errors.siret, isSiretSelected])
 
+  const [sideComponent, setSideComponent] = useState(<></>)
+  useEffect(() => {
+    setSideComponent(
+      isSiretSelected ? (
+        <InfoBox
+          type="info"
+          text="Le SIRET du lieu doit être lié au SIREN de votre structure. Attention, ce SIRET ne sera plus modifiable. "
+        />
+      ) : (
+        <></>
+      )
+    )
+  }, [isSiretSelected])
+
   return (
     <>
       {isCreatedEntity && (
-        <Toggle
-          label="Je veux créer un lieu avec SIRET"
-          isActiveByDefault={isSiretSelected}
-          isDisabled={readOnly || isToggleDisabled}
-          handleClick={handleToggleClick}
-        />
+        <FormLayout.Row sideComponent={sideComponent}>
+          <Toggle
+            label="Ce lieu possède un SIRET"
+            isActiveByDefault={isSiretSelected}
+            isDisabled={readOnly || isToggleDisabled}
+            handleClick={handleToggleClick}
+          />
+        </FormLayout.Row>
       )}
       {isSiretSelected ? (
         <TextInput
           name="siret"
-          label={siretLabel}
+          label="SIRET du lieu"
           disabled={readOnly}
           type="text"
           onChange={e => formatSiret(e.target.value)}
@@ -89,8 +104,7 @@ const SiretOrCommentFields = ({
         <TextArea
           label="Commentaire du lieu sans SIRET"
           name="comment"
-          placeholder="Je suis un équipement culturel (ou autre) donc je n’ai pas de SIRET ou je n’ai pas la gestion de ce lieu, il accueille simplement une proposition...
-          "
+          placeholder="Par exemple : Le lieu est un équipement culturel donc je n’ai pas de SIRET"
           isOptional={isSiretSelected}
         />
       )}
