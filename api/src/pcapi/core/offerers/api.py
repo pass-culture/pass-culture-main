@@ -36,6 +36,7 @@ import pcapi.routes.serialization.base as serialize_base
 from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
+from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
 
@@ -1299,12 +1300,22 @@ def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
     return dict(stats)
 
 
-def list_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+def list_offerers_to_be_validated(search_query: str | None, filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
     query = offerers_models.Offerer.query.options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
         sa.orm.joinedload(offerers_models.Offerer.tags),
         sa.orm.joinedload(offerers_models.Offerer.action_history),
     )
+
+    if search_query:
+        if search_query.isnumeric():
+            if len(search_query) != 9:
+                raise exceptions.InvalidSiren("Le SIREN doit faire 9 caractères")
+            query = query.filter(offerers_models.Offerer.siren == search_query)
+        else:
+            name = search_query.replace(" ", "%").replace("-", "%")
+            name = clean_accents(name)
+            query = query.filter(sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"))
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
 
