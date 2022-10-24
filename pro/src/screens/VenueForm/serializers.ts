@@ -36,6 +36,7 @@ const serializeCommunData = (
     venueTypeCode: formValues.venueType,
     visualDisabilityCompliant: formValues.accessibility.visual,
     withdrawalDetails: formValues.withdrawalDetails,
+    reimbursementPointId: formValues.reimbursementPointId,
     contact: {
       email: formValues.email,
       phoneNumber: formValues.phoneNumber,
