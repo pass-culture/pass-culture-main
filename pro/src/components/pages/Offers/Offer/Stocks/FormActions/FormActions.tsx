@@ -45,7 +45,7 @@ const FormActions = ({
       <div>
         {(isCreation || isCompletingDraft) && isDraftEnabled && (
           <Button
-            disabled={!canSubmit}
+            disabled={!canSubmit || isSubmiting}
             onClick={onSubmitDraft}
             variant={ButtonVariant.SECONDARY}
           >
@@ -53,11 +53,7 @@ const FormActions = ({
           </Button>
         )}
 
-        <SubmitButton
-          disabled={!canSubmit}
-          isLoading={isSubmiting}
-          onClick={onSubmit}
-        >
+        <SubmitButton disabled={!canSubmit || isSubmiting} onClick={onSubmit}>
           {isDraft ? 'Étape suivante' : 'Enregistrer les modifications'}
         </SubmitButton>
       </div>

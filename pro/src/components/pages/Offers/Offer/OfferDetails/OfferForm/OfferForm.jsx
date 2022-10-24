@@ -27,6 +27,7 @@ import {
 } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -83,6 +84,7 @@ const OfferForm = ({
   const [receiveNotificationEmails, setReceiveNotificationEmails] =
     useState(false)
   const [venue, setVenue] = useState(null)
+  const notification = useNotification()
   const [formValues, setFormValues] = useState({})
   const [venueOptions, setVenueOptions] = useState(
     sortByDisplayName(
@@ -585,7 +587,11 @@ const OfferForm = ({
         }
       } else {
         redirectToError()
-        showErrorNotification()
+        if (isSavingDraft)
+          notification.error(
+            'Des champs sont obligatoires pour enregistrer en brouillon'
+          )
+        else showErrorNotification()
       }
       setIsSubmitLoading(false)
     },
