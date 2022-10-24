@@ -21,7 +21,7 @@ const serializeCommunData = (
   const model = {
     address: formValues.address,
     audioDisabilityCompliant: formValues.accessibility.audio,
-    bookingEmail: formValues.mail,
+    bookingEmail: formValues.bookingEmail,
     city: formValues.city,
     comment: formValues.comment,
     description: formValues.description,

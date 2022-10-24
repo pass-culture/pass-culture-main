@@ -61,14 +61,6 @@ const Informations = ({
           <TextInput name="publicName" label="Nom d’affichage" isOptional />
         </FormLayout.Row>
         <FormLayout.Row>
-          <TextInput
-            name="mail"
-            label="Adresse e-mail qui recevra les notifications de réservation"
-            type="email"
-            placeholder="email@exemple.com"
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
           <Select
             options={[
               {
