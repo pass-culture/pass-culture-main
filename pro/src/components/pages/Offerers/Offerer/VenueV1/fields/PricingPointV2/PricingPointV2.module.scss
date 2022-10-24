@@ -22,18 +22,24 @@
   display: flex;
   align-items: center;
   margin-top: rem.torem(10px);
+  flex-wrap: wrap;
+
+  .select {
+    width: 100%;
+    margin-bottom: rem.torem(16px);
+  }
 
   .select > select {
-    width: rem.torem(550px);
     text-overflow: ellipsis;
   }
 
   .space-left {
-    margin-left: rem.torem(16px);
+    margin-bottom: rem.torem(16px);
   }
 
   .space-text-left {
     margin-left: rem.torem(10px);
     font-weight: 500;
+    margin-bottom: rem.torem(16px);
   }
 }

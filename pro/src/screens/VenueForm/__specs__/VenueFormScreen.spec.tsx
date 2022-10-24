@@ -121,6 +121,7 @@ const formValues: IVenueFormValues = {
   bannerUrl: '',
   withdrawalDetails: 'Oui',
   isWithdrawalAppliedOnAllOffers: false,
+  reimbursementPointId: 91,
 }
 
 describe('screen | VenueForm', () => {

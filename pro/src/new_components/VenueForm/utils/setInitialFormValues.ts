@@ -4,6 +4,7 @@ import { IVenueFormValues } from '../types'
 
 const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
   return {
+    reimbursementPointId: venue.reimbursementPointId,
     accessibility: venue.accessibility,
     address: venue.address,
     addressAutocomplete: `${venue.address} ${venue.postalCode} ${venue.city}`,

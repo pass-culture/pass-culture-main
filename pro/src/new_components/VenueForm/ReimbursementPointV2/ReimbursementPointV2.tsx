@@ -3,16 +3,15 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Spinner from 'components/layout/Spinner'
+import ApplicationBanner from 'components/pages/Offerers/Offerer/VenueV1/fields/ApplicationBanner'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import InfoDialog from 'new_components/InfoDialog'
 import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
-import { Title } from 'ui-kit'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form'
-
-import ApplicationBanner from '../ApplicationBanner'
+import { Title } from 'ui-kit/index'
 
 import styles from './ReimbursementPointV2.module.scss'
 
@@ -188,6 +187,7 @@ const ReimbursementPointV2 = ({
                   name="reimbursementPointId"
                   disabled={readOnly || !venueHasPricingPoint}
                   label="Coordonnées bancaires"
+                  defaultValue={venue.pricingPoint?.id}
                   options={[
                     {
                       value: '',
