@@ -15,7 +15,11 @@ import Header from '../Header'
 
 const mockLogEvent = jest.fn()
 jest.mock('apiClient/api', () => ({
-  api: { signout: jest.fn() },
+  api: { signout: jest.fn(), listOfferersNames: jest.fn() },
+}))
+jest.mock('hooks/useStats', () => ({
+  __esModule: true,
+  default: () => true,
 }))
 
 const defaultStore = {
@@ -184,6 +188,10 @@ describe('navigation menu', () => {
           list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
         },
       }
+      api.listOfferersNames.mockResolvedValue({
+        offerersNames: ['AE'],
+      })
+
       renderHeader(overrideStore)
 
       // When
