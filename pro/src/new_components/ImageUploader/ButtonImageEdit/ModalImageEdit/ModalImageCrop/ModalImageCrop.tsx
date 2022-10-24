@@ -11,11 +11,12 @@ import { coordonateToPosition } from 'new_components/ImageEditor/utils'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
 import { Button, Divider } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { useGetImageBitmap } from 'utils/image'
 
 import style from './ModalImageCrop.module.scss'
 
 interface IModalImageCropProps {
-  image: string | File
+  image: File
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
@@ -40,8 +41,13 @@ const ModalImageCrop = ({
   initialScale,
   mode,
 }: IModalImageCropProps): JSX.Element => {
+  const { width } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
+  const maxScale: number = {
+    [UploaderModeEnum.OFFER]: (width * (2 / 3)) / 400,
+    [UploaderModeEnum.VENUE]: width / 600,
+  }[mode]
   const title: string = {
     [UploaderModeEnum.OFFER]: "Image de l'offre",
     [UploaderModeEnum.VENUE]: 'Image du lieu',
@@ -57,6 +63,7 @@ const ModalImageCrop = ({
       cropBorderColor: '#FFF',
       cropBorderHeight: 50,
       cropBorderWidth: 105,
+      maxScale,
     },
     [UploaderModeEnum.VENUE]: {
       canvasHeight,
@@ -64,6 +71,7 @@ const ModalImageCrop = ({
       cropBorderColor: '#FFF',
       cropBorderHeight: 40,
       cropBorderWidth: 100,
+      maxScale,
     },
   }[mode]
 
