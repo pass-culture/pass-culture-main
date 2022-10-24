@@ -7,9 +7,9 @@ import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollect
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
+import CollectiveOfferStockCreation from 'routes/CollectiveOfferStockCreation'
 import CollectiveOfferVisibilityCreation from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
-import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 
 import { getActiveStep } from '../utils/getActiveStep'
 
@@ -75,7 +75,7 @@ const CollectiveOfferCreationRoutes = ({
             </Route>
             <Route path="/offre/:offerId/collectif/stocks">
               {collectiveOffer ? (
-                <OfferEducationalStockCreation offer={collectiveOffer} />
+                <CollectiveOfferStockCreation offer={collectiveOffer} />
               ) : (
                 <Spinner />
               )}
