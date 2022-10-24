@@ -14,6 +14,7 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { useGetCategories } from 'core/Offers/adapters'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -40,6 +41,7 @@ const OfferDetails = ({
   const history = useHistory()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
+  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
 
   const [formInitialValues, setFormInitialValues] = useState({})
   const [isReady, setIsReady] = useState(false)
@@ -184,10 +186,12 @@ const OfferDetails = ({
           const response = await api.postOffer(offerValues)
           const createdOfferId = response.id
           await postThumbnail(createdOfferId, thumbnailInfo)
-          if (isSavingDraft) {
+          if (isDraftEnabled) {
             notification.success(
               'Brouillon sauvegardé dans la liste des offres'
             )
+          }
+          if (isSavingDraft) {
             return Promise.resolve(() =>
               history.push(`/offre/${createdOfferId}/individuel/creation`)
             )
