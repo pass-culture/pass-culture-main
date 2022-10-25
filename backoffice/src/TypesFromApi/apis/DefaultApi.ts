@@ -65,6 +65,9 @@ import {
   OffererTotalRevenueResponseModel,
   OffererTotalRevenueResponseModelFromJSON,
   OffererTotalRevenueResponseModelToJSON,
+  OfferersStatsResponseModel,
+  OfferersStatsResponseModelFromJSON,
+  OfferersStatsResponseModelToJSON,
   OptionalCommentRequest,
   OptionalCommentRequestFromJSON,
   OptionalCommentRequestToJSON,
@@ -89,9 +92,6 @@ import {
   SearchProResponseModel,
   SearchProResponseModelFromJSON,
   SearchProResponseModelToJSON,
-  ToBeValidatedOffererFilter,
-  ToBeValidatedOffererFilterFromJSON,
-  ToBeValidatedOffererFilterToJSON,
   ValidationErrorElement,
   ValidationErrorElementFromJSON,
   ValidationErrorElementToJSON,
@@ -173,7 +173,7 @@ export interface GetVenueTotalRevenueRequest {
 }
 
 export interface ListOfferersToBeValidatedRequest {
-  filter?: Array<ToBeValidatedOffererFilter>
+  filter?: string | null
   page?: number | null
   perPage?: number | null
   sort?: string | null
@@ -901,6 +901,45 @@ export class DefaultApi extends runtime.BaseAPI {
   }
 
   /**
+   * get_offerers_stats <GET>
+   */
+  async getOfferersStatsRaw(): Promise<
+    runtime.ApiResponse<OfferersStatsResponseModel>
+  > {
+    const queryParameters: runtime.HTTPQuery = {}
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/offerers/stats`,
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      OfferersStatsResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * get_offerers_stats <GET>
+   */
+  async getOfferersStats(): Promise<OfferersStatsResponseModel> {
+    const response = await this.getOfferersStatsRaw()
+    return await response.value()
+  }
+
+  /**
    * get_offerers_tags_list <GET>
    */
   async getOfferersTagsListRaw(): Promise<
@@ -1271,8 +1310,8 @@ export class DefaultApi extends runtime.BaseAPI {
   ): Promise<runtime.ApiResponse<ListOffererToBeValidatedResponseModel>> {
     const queryParameters: runtime.HTTPQuery = {}
 
-    if (requestParameters.filter) {
-      //queryParameters['filter'] = requestParameters.filter
+    if (requestParameters.filter !== undefined) {
+      queryParameters['filter'] = requestParameters.filter
     }
 
     if (requestParameters.page !== undefined) {
