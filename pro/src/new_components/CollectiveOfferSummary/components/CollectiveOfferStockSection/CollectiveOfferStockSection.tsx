@@ -3,6 +3,7 @@ import React from 'react'
 
 import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -50,7 +51,10 @@ const CollectiveOfferStockSection = ({
         title="Nombre de places"
         description={stock?.numberOfTickets || DEFAULT_RECAP_VALUE}
       />
-      <SummaryLayout.Row title="Prix total" description={`${stock?.price}€`} />
+      <SummaryLayout.Row
+        title={TOTAL_PRICE_LABEL}
+        description={`${stock?.price}€`}
+      />
       <SummaryLayout.Row
         title="Date limite de réservation"
         description={
