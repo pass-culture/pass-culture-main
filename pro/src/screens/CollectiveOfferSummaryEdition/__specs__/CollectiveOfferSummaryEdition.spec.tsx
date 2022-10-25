@@ -1,14 +1,20 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import {
+  Events,
+  OFFER_FROM_TEMPLATE_ENTRIES,
+} from 'core/FirebaseEvents/constants'
+import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
 } from 'core/OfferEducational'
+import * as useAnalytics from 'hooks/useAnalytics'
 import {
   categoriesFactory,
   subCategoriesFactory,
@@ -65,6 +71,7 @@ const renderCollectiveOfferSummaryEdition = (
 describe('CollectiveOfferSummary', () => {
   let offer: CollectiveOfferTemplate | CollectiveOffer
   let categories: EducationalCategories
+  const mockLogEvent = jest.fn()
 
   beforeEach(() => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true })
@@ -74,6 +81,10 @@ describe('CollectiveOfferSummary', () => {
         { categoryId: 'CAT_1', id: 'SUBCAT_1' },
       ]),
     }
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
   it('should render create from template button if offer is template', () => {
     renderCollectiveOfferSummaryEdition(offer, categories)
@@ -108,5 +119,23 @@ describe('CollectiveOfferSummary', () => {
     })
 
     expect(cancelBooking).toBeInTheDocument()
+  })
+
+  it('should log event when clicking duplicate offer button', async () => {
+    offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+    renderCollectiveOfferSummaryEdition(offer, categories)
+
+    const duplicateOffer = screen.getByRole('link', {
+      name: 'Créer une offre réservable pour un établissement scolaire',
+    })
+    await userEvent.click(duplicateOffer)
+
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
+      {
+        from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+      }
+    )
   })
 })

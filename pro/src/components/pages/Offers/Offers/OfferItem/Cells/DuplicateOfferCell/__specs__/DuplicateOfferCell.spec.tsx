@@ -7,11 +7,11 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { configureTestStore } from 'store/testUtils'
 
-import DuplicateOfferCell from '../DuplicateOfferCell'
+import DuplicateOfferCell, {
+  LOCAL_STORAGE_HAS_SEEN_MODAL_KEY,
+} from '../DuplicateOfferCell'
 
-const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
-
-const renderDuplicateOfferCell = () => {
+const renderDuplicateOfferCell = (isTemplate = true) => {
   const store = configureTestStore({
     user: {
       initialized: true,
@@ -30,9 +30,9 @@ const renderDuplicateOfferCell = () => {
             <tbody>
               <tr>
                 <DuplicateOfferCell
-                  isTemplate
+                  isTemplate={isTemplate}
                   templateOfferId="AE"
-                ></DuplicateOfferCell>
+                />
               </tr>
             </tbody>
           </table>
@@ -46,6 +46,15 @@ const renderDuplicateOfferCell = () => {
 }
 
 describe('DuplicateOfferCell', () => {
+  it('should not render duplicate button if offer is not template', () => {
+    renderDuplicateOfferCell(false)
+    const button = screen.queryByRole('button', {
+      name: 'Créer une offre réservable pour un établissement',
+    })
+
+    expect(button).not.toBeInTheDocument()
+  })
+
   it('should close dialog when click on cancel button', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
@@ -96,7 +105,27 @@ describe('DuplicateOfferCell', () => {
     )
   })
 
-  it('should redirect to offer duplication if user has check option to not display modal again', async () => {
+  it('should not update local storage if user does not check any option', async () => {
+    localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
+    renderDuplicateOfferCell()
+    const button = screen.getByRole('button', {
+      name: 'Créer une offre réservable pour un établissement',
+    })
+    await userEvent.click(button)
+
+    const modalConfirmButton = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+    await userEvent.click(modalConfirmButton)
+    expect(
+      screen.getByText("Parcours de duplication d'offre")
+    ).toBeInTheDocument()
+    expect(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY)).toEqual(
+      'false'
+    )
+  })
+
+  it('should redirect to offer duplication if user has already check option to not display modal again', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
