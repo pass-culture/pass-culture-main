@@ -26,7 +26,7 @@ const DuplicateOfferDialog = ({
       <p className={styles['duplicate-offer-dialog-text']}>
         Les informations que vous avez renseignées dans l’offre vitrine seront
         copiées. Vous pourrez modifier les informations de l’offre. Il vous
-        restera alors à sélectionner l’établissement scolaire qui ont fait une
+        restera alors à sélectionner l’établissement scolaire qui a fait une
         demande et à renseigner les informations de date et prix.
       </p>
       <BaseCheckbox
