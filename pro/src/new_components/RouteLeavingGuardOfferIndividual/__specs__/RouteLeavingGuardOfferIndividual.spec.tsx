@@ -49,7 +49,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
   let history: History
 
   beforeEach(() => {
-    props = {}
+    props = { when: true }
     history = createBrowserHistory()
   })
 

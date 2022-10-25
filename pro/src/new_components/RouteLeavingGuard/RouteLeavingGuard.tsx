@@ -15,6 +15,7 @@ export interface IRouteLeavingGuardProps {
   ) => IShouldBlockNavigationReturnValue
   when: boolean
   dialogTitle: string
+  tracking?: (p: string) => void
 }
 
 const RouteLeavingGuard = ({
@@ -23,9 +24,11 @@ const RouteLeavingGuard = ({
   shouldBlockNavigation,
   when,
   dialogTitle,
+  tracking,
 }: IRouteLeavingGuardProps): JSX.Element => {
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [lastLocation, setLastLocation] = useState('')
+  // @ts-ignore next FIX ME no any
+  const [nextLocation, setNextLocation] = useState<any>('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
   const history = useHistory()
 
@@ -34,9 +37,10 @@ const RouteLeavingGuard = ({
   }, [])
 
   const handleBlockedNavigation = useCallback(
-    (nextLocation: any) => {
-      const { redirectPath, shouldBlock } = shouldBlockNavigation(nextLocation)
-      setLastLocation(redirectPath ? redirectPath : nextLocation)
+    (chosenLocation: any) => {
+      const { redirectPath, shouldBlock } =
+        shouldBlockNavigation(chosenLocation)
+      setNextLocation(redirectPath ? redirectPath : chosenLocation)
       if (!isConfirmedNavigation && shouldBlock) {
         setIsModalVisible(true)
         return false
@@ -56,8 +60,17 @@ const RouteLeavingGuard = ({
     setIsConfirmedNavigation(true)
   }, [])
 
-  return isConfirmedNavigation && lastLocation ? (
-    <Redirect push to={lastLocation} />
+  if (isConfirmedNavigation && nextLocation) {
+    tracking &&
+      tracking(
+        Object.keys(nextLocation).includes('pathname')
+          ? nextLocation.pathname
+          : nextLocation
+      )
+  }
+
+  return isConfirmedNavigation && nextLocation ? (
+    <Redirect push to={nextLocation} />
   ) : (
     <>
       <Prompt message={handleBlockedNavigation} when={when} />

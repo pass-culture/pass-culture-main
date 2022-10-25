@@ -22,11 +22,13 @@ const urlPatterns: { [key: string]: RegExp } = {
 }
 
 export interface RouteLeavingGuardOfferIndividualProps {
-  when?: boolean
+  when: boolean
+  tracking?: (p: string) => void
 }
 
 const RouteLeavingGuardOfferIndividual = ({
-  when = true,
+  when,
+  tracking,
 }: RouteLeavingGuardOfferIndividualProps): JSX.Element => {
   const location = useLocation()
   const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
@@ -101,6 +103,7 @@ const RouteLeavingGuardOfferIndividual = ({
       shouldBlockNavigation={shouldBlockNavigation}
       when={when}
       dialogTitle="Voulez-vous quitter la création d’offre ?"
+      tracking={tracking}
     >
       <p>{description}</p>
     </RouteLeavingGuard>
