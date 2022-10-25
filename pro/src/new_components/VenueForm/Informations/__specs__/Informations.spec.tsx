@@ -89,8 +89,6 @@ describe('components | Informations', () => {
       readOnly: false,
       updateIsSiretValued,
       venueIsVirtual: false,
-      venueLabels: [],
-      venueTypes: [{ value: 'CINEMA', label: 'Cinéma, salle de projection' }],
     }
   })
 
@@ -117,13 +115,9 @@ describe('components | Informations', () => {
     const siretInput = screen.getByLabelText('SIRET du lieu', {
       exact: false,
     })
-    const venueTypeSelect = screen.getByLabelText('Type de lieu', {
-      exact: false,
-    })
 
     await userEvent.type(siretInput, '12345678912345')
-    await userEvent.selectOptions(venueTypeSelect, 'CINEMA')
-
+    await userEvent.tab()
     await userEvent.click(buttonSubmit)
 
     expect(onSubmit).toHaveBeenCalledTimes(1)
@@ -136,21 +130,9 @@ describe('components | Informations', () => {
       props,
     })
     const nameInput = screen.getByText('Nom juridique')
-    const venueTypeSelect = screen.getByLabelText('Type de lieu', {
-      exact: false,
-    })
 
     await userEvent.click(nameInput)
     await userEvent.tab()
     expect(screen.getByText('Veuillez renseigner un nom')).toBeInTheDocument()
-
-    await userEvent.selectOptions(
-      venueTypeSelect,
-      'Sélectionner celui qui correspond à votre lieu'
-    )
-    await userEvent.tab()
-    expect(
-      screen.getByText('Veuillez sélectionner un type de lieu')
-    ).toBeInTheDocument()
   })
 })

@@ -10,6 +10,7 @@ import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
 import { Accessibility } from './Accessibility'
+import Activity from './Activity/Activity'
 import { Address } from './Address'
 import { Contact } from './Contact'
 import { EACInformation } from './EACInformation'
@@ -64,14 +65,13 @@ const VenueForm = ({
           readOnly={!isCreatingVenue}
           updateIsSiretValued={updateIsSiretValued}
           venueIsVirtual={false}
-          venueTypes={venueTypes}
-          venueLabels={venueLabels}
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */
           !!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />
         }
         <Address />
+        <Activity venueTypes={venueTypes} venueLabels={venueLabels} />
         <Accessibility isCreatingVenue={isCreatingVenue} />
         <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
         <Contact />
