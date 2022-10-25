@@ -33,7 +33,9 @@ Le repo `main` contient les 5 projets suivants :
   - `pip install -U commitizen`
 
 - Pour MacOS spécifiquement
-  - CoreUtils: `brew install coreutils`
+  - CoreUtils: `brew install coreutils libxmlsec1`
+- Pour Linux spécifiquement
+  - L'API a besoin des paquets suivants, à installer avec `sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0` pour les distributions Ubuntu
 
 #### Installer les CLI
 

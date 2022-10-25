@@ -278,26 +278,6 @@ Il faut supprimer les fichiers de cache de pré-compilation de Python, par exemp
 find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 ```
 
-#### Problème lié à `xmlsec1`
-
-Lorsque les tests échouent avec l'erreur suivante
-
-`saml2.sigver.SigverError: Cannot find ['xmlsec1']`
-
-Il faut installer la dépendance `xmlsec1`
-
-Sous OS X :
-
-```sh
-brew install libxmlsec1
-```
-
-Sous une distribution basée sur Debian :
-
-```sh
-apt install xmlsec1
-```
-
 ## IDE
 
 ### PyCharm(IntelliJ)
