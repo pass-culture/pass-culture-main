@@ -21,7 +21,7 @@
 
   &-actions {
     max-width: rem.torem(486px);
-    margin: rem.torem(64px) auto 0;
+    margin: rem.torem(40px) auto 0;
     display: flex;
     justify-content: center;
   }
@@ -35,7 +35,6 @@
       margin-left: 0;
     }
   }
-
 }
 
 .confirmation-wrapper .confirmation-banner {
