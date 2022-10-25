@@ -52,7 +52,7 @@ export const useConfigureFirebase = (currentUserId: string | undefined) => {
             (
               event: string,
               params:
-                | { [key: string]: string | boolean | string[] }
+                | { [key: string]: string | boolean | string[] | undefined }
                 | Record<string, never> = {}
             ) => {
               analyticsLogEvent(getAnalytics(app), event, {

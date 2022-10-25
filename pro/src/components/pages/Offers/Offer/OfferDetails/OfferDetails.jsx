@@ -174,10 +174,38 @@ const OfferDetails = ({
           setThumbnailError(false)
           setThumbnailMsgError('')
           if (isSavingDraft) {
+            // Click on "Sauvegarder le brouillon" when on /creation (after offer creation) or when on /brouillon
+            const isEdition = !(isCreatingOffer || isCompletingDraft)
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.DETAILS,
+              to: OfferBreadcrumbStep.DETAILS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
+              isEdition: isEdition,
+              isDraft: true,
+              offerId: offer?.id,
+            })
             return Promise.resolve(null)
           } else if (isCreatingOffer || isCompletingDraft) {
+            // Click on "Etape suivante" when on /creation or /brouillon
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.DETAILS,
+              to: OfferBreadcrumbStep.STOCKS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+              isEdition: false,
+              isDraft: true,
+              offerId: offer?.id,
+            })
             return Promise.resolve(() => goToStockAndPrice(offer.id))
           } else {
+            // Click on "Enregistrer les modifications" when on /edition
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.DETAILS,
+              to: OfferBreadcrumbStep.SUMMARY,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+              isEdition: true,
+              isDraft: false,
+              offerId: offer?.id,
+            })
             return Promise.resolve(() =>
               history.push(`/offre/${offer.id}/individuel/recapitulatif`)
             )
@@ -192,9 +220,28 @@ const OfferDetails = ({
             )
           }
           if (isSavingDraft) {
+            // Click sur "Sauvegarder le brouillon" quand sur /creation
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.DETAILS,
+              to: OfferBreadcrumbStep.DETAILS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
+              isEdition: false,
+              isDraft: true,
+              offerId: createdOfferId,
+            })
             return Promise.resolve(() =>
               history.push(`/offre/${createdOfferId}/individuel/creation`)
             )
+          } else {
+            // Click sur "Etape suivante" quand sur /creation
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.DETAILS,
+              to: OfferBreadcrumbStep.STOCKS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+              isEdition: false,
+              isDraft: true,
+              offerId: createdOfferId,
+            })
           }
           if (Object.keys(thumbnailInfo).length === 0) {
             return Promise.resolve(() => goToStockAndPrice(createdOfferId))

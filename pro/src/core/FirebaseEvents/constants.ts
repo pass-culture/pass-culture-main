@@ -50,6 +50,7 @@ export enum Events {
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
   RECAP_LINK = 'RecapLink',
   STICKY_BUTTONS = 'StickyButtons',
+  DRAFT_BUTTONS = 'DraftButtons',
   BREADCRUMB = 'Breadcrumb',
   HOME_BUTTON = 'HomeButton',
   HOME_LINK = 'HomeLink',
