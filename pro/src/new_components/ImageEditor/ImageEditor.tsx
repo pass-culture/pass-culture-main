@@ -93,6 +93,7 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
       setScale(event.target.value)
     }, [])
 
+    /* istanbul ignore next: DEBT, TO FIX */
     const onPositionChange = useCallback((position: Position) => {
       setPosition(position)
     }, [])
