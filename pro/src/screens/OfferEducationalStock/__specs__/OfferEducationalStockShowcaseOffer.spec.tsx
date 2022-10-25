@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import {
@@ -12,22 +13,18 @@ import { configureTestStore } from 'store/testUtils'
 import {
   collectiveOfferTemplateFactory,
   defaultProps,
-  elements,
   offerFactory,
   renderOfferEducationalStock,
 } from '../__tests-utils__'
+import {
+  BOOKING_LIMIT_DATETIME_LABEL,
+  DETAILS_PRICE_LABEL,
+  EVENT_DATE_LABEL,
+  EVENT_TIME_LABEL,
+  NUMBER_OF_PLACES_LABEL,
+  TOTAL_PRICE_LABEL,
+} from '../constants/labels'
 import { IOfferEducationalStockProps } from '../OfferEducationalStock'
-
-const {
-  queryShowcaseOfferRadio,
-  queryBeginningDateInput,
-  queryBeginningTimeInput,
-  queryNumberOfPlacesInput,
-  queryPriceInput,
-  queryBookingLimitDatetimeInput,
-  queryPriceDetailsTextarea,
-  queryClassicOfferRadio,
-} = elements
 
 describe('screens | OfferEducationalStock : showcase offer', () => {
   let props: IOfferEducationalStockProps
@@ -39,7 +36,9 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
 
   it('should hide stock form when user select showcase option', async () => {
     renderOfferEducationalStock(props)
-    const showCaseOptionRadioButton = queryShowcaseOfferRadio()
+    const showCaseOptionRadioButton = screen.getByLabelText(
+      'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+    ) as HTMLInputElement
 
     expect(showCaseOptionRadioButton).toBeInTheDocument()
 
@@ -47,12 +46,16 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
     await userEvent.click(showCaseOptionRadioButton as HTMLInputElement)
     expect(showCaseOptionRadioButton?.checked).toBe(true)
 
-    const beginningDateInput = queryBeginningDateInput()
-    const beginningTimeInput = queryBeginningTimeInput()
-    const numberOfPlacesInput = queryNumberOfPlacesInput()
-    const priceInput = queryPriceInput()
-    const bookingLimitDatetimeInput = queryBookingLimitDatetimeInput()
-    const priceDetailsTextArea = queryPriceDetailsTextarea()
+    const beginningDateInput = screen.queryByLabelText(EVENT_DATE_LABEL)
+    const beginningTimeInput = screen.queryByLabelText(EVENT_TIME_LABEL)
+    const numberOfPlacesInput = screen.queryByLabelText(NUMBER_OF_PLACES_LABEL)
+    const priceInput = screen.queryByLabelText(TOTAL_PRICE_LABEL)
+    const bookingLimitDatetimeInput = screen.queryByLabelText(
+      BOOKING_LIMIT_DATETIME_LABEL
+    )
+    const priceDetailsTextArea = screen.queryByLabelText(DETAILS_PRICE_LABEL, {
+      exact: false,
+    })
 
     expect(beginningDateInput).not.toBeInTheDocument()
     expect(beginningTimeInput).not.toBeInTheDocument()
@@ -75,25 +78,42 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
     }
     renderOfferEducationalStock(testProps)
 
-    const showCaseOptionRadioButton = queryShowcaseOfferRadio()
+    const showCaseOptionRadioButton = screen.getByLabelText(
+      'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+    ) as HTMLInputElement
 
     expect(showCaseOptionRadioButton).toBeInTheDocument()
     expect(showCaseOptionRadioButton?.checked).toBe(true)
 
-    const priceDetailsTextArea = queryPriceDetailsTextarea()
+    const priceDetailsTextArea = screen.queryByLabelText(DETAILS_PRICE_LABEL, {
+      exact: false,
+    })
     expect(priceDetailsTextArea).toHaveValue('Détail du prix')
 
-    const classicOptionRadioButton = queryClassicOfferRadio()
-    await userEvent.click(classicOptionRadioButton as HTMLInputElement)
+    const classicOptionRadioButton = screen.getByLabelText(
+      'Je connais la date et le prix de mon offre'
+    ) as HTMLInputElement
+    await userEvent.click(classicOptionRadioButton)
 
     expect(showCaseOptionRadioButton?.checked).toBe(false)
     expect(classicOptionRadioButton?.checked).toBe(true)
 
-    const beginningDateInput = queryBeginningDateInput()
-    const beginningTimeInput = queryBeginningTimeInput()
-    const numberOfPlacesInput = queryNumberOfPlacesInput()
-    const priceInput = queryPriceInput()
-    const bookingLimitDatetimeInput = queryBookingLimitDatetimeInput()
+    const beginningDateInput = screen.getByLabelText(
+      EVENT_DATE_LABEL
+    ) as HTMLInputElement
+    const beginningTimeInput = screen.getByLabelText(
+      EVENT_TIME_LABEL
+    ) as HTMLInputElement
+    const numberOfPlacesInput = screen.getByLabelText(
+      NUMBER_OF_PLACES_LABEL
+    ) as HTMLInputElement
+    const priceInput = screen.getByLabelText(
+      TOTAL_PRICE_LABEL
+    ) as HTMLInputElement
+    const bookingLimitDatetimeInput = screen.getByLabelText(
+      BOOKING_LIMIT_DATETIME_LABEL
+    ) as HTMLInputElement
+
     expect(beginningDateInput).toBeInTheDocument()
     expect(beginningDateInput?.value).toBe('')
     expect(beginningTimeInput).toBeInTheDocument()
@@ -123,8 +143,12 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
     }
     renderOfferEducationalStock(testProps)
 
-    const showCaseOptionRadioButton = queryShowcaseOfferRadio()
-    const classicOptionRadioButton = queryClassicOfferRadio()
+    const showCaseOptionRadioButton = screen.queryByLabelText(
+      'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+    )
+    const classicOptionRadioButton = screen.queryByLabelText(
+      'Je connais la date et le prix de mon offre'
+    )
 
     expect(showCaseOptionRadioButton).not.toBeInTheDocument()
     expect(classicOptionRadioButton).not.toBeInTheDocument()
@@ -133,8 +157,12 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
   describe('radio buttons', () => {
     it('should display radio button when creating offer', async () => {
       renderOfferEducationalStock(props)
-      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
-      const classicOptionRadioButton = queryClassicOfferRadio()
+      const showCaseOptionRadioButton = screen.queryByLabelText(
+        'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+      )
+      const classicOptionRadioButton = screen.queryByLabelText(
+        'Je connais la date et le prix de mon offre'
+      )
       expect(showCaseOptionRadioButton).toBeInTheDocument()
       expect(classicOptionRadioButton).toBeInTheDocument()
     })
@@ -149,8 +177,12 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
           educationalOfferType: EducationalOfferType.SHOWCASE,
         },
       })
-      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
-      const classicOptionRadioButton = queryClassicOfferRadio()
+      const showCaseOptionRadioButton = screen.getByLabelText(
+        'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+      )
+      const classicOptionRadioButton = screen.getByLabelText(
+        'Je connais la date et le prix de mon offre'
+      )
       expect(showCaseOptionRadioButton).toBeInTheDocument()
       expect(classicOptionRadioButton).toBeInTheDocument()
     })
@@ -161,8 +193,12 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
         mode: Mode.EDITION,
       })
 
-      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
-      const classicOptionRadioButton = queryClassicOfferRadio()
+      const showCaseOptionRadioButton = screen.queryByLabelText(
+        'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+      )
+      const classicOptionRadioButton = screen.queryByLabelText(
+        'Je connais la date et le prix de mon offre'
+      )
       expect(showCaseOptionRadioButton).not.toBeInTheDocument()
       expect(classicOptionRadioButton).not.toBeInTheDocument()
     })
@@ -190,8 +226,12 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
         })
       )
 
-      const showCaseOptionRadioButton = queryShowcaseOfferRadio()
-      const classicOptionRadioButton = queryClassicOfferRadio()
+      const showCaseOptionRadioButton = screen.queryByLabelText(
+        'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+      )
+      const classicOptionRadioButton = screen.queryByLabelText(
+        'Je connais la date et le prix de mon offre'
+      )
       expect(showCaseOptionRadioButton).not.toBeInTheDocument()
       expect(classicOptionRadioButton).not.toBeInTheDocument()
     })
@@ -220,8 +260,12 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
       })
     )
 
-    const showCaseOptionRadioButton = queryShowcaseOfferRadio()
-    const classicOptionRadioButton = queryClassicOfferRadio()
+    const showCaseOptionRadioButton = screen.queryByLabelText(
+      'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
+    )
+    const classicOptionRadioButton = screen.queryByLabelText(
+      'Je connais la date et le prix de mon offre'
+    )
     expect(showCaseOptionRadioButton).not.toBeInTheDocument()
     expect(classicOptionRadioButton).not.toBeInTheDocument()
   })
