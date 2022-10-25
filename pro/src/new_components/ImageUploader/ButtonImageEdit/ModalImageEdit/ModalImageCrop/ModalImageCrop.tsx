@@ -9,6 +9,7 @@ import ImageEditor, {
   IImageEditorConfig,
 } from 'new_components/ImageEditor/ImageEditor'
 import { coordonateToPosition } from 'new_components/ImageEditor/utils'
+import { modeValidationConstraints } from 'new_components/ImageUploadBrowserForm/constants'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
 import { Button, Divider } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -44,9 +45,10 @@ const ModalImageCrop = ({
   const { width } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
+  const minWidth = modeValidationConstraints[mode].minWidth
   const maxScale: number = {
-    [UploaderModeEnum.OFFER]: (width * (2 / 3)) / 400,
-    [UploaderModeEnum.VENUE]: width / 600,
+    [UploaderModeEnum.OFFER]: (width * (2 / 3)) / minWidth,
+    [UploaderModeEnum.VENUE]: width / minWidth,
   }[mode]
   const title: string = {
     [UploaderModeEnum.OFFER]: "Image de l'offre",
@@ -75,12 +77,14 @@ const ModalImageCrop = ({
     },
   }[mode]
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleNext()
     }
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const handleNext = useCallback(() => {
     try {
       if (editorRef.current) {

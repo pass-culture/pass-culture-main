@@ -9,6 +9,7 @@ import {
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
 import { BaseFileInput } from 'ui-kit/form/shared'
 
+import { modeValidationConstraints } from './constants'
 import type { IImageUploadBrowserFormValues } from './types'
 import getValidationSchema from './validationSchema'
 
@@ -23,18 +24,7 @@ const ImageUploadBrowserForm = ({
   mode,
 }: IImageUploadBrowserFormProps): JSX.Element => {
   const [errors, setErrors] = useState<string[]>([])
-  const validationConstraints = {
-    [UploaderModeEnum.OFFER]: {
-      maxSize: 10000000,
-      minWidth: 400,
-      types: ['image/png', 'image/jpeg'],
-    },
-    [UploaderModeEnum.VENUE]: {
-      maxSize: 10000000,
-      minWidth: 600,
-      types: ['image/png', 'image/jpeg'],
-    },
-  }[mode]
+  const validationConstraints = modeValidationConstraints[mode]
   const constraints: Constraint[] = [
     imageConstraints.formats(validationConstraints.types),
     imageConstraints.size(validationConstraints.maxSize),
@@ -43,6 +33,7 @@ const ImageUploadBrowserForm = ({
 
   const validationSchema = getValidationSchema(validationConstraints)
 
+  /* istanbul ignore next: DEBT, TO FIX */
   const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFile: File | null =
       (event.currentTarget.files && event.currentTarget.files[0]) || null
@@ -58,6 +49,7 @@ const ImageUploadBrowserForm = ({
     }
   }
 
+  /* istanbul ignore next: DEBT, TO FIX */
   return (
     <form onSubmit={e => e.preventDefault()}>
       <BaseFileInput
