@@ -15,13 +15,19 @@ const Contact = () => {
           vous contacter en cas de besoin.
         </p>
         <FormLayout.Row>
-          <TextInput name="phoneNumber" label="Téléphone" />
+          <TextInput
+            name="phoneNumber"
+            label="Téléphone"
+            isOptional
+            placeholder={'062345678'}
+          />
         </FormLayout.Row>
         <FormLayout.Row>
           <TextInput
             name="email"
             label="Adresse e-mail"
             placeholder="email@exemple.com"
+            isOptional
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -29,6 +35,7 @@ const Contact = () => {
             name="webSite"
             label="URL de votre site web"
             placeholder="https://exemple.com"
+            isOptional
           />
         </FormLayout.Row>
       </FormLayout.Section>
