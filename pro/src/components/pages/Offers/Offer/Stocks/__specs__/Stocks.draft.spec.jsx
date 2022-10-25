@@ -6,9 +6,13 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferLayout from '../../OfferLayout'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -140,6 +144,10 @@ describe('stocks page - Brouillon', () => {
         },
       ],
     })
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
   describe('Brouillon', () => {
     it('should render a form with the right title', async () => {
@@ -189,6 +197,98 @@ describe('stocks page - Brouillon', () => {
           },
         ],
       })
+    })
+
+    it('should track when clicking on save draft button', async () => {
+      // given
+      api.upsertStocks.mockResolvedValue({})
+      api.getStocks.mockResolvedValueOnce({ stocks: [] })
+      store = {
+        ...store,
+        features: {
+          list: [
+            {
+              isActive: true,
+              name: 'OFFER_DRAFT_ENABLED',
+              nameKey: 'OFFER_DRAFT_ENABLED',
+            },
+          ],
+        },
+      }
+      renderOffers(props, store)
+
+      await userEvent.click(await screen.findByText('Ajouter un stock'))
+
+      await userEvent.type(screen.getByLabelText('Prix'), '15')
+
+      await userEvent.click(screen.getByLabelText('Date limite de réservation'))
+      await userEvent.click(screen.getByText('22'))
+
+      await userEvent.type(screen.getByLabelText('Quantité'), '15')
+
+      // when
+      await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'stocks',
+          isDraft: true,
+          isEdition: false,
+          offerId: 'AG3A',
+          to: 'stocks',
+          used: 'DraftButtons',
+        }
+      )
+    })
+
+    it('should track when clicking on next step button', async () => {
+      // given
+      api.upsertStocks.mockResolvedValue({})
+      api.getStocks.mockResolvedValueOnce({ stocks: [] })
+      store = {
+        ...store,
+        features: {
+          list: [
+            {
+              isActive: true,
+              name: 'OFFER_DRAFT_ENABLED',
+              nameKey: 'OFFER_DRAFT_ENABLED',
+            },
+          ],
+        },
+      }
+      renderOffers(props, store)
+
+      await userEvent.click(await screen.findByText('Ajouter un stock'))
+
+      await userEvent.type(screen.getByLabelText('Prix'), '15')
+
+      await userEvent.click(screen.getByLabelText('Date limite de réservation'))
+      await userEvent.click(screen.getByText('22'))
+
+      await userEvent.type(screen.getByLabelText('Quantité'), '15')
+
+      // when
+      await userEvent.click(screen.getByText('Étape suivante'))
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'stocks',
+          isDraft: true,
+          isEdition: false,
+          offerId: 'AG3A',
+          to: 'recapitulatif',
+          used: 'StickyButtons',
+        }
+      )
     })
   })
 })

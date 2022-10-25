@@ -13,7 +13,7 @@ interface IFormActionsProps {
   isDraft: boolean
   isSubmiting: boolean
   onSubmit: () => void
-  onCancelClick?: () => void
+  onCancelClick: () => void
   onSubmitDraft: () => void
 }
 
@@ -36,7 +36,7 @@ const FormActions = ({
         <ButtonLink
           variant={ButtonVariant.SECONDARY}
           link={{ to: cancelUrl, isExternal: false }}
-          onClick={onCancelClick ? onCancelClick : undefined}
+          onClick={onCancelClick}
         >
           {isDraft ? 'Étape précédente' : 'Annuler et quitter'}
         </ButtonLink>
