@@ -11,7 +11,9 @@ import {
 import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
 import { IOfferIndividualImage } from 'core/Offers/types'
+import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import FormLayout from 'new_components/FormLayout'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -21,7 +23,6 @@ import {
   validationSchema,
 } from 'new_components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
-import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 
 import { ActionBar } from '../ActionBar'
 
@@ -39,7 +40,7 @@ const Informations = ({
 }: IInformationsProps): JSX.Element => {
   const notify = useNotification()
   const history = useHistory()
-  const isCreation = useIsCreation()
+  const mode = useOfferWizardMode()
   const {
     offerId,
     offer,
@@ -147,8 +148,11 @@ const Informations = ({
   }
 
   const onImageDelete = async () => {
+    /* istanbul ignore next: DEBT, TO FIX */
     if (!offerId) {
+      /* istanbul ignore next: DEBT, TO FIX */
       setImageOffer(undefined)
+      /* istanbul ignore next: DEBT, TO FIX */
       setImageOfferCreationArgs(undefined)
     } else {
       const response = await deleteThumbnailAdapter({ offerId })
@@ -183,9 +187,11 @@ const Informations = ({
       }
       notify.success('Vos modifications ont bien été prises en compte')
       history.push(
-        isCreation
-          ? `/offre/${payload.id}/v3/creation/individuelle/stocks`
-          : `/offre/${payload.id}/v3/individuelle/stocks`
+        getOfferIndividualUrl({
+          offerId: payload.id,
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode,
+        })
       )
     } else {
       formik.setErrors(payload.errors)
@@ -225,7 +231,6 @@ const Informations = ({
           <ActionBar
             onClickNext={handleNextStep}
             onClickSaveDraft={() => {}}
-            isCreation={isCreation}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
           />
         </form>

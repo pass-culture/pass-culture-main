@@ -5,8 +5,9 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_DRAFT, OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
+import { OFFER_WITHDRAWAL_TYPE_LABELS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
@@ -55,16 +56,15 @@ export interface IOfferSectionProps {
 
 interface IOfferSummaryProps {
   offer: IOfferSectionProps
-  isCreation: boolean
   conditionalFields: string[]
 }
 
 const OfferSummary = ({
-  isCreation,
   offer,
   conditionalFields,
 }: IOfferSummaryProps): JSX.Element => {
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+  const mode = useOfferWizardMode()
   const informationsUrls = isOfferFormV3
     ? {
         creation: `/offre/${offer.id}/v3/creation/individuelle/informations`,
@@ -74,9 +74,10 @@ const OfferSummary = ({
         creation: `/offre/${offer.id}/individuel/creation`,
         edition: `/offre/${offer.id}/individuel/edition`,
       }
-  const editLink = isCreation
-    ? informationsUrls.creation
-    : informationsUrls.edition
+  const editLink =
+    mode === OFFER_WIZARD_MODE.CREATION
+      ? informationsUrls.creation
+      : informationsUrls.edition
   const { logEvent } = useAnalytics()
 
   const logEditEvent = () => {
@@ -84,9 +85,9 @@ const OfferSummary = ({
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
-      isEdition: !isCreation,
-      isDraft: offer.status === OFFER_STATUS_DRAFT,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
       offerId: offer.id,
+      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
     })
   }
 
@@ -106,7 +107,10 @@ const OfferSummary = ({
         {conditionalFields.includes('musicType') && (
           <SummaryLayout.Row
             title="Genre musical"
-            description={offer.musicTypeName || '-'}
+            description={
+              /* istanbul ignore next: DEBT, TO FIX */
+              offer.musicTypeName || '-'
+            }
           />
         )}
         {offer.musicSubTypeName && (
@@ -115,92 +119,146 @@ const OfferSummary = ({
             description={offer.musicSubTypeName}
           />
         )}
-        {conditionalFields.includes('showType') && (
-          <SummaryLayout.Row
-            title="Type de spéctacle"
-            description={offer.showTypeName || '-'}
-          />
-        )}
-        {offer.showSubTypeName && (
-          <SummaryLayout.Row
-            title="Sous-type"
-            description={offer.showSubTypeName}
-          />
-        )}
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('showType') && (
+            <SummaryLayout.Row
+              title="Type de spéctacle"
+              description={
+                /* istanbul ignore next: DEBT, TO FIX */
+                offer.showTypeName || '-'
+              }
+            />
+          )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          offer.showSubTypeName && (
+            <SummaryLayout.Row
+              title="Sous-type"
+              description={offer.showSubTypeName}
+            />
+          )
+        }
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Informations artistiques">
         <SummaryLayout.Row title="Titre de l'offre" description={offer.name} />
         <SummaryLayout.Row
           title="Description"
-          description={offer.description || ' - '}
+          description={
+            /* istanbul ignore next: DEBT, TO FIX */
+            offer.description || ' - '
+          }
         />
 
-        {conditionalFields.includes('speaker') && (
-          <SummaryLayout.Row title="Intervenant" description={offer.speaker} />
-        )}
-        {conditionalFields.includes('author') && (
-          <SummaryLayout.Row title="Auteur" description={offer.author} />
-        )}
-        {conditionalFields.includes('visa') && (
-          <SummaryLayout.Row
-            title="Visa d’exploitation"
-            description={offer.visa}
-          />
-        )}
-        {conditionalFields.includes('isbn') && (
-          <SummaryLayout.Row title="ISBN" description={offer.isbn} />
-        )}
-        {conditionalFields.includes('stageDirector') && (
-          <SummaryLayout.Row
-            title="Metteur en scène"
-            description={offer.stageDirector}
-          />
-        )}
-        {conditionalFields.includes('performer') && (
-          <SummaryLayout.Row title="Interprète" description={offer.performer} />
-        )}
-        {conditionalFields.includes('durationMinutes') && (
-          <SummaryLayout.Row
-            title="Durée"
-            description={
-              offer.durationMinutes ? `${offer.durationMinutes} min` : '-'
-            }
-          />
-        )}
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('speaker') && (
+            <SummaryLayout.Row
+              title="Intervenant"
+              description={offer.speaker}
+            />
+          )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('author') && (
+            <SummaryLayout.Row title="Auteur" description={offer.author} />
+          )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('visa') && (
+            <SummaryLayout.Row
+              title="Visa d’exploitation"
+              description={offer.visa}
+            />
+          )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('isbn') && (
+            <SummaryLayout.Row title="ISBN" description={offer.isbn} />
+          )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('stageDirector') && (
+            <SummaryLayout.Row
+              title="Metteur en scène"
+              description={offer.stageDirector}
+            />
+          )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('performer') && (
+            <SummaryLayout.Row
+              title="Interprète"
+              description={offer.performer}
+            />
+          )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          conditionalFields.includes('durationMinutes') && (
+            <SummaryLayout.Row
+              title="Durée"
+              description={
+                offer.durationMinutes ? `${offer.durationMinutes} min` : '-'
+              }
+            />
+          )
+        }
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Informations pratiques">
         <SummaryLayout.Row title="Structure" description={offer.offererName} />
         <SummaryLayout.Row
           title="Lieu"
-          description={offer.venuePublicName || offer.venueName}
+          description={
+            /* istanbul ignore next: DEBT, TO FIX */ offer.venuePublicName ||
+            offer.venueName
+          }
         />
-        {offer.withdrawalType && (
-          <SummaryLayout.Row
-            title="Comment les billets, places seront-ils transmis ?"
-            description={OFFER_WITHDRAWAL_TYPE_LABELS[offer.withdrawalType]}
-          />
-        )}
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          offer.withdrawalType && (
+            <SummaryLayout.Row
+              title="Comment les billets, places seront-ils transmis ?"
+              description={OFFER_WITHDRAWAL_TYPE_LABELS[offer.withdrawalType]}
+            />
+          )
+        }
 
-        {offer.withdrawalDelay && (
-          <SummaryLayout.Row
-            title="Heure de retrait"
-            description={`${humanizeDelay(
-              offer.withdrawalDelay
-            )} avant le début de l'évènement`}
-          />
-        )}
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          offer.withdrawalDelay && (
+            <SummaryLayout.Row
+              title="Heure de retrait"
+              description={`${humanizeDelay(
+                offer.withdrawalDelay
+              )} avant le début de l'évènement`}
+            />
+          )
+        }
 
         <SummaryLayout.Row
           title="Informations de retrait"
-          description={offer.withdrawalDetails || ' - '}
+          description={
+            /* istanbul ignore next: DEBT, TO FIX */
+            offer.withdrawalDetails || ' - '
+          }
         />
 
         {conditionalFields.includes('url') && (
           <SummaryLayout.Row
             title="URL d’accès à l’offre"
-            description={offer.url || ' - '}
+            description={
+              /* istanbul ignore next: DEBT, TO FIX */
+              offer.url || ' - '
+            }
           />
         )}
       </SummaryLayout.SubSection>
@@ -217,6 +275,7 @@ const OfferSummary = ({
         <SummaryLayout.SubSection title="Autres caractéristiques">
           <SummaryLayout.Row
             description={
+              /* istanbul ignore next: DEBT, TO FIX */
               offer.isDuo === true
                 ? 'Accepter les réservations "Duo"'
                 : 'Refuser les réservations "Duo"'
@@ -228,14 +287,20 @@ const OfferSummary = ({
       <SummaryLayout.SubSection title="Lien pour le grand public">
         <SummaryLayout.Row
           title="URL de votre site ou billeterie"
-          description={offer.externalTicketOfficeUrl || ' - '}
+          description={
+            /* istanbul ignore next: DEBT, TO FIX */
+            offer.externalTicketOfficeUrl || ' - '
+          }
         />
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Notifications des réservations">
         <SummaryLayout.Row
           title="E-mail auquel envoyer les notifications"
-          description={offer.bookingEmail || ' - '}
+          description={
+            /* istanbul ignore next: DEBT, TO FIX */
+            offer.bookingEmail || ' - '
+          }
         />
       </SummaryLayout.SubSection>
     </SummaryLayout.Section>

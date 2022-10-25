@@ -12,14 +12,26 @@ import { configureTestStore } from 'store/testUtils'
 import { ActionBar } from '..'
 import { IActionBarProps } from '../ActionBar'
 
-const renderActionBar = (props: IActionBarProps) => {
+const renderActionBar = ({
+  props,
+  url = '/creation/testUrl',
+}: {
+  props: IActionBarProps
+  url?: string
+}) => {
   return render(
     <Provider
       store={configureTestStore({
-        offers: { searchFilters: ['filter', 'other_filter'], pageNumber: 3 },
+        offers: {
+          searchFilters: {
+            filter: 'my_filter',
+            other_filter: 'my_other_filter',
+          },
+          pageNumber: 3,
+        },
       })}
     >
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[url]}>
         <ActionBar {...props} />
       </MemoryRouter>
     </Provider>
@@ -37,20 +49,15 @@ describe('OfferIndividual::ActionBar', () => {
       onClickPrevious: onClickPreviousMock,
       onClickNext: onClickNextMock,
       onClickSaveDraft: onClickSaveDraftMock,
-      isCreation: true,
       step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     }
   })
 
   describe('on creation', () => {
-    beforeEach(() => {
-      props.isCreation = true
-    })
-
     it('should render the component for information page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS
 
-      renderActionBar(props)
+      renderActionBar({ props })
 
       const buttonCancel = screen.getByText('Annuler et quitter')
       expect(buttonCancel).toHaveAttribute('href', '/offres')
@@ -65,7 +72,7 @@ describe('OfferIndividual::ActionBar', () => {
     it('should render the component for stock page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.STOCKS
 
-      renderActionBar(props)
+      renderActionBar({ props })
 
       const buttonPreviousStep = screen.getByText('Étape précédente')
       await userEvent.click(buttonPreviousStep)
@@ -81,7 +88,7 @@ describe('OfferIndividual::ActionBar', () => {
     it('should render the component for summary page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.SUMMARY
 
-      renderActionBar(props)
+      renderActionBar({ props })
 
       const buttonPreviousStep = screen.getByText('Étape précédente')
       await userEvent.click(buttonPreviousStep)
@@ -97,19 +104,15 @@ describe('OfferIndividual::ActionBar', () => {
   })
 
   describe('on edition', () => {
-    beforeEach(() => {
-      props.isCreation = false
-    })
-
     it('should render the component for information page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS
 
-      renderActionBar(props)
+      renderActionBar({ props, url: '/edition/url' })
 
       const buttonCancel = screen.getByText('Annuler et quitter')
       expect(buttonCancel).toHaveAttribute(
         'href',
-        '/offres?0=filter&1=other_filter&page=3'
+        '/offres?filter=my_filter&other_filter=my_other_filter&page=3'
       )
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
@@ -119,12 +122,12 @@ describe('OfferIndividual::ActionBar', () => {
     it('should render the component for stock page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.STOCKS
 
-      renderActionBar(props)
+      renderActionBar({ props, url: '/edition/url' })
 
       const buttonCancel = screen.getByText('Annuler et quitter')
       expect(buttonCancel).toHaveAttribute(
         'href',
-        '/offres?0=filter&1=other_filter&page=3'
+        '/offres?filter=my_filter&other_filter=my_other_filter&page=3'
       )
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
@@ -134,12 +137,12 @@ describe('OfferIndividual::ActionBar', () => {
     it('should render the component for summary page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.SUMMARY
 
-      renderActionBar(props)
+      renderActionBar({ props, url: '/edition/url' })
 
       const buttonBack = screen.getByText('Retour à la liste des offres')
       expect(buttonBack).toHaveAttribute(
         'href',
-        '/offres?0=filter&1=other_filter&page=3'
+        '/offres?filter=my_filter&other_filter=my_other_filter&page=3'
       )
     })
   })

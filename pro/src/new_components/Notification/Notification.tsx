@@ -59,13 +59,15 @@ const Notification = (): JSX.Element | null => {
     return (
       <div
         data-testid={`global-notification-${type}`}
-        className={cn(
-          styles['notification'],
+        className={
           /* istanbul ignore next */
-          styles[`is-${type || 'success'}`],
-          isVisible ? styles['show'] : styles['hide'],
-          notification.withStickyActionBar && styles['with-sticky-action-bar']
-        )}
+          cn(
+            styles['notification'],
+            styles[`is-${type || 'success'}`],
+            isVisible ? styles['show'] : styles['hide'],
+            notification.withStickyActionBar && styles['with-sticky-action-bar']
+          )
+        }
       >
         {iconComponent}
         {text}
