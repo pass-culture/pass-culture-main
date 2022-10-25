@@ -342,7 +342,7 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     offerVenue: CollectiveOfferOfferVenueResponseModel
     beginningDatetime: datetime
     students: list[models.StudentLevels]
-    price: int
+    price: float
     educationalInstitution: EducationalInstitutionResponseModel
     educationalRedactor: CollectiveBookingEducationalRedactorResponseModel
     numberOfTickets: int
