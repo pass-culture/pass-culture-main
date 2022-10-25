@@ -8,6 +8,11 @@ interface FacetsWithData {
   filtersKeys: string[]
 }
 
+export const computeVenueFacetFilter = (venueFilter: VenueResponse): string[] =>
+  [venueFilter.id, ...venueFilter.relative].map(
+    venueId => `venue.id:${venueId}`
+  )
+
 export const populateFacetFilters = ({
   departments,
   categories,
@@ -76,7 +81,7 @@ export const populateFacetFilters = ({
 
   if (venueFilter?.id) {
     filtersKeys.push('venue')
-    updatedFilters.push(`venue.id:${venueFilter.id}`)
+    updatedFilters.push(computeVenueFacetFilter(venueFilter))
   }
 
   if (uai) {
