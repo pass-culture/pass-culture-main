@@ -64,11 +64,10 @@
     &:before {
       content: 'IMPORTANT';
     }
-    svg {
-      fill: colors.$primary;
-    }
-    a , .bi-link{
-      color: colors.$primary;
+    svg,
+    a,
+    .bi-link {
+      color: colors.$black;
     }
   }
   &.notification-info {
