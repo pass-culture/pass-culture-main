@@ -37,6 +37,7 @@ export enum Events {
   CLICKED_VIEW_OFFERER_STATS = 'hasClickedViewOffererStats',
   CLICKED_VIEW_ALL_OFFERER_STATS = 'hasClickedViewAllOffererStats',
   CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS = 'hasClickedExpandCollectiveBookingDetails',
+  CLICKED_DUPLICATE_TEMPLATE_OFFER = 'hasClickedDuplicateTemplateOffer',
   FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
   SIGNUP_FORM_ABORT = 'signupFormAbort',
@@ -78,6 +79,12 @@ export enum OFFER_FORM_NAVIGATION_IN {
   OFFERER = 'Offerer',
   VENUE = 'Venue',
   BOOKINGS = 'Bookings',
+}
+
+export enum OFFER_FROM_TEMPLATE_ENTRIES {
+  OFFERS_MODAL = 'OffersListModal',
+  OFFERS = 'OffersList',
+  OFFER_TEMPLATE_RECAP = 'OfferTemplateRecap',
 }
 
 export const OFFER_FORM_HOMEPAGE = 'OfferFormHomepage'

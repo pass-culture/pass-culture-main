@@ -1,6 +1,10 @@
 import React from 'react'
 
 import {
+  Events,
+  OFFER_FROM_TEMPLATE_ENTRIES,
+} from 'core/FirebaseEvents/constants'
+import {
   cancelCollectiveBookingAdapter,
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -10,6 +14,7 @@ import {
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummary from 'new_components/CollectiveOfferSummary'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
@@ -64,6 +69,8 @@ const CollectiveOfferSummaryEdition = ({
     reloadCollectiveOffer?.()
   }
 
+  const { logEvent } = useAnalytics()
+
   const setIsOfferActive = async () => {
     const adapter = offer.isTemplate
       ? patchIsTemplateOfferActiveAdapter
@@ -105,6 +112,11 @@ const CollectiveOfferSummaryEdition = ({
           </p>
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
+            onClick={() =>
+              logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+                from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+              })
+            }
             link={{
               isExternal: false,
               to: `/offre/duplication/collectif/${offer.id}`,
