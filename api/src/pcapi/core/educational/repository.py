@@ -2,6 +2,7 @@ from collections import namedtuple
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
 from decimal import Decimal
 from typing import Iterable
 from typing import Tuple
@@ -67,6 +68,40 @@ CollectiveBookingNamedTuple = namedtuple(
         "numberOfTickets",
     ],
 )
+
+
+def find_bookings_happening_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
+    target_day = datetime.utcnow() + timedelta(days=number_of_days)
+    start = datetime.combine(target_day, time.min)
+    end = datetime.combine(target_day, time.max)
+    return find_bookings_starting_in_interval(start, end)
+
+
+def find_bookings_starting_in_interval(start: datetime, end: datetime) -> list[educational_models.CollectiveBooking]:
+
+    query = educational_models.CollectiveBooking.query.join(
+        educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+    )
+    query = query.filter(
+        educational_models.CollectiveStock.beginningDatetime.between(start, end),
+        educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
+    )
+    query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True))
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
+            educational_models.CollectiveStock.collectiveOffer, innerjoin=True
+        )
+    )
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+        .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+        .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+    )
+    query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True)
+    )
+    return query.distinct().all()
 
 
 def get_and_lock_educational_deposit(
