@@ -30,6 +30,13 @@ const DuplicateOfferCell = ({
     return history.push(`/offre/duplication/collectif/${templateOfferId}`)
   }
 
+  const handleCreateOfferClick = () => {
+    if (!shouldDisplayModal) {
+      return history.push(`/offre/duplication/collectif/${templateOfferId}`)
+    }
+    setIsModalOpen(true)
+  }
+
   return (
     <>
       <td className={styles['duplicate-offer-column']}>
@@ -37,7 +44,7 @@ const DuplicateOfferCell = ({
           <Button
             variant={ButtonVariant.SECONDARY}
             className={styles['button']}
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleCreateOfferClick}
             Icon={PlusIcon}
             iconPosition={IconPositionEnum.CENTER}
             hasTooltip
