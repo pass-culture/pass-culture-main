@@ -589,7 +589,7 @@ const OfferForm = ({
         redirectToError()
         if (isSavingDraft)
           notification.error(
-            'Des champs sont obligatoires pour enregistrer en brouillon'
+            'Des informations sont nécessaires pour sauvegarder le brouillon'
           )
         else showErrorNotification()
       }

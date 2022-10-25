@@ -93,6 +93,7 @@ $buttonHeight: rem.torem(40px);
     button,
     a {
       max-width: rem.torem(270px);
+      flex: none;
     }
   }
 }
