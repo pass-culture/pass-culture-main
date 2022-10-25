@@ -31,6 +31,18 @@ export interface HistoryItem {
    * @type {number}
    * @memberof HistoryItem
    */
+  accountId?: number | null
+  /**
+   *
+   * @type {string}
+   * @memberof HistoryItem
+   */
+  accountName?: string | null
+  /**
+   *
+   * @type {number}
+   * @memberof HistoryItem
+   */
   authorId?: number | null
   /**
    *
@@ -70,6 +82,8 @@ export function HistoryItemFromJSONTyped(
     return json
   }
   return {
+    accountId: !exists(json, 'accountId') ? undefined : json['accountId'],
+    accountName: !exists(json, 'accountName') ? undefined : json['accountName'],
     authorId: !exists(json, 'authorId') ? undefined : json['authorId'],
     authorName: !exists(json, 'authorName') ? undefined : json['authorName'],
     comment: !exists(json, 'comment') ? undefined : json['comment'],
@@ -86,6 +100,8 @@ export function HistoryItemToJSON(value?: HistoryItem | null): any {
     return null
   }
   return {
+    accountId: value.accountId,
+    accountName: value.accountName,
     authorId: value.authorId,
     authorName: value.authorName,
     comment: value.comment,
