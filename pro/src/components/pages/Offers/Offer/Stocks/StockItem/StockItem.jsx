@@ -23,6 +23,7 @@ const StockItem = ({
   errors,
   isDigital,
   isEvent,
+  isDraft,
   isNewStock,
   isDisabled: isOfferDisabled,
   lastProvider,
@@ -309,8 +310,8 @@ const StockItem = ({
           value={totalQuantityValue}
         />
       </td>
-      <td>{!isNewStock && remainingQuantityValue}</td>
-      <td>{!isNewStock && initialStock.bookingsQuantity}</td>
+      <td>{!isNewStock && !isDraft && remainingQuantityValue}</td>
+      <td>{!isNewStock && !isDraft && initialStock.bookingsQuantity}</td>
       <td className="action-column">
         <StockItemOptionsMenu
           canAddActivationCodes={isDigital && !isEvent}
@@ -385,6 +386,7 @@ StockItem.propTypes = {
   isDigital: PropTypes.bool,
   isDisabled: PropTypes.bool,
   isEvent: PropTypes.bool.isRequired,
+  isDraft: PropTypes.bool,
   isNewStock: PropTypes.bool,
   lastProvider: PropTypes.shape(),
   onChange: PropTypes.func.isRequired,

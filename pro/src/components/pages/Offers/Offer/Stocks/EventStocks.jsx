@@ -350,13 +350,13 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 <th>Prix</th>
                 <th>Date limite de réservation</th>
                 <th>Quantité</th>
-                {(stocksInCreation.length === 0 ||
-                  existingStocks.length > 0) && (
-                  <Fragment>
-                    <th>Stock restant</th>
-                    <th>Réservations</th>
-                  </Fragment>
-                )}
+                {(stocksInCreation.length === 0 || existingStocks.length > 0) &&
+                  !isCompletingDraft && (
+                    <Fragment>
+                      <th>Stock restant</th>
+                      <th>Réservations</th>
+                    </Fragment>
+                  )}
                 <th />
               </tr>
             </thead>
@@ -384,6 +384,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                   isDigital={offer.isDigital}
                   isDisabled={isDisabled}
                   isEvent
+                  isDraft={isCompletingDraft}
                   key={stock.id}
                   lastProvider={offer.lastProvider}
                   onChange={updateStock}
