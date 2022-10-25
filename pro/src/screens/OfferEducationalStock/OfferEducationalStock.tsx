@@ -156,12 +156,12 @@ const OfferEducationalStock = <
                     échanges avec l'établissement scolaire.
                   </Banner>
                   <p className={styles['description-text']}>
-                    Indiquez le prix total de l’évènement et le nombre de
+                    Indiquez le prix global TTC de l’évènement et le nombre de
                     personnes qui y participeront.
                     <br />
                     <span className={styles['description-text-italic']}>
                       (Exemple : j’accueille 30 élèves à 5€ la place, le prix
-                      total de mon offre s'élève à 150€)
+                      global de mon offre s'élève à 150€ TTC)
                     </span>
                   </p>
                   <FormStock mode={mode} />
