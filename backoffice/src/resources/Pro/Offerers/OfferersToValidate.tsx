@@ -1,9 +1,9 @@
 import {
   Backdrop,
-  Button,
   Card,
   Chip,
   CircularProgress,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -57,6 +57,7 @@ export const OfferersToValidate = () => {
       const response = await apiProvider().listOfferersToBeValidated({
         page: page + 1,
         perPage: rowsPerPage,
+        sort: JSON.stringify([{ field: 'name', order: 'asc' }]),
       })
       if (response && response.data && response.data.length > 0) {
         setData({
@@ -87,6 +88,7 @@ export const OfferersToValidate = () => {
     setIsLoading(false)
     setCurrentPage(value)
   }
+
   const onChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -127,6 +129,7 @@ export const OfferersToValidate = () => {
                       <TableCell></TableCell>
                       <TableCell>ID</TableCell>
                       <TableCell>Nom de la structure</TableCell>
+                      <TableCell>Top Acteur</TableCell>
                       <TableCell>Statut</TableCell>
                       <TableCell>Dernier Commentaire</TableCell>
                       <TableCell>SIREN</TableCell>
@@ -148,6 +151,42 @@ export const OfferersToValidate = () => {
                         <TableCell>{offerer.name}</TableCell>
                         <TableCell>
                           <Chip label={offerer.status} />
+                        </TableCell>
+                        <TableCell>
+                          <Switch
+                            checked={offerer.isTopActor === true}
+                            onChange={async () => {
+                              try {
+                                await apiProvider().toggleTopActor({
+                                  offererId: offerer.id,
+                                  isTopActorRequest: {
+                                    isTopActor: !offerer.isTopActor,
+                                  },
+                                })
+                                notify(
+                                  'Le mise à jour a été effectuée avec succès !',
+                                  { type: 'success' }
+                                )
+                              } catch (error) {
+                                if (error instanceof PcApiHttpError) {
+                                  notify(getHttpApiErrorMessage(error), {
+                                    type: 'error',
+                                  })
+                                } else {
+                                  notify(
+                                    await getGenericHttpErrorMessage(
+                                      error as Response
+                                    ),
+                                    {
+                                      type: 'error',
+                                      messageArgs: (error as Response).status,
+                                    }
+                                  )
+                                }
+                                captureException(error)
+                              }
+                            }}
+                          />
                         </TableCell>
                         <TableCell>
                           {offerer.lastComment && offerer.lastComment.content}
@@ -177,18 +216,6 @@ export const OfferersToValidate = () => {
               </>
             )}
           </Card>
-        </>
-      )}
-      {!permissionGranted && (
-        <>
-          <Typography variant={'h5'} color={Colors.GREY} sx={{ mb: 3, mt: 3 }}>
-            Vous n'avez pas accès à cette page !
-          </Typography>
-          <div>
-            <Button variant={'outlined'} onClick={() => history.back()}>
-              Retour à la page précédente
-            </Button>
-          </div>
         </>
       )}
     </div>

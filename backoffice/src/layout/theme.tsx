@@ -53,6 +53,15 @@ export const theme = createTheme({
     //     component: LinkBehavior,
     //   } as LinkProps,
     // },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          '&.MuiTableCell-head': {
+            fontWeight: 'bold',
+          },
+        },
+      },
+    },
     MuiButtonBase: {
       defaultProps: {
         LinkComponent: LinkBehavior,

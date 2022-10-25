@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  Chip,
   CircularProgress,
   Grid,
   Paper,
@@ -39,6 +38,7 @@ import { BankAccountStatusBadge } from '../Components/BankAccountStatusBadge'
 import { CommentOfferer } from '../Components/CommentOfferer'
 import { OffererUserssToValidateContextTableMenu } from '../Components/OffererUsersToValidateContextTableMenu'
 import { ProTypeBadge } from '../Components/ProTypeBadge'
+import { ValidationStatusBadge } from '../Components/VallidationStatusBadge'
 import { ProTypeEnum } from '../types'
 
 const cardStyle = {
@@ -94,7 +94,7 @@ export const OffererDetail = () => {
   )
   const notify = useNotify()
   const redirect = useRedirect()
-  const [tabValue, setTabValue] = useState(1)
+  const [tabValue, setTabValue] = useState(0)
   const handleChange = useCallback(
     (event: React.SyntheticEvent, newValue: number) => {
       setTabValue(newValue)
@@ -343,7 +343,7 @@ export const OffererDetail = () => {
                         <TableCell>&nbsp;</TableCell>
                         <TableCell>Type</TableCell>
                         <TableCell>Date/Heure</TableCell>
-                        <TableCell align="right">Auteur</TableCell>
+                        <TableCell align="left">Auteur</TableCell>
                         <TableCell align="left">Commentaire</TableCell>
                       </TableRow>
                     </TableHead>
@@ -360,8 +360,12 @@ export const OffererDetail = () => {
                           <TableCell>
                             {format(item.date, 'dd/MM/yyyy à HH:mm:ss')}
                           </TableCell>
-                          <TableCell align="right">{item.authorName}</TableCell>
-                          <TableCell align="left">{item.comment}</TableCell>
+                          <TableCell align="left">{item.authorName}</TableCell>
+                          <TableCell align="left">
+                            <p>{`${item.accountName} - ${item.accountId}`}</p>
+                            <span>{`Commentaire :
+                              ${item.comment}`}</span>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -375,9 +379,10 @@ export const OffererDetail = () => {
                       <TableRow>
                         <TableCell></TableCell>
                         <TableCell>ID</TableCell>
+                        <TableCell>Statut</TableCell>
                         <TableCell>Nom</TableCell>
-                        <TableCell align="right">Prénom</TableCell>
-                        <TableCell align="right">Email</TableCell>
+                        <TableCell>Prénom</TableCell>
+                        <TableCell align="left">Email</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -395,13 +400,15 @@ export const OffererDetail = () => {
                           </TableCell>
                           <TableCell>{user.id}</TableCell>
                           <TableCell>
-                            <Chip label={user.validationStatus} />
+                            <ValidationStatusBadge
+                              status={user.validationStatus}
+                            />
                           </TableCell>
                           <TableCell component="th" scope="row">
                             {user.lastName}
                           </TableCell>
-                          <TableCell align="right">{user.firstName}</TableCell>
-                          <TableCell align="right">{user.email}</TableCell>
+                          <TableCell>{user.firstName}</TableCell>
+                          <TableCell align="left">{user.email}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

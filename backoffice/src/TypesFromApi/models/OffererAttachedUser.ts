@@ -67,7 +67,7 @@ export interface OffererAttachedUser {
    * @type {ValidationStatus}
    * @memberof OffererAttachedUser
    */
-  validationStatus?: ValidationStatus | null
+  validationStatus: ValidationStatus
 }
 
 export function OffererAttachedUserFromJSON(json: any): OffererAttachedUser {
@@ -88,9 +88,7 @@ export function OffererAttachedUserFromJSONTyped(
     lastName: !exists(json, 'lastName') ? undefined : json['lastName'],
     phoneNumber: !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
     userOffererId: json['user_offerer_id'],
-    validationStatus: !exists(json, 'validationStatus')
-      ? undefined
-      : ValidationStatusFromJSON(json['validationStatus']),
+    validationStatus: ValidationStatusFromJSON(json['validationStatus']),
   }
 }
 
