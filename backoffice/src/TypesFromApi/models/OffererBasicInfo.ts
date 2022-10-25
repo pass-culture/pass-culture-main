@@ -18,6 +18,10 @@ import {
   OffererBankInformationStatusFromJSON,
   OffererBankInformationStatusFromJSONTyped,
   OffererBankInformationStatusToJSON,
+  ValidationStatus,
+  ValidationStatusFromJSON,
+  ValidationStatusFromJSONTyped,
+  ValidationStatusToJSON,
 } from './'
 
 /**
@@ -52,12 +56,6 @@ export interface OffererBasicInfo {
   isCollectiveEligible: boolean
   /**
    *
-   * @type {boolean}
-   * @memberof OffererBasicInfo
-   */
-  isTopActor: boolean
-  /**
-   *
    * @type {string}
    * @memberof OffererBasicInfo
    */
@@ -74,6 +72,12 @@ export interface OffererBasicInfo {
    * @memberof OffererBasicInfo
    */
   siren: string
+  /**
+   *
+   * @type {ValidationStatus}
+   * @memberof OffererBasicInfo
+   */
+  validationStatus: ValidationStatus
 }
 
 export function OffererBasicInfoFromJSON(json: any): OffererBasicInfo {
@@ -94,10 +98,10 @@ export function OffererBasicInfoFromJSONTyped(
     id: json['id'],
     isActive: json['isActive'],
     isCollectiveEligible: json['isCollectiveEligible'],
-    isTopActor: json['isTopActor'],
     name: json['name'],
     region: json['region'],
     siren: json['siren'],
+    validationStatus: ValidationStatusFromJSON(json['validationStatus']),
   }
 }
 
@@ -115,9 +119,9 @@ export function OffererBasicInfoToJSON(value?: OffererBasicInfo | null): any {
     id: value.id,
     isActive: value.isActive,
     isCollectiveEligible: value.isCollectiveEligible,
-    isTopActor: value.isTopActor,
     name: value.name,
     region: value.region,
     siren: value.siren,
+    validationStatus: ValidationStatusToJSON(value.validationStatus),
   }
 }

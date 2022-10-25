@@ -13,6 +13,20 @@
       }
     }
   },
+  "getOfferersStats": {
+    "200": {
+      "data": {}
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
   "getOfferersTagsList": {
     "200": {
       "data": [
@@ -93,7 +107,7 @@
     }
   },
   "toggleTopActor": {
-    "200": "OK",
+    "204": "No Content",
     "403": "Forbidden",
     "422": {
       "0": {

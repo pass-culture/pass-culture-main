@@ -13,25 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime'
-import {
-  ToBeValidatedOffererFilter,
-  ToBeValidatedOffererFilterFromJSON,
-  ToBeValidatedOffererFilterFromJSONTyped,
-  ToBeValidatedOffererFilterToJSON,
-} from './'
-
 /**
- * base class for backoffice filterable query, should probably be specialized for each endpoint
+ *
  * @export
  * @interface OffererToBeValidatedQuery
  */
 export interface OffererToBeValidatedQuery {
   /**
    *
-   * @type {Array<ToBeValidatedOffererFilter>}
+   * @type {string}
    * @memberof OffererToBeValidatedQuery
    */
-  filter?: Array<ToBeValidatedOffererFilter>
+  filter?: string | null
   /**
    *
    * @type {number}
@@ -66,9 +59,7 @@ export function OffererToBeValidatedQueryFromJSONTyped(
     return json
   }
   return {
-    filter: !exists(json, 'filter')
-      ? undefined
-      : (json['filter'] as Array<any>).map(ToBeValidatedOffererFilterFromJSON),
+    filter: !exists(json, 'filter') ? undefined : json['filter'],
     page: !exists(json, 'page') ? undefined : json['page'],
     perPage: !exists(json, 'perPage') ? undefined : json['perPage'],
     sort: !exists(json, 'sort') ? undefined : json['sort'],
@@ -85,10 +76,7 @@ export function OffererToBeValidatedQueryToJSON(
     return null
   }
   return {
-    filter:
-      value.filter === undefined
-        ? undefined
-        : (value.filter as Array<any>).map(ToBeValidatedOffererFilterToJSON),
+    filter: value.filter,
     page: value.page,
     perPage: value.perPage,
     sort: value.sort,

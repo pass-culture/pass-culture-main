@@ -52,6 +52,12 @@ export interface OffererToBeValidated {
   id: number
   /**
    *
+   * @type {boolean}
+   * @memberof OffererToBeValidated
+   */
+  isTopActor: boolean
+  /**
+   *
    * @type {Comment}
    * @memberof OffererToBeValidated
    */
@@ -116,6 +122,7 @@ export function OffererToBeValidatedFromJSONTyped(
     city: json['city'],
     email: !exists(json, 'email') ? undefined : json['email'],
     id: json['id'],
+    isTopActor: json['isTopActor'],
     lastComment: !exists(json, 'lastComment')
       ? undefined
       : CommentFromJSON(json['lastComment']),
@@ -143,6 +150,7 @@ export function OffererToBeValidatedToJSON(
     city: value.city,
     email: value.email,
     id: value.id,
+    isTopActor: value.isTopActor,
     lastComment: CommentToJSON(value.lastComment),
     name: value.name,
     owner: value.owner,
