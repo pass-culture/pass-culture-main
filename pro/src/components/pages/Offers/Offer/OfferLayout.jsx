@@ -12,6 +12,11 @@ import { api } from 'apiClient/api'
 import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_OUT,
+} from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import OfferBreadcrumb, {
   OfferBreadcrumbStep,
 } from 'new_components/OfferBreadcrumb'
@@ -59,6 +64,7 @@ const OfferLayout = () => {
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch()
+  const { logEvent } = useAnalytics()
   const isCreatingOffer = location.pathname.includes('creation')
   const isCompletingDraft = useIsCompletingDraft()
   const [offer, setOffer] = useState(null)
@@ -211,7 +217,19 @@ const OfferLayout = () => {
           ></Route>
         </Switch>
       </div>
-      <RouteLeavingGuardOfferIndividual when={isCreatingOffer} />
+      <RouteLeavingGuardOfferIndividual
+        when={isCreatingOffer}
+        tracking={nextLocation =>
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: activeStep,
+            to: nextLocation,
+            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
+            isEdition: !isCreatingOffer,
+            isDraft: isCreatingOffer,
+            offerId: offer?.id,
+          })
+        }
+      />
     </div>
   )
 }
