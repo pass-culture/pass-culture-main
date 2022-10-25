@@ -37,6 +37,7 @@ from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
+from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.phone_number as phone_number_utils
@@ -833,52 +834,47 @@ def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: m
     return False
 
 
-def _filter_user_accounts(
-    accounts: BaseQuery, terms: typing.Iterable[str], order_by: list[str] | None = None
-) -> BaseQuery:
+def _filter_user_accounts(accounts: BaseQuery, search_term: str, order_by: list[str] | None = None) -> BaseQuery:
     filters = []
-    name_terms: list[str] = []
+    name_term = None
 
-    if not terms:
+    if not search_term:
         return accounts.filter(False)
 
-    for term in terms:
-        if not term:
-            continue
+    term_filters: list[sa.sql.ColumnElement] = []
 
-        term_filters: list[sa.sql.ColumnElement] = []
+    # phone number
+    try:
+        parsed_phone_number = phone_number_utils.parse_phone_number(search_term)
+        term_as_phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
+    except phone_validation_exceptions.InvalidPhoneNumber:
+        pass  # term can't be a phone number
+    else:
+        term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore [arg-type]
 
-        # phone number
-        try:
-            parsed_phone_number = phone_number_utils.parse_phone_number(term)
-            term_as_phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
-        except phone_validation_exceptions.InvalidPhoneNumber:
-            pass  # term can't be a phone number
-        else:
-            term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore [arg-type]
+    # numeric
+    if search_term.isnumeric():
+        term_filters.append(models.User.id == int(search_term))
 
-        # numeric
-        if term.isnumeric():
-            term_filters.append(models.User.id == int(term))
+    # email
+    sanitized_term = email_utils.sanitize_email(search_term)
+    if email_utils.is_valid_email(sanitized_term):
+        term_filters.append(models.User.email == sanitized_term)
+    elif email_utils.is_valid_email_domain(sanitized_term):
+        # search for all emails @domain.ext
+        term_filters.append(models.User.email.like(f"%{sanitized_term}"))
 
-        # email
-        sanitized_term = email_utils.sanitize_email(term)
-        if email_utils.is_valid_email(sanitized_term):
-            term_filters.append(models.User.email == sanitized_term)
-        elif email_utils.is_valid_email_domain(sanitized_term):
-            # search for all emails @domain.ext
-            term_filters.append(models.User.email.like(f"%{sanitized_term}"))
-
-        if not term_filters:
-            # terms which do not match a formatted column are searched by trigram distance in the names
+    if not term_filters:
+        name_term = search_term
+        for name in name_term.split():
             term_filters.append(
-                sa.func.similarity(models.User.firstName, term) > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE
+                sa.func.unaccent(sa.func.concat(models.User.firstName, " ", models.User.lastName)).ilike(
+                    f"%{clean_accents(name)}%"
+                )
             )
-            term_filters.append(
-                sa.func.similarity(models.User.lastName, term) > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE
-            )
-            name_terms.append(term)
+        filters.append(sa.and_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
+    else:
         filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
     # each result must match all terms in any column
@@ -890,12 +886,11 @@ def _filter_user_accounts(
         except db_utils.BadSortError as err:
             raise ApiErrors({"sorting": str(err)})
 
-    if name_terms:
-        name_search = " ".join(name_terms)
+    if name_term:
+        name_term = name_term.lower()
         accounts = accounts.order_by(
-            sa.desc(
-                sa.func.similarity(models.User.firstName, name_search)
-                + 1.5 * sa.func.similarity(models.User.lastName, name_search)
+            sa.func.levenshtein(
+                sa.func.lower(sa.func.concat(models.User.firstName, " ", models.User.lastName)), name_term
             )
         )
 
@@ -905,7 +900,7 @@ def _filter_user_accounts(
     return accounts
 
 
-def search_public_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+def search_public_account(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
     # There is no fully reliable condition to be sure that a user account is used as a public account (vs only pro).
     # In Flask-Admin backoffice, the difference was made from user_offerer table, which turns the user into a "pro"
     # account ; the same filter is kept here.
@@ -922,13 +917,13 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
         )
         .distinct(models.User.id)
     )
-    return _filter_user_accounts(public_accounts, terms, order_by=order_by)
+    return _filter_user_accounts(public_accounts, search_query, order_by=order_by)
 
 
-def search_pro_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+def search_pro_account(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
     # Any account which is associated with at least one offerer
     pro_accounts = models.User.query.join(offerers_models.UserOfferer).distinct(models.User.id)
-    return _filter_user_accounts(pro_accounts, terms, order_by=order_by)
+    return _filter_user_accounts(pro_accounts, search_query, order_by=order_by)
 
 
 def skip_phone_validation_step(user: models.User) -> None:
