@@ -22,7 +22,6 @@ const Summary = (): JSX.Element | null => {
   const offer = contextOffer as IOfferIndividual
   const {
     providerName,
-    offerStatus,
     offer: offerData,
     stockThing,
     stockEventList,
@@ -39,13 +38,13 @@ const Summary = (): JSX.Element | null => {
       <SummaryScreen
         offerId={offer.id}
         providerName={providerName}
-        offerStatus={offerStatus}
         isCreation={isCreation}
         offer={offerData}
         stockThing={stockThing}
         stockEventList={stockEventList}
         subCategories={subCategories}
         preview={preview}
+        isDraft={isCreation}
       />
     </WizardTemplate>
   )

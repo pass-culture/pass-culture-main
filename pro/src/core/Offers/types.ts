@@ -1,6 +1,7 @@
 import {
   EducationalInstitutionResponseModel,
   WithdrawalTypeEnum,
+  OfferStatus,
 } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
 import { ICropParams } from 'new_components/ImageUploader'
@@ -185,5 +186,5 @@ export interface IOfferIndividual {
   stocks: IOfferIndividualStock[]
   lastProviderName: string | null
   lastProvider: IOfferIndividualVenueProvider | null
-  status: string
+  status: OfferStatus
 }

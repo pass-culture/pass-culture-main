@@ -20,6 +20,7 @@ export interface IStockThingSectionProps {
 export interface IStockThingSummarySection extends IStockThingSectionProps {
   isCreation: boolean
   offerId: string
+  isDraft: boolean
 }
 
 const StockThingSection = ({
@@ -28,6 +29,7 @@ const StockThingSection = ({
   bookingLimitDatetime,
   isCreation,
   offerId,
+  isDraft,
 }: IStockThingSummarySection): JSX.Element => {
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const stocksUrls = isOfferFormV3
@@ -48,6 +50,8 @@ const StockThingSection = ({
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: !isCreation,
+      isDraft: isDraft || isCreation,
+      offerId: offerId,
     })
   }
   return (

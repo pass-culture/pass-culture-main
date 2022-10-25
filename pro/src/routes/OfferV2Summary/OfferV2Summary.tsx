@@ -99,7 +99,6 @@ const OfferV2Summary = (): JSX.Element | null => {
 
   const {
     providerName,
-    offerStatus,
     offer: offerData,
     stockThing,
     stockEventList,
@@ -116,7 +115,6 @@ const OfferV2Summary = (): JSX.Element | null => {
         offerId={offerId}
         formOfferV2
         providerName={providerName}
-        offerStatus={offerStatus}
         isCreation={isCreation}
         isDraft={isDraft}
         offer={offerData}

@@ -23,12 +23,14 @@ export interface IStockEventSectionProps {
   stocks: IStockEventItemProps[]
   isCreation: boolean
   offerId: string
+  isDraft: boolean
 }
 
 const StockEventSection = ({
   stocks,
   isCreation,
   offerId,
+  isDraft,
 }: IStockEventSectionProps): JSX.Element => {
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const [showAllStocks, setShowAllStocks] = useState(false)
@@ -59,6 +61,8 @@ const StockEventSection = ({
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: !isCreation,
+      isDraft: isDraft || isCreation,
+      offerId: offerId,
     })
   }
   return (
