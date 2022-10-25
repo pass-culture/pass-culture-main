@@ -18,21 +18,23 @@ interface ICollectiveOfferConfirmationProps {
 }
 
 const activeOffer = (institutionDisplayName?: string) => ({
-  title: 'Offre créée avec succès !',
+  title: 'Votre offre a été publiée sur ADAGE',
   description: (
     <>
-      Votre offre est désormais disponible sur <b>ADAGE</b> (L'Application
-      Dédiée À la Généralisation de l’Éducation artistique et culturelle) et{' '}
+      Votre offre est désormais visible et réservable par les enseignants et
+      chefs d’établissements{' '}
       {institutionDisplayName ? (
         <>
-          <b>visible uniquement</b> par :
-          <br />
+          de l’établissement scolaire :
           <br />
           <br />
           <b>{institutionDisplayName}</b>
         </>
       ) : (
-        <>visible par les enseignants et chefs d’établissement.</>
+        <>
+          des établissement scolaires qui sont dans la ou les zones de mobilité
+          sélectionnées.
+        </>
       )}
     </>
   ),
@@ -52,14 +54,12 @@ const pendingOffer = {
 }
 
 const showcaseOffer = {
-  title: 'Offre créée avec succès !',
+  title: 'Votre offre a été publiée sur ADAGE',
   description: (
     <>
-      Votre offre est désormais disponible sur <b>ADAGE</b> (L’Application
-      Dédiée À la Généralisation de l’Éducation artistique et culturelle) et
-      visible par les enseignants et chefs d’établissement. Vous aurez la
-      possibilité de revenir <b>éditer</b> votre offre et
-      <b> compléter</b> les éléments de date(s) et prix.
+      Votre offre est visible uniquement par les enseignants et chefs
+      d’établissement de l’Éducation Nationale qui peuvent désormais prendre
+      contact avec vous pour co-construire une offre adaptée à leurs classes.
     </>
   ),
   Icon: ValidateIcon,
@@ -130,6 +130,13 @@ const CollectiveOfferConfirmation = ({
         <Banner
           type="notification-info"
           className={styles['confirmation-banner']}
+          links={[
+            {
+              href: `https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-mon-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement`,
+              linkTitle:
+                'Quel est le cycle de vie d’une offre collective, de sa création à son remboursement',
+            },
+          ]}
         >
           <h2 className={styles['confirmation-banner-title']}>
             Quelle est la prochaine étape ?
@@ -149,7 +156,8 @@ const CollectiveOfferConfirmation = ({
               L’enseignant doit préréserver votre offre depuis son compte ADAGE.
               <br />
               Une fois la préréservation faite, vous verrez une réservation
-              portant le statut préréservé.
+              portant le statut préréservé qui, dans un second temps, devra être
+              officiellement réservée par le chef d’établissement.
             </>
           )}
         </Banner>

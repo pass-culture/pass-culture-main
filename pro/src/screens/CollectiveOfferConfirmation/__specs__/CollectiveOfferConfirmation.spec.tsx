@@ -44,7 +44,9 @@ describe('CollectiveOfferConfirmation', () => {
       </Router>
     )
 
-    expect(screen.getByText('Offre créée avec succès !')).toBeInTheDocument()
+    expect(
+      screen.getByText('Votre offre a été publiée sur ADAGE')
+    ).toBeInTheDocument()
     expect(
       screen.getByText('Collège Bellevue', { exact: false })
     ).toBeInTheDocument()
@@ -62,11 +64,16 @@ describe('CollectiveOfferConfirmation', () => {
       </Router>
     )
 
-    expect(screen.getByText('Offre créée avec succès !')).toBeInTheDocument()
     expect(
-      screen.getByText('visible par les enseignants et chefs d’établissement', {
-        exact: false,
-      })
+      screen.getByText('Votre offre a été publiée sur ADAGE')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'visible et réservable par les enseignants et chefs d’établissements',
+        {
+          exact: false,
+        }
+      )
     ).toBeInTheDocument()
   })
 
@@ -82,7 +89,9 @@ describe('CollectiveOfferConfirmation', () => {
       </Router>
     )
 
-    expect(screen.getByText('Offre créée avec succès !')).toBeInTheDocument()
+    expect(
+      screen.getByText('Votre offre a été publiée sur ADAGE')
+    ).toBeInTheDocument()
   })
 
   it('should render banner at the bottom of the page', () => {
