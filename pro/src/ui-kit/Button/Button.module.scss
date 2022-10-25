@@ -30,7 +30,7 @@
     cursor: pointer;
     .tooltip {
       margin-left: 0;
-      background-color: black;
+      background-color: colors.$dark-blue;
       &::after {
         content: '';
         position: absolute;
@@ -38,7 +38,7 @@
         height: 0;
         border-width: rem.torem(4px);
         border-style: solid;
-        border-color: #000000 transparent transparent transparent;
+        border-color: colors.$dark-blue transparent transparent transparent;
         bottom: rem.torem(-8px);
         left: 50%;
         transform: translateX(-50%);
