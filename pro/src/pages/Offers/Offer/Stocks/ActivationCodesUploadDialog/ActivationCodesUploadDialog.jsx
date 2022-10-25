@@ -2,9 +2,8 @@ import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useRef, useState } from 'react'
 
 import DialogBox from 'components/DialogBox/DialogBox'
-
-import { ReactComponent as ActivationCodeErrorIcon } from '../assets/add-activation-code-error.svg'
-import { ReactComponent as AddActivationCodeIcon } from '../assets/add-activation-code-light.svg'
+import { ReactComponent as ActivationCodeErrorIcon } from 'icons/add-activation-code-error.svg'
+import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
 
 import ActivationCodesConfirmationForm from './ActivationCodesConfirmationForm/ActivationCodesConfirmationForm'
 import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'

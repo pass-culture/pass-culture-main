@@ -9,12 +9,6 @@ export const PublicIcons = () => (
   <table className={styles.table}>
     <body>
       <tr>
-        <td>
-          <Icon svg="add-activation-code-light" />
-        </td>
-        <td>public/icons/add-activation-code-light</td>
-      </tr>
-      <tr>
         <td className={styles['with-background']}>
           <Icon svg="brand-logo-pro-small-pro" />
         </td>
