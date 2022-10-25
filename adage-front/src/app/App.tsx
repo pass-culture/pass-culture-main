@@ -35,13 +35,14 @@ export const App = (): JSX.Element => {
     const params = new URLSearchParams(window.location.search)
     const siret = params.get('siret')
     const venueId = Number(params.get('venue'))
+    const getRelativeOffers = params.get('all') === 'true'
     api
       .authenticate()
       .then(user => setUser(user))
       .then(() => {
         if (siret) {
           return api
-            .getVenueBySiret(siret)
+            .getVenueBySiret(siret, getRelativeOffers)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(
@@ -55,7 +56,7 @@ export const App = (): JSX.Element => {
 
         if (venueId && !Number.isNaN(venueId)) {
           return api
-            .getVenueById(venueId)
+            .getVenueById(venueId, getRelativeOffers)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(

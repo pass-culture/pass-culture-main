@@ -206,7 +206,7 @@ describe('app', () => {
       .calls[2][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01', 'offer.interventionArea:01'],
-      'venue.id:1436',
+      ['venue.id:1436'],
       [
         'offer.educationalInstitutionUAICode:all',
         'offer.educationalInstitutionUAICode:uai',

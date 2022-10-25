@@ -17,7 +17,7 @@ import { ReactComponent as OffersIcon } from 'assets/offers.svg'
 import { LOGS_DATA } from 'utils/config'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
-import { populateFacetFilters } from '../utils'
+import { computeVenueFacetFilter, populateFacetFilters } from '../utils'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
@@ -116,7 +116,7 @@ export const OffersSearchComponent = ({
   useEffect(() => {
     if (venueFilter?.id) {
       setFacetFilters([
-        `venue.id:${venueFilter.id}`,
+        computeVenueFacetFilter(venueFilter),
         getDefaultFacetFilterUAICodeValue(user.uai),
       ])
     }
