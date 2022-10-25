@@ -7,14 +7,14 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS, OFFER_STATUS_ACTIVE } from 'core/Offers'
+import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -193,7 +193,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       stocks: [],
       lastProviderName: null,
       lastProvider: null,
-      status: OFFER_STATUS_ACTIVE,
+      status: OfferStatus.ACTIVE,
     }
 
     contextValue = {

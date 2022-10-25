@@ -1,11 +1,11 @@
 import React from 'react'
 
-import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
+import { OFFER_STATUS_DRAFT, OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
 import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -50,6 +50,7 @@ export interface IOfferSectionProps {
   withdrawalDetails: string
   withdrawalType: WithdrawalTypeEnum | null
   withdrawalDelay: number | null
+  status: OfferStatus
 }
 
 interface IOfferSummaryProps {
@@ -84,6 +85,8 @@ const OfferSummary = ({
       to: OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: !isCreation,
+      isDraft: offer.status === OFFER_STATUS_DRAFT,
+      offerId: offer.id,
     })
   }
 

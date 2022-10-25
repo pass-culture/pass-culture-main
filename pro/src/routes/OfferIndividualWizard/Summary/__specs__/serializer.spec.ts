@@ -1,4 +1,4 @@
-import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { CATEGORY_STATUS, OFFER_STATUS_ACTIVE } from 'core/Offers'
 import {
   IOfferCategory,
@@ -110,7 +110,7 @@ describe('routes::Summary::serializers', () => {
       ],
       lastProviderName: 'Last Provider Name',
       lastProvider: null,
-      status: OFFER_STATUS_ACTIVE,
+      status: OfferStatus.ACTIVE,
     }
     categories = [
       {
@@ -137,7 +137,6 @@ describe('routes::Summary::serializers', () => {
 
   it('should serialize data with event stock', () => {
     const {
-      offerStatus: offerStatusSerialized,
       providerName: providerNameSerialized,
       offer: offerSerialized,
       stockThing: stockThingSerialized,
@@ -145,7 +144,6 @@ describe('routes::Summary::serializers', () => {
       preview: previewSerialized,
     } = serializePropsFromOfferIndividual(offer, categories, subCategoryList)
 
-    expect(offerStatusSerialized).toEqual(OFFER_STATUS_ACTIVE)
     expect(providerNameSerialized).toEqual('Last Provider Name')
     expect(offerSerialized).toEqual({
       id: 'AA',
@@ -187,6 +185,7 @@ describe('routes::Summary::serializers', () => {
       performer: 'Offer performer',
       isbn: '',
       durationMinutes: '140',
+      status: OfferStatus.ACTIVE,
     })
     expect(stockThingSerialized).toEqual(undefined)
     expect(stockEventListSerialized).toEqual([

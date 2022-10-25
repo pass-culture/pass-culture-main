@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { OfferStatus } from 'apiClient/v1'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'core/Offers'
@@ -21,7 +22,7 @@ jest.mock('apiClient/api', () => ({
   api: { patchPublishOffer: jest.fn().mockResolvedValue({}) },
 }))
 
-const renderSummary = (props: ISummaryProps) => {
+const renderSummary = (props: ISummaryProps, overrideStore = {}) => {
   const store = configureTestStore({
     user: {
       initialized: true,
@@ -31,6 +32,7 @@ const renderSummary = (props: ISummaryProps) => {
         email: 'email@example.com',
       },
     },
+    ...overrideStore,
   })
   return render(
     <Provider store={store}>
@@ -124,6 +126,7 @@ describe('Summary trackers', () => {
       withdrawalDetails: 'détails de retrait',
       withdrawalType: null,
       withdrawalDelay: null,
+      status: OfferStatus.ACTIVE,
     }
     const preview = {
       offerData: {
@@ -139,12 +142,12 @@ describe('Summary trackers', () => {
       formOfferV2: true,
       isCreation: false,
       providerName: null,
-      offerStatus: 'DRAFT',
       offer: offer,
       stockThing: stock,
       stockEventList: undefined,
       subCategories: subCategories,
       preview: preview,
+      isDraft: false,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -170,6 +173,8 @@ describe('Summary trackers', () => {
           from: 'recapitulatif',
           isEdition: true,
           to: 'details',
+          isDraft: false,
+          offerId: 'AB',
           used: 'RecapLink',
         }
       )
@@ -192,6 +197,8 @@ describe('Summary trackers', () => {
           isEdition: true,
           to: 'stocks',
           used: 'RecapLink',
+          isDraft: false,
+          offerId: 'AB',
         }
       )
     })
@@ -215,6 +222,8 @@ describe('Summary trackers', () => {
           isEdition: true,
           to: 'Offers',
           used: 'StickyButtons',
+          isDraft: false,
+          offerId: 'AB',
         }
       )
     })
@@ -236,6 +245,8 @@ describe('Summary trackers', () => {
           isEdition: true,
           to: 'AppPreview',
           used: 'SummaryPreview',
+          isDraft: false,
+          offerId: 'AB',
         }
       )
     })
@@ -244,6 +255,8 @@ describe('Summary trackers', () => {
   describe('On Creation', () => {
     beforeEach(() => {
       props.isCreation = true
+      props.isDraft = true
+      props.offer.status = OfferStatus.DRAFT
     })
 
     it('should track when clicking on "Modifier" on offer section', async () => {
@@ -263,6 +276,8 @@ describe('Summary trackers', () => {
           isEdition: false,
           to: 'details',
           used: 'RecapLink',
+          isDraft: true,
+          offerId: 'AB',
         }
       )
     })
@@ -284,6 +299,8 @@ describe('Summary trackers', () => {
           isEdition: false,
           to: 'stocks',
           used: 'RecapLink',
+          isDraft: true,
+          offerId: 'AB',
         }
       )
     })
@@ -306,6 +323,8 @@ describe('Summary trackers', () => {
             isEdition: false,
             to: 'stocks',
             used: 'StickyButtons',
+            isDraft: true,
+            offerId: 'AB',
           }
         )
       })
@@ -327,6 +346,8 @@ describe('Summary trackers', () => {
             isEdition: false,
             to: 'confirmation',
             used: 'StickyButtons',
+            isDraft: true,
+            offerId: 'AB',
           }
         )
       })
@@ -378,6 +399,141 @@ describe('Summary trackers', () => {
           }
         )
       })
+    })
+  })
+
+  describe('For Draft offers', () => {
+    const overrideStore = {
+      features: {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'OFFER_DRAFT_ENABLED',
+          },
+        ],
+      },
+    }
+    beforeEach(() => {
+      props.isCreation = true
+      props.isDraft = true
+      props.offer.status = OfferStatus.DRAFT
+    })
+
+    it('should track when clicking on "Modifier" on offer section', async () => {
+      // given
+      renderSummary(props, overrideStore)
+
+      // when
+      await userEvent.click(screen.getAllByText('Modifier')[0])
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'recapitulatif',
+          isEdition: false,
+          to: 'details',
+          used: 'RecapLink',
+          isDraft: true,
+          offerId: 'AB',
+        }
+      )
+    })
+
+    it('should track when clicking on "Modifier" on stock section', async () => {
+      // given
+      renderSummary(props, overrideStore)
+
+      // when
+      await userEvent.click(screen.getAllByText('Modifier')[1])
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'recapitulatif',
+          isEdition: false,
+          to: 'stocks',
+          used: 'RecapLink',
+          isDraft: true,
+          offerId: 'AB',
+        }
+      )
+    })
+
+    it('should track when clicking on return to previous step button', async () => {
+      // given
+      renderSummary(props, overrideStore)
+
+      // when
+      await userEvent.click(await screen.findByText('Étape précédente'))
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'recapitulatif',
+          isEdition: false,
+          to: 'stocks',
+          used: 'StickyButtons',
+          isDraft: true,
+          offerId: 'AB',
+        }
+      )
+    })
+
+    it('should track when clicking on return to publish offer button', async () => {
+      // given
+      renderSummary(props, overrideStore)
+
+      // when
+      await userEvent.click(await screen.findByText("Publier l'offre"))
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'recapitulatif',
+          isEdition: false,
+          to: 'confirmation',
+          used: 'StickyButtons',
+          isDraft: true,
+          offerId: 'AB',
+        }
+      )
+    })
+
+    it('should track when clicking on return to save draft button', async () => {
+      // given
+      renderSummary(props, overrideStore)
+
+      // when
+      await userEvent.click(
+        await screen.findByText('Sauvegarder le brouillon et quitter')
+      )
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'recapitulatif',
+          isEdition: false,
+          to: 'Offers',
+          used: 'DraftButtons',
+          isDraft: true,
+          offerId: 'AB',
+        }
+      )
     })
   })
 })

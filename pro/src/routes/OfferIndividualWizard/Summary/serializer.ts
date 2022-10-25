@@ -105,6 +105,7 @@ const serializerOfferSectionProps = (
     withdrawalType: offer.withdrawalType || null,
     withdrawalDelay: offer.withdrawalDelay || null,
     accessibility: offer.accessibility,
+    status: offer.status,
 
     isDuo: offer.isDuo,
     url: offer.url,
@@ -190,7 +191,6 @@ export const serializePropsFromOfferIndividual = (
   categories: IOfferCategory[],
   subCategories: IOfferSubCategory[]
 ): {
-  offerStatus: string
   providerName: string | null
   offer: IOfferSectionProps
   stockThing?: IStockThingSectionProps
@@ -198,7 +198,6 @@ export const serializePropsFromOfferIndividual = (
   preview: IOfferAppPreviewProps
 } => {
   return {
-    offerStatus: offer.status,
     providerName: offer.lastProviderName,
     offer: serializerOfferSectionProps(offer, categories, subCategories),
     stockThing: serializerStockThingSectionProps(offer),

@@ -1,4 +1,4 @@
-import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { CATEGORY_STATUS, OFFER_STATUS_ACTIVE } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
@@ -73,7 +73,7 @@ describe('setFormReadOnlyFields', () => {
       stocks: [],
       lastProviderName: null,
       lastProvider: null,
-      status: OFFER_STATUS_ACTIVE,
+      status: OfferStatus.ACTIVE,
     }
     subCategoryList = [
       {
