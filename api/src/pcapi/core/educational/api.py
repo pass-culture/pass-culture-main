@@ -1318,3 +1318,13 @@ def publish_collective_offer_template(offer_template: educational_models.Collect
         update_offer_fraud_information(offer_template, user)
         search.async_index_collective_offer_template_ids([offer_template.id])
         db.session.commit()
+
+
+def notify_pro_users_one_day() -> None:
+    bookings = educational_repository.find_bookings_happening_in_x_days(1)
+    for booking in bookings:
+        if not transactional_mails.send_eac_alert_one_day_before_event(booking):
+            logger.warning(
+                "Could not notify offerer one day before event",
+                extra={"collectiveBooking": booking.id},
+            )
