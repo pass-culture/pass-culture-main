@@ -11,13 +11,14 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { CLOSE_JOB_HIGHLIGHTS_BANNER_KEY } from 'new_components/JobHighlightsBanner/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
-import { RemoteContextProvider } from '../../../../context/remoteConfigContext'
 import Homepage from '../Homepage'
 
 jest.mock('utils/config', () => ({
@@ -312,7 +313,7 @@ describe('homepage', () => {
       })
 
       it('should not display if user has already seen', async () => {
-        localStorage.setItem('iscloseJobHighlights', true)
+        localStorage.setItem(CLOSE_JOB_HIGHLIGHTS_BANNER_KEY, true)
 
         renderHomePage(store)
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
