@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -11,10 +15,20 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { ApiError } from 'apiClient/v2'
 import { CATEGORY_STATUS } from 'core/Offers'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import Notification from 'new_components/Notification/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import { OfferIndividualWizard } from '..'
+
+jest.mock('core/Notification/constants', () => ({
+  NOTIFICATION_TRANSITION_DURATION: 10,
+  NOTIFICATION_SHOW_DURATION: 10,
+}))
 
 const apiOffer: GetIndividualOfferResponseModel = {
   activeMediation: null,
@@ -159,7 +173,9 @@ const renderOfferIndividualWizardRoute = (
         <Route path={['/offre/v3', '/offre/:offerId/v3']}>
           <OfferIndividualWizard />
         </Route>
+        <Route path={['/structures', '/accueil']}>Home Page</Route>
       </MemoryRouter>
+      <Notification />
     </Provider>
   )
 }
@@ -187,8 +203,52 @@ describe('test OfferIndividualWisard', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   })
 
+  it('should display an error when unable to load offer', async () => {
+    jest.spyOn(api, 'getOffer').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          body: {
+            global: ['Une erreur est survenue'],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+    renderOfferIndividualWizardRoute(store, '/offre/OFFER_ID/v3/creation')
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(/Chargement en cours/)
+    )
+    expect(
+      await screen.findByText(
+        /Une erreur est survenue lors de la récupération de votre offre/
+      )
+    ).toBeInTheDocument()
+  })
+  it('should display an error when unable to load categories', async () => {
+    jest.spyOn(api, 'getCategories').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          body: {
+            global: ['Une erreur est survenue'],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+    renderOfferIndividualWizardRoute(
+      store,
+      '/offre/v3/creation/individuelle/informations/'
+    )
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(/Chargement en cours/)
+    )
+    expect(screen.getByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+  })
+
   it('should initialize context with api', async () => {
-    await renderOfferIndividualWizardRoute(
+    renderOfferIndividualWizardRoute(
       store,
       '/offre/v3/creation/individuelle/informations'
     )
@@ -211,7 +271,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   it('should initialize context with api when offererId is given in query', async () => {
-    await renderOfferIndividualWizardRoute(
+    renderOfferIndividualWizardRoute(
       store,
       '/offre/v3/creation/individuelle/informations/?structure=CU'
     )
@@ -262,7 +322,7 @@ describe('test OfferIndividualWisard', () => {
       ],
     })
     const offerId = 'YA'
-    await renderOfferIndividualWizardRoute(
+    renderOfferIndividualWizardRoute(
       store,
       `/offre/${offerId}/v3/individuelle/informations?structure=CU`
     )
@@ -286,7 +346,7 @@ describe('test OfferIndividualWisard', () => {
 
   describe('stepper', () => {
     it('should not render stepper on information page', async () => {
-      await renderOfferIndividualWizardRoute(
+      renderOfferIndividualWizardRoute(
         store,
         `/offre/v3/creation/individuelle/informations`
       )
@@ -316,7 +376,7 @@ describe('test OfferIndividualWisard', () => {
 
     it('should not render stepper on confirmation page', async () => {
       const offerId = 'YA'
-      await renderOfferIndividualWizardRoute(
+      renderOfferIndividualWizardRoute(
         store,
         `/offre/${offerId}/v3/individuelle/confirmation`
       )
@@ -345,7 +405,7 @@ describe('test OfferIndividualWisard', () => {
     })
 
     it('should render stepper on summary page in creation', async () => {
-      await renderOfferIndividualWizardRoute(
+      renderOfferIndividualWizardRoute(
         store,
         `/offre/creation/v3/individuelle/recapitulatif`
       )
@@ -373,7 +433,7 @@ describe('test OfferIndividualWisard', () => {
 
     it('should not render stepper on summary page in edition', async () => {
       const offerId = 'YA'
-      await renderOfferIndividualWizardRoute(
+      renderOfferIndividualWizardRoute(
         store,
         `/offre/${offerId}/v3/individuelle/recapitulatif`
       )

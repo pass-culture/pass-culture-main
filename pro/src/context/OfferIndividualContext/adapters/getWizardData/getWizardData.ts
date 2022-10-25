@@ -2,6 +2,7 @@ import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { TOffererName } from 'core/Offerers/types'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters/getOfferIndividualVenuesAdapter'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
@@ -30,7 +31,7 @@ export type TGetOfferIndividualAdapter = Adapter<
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
-  message: 'Une erreur est survenue lors de la récupération de votre offre',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: null,
 }
 
@@ -65,9 +66,11 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
   }
 
   const venuesResponse = await getOfferIndividualVenuesAdapter({ offererId })
+  /* istanbul ignore next: DEBT, TO FIX */
   if (venuesResponse.isOk) {
     successPayload.venueList = venuesResponse.payload
   } else {
+    /* istanbul ignore next: DEBT, TO FIX */
     return Promise.resolve(FAILING_RESPONSE)
   }
 
@@ -82,9 +85,11 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
     const offererResponse = await getOffererNamesAdapter({
       offererId: isAdmin ? offererId : undefined,
     })
+    /* istanbul ignore next: DEBT, TO FIX */
     if (offererResponse.isOk) {
       successPayload.offererNames = offererResponse.payload
     } else {
+      /* istanbul ignore next: DEBT, TO FIX */
       return Promise.resolve(FAILING_RESPONSE)
     }
   }

@@ -1,9 +1,10 @@
 import React from 'react'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { OfferIndividualStepper } from 'new_components/OfferIndividualStepper'
-import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 
 import styles from './Template.module.scss'
 
@@ -16,10 +17,13 @@ export interface ITemplateProps {
 
 const Template = ({ title, children, withStepper = true }: ITemplateProps) => {
   const { offer } = useOfferIndividualContext()
-  const isCreation = useIsCreation()
+  const mode = useOfferWizardMode()
 
-  const defaultTitle = isCreation ? 'Créer une offre' : "Modifier l'offre"
-
+  const defaultTitle = {
+    [OFFER_WIZARD_MODE.CREATION]: 'Créer une offre',
+    [OFFER_WIZARD_MODE.DRAFT]: "Compléter l'offre",
+    [OFFER_WIZARD_MODE.EDITION]: "Modifier l'offre",
+  }[mode]
   return (
     <OfferFormLayout>
       {title !== null && (

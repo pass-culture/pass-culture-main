@@ -9,8 +9,10 @@ import { MemoryRouter } from 'react-router'
 import { OfferStatus } from 'apiClient/v1'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as useOfferWizardMode from 'hooks/useOfferWizardMode'
+import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
 import Summary, { ISummaryProps } from '../Summary'
@@ -22,7 +24,13 @@ jest.mock('apiClient/api', () => ({
   api: { patchPublishOffer: jest.fn().mockResolvedValue({}) },
 }))
 
-const renderSummary = (props: ISummaryProps, overrideStore = {}) => {
+const renderSummary = ({
+  props,
+  overrideStore = {},
+}: {
+  props: ISummaryProps
+  overrideStore?: Partial<RootState>
+}) => {
   const store = configureTestStore({
     user: {
       initialized: true,
@@ -140,26 +148,27 @@ describe('Summary trackers', () => {
     props = {
       offerId: offer.id,
       formOfferV2: true,
-      isCreation: false,
       providerName: null,
       offer: offer,
       stockThing: stock,
       stockEventList: undefined,
       subCategories: subCategories,
       preview: preview,
-      isDraft: false,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    jest
+      .spyOn(useOfferWizardMode, 'default')
+      .mockImplementation(() => OFFER_WIZARD_MODE.EDITION)
   })
 
   describe('On edition', () => {
     it('should track when clicking on "Modifier" on offer section', async () => {
       // given
-      renderSummary(props)
+      renderSummary({ props })
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[0])
@@ -182,7 +191,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on stock section', async () => {
       // given
-      renderSummary(props)
+      renderSummary({ props })
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[1])
@@ -205,7 +214,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to offers button', async () => {
       // given
-      renderSummary(props)
+      renderSummary({ props })
 
       // when
       await userEvent.click(
@@ -230,7 +239,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on see preview link', async () => {
       // given
-      renderSummary(props)
+      renderSummary({ props })
 
       // when
       await userEvent.click(await screen.findByText('Visualiser dans l’app'))
@@ -254,14 +263,15 @@ describe('Summary trackers', () => {
 
   describe('On Creation', () => {
     beforeEach(() => {
-      props.isCreation = true
-      props.isDraft = true
       props.offer.status = OfferStatus.DRAFT
+      jest
+        .spyOn(useOfferWizardMode, 'default')
+        .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
     })
 
     it('should track when clicking on "Modifier" on offer section', async () => {
       // given
-      renderSummary(props)
+      renderSummary({ props })
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[0])
@@ -284,7 +294,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on stock section', async () => {
       // given
-      renderSummary(props)
+      renderSummary({ props })
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[1])
@@ -308,7 +318,7 @@ describe('Summary trackers', () => {
     describe('When it is form v2', () => {
       it('should track when clicking on return to previous step button', async () => {
         // given
-        renderSummary(props)
+        renderSummary({ props })
 
         // when
         await userEvent.click(await screen.findByText('Étape précédente'))
@@ -331,7 +341,7 @@ describe('Summary trackers', () => {
 
       it('should track when clicking on return to publish offer button', async () => {
         // given
-        renderSummary(props)
+        renderSummary({ props })
 
         // when
         await userEvent.click(await screen.findByText("Publier l'offre"))
@@ -360,7 +370,7 @@ describe('Summary trackers', () => {
 
       it('should track when clicking on return to previous step button', async () => {
         // given
-        renderSummary(props)
+        renderSummary({ props })
 
         // when
         await userEvent.click(await screen.findByText('Étape précédente'))
@@ -381,7 +391,7 @@ describe('Summary trackers', () => {
 
       it('should track when clicking on return to next step button', async () => {
         // given
-        renderSummary(props)
+        renderSummary({ props })
 
         // when
         await userEvent.click(await screen.findByText("Publier l'offre"))
@@ -403,8 +413,9 @@ describe('Summary trackers', () => {
   })
 
   describe('For Draft offers', () => {
-    const overrideStore = {
+    const overrideStore: Partial<RootState> = {
       features: {
+        initialized: true,
         list: [
           {
             isActive: true,
@@ -414,14 +425,15 @@ describe('Summary trackers', () => {
       },
     }
     beforeEach(() => {
-      props.isCreation = true
-      props.isDraft = true
       props.offer.status = OfferStatus.DRAFT
+      jest
+        .spyOn(useOfferWizardMode, 'default')
+        .mockImplementation(() => OFFER_WIZARD_MODE.DRAFT)
     })
 
     it('should track when clicking on "Modifier" on offer section', async () => {
       // given
-      renderSummary(props, overrideStore)
+      renderSummary({ props, overrideStore })
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[0])
@@ -444,7 +456,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on "Modifier" on stock section', async () => {
       // given
-      renderSummary(props, overrideStore)
+      renderSummary({ props, overrideStore })
 
       // when
       await userEvent.click(screen.getAllByText('Modifier')[1])
@@ -467,7 +479,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to previous step button', async () => {
       // given
-      renderSummary(props, overrideStore)
+      renderSummary({ props, overrideStore })
 
       // when
       await userEvent.click(await screen.findByText('Étape précédente'))
@@ -490,7 +502,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to publish offer button', async () => {
       // given
-      renderSummary(props, overrideStore)
+      renderSummary({ props, overrideStore })
 
       // when
       await userEvent.click(await screen.findByText("Publier l'offre"))
@@ -513,7 +525,7 @@ describe('Summary trackers', () => {
 
     it('should track when clicking on return to save draft button', async () => {
       // given
-      renderSummary(props, overrideStore)
+      renderSummary({ props, overrideStore })
 
       // when
       await userEvent.click(

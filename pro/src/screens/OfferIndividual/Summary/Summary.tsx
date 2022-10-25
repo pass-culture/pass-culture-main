@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -10,7 +10,11 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
+import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
@@ -37,8 +41,6 @@ import styles from './Summary.module.scss'
 export interface ISummaryProps {
   offerId: string
   formOfferV2?: boolean
-  isCreation: boolean
-  isDraft: boolean
   providerName: string | null
   offer: IOfferSectionProps
   stockThing?: IStockThingSectionProps
@@ -51,8 +53,6 @@ const Summary = (
   /* istanbul ignore next: DEBT, TO FIX */
   {
     formOfferV2 = false,
-    isCreation,
-    isDraft,
     providerName,
     offerId,
     offer,
@@ -63,14 +63,16 @@ const Summary = (
   }: ISummaryProps
 ): JSX.Element => {
   const [isDisabled, setIsDisabled] = useState(false)
-  const location = useLocation()
   const notification = useNotification()
+  const mode = useOfferWizardMode()
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+
   const { logEvent } = useAnalytics()
   const publishOffer = () => {
+    // edition mode offers are already publish
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (mode === OFFER_WIZARD_MODE.EDITION) return
     setIsDisabled(true)
-    let url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
-    if (isDraft)
-      url = `/offre/${offerId}/individuel/brouillon/confirmation${location.search}`
     api
       // @ts-expect-error: type string is not assignable to type number
       .patchPublishOffer({ id: offerId })
@@ -80,16 +82,26 @@ const Summary = (
           from: OfferBreadcrumbStep.SUMMARY,
           to: OfferBreadcrumbStep.CONFIRMATION,
           used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-          isEdition: !isCreation,
+          isEdition: false,
           isDraft: true,
           offerId: offerId,
         })
-        history.push(url)
+        history.push(
+          getOfferIndividualUrl({
+            offerId,
+            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+            mode,
+            isV2: !isOfferFormV3,
+          })
+        )
       })
-      .catch(() => {
-        notification.error("Une erreur s'est produite, veuillez réessayer")
-        setIsDisabled(false)
-      })
+      .catch(
+        /* istanbul ignore next: DEBT, TO FIX */
+        () => {
+          notification.error("Une erreur s'est produite, veuillez réessayer")
+          setIsDisabled(false)
+        }
+      )
   }
 
   const history = useHistory()
@@ -98,9 +110,15 @@ const Summary = (
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.CONFIRMATION,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: !isCreation,
+      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
     })
-    history.push(`/offre/${offerId}/v3/creation/individuelle/confirmation`)
+    history.push(
+      getOfferIndividualUrl({
+        offerId,
+        mode,
+        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+      })
+    )
   }
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -109,11 +127,15 @@ const Summary = (
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: !isCreation,
+      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
     })
-    let url = `/offre/${offerId}/v3/creation/individuelle/stocks`
-    if (isDraft) url = `/offre/${offerId}/v3/brouillon/individuelle/stocks`
-    history.push(url)
+    history.push(
+      getOfferIndividualUrl({
+        offerId,
+        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        mode,
+      })
+    )
   }
   const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
 
@@ -135,9 +157,11 @@ const Summary = (
 
   return (
     <>
-      {(isCreation || isDisabledOffer || providerName !== null || isDraft) && (
+      {(mode !== OFFER_WIZARD_MODE.EDITION ||
+        isDisabledOffer ||
+        providerName !== null) && (
         <div className={styles['offer-preview-banners']}>
-          {(isCreation || isDraft) && <BannerSummary />}
+          {mode !== OFFER_WIZARD_MODE.EDITION && <BannerSummary />}
           {
             /* istanbul ignore next: DEBT, TO FIX */
             isDisabledOffer && (
@@ -158,32 +182,16 @@ const Summary = (
       )}
       <SummaryLayout>
         <SummaryLayout.Content>
-          <OfferSection
-            conditionalFields={conditionalFields}
-            offer={offer}
-            isCreation={isCreation}
-          />
+          <OfferSection conditionalFields={conditionalFields} offer={offer} />
           {stockThing && (
-            <StockThingSection
-              {...stockThing}
-              isCreation={isCreation}
-              offerId={offerId}
-              isDraft={isDraft}
-            />
+            <StockThingSection {...stockThing} offerId={offerId} />
           )}
           {stockEventList && (
-            <StockEventSection
-              stocks={stockEventList}
-              isCreation={isCreation}
-              offerId={offerId}
-              isDraft={isDraft}
-            />
+            <StockEventSection stocks={stockEventList} offerId={offerId} />
           )}
 
           {formOfferV2 ? (
             <ActionsFormV2
-              isDraft={isDraft}
-              isCreation={isCreation}
               offerId={offerId}
               className={styles['offer-creation-preview-actions']}
               publishOffer={publishOffer}
@@ -193,7 +201,6 @@ const Summary = (
             <ActionBar
               onClickNext={handleNextStep}
               onClickPrevious={handlePreviousStep}
-              isCreation={isCreation}
               step={OFFER_WIZARD_STEP_IDS.SUMMARY}
             />
           )}
@@ -205,7 +212,7 @@ const Summary = (
             <span>Aperçu dans l'app</span>
           </div>
           <OfferAppPreview {...preview} />
-          {!isCreation && !isDraft && (
+          {mode === OFFER_WIZARD_MODE.EDITION && (
             <div className={styles['offer-preview-app-link']}>
               <DisplayOfferInAppLink
                 nonHumanizedId={offer.nonHumanizedId}

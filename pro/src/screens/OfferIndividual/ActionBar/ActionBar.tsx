@@ -1,7 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-import { computeOffersUrl } from 'core/Offers'
+import { computeOffersUrl, OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import ActionsBarSticky from 'new_components/ActionsBarSticky'
@@ -14,7 +15,6 @@ export interface IActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   onClickSaveDraft?: () => void
-  isCreation: boolean
   step: OFFER_WIZARD_STEP_IDS
 }
 
@@ -22,7 +22,6 @@ const ActionBar = ({
   onClickNext,
   onClickPrevious,
   onClickSaveDraft,
-  isCreation,
   step,
 }: IActionBarProps) => {
   const offersSearchFilters = useSelector(
@@ -31,10 +30,11 @@ const ActionBar = ({
   const offersPageNumber = useSelector(
     (state: RootState) => state.offers.pageNumber
   )
+  const mode = useOfferWizardMode()
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
 
   const Left = (): JSX.Element => {
-    if (isCreation)
+    if (mode === OFFER_WIZARD_MODE.CREATION)
       return (
         <>
           {step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
@@ -80,7 +80,7 @@ const ActionBar = ({
   }
 
   const Right = (): JSX.Element | null => {
-    if (isCreation)
+    if (mode !== OFFER_WIZARD_MODE.EDITION)
       return (
         <>
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (

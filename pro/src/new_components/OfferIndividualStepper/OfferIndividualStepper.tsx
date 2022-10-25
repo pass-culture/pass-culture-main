@@ -2,6 +2,8 @@ import React from 'react'
 import { generatePath } from 'react-router'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
 import Breadcrumb, {
   BreadcrumbStyle,
   IStepPattern,
@@ -10,13 +12,12 @@ import Breadcrumb, {
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import { useActiveStep } from './hooks'
-import useIsCreation from './hooks/useIsCreation'
 import styles from './OfferIndividualStepper.module.scss'
 
 const OfferIndividualStepper = () => {
   const { offer } = useOfferIndividualContext()
   const activeStep = useActiveStep()
-  const isCreation = useIsCreation()
+  const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasStock = offer !== null && offer.stocks.length > 0
 
@@ -24,29 +25,41 @@ const OfferIndividualStepper = () => {
     {
       id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       label: 'Informations',
-      path: isCreation
-        ? '/offre/:offerId/v3/creation/individuelle/informations'
-        : '/offre/:offerId/v3/individuelle/informations',
+      path: {
+        [OFFER_WIZARD_MODE.CREATION]:
+          '/offre/:offerId/v3/creation/individuelle/informations',
+        [OFFER_WIZARD_MODE.DRAFT]:
+          '/offre/:offerId/v3/brouillon/individuelle/informations',
+        [OFFER_WIZARD_MODE.EDITION]:
+          '/offre/:offerId/v3/individuelle/informations',
+      }[mode],
       isActive: true,
     },
     {
       id: OFFER_WIZARD_STEP_IDS.STOCKS,
       label: 'Stock & Prix',
-      path: isCreation
-        ? '/offre/:offerId/v3/creation/individuelle/stocks'
-        : '/offre/:offerId/v3/individuelle/stocks',
+      path: {
+        [OFFER_WIZARD_MODE.CREATION]:
+          '/offre/:offerId/v3/creation/individuelle/stocks',
+        [OFFER_WIZARD_MODE.DRAFT]:
+          '/offre/:offerId/v3/brouillon/individuelle/stocks',
+        [OFFER_WIZARD_MODE.EDITION]: '/offre/:offerId/v3/individuelle/stocks',
+      }[mode],
       isActive: hasOffer,
     },
   ]
 
-  if (isCreation) {
+  if (mode !== OFFER_WIZARD_MODE.EDITION) {
     stepPatternList.push(
       {
         id: OFFER_WIZARD_STEP_IDS.SUMMARY,
         label: 'Récapitulatif',
-        path: isCreation
-          ? '/offre/:offerId/v3/creation/individuelle/recapitulatif'
-          : '/offre/:offerId/v3/individuelle/recapitulatif',
+        path: {
+          [OFFER_WIZARD_MODE.CREATION]:
+            '/offre/:offerId/v3/creation/individuelle/recapitulatif',
+          [OFFER_WIZARD_MODE.DRAFT]:
+            '/offre/:offerId/v3/brouillon/individuelle/recapitulatif',
+        }[mode],
         isActive: hasStock,
       },
       {
@@ -72,8 +85,14 @@ const OfferIndividualStepper = () => {
     <Breadcrumb
       activeStep={activeStep}
       steps={stepList}
-      styleType={isCreation ? BreadcrumbStyle.STEPPER : BreadcrumbStyle.DEFAULT}
-      className={isCreation ? styles['stepper-creation'] : ''}
+      styleType={
+        mode !== OFFER_WIZARD_MODE.EDITION
+          ? BreadcrumbStyle.STEPPER
+          : BreadcrumbStyle.DEFAULT
+      }
+      className={
+        mode !== OFFER_WIZARD_MODE.EDITION ? styles['stepper-creation'] : ''
+      }
     />
   )
 }

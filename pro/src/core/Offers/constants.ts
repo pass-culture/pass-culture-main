@@ -24,6 +24,12 @@ export enum OFFER_WITHDRAWAL_TYPE_OPTIONS {
   BY_EMAIL = 'by_email',
 }
 
+export enum OFFER_WIZARD_MODE {
+  CREATION = 'creation',
+  DRAFT = 'draft',
+  EDITION = 'edition',
+}
+
 export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE]:
     'Retrait sur place (guichet, comptoir ...)',
