@@ -164,7 +164,7 @@ describe('app', () => {
       expect(Configure).toHaveBeenCalledTimes(2)
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
-        `venue.id:${venue.id}`,
+        [`venue.id:${venue.id}`],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
@@ -174,7 +174,7 @@ describe('app', () => {
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
 
-      expect(mockedApi.getVenueBySiret).toHaveBeenCalledWith(siret)
+      expect(mockedApi.getVenueBySiret).toHaveBeenCalledWith(siret, false)
     })
 
     it('should show venue filter on venue name when siret is provided and public name does not exist', async () => {
@@ -188,6 +188,7 @@ describe('app', () => {
 
       // Then
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
+      expect(mockedApi.getVenueBySiret).toHaveBeenCalledWith(siret, false)
       expect(venueFilter).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
     })
@@ -208,7 +209,7 @@ describe('app', () => {
       expect(Configure).toHaveBeenCalledTimes(2)
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
-        `venue.id:${venue.id}`,
+        [`venue.id:${venue.id}`],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
@@ -218,12 +219,12 @@ describe('app', () => {
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
 
-      expect(mockedApi.getVenueById).toHaveBeenCalledWith(venueId)
+      expect(mockedApi.getVenueById).toHaveBeenCalledWith(venueId, false)
     })
 
     it('should show venue filter on venue name when venueId is provided and public name does not exist', async () => {
       // Given
-      const venueId = '123456789'
+      const venueId = 123456789
       venue.publicName = undefined
       window.location.search = `?venue=${venueId}`
 
@@ -232,6 +233,7 @@ describe('app', () => {
 
       // Then
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
+      expect(mockedApi.getVenueById).toHaveBeenCalledWith(venueId, false)
       expect(venueFilter).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
     })
@@ -250,6 +252,7 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
+      expect(mockedApi.getVenueBySiret).toHaveBeenCalledWith(siret, false)
       const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [
@@ -263,6 +266,61 @@ describe('app', () => {
       expect(
         screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
       ).toBeInTheDocument()
+    })
+
+    it('should add all related venues in facet filters when siret is provided and "all" query param is true', async () => {
+      // Given
+      const siret = '123456789'
+      window.location.search = `?siret=${siret}&all=true`
+      mockedApi.getVenueBySiret.mockResolvedValueOnce({
+        ...venue,
+        relative: [123, 456],
+      })
+
+      // When
+      renderApp()
+
+      const contentTitle = await screen.findByText('Rechercher une offre', {
+        selector: 'h2',
+      })
+      expect(contentTitle).toBeInTheDocument()
+
+      expect(mockedApi.getVenueBySiret).toHaveBeenCalledWith(siret, true)
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+      expect(searchConfiguration.facetFilters).toStrictEqual([
+        [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
+      ])
+    })
+
+    it('should add all related venues in facet filters when venue is provided and "all" query param is true', async () => {
+      // Given
+      window.location.search = `?venue=${venue.id}&all=true`
+      mockedApi.getVenueById.mockResolvedValueOnce({
+        ...venue,
+        relative: [123, 456],
+      })
+
+      // When
+      renderApp()
+
+      const contentTitle = await screen.findByText('Rechercher une offre', {
+        selector: 'h2',
+      })
+      expect(contentTitle).toBeInTheDocument()
+
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+      expect(api.getVenueById).toHaveBeenCalledWith(venue.id, true)
+      expect(searchConfiguration.facetFilters).toStrictEqual([
+        [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
+      ])
     })
 
     it('should remove venue filter on click', async () => {
@@ -285,7 +343,7 @@ describe('app', () => {
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
         .calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        `venue.id:${venue.id}`,
+        [`venue.id:${venue.id}`],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
@@ -351,7 +409,7 @@ describe('app', () => {
           .calls[2][0]
 
         expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
-          `venue.id:${venue.id}`,
+          [`venue.id:${venue.id}`],
           ['offer.educationalInstitutionUAICode:uai'],
         ])
       })
