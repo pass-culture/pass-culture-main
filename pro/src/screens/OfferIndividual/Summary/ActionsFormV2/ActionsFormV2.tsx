@@ -1,3 +1,4 @@
+/* istanbul ignore file: will be removed on offer v3 */
 import cn from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
@@ -7,7 +8,8 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { computeOffersUrl } from 'core/Offers'
+import { computeOffersUrl, OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -23,8 +25,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './ActionsFormsV2.module.scss'
 
 interface IActionsFormV2Props {
-  isCreation: boolean
-  isDraft: boolean
   offerId: string
   className?: string
   publishOffer: () => void
@@ -35,8 +35,6 @@ const ActionsFormV2 = ({
   offerId,
   className,
   publishOffer,
-  isCreation,
-  isDraft,
   disablePublish = false,
 }: IActionsFormV2Props): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -45,8 +43,12 @@ const ActionsFormV2 = ({
   const quitUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
   const notification = useNotification()
   const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
-  let backOfferUrl = `/offre/${offerId}/individuel/creation/stocks`
-  if (isDraft) backOfferUrl = `/offre/${offerId}/individuel/brouillon/stocks`
+  const mode = useOfferWizardMode()
+  const backOfferUrl = {
+    [OFFER_WIZARD_MODE.CREATION]: `/offre/${offerId}/individuel/creation/stocks`,
+    [OFFER_WIZARD_MODE.DRAFT]: `/offre/${offerId}/individuel/brouillon/stocks`,
+    [OFFER_WIZARD_MODE.EDITION]: `/offre/${offerId}/individuel/stocks`,
+  }[mode]
 
   const renderCreationActions = (): JSX.Element => (
     <div className={cn(className, styles['draft-actions'])}>
@@ -62,9 +64,9 @@ const ActionsFormV2 = ({
               from: OfferBreadcrumbStep.SUMMARY,
               to: OfferBreadcrumbStep.STOCKS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-              isEdition: !isCreation,
               isDraft: true,
               offerId: offerId,
+              isEdition: mode === OFFER_WIZARD_MODE.EDITION,
             })
           }
         >
@@ -81,7 +83,7 @@ const ActionsFormV2 = ({
                 from: OfferBreadcrumbStep.SUMMARY,
                 to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
-                isEdition: !isCreation,
+                isEdition: mode === OFFER_WIZARD_MODE.EDITION,
                 isDraft: true,
                 offerId: offerId,
               })
@@ -123,8 +125,8 @@ const ActionsFormV2 = ({
               from: OfferBreadcrumbStep.SUMMARY,
               to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-              isEdition: !isCreation,
-              isDraft: isDraft || isCreation,
+              isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+              isDraft: mode === OFFER_WIZARD_MODE.DRAFT,
               offerId: offerId,
             })
           }
@@ -135,9 +137,9 @@ const ActionsFormV2 = ({
     )
   }
 
-  return isCreation || isDraft
-    ? renderCreationActions()
-    : renderEditionActions()
+  return mode === OFFER_WIZARD_MODE.EDITION
+    ? renderEditionActions()
+    : renderCreationActions()
 }
 
 export default ActionsFormV2

@@ -5,6 +5,8 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -18,18 +20,14 @@ export interface IStockThingSectionProps {
 }
 
 export interface IStockThingSummarySection extends IStockThingSectionProps {
-  isCreation: boolean
   offerId: string
-  isDraft: boolean
 }
 
 const StockThingSection = ({
   quantity,
   price,
   bookingLimitDatetime,
-  isCreation,
   offerId,
-  isDraft,
 }: IStockThingSummarySection): JSX.Element => {
   const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const stocksUrls = isOfferFormV3
@@ -41,7 +39,11 @@ const StockThingSection = ({
         creation: `/offre/${offerId}/individuel/creation/stocks`,
         edition: `/offre/${offerId}/individuel/stocks`,
       }
-  const editLink = isCreation ? stocksUrls.creation : stocksUrls.edition
+  const mode = useOfferWizardMode()
+  const editLink =
+    mode === OFFER_WIZARD_MODE.CREATION
+      ? stocksUrls.creation
+      : stocksUrls.edition
   const { logEvent } = useAnalytics()
 
   const logEditEvent = () => {
@@ -49,8 +51,8 @@ const StockThingSection = ({
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
-      isEdition: !isCreation,
-      isDraft: isDraft || isCreation,
+      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
       offerId: offerId,
     })
   }

@@ -1,9 +1,10 @@
+/* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
-import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
-import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
+import { useOfferWizardMode } from 'hooks'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import {
   Summary as SummaryScreen,
@@ -17,8 +18,7 @@ interface ISummaryProps {
 }
 
 const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
-  const isCreation = useIsCreation()
-  const isDraft = useIsCompletingDraft()
+  const mode = useOfferWizardMode()
   const {
     offer: contextOffer,
     categories,
@@ -41,19 +41,17 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   return (
     <WizardTemplate
       title={isOfferV2 ? null : 'Récapitulatif'}
-      withStepper={isCreation}
+      withStepper={mode !== OFFER_WIZARD_MODE.EDITION}
     >
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
         offerId={offer.id}
         providerName={providerName}
-        isCreation={isCreation}
         offer={offerData}
         stockThing={stockThing}
         stockEventList={stockEventList}
         subCategories={subCategories}
         preview={preview}
-        isDraft={isDraft}
         formOfferV2
       />
     </WizardTemplate>

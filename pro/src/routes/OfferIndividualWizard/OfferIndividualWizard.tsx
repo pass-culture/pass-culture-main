@@ -34,6 +34,7 @@ const OfferIndividualWizard = () => {
           exact
           path={[
             `${path}/creation/individuelle/informations`,
+            `${path}/brouillon/individuelle/informations`,
             `${path}/individuelle/informations`,
           ]}
         >
@@ -43,6 +44,7 @@ const OfferIndividualWizard = () => {
           exact
           path={[
             `${path}/creation/individuelle/stocks`,
+            `${path}/brouillon/individuelle/stocks`,
             `${path}/individuelle/stocks`,
           ]}
         >
@@ -52,6 +54,7 @@ const OfferIndividualWizard = () => {
           exact
           path={[
             `${path}/creation/individuelle/recapitulatif`,
+            `${path}/brouillon/individuelle/recapitulatif`,
             `${path}/individuelle/recapitulatif`,
           ]}
         >
@@ -61,6 +64,7 @@ const OfferIndividualWizard = () => {
           exact
           path={[
             `${path}/creation/individuelle/confirmation`,
+            `${path}/brouillon/individuelle/confirmation`,
             `${path}/individuelle/confirmation`,
           ]}
         >

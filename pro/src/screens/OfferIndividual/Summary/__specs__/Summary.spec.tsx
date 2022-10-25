@@ -7,7 +7,9 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { CancelablePromise, OfferStatus } from 'apiClient/v1'
+import { CancelablePromise, OfferStatus, ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -24,11 +26,15 @@ jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_SHOW_DURATION: 10,
 }))
 
-const renderSummary = (
-  props: ISummaryProps,
-  storeOverride: Partial<RootState> = {},
-  url = '/summary'
-) => {
+const renderSummary = ({
+  props,
+  storeOverride = {},
+  url = '/summary',
+}: {
+  props: ISummaryProps
+  storeOverride?: Partial<RootState>
+  url?: string
+}) => {
   const store = configureTestStore({
     features: {
       list: [
@@ -55,14 +61,23 @@ const renderSummary = (
         <Route path="/summary">
           <Summary {...props} />
         </Route>
-        <Route path="/offre/:offerId/individuel/creation/confirmation">
-          <div>Confirmation page: creation</div>
+        <Route path="/creation/summary">
+          <Summary {...props} />
         </Route>
-        <Route path="/offre/:offerId/individuel/brouillon/confirmation">
+        <Route path="/brouillon/summary">
+          <Summary {...props} />
+        </Route>
+        <Route path="/offre/:offerId/v3/brouillon/individuelle/confirmation">
           <div>Confirmation page: draft</div>
         </Route>
         <Route path="/offre/:offerId/v3/creation/individuelle/confirmation">
           <div>Confirmation page: creation</div>
+        </Route>
+        <Route path="/offre/:offerId/individuel/brouillon/confirmation">
+          <div>Confirmation page: draft V2</div>
+        </Route>
+        <Route path="/offre/:offerId/individuel/creation/confirmation">
+          <div>Confirmation page: creation V2</div>
         </Route>
       </MemoryRouter>
       <Notification />
@@ -72,7 +87,6 @@ const renderSummary = (
 
 describe('Summary', () => {
   let props: ISummaryProps
-
   beforeEach(() => {
     const categories = [
       {
@@ -166,15 +180,12 @@ describe('Summary', () => {
 
     props = {
       offerId: offer.id,
-      formOfferV2: true,
       providerName: null,
       offer: offer,
       stockThing: stock,
       stockEventList: undefined,
       subCategories: subCategories,
       preview: preview,
-      isCreation: false,
-      isDraft: false,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -187,7 +198,7 @@ describe('Summary', () => {
   describe('On edition', () => {
     it('should render component with informations', async () => {
       // given / when
-      renderSummary(props)
+      renderSummary({ props })
 
       // then
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
@@ -232,13 +243,11 @@ describe('Summary', () => {
 
   describe('On Creation', () => {
     beforeEach(() => {
-      props.isCreation = true
       props.offer.status = OfferStatus.DRAFT
     })
-
     it('should render component with informations', async () => {
       // given / when
-      renderSummary(props)
+      renderSummary({ props, url: '/creation/summary' })
 
       // then
       expect(screen.getAllByText('Modifier')).toHaveLength(2)
@@ -282,7 +291,7 @@ describe('Summary', () => {
     describe('When it is form v2', () => {
       it('should render component with right buttons', async () => {
         // given / when
-        renderSummary(props)
+        renderSummary({ props, url: '/creation/summary' })
 
         // then
         expect(screen.getByText('Étape précédente')).toBeInTheDocument()
@@ -299,19 +308,17 @@ describe('Summary', () => {
         props = {
           ...props,
           formOfferV2: true,
-          isCreation: true,
-          isDraft: false,
         }
 
         // when
-        renderSummary(props)
+        renderSummary({ props, url: '/creation/summary' })
 
         await userEvent.click(
           screen.getByRole('button', { name: /Publier l'offre/ })
         )
 
         expect(
-          await screen.findByText(/Confirmation page: creation/)
+          await screen.findByText(/Confirmation page: creation V2/)
         ).toBeInTheDocument()
       })
 
@@ -320,12 +327,10 @@ describe('Summary', () => {
         props = {
           ...props,
           formOfferV2: true,
-          isCreation: false,
-          isDraft: true,
         }
 
         // when
-        renderSummary(props)
+        renderSummary({ props, url: '/brouillon/summary' })
 
         await userEvent.click(
           screen.getByRole('button', { name: /Publier l'offre/ })
@@ -344,10 +349,9 @@ describe('Summary', () => {
             list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
           },
         }
-        props.formOfferV2 = false
 
         // when
-        renderSummary(props, storeOverride)
+        renderSummary({ props, storeOverride, url: '/creation/summary' })
 
         // then
         expect(screen.getByText('Étape précédente')).toBeInTheDocument()
@@ -365,15 +369,9 @@ describe('Summary', () => {
             list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
           },
         }
-        props = {
-          ...props,
-          formOfferV2: false,
-          isCreation: true,
-          isDraft: false,
-        }
 
         // when
-        renderSummary(props, storeOverride)
+        renderSummary({ props, storeOverride, url: '/creation/summary' })
 
         await userEvent.click(
           screen.getByRole('button', { name: /Publier l'offre/ })
@@ -392,9 +390,10 @@ describe('Summary', () => {
           list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
         },
       }
+      props.formOfferV2 = true
 
       // when
-      renderSummary(props, storeOverride)
+      renderSummary({ props, storeOverride, url: '/creation/summary' })
       const buttonPublish = screen.getByRole('button', {
         name: /Publier l'offre/,
       })
@@ -422,10 +421,20 @@ describe('Summary', () => {
           list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
         },
       }
+      props.formOfferV2 = true
 
       // when
-      renderSummary(props, storeOverride)
-      jest.spyOn(api, 'patchPublishOffer').mockRejectedValue({})
+      renderSummary({ props, storeOverride, url: '/creation/summary' })
+      jest.spyOn(api, 'patchPublishOffer').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            status: 400,
+            body: {},
+          } as ApiResult,
+          ''
+        )
+      )
 
       await userEvent.click(
         screen.getByRole('button', {
@@ -441,34 +450,20 @@ describe('Summary', () => {
   })
 
   describe('banners', () => {
-    it('should display pre publishing banner in creation', () => {
-      // given
-      props.isCreation = true
+    const urlList = ['/creation/summary', '/brouillon/summary']
+    it.each(urlList)(
+      'should display pre publishing banner in creation',
+      url => {
+        renderSummary({ props, url })
 
-      // when
-      renderSummary(props)
-
-      // then
-      expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
-    })
-
-    it('should display pre publishing banner in draft mode', () => {
-      // given
-      props.isDraft = true
-
-      // when
-      renderSummary(props)
-
-      // then
-      expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
-    })
+        // then
+        expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
+      }
+    )
 
     it('should not display pre publishing banner in edition mode', () => {
-      // given
-      props.isCreation = false
-
       // when
-      renderSummary(props)
+      renderSummary({ props, url: '/summary' })
 
       // then
       expect(

@@ -40,6 +40,9 @@ const renderStockThingSection = ({
         <Route path="/summary">
           <StockThingSection {...props} />
         </Route>
+        <Route path="/creation/summary">
+          <StockThingSection {...props} />
+        </Route>
         <Route path="/offre/:offerId/v3/creation/individuelle/stocks">
           <div>Offer V3 creation: page stocks</div>
         </Route>
@@ -66,9 +69,7 @@ describe('OfferIndividual section: venue', () => {
       quantity: 10,
       price: 20,
       bookingLimitDatetime: null,
-      isCreation: false,
       offerId: 'TEST_OFFER_ID',
-      isDraft: true,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -78,11 +79,7 @@ describe('OfferIndividual section: venue', () => {
   })
 
   it('should render creation summary (v2)', async () => {
-    props = {
-      ...props,
-      isCreation: true,
-    }
-    renderStockThingSection({ props })
+    renderStockThingSection({ props, url: '/creation/summary' })
     expect(
       screen.getByRole('heading', { name: /Stocks et prix/ })
     ).toBeInTheDocument()
@@ -94,11 +91,6 @@ describe('OfferIndividual section: venue', () => {
   })
 
   it('should render edition summary (v2)', async () => {
-    props = {
-      ...props,
-      isCreation: false,
-      isDraft: false,
-    }
     renderStockThingSection({ props })
     expect(
       screen.getByRole('heading', { name: /Stocks et prix/ })
@@ -116,11 +108,7 @@ describe('OfferIndividual section: venue', () => {
         list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
       },
     }
-    props = {
-      ...props,
-      isCreation: true,
-    }
-    renderStockThingSection({ props, storeOverride })
+    renderStockThingSection({ props, storeOverride, url: '/creation/summary' })
     expect(
       screen.getByRole('heading', { name: /Stocks et prix/ })
     ).toBeInTheDocument()
@@ -140,10 +128,6 @@ describe('OfferIndividual section: venue', () => {
         initialized: true,
         list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
       },
-    }
-    props = {
-      ...props,
-      isCreation: false,
     }
     renderStockThingSection({ props, storeOverride })
     expect(

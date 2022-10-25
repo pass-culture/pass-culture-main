@@ -2,6 +2,8 @@ import React from 'react'
 import { useLocation } from 'react-router'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { BannerCreateOfferAdmin } from 'new_components/Banner'
 import {
@@ -11,14 +13,14 @@ import {
   setDefaultInitialFormValues,
   setFormReadOnlyFields,
 } from 'new_components/OfferIndividualForm'
-import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import {
   Informations as InformationsScreen,
   Template as WizardTemplate,
 } from 'screens/OfferIndividual'
 import { parse } from 'utils/query-string'
+
 const Offer = (): JSX.Element | null => {
-  const isCreation = useIsCreation()
+  const mode = useOfferWizardMode()
   const {
     currentUser: { isAdmin },
   } = useCurrentUser()
@@ -40,7 +42,8 @@ const Offer = (): JSX.Element | null => {
       : setInitialFormValues(offer, subCategories)
 
   const readOnlyFields = setFormReadOnlyFields(offer, isAdmin)
-  const showAdminCreationBanner = isAdmin && isCreation && !(offererId || offer)
+  const showAdminCreationBanner =
+    isAdmin && mode === OFFER_WIZARD_MODE.CREATION && !(offererId || offer)
   return (
     <WizardTemplate>
       {showAdminCreationBanner ? (
