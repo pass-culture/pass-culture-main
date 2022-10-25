@@ -24,6 +24,7 @@ import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
@@ -181,12 +182,15 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
 
   /* istanbul ignore next: DEBT, TO FIX */
   const onCancelClick = () => {
-    if (isOfferDraft) return
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.STOCKS,
-      to: OfferBreadcrumbStep.DETAILS,
+      to: isOfferDraft
+        ? OfferBreadcrumbStep.DETAILS
+        : OFFER_FORM_NAVIGATION_OUT.OFFERS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: !isOfferDraft,
+      isDraft: isOfferDraft,
+      offerId: offer.id,
     })
   }
 
@@ -241,15 +245,27 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
 
               logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OfferBreadcrumbStep.STOCKS,
-                to: OfferBreadcrumbStep.SUMMARY,
+                to: isSavingDraft
+                  ? OfferBreadcrumbStep.STOCKS
+                  : OfferBreadcrumbStep.SUMMARY,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                isEdition: !isOfferDraft,
+                isEdition: false,
+                isDraft: true,
+                offerId: offer.id,
               })
               if (isDraftEnabled)
                 notification.success(
                   'Brouillon sauvegardé dans la liste des offres'
                 )
             } else {
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OfferBreadcrumbStep.STOCKS,
+                to: OfferBreadcrumbStep.SUMMARY,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                isEdition: true,
+                isDraft: false,
+                offerId: offer.id,
+              })
               await loadStocks()
               await reloadOffer()
               notification.success(

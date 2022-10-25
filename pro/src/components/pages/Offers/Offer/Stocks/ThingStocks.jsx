@@ -17,6 +17,7 @@ import {
 import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import {
   Events,
+  OFFER_FORM_NAVIGATION_OUT,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import {
@@ -146,14 +147,16 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
 
   const onCancelClick = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    if (isOfferDraft) {
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OfferBreadcrumbStep.STOCKS,
-        to: OfferBreadcrumbStep.DETAILS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: !isOfferDraft,
-      })
-    }
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.STOCKS,
+      to: isOfferDraft
+        ? OfferBreadcrumbStep.DETAILS
+        : OFFER_FORM_NAVIGATION_OUT.OFFERS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: !isOfferDraft,
+      isDraft: isOfferDraft,
+      offerId: offer.id,
+    })
   }
 
   const submitDraft = e => submitStocks(e, true)
@@ -199,15 +202,29 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               }
               logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OfferBreadcrumbStep.STOCKS,
-                to: OfferBreadcrumbStep.SUMMARY,
-                used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                isEdition: !isOfferDraft,
+                to: isSavingDraft
+                  ? OfferBreadcrumbStep.STOCKS
+                  : OfferBreadcrumbStep.SUMMARY,
+                used: isSavingDraft
+                  ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+                  : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                isEdition: false,
+                isDraft: true,
+                offerId: offer.id,
               })
               if (isDraftEnabled)
                 notification.success(
                   'Brouillon sauvegardé dans la liste des offres'
                 )
             } else {
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OfferBreadcrumbStep.STOCKS,
+                to: OfferBreadcrumbStep.SUMMARY,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                isEdition: true,
+                isDraft: false,
+                offerId: offer.id,
+              })
               loadStocks()
               reloadOffer()
               if (quantityOfActivationCodes) {
