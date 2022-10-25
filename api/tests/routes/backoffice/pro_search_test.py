@@ -155,7 +155,7 @@ class ProSearchUserTest:
         assert response.status_code == 200
         assert len(response.json["data"]) == 0
 
-    @pytest.mark.parametrize("query", ["'", '""', "%", "*", "([{#/="])
+    @pytest.mark.parametrize("query", ["'", '""', "*", "([{#/="])
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_pro_unexpected(self, client, query):
         # given
@@ -171,6 +171,21 @@ class ProSearchUserTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_search_pro_with_percent_is_forbidden(self, client):
+        # given
+        self._create_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="%terms", type="proUser"),
+        )
+
+        # then
+        assert response.status_code == 400
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_pro_also_beneficiary(self, client):

@@ -143,11 +143,11 @@ class PublicAccountSearchTest:
         assert len(response.json["data"]) == 1
         assert response.json["data"][0]["firstName"] == expected_found
 
-    @pytest.mark.parametrize("query", ["Flaille", "Faille", "Flail"])
+    @pytest.mark.parametrize("query", ["ALGÉZIC", "Algézic", "Algezic"])
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_name(self, client, query):
         # given
-        _, grant_18, _, _, _ = create_bunch_of_accounts()
+        _, _, _, random, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -159,29 +159,32 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
-        assert_user_equals(response.json["data"][0], grant_18)
+        assert_user_equals(response.json["data"][0], random)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_public_account_last_name_priority(self, client):
+    def test_can_search_public_account_order_by_priority(self, client):
         # given
         create_bunch_of_accounts()
-        users_factories.BeneficiaryGrant18Factory(firstName="Martin", lastName="Gall")
-        users_factories.BeneficiaryGrant18Factory(firstName="Jacques", lastName="Martin")
+        users_factories.BeneficiaryGrant18Factory(firstName="Théo", lastName="Dorant")
+        users_factories.BeneficiaryGrant18Factory(firstName="Théodule", lastName="Dorantissime")
+        users_factories.BeneficiaryGrant18Factory(firstName="Théos", lastName="Doranta")
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_public_account", q="Martin"),
+            url_for("backoffice_blueprint.search_public_account", q="Théo Dorant"),
         )
 
         # then
         assert response.status_code == 200
-        assert len(response.json["data"]) == 2
-        assert response.json["data"][0]["firstName"] == "Jacques"
-        assert response.json["data"][0]["lastName"] == "Martin"
-        assert response.json["data"][1]["firstName"] == "Martin"
-        assert response.json["data"][1]["lastName"] == "Gall"
+        assert len(response.json["data"]) == 3
+        assert response.json["data"][0]["firstName"] == "Théo"
+        assert response.json["data"][0]["lastName"] == "Dorant"
+        assert response.json["data"][1]["firstName"] == "Théos"
+        assert response.json["data"][1]["lastName"] == "Doranta"
+        assert response.json["data"][2]["firstName"] == "Théodule"
+        assert response.json["data"][2]["lastName"] == "Dorantissime"
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_email(self, client):
@@ -252,11 +255,11 @@ class PublicAccountSearchTest:
         assert len(response.json["data"]) == 1
         assert_user_equals(response.json["data"][0], no_address)
 
-    @pytest.mark.parametrize("query", ["Anne Algézic", "Anne Algezic", "Anne Algesic", "Anna Algesic"])
+    @pytest.mark.parametrize("query", ["Abdel Yves Akhim Flaille", "Abdel Flaille", "Flaille Akhim", "Yves Abdel"])
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_both_first_name_and_name(self, client, query):
         # given
-        _, _, _, random, _ = create_bunch_of_accounts()
+        _, grant_18, _, _, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -268,31 +271,11 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 1
-        assert_user_equals(response.json["data"][0], random)
+        assert_user_equals(response.json["data"][0], grant_18)
 
+    @pytest.mark.parametrize("query", ["Gédéon Flaille", "Abdal Flaille", "Autre Algézic"])
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_public_account_by_all_criteria(self, client):
-        # given
-        underage, _, _, _, _ = create_bunch_of_accounts()
-        user = users_factories.UserFactory()
-        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
-
-        # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for(
-                "backoffice_blueprint.search_public_account",
-                q=f"{underage.firstName} {underage.lastName[:7]} {underage.email} {underage.phoneNumber} @example.net",
-            ),
-        )
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json["data"]) == 1
-        assert_user_equals(response.json["data"][0], underage)
-
-    @pytest.mark.parametrize("query", ["Gédéon Flaille", "Anne 0756273849", "Jean Luc Delarue @example.net"])
-    @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_search_public_account_terms_which_do_not_match(self, client, query):
+    def test_can_search_public_account_names_which_do_not_match(self, client, query):
         # given
         create_bunch_of_accounts()
         user = users_factories.UserFactory()
@@ -323,7 +306,7 @@ class PublicAccountSearchTest:
         assert response.status_code == 200
         assert len(response.json["data"]) == 0
 
-    @pytest.mark.parametrize("query", ["'", '""', "%", "Ge*", "([{#/="])
+    @pytest.mark.parametrize("query", ["'", '""', "Ge*", "([{#/="])
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_unexpected(self, client, query):
         # given
@@ -339,6 +322,21 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         assert len(response.json["data"]) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_search_public_account_with_percent_is_forbidden(self, client):
+        # given
+        create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="%terms"),
+        )
+
+        # then
+        assert response.status_code == 400
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_young_but_also_pro(self, client):

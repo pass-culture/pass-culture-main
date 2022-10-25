@@ -86,6 +86,12 @@ class OffererToBeValidatedQuery(PaginableQuery, FilterableQuery):
 class SearchQuery(PaginableQuery):
     q: str
 
+    @pydantic.validator("q")
+    def validate_q(cls, q: str) -> str:
+        if "%" in q:
+            raise ValueError(f"Le caractère % n'est pas autorisé : {q}")
+        return q
+
 
 class Response(BaseModel):
     data: typing.Any
@@ -220,6 +226,12 @@ class PublicHistoryResponseModel(BaseModel):
 class ProSearchQuery(PaginableQuery):
     q: str
     type: str  # "proUser" or "venue" or "offerer"
+
+    @pydantic.validator("q")
+    def validate_q(cls, q: str) -> str:
+        if "%" in q:
+            raise ValueError(f"Le caractère % n'est pas autorisé : {q}")
+        return q
 
 
 class ProResultPayload(BaseModel):

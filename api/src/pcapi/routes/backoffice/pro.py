@@ -22,25 +22,24 @@ from . import utils
 def search_pro(
     query: serialization.ProSearchQuery,
 ) -> serialization.SearchProResponseModel:
-    terms = query.q.split()
     sorts = query.sort.split(",") if query.sort else None
 
     # First version of pro search: no aggregration, a single type is requested.
     match query.type:
         case "proUser":
-            paginated = users_api.search_pro_account(terms, order_by=sorts).paginate(
+            paginated = users_api.search_pro_account(query.q, order_by=sorts).paginate(
                 page=query.page,
                 per_page=query.perPage,
             )
             response_payload_type: typing.Type = serialization.ProUserPayload
         case "offerer":
-            paginated = offerers_api.search_offerer(terms, order_by=sorts).paginate(
+            paginated = offerers_api.search_offerer(query.q, order_by=sorts).paginate(
                 page=query.page,
                 per_page=query.perPage,
             )
             response_payload_type = serialization.OffererPayload
         case "venue":
-            paginated = offerers_api.search_venue(terms, order_by=sorts).paginate(
+            paginated = offerers_api.search_venue(query.q, order_by=sorts).paginate(
                 page=query.page,
                 per_page=query.perPage,
             )
