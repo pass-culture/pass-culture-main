@@ -12,6 +12,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
+import { ButtonLink } from 'ui-kit'
 import { loadFakeApiCategories } from 'utils/fakeApi'
 
 import OfferLayout from '../../OfferLayout'
@@ -74,6 +75,9 @@ const renderOffers = async (props, queryParams = null) => {
         >
           <>
             <OfferLayout {...props} />
+            <ButtonLink link={{ to: '/lapin', isExternal: false }}>
+              Display exit modal
+            </ButtonLink>
             <Notification />
           </>
         </Route>
@@ -359,5 +363,65 @@ describe('offerDetails - Creation - pro user - tracking', () => {
         }
       )
     })
+  })
+
+  it('should track when exiting confirmation modal', async () => {
+    // Given
+    await renderOffers(props)
+
+    // When
+    await userEvent.click(await screen.findByText('Display exit modal'))
+    await userEvent.click(await screen.findByText('Quitter'))
+
+    // Then
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'details',
+        isDraft: true,
+        isEdition: false,
+        offerId: undefined,
+        to: '/lapin',
+        used: 'RouteLeavingGuard',
+      }
+    )
+  })
+
+  it('should track when clicking on annuler et quitter', async () => {
+    // Given
+    await renderOffers(props)
+
+    // When
+    await userEvent.click(await screen.findByText('Annuler et quitter'))
+    await userEvent.click(await screen.findByText('Quitter'))
+
+    // Then
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'details',
+        isDraft: true,
+        isEdition: false,
+        offerId: undefined,
+        to: 'Offers',
+        used: 'StickyButtons',
+      }
+    )
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      2,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'details',
+        isDraft: true,
+        isEdition: false,
+        offerId: undefined,
+        to: '/offres',
+        used: 'RouteLeavingGuard',
+      }
+    )
   })
 })

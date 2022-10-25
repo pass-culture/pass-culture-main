@@ -74,6 +74,7 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
 export enum OFFER_FORM_NAVIGATION_OUT {
   OFFERS = 'Offers',
   PREVIEW = 'AppPreview',
+  ROUTE_LEAVING_GUARD = 'RouteLeavingGuard',
 }
 
 export enum OFFER_FORM_NAVIGATION_IN {
