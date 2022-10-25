@@ -1,7 +1,4 @@
-import {
-  OFFER_STATUS_REJECTED,
-  OFFER_STATUS_PENDING,
-} from 'core/Offers/constants'
+import { OfferStatus } from 'apiClient/v1'
 import {
   IOfferIndividual,
   IOfferIndividualVenueProvider,
@@ -14,10 +11,10 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   beforeEach(() => {
     offer = {} as IOfferIndividual
   })
-  const disabledStatus = [OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING]
+  const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]
   it.each(disabledStatus)(
     'should disabled field for disable statuts "%s"',
-    status => {
+    (status: OfferStatus) => {
       offer.status = status
       const readOnlyFields = setFormReadOnlyFields(offer)
       expect(readOnlyFields).toEqual([

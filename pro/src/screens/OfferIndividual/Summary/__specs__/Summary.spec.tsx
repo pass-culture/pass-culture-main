@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { CancelablePromise } from 'apiClient/v1'
+import { CancelablePromise, OfferStatus } from 'apiClient/v1'
 import Notification from 'components/layout/Notification/Notification'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
@@ -153,6 +153,7 @@ describe('Summary', () => {
       withdrawalDetails: 'détails de retrait',
       withdrawalType: null,
       withdrawalDelay: null,
+      status: OfferStatus.ACTIVE,
     }
     const preview = {
       offerData: {
@@ -167,12 +168,13 @@ describe('Summary', () => {
       offerId: offer.id,
       formOfferV2: true,
       providerName: null,
-      offerStatus: 'DRAFT',
       offer: offer,
       stockThing: stock,
       stockEventList: undefined,
       subCategories: subCategories,
       preview: preview,
+      isCreation: false,
+      isDraft: false,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -231,6 +233,7 @@ describe('Summary', () => {
   describe('On Creation', () => {
     beforeEach(() => {
       props.isCreation = true
+      props.offer.status = OfferStatus.DRAFT
     })
 
     it('should render component with informations', async () => {

@@ -68,6 +68,7 @@ describe('OfferIndividual section: venue', () => {
       bookingLimitDatetime: null,
       isCreation: false,
       offerId: 'TEST_OFFER_ID',
+      isDraft: true,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -96,6 +97,7 @@ describe('OfferIndividual section: venue', () => {
     props = {
       ...props,
       isCreation: false,
+      isDraft: false,
     }
     renderStockThingSection({ props })
     expect(

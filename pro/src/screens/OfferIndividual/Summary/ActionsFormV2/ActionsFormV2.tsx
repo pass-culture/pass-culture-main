@@ -35,8 +35,8 @@ const ActionsFormV2 = ({
   offerId,
   className,
   publishOffer,
-  isCreation = false,
-  isDraft = false,
+  isCreation,
+  isDraft,
   disablePublish = false,
 }: IActionsFormV2Props): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -63,6 +63,8 @@ const ActionsFormV2 = ({
               to: OfferBreadcrumbStep.STOCKS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
               isEdition: !isCreation,
+              isDraft: true,
+              offerId: offerId,
             })
           }
         >
@@ -74,11 +76,19 @@ const ActionsFormV2 = ({
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{ to: quitUrl, isExternal: false }}
-            onClick={() =>
+            onClick={() => {
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OfferBreadcrumbStep.SUMMARY,
+                to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
+                isEdition: !isCreation,
+                isDraft: true,
+                offerId: offerId,
+              })
               notification.success(
                 'Brouillon sauvegardé dans la liste des offres'
               )
-            }
+            }}
           >
             Sauvegarder le brouillon et quitter
           </ButtonLink>
@@ -114,6 +124,8 @@ const ActionsFormV2 = ({
               to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
               isEdition: !isCreation,
+              isDraft: isDraft || isCreation,
+              offerId: offerId,
             })
           }
         >

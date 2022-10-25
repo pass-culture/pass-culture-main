@@ -37,10 +37,9 @@ import styles from './Summary.module.scss'
 export interface ISummaryProps {
   offerId: string
   formOfferV2?: boolean
-  isCreation?: boolean
-  isDraft?: boolean
+  isCreation: boolean
+  isDraft: boolean
   providerName: string | null
-  offerStatus: string
   offer: IOfferSectionProps
   stockThing?: IStockThingSectionProps
   stockEventList?: IStockEventItemProps[]
@@ -52,10 +51,9 @@ const Summary = (
   /* istanbul ignore next: DEBT, TO FIX */
   {
     formOfferV2 = false,
-    isCreation = false,
-    isDraft = false,
+    isCreation,
+    isDraft,
     providerName,
-    offerStatus,
     offerId,
     offer,
     stockThing,
@@ -83,6 +81,8 @@ const Summary = (
           to: OfferBreadcrumbStep.CONFIRMATION,
           used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
           isEdition: !isCreation,
+          isDraft: true,
+          offerId: offerId,
         })
         history.push(url)
       })
@@ -131,7 +131,7 @@ const Summary = (
     ...offerConditionalFields,
   ]
 
-  const isDisabledOffer = isOfferDisabled(offerStatus)
+  const isDisabledOffer = isOfferDisabled(offer.status)
 
   return (
     <>
@@ -142,7 +142,7 @@ const Summary = (
             /* istanbul ignore next: DEBT, TO FIX */
             isDisabledOffer && (
               <div className={styles['offer-preview-banner']}>
-                <OfferStatusBanner status={offerStatus} />
+                <OfferStatusBanner status={offer.status} />
               </div>
             )
           }
@@ -168,6 +168,7 @@ const Summary = (
               {...stockThing}
               isCreation={isCreation}
               offerId={offerId}
+              isDraft={isDraft}
             />
           )}
           {stockEventList && (
@@ -175,6 +176,7 @@ const Summary = (
               stocks={stockEventList}
               isCreation={isCreation}
               offerId={offerId}
+              isDraft={isDraft}
             />
           )}
 
@@ -217,6 +219,8 @@ const Summary = (
                         to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
                         used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
                         isEdition: true,
+                        isDraft: false,
+                        offerId: offerId,
                       }),
                 }}
                 variant={ButtonVariant.SECONDARY}
