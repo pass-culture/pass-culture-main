@@ -58,4 +58,5 @@
 
 .button.is-selected:focus-within {
   border-width: rem.torem(2px);
+  padding: rem.torem(31px) rem.torem(15px) rem.torem(15px);
 }
