@@ -100,7 +100,10 @@ const OfferEducationalStock = <
 
   const shouldDisplayShowcaseScreen =
     !isCreatingFromTemplate &&
-    (mode == Mode.CREATION || (mode == Mode.EDITION && offer.isTemplate))
+    (mode == Mode.CREATION ||
+      (mode == Mode.EDITION &&
+        offer.isTemplate &&
+        !isCollectiveOfferDuplicationActive))
 
   const displayElementsForShowcaseOption =
     shouldDisplayShowcaseScreen &&
@@ -125,16 +128,15 @@ const OfferEducationalStock = <
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             <FormLayout.MandatoryInfo />
             <FormLayout.Section title="Date et prix">
-              {shouldDisplayShowcaseScreen &&
-                !isCollectiveOfferDuplicationActive && (
-                  <FormLayout.Row>
-                    <RadioGroup
-                      group={showcaseOfferRadios}
-                      name="educationalOfferType"
-                      hideFooter
-                    />
-                  </FormLayout.Row>
-                )}
+              {shouldDisplayShowcaseScreen && (
+                <FormLayout.Row>
+                  <RadioGroup
+                    group={showcaseOfferRadios}
+                    name="educationalOfferType"
+                    hideFooter
+                  />
+                </FormLayout.Row>
+              )}
               {displayElementsForShowcaseOption ? (
                 <ShowcaseBannerInfo />
               ) : (
