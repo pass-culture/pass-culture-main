@@ -899,8 +899,9 @@ def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
     return offerers_repository.get_venue_by_id(venue_id)
 
 
-def search_offerer(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+def search_offerer(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
     offerers = models.Offerer.query
+    terms = search_query.split()
 
     filters: list[sa.sql.ColumnElement] = []
     name_terms: list[str] = []
@@ -946,8 +947,9 @@ def search_offerer(terms: typing.Iterable[str], order_by: list[str] | None = Non
     return offerers
 
 
-def search_venue(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
+def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
     venues = models.Venue.query.outerjoin(offerers_models.VenueContact)
+    terms = search_query.split()
 
     filters: list[sa.sql.ColumnElement] = []
     name_terms: list[str] = []

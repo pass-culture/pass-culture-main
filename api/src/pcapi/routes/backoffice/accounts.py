@@ -46,10 +46,9 @@ SUBSCRIPTION_ITEM_METHODS = [
 def search_public_account(
     query: serialization.SearchQuery,
 ) -> serialization.ListPublicAccountsResponseModel:
-    terms = query.q.split()
     sorts = query.sort.split(",") if query.sort else None
 
-    paginated = users_api.search_public_account(terms, order_by=sorts).paginate(
+    paginated = users_api.search_public_account(query.q, order_by=sorts).paginate(
         page=query.page,
         per_page=query.perPage,
     )
