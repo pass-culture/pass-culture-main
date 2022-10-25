@@ -102,6 +102,7 @@ const OfferEdition = ({
       submitErrors={submitErrors}
       userEmail={userEmail}
       venues={[offer.venue]}
+      offer={offer}
     />
   )
 }
@@ -109,7 +110,7 @@ const OfferEdition = ({
 OfferEdition.defaultProps = {
   isDisabled: false,
   isUserAdmin: false,
-  offer: null,
+  offer: undefined,
   isCreatingOffer: false,
 }
 

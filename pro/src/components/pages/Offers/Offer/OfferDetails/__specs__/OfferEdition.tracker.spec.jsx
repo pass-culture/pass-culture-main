@@ -179,4 +179,28 @@ describe('offerDetails - Edition', () => {
       }
     )
   })
+
+  it('should track when clicking on "Enregistrer les modifications" link', async () => {
+    // Given
+    await renderOffers({}, store)
+    const saveButton = await screen.findByText('Enregistrer les modifications')
+
+    // When
+    await userEvent.click(saveButton)
+
+    // Then
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'details',
+        isDraft: false,
+        isEdition: true,
+        offerId: 'ABC12',
+        to: 'recapitulatif',
+        used: 'StickyButtons',
+      }
+    )
+  })
 })

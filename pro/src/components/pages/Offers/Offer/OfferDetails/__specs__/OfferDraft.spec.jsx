@@ -7,11 +7,15 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferLayout from '../../OfferLayout'
 
 import { getOfferInputForField } from './helpers'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: jest.fn(),
@@ -70,6 +74,14 @@ describe('offerDetails - Draft', () => {
           email: 'francois@example.com',
         },
         initialized: true,
+      },
+      features: {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'OFFER_DRAFT_ENABLED',
+          },
+        ],
       },
     })
 
@@ -173,16 +185,65 @@ describe('offerDetails - Draft', () => {
     api.getCategories.mockResolvedValue(categories)
     api.getVenue.mockReturnValue(Promise.resolve())
     api.getStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
   describe('render when completing a draft offer', () => {
     it('should display the right title and redirect to brouillon stock page', async () => {
       await renderOffers(props, store)
+
       expect(screen.getByText("Compléter l'offre")).toBeInTheDocument()
+
       await userEvent.click(screen.getByText('Étape suivante'))
+
       expect(
         await screen.findByRole('heading', { name: 'Stocks et prix', level: 3 })
       ).toBeInTheDocument()
       expect(screen.getByText("Compléter l'offre")).toBeInTheDocument()
+    })
+
+    it('should track information when clicking on "Étape suivante"', async () => {
+      await renderOffers(props, store)
+
+      await userEvent.click(screen.getByText('Étape suivante'))
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'details',
+          isDraft: true,
+          isEdition: false,
+          offerId: 'ABC12',
+          to: 'stocks',
+          used: 'StickyButtons',
+        }
+      )
+    })
+
+    it('should track information when clicking on "Enregistrer le brouillon"', async () => {
+      await renderOffers(props, store)
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_OFFER_FORM_NAVIGATION,
+        {
+          from: 'details',
+          isDraft: true,
+          isEdition: false,
+          offerId: 'ABC12',
+          to: 'details',
+          used: 'DraftButtons',
+        }
+      )
     })
   })
 })

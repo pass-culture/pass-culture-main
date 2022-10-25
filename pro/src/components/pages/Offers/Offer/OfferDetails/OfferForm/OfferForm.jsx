@@ -17,20 +17,14 @@ import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
 import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import {
   OFFER_WITHDRAWAL_TYPE_OPTIONS,
   EXTRA_DATA_FIELDS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
@@ -79,6 +73,7 @@ const OfferForm = ({
   submitErrors,
   userEmail,
   venues,
+  offer,
 }) => {
   const [offerSubCategory, setOfferSubCategory] = useState(null)
   const [receiveNotificationEmails, setReceiveNotificationEmails] =
@@ -103,7 +98,6 @@ const OfferForm = ({
   const formRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
-  const { logEvent } = useAnalytics()
 
   const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
@@ -575,13 +569,6 @@ const OfferForm = ({
 
         const nextStepRedirect = await onSubmit(submittedValues, isSavingDraft)
         if (nextStepRedirect !== null) {
-          if (!isSavingDraft)
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OfferBreadcrumbStep.DETAILS,
-              to: OfferBreadcrumbStep.STOCKS,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-              isEdition: isEdition,
-            })
           await nextStepRedirect()
           return
         }
@@ -1216,6 +1203,7 @@ const OfferForm = ({
           cancelUrl={backUrl}
           onClickNext={submitForm}
           onClickSaveDraft={submitDraft}
+          offer={offer}
         />
       </section>
     </form>
@@ -1231,6 +1219,7 @@ OfferForm.defaultProps = {
   isUserAdmin: false,
   providerName: null,
   readOnlyFields: [],
+  offer: undefined,
   setSelectedOfferer: () => {},
 }
 
@@ -1256,6 +1245,7 @@ OfferForm.propTypes = {
   showErrorNotification: PropTypes.func.isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,
+  offer: PropTypes.shape(),
   userEmail: PropTypes.string.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
