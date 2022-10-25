@@ -812,7 +812,7 @@ class IsFraudCheckUpdToDateUnitTest:
 
 @pytest.mark.usefixtures("db_session")
 class ShouldImportDmsApplicationTest:
-    def setup(self):
+    def setup_method(self):
         self.user_email = "john.stiles@example.com"
 
     def start_id_check(self, fields):
