@@ -1,3 +1,4 @@
+from pcapi.core.educational import models
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 
 
@@ -15,7 +16,7 @@ class EducationalDepositsResponse(AdageBaseResponseModel):
 
 
 def serialize_educational_deposits(
-    educational_deposits: list[tuple[int, str, bool]]
+    educational_deposits: list[models.EducationalDeposit],
 ) -> list[EducationalDepositResponse]:
     serialized_educational_deposit = []
     for educational_deposit in educational_deposits:
@@ -23,9 +24,9 @@ def serialize_educational_deposits(
     return serialized_educational_deposit
 
 
-def serialize_educational_deposit(educational_deposit: tuple[int, str, bool]) -> EducationalDepositResponse:
+def serialize_educational_deposit(educational_deposit: models.EducationalDeposit) -> EducationalDepositResponse:
     return EducationalDepositResponse(
-        deposit=float(educational_deposit[0]),
-        uai=educational_deposit[1],
-        isFinal=educational_deposit[2],
+        deposit=educational_deposit.amount,
+        uai=educational_deposit.uai,
+        isFinal=educational_deposit.isFinal,
     )

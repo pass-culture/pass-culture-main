@@ -9,7 +9,7 @@ from pcapi.core.educational.factories import EducationalYearFactory
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_get_educational_deposit(self, client: Any) -> None:
+    def test_get_educational_deposit(self, client) -> None:
         educational_year1 = EducationalYearFactory()
         educational_institution1 = EducationalInstitutionFactory()
         EducationalDepositFactory(
@@ -66,4 +66,4 @@ class Returns404Test:
         response = client.with_eac_token().get("/adage/v1/years/UNKNOWN/deposits")
 
         assert response.status_code == 404
-        assert response.json == {"code": "EDUCATIONAL DEPOSIT NOT FOUND"}
+        assert response.json == {"code": "EDUCATIONAL_DEPOSIT_NOT_FOUND"}
