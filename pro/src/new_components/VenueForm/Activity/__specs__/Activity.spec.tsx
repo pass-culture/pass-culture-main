@@ -24,7 +24,7 @@ const renderInformations = ({
 }) => {
   const validationSchema = yup.object().shape(informationsValidationSchema)
 
-  const rtlReturns = render(
+  render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -36,13 +36,6 @@ const renderInformations = ({
       </Form>
     </Formik>
   )
-
-  return {
-    ...rtlReturns,
-    buttonSubmit: screen.getByRole('button', {
-      name: 'Submit',
-    }),
-  }
 }
 
 describe('components | Activity', () => {
@@ -59,10 +52,13 @@ describe('components | Activity', () => {
   })
 
   it('should submit form without errors', async () => {
-    const { buttonSubmit } = renderInformations({
+    renderInformations({
       initialValues,
       onSubmit,
       props,
+    })
+    const buttonSubmit = screen.getByRole('button', {
+      name: 'Submit',
     })
     const venueTypeSelect = screen.getByLabelText('Type de lieu')
     await userEvent.selectOptions(venueTypeSelect, 'CINEMA')

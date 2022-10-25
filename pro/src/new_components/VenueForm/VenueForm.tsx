@@ -10,7 +10,7 @@ import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
 import { Accessibility } from './Accessibility'
-import Activity from './Activity/Activity'
+import { Activity } from './Activity'
 import { Address } from './Address'
 import { Contact } from './Contact'
 import { EACInformation } from './EACInformation'
