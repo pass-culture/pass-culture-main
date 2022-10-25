@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
+from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -34,3 +35,10 @@ def generate_fake_adage_token() -> None:
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
 def synchronize_venues_from_adage_cultural_partners() -> None:
     api.synchronize_adage_ids_on_venues()
+
+
+@blueprint.cli.command("eac_notify_pro_one_day")
+@log_cron_with_transaction
+def notify_pro_users_one_day() -> None:
+    """Notify pro users 1 day before EAC event."""
+    api.notify_pro_users_one_day()
