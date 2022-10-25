@@ -1,6 +1,8 @@
 /* istanbul ignore file */
 import React from 'react'
 
+import { ReactComponent as ActivationCodeErrorIcon } from 'icons/add-activation-code-error.svg'
+import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
 import { ReactComponent as AudioDisabilityIcon } from 'icons/audio-disability.svg'
 import { ReactComponent as BuildingIcon } from 'icons/building.svg'
 import { ReactComponent as CheckboxCheckIcon } from 'icons/checkbox-check.svg'
@@ -95,6 +97,18 @@ import styles from './Icons.module.scss'
 export const Icons = () => (
   <table className={styles.table}>
     <body>
+      <tr>
+        <td>
+          <ActivationCodeErrorIcon />
+        </td>
+        <td>activation-code-error</td>
+      </tr>
+      <tr>
+        <td>
+          <AddActivationCodeIcon />
+        </td>
+        <td>add-activation-code</td>
+      </tr>
       <tr>
         <td>
           <BuildingIcon />
