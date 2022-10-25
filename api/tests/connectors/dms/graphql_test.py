@@ -11,7 +11,7 @@ from .schema import DmsSchema
 
 
 class DMSGraphQLTest:
-    def setup(self):
+    def setup_method(self):
         self.client = Client(schema=DmsSchema)
         self.expected_dossier = dms_models.DmsApplicationResponse(
             annotations=[],
