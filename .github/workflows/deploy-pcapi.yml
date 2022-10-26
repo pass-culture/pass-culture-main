@@ -53,6 +53,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: pass-culture/pass-culture-deployment
+          token: ${{ secrets.PASSCULTURE_SA_ACCESS_TOKEN }}
           path: ./pass-culture-deployment
       - id: openid-auth
         name: "OpenID Connect Authentication"
