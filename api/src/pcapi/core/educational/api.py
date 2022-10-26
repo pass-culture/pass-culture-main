@@ -23,6 +23,7 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
+from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from pcapi.core.offerers import api as offerers_api
@@ -1324,6 +1325,16 @@ def publish_collective_offer_template(offer_template: educational_models.Collect
         update_offer_fraud_information(offer_template, user)
         search.async_index_collective_offer_template_ids([offer_template.id])
         db.session.commit()
+
+
+def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
+    bookings = find_pending_booking_confirmation_limit_date_in_3_days()
+    for booking in bookings:
+        if not transactional_mails.send_eac_pending_booking_confirmation_limit_date_in_3_days(booking):
+            logger.warning(
+                "Could not notify offerer three days before booking confirmation limit date",
+                extra={"collectiveBooking": booking.id},
+            )
 
 
 def notify_pro_users_one_day() -> None:
