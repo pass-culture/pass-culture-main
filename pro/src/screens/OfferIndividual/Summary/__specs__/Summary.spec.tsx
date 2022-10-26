@@ -439,4 +439,41 @@ describe('Summary', () => {
       )
     })
   })
+
+  describe('banners', () => {
+    it('should display pre publishing banner in creation', () => {
+      // given
+      props.isCreation = true
+
+      // when
+      renderSummary(props)
+
+      // then
+      expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
+    })
+
+    it('should display pre publishing banner in draft mode', () => {
+      // given
+      props.isDraft = true
+
+      // when
+      renderSummary(props)
+
+      // then
+      expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
+    })
+
+    it('should not display pre publishing banner in edition mode', () => {
+      // given
+      props.isCreation = false
+
+      // when
+      renderSummary(props)
+
+      // then
+      expect(
+        screen.queryByText('Vous y êtes presque !')
+      ).not.toBeInTheDocument()
+    })
+  })
 })

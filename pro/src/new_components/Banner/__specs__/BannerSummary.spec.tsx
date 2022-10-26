@@ -1,4 +1,3 @@
-// react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
@@ -42,7 +41,12 @@ describe('new_components:BannerSummary', () => {
     )
     expect(
       screen.getByText(
-        'Vérifiez les informations ci-dessous avant de publier votre offre. Si vous souhaitez la publier plus tard, vous pouvez retrouver votre brouillon dans la liste de vos offres.'
+        /Vérifiez les informations ci-dessous avant de publier votre offre./
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Si vous souhaitez la publier plus tard, vous pouvez retrouver votre brouillon dans la liste de vos offres./
       )
     ).toBeInTheDocument()
   })
