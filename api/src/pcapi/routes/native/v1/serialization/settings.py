@@ -14,7 +14,6 @@ class DepositAmountsByAge(BaseModel):
 class SettingsResponse(BaseModel):
     account_creation_minimum_age: int
     app_enable_autocomplete: bool
-    app_enable_category_filter_page: bool
     auto_activate_digital_bookings: bool
     deposit_amounts_by_age = DepositAmountsByAge()
     display_dms_redirection: bool

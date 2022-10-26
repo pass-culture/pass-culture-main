@@ -1076,7 +1076,6 @@ def test_public_api(client):
                         "accountCreationMinimumAge": {"title": "Accountcreationminimumage", "type": "integer"},
                         "accountUnsuspensionLimit": {"title": "Accountunsuspensionlimit", "type": "integer"},
                         "appEnableAutocomplete": {"title": "Appenableautocomplete", "type": "boolean"},
-                        "appEnableCategoryFilterPage": {"title": "Appenablecategoryfilterpage", "type": "boolean"},
                         "appEnableCookiesV2": {"title": "Appenablecookiesv2", "type": "boolean"},
                         "autoActivateDigitalBookings": {"title": "Autoactivatedigitalbookings", "type": "boolean"},
                         "depositAmountsByAge": {
@@ -1106,7 +1105,6 @@ def test_public_api(client):
                     "required": [
                         "accountCreationMinimumAge",
                         "appEnableAutocomplete",
-                        "appEnableCategoryFilterPage",
                         "autoActivateDigitalBookings",
                         "displayDmsRedirection",
                         "enableFrontImageResizing",
