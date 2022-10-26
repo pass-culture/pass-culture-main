@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   createIndividualOffer,
+  getOfferIndividualAdapter,
   updateIndividualOffer,
 } from 'core/Offers/adapters'
 import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
@@ -46,7 +47,7 @@ const Informations = ({
     subCategories,
     offererNames,
     venueList,
-    reloadOffer,
+    setOffer,
   } = useOfferIndividualContext()
   const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
     IOnImageUploadArgs | undefined
@@ -176,7 +177,10 @@ const Informations = ({
           ...imageOfferCreationArgs,
           imageOfferId: payload.id,
         }))
-      await reloadOffer()
+      const response = await getOfferIndividualAdapter(payload.id)
+      if (response.isOk) {
+        setOffer && setOffer(response.payload)
+      }
       notify.success('Vos modifications ont bien été prises en compte')
       history.push(
         isCreation
