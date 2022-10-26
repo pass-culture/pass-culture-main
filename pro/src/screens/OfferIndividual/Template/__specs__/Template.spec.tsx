@@ -30,7 +30,7 @@ const renderTemplate = ({
     offererNames: [],
     categories: [],
     subCategories: [],
-    reloadOffer: () => {},
+    setOffer: () => {},
     ...contextOverride,
   }
   return render(

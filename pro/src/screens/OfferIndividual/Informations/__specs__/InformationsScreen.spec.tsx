@@ -117,7 +117,7 @@ describe('screens:OfferIndividual::Informations', () => {
       offererNames: [],
       categories,
       subCategories,
-      reloadOffer: () => {},
+      setOffer: () => {},
     }
 
     jest

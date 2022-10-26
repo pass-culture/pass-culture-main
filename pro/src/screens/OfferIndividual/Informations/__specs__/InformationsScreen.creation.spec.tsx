@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
@@ -39,9 +39,19 @@ jest.mock('repository/pcapi/pcapi', () => ({
 const renderInformationsScreen = (
   props: IInformationsProps,
   storeOverride: any,
-  contextValue: IOfferIndividualContext
+  contextOverride: Partial<IOfferIndividualContext>
 ) => {
   const store = configureTestStore(storeOverride)
+  const contextValue: IOfferIndividualContext = {
+    offerId: null,
+    offer: null,
+    venueList: [],
+    offererNames: [],
+    categories: [],
+    subCategories: [],
+    setOffer: () => {},
+    ...contextOverride,
+  }
   return render(
     <Provider store={store}>
       <MemoryRouter
@@ -65,7 +75,7 @@ const scrollIntoViewMock = jest.fn()
 describe('screens:OfferIndividual::Informations::creation', () => {
   let props: IInformationsProps
   let store: any
-  let contextValue: IOfferIndividualContext
+  let contextOverride: Partial<IOfferIndividualContext>
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -128,9 +138,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       },
     }
 
-    contextValue = {
-      offerId: null,
-      offer: null,
+    contextOverride = {
       venueList: [
         venue,
         {
@@ -151,13 +159,15 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       offererNames: [{ id: 'A', name: 'mon offerer A' }],
       categories,
       subCategories,
-      reloadOffer: jest.fn(),
     }
 
     props = {
       initialValues: FORM_DEFAULT_VALUES,
     }
 
+    jest
+      .spyOn(api, 'getOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({ id: 'AA' })
     jest
       .spyOn(utils, 'filterCategories')
@@ -166,7 +176,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should submit minimal physical offer', async () => {
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, store, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -200,7 +210,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       withdrawalDetails: null,
       withdrawalType: null,
     })
-    expect(contextValue.reloadOffer).toHaveBeenCalledTimes(1)
+    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
@@ -208,7 +218,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   })
 
   it('should display api errors', async () => {
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, store, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -236,12 +246,12 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     expect(screen.getByText('api wrong venue')).toBeInTheDocument()
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
-    expect(contextValue.reloadOffer).not.toHaveBeenCalled()
+    expect(api.getOffer).not.toHaveBeenCalled()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
   })
 
   it('should submit minimal virtual offer', async () => {
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, store, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
@@ -279,7 +289,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       withdrawalDetails: null,
       withdrawalType: null,
     })
-    expect(contextValue.reloadOffer).toHaveBeenCalledTimes(1)
+    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()

@@ -53,7 +53,8 @@ const renderOfferIndividualForm = ({
     offererNames: [],
     categories: [],
     subCategories: [],
-    reloadOffer: () => {},
+    setOffer: () => {},
+
     ...contextOverride,
   }
   return render(

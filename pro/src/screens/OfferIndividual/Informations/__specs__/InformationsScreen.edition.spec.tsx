@@ -7,7 +7,11 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  OfferStatus,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -40,9 +44,19 @@ jest.mock('repository/pcapi/pcapi', () => ({
 const renderInformationsScreen = (
   props: IInformationsProps,
   storeOverride: any,
-  contextValue: IOfferIndividualContext
+  contextOverride: Partial<IOfferIndividualContext>
 ) => {
   const store = configureTestStore(storeOverride)
+  const contextValue: IOfferIndividualContext = {
+    offerId: null,
+    offer: null,
+    venueList: [],
+    offererNames: [],
+    categories: [],
+    subCategories: [],
+    setOffer: () => {},
+    ...contextOverride,
+  }
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/offre/AA/v3/individuelle/informations']}>
@@ -65,7 +79,7 @@ const scrollIntoViewMock = jest.fn()
 describe('screens:OfferIndividual::Informations:edition', () => {
   let props: IInformationsProps
   let store: any
-  let contextValue: IOfferIndividualContext
+  let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
   let subCategories: IOfferSubCategory[]
 
@@ -196,7 +210,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       status: OfferStatus.ACTIVE,
     }
 
-    contextValue = {
+    contextOverride = {
       offerId: offer.id,
       offer: offer,
       venueList: [
@@ -219,7 +233,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       offererNames: [{ id: 'OFID', name: 'Offerer name' }],
       categories,
       subCategories,
-      reloadOffer: jest.fn(),
     }
 
     props = {
@@ -232,11 +245,14 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       .mockImplementation((c, s, _v) => [c, s])
     jest.spyOn(api, 'patchOffer').mockResolvedValue({ id: 'AA' })
     jest.spyOn(api, 'postOffer').mockResolvedValue({ id: 'AA' })
+    jest
+      .spyOn(api, 'getOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'deleteThumbnail').mockResolvedValue()
   })
 
   it('should submit minimal physical offer', async () => {
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, store, contextOverride)
     const nameField = screen.getByLabelText("Titre de l'offre")
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
@@ -276,7 +292,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
     })
-    expect(contextValue.reloadOffer).toHaveBeenCalledTimes(1)
+    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
@@ -285,7 +301,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
   })
 
   it('should submit minimal virtual offer', async () => {
-    contextValue.offer = {
+    contextOverride.offer = {
       ...offer,
       venueId: 'VID virtual',
       subcategoryId: 'SCID virtual',
@@ -294,10 +310,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalType: null,
     }
     props = {
-      initialValues: setInitialFormValues(contextValue.offer, subCategories),
+      initialValues: setInitialFormValues(contextOverride.offer, subCategories),
     }
 
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, store, contextOverride)
     const nameField = screen.getByLabelText("Titre de l'offre")
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
@@ -337,7 +353,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       withdrawalDelay: undefined,
       withdrawalType: undefined,
     })
-    expect(contextValue.reloadOffer).toHaveBeenCalledTimes(1)
+    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
@@ -346,7 +362,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
   })
 
   it('should delete offer image', async () => {
-    contextValue.offer = {
+    contextOverride.offer = {
       ...offer,
       image: {
         originalUrl: 'http://image.url',
@@ -355,9 +371,9 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       },
     }
     props = {
-      initialValues: setInitialFormValues(contextValue.offer, subCategories),
+      initialValues: setInitialFormValues(contextOverride.offer, subCategories),
     }
-    renderInformationsScreen(props, store, contextValue)
+    renderInformationsScreen(props, store, contextOverride)
     await screen.findByRole('heading', { name: /Type d’offre/ })
     expect(
       screen.queryByRole('button', { name: /Ajouter une image/ })
@@ -372,7 +388,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     ).toBeInTheDocument()
   })
   it('should display an error on delete offer image api failure', async () => {
-    contextValue.offer = {
+    contextOverride.offer = {
       ...offer,
       image: {
         originalUrl: 'http://image.url',
@@ -381,9 +397,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       },
     }
     props = {
-      initialValues: setInitialFormValues(contextValue.offer, subCategories),
+      initialValues: setInitialFormValues(contextOverride.offer, subCategories),
     }
-    renderInformationsScreen(props, store, contextValue)
+
+    renderInformationsScreen(props, store, contextOverride)
     await screen.findByRole('heading', { name: /Type d’offre/ })
     expect(
       screen.queryByRole('button', { name: /Ajouter une image/ })
