@@ -24,7 +24,9 @@ const ButtonImageAdd = ({
     type="button"
   >
     <PlusIcon className={style['icon']} />
-    <span className={style['label']}>Ajouter une image</span>
+    <span className={style['label']}>
+      Ajouter <br /> une image
+    </span>
   </button>
 )
 
