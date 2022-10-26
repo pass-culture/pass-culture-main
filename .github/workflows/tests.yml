@@ -51,6 +51,10 @@ jobs:
       folder: backoffice
 
   deploy-testing:
+    needs:
+      - test-pro
+      - test-adage
+      - test-api
     if: github.ref == 'master'
     uses: ./.github/workflows/deploy-pcapi.yml
     with:
