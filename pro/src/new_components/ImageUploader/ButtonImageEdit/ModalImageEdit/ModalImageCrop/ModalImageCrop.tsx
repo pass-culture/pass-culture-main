@@ -15,6 +15,7 @@ import { Button, Divider } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './ModalImageCrop.module.scss'
+import { getCropMaxDimension } from './utils'
 
 interface IModalImageCropProps {
   image: File
@@ -42,14 +43,22 @@ const ModalImageCrop = ({
   initialScale,
   mode,
 }: IModalImageCropProps): JSX.Element => {
-  const { width } = useGetImageBitmap(image)
+  const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
   const minWidth = modeValidationConstraints[mode].minWidth
-  const maxScale: number = {
-    [UploaderModeEnum.OFFER]: (width * (2 / 3)) / minWidth,
-    [UploaderModeEnum.VENUE]: width / minWidth,
-  }[mode]
+  // getCropMaxDimension is tested on it's own.
+  /* istanbul ignore next: unable to test intercations with AvatarEditor  */
+  const { width: maxWidth } = getCropMaxDimension({
+    originalDimensions: { width, height },
+    /* istanbul ignore next */
+    orientation: mode === UploaderModeEnum.OFFER ? 'portrait' : 'landscape',
+  })
+  const maxScale: number = Math.min(
+    4,
+    (maxWidth - 10) / // Add few security pixel to garantie that max zoom will never be 399px.
+      minWidth
+  )
   const title: string = {
     [UploaderModeEnum.OFFER]: "Image de l'offre",
     [UploaderModeEnum.VENUE]: 'Image du lieu',
