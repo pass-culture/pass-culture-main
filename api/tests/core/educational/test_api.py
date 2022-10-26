@@ -806,6 +806,71 @@ class GetCulturalPartnersTest:
         }
 
 
+@freeze_time("2022-11-26 18:29:20.891028")
+@pytest.mark.usefixtures("db_session")
+class EACPendingBookingWithConfirmationLimitDate3DaysTest:
+    @mock.patch(
+        "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
+    )
+    def test_with_pending_booking_limit_date_in_3_days(self, mock_mail_sender) -> None:
+        # given
+        booking = educational_factories.PendingCollectiveBookingFactory(
+            confirmationLimitDate="2022-11-29 18:29:20.891028",
+            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+        )
+
+        # when
+        educational_api.notify_pro_pending_booking_confirmation_limit_in_3_days()
+
+        # then
+        mock_mail_sender.assert_called_once()
+        assert mock_mail_sender.call_args.kwargs["data"].params == {
+            "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
+            "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
+            "EVENT_DATE": "dimanche 27 novembre 2022",
+            "USER_FIRSTNAME": booking.educationalRedactor.firstName,
+            "USER_LASTNAME": booking.educationalRedactor.lastName,
+            "USER_EMAIL": booking.educationalRedactor.email,
+        }
+
+    @mock.patch(
+        "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
+    )
+    def test_with_pending_booking_limit_date_in_less_or_more_than_3_days(self, mock_mail_sender) -> None:
+        # given
+        educational_factories.PendingCollectiveBookingFactory(
+            confirmationLimitDate="2022-11-28 18:29:20.891028",
+            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+        )
+
+        educational_factories.PendingCollectiveBookingFactory(
+            confirmationLimitDate="2022-12-01 18:29:20.891028",
+            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+        )
+
+        # when
+        educational_api.notify_pro_pending_booking_confirmation_limit_in_3_days()
+
+        # then
+        mock_mail_sender.assert_not_called()
+
+    @mock.patch(
+        "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
+    )
+    def test_with_confirmed_booking_confirmation_limit_date_in_3_days(self, mock_mail_sender) -> None:
+        # given
+        educational_factories.CollectiveBookingFactory(
+            confirmationLimitDate="2022-11-29 18:29:20.891028",
+            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+        )
+
+        # when
+        educational_api.notify_pro_pending_booking_confirmation_limit_in_3_days()
+
+        # then
+        mock_mail_sender.assert_not_called()
+
+
 @override_settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
