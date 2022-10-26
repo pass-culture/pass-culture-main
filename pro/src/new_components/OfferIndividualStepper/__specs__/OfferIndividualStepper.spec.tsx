@@ -24,7 +24,7 @@ const renderOfferIndividualStepper = (
     offererNames: [],
     categories: [],
     subCategories: [],
-    reloadOffer: () => {},
+    setOffer: () => {},
     ...contextOverride,
   }
   const rtlReturns = render(
