@@ -37,6 +37,9 @@ def create_venue_labels(sandbox: bool = False) -> None:
         ("Ville et Pays d'art et d'histoire", 28),
         ("Théâtre lyrique conventionné d'intérêt national", 34),
         ("Centre Culturel de Rencontre", 35),
+        ("CNAV - Centre national d'Art Vocal", 36),
+        ("Parc naturel régional", 37),
+        ("Science, culture et innovation", 38),
     ]
 
     save_new_venue_labels(venue_label_strings, sandbox)
