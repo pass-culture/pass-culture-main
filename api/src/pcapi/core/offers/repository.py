@@ -292,7 +292,7 @@ def get_collective_offers_template_by_filters(
     period_beginning_date: datetime | None = None,
     period_ending_date: datetime | None = None,
 ) -> BaseQuery:
-    query = CollectiveOfferTemplate.query
+    query = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT)
 
     if period_beginning_date is not None or period_ending_date is not None:
         query = query.filter(false())
