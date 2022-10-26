@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class AdageLoggerClient(AdageClient):
     def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> AdageApiResult:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation", data)
-        return AdageApiResult(sent_data=data, response={"status_code": 201}, success=True)  # type: ignore [arg-type]
+        return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
     def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingEdition) -> AdageApiResult:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation-edit", data)

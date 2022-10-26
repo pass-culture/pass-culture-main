@@ -62,7 +62,10 @@ def check_institution_fund(
 
 
 def check_ministry_fund(
-    educational_year_id: str, booking_amount: Decimal, booking_date: datetime.datetime, ministry: str | None
+    educational_year_id: str,
+    booking_amount: Decimal,
+    booking_date: datetime.datetime,
+    ministry: models.Ministry | None,
 ) -> None:
     if booking_date.month < 9:
         return
@@ -77,16 +80,6 @@ def check_ministry_fund(
     available_amount = yearly_available_amount / 3
     if total_spent_amount > available_amount:
         raise exceptions.InsufficientMinistryFund()
-
-
-def check_institution_exists(educational_institution: models.EducationalInstitution | None) -> None:
-    if not educational_institution:
-        raise exceptions.EducationalInstitutionUnknown()
-
-
-def check_educational_year_exists(educational_year: models.EducationalYear | None) -> None:
-    if not educational_year:
-        raise exceptions.EducationalYearNotFound()
 
 
 def check_collective_stock_is_bookable(stock: models.CollectiveStock) -> None:
@@ -114,9 +107,9 @@ def check_collective_booking_status_pending(booking: models.CollectiveBooking) -
         raise exceptions.CollectiveOfferStockBookedAndBookingNotPending(booking.status, booking.id)
 
 
-def check_collective_offer_number_of_collective_stocks(  # type: ignore [return]
+def check_collective_offer_number_of_collective_stocks(
     collective_offer: models.CollectiveOffer,
-) -> exceptions.CollectiveStockAlreadyExists | None:
+) -> None:
     if collective_offer.collectiveStock:
         raise exceptions.CollectiveStockAlreadyExists()
 
@@ -134,3 +127,8 @@ def check_intervention_area(intervention_area: list[str]) -> None:
             if area not in INTERVENTION_AREA:
                 errors.append(area)
         raise exceptions.InvalidInterventionArea(errors=errors)
+
+
+def check_institution_id_exists(institution_id: int) -> None:
+    if not models.EducationalInstitution.query.get(institution_id):
+        raise exceptions.EducationalInstitutionNotFound()

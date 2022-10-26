@@ -68,7 +68,7 @@ def _create_redactor(redactor_informations: RedactorInformation) -> educational_
         email=redactor_informations.email,
         firstName=redactor_informations.firstname,
         lastName=redactor_informations.lastname,
-        civility=redactor_informations.civility,  # type: ignore [arg-type]
+        civility=redactor_informations.civility,
     )
     repository.save(redactor)
     return redactor
@@ -82,7 +82,8 @@ def book_collective_offer(
         redactor = _create_redactor(redactor_informations)
 
     educational_institution = educational_repository.find_educational_institution_by_uai_code(redactor_informations.uai)
-    validation.check_institution_exists(educational_institution)
+    if not educational_institution:
+        raise exceptions.EducationalInstitutionUnknown()
 
     # The call to transaction here ensures we free the FOR UPDATE lock
     # on the stock if validation issues an exception
@@ -91,13 +92,14 @@ def book_collective_offer(
         validation.check_collective_stock_is_bookable(stock)
 
         educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
-        validation.check_educational_year_exists(educational_year)
+        if not educational_year:
+            raise exceptions.EducationalYearNotFound()
         validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
         utcnow = datetime.datetime.utcnow()
         booking = educational_models.CollectiveBooking(
-            educationalInstitution=educational_institution,  # type: ignore [arg-type]
-            educationalYear=educational_year,  # type: ignore [arg-type]
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
             educationalRedactor=redactor,
             confirmationLimitDate=stock.bookingLimitDatetime,
             collectiveStockId=stock.id,
@@ -190,7 +192,7 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
                 educational_year_id=educational_year_id,
                 booking_amount=decimal.Decimal(collective_booking.collectiveStock.price),
                 booking_date=collective_booking.collectiveStock.beginningDatetime,
-                ministry=deposit.ministry,  # type: ignore [arg-type]
+                ministry=deposit.ministry,
             )
 
         collective_booking.mark_as_confirmed()
@@ -579,7 +581,10 @@ def edit_collective_stock(
 
 
 def _extract_updatable_fields_from_stock_data(
-    stock: educational_models.CollectiveStock, stock_data: dict, beginning: datetime, booking_limit_datetime: datetime  # type: ignore [valid-type]
+    stock: educational_models.CollectiveStock,
+    stock_data: dict,
+    beginning: datetime.datetime | None,
+    booking_limit_datetime: datetime.datetime | None,
 ) -> dict:
     # if booking_limit_datetime is provided but null, set it to default value which is event datetime
     if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
@@ -655,9 +660,10 @@ def unindex_expired_collective_offers(process_all_expired: bool = False) -> None
     collective offers.
     """
     start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    interval = [start_of_day - datetime.timedelta(days=2), start_of_day]
-    if process_all_expired:
-        interval[0] = datetime.datetime(2000, 1, 1)  # arbitrary old date
+    interval = (
+        datetime.datetime(2000, 1, 1) if process_all_expired else start_of_day - datetime.timedelta(days=2),
+        start_of_day,
+    )
 
     page = 0
     limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
@@ -667,7 +673,11 @@ def unindex_expired_collective_offers(process_all_expired: bool = False) -> None
         page += 1
 
 
-def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: int, limit: int) -> list[int]:
+def _get_expired_collective_offer_ids(
+    interval: tuple[datetime.datetime, datetime.datetime],
+    page: int,
+    limit: int,
+) -> list[int]:
     collective_offers = educational_repository.get_expired_collective_offers(interval)
     collective_offers = collective_offers.offset(page * limit).limit(limit)
     return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
@@ -684,8 +694,8 @@ def get_collective_booking_report(
 ) -> str | bytes:
     bookings_query = educational_repository.get_filtered_collective_booking_report(
         pro_user=user,
-        period=booking_period,  # type: ignore [arg-type]
-        status_filter=status_filter,  # type: ignore [arg-type]
+        period=booking_period,
+        status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
     )
@@ -958,22 +968,16 @@ def search_educational_institution(
     )
 
 
-def get_educational_institution_by_id(institution_id: int) -> educational_models.EducationalInstitution:
-    return educational_repository.get_educational_institution_by_id(institution_id)
-
-
 def update_collective_offer_educational_institution(
     offer_id: int, educational_institution_id: int | None, user: User
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if educational_institution_id is not None:
-        institution = get_educational_institution_by_id(educational_institution_id)
-    else:
-        institution = None
+        validation.check_institution_id_exists(educational_institution_id)
 
     if offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
-    offer.institution = institution  # type: ignore [assignment]
+    offer.institutionId = educational_institution_id
     db.session.commit()
 
     search.async_index_collective_offer_ids([offer_id])

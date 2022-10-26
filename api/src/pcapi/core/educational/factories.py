@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 from dateutil.relativedelta import relativedelta
 import factory
@@ -46,7 +47,12 @@ class CollectiveOfferFactory(BaseFactory):
     interventionArea = ["93", "94", "95"]
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.CollectiveOffer],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.CollectiveOffer:
         if kwargs.get("isActive") is None:
             kwargs["isActive"] = kwargs.get("validation") not in (
                 OfferValidationStatus.REJECTED,
@@ -96,7 +102,12 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     interventionArea = ["2A", "2B"]
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.CollectiveOfferTemplate],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.CollectiveOfferTemplate:
         if kwargs.get("isActive") is None:
             kwargs["isActive"] = kwargs.get("validation") not in (
                 OfferValidationStatus.REJECTED,
