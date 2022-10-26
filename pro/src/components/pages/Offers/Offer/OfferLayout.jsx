@@ -138,7 +138,6 @@ const OfferLayout = () => {
           </Title>
         )}
       </div>
-
       <OfferBreadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}

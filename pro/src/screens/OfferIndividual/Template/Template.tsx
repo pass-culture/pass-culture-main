@@ -8,7 +8,8 @@ import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCrea
 import styles from './Template.module.scss'
 
 export interface ITemplateProps {
-  title?: string
+  // TODO: remove this '| null' on OFFER_FORM_V3 FF cleaning
+  title?: string | null
   withStepper?: boolean
   children: JSX.Element | JSX.Element[]
 }
@@ -21,16 +22,19 @@ const Template = ({ title, children, withStepper = true }: ITemplateProps) => {
 
   return (
     <OfferFormLayout>
-      <OfferFormLayout.TitleBlock
-        className={!offer?.name ? styles['title-without-name'] : undefined}
-      >
-        <h1>{title ? title : defaultTitle}</h1>
-      </OfferFormLayout.TitleBlock>
+      {title !== null && (
+        <>
+          <OfferFormLayout.TitleBlock
+            className={!offer?.name ? styles['title-without-name'] : undefined}
+          >
+            <h1>{title ? title : defaultTitle}</h1>
+          </OfferFormLayout.TitleBlock>
 
-      <OfferFormLayout.TitleBlock>
-        {offer && <h4>{offer.name}</h4>}
-      </OfferFormLayout.TitleBlock>
-
+          <OfferFormLayout.TitleBlock>
+            {offer && <h4>{offer.name}</h4>}
+          </OfferFormLayout.TitleBlock>
+        </>
+      )}
       {withStepper && (
         <OfferFormLayout.Stepper>
           <OfferIndividualStepper />
