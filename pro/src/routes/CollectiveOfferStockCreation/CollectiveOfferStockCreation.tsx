@@ -79,7 +79,7 @@ const CollectiveOfferStockCreation = ({
         offer={offer}
         onSubmit={handleSubmitStock}
       />
-      <RouteLeavingGuardOfferCreation isCollectiveFlow />
+      <RouteLeavingGuardOfferCreation />
     </>
   )
 }
