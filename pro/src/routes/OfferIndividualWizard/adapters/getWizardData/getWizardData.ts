@@ -1,16 +1,14 @@
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { TOffererName } from 'core/Offerers/types'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
-import {
-  IOfferCategory,
-  IOfferIndividual,
-  IOfferSubCategory,
-} from 'core/Offers/types'
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters/getOfferIndividualVenuesAdapter'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 interface IGetWizardDataArgs {
-  offer?: IOfferIndividual
+  offerOffererId?: string
+  offerOffererName?: string
+  offerer?: TOffererName
   queryOffererId?: string
   isAdmin?: boolean
 }
@@ -37,11 +35,11 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 const getWizardData: TGetOfferIndividualAdapter = async ({
-  offer,
+  offerer,
   queryOffererId,
   isAdmin,
 }) => {
-  const offererId = isAdmin && offer ? offer.offererId : queryOffererId
+  const offererId = isAdmin && offerer ? offerer.id : queryOffererId
   const successPayload: IOfferWizardData = {
     offererNames: [],
     venueList: [],
@@ -51,7 +49,7 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
     },
   }
 
-  if (isAdmin && !offer && !queryOffererId) {
+  if (isAdmin && !offerer && !queryOffererId) {
     return Promise.resolve({
       isOk: true,
       message: null,
@@ -73,11 +71,11 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
     return Promise.resolve(FAILING_RESPONSE)
   }
 
-  if (isAdmin && offer) {
+  if (isAdmin && offerer) {
     successPayload.offererNames = [
       {
-        id: offer.venue.offerer.id,
-        name: offer.venue.offerer.name,
+        id: offerer.id,
+        name: offerer.name,
       },
     ]
   } else {
