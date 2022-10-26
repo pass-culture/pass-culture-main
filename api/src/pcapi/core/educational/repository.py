@@ -9,9 +9,9 @@ from typing import Tuple
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
-from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.repository import field_to_venue_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -34,7 +34,7 @@ COLLECTIVE_BOOKING_STATUS_LABELS = {
 }
 
 
-BOOKING_DATE_STATUS_MAPPING = {
+BOOKING_DATE_STATUS_MAPPING: dict[educational_models.CollectiveBookingStatusFilter, sa_orm.InstrumentedAttribute] = {
     educational_models.CollectiveBookingStatusFilter.BOOKED: educational_models.CollectiveBooking.dateCreated,
     educational_models.CollectiveBookingStatusFilter.VALIDATED: educational_models.CollectiveBooking.dateUsed,
     educational_models.CollectiveBookingStatusFilter.REIMBURSED: educational_models.CollectiveBooking.reimbursementDate,
@@ -135,7 +135,10 @@ def get_and_lock_educational_deposit(
     return educational_deposit
 
 
-def get_ministry_budget_for_year(ministry: str | None, educational_year_id: str) -> Decimal:
+def get_ministry_budget_for_year(
+    ministry: educational_models.Ministry | None,
+    educational_year_id: str,
+) -> Decimal:
     query = db.session.query(sa.func.sum(educational_models.EducationalDeposit.amount).label("amount"))
     query = query.filter(
         educational_models.EducationalDeposit.educationalYearId == educational_year_id,
@@ -145,7 +148,7 @@ def get_ministry_budget_for_year(ministry: str | None, educational_year_id: str)
 
 
 def get_confirmed_collective_bookings_amount_for_ministry(
-    ministry: str | None,
+    ministry: educational_models.Ministry | None,
     educational_year_id: str,
 ) -> Decimal:
     query = db.session.query(sa.func.sum(educational_models.CollectiveStock.price).label("amount"))
@@ -359,7 +362,7 @@ def get_paginated_collective_bookings_for_educational_year(
     return query.all()
 
 
-def get_expired_collective_offers(interval: list[datetime]) -> BaseQuery:
+def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQuery:
     """Return a query of collective offers whose latest booking limit occurs within
     the given interval.
 
@@ -373,7 +376,7 @@ def get_expired_collective_offers(interval: list[datetime]) -> BaseQuery:
         .filter(
             educational_models.CollectiveOffer.isActive.is_(True),
         )
-        .having(sa.func.max(educational_models.CollectiveStock.bookingLimitDatetime).between(*interval))  # type: ignore [arg-type]
+        .having(sa.func.max(educational_models.CollectiveStock.bookingLimitDatetime).between(*interval))
         .group_by(educational_models.CollectiveOffer.id)
         .order_by(educational_models.CollectiveOffer.id)
     )
@@ -472,8 +475,8 @@ def get_collective_offers_for_filters(
         venue_id=venue_id,
         category_id=category_id,
         name_keywords=name_keywords,
-        period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
-        period_ending_date=period_ending_date,  # type: ignore [arg-type]
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
     )
 
     query = query.order_by(educational_models.CollectiveOffer.id.desc())
@@ -515,8 +518,8 @@ def get_collective_offers_template_for_filters(
         venue_id=venue_id,
         category_id=category_id,
         name_keywords=name_keywords,
-        period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
-        period_ending_date=period_ending_date,  # type: ignore [arg-type]
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
     )
 
     if query is None:
@@ -568,7 +571,7 @@ def _get_filtered_collective_bookings_query(
         )
 
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)  # type: ignore [arg-type]
+            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
         )
 
     if venue_id is not None:
@@ -625,7 +628,7 @@ def list_public_collective_offers(
 def _get_filtered_collective_bookings_pro(
     pro_user: User,
     period: tuple[date, date] | None = None,
-    status_filter: bookings_models.BookingStatusFilter | None = None,
+    status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
 ) -> sa.orm.Query:
@@ -633,7 +636,7 @@ def _get_filtered_collective_bookings_pro(
         _get_filtered_collective_bookings_query(
             pro_user,
             period,
-            status_filter,  # type: ignore [arg-type]
+            status_filter,
             event_date,
             venue_id,
             extra_joins=(
@@ -695,7 +698,11 @@ def find_collective_bookings_by_pro_user(
     )
 
     collective_bookings_query = _get_filtered_collective_bookings_pro(
-        pro_user=user, period=booking_period, status_filter=status_filter, event_date=event_date, venue_id=venue_id  # type: ignore [arg-type]
+        pro_user=user,
+        period=booking_period,
+        status_filter=status_filter,
+        event_date=event_date,
+        venue_id=venue_id,
     )
 
     collective_bookings_page = (
@@ -741,11 +748,11 @@ def find_collective_bookings_by_pro_user(
 
 def get_filtered_collective_booking_report(
     pro_user: User,
-    period: tuple[date, date],
-    status_filter: educational_models.CollectiveBookingStatusFilter,
+    period: tuple[date, date] | None,
+    status_filter: educational_models.CollectiveBookingStatusFilter | None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
-) -> str:
+) -> BaseQuery:
     bookings_query = (
         _get_filtered_collective_bookings_query(
             pro_user,
@@ -782,7 +789,7 @@ def get_filtered_collective_booking_report(
         .distinct(educational_models.CollectiveBooking.id)
     )
 
-    return bookings_query  # type: ignore [return-value]
+    return bookings_query
 
 
 def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
@@ -944,13 +951,6 @@ def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[t
         query = query.limit(limit)
 
     return query.all(), total
-
-
-def get_educational_institution_by_id(institution_id: int) -> educational_models.EducationalInstitution:
-    try:
-        return educational_models.EducationalInstitution.query.filter_by(id=institution_id).one()
-    except sa.orm.exc.NoResultFound:
-        raise educational_exceptions.EducationalInstitutionNotFound()
 
 
 def search_educational_institution(

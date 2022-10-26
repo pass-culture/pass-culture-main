@@ -212,8 +212,8 @@ def get_collective_offers_by_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: datetime | None = None,
-    period_ending_date: datetime | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
 ) -> BaseQuery:
     query = CollectiveOffer.query.filter(CollectiveOffer.validation != OfferValidationStatus.DRAFT)
 
@@ -289,8 +289,8 @@ def get_collective_offers_template_by_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: datetime | None = None,
-    period_ending_date: datetime | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
 ) -> BaseQuery:
     query = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT)
 

@@ -1,6 +1,8 @@
 from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
 
+from . import models
+
 
 class EducationalInstitutionUnknown(ClientError):
     def __init__(self) -> None:
@@ -68,7 +70,7 @@ class StockDoesNotExist(ApiErrors):
 
 
 class CollectiveOfferStockBookedAndBookingNotPending(Exception):
-    def __init__(self, status, booking_id):  # type: ignore [no-untyped-def]
+    def __init__(self, status: models.CollectiveBookingStatus, booking_id: int) -> None:
         self.booking_status = status
         super().__init__()
 
@@ -102,7 +104,7 @@ class CollectiveStockNotBookableByUser(Exception):
 
 
 class AdageException(Exception):
-    def __init__(self, message, status_code, response_text):  # type: ignore [no-untyped-def]
+    def __init__(self, message: str, status_code: int, response_text: str) -> None:
         self.message = message
         self.status_code = status_code
         self.response_text = response_text

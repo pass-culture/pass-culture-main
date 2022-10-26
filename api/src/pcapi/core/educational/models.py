@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import dataclasses
 from datetime import datetime
 from decimal import Decimal
@@ -11,6 +9,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import False_
@@ -22,7 +21,6 @@ from sqlalchemy.sql.sqltypes import Numeric
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
-from pcapi.core.educational import exceptions
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import offer_mixin
@@ -31,8 +29,6 @@ from pcapi.models.pc_object import PcObject
 
 
 if typing.TYPE_CHECKING:
-    from sqlalchemy.orm import Mapped
-
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
 
@@ -89,7 +85,9 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue: Mapped["Venue"] = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="collectiveOffers")
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
+        "Venue", foreign_keys=[venueId], back_populates="collectiveOffers"
+    )
 
     name: str = sa.Column(sa.String(140), nullable=False)
 
@@ -135,7 +133,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
 
-    institution: Mapped["EducationalInstitution"] = relationship(
+    institution: sa_orm.Mapped["EducationalInstitution | None"] = relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
@@ -143,7 +141,7 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
 
-    template: Mapped["CollectiveOfferTemplate"] = sa.orm.relationship(
+    template: sa_orm.Mapped["CollectiveOfferTemplate | None"] = sa.orm.relationship(
         "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="collectiveOffers"
     )
 
@@ -240,8 +238,8 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
 
     @classmethod
     def create_from_collective_offer_template(
-        cls, collective_offer_template: CollectiveOfferTemplate
-    ) -> CollectiveOffer:
+        cls, collective_offer_template: "CollectiveOfferTemplate"
+    ) -> "CollectiveOffer":
         list_of_common_attributes = [
             "isActive",
             "venue",
@@ -283,7 +281,7 @@ class CollectiveOfferTemplate(
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue: Mapped["Venue"] = sa.orm.relationship(
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates"
     )
 
@@ -327,7 +325,7 @@ class CollectiveOfferTemplate(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
     )
 
-    collectiveOffers: Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="template")
+    collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="template")
 
     @property
     def isEducational(self) -> bool:
@@ -390,7 +388,7 @@ class CollectiveOfferTemplate(
     @classmethod
     def create_from_collective_offer(
         cls, collective_offer: CollectiveOffer, price_detail: str = None
-    ) -> CollectiveOfferTemplate:
+    ) -> "CollectiveOfferTemplate":
         list_of_common_attributes = [
             "isActive",
             "venue",
@@ -439,7 +437,7 @@ class CollectiveStock(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
     )
 
-    collectiveOffer: Mapped["CollectiveOffer"] = sa.orm.relationship(
+    collectiveOffer: sa_orm.Mapped["CollectiveOffer"] = sa.orm.relationship(
         "CollectiveOffer", foreign_keys=[collectiveOfferId], uselist=False, back_populates="collectiveStock"
     )
 
@@ -557,7 +555,7 @@ class EducationalDeposit(PcObject, Base, Model):
         sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False
     )
 
-    educationalYear: Mapped["EducationalYear"] = relationship(
+    educationalYear: sa_orm.Mapped["EducationalYear"] = relationship(
         EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
     )
 
@@ -576,6 +574,8 @@ class EducationalDeposit(PcObject, Base, Model):
         return round(self.amount * Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO), 2) if not self.isFinal else self.amount
 
     def check_has_enough_fund(self, total_amount_after_booking: Decimal) -> None:
+        from pcapi.core.educational import exceptions
+
         if self.amount < total_amount_after_booking:
             raise exceptions.InsufficientFund()
 
@@ -595,7 +595,7 @@ class EducationalRedactor(PcObject, Base, Model):
 
     lastName = sa.Column(sa.String(128), nullable=True)
 
-    civility: str = sa.Column(sa.String(20), nullable=True)
+    civility = sa.Column(sa.String(20), nullable=True)
 
     collectiveBookings: list["CollectiveBooking"] = relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
@@ -614,17 +614,17 @@ class CollectiveBooking(PcObject, Base, Model):
 
     collectiveStockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
 
-    collectiveStock: Mapped["CollectiveStock"] = relationship(
+    collectiveStock: sa_orm.Mapped["CollectiveStock"] = relationship(
         "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
     )
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue: Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
+    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
 
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer: Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
+    offerer: sa_orm.Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
@@ -650,12 +650,12 @@ class CollectiveBooking(PcObject, Base, Model):
     educationalInstitutionId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
     )
-    educationalInstitution: Mapped["EducationalInstitution"] = relationship(
+    educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
     educationalYearId: str = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
-    educationalYear: Mapped["EducationalYear"] = relationship(EducationalYear, foreign_keys=[educationalYearId])
+    educationalYear: sa_orm.Mapped["EducationalYear"] = relationship(EducationalYear, foreign_keys=[educationalYearId])
 
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
@@ -668,7 +668,7 @@ class CollectiveBooking(PcObject, Base, Model):
         nullable=False,
         index=True,
     )
-    educationalRedactor: Mapped["EducationalRedactor"] = relationship(
+    educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = relationship(
         EducationalRedactor,
         back_populates="collectiveBookings",
         uselist=False,
@@ -689,6 +689,8 @@ class CollectiveBooking(PcObject, Base, Model):
         self.status = CollectiveBookingStatus.CONFIRMED
 
     def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
+        from pcapi.core.educational import exceptions
+
         if self.status is CollectiveBookingStatus.CANCELLED:
             raise exceptions.CollectiveBookingAlreadyCancelled()
         if self.status is CollectiveBookingStatus.REIMBURSED:
@@ -737,6 +739,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.confirmationLimitDate <= datetime.utcnow()
 
     def mark_as_refused(self) -> None:
+        from pcapi.core.educational import exceptions
 
         if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
             raise exceptions.EducationalBookingNotRefusable()
@@ -809,7 +812,7 @@ class EducationalDomain(PcObject, Base, Model):
     __tablename__ = "educational_domain"
 
     name: str = sa.Column(sa.Text, nullable=False)
-    venues: "Mapped[list[Venue]]" = sa.orm.relationship(
+    venues: sa_orm.Mapped[list["Venue"]] = sa.orm.relationship(
         "Venue", back_populates="collectiveDomains", secondary="educational_domain_venue"
     )
     collectiveOffers: list["CollectiveOffer"] = relationship(
