@@ -1002,6 +1002,32 @@ def search_educational_institution(
     )
 
 
+def find_pending_booking_confirmation_limit_date_in_3_days() -> list[educational_models.CollectiveBooking]:
+    target_day = datetime.utcnow() + timedelta(days=3)
+    start = datetime.combine(target_day, time.min)
+    end = datetime.combine(target_day, time.max)
+    query = (
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.confirmationLimitDate.between(start, end)
+        )
+        .filter(educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING)
+        .distinct()
+    )
+    query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True))
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
+            educational_models.CollectiveStock.collectiveOffer, innerjoin=True
+        )
+    )
+    query = query.options(
+        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+        .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+        .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+    )
+    query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
+    return query.all()
+
+
 def get_paginated_active_collective_offer_ids(limit: int, page: int) -> list[int]:
     query = (
         educational_models.CollectiveOffer.query.with_entities(educational_models.CollectiveOffer.id)

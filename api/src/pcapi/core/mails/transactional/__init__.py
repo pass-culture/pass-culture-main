@@ -22,6 +22,9 @@ from .educational.eac_booking_cancellation import send_eac_booking_cancellation_
 from .educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from .educational.eac_new_prebooking_to_pro import send_eac_new_collective_prebooking_email_to_pro
 from .educational.eac_one_day_before_event import send_eac_alert_one_day_before_event
+from .educational.eac_pending_booking_confirmation_limit_date_in_3_days import (
+    send_eac_pending_booking_confirmation_limit_date_in_3_days,
+)
 from .pro.email_validation import send_email_validation_to_admin_email
 from .pro.email_validation import send_email_validation_to_pro_email
 from .pro.event_offer_postponed_confirmation_to_pro import send_event_offer_postponement_confirmation_email_to_pro

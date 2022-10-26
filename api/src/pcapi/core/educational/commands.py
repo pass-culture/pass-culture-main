@@ -42,3 +42,10 @@ def synchronize_venues_from_adage_cultural_partners() -> None:
 def notify_pro_users_one_day() -> None:
     """Notify pro users 1 day before EAC event."""
     api.notify_pro_users_one_day()
+
+
+@blueprint.cli.command("eac_handle_pending_collective_booking_j3")
+@log_cron_with_transaction
+def handle_pending_collective_booking_j3() -> None:
+    """Triggers email to be sent for events with pending booking and booking limit date in 3 days"""
+    api.notify_pro_pending_booking_confirmation_limit_in_3_days()
