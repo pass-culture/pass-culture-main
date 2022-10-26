@@ -39,7 +39,7 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.openid-auth.outputs.access_token }}'
           image: '${{ env.DOCKER_REPO }}/pcapi:${{ github.sha }}'
-          run: echo "::set-output name=secrets_file_base64::$(flask print_secret_keys | base64)"
+          run: echo "secrets_file_base64=$(flask print_secret_keys | base64 -w 0)" >> $GITHUB_OUTPUT
 
   deploy-helm-release:
     runs-on: ubuntu-latest
