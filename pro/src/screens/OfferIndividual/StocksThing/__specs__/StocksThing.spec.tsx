@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
@@ -90,8 +90,11 @@ describe('screens:StocksThing', () => {
       offererNames: [],
       categories: [],
       subCategories: [],
-      reloadOffer: jest.fn(),
+      setOffer: () => {},
     }
+    jest
+      .spyOn(api, 'getOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
 
   it('should render physical stock thing', async () => {
@@ -167,7 +170,7 @@ describe('screens:StocksThing', () => {
       screen.getByText('Vos modifications ont bien été prises en compte')
     ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
-    expect(contextValue.reloadOffer).toHaveBeenCalledWith()
+    expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
   it('should submit stock form when click on "Étape précédente"', async () => {
@@ -195,7 +198,7 @@ describe('screens:StocksThing', () => {
       screen.getByText('Vos modifications ont bien été prises en compte')
     ).toBeInTheDocument()
     expect(screen.getByText('Previous page')).toBeInTheDocument()
-    expect(contextValue.reloadOffer).toHaveBeenCalledWith()
+    expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
   it('should display api errors', async () => {

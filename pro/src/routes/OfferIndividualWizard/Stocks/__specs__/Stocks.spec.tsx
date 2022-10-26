@@ -17,12 +17,22 @@ import Stocks from '../Stocks'
 
 const renderStocksScreen = ({
   storeOverride = {},
-  contextValue,
+  contextOverride,
 }: {
   storeOverride: Partial<RootState>
-  contextValue: IOfferIndividualContext
+  contextOverride: Partial<IOfferIndividualContext>
 }) => {
   const store = configureTestStore(storeOverride)
+  const contextValue: IOfferIndividualContext = {
+    offerId: null,
+    offer: null,
+    venueList: [],
+    offererNames: [],
+    categories: [],
+    subCategories: [],
+    setOffer: () => {},
+    ...contextOverride,
+  }
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/creation/stocks']}>
@@ -36,7 +46,7 @@ const renderStocksScreen = ({
 
 describe('screens:Stocks', () => {
   let storeOverride: Partial<RootState>
-  let contextValue: IOfferIndividualContext
+  let contextOverride: Partial<IOfferIndividualContext>
   let offer: Partial<IOfferIndividual>
 
   beforeEach(() => {
@@ -48,24 +58,19 @@ describe('screens:Stocks', () => {
       stocks: [],
     }
     storeOverride = {}
-    contextValue = {
-      offerId: null,
+    contextOverride = {
+      offerId: 'OFFER_ID',
       offer: offer as IOfferIndividual,
-      venueList: [],
-      offererNames: [],
-      categories: [],
-      subCategories: [],
-      reloadOffer: () => {},
     }
   })
 
   it('should render stock thing', async () => {
-    contextValue.offer = {
-      ...contextValue.offer,
+    contextOverride.offer = {
+      ...contextOverride.offer,
       isEvent: false,
       isDigital: false,
     } as IOfferIndividual
-    renderStocksScreen({ storeOverride, contextValue })
+    renderStocksScreen({ storeOverride, contextOverride })
     expect(
       screen.getByText(
         'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
@@ -73,11 +78,11 @@ describe('screens:Stocks', () => {
     ).toBeInTheDocument()
   })
   it('should render stock event', async () => {
-    contextValue.offer = {
-      ...contextValue.offer,
+    contextOverride.offer = {
+      ...contextOverride.offer,
       isEvent: true,
     } as IOfferIndividual
-    renderStocksScreen({ storeOverride, contextValue })
+    renderStocksScreen({ storeOverride, contextOverride })
     expect(screen.getByText('TODO Stock Event screen')).toBeInTheDocument()
   })
 })
