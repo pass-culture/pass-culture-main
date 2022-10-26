@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 import { VenueProviderResponse } from 'apiClient/v1'
 import ReimbursementFields from 'components/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
@@ -8,6 +9,8 @@ import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
+
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
@@ -48,10 +51,12 @@ const VenueForm = ({
   } = useFormikContext<IVenueFormValues>()
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
+  const { currentUser } = useCurrentUser()
+  const location = useLocation()
 
   return (
     <div>
-      <FormLayout small>
+      <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
         {!isCreatingVenue && provider && venueProvider && venue && (
           <OffersSynchronization
@@ -80,11 +85,21 @@ const VenueForm = ({
           <ReimbursementFields
             offerer={offerer}
             readOnly={false}
-            scrollToSection={false}
+            scrollToSection={!!location.state}
             venue={venue}
           />
         )}
-        <SubmitButton isLoading={isSubmitting}>Valider</SubmitButton>
+        <FormLayout.Actions>
+          <Link
+            className="secondary-link"
+            to={currentUser.isAdmin ? `/structures/${offerer.id}` : '/accueil'}
+          >
+            Annuler et quitter
+          </Link>
+          <SubmitButton isLoading={isSubmitting}>
+            Enregistrer et {isCreatingVenue ? 'continuer' : 'quitter'}
+          </SubmitButton>
+        </FormLayout.Actions>
       </FormLayout>
     </div>
   )

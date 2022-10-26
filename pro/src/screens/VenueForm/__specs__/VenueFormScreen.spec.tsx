@@ -52,7 +52,7 @@ const renderForm = (
         <VenueFormScreen
           initialValues={initialValues}
           isCreatingVenue={isCreatingVenue}
-          offerer={{ id: 'AE' } as IOfferer}
+          offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
           venueTypes={venueTypes}
           venueLabels={venueLabels}
           providers={[]}
@@ -68,7 +68,19 @@ const renderForm = (
 jest.mock('apiClient/api', () => ({
   api: {
     postCreateVenue: jest.fn(),
+    getSiretInfo: jest.fn(),
     editVenue: jest.fn(),
+    getEducationalPartners: jest.fn(),
+    getAvailableReimbursementPoints: jest.fn(),
+  },
+}))
+jest.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
+
+jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
+
+jest.mock('apiClient/adresse/apiAdresse', () => ({
+  api: {
+    getDataFromAddress: jest.fn(),
   },
 }))
 
@@ -93,7 +105,7 @@ const formValues: IVenueFormValues = {
   bookingEmail: 'em@ail.fr',
   name: 'MINISTERE DE LA CULTURE',
   publicName: 'Melodie Sims',
-  siret: '881 457 238 23022',
+  siret: '88145723823022',
   venueType: 'GAMES',
   venueLabel: 'BM',
   departmentCode: '',
@@ -125,9 +137,80 @@ const formValues: IVenueFormValues = {
   reimbursementPointId: 91,
 }
 
+const venue: IVenue = {
+  collectiveDomains: [],
+  dateCreated: '2022-02-02',
+  fieldsUpdated: [],
+  isVirtual: false,
+  managingOffererId: '',
+  accessibility: {
+    visual: false,
+    audio: false,
+    motor: false,
+    mental: false,
+    none: true,
+  },
+  address: 'Address',
+  bannerMeta: null,
+  bannerUrl: '',
+  city: 'city',
+  comment: 'comment',
+  contact: {
+    email: 'email',
+    phoneNumber: '0606060606',
+    webSite: 'web',
+  },
+  description: 'description',
+  departmentCode: '75008',
+  dmsToken: '',
+  id: 'id',
+  isPermanent: true,
+  isVenueVirtual: false,
+  latitude: 0,
+  longitude: 0,
+  mail: 'a@b.c',
+  name: 'name',
+  nonHumanizedId: 0,
+  pricingPoint: null,
+  postalCode: '75008',
+  publicName: 'name',
+  siret: '88145723823022',
+  venueType: 'ARTISTIC_COURSE',
+  venueLabel: 'AE',
+  reimbursementPointId: 0,
+  withdrawalDetails: 'string',
+  collectiveAccessInformation: 'string',
+  collectiveDescription: 'string',
+  collectiveEmail: 'string',
+  collectiveInterventionArea: [],
+  collectiveLegalStatus: null,
+  collectiveNetwork: [],
+  collectivePhone: 'string',
+  collectiveStudents: [],
+  collectiveWebsite: 'string',
+
+  managingOfferer: {
+    address: null,
+    bic: null,
+    city: 'string',
+    dateCreated: 'string',
+    dateModifiedAtLastProvider: null,
+    demarchesSimplifieesApplicationId: null,
+    fieldsUpdated: [],
+    iban: null,
+    id: 'id',
+    idAtProviders: null,
+    isValidated: true,
+    lastProviderId: null,
+    name: 'name',
+    postalCode: 'string',
+    siren: null,
+  },
+}
+
 describe('screen | VenueForm', () => {
   describe('Navigation', () => {
-    it('administrators should be redirected to the list of structures after creating a venue', async () => {
+    it('User should be redirected to the edit page after creating a venue', async () => {
       const { history } = renderForm(
         {
           id: 'EY',
@@ -140,14 +223,36 @@ describe('screen | VenueForm', () => {
       )
       jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
 
-      await userEvent.click(screen.getByText('Valider'))
+      await userEvent.click(screen.getByText(/Enregistrer et continuer/))
+
+      await waitFor(() => {
+        expect(history.location.pathname).toMatch(
+          /\/structures\/.*\/lieux\/v2\/.*/
+        )
+      })
+    })
+
+    it('administrators should be redirected to the list of structures after updating a venue', async () => {
+      const { history } = renderForm(
+        {
+          id: 'EY',
+          isAdmin: true,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue
+      )
+      jest.spyOn(api, 'editVenue').mockResolvedValue(venue)
+
+      await userEvent.click(screen.getByText(/Enregistrer/))
 
       await waitFor(() => {
         expect(history.location.pathname).toBe('/structures/AE')
       })
     })
 
-    it('non administrators should be redirected to home page after creating a venue', async () => {
+    it('non administrators should be redirected to home page after updating a venue', async () => {
       const { history } = renderForm(
         {
           id: 'EY',
@@ -155,13 +260,12 @@ describe('screen | VenueForm', () => {
           publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
-        true,
-        undefined
+        false,
+        venue
       )
+      jest.spyOn(api, 'editVenue').mockResolvedValue(venue)
 
-      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
-
-      await userEvent.click(screen.getByText('Valider'))
+      await userEvent.click(screen.getByText(/Enregistrer/))
 
       await waitFor(() => {
         expect(history.location.pathname).toBe('/accueil')
@@ -194,7 +298,7 @@ describe('screen | VenueForm', () => {
         )
       )
 
-      await userEvent.click(screen.getByText('Valider'))
+      await userEvent.click(screen.getByText(/Enregistrer/))
 
       expect(
         screen.getByText('ensure this value has at least 14 characters')
@@ -225,7 +329,7 @@ describe('screen | VenueForm', () => {
         )
       )
 
-      await userEvent.click(screen.getByText('Valider'))
+      await userEvent.click(screen.getByText(/Enregistrer/))
 
       expect(
         screen.getByText('ensure this value has at least 14 characters')
@@ -244,10 +348,13 @@ describe('screen | VenueForm', () => {
         undefined
       )
 
-      jest.spyOn(api, 'postCreateVenue').mockRejectedValue({})
+      const postCreateVenue = jest
+        .spyOn(api, 'postCreateVenue')
+        .mockRejectedValue({})
 
-      await userEvent.click(screen.getByText('Valider'))
+      await userEvent.click(screen.getByText(/Enregistrer/))
 
+      expect(postCreateVenue).toHaveBeenCalled()
       await waitFor(() => {
         expect(
           screen.getByText('Erreur inconnue lors de la sauvegarde du lieu.')

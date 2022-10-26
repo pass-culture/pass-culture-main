@@ -10,6 +10,16 @@ $info-box-margin-left: rem.torem(24px);
     width: rem.torem(486px);
   }
 
+  &.full-width-actions {
+    & > *:not(.form-layout-actions) {
+      width: rem.torem(486px);
+    }
+
+    .form-layout-actions {
+      justify-content: space-between;
+    }
+  }
+
   &-section {
     margin-bottom: rem.torem(24px);
 
