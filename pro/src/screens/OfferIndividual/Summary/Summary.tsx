@@ -135,9 +135,9 @@ const Summary = (
 
   return (
     <>
-      {(isCreation || isDisabledOffer || providerName !== null) && (
+      {(isCreation || isDisabledOffer || providerName !== null || isDraft) && (
         <div className={styles['offer-preview-banners']}>
-          {isCreation && <BannerSummary />}
+          {(isCreation || isDraft) && <BannerSummary />}
           {
             /* istanbul ignore next: DEBT, TO FIX */
             isDisabledOffer && (

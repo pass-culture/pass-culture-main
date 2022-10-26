@@ -3,6 +3,7 @@ import React from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { IOfferIndividual } from 'core/Offers/types'
+import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import {
   Summary as SummaryScreen,
@@ -13,6 +14,7 @@ import { serializePropsFromOfferIndividual } from '.'
 
 const Summary = (): JSX.Element | null => {
   const isCreation = useIsCreation()
+  const isDraft = useIsCompletingDraft()
   const {
     offer: contextOffer,
     categories,
@@ -44,7 +46,7 @@ const Summary = (): JSX.Element | null => {
         stockEventList={stockEventList}
         subCategories={subCategories}
         preview={preview}
-        isDraft={isCreation}
+        isDraft={isDraft}
       />
     </WizardTemplate>
   )
