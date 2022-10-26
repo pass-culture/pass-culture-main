@@ -143,7 +143,7 @@ def book_collective_offer(
         )
     except ValidationError:
         logger.exception(
-            "Coulf not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
+            "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
             extra={
                 "bookingId": booking.id,
             },

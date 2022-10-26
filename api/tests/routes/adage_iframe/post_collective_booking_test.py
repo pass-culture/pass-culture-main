@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
+import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -59,6 +60,8 @@ class Returns200Test:
             "userId": get_hashed_user_id(educational_redactor.email),
         }
 
+        assert len(adage_api_testing.adage_requests) == 1
+
     def test_post_educational_booking_with_less_redactor_information(self, app):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
@@ -99,6 +102,8 @@ class Returns200Test:
 
         assert response.json["bookingId"] == booking.id
 
+        assert len(adage_api_testing.adage_requests) == 1
+
 
 @freeze_time("2020-11-17 15:00:00")
 class Returns400Test:
@@ -132,6 +137,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"code": "UNKNOWN_EDUCATIONAL_INSTITUTION"}
+        assert len(adage_api_testing.adage_requests) == 0
 
     def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, test_data, app):
         # Given
@@ -156,6 +162,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"stock": "Cette offre n'est pas disponible à la réservation"}
+        assert len(adage_api_testing.adage_requests) == 0
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -190,6 +197,7 @@ class Returns403Test:
         assert response.json == {
             "authorization": "Des informations sur le rédacteur de projet, et nécessaires à la préréservation, sont manquantes"
         }
+        assert len(adage_api_testing.adage_requests) == 0
 
     def test_should_not_allow_prebooking_when_uai_code_does_not_match_offer_institution_id(self, client) -> None:
         # Given
@@ -218,3 +226,4 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         assert response.json == {"code": "WRONG_UAI_CODE"}
+        assert len(adage_api_testing.adage_requests) == 0
