@@ -61,6 +61,10 @@ const RouteLeavingGuardOfferIndividual = ({
         to = toMatchs.reverse()[0]
       }
 
+      if (from === STEP_SUMMARY) {
+        return { shouldBlock: false }
+      }
+
       if (from == STEP_OFFER) {
         if (to === undefined) {
           return {
