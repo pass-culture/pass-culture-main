@@ -230,14 +230,14 @@ def _get_identity_fraud_checks_for_eligibility(
 
 def get_identity_check_subscription_status(
     user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> models.SubscriptionItem:
+) -> models.SubscriptionItemStatus:
     """
     eligibility may be the current user.eligibility or a specific eligibility.
     The result relies on the FraudChecks made with the 3 current identity providers (DMS, Ubble and Educonnect)
     and with the legacy provider (Jouve)
     """
     if eligibility is None:
-        return models.SubscriptionItemStatus.VOID  # type: ignore [return-value]
+        return models.SubscriptionItemStatus.VOID
 
     identity_fraud_checks = _get_identity_fraud_checks_for_eligibility(user, eligibility)
 
@@ -256,24 +256,24 @@ def get_identity_check_subscription_status(
     ]
 
     if any(status == models.SubscriptionItemStatus.OK for status in statuses):
-        return models.SubscriptionItemStatus.OK  # type: ignore [return-value]
+        return models.SubscriptionItemStatus.OK
     if any(status == models.SubscriptionItemStatus.PENDING for status in statuses):
-        return models.SubscriptionItemStatus.PENDING  # type: ignore [return-value]
+        return models.SubscriptionItemStatus.PENDING
     if any(status == models.SubscriptionItemStatus.KO for status in statuses):
-        return models.SubscriptionItemStatus.KO  # type: ignore [return-value]
+        return models.SubscriptionItemStatus.KO
     if any(status == models.SubscriptionItemStatus.SUSPICIOUS for status in statuses):
-        return models.SubscriptionItemStatus.SUSPICIOUS  # type: ignore [return-value]
+        return models.SubscriptionItemStatus.SUSPICIOUS
     if any(status == models.SubscriptionItemStatus.TODO for status in statuses):
-        return models.SubscriptionItemStatus.TODO  # type: ignore [return-value]
+        return models.SubscriptionItemStatus.TODO
 
-    return models.SubscriptionItemStatus.VOID  # type: ignore [return-value]
+    return models.SubscriptionItemStatus.VOID
 
 
 def get_identity_check_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     status = get_identity_check_subscription_status(user, eligibility)
-    return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)  # type: ignore [arg-type]
+    return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)
 
 
 def get_honor_statement_subscription_item(
