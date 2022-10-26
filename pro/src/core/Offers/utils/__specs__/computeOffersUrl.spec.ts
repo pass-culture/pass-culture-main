@@ -1,3 +1,5 @@
+import { OfferStatus } from 'apiClient/v1'
+
 import { computeOffersUrl } from '../computeOffersUrl'
 
 describe('src | components | pages | Offer | utils | computeOffersUrl', () => {
@@ -19,7 +21,7 @@ describe('src | components | pages | Offer | utils | computeOffersUrl', () => {
       offererId: 'AY',
       venueId: 'EQ',
       categoryId: 'CINEMA',
-      status: 'ACTIVE',
+      status: OfferStatus.ACTIVE,
       creationMode: 'manual',
       periodBeginningDate: '2020-11-30T00:00:00+01:00',
       periodEndingDate: '2021-01-07T23:59:59+01:00',

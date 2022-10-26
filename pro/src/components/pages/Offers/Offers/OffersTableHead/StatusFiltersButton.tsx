@@ -13,7 +13,7 @@ import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStat
 type StatusFiltersButtonProps = {
   applyFilters: () => void
   disabled?: boolean
-  status?: string
+  status?: OfferStatus | 'all'
   updateStatusFilter: (status: OfferStatus | 'all') => void
   audience: Audience
 }
@@ -28,7 +28,7 @@ const StatusFiltersButton = ({
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
   const isFilteredByStatus = Boolean(
-    status && OFFER_STATUS_LIST.includes(status)
+    status && OFFER_STATUS_LIST.some(s => s === status)
   )
 
   function toggleStatusFiltersVisibility() {
