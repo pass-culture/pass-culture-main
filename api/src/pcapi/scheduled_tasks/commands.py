@@ -82,27 +82,10 @@ def synchronize_cine_office_stocks() -> None:
     synchronize_venue_providers(venue_providers)
 
 
-# TODO (lixxday, 2022-10-14): Remove this command once the corresponding cron is removed
-@blueprint.cli.command("import_dms_users_beneficiaries")
-@log_cron_with_transaction
-def import_dms_users_beneficiaries() -> None:
-    pass
-
-
-# TODO (lixxday, 2022-10-14): Remove this command once the corresponding cron is removed
-@blueprint.cli.command("import_dms_users_beneficiaries_from_old_dms")
-@log_cron_with_transaction
-def import_dms_users_beneficiaries_from_old_dms() -> None:
-    pass
-
-
 @blueprint.cli.command("import_beneficiaries_from_dms_v4")
 @log_cron_with_transaction
-def import_beneficiaries_from_dms() -> None:
-    procedures = [
-        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
-        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
-    ]
+def import_beneficiaries_from_dms_legacy() -> None:
+    procedures = []
     if settings.IS_PROD:
         procedures.append(("old_procedure_1", settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID))
         procedures.append(("old_procedure_2", DMS_OLD_PROCEDURE_ID))
