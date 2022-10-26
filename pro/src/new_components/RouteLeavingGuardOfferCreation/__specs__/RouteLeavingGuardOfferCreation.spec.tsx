@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import type { History } from 'history'
 import { createBrowserHistory } from 'history'
 import React from 'react'
@@ -19,121 +18,95 @@ const renderRouteLeavingGuardOfferCreation = async (
   render(
     <Router history={history}>
       <Link to="/about">About</Link>
-      <Link to={'/offre/individuel/creation'}>Création</Link>
-      <Link to={'/offre/AE/individuel/creation/stocks'}>Stocks</Link>
-      <Link to={'/offre/AE/individuel/creation/confirmation'}>
-        Confirmation
-      </Link>
+      <Link to={`/offre/creation/collective`}>Création</Link>
+      <Link to={`/offre/AE/collective/stocks`}>Stocks</Link>
+      <Link to={`/offre/AE/collectif/visibilite`}>Visibilité</Link>
+      <Link to={`/offre/AE/collective/confirmation`}>Confirmation</Link>
       <RouteLeavingGuardOfferCreation {...props} />
     </Router>
   )
 }
 
 describe('new_components | RouteLeavingGuardOfferCreation', () => {
-  let props: RouteLeavingGuardOfferCreationProps
+  const props: RouteLeavingGuardOfferCreationProps = { when: true }
   const history = createBrowserHistory()
 
-  beforeEach(() => {
-    props = {}
-  })
+  describe('when following creation flow', () => {
+    it('should not display confirmation modal when following creation flow', async () => {
+      history.push('/offre/creation/collectif')
+      renderRouteLeavingGuardOfferCreation(props, history)
 
-  it('should display confirmation modal before changing page', async () => {
-    history.push('/')
-    renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('About'))
-    expect(
-      await screen.findByText(/Voulez-vous quitter la création d’offre ?/)
-    ).toBeInTheDocument()
-  })
+      history.push('/offre/AE/collectif/stocks')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
 
-  it('should reditect to offers list without confirmation modal when going from confirmation to stock', async () => {
-    history.push('/offre/AE/individuel/creation/confirmation')
-    const spyHistory = jest.spyOn(history, 'push')
-    renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('Stocks'))
-    expect(
-      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-    ).not.toBeInTheDocument()
-    expect(spyHistory).toHaveBeenLastCalledWith({ pathname: '/offres' })
-  })
+      history.push('/offre/AE/collectif/visibilite')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
 
-  it('should reditect to offers list with confirmation modal when going from stock to creation', async () => {
-    history.push('/offre/AE/individuel/creation/stocks')
-    const spyHistory = jest.spyOn(history, 'push')
-    renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('Création'))
-    expect(
-      await screen.findByText(/Voulez-vous quitter la création d’offre ?/)
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Quitter'))
-    expect(spyHistory).toHaveBeenLastCalledWith(
-      expect.objectContaining({ pathname: '/offres' })
-    )
-  })
+      history.push('/offre/AE/collectif/creation/recapitulatif')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
 
-  it('should display confirmation modal when going from stock to offer creation', async () => {
-    history.push('/offre/AE/individuel/stocks')
-    renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('Création'))
-    expect(
-      await screen.findByText(/Voulez-vous quitter la création d’offre ?/)
-    ).toBeInTheDocument()
-  })
-
-  it('should not display confirmation modal when going to stock', async () => {
-    history.push('/offre/creation/individuel')
-    renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('Stocks'))
-    expect(
-      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not display confirmation modal when going to confirmation', async () => {
-    history.push('/offre/AE/individuel/stocks')
-    renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('Confirmation'))
-    expect(
-      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not display confirmation modal and redirect to offers when from confirmation to stocks', async () => {
-    history.push('/offre/AE/individuel/creation/confirmation')
-    renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('Stocks'))
-    expect(
-      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-    ).not.toBeInTheDocument()
-    expect(location.pathname).toBe('/offres')
-  })
-
-  describe('CollectiveOffer', () => {
-    beforeEach(() => {
-      props.isCollectiveFlow = true
-    })
-
-    it('should not display confirmation modal when going to visibilité', async () => {
-      history.push('/')
-      render(
-        <Router history={history}>
-          <Link to="/about">About</Link>
-          <Link to={`/offre/creation/collective`}>Création</Link>
-          <Link to={`/offre/AE/collective/stocks`}>Stocks</Link>
-          <Link to={`/offre/AE/collectif/visibilite`}>Visibilité</Link>
-          <Link to={`/offre/AE/collective/confirmation`}>Confirmation</Link>
-          <RouteLeavingGuardOfferCreation {...props} />
-        </Router>
-      )
-      await userEvent.click(screen.getByText('Visibilité'))
+      history.push('/offre/AE/collectif/confirmation')
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
 
+    it('should not display confirmation modal when following template creation flow', async () => {
+      history.push('/offre/creation/collectif')
+      renderRouteLeavingGuardOfferCreation(props, history)
+
+      history.push('/offre/AE/collectif/stocks')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+
+      history.push('/offre/T-AE/collectif/creation/recapitulatif')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+
+      history.push('/offre/T-AE/collectif/confirmation')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal when following duplication flow', async () => {
+      history.push('/offre/duplication/collectif/PU')
+      renderRouteLeavingGuardOfferCreation(props, history)
+
+      history.push('/offre/duplication/collectif/AE/stocks')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+
+      history.push('/offre/duplication/collectif/AE/visibilite')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+
+      history.push('/offre/duplication/collectif/AE/recapitulatif')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+
+      history.push('/offre/AE/collectif/confirmation')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when leaving creation flow', () => {
     it('should display confirmation modal when leaving offer creation', () => {
       history.push('/offre/creation/collectif')
-      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+      renderRouteLeavingGuardOfferCreation(props, history)
       history.push('/')
 
       expect(
@@ -141,55 +114,167 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
       ).toBeInTheDocument()
     })
 
-    it('should not display confirmation modal when going from offer creation to stock creation', () => {
+    it('should display confirmation modal when leaving stock creation', () => {
+      history.push('/offre/AE/collectif/stocks')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when leaving visibility creation', () => {
+      history.push('/offre/AE/collectif/visibilite')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when leaving summary creation', () => {
+      history.push('/offre/AE/collectif/creation/recapitulatif')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal when leaving confirmation page', () => {
+      history.push('/offre/AE/collectif/confirmation')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when leaving offer creation', () => {
+      history.push('/offre/duplication/collectif/PU')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when leaving stock creation', () => {
+      history.push('/offre/duplication/collectif/AE/stocks')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when leaving visibility creation', () => {
+      history.push('/offre/duplication/collectif/AE/visibilite')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when leaving summary creation', () => {
+      history.push('/offre/duplication/collectif/AE/recapitulatif')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when going backward', () => {
+    it('should display confirmation modal when going from stocks to offer creation', () => {
+      history.push('/offre/AE/collectif/stocks')
+      renderRouteLeavingGuardOfferCreation(props, history)
       history.push('/offre/creation/collectif')
-      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when going from visibility to stocks creation', () => {
+      history.push('/offre/AE/collectif/visibilite')
+      renderRouteLeavingGuardOfferCreation(props, history)
       history.push('/offre/AE/collectif/stocks')
 
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
     })
 
-    it('should not display confirmation modal when going from stock creation to visibility creation', () => {
-      history.push('/offre/AE/collectif/stocks')
-      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+    it('should display confirmation modal when going from summary to visibility creation', () => {
+      history.push('/offre/AE/collectif/creation/recapitulatif')
+      renderRouteLeavingGuardOfferCreation(props, history)
       history.push('/offre/AE/collectif/visibilite')
 
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
     })
 
-    it('should not display confirmation modal when going from stock creation to confirmation', () => {
+    it('should display confirmation modal when going from summary to stocks creation', () => {
+      history.push('/offre/T-AE/collectif/creation/recapitulatif')
+      renderRouteLeavingGuardOfferCreation(props, history)
       history.push('/offre/AE/collectif/stocks')
-      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
-      history.push('/offre/T-AE/collectif/confirmation')
 
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
     })
 
-    it('should not display confirmation modal when going from visibility creation to confirmation', () => {
-      history.push('/offre/AE/collectif/visibilite')
-      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
+    it('should redirect to collective offers page when going from confirmation to summary', () => {
       history.push('/offre/AE/collectif/confirmation')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/offre/AE/collectif/creation/recapitulatif')
 
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
+      expect(window.location.pathname).toBe('/offres/collectives')
     })
 
-    it('should not display confirmation modal and redirect to offers when going from confirmation to visibility', () => {
-      history.push('/offre/AE/collectif/confirmation')
-      renderRouteLeavingGuardOfferCreation({ isCollectiveFlow: true }, history)
-      history.push('/offre/AE/collectif/visibilite')
+    it('should display confirmation modal when going from stocks to offer creation', () => {
+      history.push('/offre/duplication/collectif/AE/stocks')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/offre/duplication/collectif/PU')
 
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-      ).not.toBeInTheDocument()
-      expect(location.pathname).toBe('/offres')
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when going from visibility to stocks creation', () => {
+      history.push('/offre/duplication/collectif/AE/visibilite')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/offre/duplication/collectif/AE/stocks')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+    })
+
+    it('should display confirmation modal when going from summary to visibility creation', () => {
+      history.push('/offre/duplication/collectif/AE/recapitulatif')
+      renderRouteLeavingGuardOfferCreation(props, history)
+      history.push('/offre/duplication/collectif/AE/visibilite')
+
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
     })
   })
 })

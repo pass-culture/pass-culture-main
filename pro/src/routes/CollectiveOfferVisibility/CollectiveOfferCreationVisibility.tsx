@@ -62,7 +62,7 @@ const CollectiveOfferVisibility = ({
         institutions={institutions}
         isLoadingInstitutions={isLoadingInstitutions}
       />
-      <RouteLeavingGuardOfferCreation isCollectiveFlow />
+      <RouteLeavingGuardOfferCreation />
     </>
   )
 }

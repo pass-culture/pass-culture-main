@@ -8,6 +8,7 @@ import {
 } from 'core/OfferEducational'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
+import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferSummaryCreationScreen from 'screens/CollectiveOfferSummaryCreation'
 
 interface CollectiveOfferSummaryCreationProps {
@@ -33,10 +34,13 @@ const CollectiveOfferSummaryCreation = ({
   return isLoading ? (
     <Spinner />
   ) : (
-    <CollectiveOfferSummaryCreationScreen
-      offer={offer}
-      categories={categories}
-    />
+    <>
+      <CollectiveOfferSummaryCreationScreen
+        offer={offer}
+        categories={categories}
+      />
+      <RouteLeavingGuardOfferCreation />
+    </>
   )
 }
 
