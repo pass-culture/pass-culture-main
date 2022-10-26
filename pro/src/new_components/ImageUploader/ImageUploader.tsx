@@ -33,18 +33,20 @@ const ImageUploader = ({
             alt="Prévisualisation de l'image"
           />
           <div className={styles['image-uploader-actions-container']}>
-            <ButtonImageEdit
-              mode={mode}
-              initialValues={{
-                originalImageUrl,
-                imageUrl,
-                credit,
-                cropParams,
-              }}
-              onImageUpload={onImageUpload}
-            />
-            <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
-            <ButtonImageDelete onImageDelete={onImageDelete} />
+            <div className={styles['actions-wrapper']}>
+              <ButtonImageEdit
+                mode={mode}
+                initialValues={{
+                  originalImageUrl,
+                  imageUrl,
+                  credit,
+                  cropParams,
+                }}
+                onImageUpload={onImageUpload}
+              />
+              <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
+              <ButtonImageDelete onImageDelete={onImageDelete} />
+            </div>
           </div>
         </>
       ) : (
