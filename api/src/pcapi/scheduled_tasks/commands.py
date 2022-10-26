@@ -98,6 +98,26 @@ def import_beneficiaries_from_dms_legacy() -> None:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
         dms_script.import_dms_accepted_applications(procedure_id)
+
+
+@blueprint.cli.command("archive_already_processed_dms_applications")
+@log_cron_with_transaction
+def archive_already_processed_dms_applications() -> None:
+    procedures = [
+        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
+        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
+    ]
+    if settings.IS_PROD:
+        procedures.append(("old_procedure_1", settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID))
+        procedures.append(("old_procedure_2", DMS_OLD_PROCEDURE_ID))
+        procedures.append(
+            ("old_procedure_after_general_opening", settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
+        )
+
+    for procedure_name, procedure_id in procedures:
+        if not procedure_id:
+            logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
+            continue
         dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
