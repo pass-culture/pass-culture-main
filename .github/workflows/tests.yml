@@ -7,48 +7,23 @@ on:
       - staging
 
 jobs:
-  check-pro-folder-changes:
-    name: "[pro]"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: pro
-
   test-pro:
-    name: "[pro] Tests"
-    needs: check-pro-folder-changes
-    if: ${{ needs.check-pro-folder-changes.outputs.folder_changed == 'true' }}
+    name: "[pro]"
     uses: ./.github/workflows/tests-pro.yml
 
-  check-adage-folder-changes:
-    name: "[adage]"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: adage-front
-
   test-adage:
-    name: "[adage] Tests"
-    needs: check-adage-folder-changes
-    if: ${{ needs.check-adage-folder-changes.outputs.folder_changed == 'true' }}
+    name: "[adage]"
     uses: ./.github/workflows/tests-adage.yml
 
-  check-api-folder-changes:
-    name: "[api]"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: api
-
   test-api:
-    name: "[api] Tests"
-    needs: check-api-folder-changes
-    if: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
+    name: "[api]"
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
-  check-backoffice-folder-changes:
+  test-backoffice:
     name: "[backoffice]"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: backoffice
+    uses: ./.github/workflows/tests-backoffice.yml
+    secrets: inherit
 
   deploy-testing:
     needs:
