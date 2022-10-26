@@ -67,3 +67,13 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
         res = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
         return res.data.numberRemainingSeatsForOnlineSale
+
+    def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime:
+        json_data = boost.get_resource(
+            self.cinema_str_id,
+            boost.ResourceBoost.SHOWTIME,
+            params={"filter_payment_method": "external:credit:passculture"},
+            pattern_values={"id": showtime_id},
+        )
+        showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
+        return showtime_details.data

@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 
 import pydantic
 
@@ -56,30 +57,36 @@ def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> date
 
 class ShowTime3(BaseModel):
     id: int
-    showDate: datetime.datetime
-    showEndDate: datetime.datetime
-    soldOut: bool
-    authorizedAccess: bool
-    numberSeatsRemaining: int
-    film: Film2
-    format: dict
-    version: dict
-    screen: dict
-
-    @pydantic.validator("showDate", "showEndDate")
-    def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
-        return _convert_to_utc_datetime(value)
 
 
 class ShowTimeCollection(Collection):
     data: list[ShowTime3]
 
 
-class ShowTimeRemainingOnlineSeats(BaseModel):
+class ShowtimePricing(BaseModel):
+    id: int
+    pricingCode: str
+    amountTaxesIncluded: Decimal
+
+
+class ShowTime(BaseModel):
     id: int
     numberRemainingSeatsForOnlineSale: int
+    showDate: datetime.datetime
+    showEndDate: datetime.datetime
+    soldOut: bool
+    authorizedAccess: bool
+    film: Film2
+    format: dict
+    version: dict
+    screen: dict
+    showtimePricing: list[ShowtimePricing]
+
+    @pydantic.validator("showDate", "showEndDate")
+    def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
+        return _convert_to_utc_datetime(value)
 
 
 class ShowTimeDetails(BaseModel):
     message: str
-    data: ShowTimeRemainingOnlineSeats
+    data: ShowTime

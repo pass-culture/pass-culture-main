@@ -1,5 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
 from typing import Iterator
 from typing import cast
 
@@ -22,6 +21,17 @@ from pcapi.models import db
 import pcapi.utils.date as utils_date
 
 
+BOOST_PASS_CULTURE_PRICING_CODE = "PCU"
+
+
+def get_pcu_pricing_if_exists(
+    showtime_pricing_list: list[boost_serializers.ShowtimePricing],
+) -> boost_serializers.ShowtimePricing | None:
+    return next(
+        (pricing for pricing in showtime_pricing_list if pricing.pricingCode == BOOST_PASS_CULTURE_PRICING_CODE), None
+    )
+
+
 class BoostStocks(LocalProvider):
     name = "Boost"
     can_create = True
@@ -37,23 +47,25 @@ class BoostStocks(LocalProvider):
     def __next__(self) -> list[ProvidableInfo]:
         showtime = next(self.showtimes)
         if showtime:
-            self.showtime_information = showtime
-        #     return [] #TODO
+            self.showtime_details = self._get_showtime_details(showtime.id)
+            self.pcu_pricing = get_pcu_pricing_if_exists(self.showtime_details.showtimePricing)
+            if not self.pcu_pricing:
+                return []
 
         providable_information_list = []
 
         product_providable_info = self.create_providable_info(
-            Product, str(self.showtime_information.film.id), datetime.utcnow(), str(self.showtime_information.film.id)
+            Product, str(self.showtime_details.film.id), datetime.utcnow(), str(self.showtime_details.film.id)
         )
         providable_information_list.append(product_providable_info)
 
-        venue_movie_unique_id = _build_movie_uuid(self.showtime_information.film.id, self.venue)
+        venue_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
         offer_providable_info = self.create_providable_info(
             Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
         )
         providable_information_list.append(offer_providable_info)
 
-        showtime_id = _build_stock_uuid(self.showtime_information.film.id, self.venue, self.showtime_information.id)
+        showtime_id = _build_stock_uuid(self.showtime_details.film.id, self.venue, self.showtime_details.id)
         stock_providable_info = self.create_providable_info(Stock, showtime_id, datetime.utcnow(), showtime_id)
         providable_information_list.append(stock_providable_info)
 
@@ -70,10 +82,10 @@ class BoostStocks(LocalProvider):
             self.fill_stock_attributes(pc_object)
 
     def fill_product_attributes(self, product: Product) -> None:
-        product.name = self.showtime_information.film.titleCnc
+        product.name = self.showtime_details.film.titleCnc
         product.subcategoryId = subcategories.SEANCE_CINE.id
 
-        self.update_from_movie_information(product, self.showtime_information.film.to_generic_movie())
+        self.update_from_movie_information(product, self.showtime_details.film.to_generic_movie())
 
         is_new_product_to_insert = product.id is None
 
@@ -86,12 +98,12 @@ class BoostStocks(LocalProvider):
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
 
-        self.update_from_movie_information(offer, self.showtime_information.film.to_generic_movie())
+        self.update_from_movie_information(offer, self.showtime_details.film.to_generic_movie())
 
-        if self.showtime_information.film.numVisa:
-            offer.extraData = {"visa": self.showtime_information.film.numVisa}
+        if self.showtime_details.film.numVisa:
+            offer.extraData = {"visa": self.showtime_details.film.numVisa}
 
-        offer.name = self.showtime_information.film.titleCnc
+        offer.name = self.showtime_details.film.titleCnc
         offer.subcategoryId = subcategories.SEANCE_CINE.id
         offer.productId = self.last_product_id
 
@@ -107,7 +119,7 @@ class BoostStocks(LocalProvider):
         stock.offerId = cast(int, self.last_offer_id)
 
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
-        datetime_in_utc = utils_date.local_datetime_to_default_timezone(self.showtime_information.showDate, local_tz)
+        datetime_in_utc = utils_date.local_datetime_to_default_timezone(self.showtime_details.showDate, local_tz)
         booking_limit_datetime = utils_date.get_day_start(datetime_in_utc.date(), pytz.timezone(local_tz))
         stock.beginningDatetime = datetime_in_utc
 
@@ -119,13 +131,14 @@ class BoostStocks(LocalProvider):
             stock.bookingLimitDatetime = booking_limit_datetime
 
         if "quantity" not in stock.fieldsUpdated:
-            stock.quantity = self.showtime_information.numberSeatsRemaining
+            stock.quantity = self.showtime_details.numberRemainingSeatsForOnlineSale
 
         if "price" not in stock.fieldsUpdated:
-            stock.price = Decimal(5)  # Fixme
+            assert self.pcu_pricing  # helps mypy
+            stock.price = self.pcu_pricing.amountTaxesIncluded
 
         if not is_new_stock_to_insert:
-            stock.quantity = self.showtime_information.numberSeatsRemaining + stock.dnBookedQuantity
+            stock.quantity = self.showtime_details.numberRemainingSeatsForOnlineSale + stock.dnBookedQuantity
 
     def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
         if movie_information.description:
@@ -149,6 +162,10 @@ class BoostStocks(LocalProvider):
     def _get_showtimes(self) -> list[boost_serializers.ShowTime3]:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_showtimes()
+
+    def _get_showtime_details(self, showtime_id: int) -> boost_serializers.ShowTime:
+        client_boost = BoostClientAPI(self.cinema_id)
+        return client_boost.get_showtime(showtime_id)
 
 
 def get_next_product_id_from_database() -> int:
