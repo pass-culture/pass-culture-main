@@ -14,4 +14,11 @@
   align-items: flex-start;
   justify-content: space-evenly;
   margin-left: rem.torem(32px);
+  .actions-wrapper {
+    height: rem.torem(108px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-evenly;
+  }
 }

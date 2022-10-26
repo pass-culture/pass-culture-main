@@ -24,7 +24,7 @@ const ModalImageDelete = ({
       onConfirm={onConfirm}
       title="Supprimer l'image"
     >
-      Souhaitez-vous vraiment supprimer <br /> cette image ?
+      Souhaitez-vous vraiment supprimer cette image ?
     </ConfirmDialog>
   )
 }
