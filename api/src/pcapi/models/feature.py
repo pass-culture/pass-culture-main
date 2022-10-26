@@ -8,6 +8,7 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.sql import text
 
+from pcapi import settings
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -122,10 +123,11 @@ class FeatureToggle(enum.Enum):
     TEMP_DISABLE_OFFERER_VALIDATION_EMAIL = (
         "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
     )
+    # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION = "Active l'écran carrefour sur la page de choix du type d’offre à créer, afin de pouvoir créer une offre collective vitrine dès le départ"
     WIP_ENABLE_BACKOFFICE_V3 = "Autorise l'accès au nouveau back-office (v3)"
+    WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
     WIP_IMAGE_COLLECTIVE_OFFER = "Active les images dans les offres collectives et les offres vitrines."
-    # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -153,7 +155,7 @@ class Feature(PcObject, Base, Model, DeactivableMixin):
         return str(self.name).replace("FeatureToggle.", "")
 
 
-FEATURES_DISABLED_BY_DEFAULT = (
+FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
@@ -192,6 +194,9 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.WIP_ENABLE_BACKOFFICE_V3,
     FeatureToggle.WIP_IMAGE_COLLECTIVE_OFFER,
 )
+
+if not (settings.IS_DEV or settings.IS_RUNNING_TESTS):
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,)
 
 
 # FIXME (dbaty, 2022-03-15): remove this function once migrations have
