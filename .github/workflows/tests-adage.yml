@@ -1,5 +1,10 @@
 on: workflow_call
 
+env:
+  folder: adage-front
+  node_version: 14.18
+  use_cache: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   quality-check:
     name: "Quality check"
@@ -35,6 +40,20 @@ jobs:
       - run: yarn install
       - run: yarn tsc -b
 
-#  tests-adage-front:
-#    runs-on: ubuntu-latest
-#
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - if: ${{ env.use_cache }}
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: ${{ env.node_version }}
+      - if: ${{ !env.use_cache }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn install
+        working-directory: ${{ env.folder }}
+      - run: yarn test:unit
+        working-directory: ${{ env.folder }}

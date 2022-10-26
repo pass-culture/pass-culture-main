@@ -40,7 +40,7 @@ jobs:
   test-api:
     name: "[api] Tests"
     needs: check-api-folder-changes
-#    if: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
+    if: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
