@@ -1515,9 +1515,11 @@ WITHDRAWABLE_SUBCATEGORIES = {
     subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_withdrawable
 }
 
+
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
 )
+
 
 SubcategoryIdEnumv2 = Enum("SubcategoryIdEnumv2", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
 SearchGroupNameEnumv2 = Enum(  # type: ignore [misc]
