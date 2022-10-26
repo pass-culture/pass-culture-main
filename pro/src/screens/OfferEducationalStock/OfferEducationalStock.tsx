@@ -106,7 +106,7 @@ const OfferEducationalStock = <
         !isCollectiveOfferDuplicationActive))
 
   const displayElementsForShowcaseOption =
-    shouldDisplayShowcaseScreen &&
+    (shouldDisplayShowcaseScreen || isCollectiveOfferDuplicationActive) &&
     formik.values.educationalOfferType === EducationalOfferType.SHOWCASE
 
   return (
