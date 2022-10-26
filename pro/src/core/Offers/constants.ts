@@ -1,3 +1,5 @@
+import { OfferStatus } from 'apiClient/v1'
+
 import { TSearchFilters } from './types'
 
 export enum OFFER_TYPES {
@@ -24,13 +26,13 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL]: 'Envoi par e-mail',
 }
 
-export const OFFER_STATUS_ACTIVE = 'ACTIVE'
-export const OFFER_STATUS_INACTIVE = 'INACTIVE'
-export const OFFER_STATUS_SOLD_OUT = 'SOLD_OUT'
-export const OFFER_STATUS_EXPIRED = 'EXPIRED'
-export const OFFER_STATUS_PENDING = 'PENDING'
-export const OFFER_STATUS_REJECTED = 'REJECTED'
-export const OFFER_STATUS_DRAFT = 'DRAFT'
+export const OFFER_STATUS_ACTIVE = OfferStatus.ACTIVE
+export const OFFER_STATUS_INACTIVE = OfferStatus.INACTIVE
+export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
+export const OFFER_STATUS_EXPIRED = OfferStatus.EXPIRED
+export const OFFER_STATUS_PENDING = OfferStatus.PENDING
+export const OFFER_STATUS_REJECTED = OfferStatus.REJECTED
+export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 export const OFFER_STATUS_LIST = [
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_INACTIVE,

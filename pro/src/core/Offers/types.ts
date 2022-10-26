@@ -13,7 +13,7 @@ export type TSearchFilters = {
   offererId: string
   venueId: string
   categoryId: string
-  status: string
+  status: OfferStatus | 'all'
   creationMode: string
   collectiveOfferType: string
   periodBeginningDate: string
