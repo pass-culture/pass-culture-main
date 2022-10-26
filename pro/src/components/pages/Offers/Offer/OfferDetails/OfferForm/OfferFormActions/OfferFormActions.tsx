@@ -71,8 +71,7 @@ const OfferFormActions = ({
           </Button>
         )}
         <SubmitButton
-          disabled={isDisabled}
-          isLoading={isSubmitLoading}
+          disabled={isDisabled || isSubmitLoading}
           onClick={onClickNext}
         >
           {isEdition ? 'Enregistrer les modifications' : 'Étape suivante'}
