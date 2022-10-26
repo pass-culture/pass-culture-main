@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
+import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.exceptions import UnapplicableModel
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
@@ -41,12 +43,17 @@ class OfferValidationRuleItem:
         return 1.0
 
 
-def _get_class_name(obj: any) -> str:  # type: ignore [valid-type]
-    return type(obj).__name__
-
-
-def _get_model(offer: CollectiveOffer | CollectiveOfferTemplate | Offer, parameter_model: str) -> any:  # type: ignore [valid-type]
-    if parameter_model in OFFER_LIKE_MODELS and _get_class_name(offer) == parameter_model:
+def _get_model(
+    offer: CollectiveOffer | CollectiveOfferTemplate | Offer, parameter_model: str
+) -> (
+    Offer
+    | CollectiveOffer
+    | CollectiveOfferTemplate
+    | educational_models.CollectiveStock
+    | offerers_models.Venue
+    | offerers_models.Offerer
+):
+    if parameter_model in OFFER_LIKE_MODELS and offer.__class__.__name__ == parameter_model:
         model = offer
     elif parameter_model == "CollectiveStock" and isinstance(offer, CollectiveOffer):
         model = offer.collectiveStock
