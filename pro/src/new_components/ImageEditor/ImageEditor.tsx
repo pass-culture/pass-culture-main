@@ -89,7 +89,7 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
       canvasHeight,
     ])
 
-    const onScaleChange = useCallback((event: any) => {
+    const onScaleChange = useCallback(async (event: any) => {
       setScale(event.target.value)
     }, [])
 
