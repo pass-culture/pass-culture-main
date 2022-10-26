@@ -27,6 +27,8 @@ import useActiveFeature from '../../hooks/useActiveFeature'
 import useAnalytics from '../../hooks/useAnalytics'
 import { ReactComponent as AddOfferSvg } from '../../icons/ico-plus.svg'
 
+import useActiveFeature from '../../hooks/useActiveFeature'
+
 import {
   serializeEditVenueBodyModel,
   serializePostVenueBodyModel,
@@ -56,10 +58,13 @@ const VenueFormScreen = ({
 }: IVenueEditionProps): JSX.Element => {
   const history = useHistory()
   const notify = useNotification()
-  const { currentUser } = useCurrentUser()
   const [isSiretValued, setIsSiretValued] = useState(
     isCreatingVenue || !!venue?.siret
   )
+  const isNewBankInformationCreation = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
+  )
+  const { currentUser } = useCurrentUser()
 
   const onSubmit = async (value: IVenueFormValues) => {
     const request = isCreatingVenue
@@ -75,10 +80,17 @@ const VenueFormScreen = ({
         )
 
     request
-      .then(() => {
+      .then(r => {
         notify.success('Vos modifications ont bien été enregistrées')
+
+        const venuesUrl = currentUser.isAdmin
+          ? `/structures/${offerer.id}`
+          : '/accueil'
         history.push(
-          currentUser.isAdmin ? `/structures/${offerer.id}` : '/accueil'
+          isCreatingVenue
+            ? `/structures/${offerer.id}/lieux/v2/${r.id}`
+            : venuesUrl,
+          isNewBankInformationCreation
         )
       })
       .catch(error => {
@@ -98,6 +110,7 @@ const VenueFormScreen = ({
           )
           formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
           formik.setSubmitting(true)
+          formErrors.set
         }
       })
   }

@@ -13,15 +13,22 @@ interface IFormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   small?: boolean
+  fullWidthActions?: boolean
 }
 
 const FormLayout = ({
   children,
   className,
-  small,
+  small = false,
+  fullWidthActions,
 }: IFormLayoutProps): JSX.Element => (
   <div
-    className={cn(style['form-layout'], { [style.small]: small }, className)}
+    className={cn(
+      style['form-layout'],
+      { [style.small]: small },
+      { [style['full-width-actions']]: fullWidthActions },
+      className
+    )}
   >
     {children}
   </div>
