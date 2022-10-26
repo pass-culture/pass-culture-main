@@ -4,10 +4,22 @@ env:
   region: europe-west1
   tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}
 
+defaults:
+  run:
+    working-directory: api
+
 jobs:
+  check-api-folder-changes:
+    name: "Check if folder changed"
+    uses: ./.github/workflows/check-folder-changes.yml
+    with:
+      folder: api
+
   build-tests-docker-image:
     name: "Build tests docker image"
     uses: ./.github/workflows/build-and-push-docker-images.yml
+    needs: check-api-folder-changes
+    if: needs.check-api-folder-changes.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master'
     with:
       tag: ${{ github.sha }}
       tests: true
@@ -15,7 +27,10 @@ jobs:
 
   quality-api:
     runs-on: ubuntu-latest
-    needs: build-tests-docker-image
+    needs:
+      - check-api-folder-changes
+      - build-tests-docker-image
+    if: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
     permissions:
       id-token: write
       contents: read
@@ -75,7 +90,10 @@ jobs:
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
     runs-on: ubuntu-latest
-    needs: build-tests-docker-image
+    needs:
+      - check-api-folder-changes
+      - build-tests-docker-image
+    if: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
     permissions:
       id-token: write
       contents: read
