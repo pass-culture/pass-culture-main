@@ -5,8 +5,11 @@ import userEvent from '@testing-library/user-event'
 import type { History } from 'history'
 import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import { Link } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
 
 import RouteLeavingGuardOfferIndividual, {
   RouteLeavingGuardOfferIndividualProps,
@@ -22,18 +25,22 @@ const stepsUrls: { [key: string]: string } = {
 
 const renderRouteLeavingGuard = async (
   props: RouteLeavingGuardOfferIndividualProps,
-  history: History
+  history: History,
+  storeOverride = {}
 ) => {
-  render(
-    <Router history={history}>
-      <Link to="/about">About</Link>
-      <Link to={stepsUrls['offer']}>Création</Link>
-      <Link to={stepsUrls['offer_with_id']}>Création with offer</Link>
-      <Link to={stepsUrls['stocks']}>Stocks</Link>
-      <Link to={stepsUrls['summary']}>Récapitulatif</Link>
-      <Link to={stepsUrls['confirmation']}>Confirmation</Link>
-      <RouteLeavingGuardOfferIndividual {...props} />
-    </Router>
+  const store = configureTestStore(storeOverride)
+  return render(
+    <Provider store={store}>
+      <Router history={history}>
+        <Link to="/about">About</Link>
+        <Link to={stepsUrls['offer']}>Création</Link>
+        <Link to={stepsUrls['offer_with_id']}>Création with offer</Link>
+        <Link to={stepsUrls['stocks']}>Stocks</Link>
+        <Link to={stepsUrls['summary']}>Récapitulatif</Link>
+        <Link to={stepsUrls['confirmation']}>Confirmation</Link>
+        <RouteLeavingGuardOfferIndividual {...props} />
+      </Router>
+    </Provider>
   )
 }
 
@@ -54,6 +61,27 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       await userEvent.click(screen.getByText('About'))
       expect(
         await screen.findByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+      await userEvent.click(screen.getByText('Quitter'))
+      expect(spyHistory).toHaveBeenLastCalledWith(
+        expect.objectContaining({ pathname: '/offres' })
+      )
+    })
+
+    it('should display a confirmation for lost unsaved changes', async () => {
+      history.push(stepsUrls['offer'])
+      const spyHistory = jest.spyOn(history, 'push')
+      renderRouteLeavingGuard(props, history, {
+        features: {
+          list: [{ isActive: true, nameKey: 'OFFER_DRAFT_ENABLED' }],
+        },
+      })
+      await userEvent.click(screen.getByText('About'))
+      expect(
+        await screen.findByText(/Voulez-vous quitter la création d’offre ?/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Les informations non enregistrées seront perdues.')
       ).toBeInTheDocument()
       await userEvent.click(screen.getByText('Quitter'))
       expect(spyHistory).toHaveBeenLastCalledWith(

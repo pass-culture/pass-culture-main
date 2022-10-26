@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import useActiveFeature from 'hooks/useActiveFeature'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
@@ -28,6 +29,7 @@ const RouteLeavingGuardOfferIndividual = ({
   when = true,
 }: RouteLeavingGuardOfferIndividualProps): JSX.Element => {
   const location = useLocation()
+  const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
       let redirectPath = null
@@ -89,16 +91,18 @@ const RouteLeavingGuardOfferIndividual = ({
     },
     [location]
   )
+
+  let description =
+    'Votre offre ne sera pas sauvegardée et toutes les informations seront perdues.'
+  if (isDraftEnabled)
+    description = 'Les informations non enregistrées seront perdues.'
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}
       when={when}
       dialogTitle="Voulez-vous quitter la création d’offre ?"
     >
-      <p>
-        Votre offre ne sera pas sauvegardée et toutes les informations seront
-        perdues.
-      </p>
+      <p>{description}</p>
     </RouteLeavingGuard>
   )
 }
