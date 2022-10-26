@@ -181,25 +181,23 @@ const ReimbursementPointV2 = ({
                 </p>
               )}
 
-              <div className={styles['select']}>
-                <Select
-                  id="reimbursementPointId"
-                  name="reimbursementPointId"
-                  disabled={readOnly || !venueHasPricingPoint}
-                  label="Coordonnées bancaires"
-                  defaultValue={venue.pricingPoint?.id}
-                  options={[
-                    {
-                      value: '',
-                      label: 'Sélectionner des coordonnées dans la liste',
-                    },
-                    ...reimbursementPointOptions.map(option => ({
-                      value: option.id,
-                      label: option.displayName,
-                    })),
-                  ]}
-                />
-              </div>
+              <Select
+                id="reimbursementPointId"
+                name="reimbursementPointId"
+                disabled={readOnly || !venueHasPricingPoint}
+                label="Coordonnées bancaires"
+                defaultValue={venue.pricingPoint?.id}
+                options={[
+                  {
+                    value: '',
+                    label: 'Sélectionner des coordonnées dans la liste',
+                  },
+                  ...reimbursementPointOptions.map(option => ({
+                    value: option.id,
+                    label: option.displayName,
+                  })),
+                ]}
+              />
               {venueReimbursementPoint && (
                 <div className={styles['modify-reimbursement-point-section']}>
                   <Button

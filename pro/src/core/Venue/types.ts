@@ -41,6 +41,8 @@ export interface IVenue {
   bannerMeta: IVenueBannerMetaProps | null | undefined
   bannerUrl: string
   city: string
+  hasPendingBankInformationApplication: boolean | null
+  demarchesSimplifieesApplicationId: string | null
   comment: string
   contact: {
     email: string
