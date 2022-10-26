@@ -55,7 +55,7 @@ jobs:
       - test-pro
       - test-adage
       - test-api
-    if: github.ref == 'master'
+    if: github.ref == 'refs/heads/master'
     uses: ./.github/workflows/deploy-pcapi.yml
     with:
       environment: testing
