@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 
 import pcapi.core.educational.models as educational_models
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offers.exceptions import UnapplicableModel
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationConfig
+import pcapi.core.offers.exceptions as offers_exceptions
+import pcapi.core.offers.models as offers_models
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.custom_logic import OPERATIONS
 
@@ -44,30 +41,32 @@ class OfferValidationRuleItem:
 
 
 def _get_model(
-    offer: CollectiveOffer | CollectiveOfferTemplate | Offer, parameter_model: str
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | offers_models.Offer,
+    parameter_model: str,
 ) -> (
-    Offer
-    | CollectiveOffer
-    | CollectiveOfferTemplate
+    offers_models.Offer
+    | educational_models.CollectiveOffer
+    | educational_models.CollectiveOfferTemplate
     | educational_models.CollectiveStock
     | offerers_models.Venue
     | offerers_models.Offerer
 ):
     if parameter_model in OFFER_LIKE_MODELS and offer.__class__.__name__ == parameter_model:
         model = offer
-    elif parameter_model == "CollectiveStock" and isinstance(offer, CollectiveOffer):
+    elif parameter_model == "CollectiveStock" and isinstance(offer, educational_models.CollectiveOffer):
         model = offer.collectiveStock
     elif parameter_model == "Venue":
         model = offer.venue
     elif parameter_model == "Offerer":
         model = offer.venue.managingOfferer
     else:
-        raise UnapplicableModel()
+        raise offers_exceptions.UnapplicableModel()
     return model
 
 
 def parse_offer_validation_config(
-    offer: CollectiveOffer | CollectiveOfferTemplate | Offer, config: OfferValidationConfig
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | offers_models.Offer,
+    config: offers_models.OfferValidationConfig,
 ) -> tuple[float, list[OfferValidationRuleItem]]:
     minimum_score = float(config.specs["minimum_score"])
     rules = config.specs["rules"]
@@ -78,7 +77,7 @@ def parse_offer_validation_config(
         for parameter in rule["conditions"]:
             try:
                 model = _get_model(offer, parameter.get("model", None))
-            except UnapplicableModel:
+            except offers_exceptions.UnapplicableModel:
                 break
 
             validation_item = OfferValidationItem(
