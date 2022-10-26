@@ -19,7 +19,6 @@ class SettingsTest:
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         PRO_DISABLE_EVENTS_QRCODE=False,
         APP_ENABLE_AUTOCOMPLETE=True,
-        APP_ENABLE_CATEGORY_FILTER_PAGE=False,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -59,7 +58,6 @@ class SettingsTest:
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         PRO_DISABLE_EVENTS_QRCODE=True,
         APP_ENABLE_AUTOCOMPLETE=False,
-        APP_ENABLE_CATEGORY_FILTER_PAGE=True,
         APP_ENABLE_COOKIES_V2=True,
         DISABLE_STORE_REVIEW=True,
     )
