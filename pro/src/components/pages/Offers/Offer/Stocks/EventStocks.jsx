@@ -241,8 +241,8 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               queryString += `&lieu=${queryParams.lieu}`
             }
             if (isOfferDraft) {
+              await loadStocks()
               await reloadOffer(true)
-
               logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                 from: OfferBreadcrumbStep.STOCKS,
                 to: isSavingDraft
@@ -367,7 +367,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 <th>Date limite de réservation</th>
                 <th>Quantité</th>
                 {(stocksInCreation.length === 0 || existingStocks.length > 0) &&
-                  !isCompletingDraft && (
+                  !isOfferDraft && (
                     <Fragment>
                       <th>Stock restant</th>
                       <th>Réservations</th>
@@ -400,7 +400,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                   isDigital={offer.isDigital}
                   isDisabled={isDisabled}
                   isEvent
-                  isDraft={isCompletingDraft}
+                  shouldDisplayDetails={!isOfferDraft}
                   key={stock.id}
                   lastProvider={offer.lastProvider}
                   onChange={updateStock}

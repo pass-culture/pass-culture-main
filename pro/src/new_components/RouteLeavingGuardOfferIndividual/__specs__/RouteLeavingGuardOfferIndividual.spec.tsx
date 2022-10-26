@@ -170,18 +170,13 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
   })
 
   describe('from summary page', () => {
-    it('should display confirmation modal when exiting creation funnel', async () => {
+    it('should not display confirmation modal when exiting creation funnel', async () => {
       history.push(stepsUrls['summary'])
-      const spyHistory = jest.spyOn(history, 'push')
       renderRouteLeavingGuard(props, history)
       await userEvent.click(screen.getByText('About'))
       expect(
-        await screen.findByText(/Voulez-vous quitter la création d’offre ?/)
-      ).toBeInTheDocument()
-      await userEvent.click(screen.getByText('Quitter'))
-      expect(spyHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ pathname: '/about' })
-      )
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
     })
 
     it('should not display confirmation modal when going to offer', async () => {
