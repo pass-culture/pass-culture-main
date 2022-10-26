@@ -189,6 +189,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               queryString += `&lieu=${queryParams.lieu}`
             }
             if (isOfferDraft) {
+              loadStocks()
               reloadOffer(true)
               if (quantityOfActivationCodes) {
                 notification.success(
@@ -275,7 +276,6 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const hasNoStock = !stock
   const hasAStock = !hasNoStock
-  const inCreateMode = hasNoStock || !stock.id
   const cancelUrl = isOfferDraft
     ? isCompletingDraft
       ? `/offre/${offerId}/individuel/brouillon`
@@ -338,7 +338,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               <th>Date limite de réservation</th>
               {displayExpirationDatetime && <th>Date limite de validité</th>}
               <th>Quantité</th>
-              {!inCreateMode && (
+              {!isOfferDraft && (
                 <Fragment>
                   <th>Stock restant</th>
                   <th>Réservations</th>
@@ -348,7 +348,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
             </tr>
           </thead>
           <tbody>
-            {inCreateMode ? (
+            {isOfferDraft ? (
               <StockItem
                 departmentCode={offer.venue.departementCode}
                 errors={formErrors}
@@ -365,6 +365,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
               <StockItem
                 departmentCode={offer.venue.departementCode}
                 errors={formErrors}
+                shouldDisplayDetails={!isOfferDraft}
                 initialStock={stock}
                 isDigital={offer.isDigital}
                 isDisabled={isDisabled}

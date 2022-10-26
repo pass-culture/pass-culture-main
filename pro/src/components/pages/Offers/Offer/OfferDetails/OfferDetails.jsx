@@ -163,12 +163,6 @@ const OfferDetails = ({
       try {
         if (offer) {
           await api.patchOffer(offer.id, offerValues)
-          if (isSavingDraft) {
-            notification.success(
-              'Brouillon sauvegardé dans la liste des offres'
-            )
-          } else if (!isCreatingOffer)
-            notification.success('Vos modifications ont bien été enregistrées')
           reloadOffer()
           setFormErrors({})
           setThumbnailError(false)
@@ -184,6 +178,9 @@ const OfferDetails = ({
               isDraft: true,
               offerId: offer?.id,
             })
+            notification.success(
+              'Brouillon sauvegardé dans la liste des offres'
+            )
             return Promise.resolve(null)
           } else if (isCreatingOffer || isCompletingDraft) {
             // Click on "Etape suivante" when on /creation or /brouillon
@@ -195,6 +192,11 @@ const OfferDetails = ({
               isDraft: true,
               offerId: offer?.id,
             })
+            if (isDraftEnabled) {
+              notification.success(
+                'Brouillon sauvegardé dans la liste des offres'
+              )
+            }
             return Promise.resolve(() => goToStockAndPrice(offer.id))
           } else {
             // Click on "Enregistrer les modifications" when on /edition
@@ -206,6 +208,7 @@ const OfferDetails = ({
               isDraft: false,
               offerId: offer?.id,
             })
+            notification.success('Vos modifications ont bien été enregistrées')
             return Promise.resolve(() =>
               history.push(`/offre/${offer.id}/individuel/recapitulatif`)
             )
