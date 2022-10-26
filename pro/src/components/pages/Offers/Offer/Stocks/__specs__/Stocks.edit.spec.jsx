@@ -167,7 +167,7 @@ describe('stocks page', () => {
       expect(screen.queryByText('épuisée')).toBeInTheDocument()
     })
 
-    it('should go on recap page after validating of stocks', async () => {
+    it.only('should go on recap page after validating of stocks', async () => {
       // Given
       const stock = stockFactory()
       loadFakeApiStocks([stock])

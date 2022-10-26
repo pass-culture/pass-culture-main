@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers/constants'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useNavigate } from 'hooks'
@@ -34,7 +35,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   )
   const navigate = useNavigate()
   const notify = useNotification()
-  const { reloadOffer } = useOfferIndividualContext()
+  const { setOffer } = useOfferIndividualContext()
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const { isOk, payload, message } = await upsertStocksThingAdapter({
@@ -45,7 +46,10 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
     if (isOk) {
       notify.success(message)
-      await reloadOffer()
+      const response = await getOfferIndividualAdapter(offer.id)
+      if (response.isOk) {
+        setOffer && setOffer(response.payload)
+      }
       navigate(afterSubmitUrl)
     } else {
       formik.setErrors(payload.errors)

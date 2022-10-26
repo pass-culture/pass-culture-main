@@ -12,7 +12,11 @@ import {
 
 import { serializePropsFromOfferIndividual } from '.'
 
-const Summary = (): JSX.Element | null => {
+interface ISummaryProps {
+  isOfferV2?: boolean
+}
+
+const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   const isCreation = useIsCreation()
   const isDraft = useIsCompletingDraft()
   const {
@@ -35,7 +39,10 @@ const Summary = (): JSX.Element | null => {
   )
 
   return (
-    <WizardTemplate title="Récapitulatif" withStepper={isCreation}>
+    <WizardTemplate
+      title={isOfferV2 ? null : 'Récapitulatif'}
+      withStepper={isCreation}
+    >
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
         offerId={offer.id}
@@ -47,6 +54,7 @@ const Summary = (): JSX.Element | null => {
         subCategories={subCategories}
         preview={preview}
         isDraft={isDraft}
+        formOfferV2
       />
     </WizardTemplate>
   )
