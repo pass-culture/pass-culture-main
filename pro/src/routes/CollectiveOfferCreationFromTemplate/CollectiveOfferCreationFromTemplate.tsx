@@ -12,6 +12,7 @@ import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/ge
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import useNotification from 'hooks/useNotification'
+import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducational from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
@@ -91,12 +92,15 @@ const CollectiveOfferCreationFromTemplate = () => {
   }
 
   return (
-    <OfferEducational
-      {...screenProps}
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      mode={Mode.CREATION}
-    />
+    <>
+      <OfferEducational
+        {...screenProps}
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        mode={Mode.CREATION}
+      />
+      <RouteLeavingGuardOfferCreation />
+    </>
   )
 }
 

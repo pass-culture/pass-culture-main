@@ -86,7 +86,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         mode={Mode.CREATION}
         onSubmit={createOffer}
       />
-      <RouteLeavingGuardOfferCreation isCollectiveFlow />
+      <RouteLeavingGuardOfferCreation />
     </>
   ) : (
     <Spinner />

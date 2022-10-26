@@ -49,7 +49,6 @@ const RouteLeavingGuard = ({
         history.push({ pathname: redirectPath })
         return false
       }
-
       return true
     },
     [isConfirmedNavigation, history, shouldBlockNavigation]

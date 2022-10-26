@@ -11,15 +11,10 @@ const STEP_VISIBILITY = 'visibility'
 const STEP_CONFIRMATION = 'confirmation'
 const STEP_RECAP = 'summary'
 
-const individualUrlPatterns: { [key: string]: RegExp } = {
-  [STEP_OFFER]: /\/offre\/([A-Z0-9]+\/)?individuel\/creation/g,
-  [STEP_STOCKS]: /\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks/g,
-  [STEP_CONFIRMATION]:
-    /\/offre\/([A-Z0-9]+)\/individuel\/creation\/confirmation/g,
-}
 const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/creation\/collectif/g,
-  [STEP_STOCKS]: /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/stocks/g,
+  [STEP_STOCKS]:
+    /\/offre(\/(((T-){0,1}[A-Z0-9]+)|duplication))\/collectif(\/[A-Z,0-9]+)?\/stocks/g,
   [STEP_VISIBILITY]:
     /\/offre(\/([A-Z0-9]+|duplication))\/collectif(\/[A-Z,0-9]+)?\/visibilite/g,
   [STEP_RECAP]:
@@ -30,62 +25,59 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
 
 export interface RouteLeavingGuardOfferCreationProps {
   when?: boolean
-  isCollectiveFlow?: boolean
 }
 
 const RouteLeavingGuardOfferCreation = ({
   when = true,
-  isCollectiveFlow = false,
 }: RouteLeavingGuardOfferCreationProps): JSX.Element => {
   const location = useLocation()
 
   const shouldBlockNavigation = useCallback(
     (nextLocation: Location): IShouldBlockNavigationReturnValue => {
       let redirectPath = null
-      const urlPatterns = isCollectiveFlow
-        ? collectiveUrlPatterns
-        : individualUrlPatterns
-
       // when multiples url match (example: offer and stocks),
       // we're keeping the last one (example: stocks)
       let from
-      const fromMatchs = Object.keys(urlPatterns).filter((stepName): boolean =>
-        urlPatterns[stepName].test(location.pathname)
+      const fromMatchs = Object.keys(collectiveUrlPatterns).filter(
+        (stepName): boolean =>
+          collectiveUrlPatterns[stepName].test(location.pathname)
       )
       if (fromMatchs.length) {
         from = fromMatchs.reverse()[0]
       }
 
       let to
-      const toMatchs = Object.keys(urlPatterns).filter(
+      const toMatchs = Object.keys(collectiveUrlPatterns).filter(
         (stepName): boolean =>
-          nextLocation.pathname.match(urlPatterns[stepName]) !== null
+          nextLocation.pathname.match(collectiveUrlPatterns[stepName]) !== null
       )
       if (toMatchs.length) {
         to = toMatchs.reverse()[0]
       }
 
       // going from stock to offer
-      if (from === STEP_STOCKS && to === STEP_OFFER) {
+      if (
+        (from === STEP_STOCKS && to === STEP_OFFER) ||
+        (from === STEP_VISIBILITY && to === STEP_STOCKS) ||
+        (from === STEP_RECAP && to === STEP_VISIBILITY) ||
+        (from === STEP_RECAP && to === STEP_STOCKS)
+      ) {
         redirectPath = '/offres'
         return { redirectPath, shouldBlock: true }
       }
-
       // going from confirmation to stock
       if (from === STEP_CONFIRMATION) {
-        if (
-          to === STEP_STOCKS ||
-          (isCollectiveFlow && to === STEP_VISIBILITY)
-        ) {
-          redirectPath = '/offres'
+        if (to === STEP_RECAP) {
+          redirectPath = '/offres/collectives'
         }
         return { redirectPath, shouldBlock: false }
       }
+
       if (
         // going to stocks
         to === STEP_STOCKS ||
         // or to visibility
-        (isCollectiveFlow && to === STEP_VISIBILITY) ||
+        to === STEP_VISIBILITY ||
         // or to confirmation
         to === STEP_CONFIRMATION ||
         // or to recap
@@ -95,9 +87,10 @@ const RouteLeavingGuardOfferCreation = ({
       ) {
         return { shouldBlock: false }
       }
+
       return { shouldBlock: true }
     },
-    [location, isCollectiveFlow]
+    [location]
   )
   return (
     <RouteLeavingGuard

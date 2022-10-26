@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
+import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 
 interface CollectiveOfferConfirmationProps {
@@ -21,12 +22,15 @@ const CollectiveOfferConfirmation = ({
   }
 
   return (
-    <CollectiveOfferConfirmationScreen
-      isShowcase={offer.isTemplate}
-      offerStatus={offer?.status}
-      offererId={offer.venue.managingOffererId}
-      institutionDisplayName={getInstitutionDisplayName()}
-    />
+    <>
+      <CollectiveOfferConfirmationScreen
+        isShowcase={offer.isTemplate}
+        offerStatus={offer?.status}
+        offererId={offer.venue.managingOffererId}
+        institutionDisplayName={getInstitutionDisplayName()}
+      />
+      <RouteLeavingGuardOfferCreation />
+    </>
   )
 }
 
