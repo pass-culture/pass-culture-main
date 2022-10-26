@@ -12,6 +12,12 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
   }
   /* istanbul ignore next: DEBT, TO FIX */
   return {
+    demarchesSimplifieesApplicationId:
+      venue.demarchesSimplifieesApplicationId || null,
+    hasPendingBankInformationApplication:
+      venue.hasPendingBankInformationApplication != null
+        ? venue.hasPendingBankInformationApplication
+        : null,
     managingOfferer: venue.managingOfferer || [],
     reimbursementPointId: venue.reimbursementPointId || 0,
     nonHumanizedId: venue.nonHumanizedId || 0,
