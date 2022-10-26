@@ -45,34 +45,128 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           run: isort . --check-only
-          working_directory: /usr/src/app
       - name: Check code is well formatted with black
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
           run: black . --check
-          working_directory: /usr/src/app
       - name: Run pylint
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
           run: pylint src tests --jobs=2
-          working_directory: /usr/src/app
       - name: Run mypy
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
           run: mypy src
-          working_directory: /usr/src/app
-#      - when:
-#          condition:
-#            equal: [ "master", << pipeline.git.branch >> ]
-#          steps:
-#            - notify-slack:
-#                channel: shérif
-#
-#  tests-api:
-#    runs-on: ubuntu-latest
-#
+      - name: Slack Notification
+        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_CHANNEL: shérif
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Github Actions Bot
 
-
+  tests-api:
+    env:
+      RUN_ENV: tests
+      DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
+      REDIS_URL: redis://redis:6379
+    runs-on: ubuntu-latest
+    needs: build-tests-docker-image
+    permissions:
+      id-token: write
+      contents: read
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: postgis/postgis:12-3.3-alpine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+    steps:
+      - uses: actions/checkout@v3
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - uses: docker/login-action@v2
+        with:
+          registry: '${{ env.region }}-docker.pkg.dev'
+          username: oauth2accesstoken
+          password: ${{ steps.openid-auth.outputs.access_token }}
+      - run: docker pull ${{ env.tests_docker_image }}
+      - name: Check for alembic multiple heads
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: |
+            LINE_COUNT=$(wc -l \<<< "$(alembic heads)")
+            if [${LINE_COUNT} -ne 2 ]; then echo "There must be two heads";exit 1;fi
+      - name: Check database and model are aligned
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          shell: bash
+          options: -e RUN_ENV -e DATABASE_URL_TEST
+          run: |
+            set -e
+            flask install_postgres_extensions
+            alembic upgrade pre@head
+            alembic upgrade post@head
+            flask install_data
+            python tests/alembic/check_db_schema.py
+      # This step will fail ("Walked too far") if there are less than 10 migrations on each branch, for example after a squash
+      - name: Check that downgrade scripts are correctly written
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          shell: bash
+          options: -e RUN_ENV -e DATABASE_URL_TEST
+          run: |
+            set -e
+            alembic downgrade post@head-10
+            alembic downgrade pre@head-10
+            alembic upgrade pre@head
+            alembic upgrade post@head
+      - name: Running tests
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          shell: bash
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL
+          run: |
+            # Synchronize these globs with `python_files` in `pytest.ini`
+            TEST_FILES=$(ls tests/**/*test.py tests/**/test*.py)
+            mkdir -p test-results
+            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
+      - name: Slack Notification
+        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_ACCESS_TOKEN }}
+          SLACK_CHANNEL: shérif
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Github Actions Bot
