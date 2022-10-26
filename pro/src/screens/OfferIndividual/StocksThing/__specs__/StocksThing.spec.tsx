@@ -143,7 +143,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
   })
 
-  it.only('should submit stock form when click on "Étape suivante""', async () => {
+  it('should submit stock form when click on "Étape suivante""', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })

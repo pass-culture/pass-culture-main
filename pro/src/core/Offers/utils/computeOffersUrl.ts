@@ -39,6 +39,7 @@ const computeOffersUrlForGivenAudience = (
   const newFilters: Partial<TSearchFilters> = {}
   keys.forEach(key => {
     if (searchFiltersParams[key] !== DEFAULT_SEARCH_FILTERS[key]) {
+      // @ts-ignore next FIX ME: newFilters['status'] is not string...
       newFilters[key] = searchFiltersParams[key]
     }
   })

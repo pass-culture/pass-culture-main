@@ -15,6 +15,7 @@ import { Router } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
+import { OfferStatus } from 'apiClient/v1'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES,
@@ -253,7 +254,7 @@ describe('route Offers', () => {
             const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId,
-              status: 'inactive',
+              status: OfferStatus.INACTIVE,
             }
             await renderOffers(store, filters)
             await userEvent.selectOptions(
@@ -284,7 +285,7 @@ describe('route Offers', () => {
             const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId,
-              status: 'INACTIVE',
+              status: OfferStatus.INACTIVE,
               offererId: 'EF',
             }
             await renderOffers(store, filters)
@@ -318,7 +319,7 @@ describe('route Offers', () => {
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
-              status: 'INACTIVE',
+              status: OfferStatus.INACTIVE,
             }
             await renderOffers(store, filters)
             // When
@@ -350,7 +351,7 @@ describe('route Offers', () => {
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
-              status: 'INACTIVE',
+              status: OfferStatus.INACTIVE,
               offererId: offerer.id,
             }
             await renderOffers(store, filters)
@@ -667,7 +668,7 @@ describe('route Offers', () => {
           {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
-            status: 'ACTIVE',
+            status: OfferStatus.ACTIVE,
           },
           // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
           null
@@ -695,7 +696,7 @@ describe('route Offers', () => {
           {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
-            status: 'ACTIVE',
+            status: OfferStatus.ACTIVE,
           },
           // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
           null
