@@ -64,7 +64,12 @@ const OfferV2Summary = (): JSX.Element | null => {
   useEffect(() => {
     async function loadData() {
       const response = await getWizardData({
-        offer: data.offer,
+        offerer: data.offer
+          ? {
+              id: data.offer.venue.offerer.id,
+              name: data.offer.venue.offerer.name,
+            }
+          : undefined,
         queryOffererId: offererId,
         isAdmin: currentUser.isAdmin,
       })
@@ -78,7 +83,7 @@ const OfferV2Summary = (): JSX.Element | null => {
       }
     }
     ;(!offerId || data.offer) && loadData()
-  }, [offerId, data.offer])
+  }, [offerId, data.offer?.venue.offerer.id, data.offer?.venue.offerer.name])
 
   if (data.isLoading === true) return <Spinner />
   if (data.error !== undefined || data.offer === undefined) {

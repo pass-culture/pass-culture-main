@@ -58,7 +58,6 @@ const OfferIndividualWizard = () => {
   const { offerId } = useParams<{ offerId: string }>()
   const { search } = useLocation()
   const { structure: offererId } = parse(search)
-
   const loadOffer = useCallback(async () => {
     const response = await getOfferIndividualAdapter(offerId)
     if (response.isOk) {
@@ -85,8 +84,14 @@ const OfferIndividualWizard = () => {
 
   useEffect(() => {
     async function loadData() {
+      console.log('OfferIndividualWizard::loadData')
       const response = await getWizardData({
-        offer: data.offer,
+        offerer: data.offer
+          ? {
+              id: data.offer.venue.offerer.id,
+              name: data.offer.venue.offerer.name,
+            }
+          : undefined,
         queryOffererId: offererId,
         isAdmin: currentUser.isAdmin,
       })
@@ -100,7 +105,7 @@ const OfferIndividualWizard = () => {
       }
     }
     ;(!offerId || data.offer) && loadData()
-  }, [offerId, data.offer])
+  }, [offerId, data.offer?.venue.offerer.id, data.offer?.venue.offerer.name])
 
   if (data.isLoading === true) return <Spinner />
   if (data.error !== undefined) {
