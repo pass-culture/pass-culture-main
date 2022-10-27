@@ -158,10 +158,6 @@ export const buildBookingsRecapQuery = ({
   return stringify(params)
 }
 
-export const getUserHasBookings = async () => {
-  return client.get(`/bookings/pro/userHasBookings`)
-}
-
 export const getUserHasCollectiveBookings = async () => {
   return client.get(`/collective/bookings/pro/userHasBookings`)
 }

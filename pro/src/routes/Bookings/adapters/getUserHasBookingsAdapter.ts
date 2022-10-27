@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import { GetUserHasBookingsAdapter } from 'core/Bookings'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<boolean> = {
   isOk: false,
@@ -11,7 +11,7 @@ const FAILING_RESPONSE: AdapterFailure<boolean> = {
 export const getFilteredBookingsRecapAdapter: GetUserHasBookingsAdapter =
   async () => {
     try {
-      const { hasBookings } = await pcapi.getUserHasBookings()
+      const { hasBookings } = await api.getUserHasBookings()
 
       return {
         isOk: true,
