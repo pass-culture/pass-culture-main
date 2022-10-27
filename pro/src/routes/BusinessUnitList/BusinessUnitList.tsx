@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import Spinner from 'components/layout/Spinner'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
-import * as pcapi from 'repository/pcapi/pcapi'
 import BusinessUnitListScreen from 'screens/BusinessUnitList'
 import {
   IBusinessUnit,
@@ -78,7 +77,7 @@ const BusinessUnitList = (): JSX.Element => {
   const saveBusinessUnit = useCallback(
     (businessUnitId: number, siret: string) => {
       try {
-        pcapi.editBusinessUnit(businessUnitId, siret)
+        api.editBusinessUnit(businessUnitId, { siret })
       } catch (e) {
         // FIX ME
         // eslint-disable-next-line

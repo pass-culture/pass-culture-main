@@ -183,21 +183,6 @@ export const getFilteredCollectiveBookingsXLS = async filters => {
 }
 
 //
-// Booking
-//
-
-//
-// Business Unit
-//
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'businessUnitId' implicitly has an 'any'... Remove this comment to see the full error message
-export const editBusinessUnit = (businessUnitId, siret) => {
-  return client.patch(`/finance/business-units/${businessUnitId}`, {
-    siret: siret,
-  })
-}
-
-//
 // Reimbursement Point
 //
 export const getReimbursementPoints = (
