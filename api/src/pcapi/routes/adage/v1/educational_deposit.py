@@ -21,6 +21,7 @@ def get_educational_deposit(year_id: str) -> deposit_serialization.EducationalDe
     if not educational_deposits:
         raise ApiErrors(errors={"code": "EDUCATIONAL_DEPOSIT_NOT_FOUND"}, status_code=404)
 
-    return deposit_serialization.EducationalDepositsResponse(
+    result = deposit_serialization.EducationalDepositsResponse(
         deposits=deposit_serialization.serialize_educational_deposits(educational_deposits)
     )
+    return result

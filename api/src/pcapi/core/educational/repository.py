@@ -68,6 +68,15 @@ CollectiveBookingNamedTuple = namedtuple(
     ],
 )
 
+EducationalDepositNamedTuple = namedtuple(
+    "EducationalDepositNamedTuple",
+    [
+        "amount",
+        "uai",
+        "isFinal",
+    ],
+)
+
 
 def get_and_lock_educational_deposit(
     educational_institution_id: int, educational_year_id: str
@@ -183,7 +192,7 @@ def find_educational_deposit_by_institution_id_and_year(
     ).one_or_none()
 
 
-def get_educational_deposit_with_uai_code_by_year(year_id: str) -> list[educational_models.EducationalDeposit]:
+def get_educational_deposit_with_uai_code_by_year(year_id: str) -> list[EducationalDepositNamedTuple]:
     return (
         educational_models.EducationalDeposit.query.join(educational_models.EducationalDeposit.educationalInstitution)
         .filter(educational_models.EducationalDeposit.educationalYearId == year_id)
