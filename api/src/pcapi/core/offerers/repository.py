@@ -247,10 +247,8 @@ def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
     query = query.join(aliased_venue, models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        models.Venue.isPermanent == True,
         models.Venue.isVirtual == False,
         # constraint on seached venue
-        aliased_venue.isPermanent == True,
         aliased_venue.isVirtual == False,
         aliased_venue.id == venue_id,
     )

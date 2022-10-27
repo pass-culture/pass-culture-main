@@ -320,7 +320,6 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
         offerers_models.Venue.query.filter(
             offerers_models.Venue.siret == siret,
             offerers_models.Venue.isVirtual == False,
-            offerers_models.Venue.isPermanent == True,
         )
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
@@ -337,10 +336,8 @@ def get_relative_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        offerers_models.Venue.isPermanent == True,
         offerers_models.Venue.isVirtual == False,
         # constraint on searched venue
-        aliased_venue.isPermanent == True,
         aliased_venue.isVirtual == False,
         aliased_venue.siret == siret,
     )
@@ -359,7 +356,6 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
     return (
         offerers_models.Venue.query.filter(
             offerers_models.Venue.isVirtual == False,
-            offerers_models.Venue.isPermanent == True,
         )
         .order_by(offerers_models.Venue.id)
         .offset((page - 1) * per_page)
@@ -381,7 +377,6 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
                 sa.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
             ),
             offerers_models.Venue.isVirtual == False,
-            offerers_models.Venue.isPermanent == True,
         )
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
@@ -401,10 +396,8 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        offerers_models.Venue.isPermanent == True,
         offerers_models.Venue.isVirtual == False,
         # constraint on searched venue
-        aliased_venue.isPermanent == True,
         aliased_venue.isVirtual == False,
         or_(
             sa.func.unaccent(aliased_venue.name).ilike(f"%{name}%"),

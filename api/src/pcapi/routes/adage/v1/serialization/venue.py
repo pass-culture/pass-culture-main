@@ -55,6 +55,7 @@ class VenueModel(BaseModel):
     network: list[str] | None
     statusId: int | None
     label: VenueLabelModel | None
+    isPermanent: bool | None
 
     @classmethod
     def from_orm(cls, venue: Venue) -> "VenueModel":
