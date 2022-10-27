@@ -35,6 +35,7 @@ jobs:
         id: generate-secrets-file
         uses: addnab/docker-run-action@v3
         with:
+          options: -e GITHUB_OUTPUT
           registry: '${{ env.REGION }}-docker.pkg.dev'
           username: 'oauth2accesstoken'
           password: '${{ steps.openid-auth.outputs.access_token }}'
