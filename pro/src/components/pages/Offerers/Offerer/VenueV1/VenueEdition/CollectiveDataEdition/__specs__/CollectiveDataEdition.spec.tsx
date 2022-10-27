@@ -13,7 +13,6 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { mainlandOptions, domtomOptions } from 'core/shared/interventionOptions'
 import * as useNotification from 'hooks/useNotification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import CollectiveDataEdition from '../CollectiveDataEdition'
@@ -58,10 +57,6 @@ jest.mock('core/shared/interventionOptions', () => {
   }
 })
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getEducationalDomains: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getVenuesEducationalStatuses: jest.fn(),
@@ -69,6 +64,7 @@ jest.mock('apiClient/api', () => ({
     editVenueCollectiveData: jest.fn(),
     getVenueCollectiveData: jest.fn(),
     getEducationalPartner: jest.fn(),
+    listEducationalDomains: jest.fn(),
   },
 }))
 
@@ -118,7 +114,7 @@ describe('CollectiveDataEdition', () => {
         },
       ],
     })
-    jest.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([
+    jest.spyOn(api, 'listEducationalDomains').mockResolvedValue([
       { id: 1, name: 'domain 1' },
       { id: 2, name: 'domain 2' },
     ])
