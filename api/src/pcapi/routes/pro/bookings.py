@@ -118,7 +118,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
 
 @blueprint.pro_private_api.route("/bookings/pro/userHasBookings", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=UserHasBookingResponse)
+@spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
 def get_user_has_bookings() -> UserHasBookingResponse:
     user = current_user._get_current_object()
     return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user))
