@@ -92,7 +92,7 @@ jobs:
 
   deploy-pro:
     needs: deploy-helm-release
-    uses: ./.github/workflows/deploy-pcapi-gcs-front.yml
+    uses: ./.github/workflows/deploy-gcs-front.yml
     with:
       app_name: pro
       app_directory: pro
@@ -104,7 +104,7 @@ jobs:
 
   deploy-adage-front:
     needs: deploy-helm-release
-    uses: ./.github/workflows/deploy-pcapi-gcs-front.yml
+    uses: ./.github/workflows/deploy-gcs-front.yml
     with:
       app_name: adage
       app_directory: adage-front
