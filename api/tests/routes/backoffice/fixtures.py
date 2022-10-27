@@ -329,11 +329,17 @@ def offerers_to_be_validated(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
     no_tag = offerers_factories.NotValidatedOffererFactory(name="A")
-    top = offerers_factories.NotValidatedOffererFactory(name="B")
+    top = offerers_factories.NotValidatedOffererFactory(
+        name="B", validationStatus=offerers_models.ValidationStatus.PENDING
+    )
     collec = offerers_factories.NotValidatedOffererFactory(name="C")
-    public = offerers_factories.NotValidatedOffererFactory(name="D")
+    public = offerers_factories.NotValidatedOffererFactory(
+        name="D", validationStatus=offerers_models.ValidationStatus.PENDING
+    )
     top_collec = offerers_factories.NotValidatedOffererFactory(name="E")
-    top_public = offerers_factories.NotValidatedOffererFactory(name="F")
+    top_public = offerers_factories.NotValidatedOffererFactory(
+        name="F", validationStatus=offerers_models.ValidationStatus.PENDING
+    )
 
     for offerer in (top, top_collec, top_public):
         offerers_factories.OffererTagMappingFactory(tagId=top_tag.id, offererId=offerer.id)
@@ -341,5 +347,9 @@ def offerers_to_be_validated(offerer_tags):
         offerers_factories.OffererTagMappingFactory(tagId=collec_tag.id, offererId=offerer.id)
     for offerer in (public, top_public):
         offerers_factories.OffererTagMappingFactory(tagId=public_tag.id, offererId=offerer.id)
+
+    # Other statuses
+    offerers_factories.OffererFactory(name="G")
+    offerers_factories.NotValidatedOffererFactory(name="H", validationStatus=offerers_models.ValidationStatus.REJECTED)
 
     return (no_tag, top, collec, public, top_collec, top_public)
