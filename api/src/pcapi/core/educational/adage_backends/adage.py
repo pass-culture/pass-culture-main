@@ -25,10 +25,8 @@ class AdageHttpClient(AdageClient):
             data=data.json(),
         )
 
-        if api_response.status_code == 404:
-            return models.AdageApiResult(sent_data=data, response=dict(api_response.json()), success=True)  # type: ignore [arg-type]
-
-        if api_response.status_code != 201:
+        # Adage returns a 404 if the institution does not have any email
+        if api_response.status_code not in (201, 404):
             raise exceptions.AdageException(
                 "Error posting new prebooking to Adage API.", api_response.status_code, api_response.text
             )
@@ -108,7 +106,8 @@ class AdageHttpClient(AdageClient):
             api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
         )
 
-        if api_response.status_code != 201:
+        # Adage returns a 404 if the institution does not have any email
+        if api_response.status_code not in (201, 404):
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         return models.AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
