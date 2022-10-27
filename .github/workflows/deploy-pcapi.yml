@@ -156,5 +156,4 @@ jobs:
       - run: yarn install
       - run: |
           set -a; source ../config/run_envs/${{ inputs.environment }};
-          yarn build:${{ inputs.environment }}
-      - run: yarn deploy:${{ inputs.environment }}
+          yarn deploy:${{ inputs.environment }}
