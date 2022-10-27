@@ -35,6 +35,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: yarn
+          cache-dependency-path: pro/yarn.lock
           node-version: ${{ needs.read-node-version.outputs.node_version }}
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
@@ -53,6 +54,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: yarn
+          cache-dependency-path: pro/yarn.lock
           node-version: ${{ needs.read-node-version.outputs.node_version }}
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
@@ -71,6 +73,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: yarn
+          cache-dependency-path: pro/yarn.lock
           node-version: ${{ needs.read-node-version.outputs.node_version }}
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
