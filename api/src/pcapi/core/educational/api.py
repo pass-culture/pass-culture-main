@@ -317,31 +317,6 @@ def create_educational_deposit(
     return educational_deposit
 
 
-def get_siren_for_venue(venue_id: str) -> str:
-    # part de l'offerer et va chercher la venue et filtre la venue
-    """query = db.session.query(offerers_models.Offerer.siren)
-    query = query.join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
-    query = query.filter(offerers_models.Venue.id == venue_id)
-    return query.one()[0]"""
-
-    Offerer = offerers_models.Offerer
-    Venue = offerers_models.Venue
-    return (
-        Offerer.query.join(Venue, Offerer.managedVenues)
-        .filter(Venue.id == venue_id)
-        .with_entities(Offerer.siren)
-        .one()
-        .siren
-    )
-    # Venue.query.join(Offerer, Venue.managingOffererId).filter(Venue.id == venue_id).with_entities(Offerer.siren).one().siren
-
-    # query -> offerer
-    # toto.join (offerers_models.Venue, offerers_models.Offerer.managedVenues)
-    # toto = query.filter(offerers_models.Venue.venueTypeId == venue_id)
-    # with_entity -> siren
-    # one
-
-
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = (
         offerers_models.Venue.query.filter(
