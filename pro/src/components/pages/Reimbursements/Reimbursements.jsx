@@ -13,7 +13,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { BannerReimbursementsInfo } from 'new_components/Banner'
 import { ReimbursementsBreadcrumb } from 'new_components/ReimbursementsBreadcrumb'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { sortByDisplayName } from 'utils/strings'
 
 import ReimbursementsDetails from './ReimbursementsDetails/ReimbursementsDetails'
