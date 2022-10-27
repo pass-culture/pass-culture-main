@@ -61,7 +61,15 @@ jobs:
           repository: pass-culture/pass-culture-deployment
           token: ${{ secrets.PASSCULTURE_SA_ACCESS_TOKEN }}
           path: ./pass-culture-deployment
-      - id: openid-auth
+      - id: openid-auth-infra
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - id: openid-auth-metier
         name: "OpenID Connect Authentication"
         uses: 'google-github-actions/auth@v0'
         with:
@@ -77,7 +85,7 @@ jobs:
           helmfile-version: "v0.147.0"
       - name: Deploy pcapi
         run: |
-          PASSCULTURE_PASSWORD=${{ steps.openid-auth.outputs.access_token }} \
+          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
