@@ -11,6 +11,7 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email
 
 
@@ -397,6 +398,7 @@ class OffererOfferStatsResponseModel(Response):
 class HistoryItem(BaseModel):
     class Config:
         use_enum_values = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
     type: history_models.ActionType
     date: datetime.datetime
