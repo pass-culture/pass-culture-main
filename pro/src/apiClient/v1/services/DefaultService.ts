@@ -199,6 +199,22 @@ export class DefaultService {
   }
 
   /**
+   * get_user_has_collective_bookings <GET>
+   * @returns UserHasBookingResponse OK
+   * @throws ApiError
+   */
+  public getUserHasCollectiveBookings(): CancelablePromise<UserHasBookingResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/bookings/pro/userHasBookings',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_collective_booking_by_id <GET>
    * @param bookingId
    * @returns CollectiveBookingByIdResponseModel OK

@@ -158,10 +158,6 @@ export const buildBookingsRecapQuery = ({
   return stringify(params)
 }
 
-export const getUserHasCollectiveBookings = async () => {
-  return client.get(`/collective/bookings/pro/userHasBookings`)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
 export const getFilteredBookingsCSV = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
