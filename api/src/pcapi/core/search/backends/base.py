@@ -51,7 +51,7 @@ class SearchBackend:
     def check_offer_is_indexed(self, offer: "offers_models.Offer") -> bool:
         raise NotImplementedError()
 
-    def index_offers(self, offers: "Iterable[offers_models.Offer]") -> None:
+    def index_offers(self, offers: "Iterable[offers_models.Offer]", last_30_days_bookings: dict[int, int]) -> None:
         raise NotImplementedError()
 
     def index_collective_offers(self, collective_offers: "Iterable[educational_models.CollectiveOffer]") -> None:
@@ -104,7 +104,7 @@ class SearchBackend:
         raise NotImplementedError()
 
     @classmethod
-    def serialize_offer(cls, offer: "offers_models.Offer") -> dict:
+    def serialize_offer(cls, offer: "offers_models.Offer", last_30_days_bookings: int) -> dict:
         raise NotImplementedError()
 
     @classmethod

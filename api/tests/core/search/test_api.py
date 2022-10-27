@@ -1,12 +1,17 @@
+import datetime
+import itertools
 from unittest import mock
 
 import pytest
 
 from pcapi.core import search
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.search.backends import algolia
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
@@ -19,6 +24,27 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def make_bookable_offer() -> offers_models.Offer:
     return offers_factories.StockFactory().offer
+
+
+def make_booked_offer() -> offers_models.Offer:
+    offer = make_bookable_offer()
+    offers_factories.StockFactory(offer=offer)
+    now = datetime.datetime.utcnow()
+    ago_30_days = now - datetime.timedelta(days=30, hours=-1)
+    ago_31_days = now - datetime.timedelta(days=30, hours=1)
+    bookings = []
+    for stock, (status, date) in zip(
+        itertools.cycle(offer.stocks),
+        itertools.product(
+            bookings_models.BookingStatus,
+            (now, ago_30_days, ago_31_days),
+        ),
+    ):
+        # This loop builds a booking for each possible couple of status and date,
+        # shared across the existing stocks
+        bookings.append(bookings_factories.BookingFactory(stock=stock, status=status, dateCreated=date))
+
+    return offer
 
 
 def make_unbookable_offer() -> offers_models.Offer:
@@ -148,6 +174,21 @@ class ReindexOfferIdsTest:
         venue_ids = app.redis_client.smembers("search:algolia:venue-ids-to-index")
         venue_ids = {int(venue_id) for venue_id in venue_ids}
         assert venue_ids == {offer.venueId}
+
+    @override_settings(
+        ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD=0,
+        ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD=5,
+        ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD=20,
+    )
+    def test_index_last_30_days_bookings(self, app):
+        offer = make_booked_offer()
+        assert search_testing.search_store["offers"] == {}
+        search.reindex_offer_ids([offer.id])
+        assert offer.id in search_testing.search_store["offers"]
+        assert (
+            search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"]
+            == algolia.Last30DaysBookingsRange.MEDIUM.value
+        )
 
 
 class ReindexVenueIdsTest:
