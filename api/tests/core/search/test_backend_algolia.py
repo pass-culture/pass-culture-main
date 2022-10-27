@@ -312,7 +312,7 @@ def test_index_offers(app):
     offer = offers_factories.StockFactory().offer
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/offers/batch", json={})
-        backend.index_offers([offer])
+        backend.index_offers([offer], {offer.id: 0})
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "updateObject"
         assert posted_json["requests"][0]["body"]["objectID"] == offer.id
