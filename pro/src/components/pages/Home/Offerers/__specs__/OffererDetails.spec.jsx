@@ -14,7 +14,6 @@ import { MemoryRouter } from 'react-router'
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import Homepage from '../../Homepage'
@@ -32,15 +31,12 @@ jest.mock('utils/config', () => ({
     'link/to/businesUnit/demarchesSimplifiees/procedure',
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenueStats: jest.fn(),
+    getBusinessUnits: jest.fn(),
   },
 }))
 
@@ -216,7 +212,7 @@ describe('offererDetailsLegacy', () => {
       setLogEvent: null,
     }))
 
-    pcapi.getBusinessUnits.mockResolvedValue([{}])
+    api.getBusinessUnits.mockResolvedValue([{}])
   })
 
   it('should display offerer select', async () => {
@@ -872,7 +868,7 @@ describe('offererDetailsLegacy', () => {
         ],
       }
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
-      pcapi.getBusinessUnits.mockResolvedValue([
+      api.getBusinessUnits.mockResolvedValue([
         {
           name: 'Business Unit #2',
           siret: null,
@@ -906,7 +902,7 @@ describe('offererDetailsLegacy', () => {
       }
 
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
-      pcapi.getBusinessUnits.mockResolvedValue([])
+      api.getBusinessUnits.mockResolvedValue([])
 
       const { waitForElements } = await renderHomePage({ store })
       const { offerer } = await waitForElements()
@@ -937,7 +933,7 @@ describe('offererDetailsLegacy', () => {
       }
 
       api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
-      pcapi.getBusinessUnits.mockResolvedValue([
+      api.getBusinessUnits.mockResolvedValue([
         {
           name: 'Business Unit #2',
           siret: '222222222222222222',

@@ -21,13 +21,13 @@ jest.mock('utils/date', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getInvoices: jest.fn(),
-  getBusinessUnits: jest.fn(),
   getReimbursementPoints: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
+    getBusinessUnits: jest.fn(),
   },
 }))
 
@@ -113,7 +113,7 @@ describe('reimbursementsWithFilters', () => {
     props = { currentUser: { isAdmin: false } }
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
     jest.spyOn(pcapi, 'getInvoices').mockResolvedValue(BASE_INVOICES)
-    jest.spyOn(pcapi, 'getBusinessUnits').mockResolvedValue([])
+    jest.spyOn(api, 'getBusinessUnits').mockResolvedValue([])
     jest.spyOn(pcapi, 'getReimbursementPoints').mockResolvedValue([])
   })
 

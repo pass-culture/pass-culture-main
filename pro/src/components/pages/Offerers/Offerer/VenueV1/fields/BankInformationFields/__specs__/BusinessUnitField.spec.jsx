@@ -3,12 +3,12 @@ import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'apiClient/api'
 
 import BusinessUnitFields from '../BusinessUnitFields'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: { getBusinessUnits: jest.fn() },
 }))
 
 const renderBusinessUnitField = async props => {
@@ -36,7 +36,7 @@ describe('src | Venue | BusinessUnitField', () => {
 
   it('should display business unit block when offerer has at least one bu and venue is virtual', async () => {
     // Given
-    pcapi.getBusinessUnits.mockResolvedValue([
+    api.getBusinessUnits.mockResolvedValue([
       {
         name: 'Business Unit #1',
         siret: '123456789',
@@ -58,7 +58,7 @@ describe('src | Venue | BusinessUnitField', () => {
 
   it('should not display business unit block when offerer does not have bu and venue is virtual', async () => {
     // Given
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    api.getBusinessUnits.mockResolvedValue([])
     venue.isVirtual = true
 
     // When

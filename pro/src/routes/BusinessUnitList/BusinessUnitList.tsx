@@ -12,14 +12,6 @@ import {
   IOfferer,
 } from 'screens/BusinessUnitList/BusinessUnitList'
 
-interface IAPIBusinessUnitListItem {
-  bic: string
-  id: number
-  iban: string
-  name: string
-  siret: string | null
-}
-
 const BusinessUnitList = (): JSX.Element => {
   const [offerer, setOfferer] = useState<IOfferer | null>(null)
   const [businessUnitList, setBusinessUnitList] = useState<
@@ -41,20 +33,19 @@ const BusinessUnitList = (): JSX.Element => {
     }
 
     async function loadBusinessUnitList(offererId: string) {
-      const businessUnitListResponse: IAPIBusinessUnitListItem[] =
-        await pcapi.getBusinessUnits(offererId)
+      const businessUnitListResponse =
+        // @ts-expect-error string is not assignable to type number
+        await api.getBusinessUnits(offererId)
       const serializedBusinessUnitList: IBusinessUnit[] =
-        businessUnitListResponse.map(
-          (apiBusinessUnit: IAPIBusinessUnitListItem): IBusinessUnit => {
-            return {
-              id: apiBusinessUnit.id,
-              name: apiBusinessUnit.name,
-              bic: apiBusinessUnit.bic,
-              iban: apiBusinessUnit.iban,
-              siret: apiBusinessUnit.siret,
-            }
+        businessUnitListResponse.map((apiBusinessUnit): IBusinessUnit => {
+          return {
+            id: apiBusinessUnit.id,
+            name: apiBusinessUnit.name,
+            bic: apiBusinessUnit.bic ?? '',
+            iban: apiBusinessUnit.iban ?? '',
+            siret: apiBusinessUnit.siret ?? '',
           }
-        )
+        })
       setBusinessUnitList(serializedBusinessUnitList)
     }
 

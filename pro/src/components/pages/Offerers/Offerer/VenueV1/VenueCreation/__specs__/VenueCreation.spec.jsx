@@ -23,6 +23,7 @@ jest.mock('apiClient/api', () => ({
     canOffererCreateEducationalOffer: jest.fn(),
     getVenueTypes: jest.fn(),
     fetchVenueLabels: jest.fn(),
+    getBusinessUnits: jest.fn(),
   },
 }))
 
@@ -95,7 +96,7 @@ describe('venue form', () => {
       }),
     ])
     api.fetchVenueLabels.mockResolvedValue([])
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    api.getBusinessUnits.mockResolvedValue([])
     jest
       .spyOn(api, 'getProfile')
       .mockResolvedValue(storeOverrides.user.currentUser)
@@ -297,7 +298,7 @@ describe('venue form', () => {
       },
     }
     beforeEach(() => {
-      pcapi.getBusinessUnits.mockResolvedValue([
+      api.getBusinessUnits.mockResolvedValue([
         {
           id: 20,
           iban: 'FR0000000000000002',
@@ -327,7 +328,7 @@ describe('venue form', () => {
 
     it('should not display business unit select list when structure does not have busiess units', async () => {
       // Given
-      pcapi.getBusinessUnits.mockResolvedValue([])
+      api.getBusinessUnits.mockResolvedValue([])
 
       // When
       await renderVenueCreation({ props, storeOverrides })
