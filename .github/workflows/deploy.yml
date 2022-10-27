@@ -87,6 +87,7 @@ jobs:
           helmfile-version: "v0.147.0"
       - name: Deploy pcapi
         run: |
+          PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \

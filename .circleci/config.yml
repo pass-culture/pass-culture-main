@@ -944,6 +944,7 @@ jobs:
       - run:
           name: Deploy new ExternalSecret only if needed
           command: |
+            PASSCULTURE_USERNAME="_json_key" \
             PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
             PCAPI_VALUES_FILE=<(helm -n <<parameters.helm_environment>> get values <<parameters.helm_environment>>) \
             PCAPI_SECRETS_FILE=/tmp/workspace/pcapi-secrets.yaml \
@@ -959,6 +960,7 @@ jobs:
       - run:
           name: Deploy pcapi
           command: |
+            PASSCULTURE_USERNAME="_json_key" \
             PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
             PCAPI_VALUES_FILE=~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml \
             PCAPI_SECRETS_FILE=/tmp/workspace/pcapi-secrets.yaml \
