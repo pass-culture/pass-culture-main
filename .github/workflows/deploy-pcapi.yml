@@ -131,8 +131,11 @@ jobs:
         name: "OpenID Connect Authentication"
         uses: 'google-github-actions/auth@v0'
         with:
-          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.METIER_BACKOFFICE_SERVICE_ACCOUNT }}
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.BACKOFFICE_TESTING_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.BACKOFFICE_CI_SERVICE_ACCOUNT }}
+      - run: echo "FIREBASE_TOKEN=${{ steps.openid-auth.outputs.access_token }}" >> $GITHUB_ENV
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
       - name: 'Setup sentry credentials for Backoffice'
