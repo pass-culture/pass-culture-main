@@ -141,7 +141,7 @@ def _create_collective_bookings_export_file(
 
 @blueprint.pro_private_api.route("/collective/bookings/pro/userHasBookings", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=UserHasBookingResponse)
+@spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
 def get_user_has_collective_bookings() -> UserHasBookingResponse:
     user = current_user._get_current_object()
     return UserHasBookingResponse(hasBookings=collective_repository.user_has_bookings(user))
