@@ -54,6 +54,8 @@ export type { CulturalPartner } from './models/CulturalPartner';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { EditVenueBodyModel } from './models/EditVenueBodyModel';
 export type { EditVenueCollectiveDataBodyModel } from './models/EditVenueCollectiveDataBodyModel';
+export type { EducationalDomainResponseModel } from './models/EducationalDomainResponseModel';
+export type { EducationalDomainsResponseModel } from './models/EducationalDomainsResponseModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionsQueryModel } from './models/EducationalInstitutionsQueryModel';
 export type { EducationalInstitutionsResponseModel } from './models/EducationalInstitutionsResponseModel';
