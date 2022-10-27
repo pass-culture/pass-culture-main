@@ -717,6 +717,30 @@ describe('stocks page', () => {
         })
       })
 
+      it('should show a notification when clicking on save draft button without data', async () => {
+        store = {
+          ...store,
+          features: {
+            list: [
+              {
+                isActive: true,
+                name: 'OFFER_DRAFT_ENABLED',
+                nameKey: 'OFFER_DRAFT_ENABLED',
+              },
+            ],
+          },
+        }
+        renderOffers(props, store, '/offre/AG3A/individuel/creation/stocks')
+
+        await userEvent.click(await screen.findByText('Ajouter un stock'))
+        await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+
+        // then
+        expect(api.upsertStocks).not.toHaveBeenCalled()
+        expect(
+          screen.getByText('Brouillon sauvegardé dans la liste des offres')
+        ).toBeInTheDocument()
+      })
       it('should save stocks when clicking on save draft button', async () => {
         // given
         api.upsertStocks.mockResolvedValue({})
