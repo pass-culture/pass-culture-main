@@ -35,7 +35,8 @@ const SelectInput = ({
       className={cn(styles['select-input'], {
         [styles['has-error']]: hasError,
         [styles['has-description']]: hasDescription,
-        [styles['select-input-placeholder']]: field.value === '',
+        [styles['select-input-placeholder']]:
+          field.value === '' || field.value === null,
       })}
       disabled={disabled}
       id={name}

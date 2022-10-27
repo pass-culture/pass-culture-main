@@ -120,6 +120,7 @@ const formValues: IVenueFormValues = {
   id: '',
   bannerUrl: '',
   withdrawalDetails: 'Oui',
+  venueSiret: null,
   isWithdrawalAppliedOnAllOffers: false,
   reimbursementPointId: 91,
 }
