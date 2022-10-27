@@ -69,7 +69,7 @@ jobs:
       - name: Setup helmfile
         uses: mamezou-tech/setup-helmfile@v1.0.0
         with:
-          helmfile-version: "v0.135.0"
+          helmfile-version: "v0.147.0"
       - name: Deploy pcapi
         run: |
           PASSCULTURE_PASSWORD=${{ steps.openid-auth.outputs.access_token }} \
