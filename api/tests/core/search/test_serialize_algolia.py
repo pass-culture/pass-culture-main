@@ -11,6 +11,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
+from pcapi.core.testing import override_settings
 from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.utils.human_ids import humanize
 
@@ -18,6 +19,11 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@override_settings(
+    ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD=1,
+    ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD=2,
+    ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD=3,
+)
 def test_serialize_offer():
     offer = offers_factories.OfferFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
@@ -39,7 +45,7 @@ def test_serialize_offer():
         venue__managingOfferer__name="Les Librairies Associées",
     )
     stock = offers_factories.StockFactory(offer=offer, price=10)
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized == {
         "distinct": "2221001648",
         "objectID": offer.id,
@@ -55,6 +61,7 @@ def test_serialize_offer():
             "isEvent": False,
             "isForbiddenToUnderage": offer.is_forbidden_to_underage,
             "isThing": True,
+            "last30DaysBookings": None,
             "movieGenres": None,
             "musicType": None,
             "name": "Titre formidable",
@@ -111,7 +118,7 @@ def test_serialize_offer_extra_data(
     offer = offers_factories.OfferFactory(extraData=extra_data)
 
     # when
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
 
     # then
     assert serialized["offer"]["musicType"] == expected_music_style
@@ -120,13 +127,39 @@ def test_serialize_offer_extra_data(
     assert serialized["offer"]["bookMacroSection"] == expected_macro_section
 
 
+@override_settings(
+    ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD=1,
+    ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD=2,
+    ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD=3,
+)
+@pytest.mark.parametrize(
+    "bookings_number, expected_range",
+    (
+        (0, None),
+        (1, algolia.Last30DaysBookingsRange.LOW.value),
+        (2, algolia.Last30DaysBookingsRange.MEDIUM.value),
+        (3, algolia.Last30DaysBookingsRange.HIGH.value),
+        (4, algolia.Last30DaysBookingsRange.HIGH.value),
+    ),
+)
+def test_index_last_30_days_bookings(app, bookings_number, expected_range):
+    # given
+    offer = offers_factories.StockFactory().offer
+
+    # when
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, bookings_number)
+
+    # then
+    assert serialized["offer"]["last30DaysBookings"] == expected_range
+
+
 def test_serialize_offer_event():
     offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
     dt1 = datetime.datetime(2032, 1, 4, 12, 15)
     offers_factories.EventStockFactory(offer=offer, beginningDatetime=dt1)
     dt2 = datetime.datetime(2032, 1, 1, 16, 30)
     offers_factories.EventStockFactory(offer=offer, beginningDatetime=dt2)
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     # Dates are ordered, but times are not. I don't know why we order dates.
     assert serialized["offer"]["dates"] == [dt2.timestamp(), dt1.timestamp()]
     assert set(serialized["offer"]["times"]) == {12 * 60 * 60 + 15 * 60, 16 * 60 * 60 + 30 * 60}
@@ -144,20 +177,20 @@ def test_serialize_offer_event():
 )
 def test_serialize_offer_distinct(extra_data, expected_distinct):
     offer = offers_factories.OfferFactory(id=1, extraData=extra_data)
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["distinct"] == expected_distinct
 
 
 def test_serialize_offer_tags():
     criterion = criteria_factories.CriterionFactory(name="formidable")
     offer = offers_factories.OfferFactory(criteria=[criterion])
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["tags"] == ["formidable"]
 
 
 def test_serialize_default_position():
     offer = offers_factories.DigitalOfferFactory()
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["_geoloc"] == {
         "lat": algolia.DEFAULT_LATITUDE,
         "lng": algolia.DEFAULT_LONGITUDE,
@@ -166,7 +199,7 @@ def test_serialize_default_position():
 
 def test_serialize_offer_thumb_url():
     offer = offers_factories.OfferFactory(product__thumbCount=1)
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["thumbUrl"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
 
 
