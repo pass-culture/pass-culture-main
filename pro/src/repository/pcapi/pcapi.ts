@@ -190,13 +190,6 @@ export const getFilteredCollectiveBookingsXLS = async filters => {
 // Business Unit
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offererId' implicitly has an 'any' type... Remove this comment to see the full error message
-export const getBusinessUnits = offererId => {
-  const queryParams = offererId ? `?offererId=${offererId}` : ''
-
-  return client.get(`/finance/business-units${queryParams}`)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'businessUnitId' implicitly has an 'any'... Remove this comment to see the full error message
 export const editBusinessUnit = (businessUnitId, siret) => {
   return client.patch(`/finance/business-units/${businessUnitId}`, {

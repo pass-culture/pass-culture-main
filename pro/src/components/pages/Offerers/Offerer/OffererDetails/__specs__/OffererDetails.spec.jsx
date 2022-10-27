@@ -14,13 +14,10 @@ import { configureTestStore } from 'store/testUtils'
 
 import OffererDetails from '../OffererDetails'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
+    getBusinessUnits: jest.fn(),
   },
 }))
 

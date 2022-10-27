@@ -9,7 +9,6 @@ import {
 } from 'components/pages/Home/Offerers/_constants'
 import { VenueList } from 'components/pages/Home/Venues/VenueList'
 import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { sortByDisplayName } from 'utils/strings'
 
@@ -83,7 +82,7 @@ const Offerers = () => {
         setVirtualVenue(virtualVenue)
         setIsUserOffererValidated(true)
 
-        const receivedBusinessUnitList = await pcapi.getBusinessUnits(offererId)
+        const receivedBusinessUnitList = await api.getBusinessUnits(offererId)
         setBusinessUnitList(receivedBusinessUnitList)
       } catch (error) {
         if (error.status === HTTP_STATUS.FORBIDDEN) {

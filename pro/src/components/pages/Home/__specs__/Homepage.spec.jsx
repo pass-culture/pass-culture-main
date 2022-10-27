@@ -15,7 +15,6 @@ import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { CLOSE_JOB_HIGHLIGHTS_BANNER_KEY } from 'new_components/JobHighlightsBanner/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -26,10 +25,6 @@ jest.mock('utils/config', () => ({
     'link/to/offerer/demarchesSimplifiees/procedure',
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn(),
@@ -37,6 +32,7 @@ jest.mock('apiClient/api', () => ({
     getOfferer: jest.fn(),
     getVenueStats: jest.fn(),
     patchProUserRgsSeen: jest.fn(),
+    getBusinessUnits: jest.fn(),
   },
 }))
 
@@ -166,7 +162,7 @@ describe('homepage', () => {
       id: offerer.id,
       name: offerer.name,
     }))
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    api.getBusinessUnits.mockResolvedValue([])
     api.getOfferer.mockResolvedValue(baseOfferers[0])
     api.listOfferersNames.mockResolvedValue({
       offerersNames: baseOfferersNames,
