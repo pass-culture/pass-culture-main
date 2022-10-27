@@ -15,7 +15,13 @@ import { apiProvider } from '../../../providers/apiProvider'
 import { RejectOffererRequest } from '../../../TypesFromApi'
 import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
 
-export const RejectOffererModal = ({ offererId }: { offererId: number }) => {
+export const RejectOffererModal = ({
+  offererId,
+  onContextMenuChange,
+}: {
+  offererId: number
+  onContextMenuChange: () => void
+}) => {
   const [openModal, setOpenModal] = useState(false)
   const notify = useNotify()
 
@@ -36,7 +42,10 @@ export const RejectOffererModal = ({ offererId }: { offererId: number }) => {
   const handleOpenModal = () => {
     setOpenModal(true)
   }
-  const handleCloseModal = () => setOpenModal(false)
+  const handleCloseModal = () => {
+    setOpenModal(false)
+    onContextMenuChange()
+  }
 
   const formSubmit = async (params: FieldValues) => {
     try {
