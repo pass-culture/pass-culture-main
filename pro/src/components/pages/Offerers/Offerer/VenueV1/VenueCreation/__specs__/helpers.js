@@ -22,7 +22,7 @@ export const fieldLabels = {
   latitude: { label: 'Latitude', exact: false, type: 'text' },
   venueTypeCode: { label: 'Type de lieu', exact: false, type: 'select' },
   venueLabelId: {
-    label: 'Label du Ministère de la Culture ou du CNC',
+    label: 'Label du ministère de la Culture ou du CNC',
     exact: false,
     type: 'select',
   },
