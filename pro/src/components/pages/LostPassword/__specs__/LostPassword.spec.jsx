@@ -10,9 +10,7 @@ import { configureTestStore } from 'store/testUtils'
 
 import LostPassword from '../LostPassword'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  resetPassword: jest.fn().mockResolvedValue({}),
-}))
+jest.mock('repository/pcapi/pcapi', () => ({}))
 jest.mock('utils/recaptcha', () => ({
   initReCaptchaScript: jest.fn().mockReturnValue({ remove: jest.fn() }),
   getReCaptchaToken: jest.fn().mockResolvedValue({}),
@@ -22,6 +20,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn().mockResolvedValue({}),
     postNewPassword: jest.fn().mockResolvedValue({}),
+    resetPassword: jest.fn().mockResolvedValue({}),
   },
 }))
 
