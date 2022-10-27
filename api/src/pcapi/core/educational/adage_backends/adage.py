@@ -25,6 +25,9 @@ class AdageHttpClient(AdageClient):
             data=data.json(),
         )
 
+        if api_response.status_code == 404:
+            return models.AdageApiResult(sent_data=data, response=dict(api_response.json()), success=True)  # type: ignore [arg-type]
+
         if api_response.status_code != 201:
             raise exceptions.AdageException(
                 "Error posting new prebooking to Adage API.", api_response.status_code, api_response.text
