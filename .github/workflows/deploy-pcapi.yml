@@ -97,7 +97,6 @@ jobs:
       app_name: pro
       app_directory: pro
       environment: ${{ inputs.environment }}
-      node_version: 14.18
     secrets:
       gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
       service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
@@ -110,7 +109,6 @@ jobs:
       app_name: adage
       app_directory: adage-front
       environment: ${{ inputs.environment }}
-      node_version: 14.18
     secrets:
       gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
       service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
@@ -135,11 +133,12 @@ jobs:
           service_account: ${{ secrets.METIER_BACKOFFICE_SERVICE_ACCOUNT }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
+      - uses: actions/checkout@v3
+      - run: echo "node_version=$(cat backoffice/.nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.node_version }}
           cache: 'yarn'
-      - uses: actions/checkout@v3
       - run: |
           set -a; source ../config/run_envs/${{ inputs.environment }};
           yarn build:${{ inputs.environment }}

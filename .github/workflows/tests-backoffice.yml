@@ -1,7 +1,6 @@
 on: workflow_call
 
 env:
-  node_version: 14.18
   use_cache: ${{ github.ref != 'refs/heads/master' }}
 
 defaults:
@@ -15,29 +14,39 @@ jobs:
     with:
       folder: backoffice
 
-  tests-backoffice-front-unit-tests:
-    name: "Unit tests"
+  read-node-version:
     runs-on: ubuntu-latest
     needs: check-backoffice-folder-changes
     if: ${{ needs.check-backoffice-folder-changes.outputs.folder_changed == 'true' }}
+    outputs:
+      node_version: ${{ steps.read-node-version.outputs.node_version }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: read-node-version
+        run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
+
+  tests-backoffice-front-unit-tests:
+    name: "Unit tests"
+    runs-on: ubuntu-latest
+    needs: read-node-version
     steps:
       - uses: actions/checkout@v3
       - if: ${{ env.use_cache }}
         uses: actions/setup-node@v3
         with:
           cache: yarn
-          node-version: ${{ env.node_version }}
+          node-version: ${{ needs.read-node-version.outputs.node_version }}
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.node_version }}
+          node-version: ${{ needs.read-node-version.outputs.node_version }}
       - run: yarn install
       - name: Use Jest Cache
         id: jest-cache
         uses: actions/cache@v3
         with:
           path: ./${{ env.folder }}/.jest_cache
-          key: node-14.18-jest-cache
+          key: node-${{ needs.read-node-version.outputs.node_version }}-jest-cache
       - if: ${{ github.ref != 'refs/heads/master' }}
         run: yarn test:unit:ci
       - run: yarn test:unit:ci --coverage --changedSince=master

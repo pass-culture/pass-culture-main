@@ -10,9 +10,6 @@ on:
       environment:
         type: string
         required: true
-      node_version:
-        type: string
-        required: true
     secrets:
       gcp_project:
         required: true
@@ -39,10 +36,11 @@ jobs:
           service_account: ${{ secrets.service_account }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
+      - uses: actions/checkout@v3
+      - run: echo "node_version=$(cat ${{ inputs.app_directory }}/.nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
-          node-version: ${{ inputs.node_version }}
-      - uses: actions/checkout@v3
+          node-version: ${{ env.node_version }}
       - run: yarn install
         working-directory: ${{ inputs.app_directory }}
       - run: |
