@@ -10,7 +10,9 @@ class TransactionalEmail(Enum):
     ACCEPTED_AS_EAC_BENEFICIARY = models.Template(
         id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"], use_priority_queue=True
     )
-    BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER = models.Template(id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"])
+    BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER = models.Template(
+        id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"], send_to_ehp=False
+    )
     BOOKING_CANCELLATION_BY_BENEFICIARY = models.Template(
         id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"]
     )
@@ -54,7 +56,9 @@ class TransactionalEmail(Enum):
     PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY = models.Template(
         id_prod=510, id_not_prod=53, tags=["jeunes_erreur_importation_dms"]
     )
-    RECREDIT_TO_UNDERAGE_BENEFICIARY = models.Template(id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"])
+    RECREDIT_TO_UNDERAGE_BENEFICIARY = models.Template(
+        id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"], send_to_ehp=False
+    )
     REPORTED_OFFER_BY_USER = models.Template(id_prod=589, id_not_prod=70, tags=["interne_offre_signale"])
     SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR = models.Template(
         id_prod=385,
