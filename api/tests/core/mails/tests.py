@@ -1,9 +1,11 @@
 import dataclasses
+import logging
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.core.mails import models
+from pcapi.core.mails import send
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -32,7 +34,7 @@ class SendinblueBackendTest:
         reply_to={"email": "reply_to@example.com", "name": "Tom S."},
     )
 
-    def _get_backend(self):
+    def _get_backend_for_test(self):
         return import_string("pcapi.core.mails.backends.sendinblue.SendinblueBackend")
 
     @override_settings(
@@ -45,7 +47,7 @@ class SendinblueBackendTest:
     )
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail(self, mock_send_transactional_email_secondary_task):
-        backend = self._get_backend()
+        backend = self._get_backend_for_test()
         result = backend().send_mail(recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
@@ -75,7 +77,7 @@ class SendinblueBackendTest:
             reply_to=dataclasses.asdict(models.TransactionalSender.SUPPORT.value),
         )
 
-        backend = self._get_backend()
+        backend = self._get_backend_for_test()
         result = backend().send_mail(recipients=self.recipients, data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
@@ -102,13 +104,13 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         reply_to={"email": "reply_to@example.com", "name": "Tom S."},
     )
 
-    def _get_backend(self):
+    def _get_backend_for_test(self):
         return import_string("pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
 
     @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["test@example.com"])
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_to_dev(self, mock_send_transactional_email_secondary_task):
-        backend = self._get_backend()
+        backend = self._get_backend_for_test()
         result = backend().send_mail(recipients=self.recipients, bcc_recipients=["test@example.com"], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
@@ -126,7 +128,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
     def test_send_mail_test_user(self, mock_send_transactional_email_secondary_task):
         users_factories.UserFactory(email=self.recipients[0], roles=[users_models.UserRole.TEST])
 
-        backend = self._get_backend()
+        backend = self._get_backend_for_test()
         result = backend().send_mail(recipients=self.recipients, data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
@@ -142,10 +144,54 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
     def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task, recipient):
         users_factories.UserFactory(email=recipient, roles=[users_models.UserRole.TEST])
 
-        backend = self._get_backend()
+        backend = self._get_backend_for_test()
         result = backend().send_mail(recipients=[recipient, "lucy.ellingson@example.com"], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
         assert list(task_param.recipients) == [recipient]
         assert result.successful
+
+
+class SendTest:
+    @override_settings(IS_TESTING=True)
+    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_to_ehp_false_in_testing(self, mock_send_transactional_email_secondary_task, caplog):
+        mock_template_send_ehp_false = models.Template(
+            id_prod=11, id_not_prod=12, tags=["some", "stuff"], send_to_ehp=False
+        )
+        mock_reply_to = models.EmailInfo(email="reply_to@example.com", name="Tom S.")
+        data = models.TransactionalEmailData(template=mock_template_send_ehp_false, params={}, reply_to=mock_reply_to)
+        recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
+
+        with caplog.at_level(logging.INFO):
+            result_bool = send(recipients=recipients, data=data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 0
+        assert caplog.messages == [
+            "An e-mail would be sent via Sendinblue to=lucy.ellingson@example.com, avery.kelly@example.com, "
+            "bcc=None: {'template': {'id_prod': 11, 'id_not_prod': 12, 'tags': ['some', 'stuff'], 'use_priority_queue':"
+            " False, 'sender': <TransactionalSender.SUPPORT: EmailInfo(email='support@example.com',"
+            " name='pass Culture')>, 'send_to_ehp': False}, 'params': {}, 'reply_to': {'email': 'reply_to@example.com',"
+            " 'name': 'Tom S.'}}"
+        ]
+        assert result_bool
+
+    @override_settings(IS_TESTING=True)
+    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_to_ehp_true_in_testing(self, mock_send_transactional_email_secondary_task, caplog):
+        mock_template_send_ehp_true = models.Template(
+            id_prod=11, id_not_prod=12, tags=["some", "stuff"], send_to_ehp=True
+        )
+        mock_reply_to = models.EmailInfo(email="reply_to@example.com", name="Tom S.")
+        data = models.TransactionalEmailData(template=mock_template_send_ehp_true, params={}, reply_to=mock_reply_to)
+        recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
+
+        with caplog.at_level(logging.INFO):
+            result_bool = send(recipients=recipients, data=data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        assert caplog.records == []
+        assert result_bool
