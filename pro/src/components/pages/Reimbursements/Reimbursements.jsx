@@ -3,6 +3,7 @@ import './Reimbursement.scss'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -55,7 +56,7 @@ const Reimbursements = () => {
     try {
       const reimbursementPointsResponse = isNewBankInformationCreation
         ? await pcapi.getReimbursementPoints()
-        : await pcapi.getBusinessUnits()
+        : await api.getBusinessUnits()
       setReimbursementPointsOptions(
         sortByDisplayName(
           reimbursementPointsResponse.map(item => ({

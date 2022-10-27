@@ -29,7 +29,6 @@ jest.mock('react-router-dom', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn().mockResolvedValue([]),
   loadProviders: jest.fn().mockResolvedValue([]),
   editVenue: jest.fn(),
 }))
@@ -44,6 +43,7 @@ jest.mock('apiClient/api', () => ({
     fetchVenueLabels: jest.fn().mockResolvedValue([]),
     createVenueProvider: jest.fn(),
     listVenueProviders: jest.fn().mockResolvedValue({ venue_providers: [] }),
+    getBusinessUnits: jest.fn().mockResolvedValue([]),
   },
 }))
 
@@ -138,7 +138,7 @@ describe('test page : VenueEdition', () => {
         name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
       },
     ])
-    pcapi.getBusinessUnits.mockResolvedValue([{}])
+    api.getBusinessUnits.mockResolvedValue([{}])
     api.canOffererCreateEducationalOffer.mockResolvedValue()
   })
 
@@ -435,7 +435,7 @@ describe('test page : VenueEdition', () => {
         },
       }
       beforeEach(() => {
-        pcapi.getBusinessUnits.mockResolvedValue([
+        api.getBusinessUnits.mockResolvedValue([
           {
             id: 20,
             iban: 'FR0000000000000002',
@@ -511,7 +511,7 @@ describe('test page : VenueEdition', () => {
 
       it('should not submit data when cancel edition of business unit main venue', async () => {
         // Given
-        pcapi.getBusinessUnits.mockResolvedValue([
+        api.getBusinessUnits.mockResolvedValue([
           {
             id: 20,
             iban: 'FR0000000000000002',

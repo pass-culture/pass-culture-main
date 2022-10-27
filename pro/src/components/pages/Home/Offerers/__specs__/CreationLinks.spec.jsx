@@ -15,15 +15,12 @@ import { configureTestStore } from 'store/testUtils'
 
 import Homepage from '../../Homepage'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn().mockResolvedValue([{}]),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
     listOfferersNames: jest.fn(),
     getVenueStats: jest.fn(),
+    getBusinessUnits: jest.fn().mockResolvedValue([{}]),
   },
 }))
 

@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Field } from 'react-final-form'
 
+import { api } from 'apiClient/api'
 import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
 import { humanizeSiret } from 'core/Venue/utils'
-import { getBusinessUnits } from 'repository/pcapi/pcapi'
 import { Banner } from 'ui-kit'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
@@ -48,7 +48,7 @@ const BankInformationWithBusinessUnit = ({
 
   useEffect(() => {
     async function loadBusinessUnits(offererId) {
-      const businessUnitsResponse = await getBusinessUnits(offererId)
+      const businessUnitsResponse = await api.getBusinessUnits(offererId)
 
       let venueBusinessUnitResponse = null
       if (venue.businessUnit) {

@@ -27,13 +27,13 @@ jest.mock('utils/date', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getInvoices: jest.fn(),
-  getBusinessUnits: jest.fn(),
   getReimbursementPoints: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
+    getBusinessUnits: jest.fn(),
   },
 }))
 
@@ -166,7 +166,7 @@ describe('reimbursementsWithFilters', () => {
     invoices = BASE_INVOICES
     api.getVenues.mockResolvedValue({ venues })
     pcapi.getInvoices.mockResolvedValue(invoices)
-    pcapi.getBusinessUnits.mockResolvedValue([
+    api.getBusinessUnits.mockResolvedValue([
       { id: 1, name: 'Point de remboursement 1' },
       { id: 2, name: 'Point de remboursement 2' },
     ])
