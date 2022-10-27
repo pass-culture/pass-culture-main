@@ -13,6 +13,7 @@ env:
 
 jobs:
   generate-pcapi-helm-secrets-file:
+    name: "[pcapi] Generate helm secrets values file"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -48,6 +49,7 @@ jobs:
         run: echo "secrets_file_base64=$(cat ${{ github.workspace }}/helm_secrets_file_base64)" >> $GITHUB_OUTPUT
 
   deploy-helm-release:
+    name: "[pcapi] Deploy helm release"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:
@@ -115,6 +117,7 @@ jobs:
       workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
 
   deploy-backoffice-front:
+    name: "[backoffice] Deployment"
     if: inputs.environment != 'integration'
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest

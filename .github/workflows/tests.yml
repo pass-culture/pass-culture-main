@@ -8,24 +8,25 @@ on:
 
 jobs:
   test-pro:
-    name: "[pro]"
+    name: "[pro] Tests"
     uses: ./.github/workflows/tests-pro.yml
 
   test-adage:
-    name: "[adage]"
+    name: "[adage] Tests"
     uses: ./.github/workflows/tests-adage.yml
 
   test-api:
-    name: "[api]"
+    name: "[api] Tests"
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
   test-backoffice:
-    name: "[backoffice]"
+    name: "[backoffice] Tests"
     uses: ./.github/workflows/tests-backoffice.yml
     secrets: inherit
 
   deploy-testing:
+    name: "[testing] Deployment"
     needs:
       - test-pro
       - test-adage
