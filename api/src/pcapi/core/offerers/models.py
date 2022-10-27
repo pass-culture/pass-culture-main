@@ -27,6 +27,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
@@ -40,7 +41,7 @@ from werkzeug.utils import cached_property
 
 from pcapi.connectors import sirene
 from pcapi.core.educational import models as educational_models
-from pcapi.core.finance.models import BankInformationStatus
+import pcapi.core.finance.models as finance_models
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models import Base
 from pcapi.models import Model
@@ -64,6 +65,12 @@ from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
 
 from . import constants
+
+
+if typing.TYPE_CHECKING:
+    import pcapi.core.criteria.models as criteria_models
+    import pcapi.core.providers.models as providers_models
+    import pcapi.core.users.models as users_models
 
 
 logger = logging.getLogger(__name__)
@@ -154,11 +161,13 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     longitude = Column(Numeric(8, 5), nullable=True)
 
-    venueProviders = relationship("VenueProvider", back_populates="venue")  # type: ignore [misc]
+    venueProviders: list["providers_models.VenueProvider"] = relationship("VenueProvider", back_populates="venue")
 
     managingOffererId: int = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
 
-    managingOfferer = relationship("Offerer", foreign_keys=[managingOffererId], backref="managedVenues")  # type: ignore [misc]
+    managingOfferer: sa_orm.Mapped["Offerer"] = relationship(
+        "Offerer", foreign_keys=[managingOffererId], backref="managedVenues"
+    )
 
     bookingEmail = Column(String(120), nullable=True)
 
@@ -193,19 +202,21 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         nullable=True,
     )
 
-    collectiveOffers = relationship("CollectiveOffer", back_populates="venue")  # type: ignore [misc]
+    collectiveOffers: list[educational_models.CollectiveOffer] = relationship("CollectiveOffer", back_populates="venue")
 
-    collectiveOfferTemplates = relationship("CollectiveOfferTemplate", back_populates="venue")  # type: ignore [misc]
+    collectiveOfferTemplates: list[educational_models.CollectiveOfferTemplate] = relationship(
+        "CollectiveOfferTemplate", back_populates="venue"
+    )
 
     venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
 
-    venueType = relationship("VenueType", foreign_keys=[venueTypeId])  # type: ignore [misc]
+    venueType: sa_orm.Mapped["VenueType"] = relationship("VenueType", foreign_keys=[venueTypeId])
 
     venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 
-    venueLabel = relationship("VenueLabel", foreign_keys=[venueLabelId])  # type: ignore [misc]
+    venueLabel: sa_orm.Mapped["VenueLabel"] = relationship("VenueLabel", foreign_keys=[venueLabelId])
 
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
@@ -213,23 +224,25 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     description = Column(Text, nullable=True)
 
-    contact = relationship("VenueContact", back_populates="venue", uselist=False)  # type: ignore [misc]
+    contact: sa_orm.Mapped["VenueContact | None"] = relationship("VenueContact", back_populates="venue", uselist=False)
 
     businessUnitId = Column(Integer, ForeignKey("business_unit.id"), nullable=True)
-    businessUnit = relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venues")  # type: ignore [misc]
+    businessUnit: sa_orm.Mapped["finance_models.BusinessUnit"] = relationship(
+        "BusinessUnit", foreign_keys=[businessUnitId], backref="venues"
+    )
 
     # bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
     bannerUrl = Column(Text, nullable=True)
 
-    bannerMeta = Column(MutableDict.as_mutable(JSONB), nullable=True)  # type: ignore [misc]
+    bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
 
     adageId = Column(Text, nullable=True)
 
     thumb_path_component = "venues"
 
-    criteria = sa.orm.relationship(  # type: ignore [misc]
+    criteria: list["criteria_models.Criterion"] = sa.orm.relationship(
         "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
     )
 
@@ -276,12 +289,14 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     collectiveAccessInformation = Column(Text, nullable=True)
     collectivePhone = Column(Text, nullable=True)
     collectiveEmail = Column(Text, nullable=True)
-    bankInformation = relationship("BankInformation", back_populates="venue", uselist=False)  # type: ignore [misc]
+    bankInformation: finance_models.BankInformation | None = relationship(
+        "BankInformation", back_populates="venue", uselist=False
+    )
 
     @property
     def is_eligible_for_search(self) -> bool:
         not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
-        return self.isPermanent and self.managingOfferer.isActive and not_administrative  # type: ignore [return-value]
+        return bool(self.isPermanent) and self.managingOfferer.isActive and not_administrative
 
     def store_departement_code(self) -> None:
         if not self.postalCode:
@@ -302,8 +317,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             return None
 
         if self.bankInformation.status not in (
-            BankInformationStatus.DRAFT,
-            BankInformationStatus.ACCEPTED,
+            finance_models.BankInformationStatus.DRAFT,
+            finance_models.BankInformationStatus.ACCEPTED,
         ):
             return None
 
@@ -311,11 +326,15 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     @property
     def hasPendingBankInformationApplication(self) -> bool:
-        return bool(self.bankInformation) and self.bankInformation.status == BankInformationStatus.DRAFT
+        if not self.bankInformation:
+            return False
+        return self.bankInformation.status == finance_models.BankInformationStatus.DRAFT
 
     @property
     def demarchesSimplifieesIsAccepted(self) -> bool:
-        return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
+        if not self.bankInformation:
+            return False
+        return self.bankInformation.status == finance_models.BankInformationStatus.ACCEPTED
 
     @property
     def has_individual_offers(self) -> bool:
@@ -439,16 +458,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
 class VenueLabel(PcObject, Base, Model):
     __tablename__ = "venue_label"
-
     label: str = Column(String(100), nullable=False)
-
-    venue = relationship(Venue, back_populates="venueLabel", uselist=False)
 
 
 class VenueType(PcObject, Base, Model):
+    __tablename__ = "venue_type"
     label: str = Column(String(100), nullable=False)
-
-    venue = relationship("Venue", back_populates="venueType")  # type: ignore [misc]
 
 
 class VenueContact(PcObject, Base, Model):
@@ -458,7 +473,7 @@ class VenueContact(PcObject, Base, Model):
         BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
     )
 
-    venue = relationship("Venue", foreign_keys=[venueId], back_populates="contact")  # type: ignore [misc]
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="contact")
 
     email = Column(String(256), nullable=True)
 
@@ -484,12 +499,12 @@ class VenueContact(PcObject, Base, Model):
 
 
 @listens_for(Venue, "before_insert")
-def before_insert(mapper, connect, venue):  # type: ignore [no-untyped-def]
+def before_insert(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
     _fill_departement_code_from_postal_code(venue)
 
 
 @listens_for(Venue, "before_update")
-def before_update(mapper, connect, venue):  # type: ignore [no-untyped-def]
+def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
     _fill_departement_code_from_postal_code(venue)
 
 
@@ -524,9 +539,9 @@ class VenuePricingPointLink(Base, Model):
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId], back_populates="pricing_point_links")  # type: ignore [misc]
+    venue: sa_orm.Mapped[Venue] = relationship(Venue, foreign_keys=[venueId], back_populates="pricing_point_links")
     pricingPointId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    pricingPoint = relationship(Venue, foreign_keys=[pricingPointId])  # type: ignore [misc]
+    pricingPoint: sa_orm.Mapped[Venue] = relationship(Venue, foreign_keys=[pricingPointId])
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the pricing point. For links
@@ -554,9 +569,11 @@ class VenueReimbursementPointLink(Base, Model):
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId], back_populates="reimbursement_point_links")  # type: ignore [misc]
+    venue: sa_orm.Mapped[Venue] = relationship(
+        Venue, foreign_keys=[venueId], back_populates="reimbursement_point_links"
+    )
     reimbursementPointId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])  # type: ignore [misc]
+    reimbursementPoint: sa_orm.Mapped[Venue] = relationship(Venue, foreign_keys=[reimbursementPointId])
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the reimbursement point. For links
@@ -570,7 +587,7 @@ class VenueReimbursementPointLink(Base, Model):
         sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
     )
 
-    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, **kwargs: typing.Any) -> None:
         kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
 
@@ -606,7 +623,7 @@ class Offerer(
 
     dateValidated = Column(DateTime, nullable=True, default=None)
 
-    tags = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")  # type: ignore [misc]
+    tags: list["OffererTag"] = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
     thumb_path_component = "offerers"
 
@@ -624,8 +641,8 @@ class Offerer(
             return None
 
         if self.bankInformation.status not in (
-            BankInformationStatus.DRAFT,
-            BankInformationStatus.ACCEPTED,
+            finance_models.BankInformationStatus.DRAFT,
+            finance_models.BankInformationStatus.ACCEPTED,
         ):
             return None
 
@@ -712,7 +729,9 @@ offerer_ts_indexes = [
 class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusMixin):
     __table_name__ = "user_offerer"
     userId: int = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
-    user = relationship("User", foreign_keys=[userId], back_populates="UserOfferers")  # type: ignore [misc]
+    user: sa_orm.Mapped["users_models.User"] = relationship(
+        "User", foreign_keys=[userId], back_populates="UserOfferers"
+    )
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True, nullable=False)
     offerer: Offerer = relationship(Offerer, foreign_keys=[offererId], back_populates="UserOfferers")
 
@@ -731,7 +750,7 @@ class ApiKey(PcObject, Base, Model):
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))  # type: ignore [misc]
+    offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
 
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
@@ -755,8 +774,8 @@ class OffererTag(PcObject, Base, Model):
     label: str = Column(String(140))
     description: str = Column(Text)
 
-    def __repr__(self):  # type: ignore [no-untyped-def]
-        return "%s" % self.name
+    def __repr__(self) -> str:
+        return self.name
 
 
 class OffererTagMapping(PcObject, Base, Model):

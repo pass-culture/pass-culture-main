@@ -1,7 +1,9 @@
 import datetime
+import typing
 
 import factory
 
+import pcapi.core.finance.models as finance_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import crypto
@@ -38,8 +40,8 @@ class VenueFactory(BaseFactory):
 
     name = factory.Sequence("Le Petit Rintintin {}".format)
     departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75")
-    latitude = 48.87004
-    longitude = 2.37850
+    latitude: float | None = 48.87004
+    longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
     address = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
     postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75000")
@@ -66,7 +68,12 @@ class VenueFactory(BaseFactory):
     dmsToken = factory.LazyFunction(api.generate_dms_token)
 
     @factory.post_generation
-    def business_unit_venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def business_unit_venue_link(  # pylint: disable=no-self-argument
+        venue: models.Venue,
+        create: bool,
+        extracted: typing.Callable | None,
+        **kwargs: typing.Any,
+    ) -> finance_models.BusinessUnitVenueLink | None:
         import pcapi.core.finance.factories as finance_factories
 
         if not create:
@@ -76,7 +83,12 @@ class VenueFactory(BaseFactory):
         return finance_factories.BusinessUnitVenueLinkFactory(venue=venue, businessUnit=venue.businessUnit)
 
     @factory.post_generation
-    def pricing_point(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def pricing_point(  # pylint: disable=no-self-argument
+        venue: models.Venue,
+        create: bool,
+        extracted: typing.Callable | None,
+        **kwargs: typing.Any,
+    ) -> models.VenuePricingPointLink | None:
         if not create:
             return None
         pricing_point = extracted
@@ -87,7 +99,12 @@ class VenueFactory(BaseFactory):
         return VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point)
 
     @factory.post_generation
-    def reimbursement_point(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def reimbursement_point(  # pylint: disable=no-self-argument
+        venue: models.Venue,
+        create: bool,
+        extracted: typing.Callable | None,
+        **kwargs: typing.Any,
+    ) -> models.VenueReimbursementPointLink | None:
         if not create:
             return None
         reimbursement_point = extracted
@@ -125,8 +142,8 @@ class VirtualVenueFactory(VenueFactory):
     departementCode = None
     postalCode = None
     city = None
-    latitude = None  # type: ignore [assignment]
-    longitude = None  # type: ignore [assignment]
+    latitude = None
+    longitude = None
     siret = None
     audioDisabilityCompliant = None
     mentalDisabilityCompliant = None
@@ -237,7 +254,12 @@ class ApiKeyFactory(BaseFactory):
     prefix = DEFAULT_PREFIX
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def _create(
+        cls,
+        model_class: typing.Type[models.ApiKey],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.ApiKey:
         kwargs["secret"] = crypto.hash_password(kwargs.get("secret", DEFAULT_SECRET))
         return super()._create(model_class, *args, **kwargs)
 

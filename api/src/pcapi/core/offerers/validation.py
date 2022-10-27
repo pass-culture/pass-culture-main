@@ -1,4 +1,5 @@
 import decimal
+import typing
 
 import sqlalchemy.orm as sqla_orm
 
@@ -17,7 +18,7 @@ VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
 # FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
-def check_existing_business_unit(business_unit_id: int, offerer: models.Offerer):  # type: ignore [no-untyped-def]
+def check_existing_business_unit(business_unit_id: int, offerer: models.Offerer) -> None:
     business_unit = finance_models.BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
     if not business_unit:
         raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'existe pas."]})
@@ -26,7 +27,7 @@ def check_existing_business_unit(business_unit_id: int, offerer: models.Offerer)
         raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'est pas un choix valide pour ce lieu."]})
 
 
-def validate_coordinates(raw_latitude, raw_longitude):  # type: ignore [no-untyped-def]
+def validate_coordinates(raw_latitude: float | str, raw_longitude: float | str) -> None:
     api_errors = ApiErrors()
 
     if raw_latitude:
@@ -40,7 +41,7 @@ def validate_coordinates(raw_latitude, raw_longitude):  # type: ignore [no-untyp
 
 
 # FUTURE-NEW-BANK-DETAILS: cleanup ifs when new bank details journey is complete
-def check_venue_creation(data):  # type: ignore [no-untyped-def]
+def check_venue_creation(data: dict[str, typing.Any]) -> None:
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous devez choisir une structure pour votre lieu."]})
@@ -61,7 +62,7 @@ def check_venue_creation(data):  # type: ignore [no-untyped-def]
             check_existing_business_unit(business_unit_id, offerer)
 
 
-def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
+def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venue) -> None:
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
     business_unit_id = modifications.get("businessUnitId")
@@ -106,7 +107,7 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
         check_existing_business_unit(business_unit_id, offerer=venue.managingOfferer)
 
 
-def _validate_longitude(api_errors, raw_longitude):  # type: ignore [no-untyped-def]
+def _validate_longitude(api_errors: ApiErrors, raw_longitude: float | str) -> None:
     try:
         longitude = decimal.Decimal(raw_longitude)
     except decimal.InvalidOperation:
@@ -116,7 +117,7 @@ def _validate_longitude(api_errors, raw_longitude):  # type: ignore [no-untyped-
             api_errors.add_error("longitude", "La longitude doit être comprise entre -180.0 et +180.0")
 
 
-def _validate_latitude(api_errors, raw_latitude):  # type: ignore [no-untyped-def]
+def _validate_latitude(api_errors: ApiErrors, raw_latitude: float | str) -> None:
     try:
         latitude = decimal.Decimal(raw_latitude)
     except decimal.InvalidOperation:
