@@ -73,7 +73,7 @@ def update_venue(
     contact_data: serialize_base.VenueContactModel = None,
     **attrs: typing.Any,
 ) -> models.Venue:
-    validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
+    validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
     reimbursement_point_id = attrs.pop("reimbursementPointId", None)
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
@@ -474,7 +474,13 @@ def create_offerer(
             _auto_tag_new_offerer(offerer, siren_info)
             extra_data = {"sirene_info": dict(siren_info)}
 
-        history_api.log_action(history_models.ActionType.OFFERER_NEW, user, user=user, offerer=offerer, **extra_data)  # type: ignore[arg-type]
+        history_api.log_action(
+            history_models.ActionType.OFFERER_NEW,
+            user,
+            user=user,
+            offerer=offerer,
+            **extra_data,  # type: ignore [arg-type]
+        )
 
     if not admin_emails.maybe_send_offerer_validation_email(offerer, user_offerer, siren_info):
         logger.warning(
@@ -716,8 +722,8 @@ def add_comment_to_offerer_attachment(user_offerer_id: int, author_user: users_m
     )
 
 
-def get_timestamp_from_url(image_url: str) -> str:
-    return int(image_url.split("_")[-1])  # type: ignore [return-value]
+def get_timestamp_from_url(image_url: str) -> int:
+    return int(image_url.split("_")[-1])
 
 
 def rm_previous_venue_thumbs(venue: models.Venue) -> None:
@@ -726,16 +732,17 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
 
     # handle old banner urls that did not have a timestamp
     timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else 0
-    storage.remove_thumb(venue, image_index=timestamp)  # type: ignore [arg-type]
+    storage.remove_thumb(venue, image_index=timestamp)
 
     # some older venues might have a banner but not the original file
     # note: if bannerUrl is not None, bannerMeta should not be either.
+    assert venue.bannerMeta is not None
     if original_image_url := venue.bannerMeta.get("original_image_url"):
         original_image_timestamp = get_timestamp_from_url(original_image_url)
-        storage.remove_thumb(venue, image_index=original_image_timestamp)  # type: ignore [arg-type]
+        storage.remove_thumb(venue, image_index=original_image_timestamp)
 
     venue.bannerUrl = None
-    venue.bannerMeta = None  # type: ignore [call-overload]
+    venue.bannerMeta = None
 
 
 def save_venue_banner(
@@ -773,7 +780,7 @@ def save_venue_banner(
     )
 
     venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"
-    venue.bannerMeta = {  # type: ignore [call-overload]
+    venue.bannerMeta = {
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
@@ -1036,10 +1043,8 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
         sa.select(
             sa.case(
                 (
-                    sa.or_(  # type: ignore[type-var]
-                        offerers_models.VenueReimbursementPointLink.id == None,
-                        sa.not_(offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow())),
-                    ),
+                    offerers_models.VenueReimbursementPointLink.id.is_(None)
+                    | ~offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
                     "ko",
                 ),
                 else_="ok",
