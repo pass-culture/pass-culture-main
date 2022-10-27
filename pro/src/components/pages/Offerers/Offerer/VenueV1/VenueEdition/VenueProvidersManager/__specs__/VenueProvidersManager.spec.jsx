@@ -12,6 +12,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -20,7 +21,12 @@ import VenueProvidersManager from '../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    listVenueProviders: jest.fn(),
+  },
 }))
 
 const renderVenueProvidersManager = props => {
@@ -57,7 +63,9 @@ describe('src | VenueProvidersManager', () => {
     ]
     venueProviders = []
     pcapi.loadProviders.mockResolvedValue(providers)
-    pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+    api.listVenueProviders.mockResolvedValue({
+      venue_providers: venueProviders,
+    })
   })
 
   it('should retrieve providers and venue providers when component is mounted', async () => {
@@ -67,7 +75,7 @@ describe('src | VenueProvidersManager', () => {
     // then
     await waitFor(() => {
       expect(pcapi.loadProviders).toHaveBeenCalledTimes(1)
-      expect(pcapi.loadVenueProviders).toHaveBeenCalledTimes(1)
+      expect(api.listVenueProviders).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -84,7 +92,9 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadProviders.mockResolvedValue([])
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // When
       renderVenueProvidersManager(props)
@@ -107,7 +117,9 @@ describe('src | VenueProvidersManager', () => {
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // when
       renderVenueProvidersManager(props)
@@ -130,7 +142,9 @@ describe('src | VenueProvidersManager', () => {
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // when
       renderVenueProvidersManager(props)

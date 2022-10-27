@@ -106,13 +106,6 @@ export const loadProviders = async venueId => {
   return client.get(`/providers/${venueId}`)
 }
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
-export const loadVenueProviders = async venueId => {
-  return client
-    .get(`/venueProviders?venueId=${venueId}`)
-    .then(response => response.venue_providers)
-}
-
 //
 // BookingsRecap
 //

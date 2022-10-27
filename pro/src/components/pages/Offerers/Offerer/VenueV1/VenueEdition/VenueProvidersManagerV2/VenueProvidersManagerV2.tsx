@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
 import Spinner from 'components/layout/Spinner'
 import { IVenue } from 'core/Venue/types'
@@ -29,8 +30,9 @@ const VenueProvidersManagerV2 = ({
       const providersResponse = await pcapi.loadProviders(venue.id)
       setProviders(providersResponse)
 
-      const venueProvidersResponse = await pcapi.loadVenueProviders(venue.id)
-      setVenueProviders(venueProvidersResponse)
+      // @ts-expect-error string is not assignable to type number
+      const venueProvidersResponse = await api.listVenueProviders(venue.id)
+      setVenueProviders(venueProvidersResponse.venue_providers)
       setIsLoading(false)
     }
     fetchData()
