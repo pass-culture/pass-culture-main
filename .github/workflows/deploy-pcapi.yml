@@ -121,6 +121,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    defaults:
+      run:
+        working-directory: backoffice
     needs: deploy-helm-release
     steps:
       - id: openid-auth
@@ -134,14 +137,13 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
       - uses: actions/checkout@v3
-      - run: echo "node_version=$(cat backoffice/.nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
+      - run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
           cache: 'yarn'
+          cache-dependency-path: backoffice/yarn.lock
       - run: |
           set -a; source ../config/run_envs/${{ inputs.environment }};
           yarn build:${{ inputs.environment }}
-        working-directory: backoffice
       - run: yarn deploy:${{ inputs.environment }}
-        working-directory: backoffice
