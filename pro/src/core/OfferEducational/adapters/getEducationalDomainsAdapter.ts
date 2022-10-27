@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 export type GetEducationalDomainsAdapter = Adapter<
   void,
@@ -17,7 +17,7 @@ const FAILING_RESPONSE: AdapterFailure<SelectOption[]> = {
 export const getEducationalDomainsAdapter: GetEducationalDomainsAdapter =
   async () => {
     try {
-      const domains = await pcapi.getEducationalDomains()
+      const domains = await api.listEducationalDomains()
 
       return {
         isOk: true,

@@ -1,11 +1,11 @@
+import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { getEducationalDomainsAdapter } from '../getEducationalDomainsAdapter'
 
 describe('getEducationalDomainsAdapter', () => {
   it('should return an error when API returns an error', async () => {
-    jest.spyOn(pcapi, 'getEducationalDomains').mockRejectedValueOnce(null)
+    jest.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(null)
     const response = await getEducationalDomainsAdapter()
 
     expect(response.isOk).toBeFalsy()
@@ -13,7 +13,7 @@ describe('getEducationalDomainsAdapter', () => {
   })
 
   it('should return a list of domains', async () => {
-    jest.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
+    jest.spyOn(api, 'listEducationalDomains').mockResolvedValueOnce([
       { id: 1, name: 'Cinéma' },
       { id: 2, name: 'Musique' },
     ])
