@@ -124,7 +124,7 @@ class FeatureToggle(enum.Enum):
     TEMP_DISABLE_OFFERER_VALIDATION_EMAIL = (
         "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
     )
-    # TEMP_ prefix should be used for temporary feature flags (work in progress, testing, transition...)
+    # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
 
     def is_active(self) -> bool:
         if flask.has_request_context():
