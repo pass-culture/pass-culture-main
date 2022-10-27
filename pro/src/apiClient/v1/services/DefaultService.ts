@@ -76,6 +76,7 @@ import type { StockIdsResponseModel } from '../models/StockIdsResponseModel';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
+import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
 import type { UserIdentityResponseModel } from '../models/UserIdentityResponseModel';
 import type { UserPhoneBodyModel } from '../models/UserPhoneBodyModel';
@@ -134,6 +135,22 @@ export class DefaultService {
         'exportType': exportType,
         'extra': extra,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_user_has_bookings <GET>
+   * @returns UserHasBookingResponse OK
+   * @throws ApiError
+   */
+  public getUserHasBookings(): CancelablePromise<UserHasBookingResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/pro/userHasBookings',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

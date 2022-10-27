@@ -155,6 +155,7 @@ export { StudentLevels } from './models/StudentLevels';
 export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';
 export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
+export type { UserHasBookingResponse } from './models/UserHasBookingResponse';
 export type { UserIdentityBodyModel } from './models/UserIdentityBodyModel';
 export type { UserIdentityResponseModel } from './models/UserIdentityResponseModel';
 export type { UserPhoneBodyModel } from './models/UserPhoneBodyModel';
