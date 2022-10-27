@@ -104,6 +104,7 @@ class Returns200Test:
                     "network": ["1"],
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue1.isPermanent,
                 }
             ]
         }
@@ -273,8 +274,7 @@ class Returns200Test:
     def test_get_relative_venues_from_name(self, client, db_session) -> None:
         offerer = offerer_factories.OffererFactory()
         venue1 = offerer_factories.VenueFactory(managingOfferer=offerer, name="azerty", isPermanent=True)
-        venue2 = offerer_factories.VenueFactory(managingOfferer=offerer, name="z123", isPermanent=True)
-        offerer_factories.VenueFactory(managingOfferer=offerer, name="z12345", isPermanent=False)
+        venue2 = offerer_factories.VenueFactory(managingOfferer=offerer, name="z123", isPermanent=False)
         offerer_factories.VenueFactory(isPermanent=True)
 
         client.with_eac_token()
@@ -307,6 +307,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue1.isPermanent,
                 },
                 {
                     "id": venue2.id,
@@ -332,6 +333,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue2.isPermanent,
                 },
             ]
         }

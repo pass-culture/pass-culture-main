@@ -8,7 +8,6 @@ class Returns200Test:
             siret=None,
             comment="no siret",
         )
-        offerer_factories.VenueFactory(isVirtual=False, isPermanent=False)
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues")
@@ -40,6 +39,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue1.isPermanent,
                 }
             ]
         }
