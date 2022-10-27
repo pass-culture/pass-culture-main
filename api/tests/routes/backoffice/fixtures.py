@@ -328,7 +328,7 @@ def offerer_tags():
 def offerers_to_be_validated(offerer_tags):
     top_tag, collec_tag, public_tag = offerer_tags
 
-    no_tag = offerers_factories.NotValidatedOffererFactory(name="A")
+    no_tag = offerers_factories.NotValidatedOffererFactory(name="A", address=None)
     top = offerers_factories.NotValidatedOffererFactory(
         name="B", validationStatus=offerers_models.ValidationStatus.PENDING
     )
