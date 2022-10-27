@@ -21,13 +21,13 @@ const scrollToFirstError = () => {
 }
 
 const useScrollToFirstErrorAfterSubmit = (): void => {
-  const { isSubmitting, isValid } = useFormikContext()
+  const { isSubmitting, isValid, status } = useFormikContext()
 
   useEffect(() => {
-    if (isSubmitting && !isValid) {
+    if ((isSubmitting && !isValid) || status === 'apiError') {
       scrollToFirstError()
     }
-  }, [isValid, isSubmitting])
+  }, [isValid, isSubmitting, status])
 }
 
 export default useScrollToFirstErrorAfterSubmit

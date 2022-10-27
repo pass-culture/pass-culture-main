@@ -138,6 +138,8 @@ const formValues: IVenueFormValues = {
 }
 
 const venue: IVenue = {
+  hasPendingBankInformationApplication: false,
+  demarchesSimplifieesApplicationId: '',
   collectiveDomains: [],
   dateCreated: '2022-02-02',
   fieldsUpdated: [],
