@@ -48,6 +48,7 @@ class Template:
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
     sender: TransactionalSender = TransactionalSender.SUPPORT
+    send_to_ehp: bool = True
 
     @property
     def id(self) -> int:
