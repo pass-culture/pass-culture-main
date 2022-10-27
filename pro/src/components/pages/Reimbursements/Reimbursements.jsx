@@ -55,7 +55,7 @@ const Reimbursements = () => {
   const loadReimbursementPoints = useCallback(async () => {
     try {
       const reimbursementPointsResponse = isNewBankInformationCreation
-        ? await pcapi.getReimbursementPoints()
+        ? await api.getReimbursementPoints()
         : await api.getBusinessUnits()
       setReimbursementPointsOptions(
         sortByDisplayName(

@@ -21,13 +21,13 @@ jest.mock('utils/date', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getInvoices: jest.fn(),
-  getReimbursementPoints: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
     getBusinessUnits: jest.fn(),
+    getReimbursementPoints: jest.fn(),
   },
 }))
 
@@ -114,7 +114,7 @@ describe('reimbursementsWithFilters', () => {
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
     jest.spyOn(pcapi, 'getInvoices').mockResolvedValue(BASE_INVOICES)
     jest.spyOn(api, 'getBusinessUnits').mockResolvedValue([])
-    jest.spyOn(pcapi, 'getReimbursementPoints').mockResolvedValue([])
+    jest.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
   })
 
   it('shoud render a table with invoices', async () => {

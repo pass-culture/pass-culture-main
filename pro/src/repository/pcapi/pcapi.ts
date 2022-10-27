@@ -183,17 +183,6 @@ export const getFilteredCollectiveBookingsXLS = async filters => {
 }
 
 //
-// Reimbursement Point
-//
-export const getReimbursementPoints = (
-  offererId = null
-): Promise<ReimbursementPointsResponseModel[]> => {
-  const queryParams = offererId ? `?offererId=${offererId}` : ''
-
-  return client.get(`/finance/reimbursement-points${queryParams}`)
-}
-
-//
 // Invoices
 //
 
