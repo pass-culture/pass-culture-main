@@ -7,7 +7,6 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import Hero from 'ui-kit/Hero'
 import { IS_DEV } from 'utils/config'
 import { parse } from 'utils/query-string'
@@ -50,8 +49,8 @@ const LostPassword = (): JSX.Element => {
       ? await getReCaptchaToken('resetPassword')
       : 'test_token'
 
-    pcapi
-      .resetPassword(token, emailValue)
+    api
+      .resetPassword({ token, email: emailValue })
       .then(() => setPasswordSent(true))
       .catch(() => notification.error(error))
   }
