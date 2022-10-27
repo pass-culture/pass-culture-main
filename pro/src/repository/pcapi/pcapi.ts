@@ -3,8 +3,6 @@
 
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
-import { ReimbursementPointsResponseModel } from 'core/Finances'
-import { EducationalDomain } from 'core/OfferEducational'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,

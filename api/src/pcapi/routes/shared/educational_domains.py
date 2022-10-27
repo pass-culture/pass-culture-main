@@ -1,6 +1,6 @@
 from pcapi.core.educational import repository as educational_repository
-from pcapi.routes.pro import blueprint
 from pcapi.routes.apis import public_api
+from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import educational_domains as educational_domains_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
