@@ -120,6 +120,9 @@ jobs:
     if: inputs.environment != 'integration'
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     needs: deploy-helm-release
     steps:
       - id: openid-auth
