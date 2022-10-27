@@ -18,7 +18,7 @@ jobs:
       id-token: write
       contents: read
     outputs:
-      pcapi_helm_secrets_file_base64: ${{ steps.generate-secrets-file.outputs.secrets_file_base64 }}
+      pcapi_helm_secrets_file_base64: ${{ steps.set-secrets-file-output.outputs.secrets_file_base64 }}
     steps:
       - name: Output variables
         id: vars
@@ -35,12 +35,17 @@ jobs:
         id: generate-secrets-file
         uses: addnab/docker-run-action@v3
         with:
-          options: -e GITHUB_OUTPUT
+          options: --user 0 -v ${{ github.workspace }}:/workspace
           registry: '${{ env.REGION }}-docker.pkg.dev'
           username: 'oauth2accesstoken'
           password: '${{ steps.openid-auth.outputs.access_token }}'
           image: '${{ env.DOCKER_REPO }}/pcapi:${{ github.sha }}'
-          run: echo "secrets_file_base64=$(flask print_secret_keys | base64 -w 0)" >> $GITHUB_OUTPUT
+          run: |
+            su pcapi -c "flask print_secret_keys | base64 -w 0 > /tmp/helm_secrets_file_base64"
+            cp /tmp/helm_secrets_file_base64 /workspace/helm_secrets_file_base64
+      - name: "Set pcapi helm secrets values file as output"
+        id: set-secrets-file-output
+        run: echo "secrets_file_base64=$(cat ${{ github.workspace }}/helm_secrets_file_base64)" >> $GITHUB_OUTPUT
 
   deploy-helm-release:
     runs-on: ubuntu-latest
