@@ -20,6 +20,7 @@ on:
 
 jobs:
   deploy-app:
+    name: "[${{ inputs.app_name }}] Deployment"
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:
