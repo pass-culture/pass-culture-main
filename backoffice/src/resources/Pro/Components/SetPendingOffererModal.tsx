@@ -17,8 +17,10 @@ import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
 
 export const SetPendingOffererModal = ({
   offererId,
+  onContextMenuChange,
 }: {
   offererId: number
+  onContextMenuChange: () => void
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const notify = useNotify()
@@ -40,7 +42,10 @@ export const SetPendingOffererModal = ({
   const handleOpenModal = () => {
     setOpenModal(true)
   }
-  const handleCloseModal = () => setOpenModal(false)
+  const handleCloseModal = () => {
+    setOpenModal(false)
+    onContextMenuChange()
+  }
 
   const formSubmit = async (params: FieldValues) => {
     try {
