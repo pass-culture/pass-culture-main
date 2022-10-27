@@ -1599,12 +1599,12 @@ export class DefaultService {
   }
 
   /**
-   * post_for_password_token <POST>
+   * reset_password <POST>
    * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public postForPasswordToken(
+  public resetPassword(
     requestBody?: ResetPasswordBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
