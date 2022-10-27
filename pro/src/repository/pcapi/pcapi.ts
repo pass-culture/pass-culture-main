@@ -98,15 +98,6 @@ export const postThumbnail = (
 }
 
 //
-// password
-//
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'token' implicitly has an 'any' type.
-export const resetPassword = (token, email) => {
-  return client.post('/users/reset-password', { token, email })
-}
-
-//
 // Providers
 //
 
