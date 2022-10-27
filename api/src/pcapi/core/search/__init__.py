@@ -1,15 +1,19 @@
 from collections.abc import Collection
+import datetime
 import logging
 from typing import Iterable
 
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.module_loading import import_string
 
@@ -381,6 +385,46 @@ def index_offers_of_venues_in_queue() -> None:
         logger.exception("Could not index offers of venues from queue")
 
 
+def get_base_query_for_offer_indexation() -> BaseQuery:
+    return (
+        offers_models.Offer.query.options(
+            sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer)
+        )
+        .options(sa.orm.joinedload(offers_models.Offer.criteria))
+        .options(sa.orm.joinedload(offers_models.Offer.mediations))
+        .options(sa.orm.joinedload(offers_models.Offer.product))
+        .options(sa.orm.joinedload(offers_models.Offer.stocks))
+    )
+
+
+BASE_QUERY_FOR_LAST_30_DAYS_BOOKINGS = (
+    sa.select(
+        offers_models.Offer.id.label("offer_id"), sa.func.count(bookings_models.Booking.id).label("bookings_number")
+    )
+    .select_from(offers_models.Offer)
+    .outerjoin(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
+    .outerjoin(bookings_models.Booking, bookings_models.Booking.stockId == offers_models.Stock.id)
+    .where(
+        sa.or_(
+            bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=30),
+            bookings_models.Booking.dateCreated.is_(None),
+        ),
+        sa.or_(
+            sa.not_(
+                bookings_models.Booking.status.in_(
+                    (
+                        bookings_models.BookingStatus.PENDING,
+                        bookings_models.BookingStatus.CANCELLED,
+                    )
+                )
+            ),
+            bookings_models.Booking.status.is_(None),
+        ),
+    )
+    .group_by(offers_models.Offer.id)
+)
+
+
 def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
     """Given a list of `Offer.id`, reindex or unindex each offer
     (i.e. request the external indexation service an update or a
@@ -394,16 +438,12 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
     to_add = []
     to_delete_ids = []
-    offers = (
-        offers_models.Offer.query.options(
-            sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer)
-        )
-        .options(sa.orm.joinedload(offers_models.Offer.criteria))
-        .options(sa.orm.joinedload(offers_models.Offer.mediations))
-        .options(sa.orm.joinedload(offers_models.Offer.product))
-        .options(sa.orm.joinedload(offers_models.Offer.stocks))
-        .filter(offers_models.Offer.id.in_(offer_ids))
-    )
+    offers = get_base_query_for_offer_indexation().filter(offers_models.Offer.id.in_(offer_ids))
+
+    last_30_days_bookings_query = BASE_QUERY_FOR_LAST_30_DAYS_BOOKINGS.filter(offers_models.Offer.id.in_(offer_ids))
+    last_30_days_bookings = {
+        row.offer_id: row.bookings_number for row in db.session.execute(last_30_days_bookings_query).all()
+    }
 
     for offer in offers:
         if offer and offer.is_eligible_for_search:
@@ -421,7 +461,7 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
     # Handle new or updated available offers
     try:
-        backend.index_offers(to_add)
+        backend.index_offers(to_add, last_30_days_bookings)
     except Exception as exc:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
             raise

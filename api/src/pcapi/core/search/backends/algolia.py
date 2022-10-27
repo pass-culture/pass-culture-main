@@ -1,3 +1,4 @@
+import enum
 import logging
 import re
 from typing import Iterable
@@ -40,6 +41,22 @@ DEFAULT_LONGITUDE = 2.409289
 DEFAULT_LATITUDE = 47.158459
 
 WORD_SPLITTER = re.compile(r"\W+")
+
+
+class Last30DaysBookingsRange(enum.Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
+def get_last_30_days_bookings_range(quantity: int) -> str | None:
+    if quantity >= settings.ALGOLIA_LAST_30_DAYS_BOOKINGS_HIGH_THRESHOLD:
+        return Last30DaysBookingsRange.HIGH.value
+    if quantity >= settings.ALGOLIA_LAST_30_DAYS_BOOKINGS_MEDIUM_THRESHOLD:
+        return Last30DaysBookingsRange.MEDIUM.value
+    if quantity >= settings.ALGOLIA_LAST_30_DAYS_BOOKINGS_LOW_THRESHOLD:
+        return Last30DaysBookingsRange.LOW.value
+    return None
 
 
 def url_path(url: str) -> str | None:
@@ -213,10 +230,10 @@ class AlgoliaBackend(base.SearchBackend):
             # cache so that we do perform a request to Algolia.
             return True
 
-    def index_offers(self, offers: Iterable[offers_models.Offer]) -> None:
+    def index_offers(self, offers: Iterable[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         if not offers:
             return
-        objects = [self.serialize_offer(offer) for offer in offers]
+        objects = [self.serialize_offer(offer, last_30_days_bookings.get(offer.id) or 0) for offer in offers]
         self.algolia_offers_client.save_objects(objects)
 
         try:
@@ -320,7 +337,7 @@ class AlgoliaBackend(base.SearchBackend):
         self.algolia_collective_offers_templates_client.clear_objects()
 
     @classmethod
-    def serialize_offer(cls, offer: offers_models.Offer) -> dict:
+    def serialize_offer(cls, offer: offers_models.Offer, last_30_days_bookings: int) -> dict:
         venue = offer.venue
         offerer = venue.managingOfferer
         prices = map(lambda stock: stock.price, offer.bookableStocks)
@@ -383,6 +400,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isEvent": offer.isEvent,
                 "isForbiddenToUnderage": offer.is_forbidden_to_underage,
                 "isThing": offer.isThing,
+                "last30DaysBookings": get_last_30_days_bookings_range(last_30_days_bookings),
                 "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_label,
                 "name": offer.name,
