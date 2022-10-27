@@ -186,7 +186,9 @@ const ReimbursementPointV2 = ({
                 name="reimbursementPointId"
                 disabled={readOnly || !venueHasPricingPoint}
                 label="Coordonnées bancaires"
-                defaultValue={venue.pricingPoint?.id}
+                defaultValue={
+                  venueReimbursementPoint ? venueReimbursementPoint.venueId : ''
+                }
                 options={[
                   {
                     value: '',

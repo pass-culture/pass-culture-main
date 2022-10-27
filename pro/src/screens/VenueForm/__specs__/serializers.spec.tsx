@@ -42,6 +42,7 @@ const formValues: IVenueFormValues = {
   id: '',
   bannerUrl: '',
   withdrawalDetails: 'Oui',
+  venueSiret: null,
   isWithdrawalAppliedOnAllOffers: false,
   reimbursementPointId: 91,
 }
@@ -119,6 +120,7 @@ describe('screen | VenueForm | serializers', () => {
       id: '',
       bannerUrl: '',
       withdrawalDetails: 'Oui',
+      venueSiret: null,
       isWithdrawalAppliedOnAllOffers: false,
       reimbursementPointId: 91,
     }

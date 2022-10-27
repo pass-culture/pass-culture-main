@@ -23,6 +23,7 @@ export interface IVenueFormValues {
   bookingEmail: string
   name: string
   phoneNumber: string
+  venueSiret: number | null
   postalCode: string
   publicName: string
   siret: string
