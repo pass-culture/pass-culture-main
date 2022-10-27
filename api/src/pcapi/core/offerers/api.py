@@ -1307,13 +1307,26 @@ def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
 
 
 def list_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
-    query = offerers_models.Offerer.query.filter(offerers_models.Offerer.isWaitingForValidation).options(
+    query = offerers_models.Offerer.query.options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
         sa.orm.joinedload(offerers_models.Offerer.tags),
         sa.orm.joinedload(offerers_models.Offerer.action_history),
     )
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
+
+    status_list = filter_dict.get("status")
+    if status_list:
+        statuses = []
+        for status in status_list:
+            try:
+                statuses.append(offerers_models.ValidationStatus(status))
+            except ValueError:
+                pass  # ignore wrong value
+        query = query.filter(offerers_models.Offerer.validationStatus.in_(statuses))
+    else:
+        query = query.filter(offerers_models.Offerer.isWaitingForValidation)
+
     tags = filter_dict.get("tags")
     if tags:
         tagged_offerers = (

@@ -1568,7 +1568,7 @@ class ListOfferersToBeValidatedTest:
             (["Établissement public", "Top acteur"], ["F"]),
         ),
     )
-    def test_list_filtering(self, client, tag_filter, expected_offerer_names, offerers_to_be_validated):
+    def test_list_filtering_by_tags(self, client, tag_filter, expected_offerer_names, offerers_to_be_validated):
         # given
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -1578,6 +1578,38 @@ class ListOfferersToBeValidatedTest:
             url_for(
                 "backoffice_blueprint.list_offerers_to_be_validated",
                 filter=json.dumps([{"field": "tags", "value": tag_filter}]),
+            )
+        )
+
+        # then
+        assert response.status_code == 200
+        data = response.json["data"]
+        assert sorted(o["name"] for o in data) == sorted(expected_offerer_names)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    @pytest.mark.parametrize(
+        "status_filter, expected_offerer_names",
+        (
+            (["NEW"], ["A", "C", "E"]),
+            (["PENDING"], ["B", "D", "F"]),
+            (["NEW", "PENDING"], ["A", "B", "C", "D", "E", "F"]),
+            (["VALIDATED"], ["G"]),
+            (["REJECTED"], ["H"]),
+            ([], ["A", "B", "C", "D", "E", "F"]),  # same as default
+            (["OTHER"], []),  # unknown value
+            (["REJECTED", "OTHER"], ["H"]),  # only valid value taken into account
+        ),
+    )
+    def test_list_filtering_by_status(self, client, status_filter, expected_offerer_names, offerers_to_be_validated):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for(
+                "backoffice_blueprint.list_offerers_to_be_validated",
+                filter=json.dumps([{"field": "status", "value": status_filter}]),
             )
         )
 
