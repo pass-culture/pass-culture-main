@@ -27,13 +27,13 @@ jest.mock('utils/date', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getInvoices: jest.fn(),
-  getReimbursementPoints: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
     getBusinessUnits: jest.fn(),
+    getReimbursementPoints: jest.fn(),
   },
 }))
 
@@ -170,7 +170,7 @@ describe('reimbursementsWithFilters', () => {
       { id: 1, name: 'Point de remboursement 1' },
       { id: 2, name: 'Point de remboursement 2' },
     ])
-    pcapi.getReimbursementPoints.mockResolvedValue([])
+    api.getReimbursementPoints.mockResolvedValue([])
     storeOverride = {
       user: {
         currentUser: {
