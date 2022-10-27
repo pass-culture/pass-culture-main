@@ -40,6 +40,7 @@ class Returns200Test:
             "network": None,
             "statusId": None,
             "label": None,
+            "isPermanent": venue.isPermanent,
         }
 
     def test_get_relative_venues_by_id(self, client: Any) -> None:
@@ -49,8 +50,7 @@ class Returns200Test:
             managingOfferer=offerer,
             name="azerty",
         )
-        venue2 = offerer_factories.CollectiveVenueFactory(isPermanent=True, managingOfferer=offerer, name="zertyu")
-        offerer_factories.CollectiveVenueFactory(isPermanent=False, managingOfferer=offerer)
+        venue2 = offerer_factories.CollectiveVenueFactory(isPermanent=False, managingOfferer=offerer, name="zertyu")
         offerer_factories.CollectiveVenueFactory(
             isPermanent=True,
         )
@@ -85,6 +85,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue1.isPermanent,
                 },
                 {
                     "id": venue2.id,
@@ -110,6 +111,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue2.isPermanent,
                 },
             ]
         }
@@ -122,11 +124,3 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json == {"code": "VENUE_NOT_FOUND"}
-
-    def test_get_not_permanent_venue_by_id(self, client: Any) -> None:
-        venue = offerer_factories.CollectiveVenueFactory(isPermanent=False)
-
-        client.with_eac_token()
-        response = client.get(f"/adage/v1/venues/id/{venue.id}")
-
-        assert response.status_code == 404
