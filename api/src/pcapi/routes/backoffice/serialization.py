@@ -415,7 +415,7 @@ class OffererToBeValidated(BaseModel):
     status: str
     step: str | None
     siren: str
-    address: str
+    address: str | None  # nullable in HasAddressMixin
     postalCode: str
     city: str
     owner: str | None
