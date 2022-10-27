@@ -26,6 +26,7 @@ import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResp
 import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
 import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
 import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollectiveDataBodyModel';
+import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
@@ -229,6 +230,22 @@ export class DefaultService {
       path: {
         'booking_id': bookingId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * list_educational_domains <GET>
+   * @returns EducationalDomainsResponseModel OK
+   * @throws ApiError
+   */
+  public listEducationalDomains(): CancelablePromise<EducationalDomainsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/educational-domains',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
