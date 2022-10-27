@@ -54,6 +54,7 @@ jobs:
         with:
           path: ${{ inputs.app_directory }}/build
           destination: ${{ secrets.gcp_project }}-${{ inputs.environment }}-${{ inputs.app_name }}
+          parent: false
       - if: ${{ inputs.environment == 'production' }}
         run: |
           gcloud compute url-maps invalidate-cdn-cache ${{ inputs.environment }}-${{ inputs.app_name }}-url-map --path "/*"  --async
