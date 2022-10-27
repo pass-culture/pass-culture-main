@@ -52,6 +52,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue.isPermanent,
                 }
             ]
         }
@@ -105,6 +106,7 @@ class Returns200Test:
                         "name": venue.venueLabel.name,
                         "id": venue.venueLabel.id,
                     },
+                    "isPermanent": venue.isPermanent,
                 }
             ]
         }
@@ -159,6 +161,7 @@ class Returns200Test:
                     "network": ["1"],
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue.isPermanent,
                 }
             ]
         }
@@ -177,7 +180,7 @@ class Returns200Test:
             collectiveInterventionArea=None,
             collectiveNetwork=None,
             managingOfferer=offerer,
-            isPermanent=True,
+            isPermanent=False,
         )
         venue2 = offerer_factories.VenueFactory(
             siret="9874563211235",
@@ -192,19 +195,6 @@ class Returns200Test:
             collectiveNetwork=None,
             managingOfferer=offerer,
             isPermanent=True,
-        )
-        offerer_factories.VenueFactory(
-            siret="8521479632587",
-            audioDisabilityCompliant=None,
-            mentalDisabilityCompliant=None,
-            motorDisabilityCompliant=None,
-            visualDisabilityCompliant=None,
-            collectiveStudents=None,
-            collectiveDomains=[],
-            collectiveInterventionArea=None,
-            collectiveNetwork=None,
-            managingOfferer=offerer,
-            isPermanent=False,
         )
         offerer_factories.VenueFactory(
             siret="7896541238521",
@@ -249,6 +239,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue1.isPermanent,
                 },
                 {
                     "id": venue2.id,
@@ -274,6 +265,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "isPermanent": venue2.isPermanent,
                 },
             ]
         }
@@ -287,23 +279,3 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json == {"code": "VENUES_NOT_FOUND"}
-
-    def test_get_not_permanent_venues_from_siret(self, client) -> None:
-
-        offerer_factories.VenueFactory(
-            siret="12345678912345",
-            audioDisabilityCompliant=None,
-            mentalDisabilityCompliant=None,
-            motorDisabilityCompliant=None,
-            visualDisabilityCompliant=None,
-            collectiveStudents=None,
-            collectiveDomains=[],
-            collectiveInterventionArea=None,
-            collectiveNetwork=None,
-            isPermanent=False,
-        )
-
-        client.with_eac_token()
-        response = client.get("/adage/v1/venues/12345678912345")
-
-        assert response.status_code == 404

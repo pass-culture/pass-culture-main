@@ -92,7 +92,7 @@ def get_all_venues(
 )
 @adage_api_key_required
 def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModel:
-    venue = offerers_repository.get_permanent_venue_by_id(venue_id)
+    venue = offerers_repository.find_venue_by_id(venue_id)
     if not venue:
         raise ApiErrors({"code": "VENUE_NOT_FOUND"}, status_code=404)
     return venue_serialization.VenueModel.from_orm(venue)
