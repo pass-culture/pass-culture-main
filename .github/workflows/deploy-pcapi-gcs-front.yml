@@ -25,6 +25,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.app_directory }}
     steps:
       - id: openid-auth
         name: "OpenID Connect Authentication"
@@ -37,19 +40,18 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
       - uses: actions/checkout@v3
-      - run: echo "node_version=$(cat ${{ inputs.app_directory }}/.nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
+      - run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
+          cache-dependency-path: ${{ inputs.app_directory }}/yarn.lock
       - run: yarn install
-        working-directory: ${{ inputs.app_directory }}
       - run: |
           set -a; source ../config/run_envs/${{ inputs.environment }};
           yarn build:${{ inputs.environment }}
-        working-directory: ${{ inputs.app_directory }}
       - if: ${{ inputs.environment != 'testing' }}
         run: >
-          cat ${{ inputs.app_directory }}/package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > ${{ inputs.app_directory }}/build/version.txt
+          cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
       - uses: 'google-github-actions/upload-cloud-storage@v0'
         with:
           path: ${{ inputs.app_directory }}/build
