@@ -135,6 +135,15 @@ jobs:
           service_account: ${{ secrets.METIER_BACKOFFICE_SERVICE_ACCOUNT }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
+      - name: 'Setup sentry credentials for Backoffice'
+        run: |
+          echo "[defaults]" >> ~/.sentryclirc
+          echo "url=https://sentry.passculture.team/" >> ~/.sentryclirc
+          echo "org=sentry" >> ~/.sentryclirc
+          echo "project=backoffice" >> ~/.sentryclirc
+          echo "" >> ~/.sentryclirc
+          echo "[auth]" >> ~/.sentryclirc
+          echo "token=${{ secrets.SENTRY_AUTH_TOKEN }}" >> ~/.sentryclirc
       - run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
