@@ -118,6 +118,7 @@ jobs:
 
   deploy-backoffice-front:
     if: inputs.environment != 'integration'
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     needs: deploy-helm-release
     steps:
