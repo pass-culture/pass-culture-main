@@ -3,7 +3,6 @@ from pydantic import parse_obj_as
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
-from pcapi.core.educational import models
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.routes.adage.v1.serialization import prebooking
@@ -28,7 +27,7 @@ class AdageHttpClient(AdageClient):
         self.header_key = "X-omogen-api-key"
         super().__init__()
 
-    def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> models.AdageApiResult:
+    def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> None:
         api_url = f"{self.base_url}/v1/prereservation"
         api_response = requests.post(
             api_url,
@@ -41,9 +40,7 @@ class AdageHttpClient(AdageClient):
                 "Error posting new prebooking to Adage API.", api_response.status_code, api_response.text
             )
 
-        return models.AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
-
-    def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingEdition) -> models.AdageApiResult:
+    def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingEdition) -> None:
         api_url = f"{self.base_url}/v1/prereservation-edit"
         api_response = requests.post(
             api_url,
@@ -57,8 +54,6 @@ class AdageHttpClient(AdageClient):
                 api_response.status_code,
                 api_response.text,
             )
-
-        return models.AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         api_url = f"{self.base_url}/v1/partenaire-culturel/{siren}"
@@ -77,9 +72,7 @@ class AdageHttpClient(AdageClient):
 
         return parse_obj_as(list[AdageVenue], api_response.json())
 
-    def notify_booking_cancellation_by_offerer(
-        self, data: prebooking.EducationalBookingResponse
-    ) -> models.AdageApiResult:
+    def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
         api_url = f"{self.base_url}/v1/prereservation-annule"
         api_response = requests.post(
             api_url,
@@ -93,8 +86,6 @@ class AdageHttpClient(AdageClient):
                 api_response.status_code,
                 api_response.text,
             )
-
-        return models.AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
 
     def get_cultural_partners(self) -> list[dict[str, str | int | float | None]]:
         api_url = f"{self.base_url}/v1/partenaire-culturel"
@@ -110,7 +101,7 @@ class AdageHttpClient(AdageClient):
 
         return api_response.json()
 
-    def notify_institution_association(self, data: AdageCollectiveOffer) -> models.AdageApiResult:
+    def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
         api_url = f"{self.base_url}/v1/offre-assoc"
         api_response = requests.post(
             api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
@@ -118,8 +109,6 @@ class AdageHttpClient(AdageClient):
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
-
-        return models.AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
 
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"

@@ -1,4 +1,3 @@
-import dataclasses
 from datetime import datetime
 from decimal import Decimal
 import enum
@@ -850,10 +849,3 @@ sa.event.listen(
     "after_create",
     sa.DDL(CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl),
 )
-
-
-@dataclasses.dataclass
-class AdageApiResult:
-    sent_data: dict
-    response: dict
-    success: bool
