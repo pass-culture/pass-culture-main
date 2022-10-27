@@ -141,6 +141,7 @@ jobs:
           node-version: ${{ env.node_version }}
           cache: 'yarn'
           cache-dependency-path: backoffice/yarn.lock
+      - run: yarn install
       - run: |
           set -a; source ../config/run_envs/${{ inputs.environment }};
           yarn build:${{ inputs.environment }}
