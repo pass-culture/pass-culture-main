@@ -31,7 +31,7 @@ jobs:
       - test-adage
       - test-api
     if: github.ref == 'refs/heads/master'
-    uses: ./.github/workflows/deploy-pcapi.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       environment: testing
       app_version: ${{ github.sha }}
