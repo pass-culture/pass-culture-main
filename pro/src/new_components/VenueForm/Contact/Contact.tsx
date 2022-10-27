@@ -19,7 +19,7 @@ const Contact = () => {
             name="phoneNumber"
             label="Téléphone"
             isOptional
-            placeholder={'062345678'}
+            placeholder={'0639980101'}
           />
         </FormLayout.Row>
         <FormLayout.Row>
