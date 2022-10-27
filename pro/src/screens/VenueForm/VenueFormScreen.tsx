@@ -100,6 +100,9 @@ const VenueFormScreen = ({
         }
         const apiFieldsMap: Record<string, string> = {
           venue: 'venueId',
+          'contact.email': 'email',
+          'contact.phoneNumber': 'phoneNumber',
+          'contact.website': 'webSite',
         }
 
         if (!formErrors || Object.keys(formErrors).length === 0) {
