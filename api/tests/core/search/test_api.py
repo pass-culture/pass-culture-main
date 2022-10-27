@@ -5,6 +5,7 @@ import pytest
 from pcapi.core import search
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -16,11 +17,11 @@ from pcapi.core.testing import override_settings
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def make_bookable_offer():
+def make_bookable_offer() -> offers_models.Offer:
     return offers_factories.StockFactory().offer
 
 
-def make_unbookable_offer():
+def make_unbookable_offer() -> offers_models.Offer:
     return offers_factories.OfferFactory()
 
 
@@ -103,10 +104,15 @@ class ReindexOfferIdsTest:
             search.reindex_offer_ids(offer_ids)
 
     def test_unindex_unbookable_offer(self, app):
+        # given
         offer = make_unbookable_offer()
         search_testing.search_store["offers"][offer.id] = "dummy"
         app.redis_client.hset("indexed_offers", offer.id, "")
+
+        # when
         search.reindex_offer_ids([offer.id])
+
+        # then
         assert search_testing.search_store["offers"] == {}
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.save_objects", fail)

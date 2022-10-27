@@ -2,12 +2,12 @@ from collections.abc import Collection
 import logging
 from typing import Iterable
 
-from sqlalchemy.orm import joinedload
+import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.educational import models as educational_models
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models.feature import FeatureToggle
@@ -247,10 +247,10 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
 def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Collection[int]) -> None:
     logger.info("Starting to index venues", extra={"count": len(venue_ids)})
     venues = (
-        Venue.query.filter(Venue.id.in_(venue_ids))
-        .options(joinedload(Venue.managingOfferer))
-        .options(joinedload(Venue.contact))
-        .options(joinedload(Venue.criteria))
+        offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(venue_ids))
+        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+        .options(sa.orm.joinedload(offerers_models.Venue.contact))
+        .options(sa.orm.joinedload(offerers_models.Venue.criteria))
     )
 
     to_add = []
@@ -286,11 +286,11 @@ def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_
     collective_offers = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id.in_(collective_offer_ids)
     ).options(
-        joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveBookings
         ),
-        joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).joinedload(
-            Venue.managingOfferer, innerjoin=True
+        sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).joinedload(
+            offerers_models.Venue.managingOfferer, innerjoin=True
         ),
     )
 
@@ -324,8 +324,8 @@ def _reindex_collective_offer_template_ids(
     collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
     ).options(
-        joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
-            Venue.managingOfferer, innerjoin=True
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
+            offerers_models.Venue.managingOfferer, innerjoin=True
         ),
     )
 
@@ -395,12 +395,14 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
     to_add = []
     to_delete_ids = []
     offers = (
-        Offer.query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
-        .options(joinedload(Offer.criteria))
-        .options(joinedload(Offer.mediations))
-        .options(joinedload(Offer.product))
-        .options(joinedload(Offer.stocks))
-        .filter(Offer.id.in_(offer_ids))
+        offers_models.Offer.query.options(
+            sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer)
+        )
+        .options(sa.orm.joinedload(offers_models.Offer.criteria))
+        .options(sa.orm.joinedload(offers_models.Offer.mediations))
+        .options(sa.orm.joinedload(offers_models.Offer.product))
+        .options(sa.orm.joinedload(offers_models.Offer.stocks))
+        .filter(offers_models.Offer.id.in_(offer_ids))
     )
 
     for offer in offers:
@@ -479,7 +481,11 @@ def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
     if not FeatureToggle.ENABLE_VENUE_STRICT_SEARCH.is_active():
         return
 
-    query = Offer.query.filter(Offer.id.in_(offer_ids)).with_entities(Offer.venueId).distinct()
+    query = (
+        offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+        .with_entities(offers_models.Offer.venueId)
+        .distinct()
+    )
     venue_ids = [row[0] for row in query]
 
     logger.info("Starting to reindex venues from offers", extra={"venues_count": len(venue_ids)})

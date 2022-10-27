@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import decimal
 import enum
 import logging
@@ -100,7 +99,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
 
     credit = sa.Column(sa.String(255), nullable=True)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
@@ -116,11 +115,11 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
-    dateCreated: datetime = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
 
-    dateModified: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
 
@@ -166,7 +165,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
+        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore [no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
@@ -183,7 +182,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @sa.ext.hybrid.hybrid_property
     def isEventExpired(self) -> bool:
-        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
+        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
 
     @isEventExpired.expression  # type: ignore [no-redef]
     def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
@@ -202,14 +201,14 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         if not self.beginningDatetime:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-        return limit_date_for_stock_deletion >= datetime.utcnow()
+        return limit_date_for_stock_deletion >= datetime.datetime.utcnow()
 
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self) -> bool:
         # pylint: disable=comparison-with-callable
         return (
             self.isSoftDeleted
-            or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.utcnow())
+            or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.datetime.utcnow())
             or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
         )
 
@@ -249,7 +248,9 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 @sa.event.listens_for(Stock, "before_insert")
 def before_insert(mapper, configuration, self):  # type: ignore [no-untyped-def]
     if self.beginningDatetime and not self.bookingLimitDatetime:
-        self.bookingLimitDatetime = self.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=3)
+        self.bookingLimitDatetime = self.beginningDatetime.replace(hour=23).replace(minute=59) - datetime.timedelta(
+            days=3
+        )
 
 
 Stock.trig_ddl = """
@@ -365,7 +366,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     criteria = sa.orm.relationship(  # type: ignore [misc]
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
@@ -395,9 +396,11 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
 
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
+    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
 
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
@@ -422,7 +425,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         for stock in self.stocks:
             if (
                 not stock.isSoftDeleted
-                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.utcnow())
+                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.datetime.utcnow())
                 and (stock.remainingQuantity == "unlimited" or stock.remainingQuantity > 0)
             ):
                 return False
@@ -540,14 +543,14 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
         )
 
     @sa.ext.hybrid.hybrid_property
-    def firstBeginningDatetime(self) -> datetime | None:
+    def firstBeginningDatetime(self) -> datetime.datetime | None:
         stocks_with_date = [
             stock.beginningDatetime for stock in self.activeStocks if stock.beginningDatetime is not None
         ]
         return min(stocks_with_date) if stocks_with_date else None
 
     @firstBeginningDatetime.expression  # type: ignore [no-redef]
-    def firstBeginningDatetime(cls) -> datetime | None:  # pylint: disable=no-self-argument
+    def firstBeginningDatetime(cls) -> datetime.datetime | None:  # pylint: disable=no-self-argument
         return (
             sa.select(sa.func.min(Stock.beginningDatetime))
             .where(Stock.offerId == cls.id)
@@ -636,7 +639,7 @@ class ActivationCode(PcObject, Base, Model):
 class OfferValidationConfig(PcObject, Base, Model):
     __tablename__ = "offer_validation_config"
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
 
@@ -720,7 +723,7 @@ class OfferReport(PcObject, Base, Model):
 
     offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="reports")  # type: ignore [misc]
 
-    reportedAt: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    reportedAt: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     reason: Reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
 
