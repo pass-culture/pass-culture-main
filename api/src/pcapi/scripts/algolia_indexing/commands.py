@@ -3,6 +3,8 @@ import click
 from pcapi.core import search
 import pcapi.core.educational.api as educational_api
 import pcapi.core.offers.api as offers_api
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_collective_offers_in_algolia_from_database
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_collective_offers_template_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_venues_in_algolia_from_database
 from pcapi.utils.blueprint import Blueprint
@@ -35,6 +37,51 @@ def process_offers_from_database(  # type: ignore [no-untyped-def]
     if clear:
         search.unindex_all_offers()
     batch_indexing_offers_in_algolia_from_database(ending_page=ending_page, limit=limit, starting_page=starting_page)
+
+
+@blueprint.cli.command("process_collective_offers_from_database")
+@click.option("--clear", help="Clear search index", type=bool, default=False)
+@click.option(
+    "-epc", "--ending-page-collective-offer", help="Ending page for indexing collective offers", type=int, default=None
+)
+@click.option(
+    "-epct",
+    "--ending-page-collective-offer-template",
+    help="Ending page for indexing collective offers templates",
+    type=int,
+    default=None,
+)
+@click.option("-l", "--limit", help="Number of offers per page", type=int, default=10_000)
+@click.option(
+    "-spc", "--starting-page-collective-offer", help="Starting page for indexing collective offers", type=int, default=0
+)
+@click.option(
+    "-spct",
+    "--starting-page-collective-offer-template",
+    help="Starting page for indexing collective offer templates",
+    type=int,
+    default=0,
+)
+def process_collective_offers_from_database(  # type: ignore [no-untyped-def]
+    clear: bool,
+    ending_page_collective_offer: int,
+    ending_page_collective_offer_template: int,
+    limit: int,
+    starting_page_collective_offer: int,
+    starting_page_collective_offer_template: int,
+):
+    if clear:
+        # collective offers and collective offers template share the same index
+        # thus they are all unindex after this command
+        search.unindex_all_collective_offers()
+    batch_indexing_collective_offers_in_algolia_from_database(
+        ending_page=ending_page_collective_offer, limit=limit, starting_page=starting_page_collective_offer
+    )
+    batch_indexing_collective_offers_template_in_algolia_from_database(
+        ending_page=ending_page_collective_offer_template,
+        limit=limit,
+        starting_page=starting_page_collective_offer_template,
+    )
 
 
 @blueprint.cli.command("process_expired_offers")
