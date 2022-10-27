@@ -49,12 +49,12 @@ jest.mock('apiClient/api', () => ({
     getVenue: jest.fn(),
     getOfferer: jest.fn(),
     getVenueTypes: jest.fn(),
+    listVenueProviders: jest.fn(),
   },
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
 }))
 
 describe('route VenueEdition', () => {
@@ -125,7 +125,9 @@ describe('route VenueEdition', () => {
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(venue)
     jest.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
-    jest.spyOn(pcapi, 'loadVenueProviders').mockResolvedValue(venueProviders)
+    jest
+      .spyOn(api, 'listVenueProviders')
+      .mockResolvedValue({ venue_providers: venueProviders })
     jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     jest.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])

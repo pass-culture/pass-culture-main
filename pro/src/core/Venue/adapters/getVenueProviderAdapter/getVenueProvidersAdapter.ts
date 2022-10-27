@@ -1,5 +1,5 @@
+import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { GET_DATA_ERROR_MESSAGE } from '../../../shared'
 
@@ -17,11 +17,12 @@ const FAILING_RESPONSE = {
 
 const getVenueProvidersAdapter: GetVenueProvidersAdapter = async venueId => {
   try {
-    const venueProvidersResponse = await pcapi.loadVenueProviders(venueId)
+    // @ts-expect-error string is not assignable to type number
+    const venueProvidersResponse = await api.listVenueProviders(venueId)
     return {
       isOk: true,
       message: '',
-      payload: venueProvidersResponse,
+      payload: venueProvidersResponse.venue_providers,
     }
   } catch (error) {
     return FAILING_RESPONSE

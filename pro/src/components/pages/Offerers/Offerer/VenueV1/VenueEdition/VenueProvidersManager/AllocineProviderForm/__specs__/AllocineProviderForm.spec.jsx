@@ -21,13 +21,13 @@ import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     createVenueProvider: jest.fn(),
     updateVenueProvider: jest.fn(),
+    listVenueProviders: jest.fn(),
   },
 }))
 
@@ -62,7 +62,7 @@ describe('components | AllocineProviderForm', () => {
       venue,
     }
 
-    pcapi.loadVenueProviders.mockResolvedValue([])
+    api.listVenueProviders.mockResolvedValue({ venue_providers: [] })
 
     provider = { id: 'providerId', name: 'Allociné' }
     pcapi.loadProviders.mockResolvedValue([provider])
@@ -305,7 +305,9 @@ describe('components | AllocineProviderForm', () => {
         isDuo: true,
       }
 
-      pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [allocineProvider],
+      })
     })
 
     const renderAllocineProviderForm = async () => {
@@ -338,7 +340,9 @@ describe('components | AllocineProviderForm', () => {
         quantity: 50,
         isDuo: false,
       }
-      pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [allocineProvider],
+      })
 
       // when
       await renderAllocineProviderForm()
@@ -392,7 +396,9 @@ describe('components | AllocineProviderForm', () => {
         quantity: 50,
         isDuo: false,
       }
-      pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [allocineProvider],
+      })
       const editedAllocineProvider = {
         ...allocineProvider,
         price: 20,
@@ -442,7 +448,9 @@ describe('components | AllocineProviderForm', () => {
         quantity: 50,
         isDuo: false,
       }
-      pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [allocineProvider],
+      })
       const editedAllocineProvider = {
         ...allocineProvider,
         price: 20,
@@ -481,7 +489,9 @@ describe('components | AllocineProviderForm', () => {
         quantity: 50,
         isDuo: false,
       }
-      pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [allocineProvider],
+      })
       const editedAllocineProvider = {
         ...allocineProvider,
         price: 20,
