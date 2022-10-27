@@ -194,7 +194,36 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     })
   }
 
-  const submitDraft = e => submitStocks(e, true)
+  const submitDraft = e => {
+    const isEmptyStocks = stocks => {
+      if (stocks.length > 1) {
+        return false
+      }
+      const {
+        price,
+        quantity,
+        beginningTime,
+        bookingLimitDatetime,
+        beginningDate,
+      } = stocks[0]
+
+      if (
+        price === '' &&
+        !quantity &&
+        !beginningTime &&
+        !beginningDate &&
+        !bookingLimitDatetime
+      ) {
+        return true
+      }
+      return false
+    }
+
+    const updatedStocks = existingStocks.filter(stock => stock.updated)
+    if (updatedStocks.length === 0 && isEmptyStocks(stocksInCreation))
+      notification.success('Brouillon sauvegardé dans la liste des offres')
+    else submitStocks(e, true)
+  }
 
   const submitStocks = useCallback(
     (e, isSavingDraft = false) => {

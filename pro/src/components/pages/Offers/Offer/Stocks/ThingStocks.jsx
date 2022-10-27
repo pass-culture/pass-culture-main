@@ -159,7 +159,17 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
     })
   }
 
-  const submitDraft = e => submitStocks(e, true)
+  const submitDraft = e => {
+    const isRowEmpty = stock => {
+      if (!stock) return true
+
+      const { price, quantity, bookingLimitDatetime } = stock
+      if (price === '' && !quantity && !bookingLimitDatetime) return true
+      return false
+    }
+    if (!isRowEmpty(stock)) submitStocks(e, true)
+    else notification.success('Brouillon sauvegardé dans la liste des offres')
+  }
 
   const submitStocks = useCallback(
     (e, isSavingDraft = false) => {
