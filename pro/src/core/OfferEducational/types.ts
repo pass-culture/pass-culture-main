@@ -101,11 +101,6 @@ export type CollectiveOfferTemplate =
     isTemplate: true
   }
 
-export type EducationalDomain = {
-  id: number
-  name: string
-}
-
 export type VisibilityFormValues = {
   visibility: 'all' | 'one'
   institution: string
