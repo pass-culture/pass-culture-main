@@ -64,7 +64,7 @@ const Activity = ({ venueTypes, venueLabels }: IActivity) => {
               ...venueLabels,
             ]}
             name="venueLabel"
-            label="Label du Ministère de la Culture ou du CNC"
+            label="Label du ministère de la Culture ou du CNC"
             isOptional
           />
         </FormLayout.Row>
