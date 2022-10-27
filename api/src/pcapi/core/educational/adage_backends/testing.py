@@ -1,5 +1,4 @@
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
-from pcapi.core.educational import models
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.routes.adage.v1.serialization import prebooking
@@ -9,22 +8,17 @@ from .. import testing
 
 
 class AdageSpyClient(AdageClient):
-    def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> models.AdageApiResult:
+    def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation", "sent_data": data})
-        return models.AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
-    def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingResponse) -> models.AdageApiResult:
+    def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-edit", "sent_data": data})
-        return models.AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         raise Exception("Do not use the spy for this method, mock the get request instead")
 
-    def notify_booking_cancellation_by_offerer(
-        self, data: prebooking.EducationalBookingResponse
-    ) -> models.AdageApiResult:
+    def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-annule", "sent_data": data})
-        return models.AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
     def get_cultural_partners(self) -> list[dict[str, str | int | float | None]]:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel", "sent_data": ""})
@@ -89,9 +83,8 @@ class AdageSpyClient(AdageClient):
             },
         ]
 
-    def notify_institution_association(self, data: AdageCollectiveOffer) -> models.AdageApiResult:
+    def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-assoc", "sent_data": data})
-        return models.AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel/{siret}", "sent_data": ""})
