@@ -126,17 +126,15 @@ jobs:
         working-directory: backoffice
     needs: deploy-helm-release
     steps:
+      - uses: actions/checkout@v3
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: 'google-github-actions/auth@v0'
         with:
-          create_credentials_file: false
-          token_format: 'access_token'
           workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.METIER_BACKOFFICE_SERVICE_ACCOUNT }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
-      - uses: actions/checkout@v3
       - run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
