@@ -26,7 +26,6 @@ import BookingsRecapContainer from '../Bookings'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getFilteredBookingsCSV: jest.fn(),
-  getUserHasBookings: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -34,6 +33,7 @@ jest.mock('apiClient/api', () => ({
     getProfile: jest.fn(),
     getBookingsPro: jest.fn(),
     getVenues: jest.fn(),
+    getUserHasBookings: jest.fn(),
   },
 }))
 
@@ -71,7 +71,7 @@ const renderBookingsRecap = async (
     </Provider>
   )
 
-  const { hasBoookings } = await pcapi.getUserHasBookings()
+  const { hasBookings } = await api.getUserHasBookings()
   const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
   const downloadBookingsCsvButton = screen.getByRole('button', {
     name: 'Télécharger',
@@ -85,7 +85,7 @@ const renderBookingsRecap = async (
   }
 
   if (waitDomReady || waitDomReady === undefined) {
-    if (hasBoookings) {
+    if (hasBookings) {
       await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
     } else {
       const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -128,7 +128,7 @@ describe('components | BookingsRecap | Pro user', () => {
     venue = venueFactory()
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
     jest
-      .spyOn(pcapi, 'getUserHasBookings')
+      .spyOn(api, 'getUserHasBookings')
       .mockResolvedValue({ hasBookings: true })
   })
 
@@ -859,7 +859,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should display no booking screen when user does not have any booking yet', async () => {
     //Given
     jest
-      .spyOn(pcapi, 'getUserHasBookings')
+      .spyOn(api, 'getUserHasBookings')
       .mockResolvedValue({ hasBookings: false })
     await renderBookingsRecap(store)
 
