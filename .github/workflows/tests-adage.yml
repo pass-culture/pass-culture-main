@@ -80,6 +80,4 @@ jobs:
         with:
           node-version: ${{ needs.read-node-version.outputs.node_version }}
       - run: yarn install
-        working-directory: ${{ env.folder }}
       - run: yarn test:unit
-        working-directory: ${{ env.folder }}
