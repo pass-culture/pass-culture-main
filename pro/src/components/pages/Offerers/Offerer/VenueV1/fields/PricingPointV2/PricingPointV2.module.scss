@@ -25,8 +25,7 @@
 .dropdown-container {
   display: flex;
   align-items: center;
-  margin-top: rem.torem(10px);
-  margin-bottom: rem.torem(24px);
+  margin: rem.torem(24px) 0;
   flex-wrap: wrap;
 
   .select {

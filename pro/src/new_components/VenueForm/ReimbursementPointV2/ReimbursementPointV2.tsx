@@ -186,6 +186,7 @@ const ReimbursementPointV2 = ({
                 name="reimbursementPointId"
                 disabled={readOnly || !venueHasPricingPoint}
                 label="Coordonnées bancaires"
+                hideFooter
                 defaultValue={
                   venueReimbursementPoint ? venueReimbursementPoint.venueId : ''
                 }
@@ -201,9 +202,9 @@ const ReimbursementPointV2 = ({
                 ]}
               />
               {venueReimbursementPoint && (
-                <div className={styles['modify-reimbursement-point-section']}>
+                <div className={styles['add-reimbursement-point-section']}>
                   <Button
-                    className="secondary-button"
+                    variant={ButtonVariant.SECONDARY}
                     id="modify-new-reimbursement-point"
                     onClick={openDMSApplication}
                     type="button"
