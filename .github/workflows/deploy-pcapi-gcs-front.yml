@@ -34,8 +34,8 @@ jobs:
         with:
           create_credentials_file: false
           token_format: 'access_token'
-          workload_identity_provider: ${{ inputs.workload_identity_provider }}
-          service_account: ${{ inputs.service_account }}
+          workload_identity_provider: ${{ secrets.workload_identity_provider }}
+          service_account: ${{ secrets.service_account }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
       - uses: actions/setup-node@v3
@@ -54,7 +54,7 @@ jobs:
       - uses: 'google-github-actions/upload-cloud-storage@v0'
         with:
           path: ${{ inputs.app_directory }}/build
-          destination: ${{ inputs.gcp_project }}-${{ inputs.environment }}-${{ inputs.app_name }}
+          destination: ${{ secrets.gcp_project }}-${{ inputs.environment }}-${{ inputs.app_name }}
       - if: ${{ inputs.environment == 'production' }}
         run: |
           gcloud compute url-maps invalidate-cdn-cache ${{ inputs.environment }}-${{ inputs.app_name }}-url-map --path "/*"  --async
