@@ -3,6 +3,7 @@ import './VenueProvidersManager.scss'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -19,8 +20,8 @@ const VenueProvidersManager = ({ venue }) => {
       const providersResponse = await pcapi.loadProviders(venue.id)
       setProviders(providersResponse)
 
-      const venueProvidersResponse = await pcapi.loadVenueProviders(venue.id)
-      setVenueProviders(venueProvidersResponse)
+      const venueProvidersResponse = await api.listVenueProviders(venue.id)
+      setVenueProviders(venueProvidersResponse.venue_providers)
       setIsLoading(false)
     }
     fetchData()

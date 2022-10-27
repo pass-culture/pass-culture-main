@@ -20,12 +20,12 @@ import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     createVenueProvider: jest.fn(),
+    listVenueProviders: jest.fn(),
   },
 }))
 
@@ -59,7 +59,7 @@ describe('src | StocksProviderForm', () => {
       venue,
     }
 
-    pcapi.loadVenueProviders.mockResolvedValue([])
+    api.listVenueProviders.mockResolvedValue({ venue_providers: [] })
     provider = {
       id: 'providerId',
       name: 'TiteLive Stocks (Epagine / Place des libraires.com)',

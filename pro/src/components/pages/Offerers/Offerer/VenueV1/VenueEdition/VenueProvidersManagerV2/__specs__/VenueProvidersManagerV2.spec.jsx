@@ -21,13 +21,13 @@ import VenueProvidersManagerV2 from '../VenueProvidersManagerV2'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     deleteVenueProvider: jest.fn(),
     updateVenueProvider: jest.fn(),
+    listVenueProviders: jest.fn(),
   },
 }))
 
@@ -67,7 +67,9 @@ describe('src | VenueProvidersManager', () => {
     ]
     venueProviders = []
     pcapi.loadProviders.mockResolvedValue(providers)
-    pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+    api.listVenueProviders.mockResolvedValue({
+      venue_providers: venueProviders,
+    })
   })
 
   it('should retrieve providers and venue providers when component is mounted', async () => {
@@ -76,7 +78,7 @@ describe('src | VenueProvidersManager', () => {
 
     // then
     expect(pcapi.loadProviders).toHaveBeenCalledTimes(1)
-    expect(pcapi.loadVenueProviders).toHaveBeenCalledTimes(1)
+    expect(api.listVenueProviders).toHaveBeenCalledTimes(1)
   })
 
   describe('when all providers are disabled for pro', () => {
@@ -92,7 +94,9 @@ describe('src | VenueProvidersManager', () => {
         },
       ]
       pcapi.loadProviders.mockResolvedValue([])
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // When
       await renderVenueProvidersManager(props)
@@ -114,7 +118,9 @@ describe('src | VenueProvidersManager', () => {
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // when
       await renderVenueProvidersManager(props)
@@ -138,7 +144,9 @@ describe('src | VenueProvidersManager', () => {
           isActive: true,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // when
       await renderVenueProvidersManager(props)
@@ -159,7 +167,9 @@ describe('src | VenueProvidersManager', () => {
           isActive: false,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // when
       await renderVenueProvidersManager(props)
@@ -179,7 +189,9 @@ describe('src | VenueProvidersManager', () => {
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // when
       await renderVenueProvidersManager(props)
@@ -199,7 +211,9 @@ describe('src | VenueProvidersManager', () => {
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
       api.deleteVenueProvider.mockResolvedValue()
 
       // When
@@ -240,7 +254,9 @@ describe('src | VenueProvidersManager', () => {
           quantity: 20,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
 
       // When
       await renderVenueProvidersManager(props)
@@ -278,7 +294,9 @@ describe('src | VenueProvidersManager', () => {
           quantity: 20,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
       api.updateVenueProvider.mockResolvedValue()
 
       // When
@@ -322,7 +340,9 @@ describe('src | VenueProvidersManager', () => {
           isActive: true,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
       api.updateVenueProvider.mockResolvedValue()
 
       // When
@@ -364,7 +384,9 @@ describe('src | VenueProvidersManager', () => {
           isDuo: false,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
       api.updateVenueProvider.mockResolvedValue()
 
       // When
@@ -387,7 +409,9 @@ describe('src | VenueProvidersManager', () => {
           isActive: true,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
       api.updateVenueProvider.mockResolvedValue()
 
       // When
@@ -427,7 +451,9 @@ describe('src | VenueProvidersManager', () => {
           isActive: false,
         },
       ]
-      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: venueProviders,
+      })
       api.updateVenueProvider.mockResolvedValue()
 
       // When

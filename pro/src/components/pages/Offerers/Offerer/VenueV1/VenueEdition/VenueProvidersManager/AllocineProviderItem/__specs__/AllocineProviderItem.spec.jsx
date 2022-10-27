@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -15,12 +16,12 @@ import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     createVenueProvider: jest.fn(),
+    listVenueProviders: jest.fn(),
   },
 }))
 
@@ -69,13 +70,17 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
       venue,
     }
 
-    pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
+    api.listVenueProviders.mockResolvedValue({
+      venue_providers: [allocineVenueProvider],
+    })
     pcapi.loadProviders.mockResolvedValue([allocineProvider])
   })
 
   it('should show synchronization modalities when venue provider is allocine', async () => {
     // given
-    pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
+    api.listVenueProviders.mockResolvedValue({
+      venue_providers: [allocineVenueProvider],
+    })
 
     // when
     renderVenueProvidersManager(props)
@@ -99,7 +104,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
 
   it('should show the last synchronization date', async () => {
     // given
-    pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
+    api.listVenueProviders.mockResolvedValue({
+      venue_providers: [allocineVenueProvider],
+    })
 
     // when
     renderVenueProvidersManager(props)

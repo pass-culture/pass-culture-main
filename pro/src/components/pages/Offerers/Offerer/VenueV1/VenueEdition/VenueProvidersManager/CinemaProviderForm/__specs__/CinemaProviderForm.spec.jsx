@@ -21,13 +21,13 @@ import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     createVenueProvider: jest.fn(),
     updateVenueProvider: jest.fn(),
+    listVenueProviders: jest.fn(),
   },
 }))
 
@@ -63,7 +63,7 @@ describe('components | CinemaProviderForm', () => {
       venue,
     }
 
-    pcapi.loadVenueProviders.mockResolvedValue([])
+    api.listVenueProviders.mockResolvedValue({ venue_providers: [] })
 
     provider = { id: 'providerId', name: 'Ciné Office' }
     pcapi.loadProviders.mockResolvedValue([provider])
@@ -168,7 +168,9 @@ describe('components | CinemaProviderForm', () => {
         nOffers: 0,
       }
 
-      pcapi.loadVenueProviders.mockResolvedValue([cinemaProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [cinemaProvider],
+      })
     })
 
     const renderCinemaProviderForm = async () => {
@@ -199,7 +201,9 @@ describe('components | CinemaProviderForm', () => {
         ...cinemaProvider,
         isDuo: false,
       }
-      pcapi.loadVenueProviders.mockResolvedValue([cinemaProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [cinemaProvider],
+      })
 
       // when
       await renderCinemaProviderForm()
@@ -217,7 +221,9 @@ describe('components | CinemaProviderForm', () => {
         ...cinemaProvider,
         isDuo: false,
       }
-      pcapi.loadVenueProviders.mockResolvedValue([cinemaProvider])
+      api.listVenueProviders.mockResolvedValue({
+        venue_providers: [cinemaProvider],
+      })
       const editedCinemaProvider = {
         ...cinemaProvider,
         isDuo: true,

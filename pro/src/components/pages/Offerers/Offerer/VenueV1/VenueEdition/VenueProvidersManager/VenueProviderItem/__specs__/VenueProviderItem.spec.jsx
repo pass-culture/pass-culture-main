@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { api } from 'apiClient/api'
 import Notification from 'components/layout/Notification/Notification'
 import { getProviderInfo } from 'core/Providers/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -15,12 +16,12 @@ import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
-  loadVenueProviders: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
     createVenueProvider: jest.fn(),
+    listVenueProviders: jest.fn(),
   },
 }))
 
@@ -68,7 +69,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       venue,
     }
 
-    pcapi.loadVenueProviders.mockResolvedValue([titeliveVenueProvider])
+    api.listVenueProviders.mockResolvedValue({
+      venue_providers: [titeliveVenueProvider],
+    })
     pcapi.loadProviders.mockResolvedValue([titeliveProvider])
   })
 
@@ -151,7 +154,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
   it('should show the last synchronization date', async () => {
     // given
-    pcapi.loadVenueProviders.mockResolvedValue([titeliveVenueProvider])
+    api.listVenueProviders.mockResolvedValue({
+      venue_providers: [titeliveVenueProvider],
+    })
 
     // when
     renderVenueProvidersManager(props)
