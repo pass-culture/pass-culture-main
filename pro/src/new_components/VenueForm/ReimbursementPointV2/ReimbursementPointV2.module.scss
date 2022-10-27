@@ -6,7 +6,10 @@
   font-size: rem.torem(16px);
 }
 
-.section-description,
+.section-description {
+  margin: rem.torem(8px) 0;
+}
+
 .or-separator {
   margin-bottom: rem.torem(24px);
 }
@@ -30,12 +33,6 @@
 .add-reimbursement-point-section {
   button {
     margin-bottom: rem.torem(24px);
-  }
-}
-
-.modify-reimbursement-point-section {
-  button {
-    margin-top: rem.torem(36px);
   }
 }
 

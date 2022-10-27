@@ -1,3 +1,5 @@
+import { DEFAULT_PRICING_POINT_FORM_VALUES } from '../../components/pages/Offerers/Offerer/VenueV1/fields/PricingPointV2/constant'
+
 import { DEFAULT_ACCESSIBILITY_FORM_VALUES } from './Accessibility'
 import { DEFAULT_ADDRESS_FORM_VALUES } from './Address'
 import { DEFAULT_CONTACT_FORM_VALUES } from './Contact'
@@ -14,4 +16,5 @@ export const DEFAULT_FORM_VALUES = {
   ...DEFAULT_IMAGE_UPLOADER_FORM_VALUES,
   ...DEFAULT_WITHDRAWAL_FORM_VALUES,
   ...DEFAULT_REIMBURSEMENT_POINT_FORM_VALUES,
+  ...DEFAULT_PRICING_POINT_FORM_VALUES,
 }

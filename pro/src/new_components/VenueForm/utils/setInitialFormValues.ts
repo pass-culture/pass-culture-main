@@ -27,6 +27,7 @@ const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
     name: venue.name,
     phoneNumber: venue.contact.phoneNumber,
     postalCode: venue.postalCode,
+    venueSiret: venue.pricingPoint != null ? venue.pricingPoint.id : null,
     publicName: venue.publicName,
     webSite: venue.contact.webSite,
     siret: humanizeSiret(venue.siret),

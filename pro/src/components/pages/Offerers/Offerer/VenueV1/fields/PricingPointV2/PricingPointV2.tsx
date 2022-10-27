@@ -130,12 +130,7 @@ const PricingPointV2 = ({
           ci-dessous le lieu avec SIRET :
         </p>
       )}
-      <div className="venue-label-label" id="venue-label">
-        <p>
-          Lieu avec SIRET utilisé pour le calcul de votre barème de
-          remboursement
-        </p>
-      </div>
+
       <div className={styles['dropdown-container']}>
         <div className={`${styles['select']}`}>
           <Select
@@ -145,8 +140,10 @@ const PricingPointV2 = ({
             id="venueSiret"
             name="venueSiret"
             data-testid={'pricingPointSelect'}
-            defaultValue={venue.pricingPoint?.id}
-            label={''}
+            defaultValue={venue.pricingPoint ? venue.pricingPoint?.id : ''}
+            label={
+              'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement'
+            }
             options={pricingPointOptions}
             hideFooter
           />

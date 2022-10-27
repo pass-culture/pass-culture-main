@@ -5,6 +5,10 @@
   font-weight: 600;
 }
 
+.sub-title {
+  margin-bottom: rem.torem(8px);
+}
+
 .reimbursement-subtitle {
   margin: rem.torem(24px) 0;
   font-size: rem.torem(15px);
@@ -22,6 +26,7 @@
   display: flex;
   align-items: center;
   margin-top: rem.torem(10px);
+  margin-bottom: rem.torem(24px);
   flex-wrap: wrap;
 
   .select {
@@ -33,13 +38,8 @@
     text-overflow: ellipsis;
   }
 
-  .space-left {
-    margin-bottom: rem.torem(16px);
-  }
-
   .space-text-left {
     margin-left: rem.torem(10px);
     font-weight: 500;
-    margin-bottom: rem.torem(16px);
   }
 }

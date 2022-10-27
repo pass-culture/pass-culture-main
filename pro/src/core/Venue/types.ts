@@ -71,7 +71,7 @@ export interface IVenue {
   siret: string
   venueType: string
   venueLabel: string
-  reimbursementPointId: number
+  reimbursementPointId: number | null
   withdrawalDetails: string
   collectiveAccessInformation: string
   collectiveDescription: string
