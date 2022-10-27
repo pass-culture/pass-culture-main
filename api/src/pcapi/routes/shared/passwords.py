@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 @private_api.route("/users/reset-password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def post_for_password_token(body: ResetPasswordBodyModel) -> None:
+def reset_password(body: ResetPasswordBodyModel) -> None:
     try:
         check_webapp_recaptcha_token(
             body.token,
