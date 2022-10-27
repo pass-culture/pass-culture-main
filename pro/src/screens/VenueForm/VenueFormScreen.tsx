@@ -112,8 +112,7 @@ const VenueFormScreen = ({
             'Une ou plusieurs erreurs sont présentes dans le formulaire'
           )
           formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
-          formik.setSubmitting(true)
-          formErrors.set
+          formik.setStatus('apiError')
         }
       })
   }
