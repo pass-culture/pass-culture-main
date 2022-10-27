@@ -1000,3 +1000,29 @@ def search_educational_institution(
         .limit(limit)
         .all()
     )
+
+
+def get_paginated_active_collective_offer_ids(limit: int, page: int) -> list[int]:
+    query = (
+        educational_models.CollectiveOffer.query.with_entities(educational_models.CollectiveOffer.id)
+        .filter(
+            educational_models.CollectiveOffer.isActive.is_(True),
+        )
+        .order_by(educational_models.CollectiveOffer.id)
+        .offset(page * limit)
+        .limit(limit)
+    )
+    return [offer_id for offer_id, in query]
+
+
+def get_paginated_active_collective_offer_template_ids(limit: int, page: int) -> list[int]:
+    query = (
+        educational_models.CollectiveOfferTemplate.query.with_entities(educational_models.CollectiveOfferTemplate.id)
+        .filter(
+            educational_models.CollectiveOfferTemplate.isActive.is_(True),
+        )
+        .order_by(educational_models.CollectiveOfferTemplate.id)
+        .offset(page * limit)
+        .limit(limit)
+    )
+    return [offer_id for offer_id, in query]
