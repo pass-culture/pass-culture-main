@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import Select from 'components/layout/inputs/Select'
 import { Option } from 'core/Offers/types'
 import PageTitle from 'new_components/PageTitle/PageTitle'
+import Select from 'ui-kit/form_raw/Select'
 import Titles from 'ui-kit/Titles/Titles'
 import { sortByDisplayName } from 'utils/strings'
 

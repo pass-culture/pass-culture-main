@@ -2,8 +2,8 @@ import fr from 'date-fns/locale/fr'
 import React from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
-import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
 import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
+import InputWithCalendar from 'ui-kit/form_raw/PeriodSelector/InputWithCalendar'
 import { FORMAT_DD_MM_YYYY, getToday } from 'utils/date'
 
 registerLocale('fr', fr)

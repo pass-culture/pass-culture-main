@@ -1,8 +1,8 @@
 import cx from 'classnames'
 import React, { useRef, useState } from 'react'
 
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { Banner, Button } from 'ui-kit'
+import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 import Titles from 'ui-kit/Titles/Titles'
 
 import { BookingDetails } from './BookingDetails'

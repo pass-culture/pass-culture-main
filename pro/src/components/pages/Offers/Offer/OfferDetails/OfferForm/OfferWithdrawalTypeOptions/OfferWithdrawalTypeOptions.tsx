@@ -1,11 +1,11 @@
 import React from 'react'
 
-import InputError from 'components/layout/inputs/Errors/InputError'
-import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WITHDRAWAL_TYPE_OPTIONS,
 } from 'core/Offers'
+import InputError from 'ui-kit/form_raw/Errors/InputError'
+import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
 import styles from './OfferWithdrawalTypeOptions.module.scss'
 

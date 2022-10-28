@@ -10,11 +10,6 @@ import React, {
   useState,
 } from 'react'
 
-import CheckboxInput from 'components/layout/inputs/CheckboxInput'
-import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
-import Select from 'components/layout/inputs/Select'
-import TextareaInput from 'components/layout/inputs/TextareaInput'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import {
   OFFER_WITHDRAWAL_TYPE_OPTIONS,
   EXTRA_DATA_FIELDS,
@@ -28,6 +23,11 @@ import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/us
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
+import CheckboxInput from 'ui-kit/form_raw/CheckboxInput'
+import DurationInput from 'ui-kit/form_raw/DurationInput/DurationInput'
+import Select from 'ui-kit/form_raw/Select'
+import TextareaInput from 'ui-kit/form_raw/TextareaInput'
+import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { sortByDisplayName } from 'utils/strings'

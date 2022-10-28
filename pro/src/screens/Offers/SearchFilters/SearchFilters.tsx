@@ -2,9 +2,6 @@ import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
 import React, { FormEvent, MouseEventHandler, useCallback } from 'react'
 
-import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import Select from 'components/layout/inputs/Select'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES_OPTION,
@@ -21,6 +18,9 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
+import Select from 'ui-kit/form_raw/Select'
+import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 import Icon from 'ui-kit/Icon/Icon'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 

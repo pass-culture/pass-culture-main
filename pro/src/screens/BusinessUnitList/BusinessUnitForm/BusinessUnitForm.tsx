@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import Select from 'components/layout/inputs/Select'
+import Select from 'ui-kit/form_raw/Select'
 import { sortByDisplayName } from 'utils/strings'
 
 import { IBusinessUnit, IBusinessUnitVenue } from '../BusinessUnitList'

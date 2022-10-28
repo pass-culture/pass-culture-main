@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
+import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
 import { OFFER_OPTIONS } from '../../_constants'
 
