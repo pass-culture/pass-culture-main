@@ -38,9 +38,11 @@ import {
 import { apiProvider } from '../../providers/apiProvider'
 import { ProResult, SearchProRequest } from '../../TypesFromApi'
 import { CustomSearchIcon } from '../Icons/CustomSearchIcon'
+import { StatusBadge } from '../PublicUsers/Components/StatusBadge'
 import { PermissionsEnum } from '../PublicUsers/types'
 
 import { ProTypeBadge } from './Components/ProTypeBadge'
+import { ValidationStatusBadge } from './Components/ValidationStatusBadge'
 import {
   isOfferer,
   isProUser,
@@ -80,13 +82,49 @@ const proResources = [
 ]
 
 const ProCard = ({ record }: { record: ProResult }) => {
-  const { id, resourceType, payload }: ProResult = record //TODO: implémenter le badge de status quand la valeur sera renvoyée depuis l'API
+  const { id, resourceType, payload }: ProResult = record
 
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card sx={{ minWidth: 330 }}>
       <CardContent>
         <Stack direction={'row'} spacing={2} sx={{ mb: 2 }}>
           <ProTypeBadge type={resourceType as ProTypeEnum} resource={record} />
+          {payload &&
+            isProUser(payload as ProUser) &&
+            !(payload as ProUser).isActive && (
+              <>
+                <StatusBadge active={(payload as ProUser).isActive} />
+              </>
+            )}
+          {payload && isOfferer(payload as Offerer) && (
+            <>
+              <ValidationStatusBadge
+                status={(payload as Offerer).validationStatus}
+                resourceType={resourceType as ProTypeEnum}
+              />
+              {!(payload as Offerer).isActive && (
+                <>
+                  <StatusBadge
+                    active={(payload as Offerer).isActive}
+                    feminine={true}
+                  />
+                </>
+              )}
+            </>
+          )}
+          {payload && isVenue(payload as Venue) && (
+            <>
+              <ValidationStatusBadge
+                status={(payload as Venue).validationStatus}
+                resourceType={resourceType as ProTypeEnum}
+              />
+              {!(payload as Venue).isActive && (
+                <>
+                  <StatusBadge active={(payload as Venue).isActive} />
+                </>
+              )}
+            </>
+          )}
         </Stack>
         {payload && isProUser(payload as ProUser) && (
           <>
