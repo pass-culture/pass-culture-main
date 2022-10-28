@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import Header from 'components/layout/Header/Header'
 import DomainNameBanner from 'new_components/DomainNameBanner'
 import GoBackLink from 'new_components/GoBackLink'
+import Header from 'new_components/Header/Header'
 import TutorialDialog from 'new_components/TutorialDialog'
 
 const AppLayout = props => {
