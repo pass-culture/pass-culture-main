@@ -13,6 +13,7 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
+from pcapi.domain.music_types import MUSIC_TYPES_DICT
 import pcapi.utils.date as date_utils
 from pcapi.utils.stopwords import STOPWORDS
 
@@ -341,6 +342,14 @@ class AlgoliaBackend(base.SearchBackend):
         distinct = extra_data.get("isbn") or extra_data.get("visa") or str(offer.id)
         distinct += extra_data.get("diffusionVersion", "")
 
+        music_type_label = None
+        music_type = extra_data.get("musicType", "").strip()
+        if music_type:
+            try:
+                music_type_label = MUSIC_TYPES_DICT[int(music_type)]
+            except (ValueError, KeyError, TypeError):
+                logger.warning("bad music type encountered", extra={"offer": offer.id, "music_type": music_type})
+
         object_to_index = {
             "distinct": distinct,
             "objectID": offer.id,
@@ -356,6 +365,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isEvent": offer.isEvent,
                 "isForbiddenToUnderage": offer.is_forbidden_to_underage,
                 "isThing": offer.isThing,
+                "musicType": music_type_label,
                 "name": offer.name,
                 "prices": prices_sorted,
                 # TODO(jeremieb): keep searchGroupNamev2 and remove
