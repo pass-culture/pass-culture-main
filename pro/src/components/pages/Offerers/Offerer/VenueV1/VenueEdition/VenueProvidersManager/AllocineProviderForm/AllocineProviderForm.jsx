@@ -4,9 +4,9 @@ import { Form } from 'react-final-form'
 import ReactTooltip from 'react-tooltip'
 
 import NumberField from 'components/layout/form/fields/NumberField'
-import Insert from 'components/layout/Insert/Insert'
 import { CheckboxField } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
+import Insert from 'ui-kit/Insert/Insert'
 import { getCanSubmit } from 'utils/react-final-form'
 
 const AllocineProviderForm = ({
