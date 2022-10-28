@@ -20,7 +20,7 @@ module.exports = {
       tags: ['forms', 'new workshop rules'],
       matchGlob: '**/*.{ts,tsx,js,jsx}',
       matchRule: ({ isImportingFrom }) =>
-        isImportingFrom('components/layout/inputs'),
+        isImportingFrom('ui-kit/form_raw'),
     },
     {
       title: 'remove forms components from layout/form',
@@ -31,7 +31,7 @@ module.exports = {
       tags: ['forms', 'new workshop rules'],
       matchGlob: '**/*.{ts,tsx,js,jsx}',
       matchRule: ({ isImportingFrom }) =>
-        isImportingFrom('components/layout/form'),
+        isImportingFrom('ui-kit/form_rff'),
     },
     {
       title:
