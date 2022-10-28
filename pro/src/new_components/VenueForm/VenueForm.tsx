@@ -1,16 +1,17 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { VenueProviderResponse } from 'apiClient/v1'
 import ReimbursementFields from 'components/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useCurrentUser from 'hooks/useCurrentUser'
 import FormLayout from 'new_components/FormLayout'
-import { SubmitButton } from 'ui-kit'
+import { ButtonLink, SubmitButton } from 'ui-kit'
 
-import useCurrentUser from '../../hooks/useCurrentUser'
+import { ButtonVariant } from '../../ui-kit/Button/types'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
@@ -90,12 +91,17 @@ const VenueForm = ({
           />
         )}
         <FormLayout.Actions>
-          <Link
-            className="secondary-link"
-            to={currentUser.isAdmin ? `/structures/${offerer.id}` : '/accueil'}
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              to: currentUser.isAdmin
+                ? `/structures/${offerer.id}`
+                : '/accueil',
+              isExternal: false,
+            }}
           >
             Annuler et quitter
-          </Link>
+          </ButtonLink>
           <SubmitButton isLoading={isSubmitting}>
             Enregistrer et {isCreatingVenue ? 'continuer' : 'quitter'}
           </SubmitButton>
