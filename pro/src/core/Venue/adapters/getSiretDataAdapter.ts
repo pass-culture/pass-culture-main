@@ -1,7 +1,8 @@
 import type { KeySelector } from 're-reselect'
 import { createCachedSelector } from 're-reselect'
 
-import { api, apiAdresse } from 'apiClient/api'
+import { apiAdresse } from 'apiClient/adresse'
+import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { validateSiret } from 'core/Venue/validate'
@@ -51,6 +52,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
   }
   try {
     const response = await api.getSiretInfo(siret)
+    /* istanbul ignore next: DEBT, TO FIX */
     if (!response.active) {
       return {
         isOk: false,
@@ -61,6 +63,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
     const { street, city, postalCode } = response.address
     const address = `${street} ${city} ${postalCode}`
     const addressData = await apiAdresse.getDataFromAddress(address, 1)
+    /* istanbul ignore next: DEBT, TO FIX */
     if (addressData.length == 0) {
       return {
         isOk: false,
@@ -89,6 +92,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status == 400) {
       message = e.body
+      /* istanbul ignore next: DEBT, TO FIX */
       if (e.body.global) {
         message = e.body.global[0]
       }
