@@ -6,11 +6,11 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
-import Logo from 'components/layout/Logo'
 import { redirectLoggedUser } from 'components/router/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import PageTitle from 'new_components/PageTitle/PageTitle'
+import Logo from 'ui-kit/Logo/Logo'
 
 const INVALID_FORM_MESSAGE =
   "Une erreur s'est produite, veuillez corriger le formulaire."

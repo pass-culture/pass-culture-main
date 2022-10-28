@@ -1,9 +1,9 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import React from 'react'
 
-import Logo from 'components/layout/Logo'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Logo from 'ui-kit/Logo/Logo'
 
 interface IEmailChangeValidationProps {
   isSuccess: boolean

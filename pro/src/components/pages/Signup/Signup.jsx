@@ -3,10 +3,10 @@ import React, { useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import Logo from 'components/layout/Logo'
 import useActiveFeature from 'hooks/useActiveFeature'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+import Logo from 'ui-kit/Logo/Logo'
 
 import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
 import SignupForm from './SignupForm/SignupForm'
