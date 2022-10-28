@@ -21,6 +21,7 @@ interface IDatePickerProps {
   minDateTime?: Date
   openingDateTime?: Date
   smallLabel?: boolean
+  isOptional?: boolean
 }
 
 const DatePicker = ({
@@ -33,6 +34,7 @@ const DatePicker = ({
   disabled,
   label,
   smallLabel,
+  isOptional = false,
 }: IDatePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'date' })
   const ref = createRef<HTMLInputElement>()
@@ -46,6 +48,7 @@ const DatePicker = ({
       name={name}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
+      isOptional={isOptional}
     >
       <ReactDatePicker
         {...field}

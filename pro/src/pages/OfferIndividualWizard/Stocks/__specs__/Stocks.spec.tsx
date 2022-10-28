@@ -73,7 +73,7 @@ describe('screens:Stocks', () => {
     renderStocksScreen({ storeOverride, contextOverride })
     expect(
       screen.getByText(
-        'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
+        'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
       )
     ).toBeInTheDocument()
   })

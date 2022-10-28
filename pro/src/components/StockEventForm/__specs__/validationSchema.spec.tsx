@@ -5,12 +5,11 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { IStockThingFormProps } from 'components/StockThingForm/StockThingForm'
 import { SubmitButton } from 'ui-kit'
 import { getToday } from 'utils/date'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
-import StockEventForm from '../StockEventForm'
+import StockEventForm, { IStockEventFormProps } from '../StockEventForm'
 import { getValidationSchema } from '../validationSchema'
 
 jest.mock('utils/date', () => ({
@@ -35,7 +34,7 @@ const renderStockEventForm = ({
   minQuantity?: number | null
   onSubmit?: () => void
 } = {}) => {
-  const props: IStockThingFormProps = { today }
+  const props: IStockEventFormProps = { today }
   return render(
     <Formik
       initialValues={STOCK_EVENT_FORM_DEFAULT_VALUES}

@@ -7,9 +7,11 @@ import styles from './StockThingForm.module.scss'
 export interface IStockThingFormProps {
   today: Date
   readOnlyFields?: string[]
+  showExpirationDate?: boolean
 }
 const StockThingForm = ({
   today,
+  showExpirationDate = false,
   readOnlyFields = [],
 }: IStockThingFormProps): JSX.Element => {
   return (
@@ -31,6 +33,16 @@ const StockThingForm = ({
         openingDateTime={today}
         disabled={readOnlyFields.includes('bookingLimitDatetime')}
       />
+
+      {showExpirationDate && (
+        <DatePicker
+          smallLabel
+          name="activationCodesExpirationDateTime"
+          label="Date d'expiration"
+          classNameFooter={styles['field-layout-footer']}
+          disabled={true}
+        />
+      )}
       <TextInput
         smallLabel
         name="quantity"

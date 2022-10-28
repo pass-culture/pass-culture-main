@@ -32,6 +32,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: jest.fn(),
 }))
 
+jest.mock('utils/date', () => ({
+  ...jest.requireActual('utils/date'),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+}))
+
 const renderStockThingScreen = ({
   props,
   storeOverride = {},
@@ -109,7 +116,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
+        'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
       )
     ).toBeInTheDocument()
 
@@ -128,7 +135,7 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen({ props, storeOverride, contextValue })
     expect(
       screen.getByText(
-        'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+        'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
       )
     ).toBeInTheDocument()
   })
@@ -136,7 +143,7 @@ describe('screens:StocksThing', () => {
     props.offer = {
       ...(offer as IOfferIndividual),
       subcategoryId: LIVRE_PAPIER_SUBCATEGORY_ID,
-      isDigital: true,
+      isDigital: false,
     }
     renderStockThingScreen({ props, storeOverride, contextValue })
     expect(
@@ -228,5 +235,106 @@ describe('screens:StocksThing', () => {
     expect(
       screen.getByText('API bookingLimitDatetime ERROR')
     ).toBeInTheDocument()
+  })
+  describe('activation codes', () => {
+    it('should submit activation codes and freeze quantity when a csv is provided', async () => {
+      jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+        stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      })
+      props.offer = {
+        ...(offer as IOfferIndividual),
+        isDigital: true,
+      }
+      renderStockThingScreen({ props, storeOverride, contextValue })
+
+      await userEvent.type(screen.getByLabelText('Prix'), '20')
+
+      await userEvent.click(
+        screen.getByTestId('stock-form-actions-button-open')
+      )
+      await userEvent.click(screen.getByText("Ajouter des codes d'activation"))
+      const uploadButton = screen.getByText(
+        "Importer un fichier .csv depuis l'ordinateur"
+      )
+
+      const file = new File(
+        ['ABH\nJHB\nIOP\nKLM\nMLK'],
+        'activation_codes.csv',
+        {
+          type: 'text/csv',
+        }
+      )
+      await userEvent.upload(uploadButton, file)
+
+      await expect(
+        screen.findByText(
+          'Vous êtes sur le point d’ajouter 5 codes d’activation.'
+        )
+      ).resolves.toBeInTheDocument()
+      await userEvent.click(await screen.findByText('Date limite de validité'))
+      await userEvent.click(screen.getByText('25'))
+
+      await userEvent.click(screen.getByText('Valider'))
+      expect(screen.getByLabelText('Quantité')).toBeDisabled()
+
+      const priceInput = screen.getByLabelText('Prix')
+      await userEvent.clear(priceInput)
+      await userEvent.type(priceInput, '14.01')
+      const expirationInput = screen.getByLabelText("Date d'expiration")
+      expect(expirationInput).toBeDisabled()
+      expect(expirationInput).toHaveValue('25/11/2022')
+      await userEvent.click(screen.getByText('Étape suivante'))
+      expect(api.upsertStocks).toHaveBeenCalledWith({
+        humanizedOfferId: 'OFFER_ID',
+        stocks: [
+          {
+            bookingLimitDatetime: null,
+            price: 14,
+            quantity: 5,
+            activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
+            activationCodesExpirationDatetime: '2022-11-25T22:59:59Z',
+          },
+        ],
+      })
+    })
+    it('should display an error when activation code file is incorrect', async () => {
+      jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+        stockIds: [{ id: 'CREATED_STOCK_ID' }],
+      })
+      props.offer = {
+        ...(offer as IOfferIndividual),
+        isDigital: true,
+      }
+      renderStockThingScreen({ props, storeOverride, contextValue })
+
+      await userEvent.click(
+        screen.getByTestId('stock-form-actions-button-open')
+      )
+      await userEvent.click(screen.getByText("Ajouter des codes d'activation"))
+      const uploadButton = screen.getByText(
+        "Importer un fichier .csv depuis l'ordinateur"
+      )
+      const title = screen.getByRole('heading', {
+        name: /Ajouter des codes d’activation/,
+      })
+
+      const file = new File(
+        ['ABH\nJHB\nIOP\nKLM\nABH'],
+        'activation_codes.csv',
+        {
+          type: 'text/csv',
+        }
+      )
+      await userEvent.upload(uploadButton, file)
+
+      await expect(
+        screen.findByText(
+          "Une erreur s'est produite lors de l'import de votre fichier."
+        )
+      ).resolves.toBeInTheDocument()
+
+      await userEvent.click(screen.getByTitle('Fermer la modale'))
+      expect(title).not.toBeInTheDocument()
+    })
   })
 })
