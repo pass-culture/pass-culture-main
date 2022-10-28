@@ -10,13 +10,13 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import Notification from 'components/layout/Notification/Notification'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import Notification from 'new_components/Notification/Notification'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 

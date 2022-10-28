@@ -8,10 +8,10 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, OfferStatus } from 'apiClient/v1'
-import Notification from 'components/layout/Notification/Notification'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
+import Notification from 'new_components/Notification/Notification'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 
