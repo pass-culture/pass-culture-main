@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Titles from 'components/layout/Titles/Titles'
 import GoBackLink from 'new_components/GoBackLink'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import Titles from 'ui-kit/Titles/Titles'
 
 import ApiKey from './ApiKey/ApiKey'
 import { Offerer } from './Offerer'
