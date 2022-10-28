@@ -383,6 +383,7 @@ def list_offerers_to_be_validated(
                         if offerer.UserOfferers
                         else None
                     ),
+                    ownerId=offerer.UserOfferers[0].userId if offerer.UserOfferers else None,
                     phoneNumber=(offerer.UserOfferers[0].user.phoneNumber if offerer.UserOfferers else None),
                     email=(offerer.UserOfferers[0].user.email if offerer.UserOfferers else None),
                     lastComment=_get_serialized_offerer_last_comment(offerer),
