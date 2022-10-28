@@ -1,0 +1,27 @@
+on:
+  push:
+    branches: ['PC-17138-import-app-engine-image-resizing']
+    paths: ['app-engine/image-resizing/**']
+
+env:
+  google_project: 'passculture-metier-ehp'
+
+jobs:
+  deploy-app-engine-image-resizing-ehp:
+    environment: testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: 'Checkout actual repository'
+        uses: actions/checkout@v3
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.APP_ENGINE_IMAGE_RESIZING_EHP_SERVICE_ACCOUNT }}
+      - name: 'Deploy the image-resizing service to the ehp app engine'
+        working-directory: ./app-engine/image-resizing
+        run:  gcloud beta app deploy --user-output-enabled=false --quiet --service-account=${{ secrets.APP_ENGINE_IMAGE_RESIZING_EHP_SERVICE_ACCOUNT }} --project ${{ env.google_project }}
