@@ -2,10 +2,10 @@ import cn from 'classnames'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
+import { ReactComponent as CloseIcon } from 'icons/close-dialog.svg'
 import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
 import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
-import { ReactComponent as CloseIcon } from 'icons/icons-close.svg'
 
 import oldStyles from './BannerLayout.module.scss'
 import newStyles from './NewBannerLayout.module.scss'
@@ -48,7 +48,10 @@ const BannerLayout = ({
           <button onClick={handleOnClick} type="button">
             {
               /* istanbul ignore next: graphic variation */
-              isNewStyles && type != 'new' && type != 'light' ? (
+              isNewStyles &&
+              type != 'new' &&
+              type != 'light' &&
+              type != 'image' ? (
                 <IcoClearIcon
                   title="Masquer le bandeau"
                   className={cn(styles['close-icon-banner'])}
