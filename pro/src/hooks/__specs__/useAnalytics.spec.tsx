@@ -118,15 +118,6 @@ test('should trigger a logEvent', async () => {
         traffic_source: 'push',
       }
     )
-    expect(firebaseAnalytics.logEvent).toHaveBeenNthCalledWith(
-      2,
-      'getAnalyticsReturn',
-      Events.UTM_TRACKING_CAMPAIGN,
-      {
-        traffic_campaign: 'push_offre_local',
-        traffic_medium: 'batch',
-        traffic_source: 'push',
-      }
-    )
   })
+  expect(firebaseAnalytics.logEvent).toHaveBeenCalledTimes(1)
 })
