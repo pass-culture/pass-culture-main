@@ -97,7 +97,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           isEdition: true,
-          isOfferDraft: false,
+          isDraft: false,
           to: 'recapitulatif',
           used: 'OffersThumb',
           offerId: 'M4',
@@ -118,6 +118,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           isEdition: true,
+          isDraft: false,
           to: 'stocks',
           used: 'OffersStocks',
           offerId: 'M4',
@@ -138,7 +139,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           isEdition: true,
-          isOfferDraft: false,
+          isDraft: false,
           to: 'recapitulatif',
           used: 'OffersPen',
           offerId: 'M4',
@@ -163,7 +164,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       {
         from: 'Offers',
         isEdition: true,
-        isOfferDraft: false,
+        isDraft: false,
         to: 'recapitulatif',
         used: 'OffersTitle',
         offerId: 'M4',
@@ -189,8 +190,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           isEdition: true,
-          isOfferDraft: true,
-          to: 'recapitulatif',
+          isDraft: true,
+          to: 'details',
           used: 'OffersTitle',
           offerId: 'M4',
         }
@@ -219,6 +220,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           from: 'Offers',
           used: 'OffersTrashicon',
           offerId: 'M4',
+          isDraft: true,
         }
       )
     })

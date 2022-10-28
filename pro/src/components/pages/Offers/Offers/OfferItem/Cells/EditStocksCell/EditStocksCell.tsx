@@ -34,6 +34,7 @@ const EditStocksCell = ({
             used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
             isEdition: true,
             offerId: offer.id,
+            isDraft: false,
           })
         }
         link={{ isExternal: false, to: editionStockLink }}
