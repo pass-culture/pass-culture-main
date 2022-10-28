@@ -11,6 +11,17 @@ from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import requests
 
 
+STATUS_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = 404
+ERROR_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = "EMAIL_ADDRESS_DOES_NOT_EXIST"
+
+
+def is_adage_institution_without_email(api_response: requests.Response) -> bool:
+    return (
+        api_response.status_code == STATUS_CODE_FOR_INSTITUTION_WITHOUT_EMAIL
+        and dict(api_response.json()).get("detail") == ERROR_CODE_FOR_INSTITUTION_WITHOUT_EMAIL
+    )
+
+
 class AdageHttpClient(AdageClient):
     def __init__(self) -> None:
         self.api_key = settings.ADAGE_API_KEY
@@ -25,8 +36,7 @@ class AdageHttpClient(AdageClient):
             data=data.json(),
         )
 
-        # Adage returns a 404 if the institution does not have any email
-        if api_response.status_code not in (201, 404):
+        if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise exceptions.AdageException(
                 "Error posting new prebooking to Adage API.", api_response.status_code, api_response.text
             )
@@ -106,8 +116,7 @@ class AdageHttpClient(AdageClient):
             api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
         )
 
-        # Adage returns a 404 if the institution does not have any email
-        if api_response.status_code not in (201, 404):
+        if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         return models.AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)

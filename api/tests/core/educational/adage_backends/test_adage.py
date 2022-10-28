@@ -13,6 +13,12 @@ from pcapi.routes.adage.v1.serialization import prebooking
 
 
 MOCK_API_URL = "http://adage.fr"
+ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL = {
+    "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+    "title": "Not Found",
+    "status": 404,
+    "detail": "EMAIL_ADDRESS_DOES_NOT_EXIST",
+}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -42,8 +48,10 @@ class AdageHttpClientTest:
         booking = CollectiveBookingFactory()
         booking_data = prebooking.serialize_collective_booking(booking)
 
-        response_data = {"result": "EMAIL_ADDRESS_DOES_NOT_EXIST"}
-        requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", status_code=404, json=response_data)
+        response_data = ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL
+        requests_mock.post(
+            f"{MOCK_API_URL}/v1/prereservation", status_code=404, json=ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL
+        )
 
         # When
         result = adage_client.notify_prebooking(booking_data)
@@ -95,8 +103,9 @@ class AdageHttpClientTest:
         )
         offer_data = serialize_collective_offer(offer)
 
-        response_data = {"result": "EMAIL_ADDRESS_DOES_NOT_EXIST"}
-        requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=404, json=response_data)
+        requests_mock.post(
+            f"{MOCK_API_URL}/v1/offre-assoc", status_code=404, json=ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL
+        )
 
         # When
         result = adage_client.notify_institution_association(offer_data)
@@ -104,7 +113,7 @@ class AdageHttpClientTest:
         # Then
         assert isinstance(result, AdageApiResult)
         assert result.success == True
-        assert result.response == response_data
+        assert result.response == ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL
 
     @override_settings(ADAGE_API_URL=MOCK_API_URL)
     def test_notify_institution_association_raises_if_adage_answers_error_response_code(self, requests_mock):
