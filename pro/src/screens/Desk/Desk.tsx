@@ -2,8 +2,8 @@ import cx from 'classnames'
 import React, { useRef, useState } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Titles from 'components/layout/Titles/Titles'
 import { Banner, Button } from 'ui-kit'
+import Titles from 'ui-kit/Titles/Titles'
 
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
