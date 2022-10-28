@@ -6,6 +6,7 @@ import Spinner from 'components/layout/Spinner'
 import ApplicationBanner from 'components/pages/Offerers/Offerer/VenueV1/fields/ApplicationBanner'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import { ReactComponent as IcoWarningGrey } from 'icons/ico-warning-grey.svg'
 import InfoDialog from 'new_components/InfoDialog'
 import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
 import { Button } from 'ui-kit/Button'
@@ -131,7 +132,7 @@ const ReimbursementPointV2 = ({
           {isNoSiretDialogOpen && (
             <InfoDialog
               buttonText="J'ai compris"
-              iconName="ico-info-wrong"
+              componentIcon={<IcoWarningGrey />}
               title="Vous devez sélectionner un lieu avec SIRET pour ajouter de nouvelles coordonnées bancaires"
               subTitle="Sélectionner un lieu avec SIRET parmi la liste puis valider votre sélection."
               closeDialog={() => {
