@@ -185,6 +185,7 @@ const ReimbursementPointV2 = ({
               <Select
                 id="reimbursementPointId"
                 name="reimbursementPointId"
+                className={styles['select-input']}
                 disabled={readOnly || !venueHasPricingPoint}
                 label="Coordonnées bancaires"
                 hideFooter
