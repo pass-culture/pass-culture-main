@@ -432,6 +432,7 @@ class OffererToBeValidated(BaseModel):
     postalCode: str
     city: str
     owner: str | None
+    ownerId: int | None
     phoneNumber: str | None
     email: str | None
     lastComment: Comment | None

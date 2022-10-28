@@ -274,7 +274,7 @@
         {
           "address": "address",
           "city": "city",
-          "dateOfBirth": "1/1/2020, 12:00:00 AM",
+          "dateOfBirth": "01/01/2020, 00:00:00",
           "email": "email",
           "firstName": "firstName",
           "id": 0,
@@ -305,7 +305,7 @@
     "200": {
       "address": "address",
       "city": "city",
-      "dateOfBirth": "1/1/2020, 12:00:00 AM",
+      "dateOfBirth": "01/01/2020, 00:00:00",
       "email": "email",
       "firstName": "firstName",
       "id": 0,
@@ -329,7 +329,7 @@
     "200": {
       "address": "address",
       "city": "city",
-      "dateOfBirth": "1/1/2020, 12:00:00 AM",
+      "dateOfBirth": "01/01/2020, 00:00:00",
       "email": "email",
       "firstName": "firstName",
       "id": 0,
@@ -351,7 +351,7 @@
   },
   "getBeneficiaryCredit": {
     "200": {
-      "dateCreated": "1/1/2020, 12:00:00 AM",
+      "dateCreated": "01/01/2020, 00:00:00",
       "initialCredit": 0,
       "remainingCredit": 0,
       "remainingDigitalCredit": 0
@@ -385,7 +385,7 @@
       "history": [
         {
           "action": "action",
-          "datetime": "1/1/2020, 12:00:00 AM",
+          "datetime": "01/01/2020, 00:00:00",
           "message": "message"
         }
       ]

@@ -177,6 +177,7 @@ export interface ListOfferersToBeValidatedRequest {
   page?: number | null
   perPage?: number | null
   sort?: string | null
+  q?: string | null
 }
 
 export interface RejectOffererRequest {
@@ -1324,6 +1325,10 @@ export class DefaultApi extends runtime.BaseAPI {
 
     if (requestParameters.sort !== undefined) {
       queryParameters['sort'] = requestParameters.sort
+    }
+
+    if (requestParameters.q !== undefined) {
+      queryParameters['q'] = requestParameters.q
     }
 
     const headerParameters: runtime.HTTPHeaders = {}
