@@ -3,10 +3,12 @@ import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
+import fetch from 'jest-fetch-mock'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
+import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
 import { ApiError, SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -78,11 +80,65 @@ jest.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
 
 jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
-jest.mock('apiClient/adresse/apiAdresse', () => ({
-  api: {
-    getDataFromAddress: jest.fn(),
+jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+  active: true,
+  address: {
+    city: 'paris',
+    postalCode: '75008',
+    street: 'rue de paris',
   },
-}))
+  name: 'lieu',
+  siret: '88145723823022',
+})
+
+jest.mock('apiClient/adresse', () => {
+  return {
+    ...jest.requireActual('apiClient/adresse'),
+    default: {
+      getDataFromAddress: jest.fn(),
+    },
+  }
+})
+
+jest.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
+  {
+    address: '12 rue des lilas',
+    city: 'Lyon',
+    id: '1',
+    latitude: 11.1,
+    longitude: -11.1,
+    label: '12 rue des lilas 69002 Lyon',
+    postalCode: '69002',
+  },
+  {
+    address: '12 rue des tournesols',
+    city: 'Paris',
+    id: '2',
+    latitude: 22.2,
+    longitude: -2.22,
+    label: '12 rue des tournesols 75003 Paris',
+    postalCode: '75003',
+  },
+])
+fetch.mockResponse(
+  JSON.stringify({
+    features: [
+      {
+        properties: {
+          name: 'name',
+          city: 'city',
+          id: 'id',
+          label: 'label',
+          postcode: 'postcode',
+        },
+        geometry: {
+          coordinates: [0, 0],
+        },
+      },
+    ],
+  }),
+  { status: 200 }
+)
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -316,7 +372,7 @@ describe('screen | VenueForm', () => {
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
-        undefined
+        venue
       )
 
       jest.spyOn(api, 'editVenue').mockRejectedValue(
