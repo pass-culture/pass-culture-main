@@ -313,7 +313,7 @@ class OfferView(BaseAdminView):
                 )
                 transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
                 admin_emails.send_offer_validation_notification_to_administration(new_validation, offer)
-
+                logger.info("validation status updated", extra={"offer": offer.id, "offer_validation": offer.validation}, technical_message_id="offers.validation_updated")  # type: ignore [call-arg]
                 flash("Le statut de l'offre a bien été modifié", "success")
 
         search.async_index_offer_ids([offer.id])
