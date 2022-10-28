@@ -2,9 +2,9 @@ import React, { useEffect } from 'react'
 import { useField } from 'react-final-form'
 import ReactTooltip from 'react-tooltip'
 
-import TextField from 'components/layout/form/fields/TextField'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
+import TextField from 'ui-kit/form_rff/fields/TextField'
 
 import { TooltipInvalidSiret } from './TooltipInvalidSiret'
 import { TooltipValidSiret } from './TooltipValidSiret'

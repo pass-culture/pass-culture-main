@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
 
-import FieldErrors from 'components/layout/form/FieldErrors'
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import FieldErrors from 'ui-kit/form_rff/FieldErrors'
+import getRequiredValidate from 'ui-kit/form_rff/utils/getRequiredValidate'
 import { composeValidators } from 'utils/react-final-form'
 
 import LocationViewer from './LocationViewer'
