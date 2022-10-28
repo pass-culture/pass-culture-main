@@ -14,7 +14,18 @@ import {
   validationSchema,
   VenueForm,
 } from 'new_components/VenueForm'
-import { Title } from 'ui-kit'
+import { Button, Title } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
+import {
+  Events,
+  OFFER_FORM_HOMEPAGE,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from '../../core/FirebaseEvents/constants'
+import useActiveFeature from '../../hooks/useActiveFeature'
+import useAnalytics from '../../hooks/useAnalytics'
+import { ReactComponent as AddOfferSvg } from '../../icons/ico-plus.svg'
 
 import {
   serializeEditVenueBodyModel,
@@ -106,20 +117,56 @@ const VenueFormScreen = ({
     validationSchema: validationSchema, // FIXME: Should use formValidationSchema instead
   })
 
+  const isNewBankInformationCreation = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
+  )
+
+  const {
+    id: initialId,
+    isVirtual: initialIsVirtual,
+    publicName: publicName,
+    name: initialName,
+  } = venue || {}
+
+  const { logEvent } = useAnalytics()
+
   return (
     <div>
-      <Title level={1} className={style['venue-form-heading']}>
-        {isCreatingVenue ? 'Création d’un lieu' : 'Lieu'}
-      </Title>
-      {!isCreatingVenue && (
-        <Title level={2} className={style['venue-form-heading']}>
-          {
-            /* istanbul ignore next: DEBT, TO FIX */
-            initialValues.publicName || initialValues.name
-          }
+      <div className={style['venue-form-heading']}>
+        <div className={style['title-page']}>
+          <Title level={1}>
+            {isCreatingVenue ? 'Création d’un lieu' : 'Lieu'}
+          </Title>
+          <a href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}>
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              onClick={() =>
+                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                  from: OFFER_FORM_NAVIGATION_IN.VENUE,
+                  to: OFFER_FORM_HOMEPAGE,
+                  used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_BUTTON,
+                  isEdition: false,
+                })
+              }
+              Icon={AddOfferSvg}
+            >
+              <span>Créer une offre</span>
+            </Button>
+          </a>
+        </div>
+        <Title level={2}>
+          {initialIsVirtual
+            ? `${offerer.name} (Offre numérique)`
+            : publicName || initialName}
         </Title>
-      )}
-
+        {!isCreatingVenue && isNewBankInformationCreation && (
+          <p className={style['identifier']}>
+            {venue && venue.dmsToken
+              ? `N° d'identifiant du lieu : ${venue.dmsToken}`
+              : ''}
+          </p>
+        )}
+      </div>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
           <VenueForm
