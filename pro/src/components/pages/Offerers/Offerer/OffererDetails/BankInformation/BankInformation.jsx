@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
-import Icon from 'components/layout/Icon'
 import InvalidBusinessUnits from 'components/pages/Home/Offerers/InvalidBusinessUnits'
 import { Banner } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 import { Offerer } from '../Offerer'

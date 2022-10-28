@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import DialogBox from 'new_components/DialogBox'
+import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './InfoDialog.module.scss'
 

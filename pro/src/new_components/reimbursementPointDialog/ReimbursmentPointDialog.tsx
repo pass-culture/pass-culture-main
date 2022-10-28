@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { Button } from 'ui-kit/Button'
 import CopyLink from 'ui-kit/CopyLink'
+import Icon from 'ui-kit/Icon/Icon'
 import { REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
 
 import DialogBox from '../DialogBox'

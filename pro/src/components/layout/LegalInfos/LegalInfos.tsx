@@ -1,9 +1,9 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import Icon from 'components/layout/Icon'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import Icon from 'ui-kit/Icon/Icon'
 
 interface ILegalInfoProps {
   title: string

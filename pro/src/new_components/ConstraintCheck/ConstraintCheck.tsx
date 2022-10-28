@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 
-import Icon from 'components/layout/Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 import style from './ConstraintCheck.module.scss'
 import { Constraint } from './imageConstraints'

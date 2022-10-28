@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import Icon from 'components/layout/Icon'
 import { Button } from 'ui-kit/Button'
+import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './CopyLink.module.scss'
 

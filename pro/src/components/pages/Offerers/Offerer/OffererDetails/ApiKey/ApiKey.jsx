@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import Icon from 'components/layout/Icon'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { Banner } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
 

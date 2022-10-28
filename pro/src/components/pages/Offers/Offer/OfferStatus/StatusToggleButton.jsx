@@ -2,13 +2,13 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
 import { api } from 'apiClient/api'
-import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
 import useNotification from 'hooks/useNotification'
+import Icon from 'ui-kit/Icon/Icon'
 
 const StatusToggleButton = ({ offer, reloadOffer }) => {
   const notification = useNotification()

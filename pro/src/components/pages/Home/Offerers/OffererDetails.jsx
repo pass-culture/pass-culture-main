@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -12,6 +11,7 @@ import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { Banner, ButtonLink, Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Icon from 'ui-kit/Icon/Icon'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 

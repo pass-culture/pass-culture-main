@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { Banner } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 
 const BannerReimbursementsInfo = (): JSX.Element => {
   return (
