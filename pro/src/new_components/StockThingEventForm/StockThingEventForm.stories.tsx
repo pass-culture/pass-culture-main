@@ -10,7 +10,6 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import {
   StockThingEventForm,
   IStockThingEventFormValuesArray,
-  getValidationSchema,
   getValidationSchemaArray,
   STOCK_THING_EVENT_FORM_DEFAULT_VALUES,
 } from '.'
@@ -26,8 +25,6 @@ interface IRenderStockThingEventForm {
   initialValues?: IStockThingEventFormValuesArray
 }
 
-const validationSchema = getValidationSchema()
-
 const renderStockThingEventForm =
   ({
     initialValues,
@@ -40,7 +37,7 @@ const renderStockThingEventForm =
           alert(`onSubmit with values: ${JSON.stringify(values)}`)
           return Promise.resolve()
         }}
-        validationSchema={getValidationSchemaArray(validationSchema)}
+        validationSchema={getValidationSchemaArray()}
       >
         {({ handleSubmit, isSubmitting }) => (
           <form onSubmit={handleSubmit}>
