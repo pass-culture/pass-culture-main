@@ -1,12 +1,14 @@
 import { Chip } from '@mui/material'
 
 import { ValidationStatus } from '../../../TypesFromApi'
+import { ProTypeEnum } from '../types'
 
 type Props = {
   status: ValidationStatus
+  resourceType: ProTypeEnum
 }
 
-export const ValidationStatusBadge = ({ status }: Props) => {
+export const ValidationStatusBadge = ({ status, resourceType }: Props) => {
   let label = ''
   let color:
     | 'default'
@@ -19,7 +21,7 @@ export const ValidationStatusBadge = ({ status }: Props) => {
 
   switch (status) {
     case ValidationStatus.NEW:
-      label = 'Nouveau'
+      label = resourceType == ProTypeEnum.offerer ? 'Nouvelle' : 'Nouveau'
       color = 'info'
       break
     case ValidationStatus.PENDING:
@@ -27,11 +29,11 @@ export const ValidationStatusBadge = ({ status }: Props) => {
       color = 'warning'
       break
     case ValidationStatus.REJECTED:
-      label = 'Rejeté'
+      label = resourceType == ProTypeEnum.offerer ? 'Rejetée' : 'Rejeté'
       color = 'error'
       break
     case ValidationStatus.VALIDATED:
-      label = 'Validé'
+      label = resourceType == ProTypeEnum.offerer ? 'Validée' : 'Validé'
       color = 'success'
       break
     default:
@@ -39,5 +41,13 @@ export const ValidationStatusBadge = ({ status }: Props) => {
       color = 'default'
       break
   }
-  return <Chip color={color} label={label} />
+  return (
+    <Chip
+      color={color}
+      label={label}
+      style={{
+        fontSize: '0.95rem',
+      }}
+    />
+  )
 }
