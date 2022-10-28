@@ -64,7 +64,6 @@ import { ReactComponent as ValidCircleIcon } from 'icons/ico-valid.svg'
 import { ReactComponent as IcoValideCercle } from 'icons/ico-valide-cercle.svg'
 import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
-import { ReactComponent as IcoClose } from 'icons/icons-close.svg'
 import { ReactComponent as InfoPhoneIcon } from 'icons/info-phone.svg'
 import { ReactComponent as InfoIcon } from 'icons/info.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
@@ -392,12 +391,6 @@ export const Icons = () => (
           <ValidCircleIcon />
         </td>
         <td>ico-valid</td>
-      </tr>
-      <tr>
-        <td>
-          <IcoClose />
-        </td>
-        <td>icons-close</td>
       </tr>
       <tr>
         <td>
