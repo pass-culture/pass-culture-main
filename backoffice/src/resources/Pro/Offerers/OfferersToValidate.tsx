@@ -1,7 +1,6 @@
 import {
   Backdrop,
   Card,
-  Chip,
   CircularProgress,
   FormControl,
   InputLabel,
@@ -42,9 +41,11 @@ import {
   OffererTagItem,
   OffererTagsResponseModel,
   OffererToBeValidated,
+  ValidationStatus,
 } from '../../../TypesFromApi'
 import { PermissionsEnum } from '../../PublicUsers/types'
 import { OfferersToValidateContextTableMenu } from '../Components/OfferersToValidateContextTableMenu'
+import { ValidationStatusBadge } from '../Components/VallidationStatusBadge'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -292,12 +293,10 @@ export const OfferersToValidate = () => {
                       <TableCell>Top Acteur</TableCell>
                       <TableCell>Dernier Commentaire</TableCell>
                       <TableCell>SIREN</TableCell>
+                      <TableCell>Mail</TableCell>
                       <TableCell>Responsable Structure</TableCell>
-                      <TableCell>Adresse</TableCell>
-                      <TableCell>CP</TableCell>
                       <TableCell>Ville</TableCell>
                       <TableCell>Tél</TableCell>
-                      <TableCell>Mail</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -312,7 +311,10 @@ export const OfferersToValidate = () => {
                         <TableCell>{offerer.id}</TableCell>
                         <TableCell>{offerer.name}</TableCell>
                         <TableCell>
-                          <Chip label={offerer.status} />
+                          {/*<Chip label={offerer.status} />*/}
+                          <ValidationStatusBadge
+                            status={offerer.status as ValidationStatus}
+                          />
                         </TableCell>
                         <TableCell>
                           <Switch
@@ -355,12 +357,10 @@ export const OfferersToValidate = () => {
                           {offerer.lastComment && offerer.lastComment.content}
                         </TableCell>
                         <TableCell>{offerer.siren}</TableCell>
+                        <TableCell>{offerer.email}</TableCell>
                         <TableCell>{offerer.owner}</TableCell>
-                        <TableCell>{offerer.address}</TableCell>
-                        <TableCell>{offerer.postalCode}</TableCell>
                         <TableCell>{offerer.city}</TableCell>
                         <TableCell>{offerer.phoneNumber}</TableCell>
-                        <TableCell>{offerer.email}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
