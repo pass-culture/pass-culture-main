@@ -8,7 +8,6 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
-import Notification from 'components/layout/Notification/Notification'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -18,6 +17,7 @@ import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import Notification from 'new_components/Notification/Notification'
 import { setInitialFormValues } from 'new_components/OfferIndividualForm'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'

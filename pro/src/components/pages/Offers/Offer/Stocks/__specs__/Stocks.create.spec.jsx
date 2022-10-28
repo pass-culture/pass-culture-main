@@ -7,8 +7,8 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import Notification from 'components/layout/Notification/Notification'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
+import Notification from 'new_components/Notification/Notification'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 

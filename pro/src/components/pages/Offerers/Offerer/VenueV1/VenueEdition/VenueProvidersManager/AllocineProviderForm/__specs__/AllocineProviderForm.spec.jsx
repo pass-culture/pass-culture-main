@@ -13,7 +13,7 @@ import ReactTooltip from 'react-tooltip'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
-import Notification from 'components/layout/Notification/Notification'
+import Notification from 'new_components/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 

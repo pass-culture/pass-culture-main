@@ -8,10 +8,10 @@ import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
-import Notification from 'components/layout/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
+import Notification from 'new_components/Notification/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import ActionsBar, { IActionBarProps } from '../ActionsBar'
