@@ -42,7 +42,7 @@ jest.mock('utils/date', () => ({
 const renderOffers = (
   props,
   storeOverrides,
-  pathname = '/offre/AG3A/individuel/stocks'
+  pathname = '/offre/AG3A/individuel/creation/stocks'
 ) => {
   const store = configureTestStore(storeOverrides)
   render(
