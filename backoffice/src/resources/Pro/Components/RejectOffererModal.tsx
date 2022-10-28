@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  MenuItem,
-  Modal,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material'
+import { Box, Button, MenuItem, Modal, Stack, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
 import * as React from 'react'
 import { useState } from 'react'
