@@ -60,7 +60,6 @@ class Returns200Test:
         response = client.get(f"/adage/v1/venues/relative/id/{venue1.id}")
 
         assert response.status_code == 200
-        assert len(response.json["venues"]) == 2
         assert response.json == {
             "venues": [
                 {
