@@ -237,7 +237,7 @@ describe('stocks page - Brouillon', () => {
         {
           from: 'stocks',
           isDraft: true,
-          isEdition: false,
+          isEdition: true,
           offerId: 'AG3A',
           to: 'stocks',
           used: 'DraftButtons',
@@ -283,7 +283,7 @@ describe('stocks page - Brouillon', () => {
         {
           from: 'stocks',
           isDraft: true,
-          isEdition: false,
+          isEdition: true,
           offerId: 'AG3A',
           to: 'recapitulatif',
           used: 'StickyButtons',

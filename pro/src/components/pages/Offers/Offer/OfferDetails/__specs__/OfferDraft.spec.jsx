@@ -216,7 +216,7 @@ describe('offerDetails - Draft', () => {
         {
           from: 'details',
           isDraft: true,
-          isEdition: false,
+          isEdition: true,
           offerId: 'ABC12',
           to: 'stocks',
           used: 'StickyButtons',
@@ -238,7 +238,7 @@ describe('offerDetails - Draft', () => {
         {
           from: 'details',
           isDraft: true,
-          isEdition: false,
+          isEdition: true,
           offerId: 'ABC12',
           to: 'details',
           used: 'DraftButtons',
