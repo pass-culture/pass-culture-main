@@ -25,19 +25,6 @@ from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_of
 from pcapi.utils.urls import build_pc_pro_offerer_link
 
 
-def _get_emails_by_offerer(offerer: Offerer) -> set[str]:
-    """
-    Get all emails for which pro attributes may be modified when the offerer is updated or deleted.
-    Any bookingEmail in a venue should be updated in sendinblue when offerer is disabled, deleted or its name changed
-    """
-    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(offerer.id)
-    emails = {user_offerer.user.email for user_offerer in users_offerer}
-
-    emails |= {venue.bookingEmail for venue in offerers_repository.find_venues_by_managing_offerer_id(offerer.id)}
-
-    return emails
-
-
 def _format_offerer_name(view: BaseAdminView, context: Context, model: Offerer, name: str) -> Markup:
     url = build_pc_pro_offerer_link(model)
     return Markup('<a href="{url}">{name}</a>').format(url=url, name=model.name)
@@ -128,7 +115,7 @@ class OffererView(BaseAdminView):
     def delete_model(self, offerer: Offerer) -> bool:
         # Get users to update before association info is deleted
         # joined user is no longer available after delete_model()
-        emails = _get_emails_by_offerer(offerer)
+        emails = offerers_repository.get_emails_by_offerer(offerer)
 
         try:
             delete_cascade_offerer_by_id(offerer.id)
@@ -165,7 +152,7 @@ class OffererView(BaseAdminView):
         result = super().update_model(form, offerer)
 
         if result:
-            for email in _get_emails_by_offerer(offerer):
+            for email in offerers_repository.get_emails_by_offerer(offerer):
                 update_external_pro(email)
 
             zendesk_sell.update_offerer(offerer)

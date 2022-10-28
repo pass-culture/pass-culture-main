@@ -14,7 +14,7 @@ from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.users.models import User
+import pcapi.core.users.models as users_models
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import db
@@ -30,7 +30,7 @@ def get_all_venue_labels() -> list[models.VenueLabel]:
 
 
 def get_all_offerers_for_user(
-    user: User,
+    user: users_models.User,
     validated: bool = None,
     keywords: str = None,
     include_non_validated_user_offerers: bool = False,
@@ -219,11 +219,7 @@ def find_user_offerer_by_validation_token(token: str) -> models.UserOfferer | No
     return models.UserOfferer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_all_user_offerers_by_offerer_id(offerer_id: int) -> list[models.UserOfferer]:
-    return models.UserOfferer.query.filter_by(offererId=offerer_id).all()
-
-
-def filter_query_where_user_is_user_offerer_and_is_validated(query: BaseQuery, user: User) -> BaseQuery:
+def filter_query_where_user_is_user_offerer_and_is_validated(query: BaseQuery, user: users_models.User) -> BaseQuery:
     return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.isValidated)
 
 
@@ -381,7 +377,12 @@ def get_by_collective_stock_id(collective_stock_id: int) -> models.Offerer:
 
 
 def find_new_offerer_user_email(offerer_id: int) -> str:
-    result_tuple = models.UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()
+    result_tuple = (
+        models.UserOfferer.query.filter_by(offererId=offerer_id)
+        .join(users_models.User)
+        .with_entities(users_models.User.email)
+        .first()
+    )
     if result_tuple:
         return result_tuple[0]
     raise exceptions.CannotFindOffererUserEmail()
@@ -500,7 +501,33 @@ def get_emails_by_venue(venue: models.Venue) -> set[str]:
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.
     Be careful: venue attributes are no longer available after venue object is deleted, call this function before.
     """
-    users_offerer = find_all_user_offerers_by_offerer_id(venue.managingOffererId)
-    emails = {user_offerer.user.email for user_offerer in users_offerer}
-    emails.add(venue.bookingEmail)
+    emails = {
+        email
+        for email, in users_models.User.query.join(users_models.User.UserOfferers)
+        .filter_by(offererId=venue.managingOffererId)
+        .with_entities(users_models.User.email)
+    }
+    if venue.bookingEmail:
+        emails.add(venue.bookingEmail)
+    return emails
+
+
+def get_emails_by_offerer(offerer: models.Offerer) -> set[str]:
+    """
+    Get all emails for which pro attributes may be modified when the offerer is updated or deleted.
+    Any bookingEmail in a venue should be updated in sendinblue when offerer is disabled, deleted or its name changed
+    """
+    emails = {
+        email
+        for email, in users_models.User.query.join(users_models.User.UserOfferers)
+        .filter_by(offererId=offerer.id)
+        .with_entities(users_models.User.email)
+    }
+    emails |= {
+        email
+        for email, in models.Venue.query.filter_by(managingOffererId=offerer.id).with_entities(
+            models.Venue.bookingEmail
+        )
+    }
+    emails.discard(None)
     return emails
