@@ -424,6 +424,7 @@ class OfferersStatsResponseModel(BaseModel):
 class OffererToBeValidated(BaseModel):
     id: int
     name: str
+    requestDate: datetime.datetime
     status: str
     step: str | None
     siren: str

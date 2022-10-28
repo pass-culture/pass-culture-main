@@ -1422,7 +1422,9 @@ class ListOfferersToBeValidatedTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_payload_content(self, client, validation_status, expected_status):
         # given
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer__validationStatus=validation_status)
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59), offerer__validationStatus=validation_status
+        )
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 12, 0),
@@ -1469,6 +1471,7 @@ class ListOfferersToBeValidatedTest:
         payload = response.json["data"][0]
         assert payload["id"] == user_offerer.offerer.id
         assert payload["name"] == user_offerer.offerer.name
+        assert payload["requestDate"] == "2022-10-03T12:00:00+00:00"
         assert payload["status"] == expected_status
         assert payload["step"] is None  # TODO
         assert payload["siren"] == user_offerer.offerer.siren
@@ -1489,6 +1492,83 @@ class ListOfferersToBeValidatedTest:
             "date": "2022-10-03T14:02:00+00:00",
         }
         assert payload["isTopActor"] == (tag in user_offerer.offerer.tags)
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_payload_content_rejected_and_registered_again(self, client):
+        # given
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59)
+        )
+        reviewer = users_factories.AdminFactory()
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 12, 0),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=reviewer,
+            offerer=user_offerer.offerer,
+            user=user_offerer.user,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 15, 3),
+            actionType=history_models.ActionType.USER_OFFERER_REJECTED,
+            authorUser=reviewer,
+            offerer=user_offerer.offerer,
+            user=user_offerer.user,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 28, 17, 5),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=reviewer,
+            offerer=user_offerer.offerer,
+            user=user_offerer.user,
+            comment=None,
+        )
+
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 200
+        payload = response.json["data"][0]
+        assert payload["id"] == user_offerer.offerer.id
+        assert payload["name"] == user_offerer.offerer.name
+        assert payload["requestDate"] == "2022-10-28T17:05:00+00:00"
+        assert payload["status"] == "NEW"
+        assert payload["step"] is None  # TODO
+        assert payload["lastComment"] is None
+        assert payload["isTopActor"] is False
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_payload_content_no_action(self, client):
+        # given
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
+        )
+
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated")
+        )
+
+        # then
+        assert response.status_code == 200
+        payload = response.json["data"][0]
+        assert payload["id"] == user_offerer.offerer.id
+        assert payload["name"] == user_offerer.offerer.name
+        assert payload["requestDate"] == "2022-10-03T11:59:00+00:00"
+        assert payload["status"] == "NEW"
+        assert payload["step"] is None  # TODO
+        assert payload["lastComment"] is None
+        assert payload["isTopActor"] is False
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(
