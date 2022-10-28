@@ -1,8 +1,8 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
+import Icon from 'ui-kit/Icon/Icon'
 
 import IconLinkBox, { IIconLinkBoxProps } from './IconLinkBox'
 

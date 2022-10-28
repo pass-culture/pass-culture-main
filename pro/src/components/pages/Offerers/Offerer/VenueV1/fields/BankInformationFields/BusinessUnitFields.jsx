@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Field } from 'react-final-form'
 
 import { api } from 'apiClient/api'
-import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
 import { humanizeSiret } from 'core/Venue/utils'
 import { Banner } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 import ApplicationBanner from '../ApplicationBanner'

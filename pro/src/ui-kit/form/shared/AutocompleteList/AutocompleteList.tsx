@@ -1,7 +1,7 @@
 import cx from 'classnames'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './AutocompleteList.module.scss'
 import { IAutocompleteItemProps } from './type'

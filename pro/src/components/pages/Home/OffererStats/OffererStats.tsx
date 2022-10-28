@@ -1,7 +1,6 @@
 import React from 'react'
 import { useLocation } from 'react-router'
 
-import Icon from 'components/layout/Icon'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as CalendarIcon } from 'icons/ico-calendar-v2.svg'
@@ -9,6 +8,7 @@ import { ReactComponent as EuroIcon } from 'icons/ico-euro-v2.svg'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Icon from 'ui-kit/Icon/Icon'
 import { IconLinkBox } from 'ui-kit/IconLinkBox'
 
 import { STEP_STATS_HASH } from '../HomepageBreadcrumb'

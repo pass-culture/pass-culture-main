@@ -1,9 +1,9 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Icon from 'ui-kit/Icon/Icon'
 
 import { UploaderModeEnum } from '../types'
 

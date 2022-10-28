@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 
-import Icon from './Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 interface SpinnerProps {
   message?: string

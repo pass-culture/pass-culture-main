@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './ShowcaseBannerInfo.module.scss'
 

@@ -1,12 +1,12 @@
 import React, { Fragment, useState } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import Icon from 'components/layout/Icon'
 import {
   ADMINS_DISABLED_FILTERS_MESSAGE,
   OFFER_STATUS_LIST,
 } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
+import Icon from 'ui-kit/Icon/Icon'
 
 import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
 

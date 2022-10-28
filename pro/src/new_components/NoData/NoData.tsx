@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { Audience } from 'core/shared'
+import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './NoData.module.scss'
 

@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react'
 
-import Icon from 'components/layout/Icon'
 import { TPreFilters } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import Icon from 'ui-kit/Icon/Icon'
 
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'

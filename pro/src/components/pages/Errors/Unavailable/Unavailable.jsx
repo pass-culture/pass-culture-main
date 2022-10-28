@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Icon from 'ui-kit/Icon/Icon'
 
 const Unavailable = () => {
   return (

@@ -2,11 +2,11 @@ import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
-import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Icon from 'ui-kit/Icon/Icon'
 
 import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
 import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'

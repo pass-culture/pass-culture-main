@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../../components/layout/Icon'
+import Icon from '../../../ui-kit/Icon/Icon'
 import { IBusinessUnitVenue } from '../BusinessUnitList'
 
 import styles from './VenueListItem.module.scss'

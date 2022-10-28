@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { Banner } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 const MissingBusinessUnits = ({ hasTitle }) => {

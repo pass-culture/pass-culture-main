@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, forwardRef } from 'react'
 
-import Icon from 'components/layout/Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 import ActivationCodesUploadErrorDescription from './ActivationCodesUploadErrorDescription'
 import ActivationCodesUploadInformationDescription from './ActivationCodesUploadInformationDescription'

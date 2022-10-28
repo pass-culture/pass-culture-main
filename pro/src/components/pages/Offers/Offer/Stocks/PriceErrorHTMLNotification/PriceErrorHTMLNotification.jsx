@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
+import Icon from 'ui-kit/Icon/Icon'
 import { CGU_URL } from 'utils/config'
 
 import styles from './PriceErrorHTMLNotification.module.scss'

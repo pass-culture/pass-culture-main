@@ -1,11 +1,11 @@
 import cn from 'classnames'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { ReactComponent as CloseIcon } from 'icons/close-dialog.svg'
 import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
 import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
+import Icon from 'ui-kit/Icon/Icon'
 
 import oldStyles from './BannerLayout.module.scss'
 import newStyles from './NewBannerLayout.module.scss'
