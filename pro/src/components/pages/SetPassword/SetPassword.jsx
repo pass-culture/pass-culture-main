@@ -4,12 +4,12 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
-import PasswordField from 'components/layout/form/fields/PasswordField'
 import { redirectLoggedUser } from 'components/router/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import LegalInfos from 'new_components/LegalInfos/LegalInfos'
 import PageTitle from 'new_components/PageTitle/PageTitle'
+import PasswordField from 'ui-kit/form_rff/fields/PasswordField'
 import Logo from 'ui-kit/Logo/Logo'
 
 const INVALID_FORM_MESSAGE =

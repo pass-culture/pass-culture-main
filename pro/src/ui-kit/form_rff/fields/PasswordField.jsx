@@ -5,7 +5,7 @@ import { Field } from 'react-final-form'
 import Icon from 'ui-kit/Icon/Icon'
 
 /*eslint no-undef: 0*/
-import TextInputWithIcon from '../../inputs/TextInputWithIcon/TextInputWithIcon'
+import TextInputWithIcon from '../../../components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 
 export const isNotValid = value => {
   if (!value) {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { Field } from 'react-final-form'
 
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import getRequiredValidate from 'ui-kit/form_rff/utils/getRequiredValidate'
 
 const CheckboxField = ({
   SvgElement,

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import TextField from 'components/layout/form/fields/TextField'
+import TextField from 'ui-kit/form_rff/fields/TextField'
 
 import { validateEmail, validatePhone, validateUrl } from './validators'
 

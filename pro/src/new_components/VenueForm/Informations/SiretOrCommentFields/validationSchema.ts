@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
-import siretApiValidate from 'components/layout/form/fields/SiretField/validators/siretApiValidate'
 import { unhumanizeSiret } from 'core/Venue'
+import siretApiValidate from 'ui-kit/form_rff/fields/SiretField/validators/siretApiValidate'
 
 const generateSiretValidationSchema = (
   siren: string,
