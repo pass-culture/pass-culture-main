@@ -383,11 +383,33 @@ def test_unindex_collective_offer_ids():
         assert posted_json["requests"][0]["body"]["objectID"] == 1
 
 
-def test_unindex_all_collective_offers():
+def test_unindex_all_collective_offers_for_all_objects():
     backend = get_backend()
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear", json={})
         backend.unindex_all_collective_offers()
+        assert posted.called
+
+
+def test_unindex_all_collective_offers_only_for_template():
+    backend = get_backend()
+    with requests_mock.Mocker() as mock:
+        posted = mock.post(
+            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/deleteByQuery",
+            json={"facetFilter": ["isTemplate:true"]},
+        )
+        backend.unindex_all_collective_offers(only_template=True)
+        assert posted.called
+
+
+def test_unindex_all_collective_offers():
+    backend = get_backend()
+    with requests_mock.Mocker() as mock:
+        posted = mock.post(
+            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/deleteByQuery",
+            json={"facetFilter": ["isTemplate:false"]},
+        )
+        backend.unindex_all_collective_offers(only_non_template=True)
         assert posted.called
 
 

@@ -516,12 +516,12 @@ def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
         logger.exception("Could not unindex venues", extra={"venues": venue_ids})
 
 
-def unindex_all_collective_offers() -> None:
+def unindex_all_collective_offers(*, only_template: bool = False, only_non_template: bool = False) -> None:
     if settings.IS_PROD:
         raise ValueError("It is forbidden to unindex all collective offers on this environment")
     backend = _get_backend()
     try:
-        backend.unindex_all_collective_offers()
+        backend.unindex_all_collective_offers(only_template=only_template, only_non_template=only_non_template)
     except Exception:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
             raise

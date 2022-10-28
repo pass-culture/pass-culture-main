@@ -3,8 +3,11 @@ from unittest import mock
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_collective_offers_in_algolia_from_database
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_collective_offers_template_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_venues_in_algolia_from_database
+from pcapi.utils.module_loading import import_string
 
 
 # FIXME (dbaty, 2021-06-25): review these tests (remove mock of database queries)
@@ -69,3 +72,128 @@ def test_batch_indexing_venues_in_algolia_from_database(mock_reindex_venue_ids) 
     # 3 eligible venues, splitted into two batches since the batch_size
     # is 2 -> 2 calls to reindex_venue_ids
     assert mock_reindex_venue_ids.call_count == batch_size
+
+
+class BatchIndexingCollectiveOffersInAlgoliaFromDatabaseTest:
+    @mock.patch("pcapi.core.search._get_backend")
+    @mock.patch("pcapi.core.educational.repository.get_paginated_active_collective_offer_ids")
+    @mock.patch("pcapi.core.search._reindex_collective_offer_ids")
+    def test_should_index_collective_offers_once_when_offers_per_page_is_one_and_only_one_page(
+        self, mock_reindex_collective_offer_ids, mock_get_paginated_active_collective_offer_ids, mock_get_backend
+    ):
+        # Given
+        mock_get_paginated_active_collective_offer_ids.side_effect = [[1], []]
+        backend = import_string("pcapi.core.educational.adage_backends.testing.AdageSpyClient")
+        mock_get_backend.return_value = backend
+
+        # When
+        batch_indexing_collective_offers_in_algolia_from_database(ending_page=None, limit=1, starting_page=0)
+
+        # Then
+        assert mock_get_paginated_active_collective_offer_ids.call_count == 2
+        mock_reindex_collective_offer_ids.assert_called_once_with(backend, [1])
+
+    @mock.patch("pcapi.core.search._get_backend")
+    @mock.patch("pcapi.core.educational.repository.get_paginated_active_collective_offer_ids")
+    @mock.patch("pcapi.core.search._reindex_collective_offer_ids")
+    def test_should_index_collective_offers_twice_when_offers_per_page_is_one_and_two_pages(
+        self, mock_reindex_collective_offer_ids, mock_get_paginated_active_collective_offer_ids, mock_get_backend
+    ):
+        # Given
+        mock_get_paginated_active_collective_offer_ids.side_effect = [[1], [2], []]
+        backend = import_string("pcapi.core.educational.adage_backends.testing.AdageSpyClient")
+        mock_get_backend.return_value = backend
+
+        # When
+        batch_indexing_collective_offers_in_algolia_from_database(ending_page=None, limit=1, starting_page=0)
+
+        # Then
+        assert mock_get_paginated_active_collective_offer_ids.call_count == 3
+        assert mock_reindex_collective_offer_ids.call_args_list == [
+            mock.call(backend, [1]),
+            mock.call(backend, [2]),
+        ]
+
+    @mock.patch("pcapi.core.search._get_backend")
+    @mock.patch("pcapi.core.educational.repository.get_paginated_active_collective_offer_ids")
+    @mock.patch("pcapi.core.search._reindex_collective_offer_ids")
+    def test_should_index_collective_offers_from_first_page_only_when_ending_page_is_provided(
+        self, mock_reindex_collective_offer_ids, mock_get_paginated_active_collective_offer_ids, mock_get_backend
+    ):
+        # Given
+        mock_get_paginated_active_collective_offer_ids.side_effect = [[1], [2], []]
+        backend = import_string("pcapi.core.educational.adage_backends.testing.AdageSpyClient")
+        mock_get_backend.return_value = backend
+
+        # When
+        batch_indexing_collective_offers_in_algolia_from_database(ending_page=1, limit=1, starting_page=0)
+
+        # Then
+        mock_reindex_collective_offer_ids.assert_called_once_with(backend, [1])
+
+
+class BatchIndexingCollectiveOffersTemplateInAlgoliaFromDatabaseTest:
+    @mock.patch("pcapi.core.search._get_backend")
+    @mock.patch("pcapi.core.educational.repository.get_paginated_active_collective_offer_template_ids")
+    @mock.patch("pcapi.core.search._reindex_collective_offer_template_ids")
+    def test_should_index_collective_offers_once_when_offers_per_page_is_one_and_only_one_page(
+        self,
+        mock_reindex_collective_offer_template_ids,
+        mock_get_paginated_active_collective_offer_template_ids,
+        mock_get_backend,
+    ):
+        # Given
+        mock_get_paginated_active_collective_offer_template_ids.side_effect = [[1], []]
+        backend = import_string("pcapi.core.educational.adage_backends.testing.AdageSpyClient")
+        mock_get_backend.return_value = backend
+
+        # When
+        batch_indexing_collective_offers_template_in_algolia_from_database(ending_page=None, limit=1, starting_page=0)
+
+        # Then
+        assert mock_get_paginated_active_collective_offer_template_ids.call_count == 2
+        mock_reindex_collective_offer_template_ids.assert_called_once_with(backend, [1])
+
+    @mock.patch("pcapi.core.search._get_backend")
+    @mock.patch("pcapi.core.educational.repository.get_paginated_active_collective_offer_template_ids")
+    @mock.patch("pcapi.core.search._reindex_collective_offer_template_ids")
+    def test_should_index_collective_offers_twice_when_offers_per_page_is_one_and_two_pages(
+        self,
+        mock_reindex_collective_offer_template_ids,
+        mock_get_paginated_active_collective_offer_template_ids,
+        mock_get_backend,
+    ):
+        # Given
+        mock_get_paginated_active_collective_offer_template_ids.side_effect = [[1], [2], []]
+        backend = import_string("pcapi.core.educational.adage_backends.testing.AdageSpyClient")
+        mock_get_backend.return_value = backend
+
+        # When
+        batch_indexing_collective_offers_template_in_algolia_from_database(ending_page=None, limit=1, starting_page=0)
+
+        # Then
+        assert mock_get_paginated_active_collective_offer_template_ids.call_count == 3
+        assert mock_reindex_collective_offer_template_ids.call_args_list == [
+            mock.call(backend, [1]),
+            mock.call(backend, [2]),
+        ]
+
+    @mock.patch("pcapi.core.search._get_backend")
+    @mock.patch("pcapi.core.educational.repository.get_paginated_active_collective_offer_template_ids")
+    @mock.patch("pcapi.core.search._reindex_collective_offer_template_ids")
+    def test_should_index_collective_offers_template_from_first_page_only_when_ending_page_is_provided(
+        self,
+        mock_reindex_collective_offer_template_ids,
+        mock_get_paginated_active_collective_offer_template_ids,
+        mock_get_backend,
+    ):
+        # Given
+        mock_get_paginated_active_collective_offer_template_ids.side_effect = [[1], [2], []]
+        backend = import_string("pcapi.core.educational.adage_backends.testing.AdageSpyClient")
+        mock_get_backend.return_value = backend
+
+        # When
+        batch_indexing_collective_offers_template_in_algolia_from_database(ending_page=1, limit=1, starting_page=0)
+
+        # Then
+        mock_reindex_collective_offer_template_ids.assert_called_once_with(backend, [1])

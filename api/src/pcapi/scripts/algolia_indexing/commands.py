@@ -41,46 +41,51 @@ def process_offers_from_database(  # type: ignore [no-untyped-def]
 
 @blueprint.cli.command("process_collective_offers_from_database")
 @click.option("--clear", help="Clear search index", type=bool, default=False)
+@click.option("-ep", "--ending-page", help="Ending page for indexing collective offers", type=int, default=None)
+@click.option("-l", "--limit", help="Number of offers per page", type=int, default=10_000)
+@click.option("-sp", "--starting-page", help="Starting page for indexing collective offers", type=int, default=0)
+def process_collective_offers_from_database(  # type: ignore [no-untyped-def]
+    clear: bool,
+    ending_page: int,
+    limit: int,
+    starting_page: int,
+):
+    if clear:
+        search.unindex_all_collective_offers(only_non_template=True)
+    batch_indexing_collective_offers_in_algolia_from_database(
+        ending_page=ending_page, limit=limit, starting_page=starting_page
+    )
+
+
+@blueprint.cli.command("process_collective_offers_template_from_database")
+@click.option("--clear", help="Clear search index", type=bool, default=False)
 @click.option(
-    "-epc", "--ending-page-collective-offer", help="Ending page for indexing collective offers", type=int, default=None
-)
-@click.option(
-    "-epct",
-    "--ending-page-collective-offer-template",
+    "-ep",
+    "--ending-page",
     help="Ending page for indexing collective offers templates",
     type=int,
     default=None,
 )
 @click.option("-l", "--limit", help="Number of offers per page", type=int, default=10_000)
 @click.option(
-    "-spc", "--starting-page-collective-offer", help="Starting page for indexing collective offers", type=int, default=0
-)
-@click.option(
-    "-spct",
-    "--starting-page-collective-offer-template",
+    "-sp",
+    "--starting-page",
     help="Starting page for indexing collective offer templates",
     type=int,
     default=0,
 )
-def process_collective_offers_from_database(  # type: ignore [no-untyped-def]
+def process_collective_offers_template_from_database(  # type: ignore [no-untyped-def]
     clear: bool,
-    ending_page_collective_offer: int,
-    ending_page_collective_offer_template: int,
+    ending_page: int,
     limit: int,
-    starting_page_collective_offer: int,
-    starting_page_collective_offer_template: int,
+    starting_page: int,
 ):
     if clear:
-        # collective offers and collective offers template share the same index
-        # thus they are all unindex after this command
-        search.unindex_all_collective_offers()
-    batch_indexing_collective_offers_in_algolia_from_database(
-        ending_page=ending_page_collective_offer, limit=limit, starting_page=starting_page_collective_offer
-    )
+        search.unindex_all_collective_offers(only_template=True)
     batch_indexing_collective_offers_template_in_algolia_from_database(
-        ending_page=ending_page_collective_offer_template,
+        ending_page=ending_page,
         limit=limit,
-        starting_page=starting_page_collective_offer_template,
+        starting_page=starting_page,
     )
 
 
