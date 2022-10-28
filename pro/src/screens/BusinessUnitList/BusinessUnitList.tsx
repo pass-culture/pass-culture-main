@@ -1,8 +1,8 @@
 import React from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Titles from 'components/layout/Titles/Titles'
 import { Banner } from 'ui-kit'
+import Titles from 'ui-kit/Titles/Titles'
 
 import BusinessUnitCard from './BusinessUnitCard'
 import styles from './BusinessUnitList.module.scss'

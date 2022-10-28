@@ -5,7 +5,6 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Titles from 'components/layout/Titles/Titles'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -23,6 +22,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Titles from 'ui-kit/Titles/Titles'
 import { getCanSubmit, parseSubmitErrors } from 'utils/react-final-form'
 import { sortByLabel } from 'utils/strings'
 

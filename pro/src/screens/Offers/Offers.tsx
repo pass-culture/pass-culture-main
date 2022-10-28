@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { UserRole } from 'apiClient/v1'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Titles from 'components/layout/Titles/Titles'
 import ActionsBar from 'components/pages/Offers/Offers/ActionsBar'
 import OffersContainer from 'components/pages/Offers/Offers/Offers'
 import {
@@ -28,6 +27,7 @@ import NoOffers from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Titles from 'ui-kit/Titles/Titles'
 
 import SearchFilters from './SearchFilters'
 
