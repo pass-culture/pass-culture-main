@@ -317,6 +317,31 @@ def create_educational_deposit(
     return educational_deposit
 
 
+def get_siren_for_venue(venue_id: str) -> str:
+    # part de l'offerer et va chercher la venue et filtre la venue
+    """query = db.session.query(offerers_models.Offerer.siren)
+    query = query.join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
+    query = query.filter(offerers_models.Venue.id == venue_id)
+    return query.one()[0]"""
+
+    Offerer = offerers_models.Offerer
+    Venue = offerers_models.Venue
+    return (
+        Offerer.query.join(Venue, Offerer.managedVenues)
+        .filter(Venue.id == venue_id)
+        .with_entities(Offerer.siren)
+        .one()
+        .siren
+    )
+    # Venue.query.join(Offerer, Venue.managingOffererId).filter(Venue.id == venue_id).with_entities(Offerer.siren).one().siren
+
+    # query -> offerer
+    # toto.join (offerers_models.Venue, offerers_models.Offerer.managedVenues)
+    # toto = query.filter(offerers_models.Venue.venueTypeId == venue_id)
+    # with_entity -> siren
+    # one
+
+
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = (
         offerers_models.Venue.query.filter(
@@ -325,6 +350,7 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
         )
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
+        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
         .one()
     )
     return [venue]
@@ -349,6 +375,7 @@ def get_relative_venues_by_siret(siret: str, permanent_only: bool = False) -> li
         )
     query = query.options(sa.orm.joinedload(offerers_models.Venue.contact))
     query = query.options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
+    query = query.options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
     # group venues by offerer
     query = query.order_by(offerers_models.Venue.managingOffererId, offerers_models.Venue.name)
 
@@ -402,6 +429,7 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
         .limit(per_page)
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
+        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
         .all()
     )
 
@@ -420,6 +448,7 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
         )
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
+        .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
         .all()
     )
     return venues
@@ -446,6 +475,7 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
     )
     query = query.options(sa.orm.joinedload(offerers_models.Venue.contact))
     query = query.options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
+    query = query.options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
 
     # group venues by offerer
     query = query.order_by(offerers_models.Venue.managingOffererId, offerers_models.Venue.name)
