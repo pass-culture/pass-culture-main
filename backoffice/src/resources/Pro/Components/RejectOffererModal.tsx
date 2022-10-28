@@ -51,7 +51,7 @@ export const RejectOffererModal = ({
     try {
       const formData: RejectOffererRequest = {
         offererId: offererId,
-        optionalCommentRequest: { comment: params.reason },
+        optionalCommentRequest: { comment: params.reason ? params.reason : '' },
       }
       await apiProvider().rejectOfferer(formData)
       notify('La revue a été envoyée avec succès !', { type: 'success' })
@@ -99,10 +99,15 @@ export const RejectOffererModal = ({
                 fullWidth
                 multiline
                 rows={4}
+                required={false}
               />
             </Stack>
             <Stack direction={'row-reverse'} spacing={3} sx={{ mt: 5 }}>
-              <SaveButton label={'REJETER LA STRUCTURE'} variant={'outlined'} />
+              <SaveButton
+                label={'REJETER LA STRUCTURE'}
+                variant={'outlined'}
+                alwaysEnable={true}
+              />
               <Button
                 variant={'outlined'}
                 onClick={handleCloseModal}
