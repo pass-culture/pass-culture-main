@@ -23,6 +23,11 @@
   &-icon {
     height: rem.torem(80px);
     width: rem.torem(80px);
+
+    &-component > svg{
+      height: rem.torem(80px);
+      width: rem.torem(80px);
+    }
   }
 
   &-subtitle {
