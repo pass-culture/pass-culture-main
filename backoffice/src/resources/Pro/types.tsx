@@ -1,8 +1,11 @@
+import { ValidationStatus } from '../../TypesFromApi'
+
 export interface ProUser {
   firstName: string
   lastName: string
   email: string
   phoneNumber: string
+  isActive: boolean
 }
 
 export function isProUser(obj: ProUser | Venue | Offerer): obj is ProUser {
@@ -19,6 +22,8 @@ export interface Venue {
   email: string
   siret: string
   permanent: boolean
+  validationStatus: ValidationStatus
+  isActive: boolean
 }
 
 export function isVenue(obj: ProUser | Venue | Offerer): obj is Venue {
@@ -28,6 +33,8 @@ export function isVenue(obj: ProUser | Venue | Offerer): obj is Venue {
 export interface Offerer {
   name: string
   siren: string
+  validationStatus: ValidationStatus
+  isActive: boolean
 }
 
 export function isOfferer(obj: ProUser | Venue | Offerer): obj is Offerer {
