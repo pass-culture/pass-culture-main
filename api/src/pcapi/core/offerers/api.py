@@ -1313,7 +1313,7 @@ def list_offerers_to_be_validated(search_query: str | None, filter_: list[dict[s
     query = offerers_models.Offerer.query.options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
         sa.orm.joinedload(offerers_models.Offerer.tags),
-        sa.orm.joinedload(offerers_models.Offerer.action_history),
+        sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.authorUser),
     )
 
     if search_query:
