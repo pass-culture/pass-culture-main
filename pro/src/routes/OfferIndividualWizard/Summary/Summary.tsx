@@ -1,10 +1,10 @@
 import React from 'react'
 
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { IOfferIndividual } from 'core/Offers/types'
 import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
+import PageTitle from 'new_components/PageTitle/PageTitle'
 import {
   Summary as SummaryScreen,
   Template as WizardTemplate,

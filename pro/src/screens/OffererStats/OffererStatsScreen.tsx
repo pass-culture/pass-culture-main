@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import Select from 'components/layout/inputs/Select'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { Option } from 'core/Offers/types'
+import PageTitle from 'new_components/PageTitle/PageTitle'
 import Titles from 'ui-kit/Titles/Titles'
 import { sortByDisplayName } from 'utils/strings'
 

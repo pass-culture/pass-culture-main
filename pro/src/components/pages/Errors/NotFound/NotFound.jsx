@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import PageTitle from 'components/layout/PageTitle/PageTitle'
+import PageTitle from 'new_components/PageTitle/PageTitle'
 import Icon from 'ui-kit/Icon/Icon'
 
 const NotFound = ({ redirect }) => (

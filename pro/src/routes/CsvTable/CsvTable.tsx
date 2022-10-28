@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Header from 'components/layout/Header/Header'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
+import PageTitle from 'new_components/PageTitle/PageTitle'
 import { CsvTableScreen } from 'screens/CsvTable'
 
 import { getCsvData } from './adapters/getCsvData'
