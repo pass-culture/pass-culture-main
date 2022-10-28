@@ -102,6 +102,8 @@ export interface IOfferIndividualStock {
   price: number
   quantity?: number | null
   remainingQuantity: number | string
+  activationCodesExpirationDateTime: Date | null
+  activationCodes: string[]
 }
 
 export interface IOfferIndividualOfferer {

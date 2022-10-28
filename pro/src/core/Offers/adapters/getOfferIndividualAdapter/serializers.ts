@@ -69,6 +69,8 @@ export const serializeStockApi = (
     price: apiStock.price,
     quantity: apiStock.quantity,
     remainingQuantity: remainingQuantity,
+    activationCodesExpirationDateTime: null,
+    activationCodes: [],
   }
 }
 

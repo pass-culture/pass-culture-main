@@ -30,6 +30,15 @@ export const serializeStockThingList = (
     price: parseInt(formValues.price, 10),
     quantity: parseInt(formValues.quantity, 10) || null,
   }
+  if (formValues.activationCodes.length > 0) {
+    apiStock.activationCodes = formValues.activationCodes
+    if (formValues.activationCodesExpirationDateTime)
+      apiStock.activationCodesExpirationDatetime =
+        serializeThingBookingLimitDatetime(
+          formValues.activationCodesExpirationDateTime,
+          departementCode
+        )
+  }
   if (formValues.stockId) {
     return [
       {

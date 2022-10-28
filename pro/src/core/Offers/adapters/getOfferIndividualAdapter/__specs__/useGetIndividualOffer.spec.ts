@@ -238,6 +238,8 @@ describe('useGetOfferIndividual', () => {
           price: 10,
           quantity: 1000,
           remainingQuantity: 998,
+          activationCodesExpirationDateTime: null,
+          activationCodes: [],
         },
       ],
       venue: {

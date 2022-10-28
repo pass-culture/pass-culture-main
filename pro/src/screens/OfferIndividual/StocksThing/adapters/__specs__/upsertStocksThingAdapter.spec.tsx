@@ -14,6 +14,8 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
     upsertStocksThingAdapter({
       offerId: 'OFFER_ID',
       formValues: {
+        activationCodesExpirationDateTime: null,
+        activationCodes: [],
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
         bookingLimitDatetime: null,
@@ -40,6 +42,8 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
     upsertStocksThingAdapter({
       offerId: 'OFFER_ID',
       formValues: {
+        activationCodesExpirationDateTime: null,
+        activationCodes: [],
         stockId: 'STOCK_ID',
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
@@ -81,6 +85,8 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       offerId: 'OFFER_ID',
       formValues: {
         stockId: 'STOCK_ID',
+        activationCodesExpirationDateTime: null,
+        activationCodes: [],
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
         bookingLimitDatetime: null,

@@ -53,10 +53,7 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
             type="text/csv"
           >
             <Icon svg="ico-other-download" />
-            <b>Gabarit CSV</b>{' '}
-            <span className="activation-codes-upload-gabarit-type-and-size">
-              (.csv, 50 ko)
-            </span>
+            Gabarit CSV<span>(.csv, 50 ko)</span>
           </a>
         </p>
       </div>
