@@ -4,6 +4,7 @@ import {
   CircularProgress,
   FormControl,
   InputLabel,
+  Link,
   MenuItem,
   OutlinedInput,
   Select,
@@ -45,7 +46,8 @@ import {
 } from '../../../TypesFromApi'
 import { PermissionsEnum } from '../../PublicUsers/types'
 import { OfferersToValidateContextTableMenu } from '../Components/OfferersToValidateContextTableMenu'
-import { ValidationStatusBadge } from '../Components/VallidationStatusBadge'
+import { ValidationStatusBadge } from '../Components/ValidationStatusBadge'
+import { ProTypeEnum } from '../types'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -309,11 +311,20 @@ export const OfferersToValidate = () => {
                           />
                         </TableCell>
                         <TableCell>{offerer.id}</TableCell>
-                        <TableCell>{offerer.name}</TableCell>
+                        <TableCell>
+                          <Link
+                            role={'link'}
+                            href={`/offerer/${offerer.id}`}
+                            color={Colors.GREY}
+                          >
+                            {offerer.name}
+                          </Link>
+                        </TableCell>
                         <TableCell>
                           {/*<Chip label={offerer.status} />*/}
                           <ValidationStatusBadge
                             status={offerer.status as ValidationStatus}
+                            resourceType={ProTypeEnum.offerer}
                           />
                         </TableCell>
                         <TableCell>
@@ -358,7 +369,19 @@ export const OfferersToValidate = () => {
                         </TableCell>
                         <TableCell>{offerer.siren}</TableCell>
                         <TableCell>{offerer.email}</TableCell>
-                        <TableCell>{offerer.owner}</TableCell>
+                        <TableCell>
+                          {offerer.ownerId && (
+                            <>
+                              <Link
+                                role={'link'}
+                                href={`/proUser/${offerer.ownerId}`}
+                                color={Colors.GREY}
+                              >
+                                {offerer.owner}
+                              </Link>
+                            </>
+                          )}
+                        </TableCell>
                         <TableCell>{offerer.city}</TableCell>
                         <TableCell>{offerer.phoneNumber}</TableCell>
                       </TableRow>

@@ -31,7 +31,7 @@ export interface OffererToBeValidated {
    * @type {string}
    * @memberof OffererToBeValidated
    */
-  address: string
+  address?: string | null
   /**
    *
    * @type {string}
@@ -76,6 +76,12 @@ export interface OffererToBeValidated {
   owner?: string | null
   /**
    *
+   * @type {number}
+   * @memberof OffererToBeValidated
+   */
+  ownerId?: number | null
+  /**
+   *
    * @type {string}
    * @memberof OffererToBeValidated
    */
@@ -86,6 +92,12 @@ export interface OffererToBeValidated {
    * @memberof OffererToBeValidated
    */
   postalCode: string
+  /**
+   *
+   * @type {Date}
+   * @memberof OffererToBeValidated
+   */
+  requestDate: Date
   /**
    *
    * @type {string}
@@ -118,7 +130,7 @@ export function OffererToBeValidatedFromJSONTyped(
     return json
   }
   return {
-    address: json['address'],
+    address: !exists(json, 'address') ? undefined : json['address'],
     city: json['city'],
     email: !exists(json, 'email') ? undefined : json['email'],
     id: json['id'],
@@ -128,8 +140,10 @@ export function OffererToBeValidatedFromJSONTyped(
       : CommentFromJSON(json['lastComment']),
     name: json['name'],
     owner: !exists(json, 'owner') ? undefined : json['owner'],
+    ownerId: !exists(json, 'ownerId') ? undefined : json['ownerId'],
     phoneNumber: !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
     postalCode: json['postalCode'],
+    requestDate: new Date(json['requestDate']),
     siren: json['siren'],
     status: json['status'],
     step: !exists(json, 'step') ? undefined : json['step'],
@@ -154,8 +168,10 @@ export function OffererToBeValidatedToJSON(
     lastComment: CommentToJSON(value.lastComment),
     name: value.name,
     owner: value.owner,
+    ownerId: value.ownerId,
     phoneNumber: value.phoneNumber,
     postalCode: value.postalCode,
+    requestDate: value.requestDate.toISOString(),
     siren: value.siren,
     status: value.status,
     step: value.step,
