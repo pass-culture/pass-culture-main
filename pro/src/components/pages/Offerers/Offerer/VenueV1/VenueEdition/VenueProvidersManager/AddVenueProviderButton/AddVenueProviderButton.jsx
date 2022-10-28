@@ -3,8 +3,8 @@ import './AddVenueProviderButton.scss'
 import PropTypes from 'prop-types'
 import React, { useCallback, useMemo, useState } from 'react'
 
-import Select from 'components/layout/inputs/Select'
 import { ReactComponent as SynchronizeOffers } from 'icons/ico-more-circle.svg'
+import Select from 'ui-kit/form_raw/Select'
 import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'

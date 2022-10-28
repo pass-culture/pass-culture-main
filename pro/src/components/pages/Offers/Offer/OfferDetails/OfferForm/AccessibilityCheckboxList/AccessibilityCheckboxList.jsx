@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import CheckboxInput from 'components/layout/inputs/CheckboxInput'
-import InputError from 'components/layout/inputs/Errors/InputError'
 import { ReactComponent as AudioDisabilitySvg } from 'icons/audio-disability.svg'
 import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.svg'
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
 import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.svg'
+import CheckboxInput from 'ui-kit/form_raw/CheckboxInput'
+import InputError from 'ui-kit/form_raw/Errors/InputError'
 
 import {
   checkHasNoDisabilityCompliance,

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import DateInput from 'components/layout/inputs/DateInput/DateInput'
+import DateInput from 'ui-kit/form_raw/DateInput/DateInput'
 
 const ActivationCodesConfirmationForm = ({
   activationCodes,

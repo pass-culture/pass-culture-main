@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import { ALL_STATUS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
+import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
 export const OffersStatusFiltersModal = ({
   isVisible,

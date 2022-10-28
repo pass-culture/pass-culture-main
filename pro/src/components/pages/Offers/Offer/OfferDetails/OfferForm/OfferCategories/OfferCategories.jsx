@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import Select from 'components/layout/inputs/Select'
 import { CATEGORY_STATUS } from 'core/Offers'
+import Select from 'ui-kit/form_raw/Select'
 import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'

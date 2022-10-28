@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback } from 'react'
 
-import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import Select from 'components/layout/inputs/Select'
+import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
+import Select from 'ui-kit/form_raw/Select'
 import { getToday } from 'utils/date'
 
 import { TFiltersType } from './types'

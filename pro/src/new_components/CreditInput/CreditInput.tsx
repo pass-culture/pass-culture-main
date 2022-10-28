@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react'
 
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 
 export interface CreditInputProps {
   credit: string

@@ -2,10 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
+import { TextInputWithIcon } from 'ui-kit/form_raw/TextInputWithIcon'
 import Icon from 'ui-kit/Icon/Icon'
-
-/*eslint no-undef: 0*/
-import TextInputWithIcon from '../../../components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 
 export const isNotValid = value => {
   if (!value) {
