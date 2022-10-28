@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Header from 'components/layout/Header/Header'
+import Header from 'new_components/Header/Header'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import { CsvTableScreen } from 'screens/CsvTable'
 
