@@ -1,0 +1,68 @@
+import React from 'react'
+
+import { Button, DatePicker } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
+import styles from './ActivationCodeFormDialog.module.scss'
+
+interface IAddActivationCodeConfirmationForm {
+  unsavedActivationCodes: string[] | undefined
+  clearActivationCodes: () => void
+  submitActivationCodes: () => void
+  today: Date
+  minExpirationDate: Date | null
+}
+
+const AddActivationCodeConfirmationForm = ({
+  unsavedActivationCodes,
+  clearActivationCodes,
+  submitActivationCodes,
+  today,
+  minExpirationDate,
+}: IAddActivationCodeConfirmationForm) => {
+  const minDate = minExpirationDate === null ? today : minExpirationDate
+  return (
+    <div className={styles['activation-codes-form']}>
+      <div>
+        <p>
+          Vous êtes sur le point d’ajouter {unsavedActivationCodes?.length}{' '}
+          codes d’activation.
+        </p>
+        <p>
+          La quantité disponible pour cette offre sera mise à jour dans vos
+          stocks.
+        </p>
+        <p>
+          Veuillez ajouter une date de fin de validité. Cette date ne doit pas
+          être antérieure à la date limite de réservation.
+        </p>
+      </div>
+      <div className={styles['activation-codes-form-expiration-date']}>
+        <DatePicker
+          label={'Date limite de validité'}
+          name="activationCodesExpirationDateTime"
+          minDateTime={minDate}
+          isOptional={true}
+        />
+      </div>
+      <div>
+        <p>
+          Vous ne pourrez modifier ni la quantité ni la date de validité après
+          import.
+        </p>
+        <p>Souhaitez-vous valider l’opération ?</p>
+      </div>
+      <div className={styles['activation-codes-actions-button']}>
+        <Button
+          onClick={clearActivationCodes}
+          variant={ButtonVariant.SECONDARY}
+        >
+          Retour
+        </Button>
+        <Button onClick={submitActivationCodes}>Valider</Button>
+      </div>
+    </div>
+  )
+}
+
+export default AddActivationCodeConfirmationForm

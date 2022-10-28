@@ -63,6 +63,8 @@ describe('serializer', () => {
       price: 150,
       quantity: 20,
       remainingQuantity: 10,
+      activationCodesExpirationDateTime: null,
+      activationCodes: [],
     }
 
     expect(serializeStockApi(stock)).toEqual(stockSerialized)
@@ -102,6 +104,8 @@ describe('serializer', () => {
       price: 150,
       quantity: 20,
       remainingQuantity: 'unlimited',
+      activationCodesExpirationDateTime: null,
+      activationCodes: [],
     }
 
     expect(serializeStockApi(stock)).toEqual(stockSerialized)
@@ -504,6 +508,8 @@ describe('serializer', () => {
           price: 10,
           quantity: 1000,
           remainingQuantity: 998,
+          activationCodesExpirationDateTime: null,
+          activationCodes: [],
         },
       ],
       venue: {

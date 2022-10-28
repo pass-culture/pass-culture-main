@@ -1,9 +1,10 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { StockFormRow } from 'components/StockFormRow'
+import { IStockFormRowAction } from 'components/StockFormRow/SockFormActions/types'
 import {
   StockThingForm,
   getValidationSchema,
@@ -20,11 +21,14 @@ import {
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
+import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
 
+import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
 import { upsertStocksThingAdapter } from './adapters'
 
 export interface IStocksThingProps {
@@ -43,6 +47,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useOfferIndividualContext()
+  const { visible, showModal, hideModal } = useModal()
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const { isOk, payload, message } = await upsertStocksThingAdapter({
@@ -117,30 +122,62 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     return (
       <StockThingForm
         today={today}
-        readOnlyFields={setFormReadOnlyFields(offer)}
+        readOnlyFields={setFormReadOnlyFields(offer, formik.values)}
+        showExpirationDate={
+          formik.values.activationCodesExpirationDateTime !== null
+        }
       />
     )
   }
 
+  let actions: IStockFormRowAction[] = []
   let description
-  /* istanbul ignore next: DEBT, TO FIX */
-  if (offer.isDigital) {
+  if (!offer.isDigital) {
     description = `Les utilisateurs ont ${
       offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'
     } jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`
   } else {
     description =
       'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
+    let isDisabled = false
+    if (offer.stocks.length > 0 && offer.stocks[0].hasActivationCode)
+      isDisabled = true
+
+    actions = [
+      {
+        callback: showModal,
+        label: "Ajouter des codes d'activation",
+        disabled: isDisabled,
+        Icon: AddActivationCodeIcon,
+      },
+    ]
   }
+
+  const submitActivationCodes = useCallback(
+    (activationCodes: string[]) => {
+      formik.setFieldValue('quantity', activationCodes?.length, true)
+      formik.setFieldValue('activationCodes', activationCodes)
+      hideModal()
+    },
+    [hideModal]
+  )
 
   return (
     <FormikProvider value={formik}>
+      {visible && (
+        <ActivationCodeFormDialog
+          onSubmit={submitActivationCodes}
+          onCancel={hideModal}
+          today={today}
+          minExpirationDate={formik.values.bookingLimitDatetime}
+        />
+      )}
       <FormLayout>
         <FormLayout.Section title="Stock & Prix" description={description}>
           <form onSubmit={formik.handleSubmit}>
             <StockFormRow
               Form={renderStockForm()}
-              actions={[]}
+              actions={actions}
               actionDisabled={false}
               showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
             />
