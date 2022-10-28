@@ -1,13 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import HiddenField from 'components/layout/form/fields/HiddenField'
-import NumberField from 'components/layout/form/fields/NumberField'
-import TextField from 'components/layout/form/fields/TextField'
-import {
-  parsePostalCode,
-  validatePostalCode,
-} from 'components/layout/form/validate'
+import HiddenField from 'ui-kit/form_rff/fields/HiddenField'
+import NumberField from 'ui-kit/form_rff/fields/NumberField'
+import TextField from 'ui-kit/form_rff/fields/TextField'
+import { parsePostalCode, validatePostalCode } from 'ui-kit/form_rff/validate'
 
 import AddressField from './AddressField'
 

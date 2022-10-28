@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import { SiretField } from 'components/layout/form/fields/SiretField'
-import TextareaField from 'components/layout/form/fields/TextareaField'
+import { SiretField } from 'ui-kit/form_rff/fields/SiretField'
+import TextareaField from 'ui-kit/form_rff/fields/TextareaField'
 import Toggle from 'ui-kit/Toggle'
 
 export interface SiretOrCommentInterface {

@@ -4,7 +4,7 @@ import { FormSpy } from 'react-final-form'
 import { Link } from 'react-router-dom'
 
 import { CreateOffererQueryModel } from 'apiClient/v1'
-import { SirenField } from 'components/layout/form/fields/SirenField'
+import { SirenField } from 'ui-kit/form_rff/fields/SirenField'
 
 interface IOffererCreationForm
   extends Pick<FormRenderProps, 'handleSubmit' | 'invalid' | 'pristine'> {
