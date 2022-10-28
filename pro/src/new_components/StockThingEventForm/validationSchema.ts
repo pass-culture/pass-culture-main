@@ -71,7 +71,8 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
   return yup.object().shape(validationSchema)
 }
 
-export const getValidationSchemaArray = (validationSchema: yup.AnySchema) => {
+export const getValidationSchemaArray = (minQuantity: number | null = null) => {
+  const validationSchema = getValidationSchema(minQuantity)
   return yup.object().shape({
     events: yup.array().of(validationSchema),
   })
