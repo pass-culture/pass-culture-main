@@ -643,7 +643,7 @@ class GetOffererHistoryTest:
         assert response.json["data"] == [
             {
                 "type": "Structure validée",
-                "date": "2022-10-06T16:04:00",
+                "date": "2022-10-06T16:04:00+00:00",
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": None,
@@ -652,7 +652,7 @@ class GetOffererHistoryTest:
             },
             {
                 "type": "Commentaire interne",
-                "date": "2022-10-05T15:03:00",
+                "date": "2022-10-05T15:03:00+00:00",
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": "Documents reçus",
@@ -661,7 +661,7 @@ class GetOffererHistoryTest:
             },
             {
                 "type": "Structure mise en attente",
-                "date": "2022-10-04T14:02:00",
+                "date": "2022-10-04T14:02:00+00:00",
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": "Documents complémentaires demandés",
@@ -670,7 +670,7 @@ class GetOffererHistoryTest:
             },
             {
                 "type": "Nouvelle structure",
-                "date": "2022-10-03T13:01:00",
+                "date": "2022-10-03T13:01:00+00:00",
                 "authorId": user_offerer.user.id,
                 "authorName": user_offerer.user.publicName,
                 "comment": None,
@@ -1486,7 +1486,7 @@ class ListOfferersToBeValidatedTest:
         assert payload["lastComment"] == {
             "author": "Inspecteur Validateur",
             "content": "Houlala",
-            "date": "2022-10-03T14:02:00",
+            "date": "2022-10-03T14:02:00+00:00",
         }
         assert payload["isTopActor"] == (tag in user_offerer.offerer.tags)
 

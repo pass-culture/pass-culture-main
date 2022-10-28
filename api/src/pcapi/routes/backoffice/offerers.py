@@ -17,6 +17,7 @@ from pcapi.repository import repository
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import db as db_utils
 from pcapi.utils import regions as regions_utils
+from pcapi.utils.date import format_into_utc_date
 
 from . import blueprint
 from . import serialization
@@ -134,7 +135,7 @@ def get_offerer_history(offerer_id: int) -> serialization.HistoryResponseModel:
         data=[
             serialization.HistoryItem(
                 type=action.actionType.value,
-                date=action.actionDate,
+                date=format_into_utc_date(action.actionDate) if action.actionDate else None,
                 authorId=action.authorUserId,
                 authorName=action.authorUser.publicName if action.authorUser else None,
                 comment=action.comment,
@@ -298,7 +299,7 @@ def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer) -> se
         if actions_with_comment:
             last = sorted(actions_with_comment, key=lambda a: a.actionDate, reverse=True)[0]
             return serialization.Comment(
-                date=last.actionDate,
+                date=format_into_utc_date(last.actionDate) if last.actionDate else None,
                 author=f"{last.authorUser.firstName} {last.authorUser.lastName}" if last.authorUser else None,
                 content=last.comment,
             )
