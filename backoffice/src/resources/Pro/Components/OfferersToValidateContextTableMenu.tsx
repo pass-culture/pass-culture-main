@@ -26,9 +26,13 @@ export const OfferersToValidateContextTableMenu = React.memo(
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorEl(event.currentTarget)
     }
+
+    const onMenuItemClicked = () => {
+      handleClose()
+      onContextMenuChange()
+    }
     const handleClose = () => {
       setAnchorEl(null)
-      onContextMenuChange()
     }
     return (
       <>
@@ -79,11 +83,11 @@ export const OfferersToValidateContextTableMenu = React.memo(
           </MenuItem>
           <RejectOffererModal
             offererId={id}
-            onContextMenuChange={onContextMenuChange}
+            onContextMenuChange={onMenuItemClicked}
           />
           <SetPendingOffererModal
             offererId={id}
-            onContextMenuChange={onContextMenuChange}
+            onContextMenuChange={onMenuItemClicked}
           />
         </Menu>
       </>
