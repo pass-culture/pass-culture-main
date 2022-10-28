@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -18,6 +17,7 @@ import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as CircledRightArrow } from 'icons/ico-right-circle-arrow.svg'
 import GoBackLink from 'new_components/GoBackLink'
+import PageTitle from 'new_components/PageTitle/PageTitle'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner, ButtonLink } from 'ui-kit'

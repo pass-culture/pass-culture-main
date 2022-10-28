@@ -4,8 +4,8 @@ import { Route, Switch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import Logo from 'components/layout/Logo'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
+import PageTitle from 'new_components/PageTitle/PageTitle'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupConfirmation from './SignupConfirmation/SignupConfirmation'

@@ -2,9 +2,9 @@ import React, { Fragment } from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import Logo from 'components/layout/Logo'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
+import PageTitle from 'new_components/PageTitle/PageTitle'
 import { parse } from 'utils/query-string'
 
 const SetPasswordConfirm = () => {
