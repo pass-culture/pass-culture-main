@@ -20,7 +20,7 @@ const FormLayout = ({
   children,
   className,
   small = false,
-  fullWidthActions,
+  fullWidthActions = false,
 }: IFormLayoutProps): JSX.Element => (
   <div
     className={cn(
