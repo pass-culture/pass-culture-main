@@ -306,8 +306,13 @@ class AlgoliaBackend(base.SearchBackend):
     def unindex_all_venues(self) -> None:
         self.algolia_venues_client.clear_objects()
 
-    def unindex_all_collective_offers(self) -> None:
-        self.algolia_collective_offers_client.clear_objects()
+    def unindex_all_collective_offers(self, *, only_template: bool = False, only_non_template: bool = False) -> None:
+        if only_template and not only_non_template:
+            self.algolia_collective_offers_client.delete_by({"facetFilters": ["isTemplate:true"]})
+        elif not only_template and only_non_template:
+            self.algolia_collective_offers_client.delete_by({"facetFilters": ["isTemplate:false"]})
+        else:
+            self.algolia_collective_offers_client.clear_objects()
 
     def unindex_all_collective_offers_templates(self) -> None:
         self.algolia_collective_offers_templates_client.clear_objects()
