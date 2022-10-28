@@ -1,7 +1,6 @@
 import React from 'react'
 import { useParams, Redirect } from 'react-router'
 
-import Spinner from 'components/layout/Spinner'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenue } from 'core/Venue'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
@@ -10,6 +9,7 @@ import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { setInitialFormValues } from 'new_components/VenueForm'
 import { VenueFormScreen } from 'screens/VenueForm'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'

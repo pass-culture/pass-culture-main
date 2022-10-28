@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
 import {
   CollectiveOffer,
   Mode,
@@ -16,6 +15,7 @@ import FormLayout from 'new_components/FormLayout'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import RadioGroup from 'ui-kit/form/RadioGroup'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'

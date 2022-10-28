@@ -15,7 +15,6 @@ import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Spinner from 'components/layout/Spinner'
 import {
   OFFER_WITHDRAWAL_TYPE_OPTIONS,
   EXTRA_DATA_FIELDS,
@@ -29,6 +28,7 @@ import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/us
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { sortByDisplayName } from 'utils/strings'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'

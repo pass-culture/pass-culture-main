@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
-import Spinner from 'components/layout/Spinner'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -20,6 +19,7 @@ import {
 } from 'routes/OfferIndividualWizard/OfferIndividualWizard'
 import { serializePropsFromOfferIndividual } from 'routes/OfferIndividualWizard/Summary/serializer'
 import { Summary as SummaryScreen } from 'screens/OfferIndividual/Summary'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { parse } from 'utils/query-string'
 
 const OfferV2Summary = (): JSX.Element | null => {

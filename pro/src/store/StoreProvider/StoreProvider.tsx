@@ -6,9 +6,9 @@ import {
   FeatureResponseModel,
   SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
 import createStore from 'store'
 import { RootState } from 'store/reducers'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface IStoreProvider {
   isDev?: boolean

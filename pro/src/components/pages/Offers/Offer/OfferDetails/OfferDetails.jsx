@@ -5,7 +5,6 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import {
@@ -21,6 +20,7 @@ import useNotification from 'hooks/useNotification'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 

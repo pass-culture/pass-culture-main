@@ -4,8 +4,8 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import AddVenueProviderButton from './AddVenueProviderButton'
 import VenueProviderList from './VenueProviderList'

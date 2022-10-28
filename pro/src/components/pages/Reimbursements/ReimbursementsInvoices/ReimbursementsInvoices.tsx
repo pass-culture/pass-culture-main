@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { InvoiceResponseModel } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { getToday } from 'utils/date'
 
 import InvoicesAdminMustFilter from './InvoicesAdminMustFilter'

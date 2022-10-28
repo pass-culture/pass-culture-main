@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import Spinner from 'components/layout/Spinner'
 import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
@@ -13,6 +12,7 @@ import {
   searchFiltersSelector,
   searchPageNumberSelector,
 } from 'store/offers/selectors'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { DEFAULT_FORM_VALUES } from '../_constants'
 import OfferForm from '../OfferForm'

@@ -1,11 +1,11 @@
 import { getValue } from '@firebase/remote-config'
 import React from 'react'
 
-import Spinner from 'components/layout/Spinner'
 import { useGetOffererNames } from 'core/Offerers/adapters'
 import useNotification from 'hooks/useNotification'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import { OffererStatsScreen } from 'screens/OffererStats'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
 
 const OffererStats = (): JSX.Element | null => {
