@@ -58,6 +58,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
   const location = useLocation()
   const notification = useNotification()
   const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
+  const isCreatingOffer = location.pathname.includes('creation')
 
   const summaryStepUrl = isOfferDraft
     ? isCompletingDraft
@@ -153,7 +154,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
         ? OfferBreadcrumbStep.DETAILS
         : OFFER_FORM_NAVIGATION_OUT.OFFERS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: !isOfferDraft,
+      isEdition: !isCreatingOffer,
       isDraft: isOfferDraft,
       offerId: offer.id,
     })
@@ -219,7 +220,7 @@ const ThingStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                 used: isSavingDraft
                   ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
                   : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                isEdition: false,
+                isEdition: !isCreatingOffer,
                 isDraft: true,
                 offerId: offer.id,
               })
