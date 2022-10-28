@@ -38,7 +38,7 @@ import { BankAccountStatusBadge } from '../Components/BankAccountStatusBadge'
 import { CommentOfferer } from '../Components/CommentOfferer'
 import { OffererUserssToValidateContextTableMenu } from '../Components/OffererUsersToValidateContextTableMenu'
 import { ProTypeBadge } from '../Components/ProTypeBadge'
-import { ValidationStatusBadge } from '../Components/VallidationStatusBadge'
+import { ValidationStatusBadge } from '../Components/ValidationStatusBadge'
 import { ProTypeEnum } from '../types'
 
 const cardStyle = {
@@ -134,9 +134,17 @@ export const OffererDetail = () => {
     offererStats.inactive.individual + offererStats.inactive.collective
   const offererRevenue = offererInfo.revenue
 
-  const activeBadge = <StatusBadge active={offererInfo.isActive} />
+  const activeBadge = (
+    <StatusBadge active={offererInfo.isActive} feminine={true} />
+  )
   const protypeBadge = (
     <ProTypeBadge type={ProTypeEnum.offerer} resource={offererInfo} />
+  )
+  const validationStatusBadge = (
+    <ValidationStatusBadge
+      status={offererInfo.validationStatus}
+      resourceType={ProTypeEnum.offerer}
+    />
   )
 
   return (
@@ -170,8 +178,9 @@ export const OffererDetail = () => {
                     <div>
                       <Typography variant="h5" gutterBottom component="div">
                         {offererInfo.name}
-                        &nbsp; &nbsp; {offererInfo.isActive && activeBadge}{' '}
-                        &nbsp; {offererInfo && protypeBadge}
+                        &nbsp; &nbsp; {offererInfo && protypeBadge}
+                        &nbsp; {offererInfo && validationStatusBadge}
+                        &nbsp; {!offererInfo.isActive && activeBadge}
                       </Typography>
                       <Typography
                         variant="body1"
@@ -402,6 +411,7 @@ export const OffererDetail = () => {
                           <TableCell>
                             <ValidationStatusBadge
                               status={user.validationStatus}
+                              resourceType={ProTypeEnum.proUser}
                             />
                           </TableCell>
                           <TableCell component="th" scope="row">
