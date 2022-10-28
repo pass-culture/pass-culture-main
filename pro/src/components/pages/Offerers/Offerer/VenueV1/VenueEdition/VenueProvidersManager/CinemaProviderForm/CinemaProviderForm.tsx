@@ -4,9 +4,9 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import Icon from 'components/layout/Icon'
 import FormLayout from 'new_components/FormLayout'
 import { Checkbox, SubmitButton } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
 import { ICinemaProviderFormValues } from './types'

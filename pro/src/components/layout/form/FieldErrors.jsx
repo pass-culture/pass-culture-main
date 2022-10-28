@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from '../Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 // NOTE: les index d'array ne doit pas servir de clé unique
 // pour les éléments d'une liste d'éléménts

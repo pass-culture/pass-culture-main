@@ -4,8 +4,8 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import Icon from 'components/layout/Icon'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
+import Icon from 'ui-kit/Icon/Icon'
 
 import { BookingsFilters } from '../../../types'
 import { getBookingStatusDisplayInformations } from '../../../utils/bookingStatusConverter'

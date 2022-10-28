@@ -7,10 +7,10 @@ import ReactTooltip from 'react-tooltip'
 import HiddenField from 'components/layout/form/fields/HiddenField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import TextField from 'components/layout/form/fields/TextField'
-import Icon from 'components/layout/Icon'
 import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
 import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueType'
 import { CheckboxField } from 'ui-kit'
+import Icon from 'ui-kit/Icon/Icon'
 
 import SiretOrCommentFields from '../SiretOrCommentFields'
 

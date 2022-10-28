@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './VenueProviderStatus.module.scss'
 

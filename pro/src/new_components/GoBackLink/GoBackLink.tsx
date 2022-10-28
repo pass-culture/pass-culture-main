@@ -3,7 +3,7 @@ import type { LocationDescriptor } from 'history'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import Icon from 'components/layout/Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './GoBackLink.module.scss'
 

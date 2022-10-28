@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { getProviderInfo } from 'core/Providers/utils'
+import Icon from 'ui-kit/Icon/Icon'
 
 export interface ISynchronizedProviderInformation {
   providerName: string

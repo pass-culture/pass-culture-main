@@ -3,9 +3,9 @@ import './OperationProcedures.scss'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import Icon from 'components/layout/Icon'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import Icon from 'ui-kit/Icon/Icon'
 
 const OperatingProcedures = (): JSX.Element => {
   const location = useLocation()

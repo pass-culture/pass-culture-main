@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Icon from 'ui-kit/Icon/Icon'
 
 const NotFound = ({ redirect }) => (
   <main className="page fullscreen no-match">

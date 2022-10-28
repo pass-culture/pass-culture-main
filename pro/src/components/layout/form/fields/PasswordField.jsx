@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
-import Icon from '../../Icon'
+import Icon from 'ui-kit/Icon/Icon'
+
 /*eslint no-undef: 0*/
 import TextInputWithIcon from '../../inputs/TextInputWithIcon/TextInputWithIcon'
 

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import Icon from 'components/layout/Icon'
+import Icon from 'ui-kit/Icon/Icon'
 
 export const OFFER_STATUS_PROPERTIES: Record<
   string,

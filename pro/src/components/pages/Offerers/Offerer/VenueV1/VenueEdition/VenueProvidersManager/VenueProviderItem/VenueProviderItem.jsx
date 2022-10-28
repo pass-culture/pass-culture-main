@@ -3,10 +3,10 @@ import './VenueProviderItem.scss'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
 import { getProviderInfo } from 'core/Providers/utils'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
+import Icon from 'ui-kit/Icon/Icon'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
