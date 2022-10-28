@@ -12,8 +12,6 @@
 
 ## [HOCS](./components/hocs/README.md) (DEPRECATED : utiliser les hooks)
 
-## [LAYOUT](./components/layout/README.md) (DEPRECATED : à migrer au sein de components et ui-kit)
-
 ## [PAGES](./components/pages/README.md) (DEPRECATED : à migrer dans screens et routes)
 
 ## [ROUTER](./components/router/README.md) (DEPRECATED? : à migrer déterminer si migration complète dans routes)
