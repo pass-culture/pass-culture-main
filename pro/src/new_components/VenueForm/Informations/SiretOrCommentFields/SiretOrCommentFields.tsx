@@ -60,7 +60,11 @@ const SiretOrCommentFields = ({
     touched.siret &&
       getSiretDataFromApi().then(response => {
         if (response?.isOk) {
-          setIsFieldNameFrozen(true)
+          setIsFieldNameFrozen(
+            response != null &&
+              response.payload.values != null &&
+              response.payload.values.siret.length > 0
+          )
           setFieldValue('name', response.payload.values?.name)
         }
       })
