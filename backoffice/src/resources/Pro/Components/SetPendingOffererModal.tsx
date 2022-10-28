@@ -98,6 +98,11 @@ export const SetPendingOffererModal = ({
                 variant={'outlined'}
                 fullWidth
                 multiline
+                onKeyDown={e => {
+                  if (e.key === 'r') {
+                    e.stopPropagation()
+                  }
+                }}
                 rows={4}
                 required={false}
               />

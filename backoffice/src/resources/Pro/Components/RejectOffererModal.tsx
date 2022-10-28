@@ -1,4 +1,12 @@
-import { Box, Button, MenuItem, Modal, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  MenuItem,
+  Modal,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { captureException } from '@sentry/react'
 import * as React from 'react'
 import { useState } from 'react'
@@ -78,7 +86,7 @@ export const RejectOffererModal = ({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={styleModal}>
+        <Box component={'div'} sx={styleModal}>
           <ExclamationPointIcon
             style={{
               display: 'flex',
@@ -88,7 +96,7 @@ export const RejectOffererModal = ({
             }}
           />
           <Form onSubmit={formSubmit}>
-            <Stack spacing={2} direction={'row'}>
+            <Stack spacing={2} direction={'row'} component={'div'}>
               <Typography color={Colors.GREY} variant={'body2'} sx={{ mr: 1 }}>
                 Raison du changement
               </Typography>
@@ -99,7 +107,11 @@ export const RejectOffererModal = ({
                 fullWidth
                 multiline
                 rows={4}
-                required={false}
+                onKeyDown={e => {
+                  if (e.key === 'r') {
+                    e.stopPropagation()
+                  }
+                }}
               />
             </Stack>
             <Stack direction={'row-reverse'} spacing={3} sx={{ mt: 5 }}>
