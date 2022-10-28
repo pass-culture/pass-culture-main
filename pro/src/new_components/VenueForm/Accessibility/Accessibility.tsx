@@ -6,7 +6,7 @@ import { IAccessibiltyFormValues } from 'core/shared'
 import { accessibilityOptions } from 'core/shared/accessibilityOptions'
 import { useAccessibilityUpdates } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
-import { Checkbox, CheckboxGroup } from 'ui-kit'
+import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { IVenueFormValues } from '..'
 interface IAccessiblityProps {
@@ -28,13 +28,21 @@ const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
 
   useAccessibilityUpdates(values.accessibility, handleAccessibilityChange)
   return (
-    <FormLayout.Section
-      title="Accessibilité du lieu"
-      description="Les modalités d’accessibilité s’appliqueront par défaut à la création de
-    vos offres. Vous pourrez modifier cette information à l’échelle de
-    chaque offre."
-    >
-      <FormLayout.Row>
+    <FormLayout.Section title="Accessibilité du lieu">
+      <FormLayout.Row
+        sideComponent={
+          <InfoBox
+            type="info"
+            text="Les modalités d’accessibilité s’appliqueront par défaut à la création de vos offres. Vous pourrez modifier cette information à l’échelle de chaque offre."
+            link={{
+              text: 'En savoir plus',
+              to: 'https://aide.passculture.app/hc/fr/articles/4412007286289--Acteurs-Culturels-Comment-indiquer-les-conditions-d-accessibilit%C3%A9-d-une-offre-sur-le-pass-Culture-',
+              isExternal: true,
+              'aria-label': 'en savoir plus sur les modalités d’accessibilité',
+            }}
+          />
+        }
+      >
         <CheckboxGroup
           group={accessibilityOptions}
           groupName="accessibility"
