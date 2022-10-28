@@ -4,7 +4,11 @@ import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { VenueProviderResponse } from 'apiClient/v1'
+import {
+  GetVenueResponseModel,
+  VenueProviderResponse,
+  VenueResponseModel,
+} from 'apiClient/v1'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -79,7 +83,7 @@ const VenueFormScreen = ({
         )
 
     request
-      .then(r => {
+      .then((response: VenueResponseModel | GetVenueResponseModel) => {
         notify.success('Vos modifications ont bien été enregistrées')
 
         const venuesUrl = currentUser.isAdmin
@@ -87,7 +91,7 @@ const VenueFormScreen = ({
           : '/accueil'
         history.push(
           isCreatingVenue
-            ? `/structures/${offerer.id}/lieux/v2/${r.id}`
+            ? `/structures/${offerer.id}/lieux/v2/${response.id}`
             : venuesUrl,
           isNewBankInformationCreation
         )
@@ -130,10 +134,6 @@ const VenueFormScreen = ({
     onSubmit: onSubmit,
     validationSchema: formValidationSchema,
   })
-
-  const isNewBankInformationCreation = useActiveFeature(
-    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
-  )
 
   const {
     id: initialId,
