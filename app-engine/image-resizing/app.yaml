@@ -1,0 +1,19 @@
+# We need to have app_engine_apis: true otherwise we will encounter the following error 
+# google.appengine.runtime.apiproxy_errors.FeatureNotEnabledError:
+# The API call blobstore.CreateEncodedGoogleStorageKey() is currently not enabled. 
+#-- Additional details from server: App Engine APIs are not enabled, please add app_engine_apis: true to your app.yaml to enable.
+app_engine_apis: true
+
+# Set the service name matching the one instanciated in terraform
+service: image-resizing
+instance_class: F1
+runtime: python39
+
+# Add secure: always to have the HTTPS
+handlers:
+- url: .*
+  script: main.py
+  secure: always
+
+automatic_scaling:
+  max_instances: 10
