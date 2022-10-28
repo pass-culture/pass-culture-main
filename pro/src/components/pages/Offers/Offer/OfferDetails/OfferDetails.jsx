@@ -169,12 +169,11 @@ const OfferDetails = ({
           setThumbnailMsgError('')
           if (isSavingDraft) {
             // Click on "Sauvegarder le brouillon" when on /creation (after offer creation) or when on /brouillon
-            const isEdition = !(isCreatingOffer || isCompletingDraft)
             logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OfferBreadcrumbStep.DETAILS,
               to: OfferBreadcrumbStep.DETAILS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
-              isEdition: isEdition,
+              isEdition: !isCreatingOffer,
               isDraft: true,
               offerId: offer?.id,
             })
@@ -188,7 +187,7 @@ const OfferDetails = ({
               from: OfferBreadcrumbStep.DETAILS,
               to: OfferBreadcrumbStep.STOCKS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-              isEdition: false,
+              isEdition: !isCreatingOffer,
               isDraft: true,
               offerId: offer?.id,
             })

@@ -61,6 +61,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
   const location = useLocation()
   const notification = useNotification()
   const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
+  const isCreatingOffer = location.pathname.includes('creation')
 
   /* istanbul ignore next: DEBT, TO FIX */
   const summaryStepUrl = isOfferDraft
@@ -188,7 +189,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
         ? OfferBreadcrumbStep.DETAILS
         : OFFER_FORM_NAVIGATION_OUT.OFFERS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: !isOfferDraft,
+      isEdition: !isCreatingOffer,
       isDraft: isOfferDraft,
       offerId: offer.id,
     })
@@ -278,7 +279,7 @@ const EventStocks = ({ offer, reloadOffer, isCompletingDraft }) => {
                   ? OfferBreadcrumbStep.STOCKS
                   : OfferBreadcrumbStep.SUMMARY,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                isEdition: false,
+                isEdition: !isCreatingOffer,
                 isDraft: true,
                 offerId: offer.id,
               })
