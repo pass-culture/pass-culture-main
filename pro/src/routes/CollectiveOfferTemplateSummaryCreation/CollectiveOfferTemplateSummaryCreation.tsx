@@ -1,6 +1,5 @@
 import React from 'react'
 
-import Spinner from 'components/layout/Spinner'
 import {
   getEducationalCategoriesAdapter,
   CollectiveOfferTemplate,
@@ -8,6 +7,7 @@ import {
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummaryCreation from 'screens/CollectiveOfferSummaryCreation'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferTemplateSummaryProps {
   offer: CollectiveOfferTemplate

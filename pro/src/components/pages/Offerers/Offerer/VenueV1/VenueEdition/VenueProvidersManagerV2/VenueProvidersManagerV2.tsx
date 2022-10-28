@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
 import { IVenue } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import AddVenueProviderButton from '../VenueProvidersManager/AddVenueProviderButton'
 

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import Spinner from 'components/layout/Spinner'
 import {
   INITIAL_PHYSICAL_VENUES,
   INITIAL_VIRTUAL_VENUE,
@@ -10,6 +9,7 @@ import {
 import { VenueList } from 'components/pages/Home/Venues/VenueList'
 import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
 
 import OffererCreationLinks from './OffererCreationLinks'

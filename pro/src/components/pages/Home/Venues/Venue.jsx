@@ -2,7 +2,6 @@ import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import Spinner from 'components/layout/Spinner'
 import { BOOKING_STATUS } from 'core/Bookings'
 import {
   Events,
@@ -19,6 +18,7 @@ import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import VenueStat from './VenueStat'
 

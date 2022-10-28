@@ -7,7 +7,6 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
@@ -29,6 +28,7 @@ import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import NoData from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import {
   FORMAT_ISO_DATE_ONLY,

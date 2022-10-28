@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import Spinner from 'components/layout/Spinner'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import {
   Events,
@@ -15,6 +14,7 @@ import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 const Confirmation = ({ offer, setOffer, reloadOffer }) => {
   const [isLoading, setIsLoading] = useState(true)

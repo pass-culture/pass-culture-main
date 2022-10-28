@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import Spinner from 'components/layout/Spinner'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import BusinessUnitListScreen from 'screens/BusinessUnitList'
 import {
@@ -10,6 +9,7 @@ import {
   IBusinessUnitVenue,
   IOfferer,
 } from 'screens/BusinessUnitList/BusinessUnitList'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 const BusinessUnitList = (): JSX.Element => {
   const [offerer, setOfferer] = useState<IOfferer | null>(null)

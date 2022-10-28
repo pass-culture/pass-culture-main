@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'core/Offers/utils'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import OfferForm from '../OfferForm'
 

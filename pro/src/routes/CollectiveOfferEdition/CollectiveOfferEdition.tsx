@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import Spinner from 'components/layout/Spinner'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   DEFAULT_EAC_FORM_VALUES,
@@ -20,6 +19,7 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import useNotification from 'hooks/useNotification'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'

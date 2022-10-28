@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 
-import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
@@ -15,6 +14,7 @@ import useNotification from 'hooks/useNotification'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducational from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
