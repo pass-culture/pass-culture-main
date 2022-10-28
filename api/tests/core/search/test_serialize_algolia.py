@@ -65,6 +65,7 @@ def test_serialize_offer():
             "thumbUrl": None,
             "tags": [],
             "times": [],
+            "musicType": None,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -77,6 +78,26 @@ def test_serialize_offer():
         },
         "_geoloc": {"lat": 48.87004, "lng": 2.3785},
     }
+
+
+@pytest.mark.parametrize(
+    "extra_data, expected_music_style",
+    (
+        ({"musicType": "501"}, "Jazz"),
+        ({"musicType": "600"}, "Classique"),
+        ({"musicType": "-1"}, "Autre"),
+        ({"musicType": " "}, None),
+    ),
+)
+def test_serialize_offer_extra_data(extra_data, expected_music_style):
+    # given
+    offer = offers_factories.OfferFactory(extraData=extra_data)
+
+    # when
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
+
+    # then
+    assert serialized["offer"]["musicType"] == expected_music_style
 
 
 def test_serialize_offer_event():
