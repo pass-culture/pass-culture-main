@@ -18,6 +18,7 @@ from sqlalchemy import case
 from sqlalchemy import event
 from sqlalchemy import exists
 from sqlalchemy import select
+import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -222,12 +223,13 @@ class Booking(PcObject, Base, Model):
         return url.replace("{token}", token).replace("{offerId}", humanize(offer.id)).replace("{email}", self.email)
 
     @staticmethod
-    def restize_internal_error(ie: Exception) -> list[str]:
-        if "tooManyBookings" in str(ie.orig):  # type: ignore [attr-defined]
-            return ["global", "La quantité disponible pour cette offre est atteinte."]
-        if "insufficientFunds" in str(ie.orig):  # type: ignore [attr-defined]
-            return ["insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre."]
-        return PcObject.restize_integrity_error(ie)
+    def restize_internal_error(ie: sa_exc.InternalError) -> tuple[str, str]:
+        assert ie.orig  # helps mypy
+        if "tooManyBookings" in str(ie.orig):
+            return ("global", "La quantité disponible pour cette offre est atteinte.")
+        if "insufficientFunds" in str(ie.orig):
+            return ("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")
+        return PcObject.restize_internal_error(ie)
 
     @hybrid_property
     def isConfirmed(self) -> bool:

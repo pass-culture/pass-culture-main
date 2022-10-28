@@ -1,4 +1,5 @@
 import json
+import typing
 
 
 class ApiErrors(Exception):
@@ -47,7 +48,12 @@ class UnauthorizedError(ApiErrors):
     www_authenticate = None
     realm = None
 
-    def __init__(self, www_authenticate=None, realm=None, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(
+        self,
+        www_authenticate: str | None = None,
+        realm: str | None = None,
+        **kwargs: typing.Any,
+    ) -> None:
         self.www_authenticate = www_authenticate
         self.realm = realm
         super().__init__(**kwargs)

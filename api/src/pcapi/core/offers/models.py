@@ -9,6 +9,7 @@ from typing import Union
 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
@@ -236,15 +237,15 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return Stock.query.filter_by(isSoftDeleted=False)
 
     @staticmethod
-    def restize_internal_error(internal_error):  # type: ignore [no-untyped-def]
+    def restize_internal_error(internal_error: sa_exc.InternalError) -> tuple[str, str]:
         if "check_stock" in str(internal_error.orig):
             if "quantity_too_low" in str(internal_error.orig):
-                return ["quantity", "Le stock total ne peut être inférieur au nombre de réservations"]
+                return ("quantity", "Le stock total ne peut être inférieur au nombre de réservations")
             if "bookingLimitDatetime_too_late" in str(internal_error.orig):
-                return [
+                return (
                     "bookingLimitDatetime",
                     "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
-                ]
+                )
             logger.error("Unexpected error in patch stocks: %s", internal_error)
         return PcObject.restize_internal_error(internal_error)
 

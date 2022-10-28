@@ -10,7 +10,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 class NeedsValidationMixin:
     validationToken = sqla.Column(sqla.String(27), unique=True, nullable=True)
 
-    def generate_validation_token(self):  # type: ignore [no-untyped-def]
+    def generate_validation_token(self) -> None:
         self.validationToken = secrets.token_urlsafe(20)
 
     @sqla_hybrid.hybrid_property
@@ -18,5 +18,5 @@ class NeedsValidationMixin:
         return self.validationToken is None
 
     @isValidated.expression  # type: ignore [no-redef]
-    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.validationToken.is_(None)

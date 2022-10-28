@@ -1,4 +1,3 @@
-""" providable mixin """
 from datetime import datetime
 
 from sqlalchemy import BigInteger
@@ -16,8 +15,8 @@ from sqlalchemy.orm import relationship
 
 @declarative_mixin
 class ProvidableMixin:
-    @declared_attr  # type: ignore [misc]
-    def lastProviderId(cls):  # pylint: disable=no-self-argument
+    @declared_attr
+    def lastProviderId(cls) -> Mapped[int | None]:  # pylint: disable=no-self-argument
         return Column(BigInteger, ForeignKey("provider.id"), nullable=True)
 
     @declared_attr  # type: ignore [misc]

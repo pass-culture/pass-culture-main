@@ -88,5 +88,5 @@ class ValidationMixin:
     )
 
     @property
-    def isApproved(self):  # type: ignore [no-untyped-def]
+    def isApproved(self) -> bool:
         return self.validation == OfferValidationStatus.APPROVED
