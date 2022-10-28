@@ -603,11 +603,12 @@ def _validate_offerer(offerer: models.Offerer, author_user: users_models.User | 
 
     zendesk_sell.update_offerer(offerer)
 
-    if not transactional_mails.send_new_offerer_validation_email_to_pro(offerer):
-        logger.warning(
-            "Could not send validation confirmation email to offerer",
-            extra={"offerer": offerer.id},
-        )
+    if applicants:
+        if not transactional_mails.send_new_offerer_validation_email_to_pro(offerer):
+            logger.warning(
+                "Could not send validation confirmation email to offerer",
+                extra={"offerer": offerer.id},
+            )
 
 
 def validate_offerer_by_token(token: str) -> None:
@@ -656,11 +657,12 @@ def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str
         )
     )
 
-    if not transactional_mails.send_new_offerer_rejection_email_to_pro(offerer):
-        logger.warning(
-            "Could not send rejection confirmation email to offerer",
-            extra={"offerer": offerer.id},
-        )
+    if applicants:
+        if not transactional_mails.send_new_offerer_rejection_email_to_pro(offerer):
+            logger.warning(
+                "Could not send rejection confirmation email to offerer",
+                extra={"offerer": offerer.id},
+            )
 
     # Detach user from offerer after sending transactional email to applicant
     models.UserOfferer.query.filter_by(offererId=offerer_id).delete()
