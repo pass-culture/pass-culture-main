@@ -20,6 +20,7 @@ class Returns200Test:
             collectiveInterventionArea=None,
             collectiveNetwork=None,
             isPermanent=True,
+            managingOfferer__siren="12345",
         )
 
         client.with_eac_token()
@@ -52,6 +53,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "siren": "12345",
                     "isPermanent": venue.isPermanent,
                 }
             ]
@@ -71,6 +73,7 @@ class Returns200Test:
             collectiveNetwork=None,
             venueLabel=offerer_factories.VenueLabelFactory(),
             isPermanent=True,
+            managingOfferer__siren="12345",
         )
 
         client.with_eac_token()
@@ -106,6 +109,7 @@ class Returns200Test:
                         "name": venue.venueLabel.name,
                         "id": venue.venueLabel.id,
                     },
+                    "siren": "12345",
                     "isPermanent": venue.isPermanent,
                 }
             ]
@@ -129,6 +133,7 @@ class Returns200Test:
             collectiveInterventionArea=["75", "92", "971"],
             collectiveNetwork=["1"],
             isPermanent=True,
+            managingOfferer__siren="12345",
         )
 
         client.with_eac_token()
@@ -161,6 +166,7 @@ class Returns200Test:
                     "network": ["1"],
                     "statusId": None,
                     "label": None,
+                    "siren": "12345",
                     "isPermanent": venue.isPermanent,
                 }
             ]
@@ -239,6 +245,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "siren": venue1.managingOfferer.siren,
                     "isPermanent": venue1.isPermanent,
                 },
                 {
@@ -265,6 +272,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "siren": venue2.managingOfferer.siren,
                     "isPermanent": venue2.isPermanent,
                 },
             ]

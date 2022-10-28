@@ -55,6 +55,7 @@ class VenueModel(BaseModel):
     network: list[str] | None
     statusId: int | None
     label: VenueLabelModel | None
+    siren: str | None
     isPermanent: bool | None
 
     @classmethod
@@ -82,8 +83,8 @@ class VenueModel(BaseModel):
         ]
         venue.network = venue.collectiveNetwork
         venue.statusId = venue.venueEducationalStatusId
-
         venue.label = venue.venueLabel
+        venue.siren = venue.managingOfferer.siren
 
         return super().from_orm(venue)
 
