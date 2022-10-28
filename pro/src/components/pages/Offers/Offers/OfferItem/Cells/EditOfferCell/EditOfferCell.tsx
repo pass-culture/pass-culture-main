@@ -25,21 +25,25 @@ const EditOfferCell = ({
   offer: Offer
 }) => {
   const { logEvent } = useAnalytics()
+  const onEditOfferClick = () => {
+    const isDraft = offer.status === OFFER_STATUS_DRAFT
+
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+      to: isDraft ? OfferBreadcrumbStep.DETAILS : OfferBreadcrumbStep.SUMMARY,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_PEN,
+      isEdition: true,
+      isDraft: isDraft,
+      offerId: offer.id,
+    })
+  }
+
   return (
     <td className={styles['edit-column']}>
       {isOfferEditable && (
         <ButtonLink
           variant={ButtonVariant.SECONDARY}
-          onClick={() =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-              to: OfferBreadcrumbStep.SUMMARY,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_PEN,
-              isEdition: true,
-              isOfferDraft: offer.status === OFFER_STATUS_DRAFT,
-              offerId: offer.id,
-            })
-          }
+          onClick={onEditOfferClick}
           link={{ isExternal: false, to: editionOfferLink }}
           className={styles['button']}
           Icon={PenIcon}

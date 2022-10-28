@@ -28,12 +28,13 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
   const { logEvent } = useAnalytics()
 
   const onOfferNameClick = () => {
+    const isDraft = offer.status === OFFER_STATUS_DRAFT
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-      to: OfferBreadcrumbStep.SUMMARY,
+      to: isDraft ? OfferBreadcrumbStep.DETAILS : OfferBreadcrumbStep.SUMMARY,
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
       isEdition: true,
-      isOfferDraft: offer.status === OFFER_STATUS_DRAFT,
+      isDraft: isDraft,
       offerId: offer.id,
     })
   }
