@@ -40,6 +40,7 @@ class Returns200Test:
             "network": None,
             "statusId": None,
             "label": None,
+            "siren": venue.managingOfferer.siren,
             "isPermanent": venue.isPermanent,
         }
 
@@ -85,6 +86,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "siren": venue1.managingOfferer.siren,
                     "isPermanent": venue1.isPermanent,
                 },
                 {
@@ -111,6 +113,7 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
+                    "siren": venue2.managingOfferer.siren,
                     "isPermanent": venue2.isPermanent,
                 },
             ]

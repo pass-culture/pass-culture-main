@@ -36,7 +36,6 @@ def get_venues_from_siret(
             venues = []
     if not venues:
         raise ApiErrors({"code": "VENUES_NOT_FOUND"}, status_code=404)
-
     return venue_serialization.GetVenuesResponseModel(
         venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
     )
