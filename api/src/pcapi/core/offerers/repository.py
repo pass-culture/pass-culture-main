@@ -263,7 +263,6 @@ def find_relative_venue_by_id(venue_id: int, permanent_only: bool = False) -> li
     query = query.options(sqla.orm.joinedload(models.Venue.managingOfferer))
     # group venues by offerer
     query = query.order_by(models.Venue.managingOffererId, models.Venue.name)
-
     return query.all()
 
 

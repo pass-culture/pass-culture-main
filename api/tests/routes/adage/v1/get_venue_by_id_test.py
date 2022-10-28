@@ -60,6 +60,7 @@ class Returns200Test:
         response = client.get(f"/adage/v1/venues/relative/id/{venue1.id}")
 
         assert response.status_code == 200
+        assert len(response.json["venues"]) == 2
         assert response.json == {
             "venues": [
                 {
@@ -86,8 +87,8 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
-                    "siren": venue1.managingOfferer.siren,
                     "isPermanent": venue1.isPermanent,
+                    "siren": venue1.managingOfferer.siren,
                 },
                 {
                     "id": venue2.id,
@@ -113,8 +114,8 @@ class Returns200Test:
                     "network": None,
                     "statusId": None,
                     "label": None,
-                    "siren": venue2.managingOfferer.siren,
                     "isPermanent": venue2.isPermanent,
+                    "siren": venue2.managingOfferer.siren,
                 },
             ]
         }
