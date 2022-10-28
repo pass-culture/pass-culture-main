@@ -4,6 +4,7 @@ import typing
 
 import sqlalchemy as sa
 from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 
 from pcapi.core.users.models import EligibilityType
@@ -50,14 +51,16 @@ class BeneficiaryImport(PcObject, Base, Model):
         default=EligibilityType.AGE18,  # TODO (viconnex) remove default values
         server_default=sa.text(EligibilityType.AGE18.name),  # TODO (viconnex) remove default values
     )
-    beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")  # type: ignore [misc]
+    beneficiary: sa_orm.Mapped["User"] = relationship(
+        "User", foreign_keys=[beneficiaryId], backref="beneficiaryImports"
+    )
 
-    def setStatus(self, status: ImportStatus, detail: str = None, author: "User" = None):  # type: ignore [no-untyped-def]
+    def setStatus(self, status: ImportStatus, detail: str | None = None, author: "User | None" = None) -> None:
         new_status = BeneficiaryImportStatus()
         new_status.status = status
         new_status.detail = detail
         new_status.date = datetime.utcnow()
-        new_status.author = author  # type: ignore [assignment]
+        new_status.author = author
 
         self.statuses.append(new_status)
 
@@ -95,7 +98,7 @@ class BeneficiaryImport(PcObject, Base, Model):
         return cls._query_last_status(BeneficiaryImportStatus.author)
 
     @property
-    def history(self):  # type: ignore [no-untyped-def]
+    def history(self) -> str:
         return "\n".join([repr(s) for s in self.statuses])
 
     def get_detailed_source(self) -> str:
@@ -105,7 +108,7 @@ class BeneficiaryImport(PcObject, Base, Model):
         return f"dossier {self.source} [{self.applicationId}]"
 
     @classmethod
-    def _query_last_status(cls, column: sa.Column):  # type: ignore [no-untyped-def]
+    def _query_last_status(cls, column: sa.Column) -> typing.Any:
         return (
             db.session.query(column)
             .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id)
@@ -114,5 +117,5 @@ class BeneficiaryImport(PcObject, Base, Model):
             .as_scalar()
         )
 
-    def _last_status(self):  # type: ignore [no-untyped-def]
+    def _last_status(self) -> BeneficiaryImportStatus:
         return sorted(self.statuses, key=lambda x: x.date, reverse=True)[0]

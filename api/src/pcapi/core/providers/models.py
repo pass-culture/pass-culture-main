@@ -20,6 +20,7 @@ from sqlalchemy import case
 from sqlalchemy import exists
 from sqlalchemy import select
 from sqlalchemy import true
+import sqlalchemy.exc as sa_exc
 from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -131,10 +132,10 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
     )
 
     @staticmethod
-    def restize_integrity_error(internal_error):  # type: ignore [no-untyped-def]
-        if "unique_venue_provider" in str(internal_error.orig):
-            return ["global", "Votre lieu est déjà lié à cette source"]
-        return PcObject.restize_integrity_error(internal_error)
+    def restize_integrity_error(error: sa_exc.IntegrityError) -> tuple[str, str]:
+        if "unique_venue_provider" in str(error.orig):
+            return ("global", "Votre lieu est déjà lié à cette source")
+        return PcObject.restize_integrity_error(error)
 
     @property
     def nOffers(self):  # type: ignore [no-untyped-def]
@@ -222,18 +223,18 @@ class AllocineVenueProviderPriceRule(PcObject, Base, Model):
     )
 
     @staticmethod
-    def restize_integrity_error(internal_error):  # type: ignore [no-untyped-def]
-        if "unique_allocine_venue_provider_price_rule" in str(internal_error.orig):
-            return ["global", "Vous ne pouvez avoir qu''un seul prix par catégorie"]
-        if "check_price_is_not_negative" in str(internal_error.orig):
-            return ["global", "Vous ne pouvez renseigner un prix négatif"]
-        return PcObject.restize_integrity_error(internal_error)
+    def restize_integrity_error(error: sa_exc.IntegrityError) -> tuple[str, str]:
+        if "unique_allocine_venue_provider_price_rule" in str(error.orig):
+            return ("global", "Vous ne pouvez avoir qu''un seul prix par catégorie")
+        if "check_price_is_not_negative" in str(error.orig):
+            return ("global", "Vous ne pouvez renseigner un prix négatif")
+        return PcObject.restize_integrity_error(error)
 
     @staticmethod
-    def restize_data_error(data_error):  # type: ignore [no-untyped-def]
+    def restize_data_error(data_error: sa_exc.DataError) -> tuple[str, str]:
         if "wrong_price" in str(data_error):
-            return ["global", "Le prix doit être un nombre décimal"]
-        return PcObject.restize_integrity_error(data_error)
+            return ("global", "Le prix doit être un nombre décimal")
+        return PcObject.restize_data_error(data_error)
 
 
 @dataclass
