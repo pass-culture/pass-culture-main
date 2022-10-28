@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
-import Spinner from 'components/layout/Spinner'
 import { CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
@@ -9,6 +8,7 @@ import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferTemplateSummaryEdition from 'routes/CollectiveOfferTemplateSummaryEdition'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getActiveStep } from '../utils/getActiveStep'
 

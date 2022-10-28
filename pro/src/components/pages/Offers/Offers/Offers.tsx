@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
@@ -12,6 +11,7 @@ import { Audience } from 'core/shared'
 import NoResults from 'screens/Offers/NoResults'
 import { Banner } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'

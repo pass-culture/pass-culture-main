@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
 import ApplicationBanner from 'components/pages/Offerers/Offerer/VenueV1/fields/ApplicationBanner'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -13,6 +12,7 @@ import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form'
 import { Title } from 'ui-kit/index'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './ReimbursementPointV2.module.scss'
 

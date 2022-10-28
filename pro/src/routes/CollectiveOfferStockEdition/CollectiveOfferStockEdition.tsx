@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { CollectiveStockResponseModel } from 'apiClient/v1'
-import Spinner from 'components/layout/Spinner'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
@@ -19,6 +18,7 @@ import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCol
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import Spinner from 'components/layout/Spinner'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import {
@@ -17,6 +16,7 @@ import useNotification from 'hooks/useNotification'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,

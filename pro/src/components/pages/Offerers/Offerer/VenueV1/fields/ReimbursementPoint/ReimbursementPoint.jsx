@@ -3,12 +3,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Field } from 'react-final-form'
 
 import { api } from 'apiClient/api'
-import Spinner from 'components/layout/Spinner'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import InfoDialog from 'new_components/InfoDialog'
 import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
 import { Title } from 'ui-kit'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import ApplicationBanner from '../ApplicationBanner'
 
