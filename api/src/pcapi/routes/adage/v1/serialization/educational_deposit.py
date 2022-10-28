@@ -26,7 +26,7 @@ def serialize_educational_deposits(
 
 def serialize_educational_deposit(educational_deposit: EducationalDepositNamedTuple) -> EducationalDepositResponse:
     return EducationalDepositResponse(
-        deposit=float(educational_deposit[0]),
-        uai=educational_deposit[1],
-        isFinal=educational_deposit[2],
+        deposit=float(educational_deposit.amount),
+        uai=educational_deposit.uai,
+        isFinal=educational_deposit.isFinal,
     )
