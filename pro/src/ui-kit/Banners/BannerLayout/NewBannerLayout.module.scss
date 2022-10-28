@@ -75,6 +75,8 @@
     color: colors.$tertiary;
     &:before {
       content: 'À SAVOIR';
+      padding: 0 rem.torem(8px) 0 rem.torem(36px);
+      left: rem.torem(18px);
     }
     svg {
       fill: colors.$tertiary;
