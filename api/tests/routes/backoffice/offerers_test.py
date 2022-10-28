@@ -1377,6 +1377,11 @@ class OfferersStatsTest:
 
 
 class ListOfferersToBeValidatedTest:
+    # 2: permission_required: features (ENABLE_BACKOFFICE_API) + user
+    # +1: query should load all data in a single query
+    # +1: count() for pagination
+    N_QUERIES = 4
+
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_list_only_offerers_to_be_validated(self, client):
         # given
@@ -1396,12 +1401,8 @@ class ListOfferersToBeValidatedTest:
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
-        n_queries = 2  # permission_required: features (ENABLE_BACKOFFICE_API) + user
-        n_queries += 1  # query should load all data in a single query
-        n_queries += 1  # count() for pagination
-
         # when
-        with assert_num_queries(n_queries):
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
             response = client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.list_offerers_to_be_validated")
             )
@@ -1462,9 +1463,10 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated")
-        )
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.list_offerers_to_be_validated")
+            )
 
         # then
         assert response.status_code == 200
@@ -1529,9 +1531,10 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated")
-        )
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.list_offerers_to_be_validated")
+            )
 
         # then
         assert response.status_code == 200
@@ -1555,9 +1558,10 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated")
-        )
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.list_offerers_to_be_validated")
+            )
 
         # then
         assert response.status_code == 200
@@ -1654,12 +1658,13 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for(
-                "backoffice_blueprint.list_offerers_to_be_validated",
-                filter=json.dumps([{"field": "tags", "value": tag_filter}]),
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for(
+                    "backoffice_blueprint.list_offerers_to_be_validated",
+                    filter=json.dumps([{"field": "tags", "value": tag_filter}]),
+                )
             )
-        )
 
         # then
         assert response.status_code == 200
@@ -1673,9 +1678,10 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated", q="123004004")
-        )
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.list_offerers_to_be_validated", q="123004004")
+            )
 
         # then
         assert response.status_code == 200
@@ -1707,9 +1713,10 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.list_offerers_to_be_validated", q=search_filter)
-        )
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for("backoffice_blueprint.list_offerers_to_be_validated", q=search_filter)
+            )
 
         # then
         assert response.status_code == 200
@@ -1737,12 +1744,13 @@ class ListOfferersToBeValidatedTest:
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
 
         # when
-        response = client.with_explicit_token(auth_token).get(
-            url_for(
-                "backoffice_blueprint.list_offerers_to_be_validated",
-                filter=json.dumps([{"field": "status", "value": status_filter}]),
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for(
+                    "backoffice_blueprint.list_offerers_to_be_validated",
+                    filter=json.dumps([{"field": "status", "value": status_filter}]),
+                )
             )
-        )
 
         # then
         assert response.status_code == 200
