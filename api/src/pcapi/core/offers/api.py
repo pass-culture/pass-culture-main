@@ -985,7 +985,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
     elif isinstance(offer, educational_models.CollectiveOfferTemplate):
         search.async_index_collective_offer_template_ids([offer.id])
     template = f"{type(offer)} validation status updated"
-    logger.info(template, extra={"offer": offer.id}, technical_message_id="offers.validation_updated")  # type: ignore [call-arg]
+    logger.info(template, extra={"offer": offer.id, "offer_validation": offer.validation}, technical_message_id="offers.validation_updated")  # type: ignore [call-arg]
     return True
 
 
