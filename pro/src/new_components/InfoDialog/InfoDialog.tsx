@@ -10,7 +10,7 @@ interface IInfoDialogProps {
   iconName?: string
   title: string
   subTitle: string
-
+  componentIcon?: React.ReactElement
   closeDialog: () => void
 }
 
@@ -19,6 +19,7 @@ const InfoDialog = ({
   iconName,
   title,
   subTitle,
+  componentIcon,
   closeDialog,
 }: IInfoDialogProps): JSX.Element => {
   return (
@@ -30,6 +31,11 @@ const InfoDialog = ({
     >
       {!!iconName && (
         <Icon className={styles['info-dialog-icon']} svg={iconName} />
+      )}
+      {componentIcon && (
+        <div className={styles['info-dialog-icon-component']}>
+          {componentIcon}
+        </div>
       )}
       <div className={styles['info-dialog-title']}>
         <strong>{title}</strong>
