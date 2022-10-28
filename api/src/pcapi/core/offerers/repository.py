@@ -191,11 +191,7 @@ def get_venue_stats(venue_id: int) -> tuple[int, int, int, int]:
 
 def get_api_key_prefixes(offerer_id: int) -> list[str]:
     return [
-        prefix or value[:8]
-        for prefix, value in models.ApiKey.query.filter_by(offererId=offerer_id)
-        .with_entities(models.ApiKey.prefix, models.ApiKey.value)
-        .all()
-        if prefix or value
+        prefix for prefix, in models.ApiKey.query.filter_by(offererId=offerer_id).with_entities(models.ApiKey.prefix)
     ]
 
 

@@ -35,7 +35,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
-from sqlalchemy.sql.sqltypes import CHAR
 from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
@@ -745,9 +744,6 @@ class UserOfferer(PcObject, Base, Model, NeedsValidationMixin, ValidationStatusM
 
 
 class ApiKey(PcObject, Base, Model):
-    # FIXME (dbaty, 2022-10-25): remove column once v211 is deployed
-    value = Column(CHAR(64), index=True, nullable=True)
-
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
     offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
