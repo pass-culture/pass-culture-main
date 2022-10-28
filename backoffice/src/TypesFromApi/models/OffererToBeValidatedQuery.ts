@@ -42,6 +42,12 @@ export interface OffererToBeValidatedQuery {
    * @type {string}
    * @memberof OffererToBeValidatedQuery
    */
+  q?: string | null
+  /**
+   *
+   * @type {string}
+   * @memberof OffererToBeValidatedQuery
+   */
   sort?: string | null
 }
 
@@ -62,6 +68,7 @@ export function OffererToBeValidatedQueryFromJSONTyped(
     filter: !exists(json, 'filter') ? undefined : json['filter'],
     page: !exists(json, 'page') ? undefined : json['page'],
     perPage: !exists(json, 'perPage') ? undefined : json['perPage'],
+    q: !exists(json, 'q') ? undefined : json['q'],
     sort: !exists(json, 'sort') ? undefined : json['sort'],
   }
 }
@@ -79,6 +86,7 @@ export function OffererToBeValidatedQueryToJSON(
     filter: value.filter,
     page: value.page,
     perPage: value.perPage,
+    q: value.q,
     sort: value.sort,
   }
 }
