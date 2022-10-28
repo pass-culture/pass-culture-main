@@ -2,7 +2,6 @@ import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 
-import Logo from 'components/layout/Logo'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -15,6 +14,7 @@ import { ReactComponent as IconHome } from 'icons/ico-home.svg'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
+import Logo from 'ui-kit/Logo/Logo'
 
 const Header = () => {
   const { currentUser } = useCurrentUser()
