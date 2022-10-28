@@ -1486,6 +1486,7 @@ class ListOfferersToBeValidatedTest:
                 user_offerer.offerer.UserOfferers[0].user.lastName,
             )
         )
+        assert payload["ownerId"] == user_offerer.offerer.UserOfferers[0].user.id
         assert payload["phoneNumber"] == user_offerer.offerer.UserOfferers[0].user.phoneNumber
         assert payload["email"] == user_offerer.offerer.UserOfferers[0].user.email
         assert payload["lastComment"] == {
