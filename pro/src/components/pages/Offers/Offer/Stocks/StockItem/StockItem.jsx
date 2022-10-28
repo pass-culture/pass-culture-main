@@ -2,13 +2,13 @@ import { isAfter } from 'date-fns'
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
-import DateInput from 'components/layout/inputs/DateInput/DateInput'
-import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import {
   getMaximumBookingLimitDatetime as getMaximumBookingLimitDatetimeFromExpirationDatetime,
   hasStockBeenUpdated,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import { isAllocineProvider } from 'core/Providers'
+import DateInput from 'ui-kit/form_raw/DateInput/DateInput'
+import TimeInput from 'ui-kit/form_raw/TimeInput/TimeInput'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 

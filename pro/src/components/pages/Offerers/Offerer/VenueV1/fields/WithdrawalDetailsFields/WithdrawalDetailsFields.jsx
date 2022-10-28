@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { Field } from 'react-final-form'
 
-import CheckboxInput from 'components/layout/inputs/CheckboxInput'
-import TextareaInput from 'components/layout/inputs/TextareaInput'
+import CheckboxInput from 'ui-kit/form_raw/CheckboxInput'
+import TextareaInput from 'ui-kit/form_raw/TextareaInput'
 import HiddenField from 'ui-kit/form_rff/fields/HiddenField'
 
 const WithdrawalDetailsFields = props => {

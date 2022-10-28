@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
+import TextInputWithIcon from 'ui-kit/form_raw/TextInputWithIcon/TextInputWithIcon'
 
 interface IPasswordInputProps {
   onChange: (newValue: string) => void

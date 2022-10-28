@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types'
 import React from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
-import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
+import InputWithCalendar from 'ui-kit/form_raw/PeriodSelector/InputWithCalendar'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 registerLocale('fr', fr)
 

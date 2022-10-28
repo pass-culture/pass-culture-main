@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
 
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { humanizeSiren, unhumanizeSiren } from 'core/Offerers/utils'
+import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 
 import validate from './validate'
 

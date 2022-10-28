@@ -1,11 +1,11 @@
 import * as PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
-import Select from 'components/layout/inputs/Select'
 import {
   musicOptionsTree,
   showOptionsTree,
 } from 'core/Offers/categoriesSubTypes'
+import Select from 'ui-kit/form_raw/Select'
 import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
