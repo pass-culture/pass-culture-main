@@ -31,7 +31,9 @@ const Notification = (): JSX.Element | null => {
   useEffect(() => {
     if (!isVisible && notification && notification.text) {
       const timer = setTimeout(() => {
+        /* istanbul ignore next: DEBT, TO FIX */
         setIsInDom(false)
+        /* istanbul ignore next: DEBT, TO FIX */
         notificationHook.close()
       }, NOTIFICATION_TRANSITION_DURATION)
       return () => clearTimeout(timer)

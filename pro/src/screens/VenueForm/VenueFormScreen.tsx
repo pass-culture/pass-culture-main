@@ -1,33 +1,31 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
-import { IOfferer } from 'core/Offerers/types'
-import { IProviders, IVenue } from 'core/Venue/types'
-import useCurrentUser from 'hooks/useCurrentUser'
-import useNotification from 'hooks/useNotification'
-import {
-  IVenueFormValues,
-  validationSchema,
-  VenueForm,
-} from 'new_components/VenueForm'
-import { Button, Title } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
-
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
-} from '../../core/FirebaseEvents/constants'
-import useActiveFeature from '../../hooks/useActiveFeature'
-import useAnalytics from '../../hooks/useAnalytics'
-import { ReactComponent as AddOfferSvg } from '../../icons/ico-plus.svg'
-
-import useActiveFeature from '../../hooks/useActiveFeature'
+} from 'core/FirebaseEvents/constants'
+import { IOfferer } from 'core/Offerers/types'
+import { IProviders, IVenue } from 'core/Venue/types'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import {
+  IVenueFormValues,
+  validationSchema,
+  VenueForm,
+} from 'new_components/VenueForm'
+import { generateSiretValidationSchema } from 'new_components/VenueForm/Informations/SiretOrCommentFields'
+import { Button, Title } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import {
   serializeEditVenueBodyModel,
@@ -75,6 +73,7 @@ const VenueFormScreen = ({
           })
         )
       : api.editVenue(
+          /* istanbul ignore next: there will always be a venue id on update screen */
           venue?.id || '',
           serializeEditVenueBodyModel(value, { hideSiret: !!venue?.comment })
         )
@@ -117,19 +116,19 @@ const VenueFormScreen = ({
       })
   }
 
-  /*const generateSiretOrCommentValidationSchema: any = useMemo(
+  const generateSiretOrCommentValidationSchema: any = useMemo(
     () => generateSiretValidationSchema(offerer.siren, isSiretValued),
     [offerer.siren, isSiretValued]
   )
 
   const formValidationSchema = validationSchema.concat(
     generateSiretOrCommentValidationSchema
-  )*/
+  )
 
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmit,
-    validationSchema: validationSchema, // FIXME: Should use formValidationSchema instead
+    validationSchema: formValidationSchema,
   })
 
   const isNewBankInformationCreation = useActiveFeature(
