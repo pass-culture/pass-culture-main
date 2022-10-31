@@ -25,6 +25,8 @@ const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
               text: 'En savoir plus',
               to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
               isExternal: true,
+              target: '_blank',
+              rel: 'noopener noreferrer',
               'aria-label': 'en savoir plus sur les modalités de retrait',
             }}
           />
