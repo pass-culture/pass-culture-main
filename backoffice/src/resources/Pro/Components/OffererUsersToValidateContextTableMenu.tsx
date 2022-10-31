@@ -1,6 +1,6 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { IconButton, Menu, MenuItem } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNotify } from 'react-admin'
 
 import {
@@ -15,19 +15,30 @@ import { SetPendingUserOffererModal } from './SetPendingUserOffererModal'
 
 type Props = {
   id: number
+  onContextMenuChange: () => void
 }
 
-export const OffererUserssToValidateContextTableMenu = ({ id }: Props) => {
+export const OffererUserssToValidateContextTableMenu = ({
+  id,
+  onContextMenuChange,
+}: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const open = Boolean(anchorEl)
   const notify = useNotify()
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget)
+    },
+    [setAnchorEl]
+  )
+  const handleClose = useCallback(() => {
     setAnchorEl(null)
-  }
+  }, [setAnchorEl])
+  const onMenuItemClicked = useCallback(() => {
+    handleClose()
+    onContextMenuChange()
+  }, [handleClose, onContextMenuChange])
   return (
     <>
       <IconButton
@@ -60,7 +71,6 @@ export const OffererUserssToValidateContextTableMenu = ({ id }: Props) => {
               notify('Le rattachement a été validé avec succès !', {
                 type: 'success',
               })
-              handleClose()
             } catch (error) {
               if (error instanceof PcApiHttpError) {
                 notify(getHttpApiErrorMessage(error), { type: 'error' })
@@ -69,14 +79,21 @@ export const OffererUserssToValidateContextTableMenu = ({ id }: Props) => {
                   type: 'error',
                 })
               }
-              handleClose()
+            } finally {
+              onMenuItemClicked()
             }
           }}
         >
           Valider
         </MenuItem>
-        <RejectUserOffererModal userOffererId={id} />
-        <SetPendingUserOffererModal userOffererId={id} />
+        <RejectUserOffererModal
+          userOffererId={id}
+          onContextMenuChange={onMenuItemClicked}
+        />
+        <SetPendingUserOffererModal
+          userOffererId={id}
+          onContextMenuChange={onMenuItemClicked}
+        />
       </Menu>
     </>
   )

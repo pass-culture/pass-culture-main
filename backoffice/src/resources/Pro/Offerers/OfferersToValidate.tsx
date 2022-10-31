@@ -21,6 +21,7 @@ import {
   Typography,
 } from '@mui/material'
 import { captureException } from '@sentry/react'
+import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import {
   useAuthenticated,
@@ -293,6 +294,7 @@ export const OfferersToValidate = () => {
                       <TableCell>Nom de la structure</TableCell>
                       <TableCell>Statut</TableCell>
                       <TableCell>Top Acteur</TableCell>
+                      <TableCell>Date de la demande</TableCell>
                       <TableCell>Dernier Commentaire</TableCell>
                       <TableCell>SIREN</TableCell>
                       <TableCell>Mail</TableCell>
@@ -363,6 +365,9 @@ export const OfferersToValidate = () => {
                               }
                             }}
                           />
+                        </TableCell>
+                        <TableCell>
+                          {format(offerer.requestDate, 'dd/MM/yyyy')}
                         </TableCell>
                         <TableCell>
                           {offerer.lastComment && offerer.lastComment.content}
