@@ -86,13 +86,6 @@ function confirm() {
 current_branch=$(git symbolic-ref -q HEAD)
 current_branch=${current_branch##refs/heads/}
 
-function open_build_status_page() {
-  cd "$ROOT_PATH"
-  env_to_deploy="$1"
-  commit_to_deploy="$2"
-  source scripts/open_build_status_page.sh "$env_to_deploy" "$commit_to_deploy"
-}
-
 function exit_success_restoring_branch() {
   git checkout "$current_branch"
   exit 0
