@@ -135,7 +135,7 @@ describe('useGetVenue', () => {
       name: 'Lieu name',
       siret: '',
       comment: 'commentaire lieu sans siret',
-      venueLabel: '',
+      venueLabel: null,
       venueType: 'Librairie',
       withdrawalDetails: '',
       collectiveAccessInformation: '',
