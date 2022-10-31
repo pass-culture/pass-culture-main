@@ -21,7 +21,7 @@ class UserStatusTest:
             user = users_factories.UserFactory(
                 dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age),
             )
-            assert user.young_status == models.Eligible()
+            assert models.young_status(user) == models.Eligible()
 
         def test_eligible_when_19yo_with_pending_dms_application(self):
             user = users_factories.UserFactory(
@@ -34,37 +34,37 @@ class UserStatusTest:
                     registration_datetime=(datetime.datetime.utcnow() - relativedelta(years=1))
                 ),
             )
-            assert user.young_status == models.Eligible()
+            assert models.young_status(user) == models.Eligible()
 
     def test_non_eligible_when_too_young(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=15) + relativedelta(days=1),
         )
-        assert user.young_status == models.NonEligible()
+        assert models.young_status(user) == models.NonEligible()
 
     def test_non_eligible_when_too_old(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, days=1),
         )
-        assert user.young_status == models.NonEligible()
+        assert models.young_status(user) == models.NonEligible()
 
     def test_beneficiary_when_18yo_and_have_deposit(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        assert user.young_status == models.Beneficiary()
+        assert models.young_status(user) == models.Beneficiary()
 
     def test_beneficiary_when_underage_and_have_deposit(self):
         user = users_factories.UnderageBeneficiaryFactory()
-        assert user.young_status == models.Beneficiary()
+        assert models.young_status(user) == models.Beneficiary()
 
     def test_ex_beneficiary_when_beneficiary_have_his_deposit_expired(self):
         user = users_factories.BeneficiaryGrant18Factory(
             deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(days=1)
         )
-        assert user.young_status == models.ExBeneficiary()
+        assert models.young_status(user) == models.ExBeneficiary()
 
     def test_suspended_when_account_is_not_active(self):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        assert user.young_status == models.Suspended()
+        assert models.young_status(user) == models.Suspended()
 
     def test_can_not_mutate(self):
         status = models.Suspended()
