@@ -1,8 +1,5 @@
 export { default as StockThingEventForm } from './StockThingEventForm'
-export {
-  getValidationSchema,
-  getValidationSchemaArray,
-} from './validationSchema'
+export { getValidationSchema } from './validationSchema'
 export type {
   IStockThingEventFormValues,
   IStockThingEventFormValuesArray,

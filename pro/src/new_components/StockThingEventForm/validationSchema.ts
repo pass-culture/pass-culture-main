@@ -1,8 +1,9 @@
 import * as yup from 'yup'
-import { ObjectShape } from 'yup/lib/object'
+
+import { getToday } from 'utils/date'
 
 const todayAtMidnight = () => {
-  const today = new Date()
+  const today = getToday()
   today.setHours(0, 0, 0, 0)
   return today
 }
@@ -22,7 +23,7 @@ const isBeforeEventDate = (
     return true
   }
 
-  return bookingLimitDatetime < context.parent.eventDate
+  return bookingLimitDatetime < context.parent.eventDatetime
 }
 
 export const getValidationSchema = (minQuantity: number | null = null) => {
@@ -36,10 +37,7 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
         todayAtMidnight(),
         "La date de l'évènement doit être supérieure à aujourd'hui"
       ),
-    eventTime: yup
-      .string()
-      .nullable()
-      .required('Veuillez renseigner un horaire'),
+    eventTime: yup.string().required('Veuillez renseigner un horaire'),
     price: yup
       .number()
       .typeError('Veuillez renseigner un prix')
@@ -71,9 +69,10 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
   return yup.object().shape(validationSchema)
 }
 
-export const getValidationSchemaArray = (minQuantity: number | null = null) => {
-  const validationSchema = getValidationSchema(minQuantity)
-  return yup.object().shape({
-    events: yup.array().of(validationSchema),
-  })
-}
+// TODO: For FormikArray if necessary
+// export const getValidationSchemaArray = (minQuantity: number | null = null) => {
+//   const validationSchema = getValidationSchema(minQuantity)
+//   return yup.object().shape({
+//     events: yup.array().of(validationSchema),
+//   })
+// }
