@@ -1,4 +1,3 @@
-from datetime import datetime
 from enum import Enum
 import typing
 
@@ -12,7 +11,6 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.pc_object import PcObject
 
 
@@ -54,15 +52,6 @@ class BeneficiaryImport(PcObject, Base, Model):
     beneficiary: sa_orm.Mapped["User"] = relationship(
         "User", foreign_keys=[beneficiaryId], backref="beneficiaryImports"
     )
-
-    def setStatus(self, status: ImportStatus, detail: str | None = None, author: "User | None" = None) -> None:
-        new_status = BeneficiaryImportStatus()
-        new_status.status = status
-        new_status.detail = detail
-        new_status.date = datetime.utcnow()
-        new_status.author = author
-
-        self.statuses.append(new_status)
 
     @hybrid_property
     def currentStatus(self):
