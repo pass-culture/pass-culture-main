@@ -36,6 +36,24 @@ class UserStatusTest:
             )
             assert user.young_status == models.Eligible()
 
+        def test_toto(self):
+            user = users_factories.UserFactory(
+                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=5),
+            )
+
+            user.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.USER_PROFILING,
+                resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                    risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+                ),
+                eligibilityType=models.EligibilityType.AGE18,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+
+            assert user.young_status == models.Eligible2(subscription_status="has_to_complete_subscription")
+
     def test_non_eligible_when_too_young(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=15) + relativedelta(days=1),

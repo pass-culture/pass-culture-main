@@ -181,6 +181,12 @@ class Eligible(YoungStatus):
 
 
 @attrs.frozen
+class Eligible2(YoungStatus):
+    subscription_status: str
+    status_type: constants.YoungStatusType = constants.YoungStatusType.ELIGIBLE
+
+
+@attrs.frozen
 class NonEligible(YoungStatus):
     status_type: constants.YoungStatusType = constants.YoungStatusType.NON_ELIGIBLE
 
