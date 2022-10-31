@@ -25,6 +25,7 @@ import {
   useNotify,
   usePermissions,
   useRedirect,
+  useRefresh,
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 
@@ -94,6 +95,7 @@ export const OffererDetail = () => {
   )
   const notify = useNotify()
   const redirect = useRedirect()
+  const refresh = useRefresh()
   const [tabValue, setTabValue] = useState(0)
   const handleChange = useCallback(
     (event: React.SyntheticEvent, newValue: number) => {
@@ -104,7 +106,7 @@ export const OffererDetail = () => {
   const { data: offererInfo, isLoading } = useGetOne(
     'offerer',
     { id: id },
-    // redirect to the list if the book is not found
+    // redirect to the list if the offerer is not found
     {
       onError() {
         notify(`Une erreur est survenue`, {
@@ -405,6 +407,7 @@ export const OffererDetail = () => {
                           <TableCell>
                             <OffererUserssToValidateContextTableMenu
                               id={user.userOffererId}
+                              onContextMenuChange={refresh}
                             />
                           </TableCell>
                           <TableCell>{user.id}</TableCell>

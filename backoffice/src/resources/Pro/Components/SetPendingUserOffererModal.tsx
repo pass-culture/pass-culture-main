@@ -1,7 +1,7 @@
 import { Box, Button, MenuItem, Modal, Stack, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
 import * as React from 'react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Form, SaveButton, TextInput, useNotify } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
@@ -17,8 +17,10 @@ import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
 
 export const SetPendingUserOffererModal = ({
   userOffererId,
+  onContextMenuChange,
 }: {
   userOffererId: number
+  onContextMenuChange: () => void
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const notify = useNotify()
@@ -37,16 +39,21 @@ export const SetPendingUserOffererModal = ({
     p: 4,
   }
 
-  const handleOpenModal = () => {
+  const handleOpenModal = useCallback(() => {
     setOpenModal(true)
-  }
-  const handleCloseModal = () => setOpenModal(false)
+  }, [setOpenModal])
+  const handleCloseModal = useCallback(() => {
+    setOpenModal(false)
+    onContextMenuChange()
+  }, [setOpenModal, onContextMenuChange])
 
   const formSubmit = async (params: FieldValues) => {
     try {
       const formData: SetOffererAttachmentPendingRequest = {
         userOffererId: userOffererId,
-        optionalCommentRequest: { comment: params.reason },
+        optionalCommentRequest: {
+          comment: params.reason ? params.reason : null,
+        },
       }
       await apiProvider().setOffererAttachmentPending(formData)
       notify('La revue a été envoyée avec succès !', { type: 'success' })
@@ -94,12 +101,14 @@ export const SetPendingUserOffererModal = ({
                 fullWidth
                 multiline
                 rows={4}
+                required={false}
               />
             </Stack>
             <Stack direction={'row-reverse'} spacing={3} sx={{ mt: 5 }}>
               <SaveButton
                 label={'METTRE EN ATTENTE LE RATTACHEMENT'}
                 variant={'outlined'}
+                alwaysEnable
               />
               <Button
                 variant={'outlined'}
