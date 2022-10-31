@@ -6,6 +6,9 @@
 
 [Mob Time](https://mobtime.hadrienmp.fr/mob/pass-culture)
 
+* [ ] création d'un Eligible2 qui prend un `subscription_status`
+  * [ ] frozen
+  * [ ] equal by value
 * [ ] has_to_complete_subscription
 * [ ] has_subscription_pending
 * [ ] has_subscription_issues
