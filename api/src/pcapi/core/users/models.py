@@ -22,7 +22,6 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
-from pcapi.core.subscription import api as subscription
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
 from pcapi.models import Base
@@ -525,7 +524,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             return Beneficiary()
 
         if self.eligibility is not None:
-            subscription.get_next_subscription_step(self)
             return Eligible()
 
         return NonEligible()
