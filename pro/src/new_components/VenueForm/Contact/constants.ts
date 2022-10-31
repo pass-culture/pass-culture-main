@@ -1,6 +1,6 @@
 export const DEFAULT_CONTACT_FORM_VALUES = {
-  phoneNumber: '',
-  email: '',
-  webSite: '',
+  phoneNumber: null,
+  email: null,
+  webSite: null,
   bookingEmail: '',
 }
