@@ -54,6 +54,7 @@ def test_serialize_offer():
             "isEvent": False,
             "isForbiddenToUnderage": offer.is_forbidden_to_underage,
             "isThing": True,
+            "movieGenres": None,
             "musicType": None,
             "name": "Titre formidable",
             "prices": [decimal.Decimal("10.00")],
@@ -82,19 +83,23 @@ def test_serialize_offer():
 
 
 @pytest.mark.parametrize(
-    "extra_data, expected_music_style, expected_show_type",
+    "extra_data, expected_music_style, expected_show_type, expected_movie_genres",
     (
-        ({"musicType": "501"}, "Jazz", None),
-        ({"musicType": "600"}, "Classique", None),
-        ({"musicType": "-1"}, "Autre", None),
-        ({"musicType": " "}, None, None),
-        ({"showType": "100"}, None, "Arts de la rue"),
-        ({"showType": "1200"}, None, "Spectacle Jeunesse"),
-        ({"showType": "-1"}, None, "Autre"),
-        ({"showType": " "}, None, None),
+        ({"musicType": "501"}, "Jazz", None, None),
+        ({"musicType": "600"}, "Classique", None, None),
+        ({"musicType": "-1"}, "Autre", None, None),
+        ({"musicType": " "}, None, None, None),
+        ({"showType": "100"}, None, "Arts de la rue", None),
+        ({"showType": "1200"}, None, "Spectacle Jeunesse", None),
+        ({"showType": "-1"}, None, "Autre", None),
+        ({"showType": " "}, None, None, None),
+        ({"genres": ["DRAMA"]}, None, None, ["DRAMA"]),
+        ({"genres": ["ADVENTURE", "DRAMA", "FAMILY"]}, None, None, ["ADVENTURE", "DRAMA", "FAMILY"]),
+        ({"genres": []}, None, None, []),
+        ({"genres": None}, None, None, None),
     ),
 )
-def test_serialize_offer_extra_data(extra_data, expected_music_style, expected_show_type):
+def test_serialize_offer_extra_data(extra_data, expected_music_style, expected_show_type, expected_movie_genres):
     # given
     offer = offers_factories.OfferFactory(extraData=extra_data)
 
@@ -104,6 +109,7 @@ def test_serialize_offer_extra_data(extra_data, expected_music_style, expected_s
     # then
     assert serialized["offer"]["musicType"] == expected_music_style
     assert serialized["offer"]["showType"] == expected_show_type
+    assert serialized["offer"]["movieGenres"] == expected_movie_genres
 
 
 def test_serialize_offer_event():
