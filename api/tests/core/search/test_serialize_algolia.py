@@ -45,7 +45,6 @@ def test_serialize_offer():
         "objectID": offer.id,
         "offer": {
             "artist": "Author Performer Speaker Stage Director",
-            "rankingWeight": 2,
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",
@@ -55,17 +54,19 @@ def test_serialize_offer():
             "isEvent": False,
             "isForbiddenToUnderage": offer.is_forbidden_to_underage,
             "isThing": True,
+            "musicType": None,
             "name": "Titre formidable",
             "prices": [decimal.Decimal("10.00")],
+            "rankingWeight": 2,
             "searchGroupName": "LIVRE",
             "searchGroupNamev2": "LIVRES",
+            "showType": None,
             "stocksDateCreated": [stock.dateCreated.timestamp()],
             "students": [],
             "subcategoryId": offer.subcategory.id,
             "thumbUrl": None,
             "tags": [],
             "times": [],
-            "musicType": None,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -81,15 +82,19 @@ def test_serialize_offer():
 
 
 @pytest.mark.parametrize(
-    "extra_data, expected_music_style",
+    "extra_data, expected_music_style, expected_show_type",
     (
-        ({"musicType": "501"}, "Jazz"),
-        ({"musicType": "600"}, "Classique"),
-        ({"musicType": "-1"}, "Autre"),
-        ({"musicType": " "}, None),
+        ({"musicType": "501"}, "Jazz", None),
+        ({"musicType": "600"}, "Classique", None),
+        ({"musicType": "-1"}, "Autre", None),
+        ({"musicType": " "}, None, None),
+        ({"showType": "100"}, None, "Arts de la rue"),
+        ({"showType": "1200"}, None, "Spectacle Jeunesse"),
+        ({"showType": "-1"}, None, "Autre"),
+        ({"showType": " "}, None, None),
     ),
 )
-def test_serialize_offer_extra_data(extra_data, expected_music_style):
+def test_serialize_offer_extra_data(extra_data, expected_music_style, expected_show_type):
     # given
     offer = offers_factories.OfferFactory(extraData=extra_data)
 
@@ -98,6 +103,7 @@ def test_serialize_offer_extra_data(extra_data, expected_music_style):
 
     # then
     assert serialized["offer"]["musicType"] == expected_music_style
+    assert serialized["offer"]["showType"] == expected_show_type
 
 
 def test_serialize_offer_event():
