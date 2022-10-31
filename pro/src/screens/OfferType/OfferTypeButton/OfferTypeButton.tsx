@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { OFFER_TYPES } from 'core/Offers'
+import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
 import { ReactComponent as TickIcon } from 'icons/tick.svg'
 
 import styles from './OfferTypeButton.module.scss'
@@ -12,16 +12,18 @@ interface IOfferTypeButton {
     SVGProps<SVGSVGElement> & { title?: string | undefined }
   >
   label: string
+  description?: string
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   className?: string
   disabled?: boolean
-  value: OFFER_TYPES
+  value: OFFER_TYPES | OFFER_SUBTYPES
 }
 
 const OfferTypeButton = ({
   isSelected,
   Icon,
   label,
+  description,
   onChange,
   className,
   disabled = false,
@@ -30,6 +32,9 @@ const OfferTypeButton = ({
   <label
     className={cn(
       styles.button,
+      description === undefined
+        ? styles['layout-column']
+        : styles['layout-row'],
       {
         [styles['is-selected']]: isSelected,
         [styles['is-disabled']]: disabled,
@@ -48,7 +53,12 @@ const OfferTypeButton = ({
       type="radio"
       value={value}
     />
-    {label}
+    <div className={styles['button-text']}>
+      <div>{label}</div>
+      {description !== undefined && (
+        <div className={styles['button-description']}>{description}</div>
+      )}
+    </div>
   </label>
 )
 
