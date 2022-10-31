@@ -15,25 +15,26 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class UserStatusTest:
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    def test_eligible_when_age_is_between_15_and_18(self, age):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age),
-        )
-        assert user.young_status == models.Eligible()
+    class EligibleTest:
+        @pytest.mark.parametrize("age", [15, 16, 17, 18])
+        def test_eligible_when_age_is_between_15_and_18(self, age):
+            user = users_factories.UserFactory(
+                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age),
+            )
+            assert user.young_status == models.Eligible()
 
-    def test_eligible_when_19yo_with_pending_dms_application(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19),
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.DMS,
-            resultContent=fraud_factories.DMSContentFactory(
-                registration_datetime=(datetime.datetime.utcnow() - relativedelta(years=1))
-            ),
-        )
-        assert user.young_status == models.Eligible()
+        def test_eligible_when_19yo_with_pending_dms_application(self):
+            user = users_factories.UserFactory(
+                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.DMS,
+                resultContent=fraud_factories.DMSContentFactory(
+                    registration_datetime=(datetime.datetime.utcnow() - relativedelta(years=1))
+                ),
+            )
+            assert user.young_status == models.Eligible()
 
     def test_non_eligible_when_too_young(self):
         user = users_factories.UserFactory(
