@@ -34,7 +34,7 @@ itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
 mypy
-notion-client==0.9.0
+notion-client==1.0.0
 openpyxl
 pgcli # a tool not used in code. There is no point in pinning its version
 phonenumberslite==8.12.*
