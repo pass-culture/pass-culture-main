@@ -1,6 +1,6 @@
-import dataclasses
 import datetime
 
+import attrs
 from dateutil.relativedelta import relativedelta
 import pytest
 
@@ -67,5 +67,5 @@ class UserStatusTest:
 
     def test_can_not_mutate(self):
         status = models.Suspended()
-        with pytest.raises(dataclasses.FrozenInstanceError):
+        with pytest.raises(attrs.exceptions.FrozenInstanceError):
             status.status_type = constants.YoungStatusType.BENEFICIARY
