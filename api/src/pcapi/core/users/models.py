@@ -9,6 +9,7 @@ from operator import attrgetter
 import typing
 from uuid import UUID
 
+import attrs
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
@@ -169,34 +170,34 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
-@dataclass(frozen=True)
+@attrs.frozen
 class YoungStatus:
     status_type: constants.YoungStatusType
 
 
+@attrs.frozen
 class Eligible(YoungStatus):
-    def __init__(self) -> None:
-        super().__init__(status_type=constants.YoungStatusType.ELIGIBLE)
+    status_type: constants.YoungStatusType = constants.YoungStatusType.ELIGIBLE
 
 
+@attrs.frozen
 class NonEligible(YoungStatus):
-    def __init__(self) -> None:
-        super().__init__(status_type=constants.YoungStatusType.NON_ELIGIBLE)
+    status_type: constants.YoungStatusType = constants.YoungStatusType.NON_ELIGIBLE
 
 
+@attrs.frozen
 class Beneficiary(YoungStatus):
-    def __init__(self) -> None:
-        super().__init__(status_type=constants.YoungStatusType.BENEFICIARY)
+    status_type: constants.YoungStatusType = constants.YoungStatusType.BENEFICIARY
 
 
+@attrs.frozen
 class ExBeneficiary(YoungStatus):
-    def __init__(self) -> None:
-        super().__init__(status_type=constants.YoungStatusType.EX_BENEFICIARY)
+    status_type: constants.YoungStatusType = constants.YoungStatusType.EX_BENEFICIARY
 
 
+@attrs.frozen
 class Suspended(YoungStatus):
-    def __init__(self) -> None:
-        super().__init__(status_type=constants.YoungStatusType.SUSPENDED)
+    status_type: constants.YoungStatusType = constants.YoungStatusType.SUSPENDED
 
 
 class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
