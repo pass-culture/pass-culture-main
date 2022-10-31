@@ -1,7 +1,7 @@
 import { Box, Button, MenuItem, Modal, Stack, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
 import * as React from 'react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Form, SaveButton, TextInput, useNotify } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
@@ -39,19 +39,21 @@ export const SetPendingOffererModal = ({
     p: 4,
   }
 
-  const handleOpenModal = () => {
+  const handleOpenModal = useCallback(() => {
     setOpenModal(true)
-  }
-  const handleCloseModal = () => {
+  }, [setOpenModal])
+  const handleCloseModal = useCallback(() => {
     setOpenModal(false)
     onContextMenuChange()
-  }
+  }, [setOpenModal, onContextMenuChange])
 
   const formSubmit = async (params: FieldValues) => {
     try {
       const formData: SetOffererPendingRequest = {
         offererId: offererId,
-        optionalCommentRequest: { comment: params.reason ? params.reason : '' },
+        optionalCommentRequest: {
+          comment: params.reason ? params.reason : null,
+        },
       }
       await apiProvider().setOffererPending(formData)
       notify('La revue a été envoyée avec succès !', { type: 'success' })
@@ -111,7 +113,7 @@ export const SetPendingOffererModal = ({
               <SaveButton
                 label={'METTRE EN ATTENTE LA STRUCTURE'}
                 variant={'outlined'}
-                alwaysEnable={true}
+                alwaysEnable
               />
               <Button
                 variant={'outlined'}
