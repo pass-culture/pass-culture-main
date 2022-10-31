@@ -7,12 +7,7 @@
   border: rem.torem(1px) solid colors.$black;
   border-radius: rem.torem(8px);
   padding: rem.torem(32px) rem.torem(16px) rem.torem(16px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   position: relative;
-  width: rem.torem(231px);
   font-size: rem.torem(15px);
 
   &-radio {
@@ -27,6 +22,7 @@
   }
 
   &-icon {
+    flex-shrink: 0;
     fill: colors.$black;
     margin-bottom: rem.torem(12px);
   }
@@ -54,6 +50,31 @@
       fill: colors.$grey-dark;
     }
   }
+
+  &-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-description {
+    font-weight: normal;
+    font-size: rem.torem(12px);
+  }
+}
+
+.layout-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: rem.torem(231px);
+}
+
+.layout-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: rem.torem(487px);
 }
 
 .button.is-selected:focus-within {
