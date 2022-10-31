@@ -14,7 +14,35 @@ where:
   -b  specify backend to connect with local app (default: localhost)
   -f  file to upload to pod
   -t  specify version you want to deploy (create tag with this name)
-  c  command that you want to run"
+  c  command that you want to run
+
+Commands:
+  access-db-logs        Display logs from the local database
+  alembic [command]     Run alembic commands on the local environment
+  bash                  Open a shell on the given environment
+  diff-schema           Create diff ouput between schema in an environment & localhost
+  dump-db               Dump pass_culture database into pgdump file
+  install               Install new local environment
+  install-hooks         Install pre-push and pre-commit hooks
+  logs                  Display logs from the local API
+  psql                  Connect to the given environment database
+  psql-file             Execute requests from the specified file on the local database
+  psql-test             Connect to the local test database
+  python                Open a Python prompt the given environment
+  rebuild-backend       Force docker-compose to build the docker images
+  reset-all-db          Clear all data in the local database
+  reset-all-storage     Delete all local images
+  restart-backend       Restart API after removing the database and files
+  restore-db            Restore a postgresql database from file (and anonymize data)
+  restore-db-intact     Restore a postgresql database from file (non anonymized)
+  set-git-config        Define a local Git configuration
+  start-adage-front     Start the adage frontend on localhost
+  start-backend         Start the API on localhost
+  start-pro             Start the pro frontend on localhost
+  symlink               Create symlink to use \"pc\" command (admin rights may be needed)
+  test-backend          Run tests for the API
+  test-backend-provider Run only local providers tests for the API
+  "
   exit 0
 fi
 
@@ -49,7 +77,6 @@ shift
 # =============================================
 # Utilities functions
 # =============================================
-
 
 PRG="$BASH_SOURCE"
 
@@ -173,7 +200,6 @@ elif [[ "$CMD" == "restore-db" ]]; then
 elif [[ "$CMD" == "restore-db-intact" ]]; then
   source "$INFRA_SCRIPTS_PATH"/restore_db.sh
   restore_db_intact $1
-
 
 # Start API server with database and nginx server
 elif [[ "$CMD" == "start-backend" ]]; then
