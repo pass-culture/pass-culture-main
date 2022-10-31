@@ -1003,7 +1003,11 @@ class GetUserHistoryTest:
         )
 
         dms_author = users_factories.UserFactory(email="dms_author@exemple.com")
-        beneficiary_import.setStatus(ImportStatus.CREATED, author=dms_author)
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport=beneficiary_import,
+            status=ImportStatus.CREATED,
+            author=dms_author,
+        )
 
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
