@@ -38,6 +38,8 @@ const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
               text: 'En savoir plus',
               to: 'https://aide.passculture.app/hc/fr/articles/4412007286289--Acteurs-Culturels-Comment-indiquer-les-conditions-d-accessibilit%C3%A9-d-une-offre-sur-le-pass-Culture-',
               isExternal: true,
+              target: '_blank',
+              rel: 'noopener noreferrer',
               'aria-label': 'en savoir plus sur les modalités d’accessibilité',
             }}
           />
