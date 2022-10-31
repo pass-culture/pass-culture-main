@@ -9,9 +9,9 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import {
   StockThingEventForm,
-  IStockThingEventFormValuesArray,
-  getValidationSchemaArray,
   STOCK_THING_EVENT_FORM_DEFAULT_VALUES,
+  getValidationSchema,
+  IStockThingEventFormValues,
 } from '.'
 
 export default {
@@ -22,7 +22,7 @@ export default {
 const today = getLocalDepartementDateTimeFromUtc(getToday(), '75')
 
 interface IRenderStockThingEventForm {
-  initialValues?: IStockThingEventFormValuesArray
+  initialValues?: IStockThingEventFormValues
 }
 
 const renderStockThingEventForm =
@@ -33,11 +33,11 @@ const renderStockThingEventForm =
     (
       <Formik
         initialValues={initialValues || STOCK_THING_EVENT_FORM_DEFAULT_VALUES}
-        onSubmit={async (values: IStockThingEventFormValuesArray) => {
+        onSubmit={async (values: IStockThingEventFormValues) => {
           alert(`onSubmit with values: ${JSON.stringify(values)}`)
           return Promise.resolve()
         }}
-        validationSchema={getValidationSchemaArray()}
+        validationSchema={getValidationSchema()}
       >
         {({ handleSubmit, isSubmitting }) => (
           <form onSubmit={handleSubmit}>

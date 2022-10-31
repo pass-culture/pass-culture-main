@@ -6,17 +6,25 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { IStockThingFormProps } from 'new_components/StockThingForm/StockThingForm'
-import {
-  EVENT_DATE_LABEL,
-  EVENT_TIME_LABEL,
-} from 'screens/OfferEducationalStock/constants/labels'
 import { SubmitButton } from 'ui-kit'
+import { getToday } from 'utils/date'
 
 import { STOCK_THING_EVENT_FORM_DEFAULT_VALUES } from '../constants'
 import StockThingEventForm from '../StockThingEventForm'
-import { getValidationSchemaArray } from '../validationSchema'
-const today = new Date()
-const yesterday = new Date(today.getDate() - 1)
+import { getValidationSchema } from '../validationSchema'
+
+jest.mock('utils/date', () => ({
+  ...jest.requireActual('utils/date'),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2022-12-25T00:00:00Z')),
+}))
+
+const today = getToday()
+const yesterday = getToday()
+const tomorrow = getToday()
+yesterday.setDate(yesterday.getDate() - 1)
+tomorrow.setDate(tomorrow.getDate() + 1)
 
 const renderStockThingEventForm = ({
   minQuantity = null,
@@ -28,7 +36,7 @@ const renderStockThingEventForm = ({
     <Formik
       initialValues={STOCK_THING_EVENT_FORM_DEFAULT_VALUES}
       onSubmit={() => {}}
-      validationSchema={getValidationSchemaArray(minQuantity)}
+      validationSchema={getValidationSchema(minQuantity)}
     >
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
@@ -46,7 +54,7 @@ describe('StockThingEventForm:validationSchema', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
     expect(screen.getByTestId('error-eventDatetime')).toBeInTheDocument()
-    expect(screen.getByTestId('error-eventDate')).toBeInTheDocument()
+    expect(screen.getByTestId('error-eventTime')).toBeInTheDocument()
     expect(screen.getByTestId('error-price')).toBeInTheDocument()
     expect(
       screen.queryByTestId('error-bookingLimitDatetime')
@@ -55,7 +63,6 @@ describe('StockThingEventForm:validationSchema', () => {
   })
 
   const dataSetEventDatetimeErrors = [
-    { eventDatetime: '', error: 'Veuillez renseigner une date' },
     {
       eventDatetime: yesterday.getDate().toString(),
       error: "La date de l'évènement doit être supérieure à aujourd'hui",
@@ -66,38 +73,31 @@ describe('StockThingEventForm:validationSchema', () => {
     async ({ eventDatetime, error }) => {
       renderStockThingEventForm()
 
-      const inputEventDatetime = screen.getByLabelText(EVENT_DATE_LABEL)
-      await userEvent.type(inputEventDatetime, eventDatetime)
-      await userEvent.tab()
-      const errorPrice = screen.queryByTestId('error-eventDatetime')
-      expect(errorPrice).toBeInTheDocument()
-      expect(errorPrice).toHaveTextContent(error)
+      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+      await userEvent.click(screen.getByText(eventDatetime))
+      const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
+      expect(errorEventDatetime).toBeInTheDocument()
+      expect(errorEventDatetime).toHaveTextContent(error)
     }
   )
 
-  // it('should not display eventDatetime error')
-
-  const dataSetEventTimeErrors = [
-    { eventTime: '', error: 'Veuillez renseigner un horaire' },
+  const dataSetEventDateTime: Array<number> = [
+    today.getDate(),
+    tomorrow.getDate(),
   ]
-  it.each(dataSetEventTimeErrors)(
-    'should display eventTime error',
-    async ({ eventTime, error }) => {
+  it.each(dataSetEventDateTime)(
+    'should not display eventDatetime error',
+    async eventDateTime => {
       renderStockThingEventForm()
 
-      const inputEventTime = screen.getByLabelText(EVENT_TIME_LABEL)
-      await userEvent.type(inputEventTime, eventTime)
-      await userEvent.tab()
-      const errorPrice = screen.queryByTestId('error-eventTime')
-      expect(errorPrice).toBeInTheDocument()
-      expect(errorPrice).toHaveTextContent(error)
+      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+      await userEvent.click(screen.getByText(eventDateTime))
+      const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
+      expect(errorEventDatetime).not.toBeInTheDocument()
     }
   )
 
-  // it('should not display eventTime error')
-
   const dataSetPriceErrors = [
-    { price: '', error: 'Veuillez renseigner un prix' },
     {
       price: 'ABCD',
       error: 'Veuillez renseigner un prix',
@@ -182,5 +182,55 @@ describe('StockThingEventForm:validationSchema', () => {
     }
   )
 
-  // TODO: Test bookingLimitDatetime error when bookingLimitDatetime < eventDatetime
+  it('should display bookingLimitDatetime error when bookingLimitDatetime > eventDatetime', async () => {
+    renderStockThingEventForm()
+
+    const todayNumber = today.getDate().toString()
+    await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+    await userEvent.click(screen.getByText(todayNumber))
+
+    const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
+    expect(errorEventDatetime).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
+    await userEvent.click(screen.getByText(tomorrow.getDate().toString()))
+
+    const errorBookingLimitDatetime = screen.queryByTestId(
+      'error-bookingLimitDatetime'
+    )
+    expect(errorBookingLimitDatetime).toBeInTheDocument()
+    expect(errorBookingLimitDatetime).toHaveTextContent(
+      "Veuillez rentrer une date antérieur à la date de l'évènement"
+    )
+  })
+
+  const dataSetBookingLimitDatetimeError = [
+    {
+      eventDateTime: today.getDate(),
+      bookingLimitDatetime: yesterday.getDate(),
+    },
+    {
+      eventDateTime: tomorrow.getDate(),
+      bookingLimitDatetime: tomorrow.getDate(),
+    },
+  ]
+  it.each(dataSetBookingLimitDatetimeError)(
+    'should not display bookingLimitDatetime error when datetime strictly before eventDatetime',
+    async ({ eventDateTime, bookingLimitDatetime }) => {
+      renderStockThingEventForm()
+
+      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+      await userEvent.click(screen.getByText(eventDateTime))
+      const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
+      expect(errorEventDatetime).not.toBeInTheDocument()
+
+      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
+      await userEvent.click(screen.getByText(bookingLimitDatetime))
+
+      const errorBookingLimitDatetime = screen.queryByTestId(
+        'error-bookingLimitDatetime'
+      )
+      expect(errorBookingLimitDatetime).not.toBeInTheDocument()
+    }
+  )
 })
