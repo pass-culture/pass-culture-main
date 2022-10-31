@@ -14,6 +14,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_DICT
+from pcapi.domain.show_types import SHOW_TYPES_DICT
 import pcapi.utils.date as date_utils
 from pcapi.utils.stopwords import STOPWORDS
 
@@ -350,6 +351,14 @@ class AlgoliaBackend(base.SearchBackend):
             except (ValueError, KeyError, TypeError):
                 logger.warning("bad music type encountered", extra={"offer": offer.id, "music_type": music_type})
 
+        show_type_label = None
+        show_type = extra_data.get("showType", "").strip()
+        if show_type:
+            try:
+                show_type_label = SHOW_TYPES_DICT[int(show_type)]
+            except (ValueError, KeyError, TypeError):
+                logger.warning("bad show type encountered", extra={"offer": offer.id, "show_type": show_type})
+
         object_to_index = {
             "distinct": distinct,
             "objectID": offer.id,
@@ -373,6 +382,7 @@ class AlgoliaBackend(base.SearchBackend):
                 # home page label migration is over.
                 "searchGroupName": offer.subcategory.search_group_name,
                 "searchGroupNamev2": offer.subcategory_v2.search_group_name,
+                "showType": show_type_label,
                 "stocksDateCreated": sorted(stocks_date_created),
                 "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
