@@ -299,11 +299,6 @@ elif [[ "$CMD" == "python" ]]; then
     exit
   fi
 
-# Display environement database restore infos
-elif [[ "$CMD" == "db_restore_infos" ]]; then
-  source "$INFRA_SCRIPTS_PATH"/get_restore_infos.sh
-  get_restore_infos
-
 # =============================================
 # Python Scripts commands
 # =============================================
