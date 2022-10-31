@@ -88,3 +88,9 @@ class YoungStatusType(enum.Enum):
     BENEFICIARY = "beneficiary"
     EX_BENEFICIARY = "ex_beneficiary"
     SUSPENDED = "suspended"
+
+
+class SubscriptionStatus(enum.Enum):
+    HAS_TO_COMPLETE_SUBSCRIPTION = "has_to_complete_subscription"
+    HAS_SUBSCRIPTION_PENDING = "has_subscription_pending"
+    HAS_SUBSCRIPTION_ISSUES = "has_subscription_issues"
