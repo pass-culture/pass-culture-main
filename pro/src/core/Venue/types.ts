@@ -45,9 +45,9 @@ export interface IVenue {
   demarchesSimplifieesApplicationId: string | null
   comment: string
   contact: {
-    email: string
-    phoneNumber: string
-    webSite: string
+    email: string | null
+    phoneNumber: string | null
+    webSite: string | null
   }
   description: string
   departmentCode: string
@@ -70,7 +70,7 @@ export interface IVenue {
   publicName: string
   siret: string
   venueType: string
-  venueLabel: string
+  venueLabel: string | null
   reimbursementPointId: number | null
   withdrawalDetails: string
   collectiveAccessInformation: string

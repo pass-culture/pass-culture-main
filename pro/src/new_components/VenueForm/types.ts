@@ -13,7 +13,7 @@ export interface IVenueFormValues {
   comment: string
   description: string
   departmentCode: string
-  email: string
+  email: string | null
   id: string
   isAccessibilityAppliedOnAllOffers: boolean
   isPermanent: boolean
@@ -22,15 +22,15 @@ export interface IVenueFormValues {
   longitude: number
   bookingEmail: string
   name: string
-  phoneNumber: string
+  phoneNumber: string | null
   venueSiret: number | null
   postalCode: string
   publicName: string
   siret: string
   'search-addressAutocomplete': string
-  venueLabel: string
+  venueLabel: string | null
   venueType: string
-  webSite: string
+  webSite: string | null
   withdrawalDetails: string
   isWithdrawalAppliedOnAllOffers: boolean
 }
