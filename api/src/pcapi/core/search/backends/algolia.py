@@ -374,6 +374,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isEvent": offer.isEvent,
                 "isForbiddenToUnderage": offer.is_forbidden_to_underage,
                 "isThing": offer.isThing,
+                "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_label,
                 "name": offer.name,
                 "prices": prices_sorted,
