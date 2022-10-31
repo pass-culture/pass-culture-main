@@ -1,6 +1,6 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { IconButton, Menu, MenuItem } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNotify } from 'react-admin'
 
 import {
@@ -23,17 +23,19 @@ export const OfferersToValidateContextTableMenu = React.memo(
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const notify = useNotify()
     const open = Boolean(anchorEl)
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-      setAnchorEl(event.currentTarget)
-    }
-
-    const onMenuItemClicked = () => {
+    const handleClick = useCallback(
+      (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget)
+      },
+      [setAnchorEl]
+    )
+    const handleClose = useCallback(() => {
+      setAnchorEl(null)
+    }, [setAnchorEl])
+    const onMenuItemClicked = useCallback(() => {
       handleClose()
       onContextMenuChange()
-    }
-    const handleClose = () => {
-      setAnchorEl(null)
-    }
+    }, [handleClose, onContextMenuChange])
     return (
       <>
         <IconButton
@@ -66,7 +68,6 @@ export const OfferersToValidateContextTableMenu = React.memo(
                 notify('Le rattachement a été validé avec succès !', {
                   type: 'success',
                 })
-                handleClose()
               } catch (error) {
                 if (error instanceof PcApiHttpError) {
                   notify(getHttpApiErrorMessage(error), { type: 'error' })
@@ -75,7 +76,8 @@ export const OfferersToValidateContextTableMenu = React.memo(
                     type: 'error',
                   })
                 }
-                handleClose()
+              } finally {
+                onMenuItemClicked()
               }
             }}
           >
