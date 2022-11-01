@@ -1,0 +1,86 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_forms.scss' as formsM;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/variables/_forms.scss' as forms;
+@use 'styles/variables/_size.scss' as size;
+
+$icon-width: rem.torem(16px);
+$icon-padding-left: rem.torem(16px);
+$space-icon-text: rem.torem(8px);
+$focus-border-width: rem.torem(2px);
+$input-height: calc(
+  #{size.$input-min-height} - 2px
+); //input height - 2 * input-border-width
+$input-width: rem.torem(86px);
+$text-padding-left: calc(
+  #{$icon-width} + #{$icon-padding-left} + #{$space-icon-text}
+);
+
+.select-input-wrapper {
+  position: relative;
+  border-color: transparent;
+  border-radius: rem.torem(forms.$input-border-radius) 0 0
+    rem.torem(forms.$input-border-radius);
+  border-width: 1px;
+  border-style: solid;
+
+  &:focus,
+  &:focus-within {
+    border-color: forms.$input-border-color-focus;
+    border-radius: rem.torem(forms.$input-border-radius) 0 0
+      rem.torem(forms.$input-border-radius);
+    border-width: $focus-border-width;
+    border-style: solid;
+
+    .select-input {
+      height: calc(#{$input-height} - #{$focus-border-width});
+      min-height: calc(#{$input-height} - #{$focus-border-width});
+      padding-left: calc(#{$text-padding-left} - (#{$focus-border-width} / 2));
+    }
+
+    .select-input-icon {
+      left: calc(#{$icon-padding-left} - (#{$focus-border-width} / 2));
+    }
+  }
+}
+
+.select-input {
+  @include formsM.input-theme();
+  @include fonts.button();
+
+  padding-left: $text-padding-left;
+  padding-right: rem.torem(8px);
+  width: $input-width;
+  height: $input-height;
+  min-height: $input-height;
+
+  // -- override default select style --
+  border: unset;
+  box-shadow: unset;
+  &:focus,
+  &:hover {
+    box-shadow: unset;
+  }
+
+  &-icon {
+    position: absolute;
+    top: 0;
+    left: $icon-padding-left;
+    height: 100%;
+    width: $icon-width;
+    fill: colors.$black;
+    transform: rotate(90deg);
+    pointer-events: none;
+
+    &-disabled {
+      fill: forms.$input-text-color-disabled;
+    }
+  }
+
+  &-placeholder {
+    @include fonts.placeholder();
+
+    color: colors.$grey-dark;
+  }
+}
