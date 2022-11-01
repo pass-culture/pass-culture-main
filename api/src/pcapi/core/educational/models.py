@@ -48,6 +48,7 @@ class CollectiveBookingCancellationReasons(enum.Enum):
     EXPIRED = "EXPIRED"
     FRAUD = "FRAUD"
     REFUSED_BY_INSTITUTE = "REFUSED_BY_INSTITUTE"
+    DEACTIVATION = "DEACTIVATION"
 
 
 class Ministry(enum.Enum):
