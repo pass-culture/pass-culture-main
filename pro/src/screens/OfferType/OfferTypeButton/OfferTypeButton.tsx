@@ -2,11 +2,13 @@ import cn from 'classnames'
 import React, { FunctionComponent, SVGProps } from 'react'
 
 import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
-import { ReactComponent as TickIcon } from 'icons/tick.svg'
+import { ReactComponent as RadioOffIcon } from 'icons/ico-radio-off.svg'
+import { ReactComponent as RadioOnIcon } from 'icons/ico-radio-on.svg'
 
 import styles from './OfferTypeButton.module.scss'
 
 interface IOfferTypeButton {
+  name: string
   isSelected: boolean
   Icon: FunctionComponent<
     SVGProps<SVGSVGElement> & { title?: string | undefined }
@@ -20,6 +22,7 @@ interface IOfferTypeButton {
 }
 
 const OfferTypeButton = ({
+  name,
   isSelected,
   Icon,
   label,
@@ -42,13 +45,17 @@ const OfferTypeButton = ({
       className
     )}
   >
-    {isSelected ? <TickIcon className={styles['button-check-mark']} /> : null}
+    {isSelected ? (
+      <RadioOnIcon className={styles['button-radio-on']} />
+    ) : (
+      <RadioOffIcon className={styles['button-radio-off']} />
+    )}
     <Icon className={styles['button-icon']} />
     <input
       checked={isSelected}
       className={styles['button-radio']}
       disabled={disabled}
-      name="offer-type"
+      name={name}
       onChange={onChange}
       type="radio"
       value={value}

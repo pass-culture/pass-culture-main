@@ -6,34 +6,42 @@
   background-color: transparent;
   border: rem.torem(1px) solid colors.$black;
   border-radius: rem.torem(8px);
-  padding: rem.torem(32px) rem.torem(16px) rem.torem(16px);
   position: relative;
   font-size: rem.torem(15px);
 
   &-radio {
+    position: absolute;
     z-index: -1;
   }
 
-  &-check-mark {
+  &-radio-on, &-radio-off {
     position: absolute;
     top: rem.torem(16px);
-    left: rem.torem(16px);
-    fill: colors.$primary;
+    right: rem.torem(16px);
+  }
+  &-radio-on {
+    fill: colors.$tertiary;
   }
 
   &-icon {
     flex-shrink: 0;
     fill: colors.$black;
-    margin-bottom: rem.torem(12px);
+    width: rem.torem(40px);
+    height: rem.torem(40px);
   }
 
+
   &.is-selected {
-    border: rem.torem(1px) solid colors.$primary;
+    border-color: colors.$tertiary;
     font-weight: 700;
-    color: colors.$primary;
+    background-color: rgba(colors.$tertiary, 0.05);
+
+    &:focus-within {
+      outline: 1px solid colors.$tertiary;
+    }
 
     .button-icon {
-      fill: colors.$primary;
+      fill: colors.$tertiary;
     }
   }
 
@@ -57,25 +65,30 @@
   }
 
   &-description {
-    font-weight: normal;
-    font-size: rem.torem(12px);
+    @include fonts.caption();
+    color: colors.$grey-dark;
   }
 }
 
 .layout-column {
+  padding: rem.torem(32px) rem.torem(16px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  .button-icon {
+    margin-bottom: rem.torem(12px);
+  }
 }
 
 .layout-row {
+  padding: rem.torem(16px);
   display: flex;
   flex-direction: row;
-  align-items: center;
+
+  .button-icon {
+    margin-right: rem.torem(12px);
+  }
 }
 
-.button.is-selected:focus-within {
-  border-width: rem.torem(2px);
-  padding: rem.torem(31px) rem.torem(15px) rem.torem(15px);
-}
