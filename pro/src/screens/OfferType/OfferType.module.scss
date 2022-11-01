@@ -3,3 +3,14 @@
 .offer-type-title {
   margin-bottom: rem.torem(48px);
 }
+
+.offer-type-container {
+  width: rem.torem(480px);
+}
+
+.offer-type-button {
+  // Make the buttons grow exactly at the same rate and initial width
+  // so that they have the exact same size
+  flex-grow: 1;
+  flex-basis: 0;
+}
