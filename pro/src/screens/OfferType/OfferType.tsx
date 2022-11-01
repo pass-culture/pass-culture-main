@@ -60,7 +60,7 @@ const OfferType = (): JSX.Element => {
   }
 
   return (
-    <div>
+    <div className={styles['offer-type-container']}>
       <h1 className={styles['offer-type-title']}>Créer une offre</h1>
       <FormLayout>
         <FormLayout.Section title="À qui destinez-vous cette offre ? ">
@@ -71,6 +71,7 @@ const OfferType = (): JSX.Element => {
               label="Au grand public"
               onChange={handleOfferTypeChange}
               value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
+              className={styles['offer-type-button']}
             />
             <OfferTypeButton
               Icon={LibraryIcon}
@@ -78,6 +79,7 @@ const OfferType = (): JSX.Element => {
               label="À un groupe scolaire"
               onChange={handleOfferTypeChange}
               value={OFFER_TYPES.EDUCATIONAL}
+              className={styles['offer-type-button']}
             />
           </FormLayout.Row>
         </FormLayout.Section>
