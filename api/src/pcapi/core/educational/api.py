@@ -1227,6 +1227,26 @@ def _cancel_collective_booking(
     )
 
 
+def cancel_collective_bookings(
+    collective_bookings: list[educational_models.CollectiveBooking],
+    reason: educational_models.CollectiveBookingCancellationReasons,
+) -> None:
+    with transaction():
+        educational_repository.get_and_lock_collective_stocks(
+            [collective_booking.collectiveStockId for collective_booking in collective_bookings]
+        )
+
+        for collective_booking in collective_bookings:
+            try:
+                collective_booking.cancel_booking()
+            except (exceptions.CollectiveBookingAlreadyCancelled):
+                continue
+            else:
+                collective_booking.cancellationReason = reason
+
+        db.session.commit()
+
+
 def cancel_collective_booking_by_offerer(
     collective_stock: educational_models.CollectiveStock,
 ) -> educational_models.CollectiveBooking:
@@ -1345,3 +1365,34 @@ def notify_pro_users_one_day() -> None:
                 "Could not notify offerer one day before event",
                 extra={"collectiveBooking": booking.id},
             )
+
+
+def deactivated_collective_offers_and_collective_offers_template_for_offerer(offerer_id: int) -> None:
+    from pcapi.core.offers.api import batch_update_collective_offers
+    from pcapi.core.offers.api import batch_update_collective_offers_template
+
+    collective_offer_query = educational_models.CollectiveOffer.query.join(
+        educational_models.CollectiveOffer.venue
+    ).filter(offerers_models.Venue.managingOffererId == offerer_id)
+    batch_update_collective_offers(collective_offer_query, {"isActive": False})
+
+    collective_offer_template_query = educational_models.CollectiveOfferTemplate.query.join(
+        educational_models.CollectiveOfferTemplate.venue
+    ).filter(offerers_models.Venue.managingOffererId == offerer_id)
+    batch_update_collective_offers_template(collective_offer_template_query, {"isActive": False})
+
+    search.unindex_collective_offer_ids([offer.id for offer in collective_offer_query.all()])
+    search.unindex_collective_offer_template_ids([offer.id for offer in collective_offer_template_query.all()])
+
+
+def deactivate_offerer_for_EAC(
+    offerer_id: int,
+) -> list[educational_models.CollectiveBooking]:
+    active_collective_bookings = educational_repository.get_active_collective_bookings_for_offerer(offerer_id)
+    cancel_collective_bookings(
+        active_collective_bookings, educational_models.CollectiveBookingCancellationReasons.DEACTIVATION
+    )
+
+    deactivated_collective_offers_and_collective_offers_template_for_offerer(offerer_id)
+
+    return active_collective_bookings

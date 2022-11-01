@@ -447,6 +447,17 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
     return stock
 
 
+def get_and_lock_collective_stocks(stock_ids: list[int]) -> list[educational_models.CollectiveStock]:
+    stocks = (
+        educational_models.CollectiveStock.query.filter(educational_models.CollectiveStock.id.in_(stock_ids))
+        .populate_existing()
+        .with_for_update()
+        .all()
+    )
+
+    return stocks
+
+
 def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
     query = educational_models.CollectiveStock.query.filter(
         educational_models.CollectiveStock.id == collective_stock_id
@@ -1052,3 +1063,26 @@ def get_paginated_active_collective_offer_template_ids(limit: int, page: int) ->
         .limit(limit)
     )
     return [offer_id for offer_id, in query]
+
+
+def get_active_collective_bookings_for_offerer(offerer_id: int) -> list[educational_models.CollectiveBooking]:
+    return (
+        educational_models.CollectiveBooking.query.join(
+            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+        )
+        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
+        .join(educational_models.EducationalDomain, educational_models.CollectiveOffer.domains)
+        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(educational_models.EducationalInstitution, educational_models.CollectiveBooking.educationalInstitution)
+        .join(educational_models.EducationalRedactor, educational_models.CollectiveBooking.educationalRedactor)
+        .filter(
+            educational_models.CollectiveBooking.status.in_(
+                [
+                    educational_models.CollectiveBookingStatus.PENDING,
+                    educational_models.CollectiveBookingStatus.CONFIRMED,
+                ]
+            ),
+            educational_models.CollectiveBooking.offererId == offerer_id,
+        )
+        .all()
+    )
