@@ -1,4 +1,7 @@
+from dataclasses import dataclass
 import datetime
+import enum
+import logging
 
 from pcapi import settings
 from pcapi.core.fraud import models as fraud_models
@@ -7,26 +10,59 @@ from pcapi.core.subscription import models
 from pcapi.core.users import models as users_models
 
 
+logger = logging.getLogger(__name__)
+
 MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
 MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e"
 
+
+class NounGender(enum.Enum):
+    MASCULINE = enum.auto()
+    FEMININE = enum.auto()
+
+
+@dataclass
+class FieldErrorLabel:
+    label: str
+    gender: NounGender
+
+
 FIELD_ERROR_LABELS = {
-    fraud_models.DmsFieldErrorKeyEnum.birth_date: "date de naissance",
-    fraud_models.DmsFieldErrorKeyEnum.first_name: "prénom",
-    fraud_models.DmsFieldErrorKeyEnum.id_piece_number: "numéro de pièce d'identité",
-    fraud_models.DmsFieldErrorKeyEnum.last_name: "nom de famille",
-    fraud_models.DmsFieldErrorKeyEnum.postal_code: "code postal",
+    fraud_models.DmsFieldErrorKeyEnum.birth_date: FieldErrorLabel(
+        label="date de naissance", gender=NounGender.FEMININE
+    ),
+    fraud_models.DmsFieldErrorKeyEnum.first_name: FieldErrorLabel(label="prénom", gender=NounGender.MASCULINE),
+    fraud_models.DmsFieldErrorKeyEnum.id_piece_number: FieldErrorLabel(
+        label="numéro de pièce d'identité", gender=NounGender.MASCULINE
+    ),
+    fraud_models.DmsFieldErrorKeyEnum.last_name: FieldErrorLabel(label="nom de famille", gender=NounGender.MASCULINE),
+    fraud_models.DmsFieldErrorKeyEnum.postal_code: FieldErrorLabel(label="code postal", gender=NounGender.MASCULINE),
 }
 
 
 def _generate_form_field_error(
-    error_text_singular: str, error_text_plural: str, error_fields: list[fraud_models.DmsFieldErrorDetails]
+    error_text_singular_masculine: str,
+    error_text_singular_feminine: str,
+    error_text_plural: str,
+    error_fields: list[fraud_models.DmsFieldErrorDetails],
 ) -> str:
-    field_text = ", ".join(FIELD_ERROR_LABELS.get(field.key, field.key.value) for field in error_fields)
+    error_field_details = [FIELD_ERROR_LABELS.get(error_field.key) for error_field in error_fields]
+
     if len(error_fields) == 1:
-        user_message = error_text_singular.format(formatted_error_fields=field_text)
+        field = error_field_details[0]
+        if not field:
+            logger.error("Unknown field error key: %s", error_fields[0].key)
+            return "Ton dossier déposé sur le site demarches-simplifiees.fr contient des erreurs."
+        user_message = (
+            error_text_singular_masculine.format(formatted_error_fields=field.label)
+            if (field.gender == NounGender.MASCULINE)
+            else error_text_singular_feminine.format(formatted_error_fields=field.label)
+        )
     else:
-        user_message = error_text_plural.format(formatted_error_fields=field_text)
+        error_field_labels = [field.label for field in error_field_details if field]
+        user_message = error_text_plural.format(
+            formatted_error_fields=", ".join(error_field_labels[:-1]) + " et " + error_field_labels[-1]
+        )
 
     return user_message
 
@@ -52,8 +88,9 @@ def get_error_updatable_message(
         errors.extend([birth_date_error] if birth_date_error else [])
 
         user_message = _generate_form_field_error(
-            "Il semblerait que le champ ‘{formatted_error_fields}’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
-            "Il semblerait que les champs ‘{formatted_error_fields}’ soient invalides. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier.",
+            "Il semblerait que ton {formatted_error_fields} soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+            "Il semblerait que ta {formatted_error_fields} soit erronée. Tu peux te rendre sur le site demarches-simplifiees.fr pour la rectifier.",
+            "Il semblerait que tes {formatted_error_fields} soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier.",
             errors,
         )
 
@@ -93,6 +130,14 @@ def get_error_not_updatable_message(
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:
         user_message += " : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans."
 
+    elif (
+        fraud_models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER in reason_codes
+        or fraud_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER in reason_codes
+    ):
+        user_message += " : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations."
+        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
+        pop_over_icon = None
+
     elif fraud_models.FraudReasonCode.ERROR_IN_DATA in reason_codes or (
         application_content and application_content.field_errors
     ):
@@ -100,12 +145,16 @@ def get_error_not_updatable_message(
         errors.extend([birth_date_error] if birth_date_error else [])
         if errors:
             user_message += _generate_form_field_error(
-                " : le champ ‘{formatted_error_fields}’ est invalide.",
-                " : les champs ‘{formatted_error_fields}’ sont invalides.",
+                " : le format du {formatted_error_fields} renseigné est invalide.",
+                " : le format de la {formatted_error_fields} renseignée est invalide.",
+                " : le format des {formatted_error_fields} renseignés est invalide.",
                 errors,
             )
         else:
             user_message += " : il y a une erreur dans les données de ton dossier."
+        user_message += " Tu peux contacter le support pour mettre à jour ton dossier."
+        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
+        pop_over_icon = None
     elif fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR in reason_codes:
         user_message += " : tu n'es malheureusement pas éligible au pass Culture."
     else:
