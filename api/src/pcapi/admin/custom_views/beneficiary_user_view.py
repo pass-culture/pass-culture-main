@@ -223,8 +223,8 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         return formatters
 
     @property
-    def form_columns(self):  # type: ignore [no-untyped-def]
-        fields = (
+    def form_columns(self) -> typing.Tuple:
+        fields: typing.Tuple = (
             "email",
             "validatedBirthDate",
             "departementCode",
@@ -233,7 +233,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             "needsToFillCulturalSurvey",
         )
         if self.check_super_admins():
-            fields += ("firstName", "lastName", "idPieceNumber", "comment")
+            fields += ("firstName", "lastName", "idPieceNumber", "ineHash", "comment")
 
         return fields
 
@@ -243,6 +243,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         validatedBirthDate=dict(validators=[DataRequired()]),
         postalCode=dict(validators=[DataRequired()]),
         email=dict(validators=[DataRequired()], filters=[filter_email]),
+        ineHash=dict(label="INE (hash)"),
     )
 
     def get_create_form(self):  # type: ignore [no-untyped-def]
