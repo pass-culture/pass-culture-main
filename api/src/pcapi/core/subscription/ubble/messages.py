@@ -106,7 +106,7 @@ def get_ubble_not_retryable_message(
         pop_over_icon = subscription_models.PopOverIcon.ERROR
 
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
-        user_message = "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support pour plus d'informations."
+        user_message = "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
         call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
