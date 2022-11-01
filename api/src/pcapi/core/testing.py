@@ -72,9 +72,41 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
 
 
 @contextlib.contextmanager
+def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None]:
+    """A context manager that verifies that no SQL statement is run twice
+    during the execution of the code in the context to prevent N+1 issues.
+
+    Use assert_num_queries() instead if you want to handle precise cases/exceptions
+    where this wrapper doesn't work (for instance, you have a duplicated query ran a constant number of time)
+
+    Usage:
+        def test_func():
+            with assert_no_duplicated_queries():
+                function_under_test()
+    """
+    # We record queries with _record_end_of_query and register_event_for_query_logger
+    flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
+    yield
+    queries = flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
+    statements = [query["statement"] for query in queries]
+
+    duplicated_queries = [(query, count) for query, count in collections.Counter(statements).items() if count > 1]
+    number_of_duplicated_queries = len(duplicated_queries)
+    output = ""
+    for query in duplicated_queries:
+        output += f"\n {query[1]} times: {query[0]}"
+    assert number_of_duplicated_queries == 0, (
+        f"{number_of_duplicated_queries} out of {len(statements)} queries are duplicated: \n " + output
+    )
+
+
+@contextlib.contextmanager
 def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[None, None, None]:
     """A context manager that verifies that we do not perform unexpected
     SQL queries.
+
+    Prefer assert_no_duplicated_queries() by default
+    Use assert_num_queries() if you want to handle precise cases/exceptions to assert_no_duplicated_queries
 
     Usage::
 
@@ -87,15 +119,15 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     """
     # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
     # the same purpose. Let's do the same.
-    flask._app_ctx_stack._assert_num_queries = []  # type: ignore [attr-defined]
+    flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
     yield
-    queries = flask._app_ctx_stack._assert_num_queries  # type: ignore [attr-defined]
+    queries = flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
             f"{len(queries)} queries executed, {expected_n_queries} expected\n" f"Captured queries were:\n{details}"
         )
-    del flask._app_ctx_stack._assert_num_queries  # type: ignore [attr-defined]
+    del flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
 
 
 def _format_sql_query(query: dict, i: int, total: int) -> str:
@@ -122,9 +154,9 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
         return
     # Do not record the query if we're not within the
     # assert_num_queries context manager.
-    if not hasattr(flask._app_ctx_stack, "_assert_num_queries"):
+    if not hasattr(flask._app_ctx_stack, "_query_logger"):
         return
-    flask._app_ctx_stack._assert_num_queries.append(
+    flask._app_ctx_stack._query_logger.append(
         {
             "statement": statement,
             "parameters": parameters,
@@ -132,7 +164,7 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
     )
 
 
-def register_event_for_assert_num_queries() -> None:
+def register_event_for_query_logger() -> None:
     sqlalchemy.event.listen(
         sqlalchemy.engine.Engine,
         "after_cursor_execute",

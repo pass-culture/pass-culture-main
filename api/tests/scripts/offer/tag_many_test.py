@@ -2,7 +2,7 @@ import pytest
 
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import factories
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.scripts.offer.tag_many import create_missing_mappings
 
 
@@ -16,11 +16,7 @@ def test_create_missing_mappings():
     criterion_names = {criterion.name for criterion in criteria}
     offer_ids = {offer.id for offer in offers}
 
-    # 1. load offers
-    # 2. load criteria (OfferCriterion)
-    # 3. insert mappings (OfferCriterionMapping)
-    # 4. commit
-    with assert_num_queries(4):
+    with assert_no_duplicated_queries():
         create_missing_mappings(offer_ids, criterion_names, dry_run=False)
 
     assert all(len(offer.criteria) == 2 for offer in offers)
@@ -39,11 +35,7 @@ def test_create_missing_mappings_when_some_criteria_exists():
     criterion_names = {criterion.name for criterion in criteria}
     offer_ids = {offer.id for offer in offers}
 
-    # 1. load offers
-    # 2. load criteria (Criterion)
-    # 3. insert mappings (OfferCriterion)
-    # 4. commit
-    with assert_num_queries(4):
+    with assert_no_duplicated_queries():
         create_missing_mappings(offer_ids, criterion_names, dry_run=False)
 
     assert all(len(offer.criteria) == 2 for offer in offers)
@@ -60,10 +52,7 @@ def test_create_missing_mappings_dry_run():
     criterion_names = {criterion.name for criterion in criteria}
     offer_ids = {offer.id for offer in offers}
 
-    # 1. load offers
-    # 2. load criteria (OfferCriterion)
-    # 3. rollback
-    with assert_num_queries(3):
+    with assert_no_duplicated_queries():
         create_missing_mappings(offer_ids, criterion_names, dry_run=True)
 
     assert all(not offer.criteria for offer in offers)

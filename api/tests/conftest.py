@@ -157,7 +157,7 @@ def _db(app):
     return mock_db
 
 
-pcapi.core.testing.register_event_for_assert_num_queries()
+pcapi.core.testing.register_event_for_query_logger()
 
 
 @pytest.fixture(name="client")
