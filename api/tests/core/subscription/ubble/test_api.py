@@ -172,7 +172,7 @@ class UbbleWorkflowTest:
             message = ubble_subscription_api.get_ubble_subscription_message(fraud_check, False)
             assert (
                 message.user_message
-                == "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support pour plus d'informations."
+                == "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
             )
             assert (
                 message.call_to_action.link
