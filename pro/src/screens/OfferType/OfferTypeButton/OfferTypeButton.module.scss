@@ -67,14 +67,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: rem.torem(231px);
 }
 
 .layout-row {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: rem.torem(487px);
 }
 
 .button.is-selected:focus-within {
