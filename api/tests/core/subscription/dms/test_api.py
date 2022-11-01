@@ -242,7 +242,7 @@ class HandleDmsApplicationTest:
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Il semblerait que le champ ‘numéro de pièce d'identité’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+            user_message="Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -285,9 +285,13 @@ class HandleDmsApplicationTest:
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
-            call_to_action=None,
-            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Contacter le support",
+                link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
+                icon=subscription_models.CallToActionIcon.EMAIL,
+            ),
+            pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
         )
 
@@ -320,9 +324,13 @@ class HandleDmsApplicationTest:
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
-            call_to_action=None,
-            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Contacter le support",
+                link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
+                icon=subscription_models.CallToActionIcon.EMAIL,
+            ),
+            pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
         )
 
@@ -361,9 +369,13 @@ class HandleDmsApplicationTest:
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le champ ‘numéro de pièce d'identité’ est invalide.",
-            call_to_action=None,
-            pop_over_icon=subscription_models.PopOverIcon.ERROR,
+            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Contacter le support",
+                link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
+                icon=subscription_models.CallToActionIcon.EMAIL,
+            ),
+            pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
         )
 
@@ -600,7 +612,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Il semblerait que le champ ‘date de naissance’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+            user_message="Il semblerait que ta date de naissance soit erronée. Tu peux te rendre sur le site demarches-simplifiees.fr pour la rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -621,7 +633,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Il semblerait que les champs ‘numéro de pièce d'identité, date de naissance’ soient invalides. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier.",
+            user_message="Il semblerait que tes numéro de pièce d'identité et date de naissance soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,

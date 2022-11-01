@@ -463,7 +463,7 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon == None
         assert (
             message.user_message
-            == "Il semblerait que les champs ‘numéro de pièce d'identité, code postal’ soient invalides. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
+            == "Il semblerait que tes numéro de pièce d'identité et code postal soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
         )
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
@@ -591,7 +591,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que le champ ‘numéro de pièce d'identité’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
+            == "Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -635,7 +635,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que le champ ‘prénom’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
+            == "Il semblerait que ton prénom soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -692,7 +692,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que les champs ‘prénom, nom de famille’ soient invalides. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
+            == "Il semblerait que tes prénom et nom de famille soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -738,7 +738,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que le champ ‘code postal’ soit invalide. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
+            == "Il semblerait que ton code postal soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
