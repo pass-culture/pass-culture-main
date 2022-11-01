@@ -1,13 +1,14 @@
 import { useField } from 'formik'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
-import React, { ChangeEvent, FocusEvent, useState } from 'react'
+import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
 
 import { BaseInput, FieldLayout } from '../shared'
 
 import CodeCountrySelect from './CodeCountrySelect/CountryCodeSelect'
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from './constants'
 import styles from './PhoneNumberInput.module.scss'
+import { getPhoneNumberValues } from './utils/getPhoneNumberValues'
 
 export interface PhoneNumberInputProps {
   name: string
@@ -19,14 +20,17 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
   const [countryCode, setCountryCode] = useState<CountryCode>(
     PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
   )
+  const [phoneInutValue, setPhoneInputValue] = useState<string>()
 
   const validatePhoneNumber = (phoneNumberInputValue: string) => {
-    helpers.setValue(phoneNumberInputValue, false)
-
     const phoneNumber = parsePhoneNumberFromString(
       phoneNumberInputValue,
       countryCode
     )
+
+    // save formatted phone number i.e +33639980101 even if user types 0639980101 or 639980101
+    helpers.setValue(phoneNumber?.number, false)
+    setPhoneInputValue(phoneNumberInputValue)
 
     if (!phoneNumber || !phoneNumber.isValid()) {
       helpers.setError('Veuillez entrer un numéro de téléphone valide')
@@ -52,9 +56,19 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
     validatePhoneNumber(event.target.value)
   }
 
+  useEffect(() => {
+    if (field.value) {
+      const { inputValue, countryCode: computedCountryCode } =
+        getPhoneNumberValues(field.value)
+
+      setPhoneInputValue(inputValue)
+      setCountryCode(computedCountryCode)
+    }
+  }, [])
+
   return (
     <FieldLayout
-      label="Numéro de téléphone"
+      label="Téléphone"
       name={name}
       showError={meta.touched && !!meta.error}
       error={meta.error}
@@ -74,7 +88,7 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
           placeholder={PLACEHOLDER_MAP[countryCode]}
           type="text"
           name={name}
-          value={field.value}
+          value={phoneInutValue}
           onChange={onPhoneNumberChange}
           className={styles['phone-number-input']}
           onBlur={onPhoneNumberBlur}
