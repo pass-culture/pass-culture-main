@@ -66,7 +66,7 @@ describe('PhoneNumberInput', () => {
 
     it('should show an error if user touched input and did not enter any phone number', async () => {
       renderPhoneNumberInput()
-      const input = screen.getByLabelText('Numéro de téléphone')
+      const input = screen.getByLabelText('Téléphone')
 
       await userEvent.click(input)
       await userEvent.tab()
@@ -83,7 +83,7 @@ describe('PhoneNumberInput', () => {
       )
       await userEvent.selectOptions(countryCodeSelect, '+590')
 
-      const input = screen.getByLabelText('Numéro de téléphone')
+      const input = screen.getByLabelText('Téléphone')
 
       await userEvent.type(input, '123')
       await userEvent.tab()

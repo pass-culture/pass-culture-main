@@ -18,7 +18,6 @@ import {
   NOTIFICATIONS_EMAIL_LABEL,
   NOTIFICATIONS_LABEL,
   OFFERER_LABEL,
-  PHONE_LABEL,
   SUBCATEGORY_LABEL,
   TITLE_LABEL,
   VENUE_LABEL,
@@ -70,7 +69,7 @@ describe('screens | OfferEducational', () => {
       screen.getByLabelText('Autre'), // one of every option
       screen.getByLabelText('Collège - 3e'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
-      screen.getByLabelText(PHONE_LABEL),
+      screen.getByLabelText('Téléphone'),
       screen.getByLabelText(EMAIL_LABEL),
       screen.getByLabelText(NOTIFICATIONS_LABEL),
       screen.getByLabelText(NOTIFICATIONS_EMAIL_LABEL),
