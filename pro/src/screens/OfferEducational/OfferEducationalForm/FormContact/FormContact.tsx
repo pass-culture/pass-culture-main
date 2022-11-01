@@ -2,8 +2,9 @@ import React from 'react'
 
 import FormLayout from 'new_components/FormLayout'
 import { TextInput } from 'ui-kit'
+import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
-import { EMAIL_LABEL, PHONE_LABEL } from '../../constants/labels'
+import { EMAIL_LABEL } from '../../constants/labels'
 
 const FormContact = ({
   disableForm,
@@ -15,12 +16,7 @@ const FormContact = ({
     title="Contact"
   >
     <FormLayout.Row>
-      <TextInput
-        label={PHONE_LABEL}
-        name="phone"
-        disabled={disableForm}
-        placeholder="0639980101"
-      />
+      <PhoneNumberInput name="phone" disabled={disableForm} />
     </FormLayout.Row>
     <FormLayout.Row>
       <TextInput

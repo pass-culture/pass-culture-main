@@ -9,11 +9,19 @@ export default {
   component: PhoneNumberInput,
 }
 
-const Template: Story<PhoneNumberInputProps> = args => (
-  <Formik initialValues={{}} onSubmit={() => {}}>
+const Template: Story<
+  PhoneNumberInputProps & { initialValues: { phone?: string } }
+> = args => (
+  <Formik initialValues={args.initialValues} onSubmit={() => {}}>
     <PhoneNumberInput {...args} />
   </Formik>
 )
 
 export const Default = Template.bind({})
-Default.args = { name: 'phone' }
+Default.args = { name: 'phone', initialValues: {} }
+
+export const WithInitialValue = Template.bind({})
+WithInitialValue.args = {
+  name: 'phone',
+  initialValues: { phone: '06 94 20 12 34' },
+}
