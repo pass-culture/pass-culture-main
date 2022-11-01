@@ -147,7 +147,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     )
 
     expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/offre/collective/vitrine/creation',
+      pathname: '/offre/collective/vitrine/creation',
       search: '',
     })
   })

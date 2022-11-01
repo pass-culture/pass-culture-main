@@ -3,8 +3,8 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
+import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
+import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
 import FormLayout from 'new_components/FormLayout'
 
 import ActionsBar from './ActionsBar/ActionsBar'
@@ -35,7 +35,7 @@ const OfferType = (): JSX.Element => {
     // Offer type is EDUCATIONAL
     if (offerSubtype === OFFER_SUBTYPES.TEMPLATE && isSubtypeChosenAtCreation) {
       return history.push({
-        pathname: '/offre/offre/collective/vitrine/creation',
+        pathname: '/offre/collective/vitrine/creation',
         search: location.search,
       })
     }
@@ -66,7 +66,8 @@ const OfferType = (): JSX.Element => {
         <FormLayout.Section title="À qui destinez-vous cette offre ? ">
           <FormLayout.Row inline>
             <OfferTypeButton
-              Icon={UserIcon}
+              name="offer-type"
+              Icon={PhoneIcon}
               isSelected={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
               label="Au grand public"
               onChange={handleOfferTypeChange}
@@ -74,7 +75,8 @@ const OfferType = (): JSX.Element => {
               className={styles['offer-type-button']}
             />
             <OfferTypeButton
-              Icon={LibraryIcon}
+              name="offer-type"
+              Icon={CaseIcon}
               isSelected={offerType === OFFER_TYPES.EDUCATIONAL}
               label="À un groupe scolaire"
               onChange={handleOfferTypeChange}
@@ -88,7 +90,8 @@ const OfferType = (): JSX.Element => {
           <FormLayout.Section title="Quel est le type de l'offre ?">
             <FormLayout.Row inline>
               <OfferTypeButton
-                Icon={UserIcon}
+                name="offer-subtype"
+                Icon={PhoneIcon}
                 isSelected={offerSubtype === OFFER_SUBTYPES.COLLECTIVE}
                 label="Une offre réservable"
                 description="Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul."
@@ -98,7 +101,8 @@ const OfferType = (): JSX.Element => {
             </FormLayout.Row>
             <FormLayout.Row inline>
               <OfferTypeButton
-                Icon={LibraryIcon}
+                name="offer-subtype"
+                Icon={CaseIcon}
                 isSelected={offerSubtype === OFFER_SUBTYPES.TEMPLATE}
                 label="Une offre vitrine"
                 description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. "

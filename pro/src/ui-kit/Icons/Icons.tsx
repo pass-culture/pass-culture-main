@@ -18,6 +18,7 @@ import { ReactComponent as IcoCalendarV2 } from 'icons/ico-calendar-v2.svg'
 import { ReactComponent as IcoCalendar } from 'icons/ico-calendar.svg'
 import { ReactComponent as IcoCaretDown } from 'icons/ico-caret-down.svg'
 import { ReactComponent as IcoCaretRight } from 'icons/ico-caret-right.svg'
+import { ReactComponent as IcoCase } from 'icons/ico-case.svg'
 import { ReactComponent as IcoClear } from 'icons/ico-clear.svg'
 import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IcoDownloadFilled } from 'icons/ico-download-filled.svg'
@@ -47,6 +48,8 @@ import { ReactComponent as IcoPenBlack } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPen } from 'icons/ico-pen.svg'
 import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
+import { ReactComponent as IcoRadioOff } from 'icons/ico-radio-off.svg'
+import { ReactComponent as IcoRadioOn } from 'icons/ico-radio-on.svg'
 import { ReactComponent as IcoRightCircleArrow } from 'icons/ico-right-circle-arrow.svg'
 import { ReactComponent as IcoSearchGray } from 'icons/ico-search-gray.svg'
 import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
@@ -215,6 +218,12 @@ export const Icons = () => (
       </tr>
       <tr>
         <td>
+          <IcoCase />
+        </td>
+        <td>ico-case</td>
+      </tr>
+      <tr>
+        <td>
           <IcoClear />
         </td>
         <td>ico-clear</td>
@@ -338,6 +347,18 @@ export const Icons = () => (
           <PlusCircleIcon />
         </td>
         <td>ico-plus-circle</td>
+      </tr>
+      <tr>
+        <td>
+          <IcoRadioOff />
+        </td>
+        <td>ico-radio-off</td>
+      </tr>
+      <tr>
+        <td>
+          <IcoRadioOn />
+        </td>
+        <td>ico-radio-on</td>
       </tr>
       <tr>
         <td>
