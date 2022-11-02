@@ -371,11 +371,17 @@ export const OffererDetail = () => {
                           <TableCell>
                             {format(item.date, 'dd/MM/yyyy à HH:mm:ss')}
                           </TableCell>
-                          <TableCell align="left">{item.authorName}</TableCell>
                           <TableCell align="left">
-                            <p>{`${item.accountName} - ${item.accountId}`}</p>
-                            <span>{`Commentaire :
-                              ${item.comment}`}</span>
+                            {item.authorName && item.authorName}
+                          </TableCell>
+                          <TableCell align="left">
+                            {!!item.accountId && (
+                              <p>{`${item.accountName} - ${item.accountId}`}</p>
+                            )}
+                            {!!item.comment && (
+                              <span>{`Commentaire :
+                                ${item.comment}`}</span>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
