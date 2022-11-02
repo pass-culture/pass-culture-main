@@ -84,6 +84,7 @@ const Venue = ({
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
+  const isVenueFormV2 = useActiveFeature('VENUE_FORM_V2')
   const isNewBankInformationActive = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
@@ -115,7 +116,9 @@ const Venue = ({
     })
   }, [offererId])
 
-  let editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
+  let editVenueLink = isVenueFormV2
+    ? `/structures/${offererId}/lieux/V2/${id}?modification`
+    : `/structures/${offererId}/lieux/${id}?modification`
 
   return (
     <div
@@ -138,9 +141,13 @@ const Venue = ({
                 title={isStatOpen ? 'Masquer' : 'Afficher'}
                 onClick={() => setIsStatOpen(prev => !prev)}
               />
-              <span className="title-text" title={publicName || name}>
+              <a
+                className="title-text"
+                title={publicName || name}
+                href={editVenueLink}
+              >
                 {publicName || name}
-              </span>
+              </a>
             </h3>
             <div className="button-group">
               {((isNewBankInformationActive && hasMissingReimbursementPoint) ||
