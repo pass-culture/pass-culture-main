@@ -336,7 +336,7 @@ class OffererBasicInfo(BaseModel):
     name: str
     validationStatus: offerers_models.ValidationStatus
     isActive: bool
-    siren: str
+    siren: str | None
     region: str
     bankInformationStatus: OffererBankInformationStatus
     isCollectiveEligible: bool
@@ -427,7 +427,7 @@ class OffererToBeValidated(BaseModel):
     requestDate: datetime.datetime
     status: str
     step: str | None
-    siren: str
+    siren: str | None
     address: str | None  # nullable in HasAddressMixin
     postalCode: str
     city: str
