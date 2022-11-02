@@ -6,11 +6,10 @@ import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { Banner } from 'ui-kit'
-import Icon from 'ui-kit/Icon/Icon'
 import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
 
-/* @debt duplicated "Gaël: delete icon import and regroup buttons within one component"*/
+/* @debt duplicated "Gaël: regroup buttons within one component"*/
 
 const ApiKey = ({
   savedApiKeys,
@@ -112,7 +111,7 @@ const ApiKey = ({
                 onClick={changeApiKeyToDelete(savedApiKey)}
                 type="button"
               >
-                <Icon svg="ico-trash" />
+                <TrashIcon />
                 <span>supprimer</span>
               </button>
             </div>

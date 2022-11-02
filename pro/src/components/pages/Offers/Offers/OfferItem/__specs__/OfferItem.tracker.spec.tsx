@@ -7,8 +7,8 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
+import { OfferStatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -57,7 +57,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
-      status: 'ACTIVE',
+      status: OfferStatus.ACTIVE,
       stocks: [],
       venue: {
         isVirtual: false,
@@ -175,7 +175,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
   describe('draft offers', () => {
     it('should track with draft informations', async () => {
       // when
-      props.offer.status = OFFER_STATUS_DRAFT
+      props.offer.status = OfferStatus.DRAFT
       renderOfferItem(props, store)
 
       // then
@@ -200,7 +200,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should track with draft informations', async () => {
       // when
-      props.offer.status = OFFER_STATUS_DRAFT
+      props.offer.status = OfferStatus.DRAFT
       renderOfferItem(props, store)
 
       // then
