@@ -356,6 +356,7 @@ describe('homepage', () => {
           features: {
             list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
           },
+          offerersNames: baseOfferersNames,
         })
       })
       it('should display section when ff is active', async () => {

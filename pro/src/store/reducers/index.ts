@@ -5,6 +5,8 @@ import { featuresReducer } from 'store/features/reducer'
 import { offersReducer } from 'store/offers/reducer'
 import { userReducer } from 'store/user/reducer'
 
+import { offerersNamesReducer } from '../offererNames/offerersNamesReducer'
+
 import bookingSummary from './bookingSummary/bookingSummary'
 import errors from './errors'
 import maintenanceReducer from './maintenanceReducer'
@@ -19,6 +21,7 @@ const rootReducer = combineReducers({
   notification: notificationReducer,
   user: userReducer,
   maintenance: maintenanceReducer,
+  offerersNames: offerersNamesReducer,
 })
 
 export default rootReducer

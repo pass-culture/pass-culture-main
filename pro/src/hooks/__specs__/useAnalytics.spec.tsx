@@ -9,7 +9,7 @@ import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
 
-import { useConfigureFirebase } from '../useAnalytics'
+import { useConfigureFirebase } from '../useConfigureFirebase'
 
 const mockSetLogEvent = jest.fn()
 

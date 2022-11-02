@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, Redirect } from 'react-router-dom'
 
-import { useConfigureFirebase } from 'hooks/useAnalytics'
+import { useConfigureFirebase } from 'hooks/useConfigureFirebase'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
 import { useIsRoutePublic } from 'routes/hooks'
