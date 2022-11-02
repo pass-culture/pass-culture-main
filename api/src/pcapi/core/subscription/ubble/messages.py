@@ -7,12 +7,6 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 
 
-PENDING_UBBLE_SUBSCRIPTION_MESSAGE = subscription_models.SubscriptionMessage(
-    user_message="Ton document d'identité est en cours de vérification.",
-    call_to_action=None,
-    pop_over_icon=subscription_models.PopOverIcon.CLOCK,
-)
-
 REDIRECT_TO_IDENTIFICATION = subscription_models.CallToActionMessage(
     title="Réessayer la vérification de mon identité",
     link="passculture://verification-identite/identification",
