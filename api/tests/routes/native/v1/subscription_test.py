@@ -103,7 +103,7 @@ class NextStepTest:
             "subscriptionMessage": {
                 "callToAction": None,
                 "popOverIcon": "CLOCK",
-                "updatedAt": "2022-09-08T11:54:22",
+                "updatedAt": None,
                 "userMessage": "La vérification d'identité est "
                 "momentanément indisponible. L'équipe "
                 "du pass Culture met tout en oeuvre "
@@ -168,7 +168,6 @@ class NextStepTest:
                         "callToActionTitle": "Réessayer la vérification de mon identité",
                     },
                     "popOverIcon": None,
-                    "updatedAt": "2022-09-08T12:01:12.343025",
                     "userMessage": "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
                 },
             ),
@@ -238,13 +237,15 @@ class NextStepTest:
         }
 
         # Perform first id check with Ubble
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        ubble_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_check_status,
             reasonCodes=[reason_code],
             resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
         )
+        if subscription_message:
+            subscription_message["updatedAt"] = ubble_fraud_check.updatedAt.isoformat()
 
         # Check next step: only a single non-aborted Ubble identification is allowed
         response = client.get("/native/v1/subscription/next_step")
@@ -407,7 +408,7 @@ class NextStepTest:
             "subscriptionMessage": {
                 "callToAction": None,
                 "popOverIcon": "CLOCK",
-                "updatedAt": "2022-09-08T12:39:04.289878",
+                "updatedAt": ubble_fraud_check.updatedAt.isoformat(),
                 "userMessage": "Ton document d'identité est en cours de vérification.",
             },
         }
@@ -583,7 +584,7 @@ class NextStepTest:
             "subscriptionMessage": {
                 "callToAction": None,
                 "popOverIcon": "CLOCK",
-                "updatedAt": "2022-09-08T12:45:13.534068",
+                "updatedAt": None,
                 "userMessage": "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
             },
         }
