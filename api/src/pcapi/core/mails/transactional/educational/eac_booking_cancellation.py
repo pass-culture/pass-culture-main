@@ -4,15 +4,13 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
-def get_education_booking_cancellation_by_institution_email_data(
-    booking: CollectiveBooking,
-) -> models.TransactionalEmailData:
+def get_education_booking_cancellation_email_data(booking: CollectiveBooking) -> models.TransactionalEmailData:
     stock = booking.collectiveStock
     offer = stock.collectiveOffer
     institution = booking.educationalInstitution
     redactor = booking.educationalRedactor
     return models.TransactionalEmailData(
-        template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
+        template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value,
         params={
             "OFFER_NAME": offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
@@ -24,14 +22,15 @@ def get_education_booking_cancellation_by_institution_email_data(
             "REDACTOR_EMAIL": redactor.email,
             "EDUCATIONAL_INSTITUTION_CITY": institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
+            "COLLECTIVE_CANCELLATION_REASON": booking.cancellationReason.value if booking.cancellationReason else "",
         },
     )
 
 
-def send_education_booking_cancellation_by_institution_email(booking: CollectiveBooking) -> bool:
+def send_eac_booking_cancellation_email(booking: CollectiveBooking) -> bool:
     booking_emails = booking.collectiveStock.collectiveOffer.bookingEmails
     if not booking_emails:
         return True
-    data = get_education_booking_cancellation_by_institution_email_data(booking)
+    data = get_education_booking_cancellation_email_data(booking)
     main_recipient, bcc_recipients = [booking_emails[0]], booking_emails[1:]
     return mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
