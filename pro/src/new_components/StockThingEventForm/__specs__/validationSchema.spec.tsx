@@ -27,7 +27,7 @@ yesterday.setDate(yesterday.getDate() - 1)
 tomorrow.setDate(tomorrow.getDate() + 1)
 
 const renderStockThingEventForm = ({
-  minQuantity = null,
+  minQuantity,
 }: {
   minQuantity?: number | null
 } = {}) => {
@@ -61,25 +61,6 @@ describe('StockThingEventForm:validationSchema', () => {
     ).not.toBeInTheDocument()
     expect(screen.queryByTestId('error-quantity')).not.toBeInTheDocument()
   })
-
-  const dataSetEventDatetimeErrors = [
-    {
-      eventDatetime: yesterday.getDate().toString(),
-      error: "La date de l'évènement doit être supérieure à aujourd'hui",
-    },
-  ]
-  it.each(dataSetEventDatetimeErrors)(
-    'should display eventDatetime error',
-    async ({ eventDatetime, error }) => {
-      renderStockThingEventForm()
-
-      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
-      await userEvent.click(screen.getByText(eventDatetime))
-      const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
-      expect(errorEventDatetime).toBeInTheDocument()
-      expect(errorEventDatetime).toHaveTextContent(error)
-    }
-  )
 
   const dataSetEventDateTime: Array<number> = [
     today.getDate(),
@@ -215,7 +196,7 @@ describe('StockThingEventForm:validationSchema', () => {
     },
   ]
   it.each(dataSetBookingLimitDatetimeError)(
-    'should not display bookingLimitDatetime error when datetime strictly before eventDatetime',
+    'should not display bookingLimitDatetime error',
     async ({ eventDateTime, bookingLimitDatetime }) => {
       renderStockThingEventForm()
 

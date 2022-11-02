@@ -1,13 +1,12 @@
 import React from 'react'
 
 import { IStockThingFormProps } from 'new_components/StockThingForm/StockThingForm'
+import styles from 'new_components/StockThingForm/StockThingForm.module.scss'
 import {
   EVENT_DATE_LABEL,
   EVENT_TIME_LABEL,
 } from 'screens/OfferEducationalStock/constants/labels'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
-
-import styles from './StockThingEventForm.module.scss'
 
 const StockThingEventForm = ({
   today,
@@ -22,11 +21,12 @@ const StockThingEventForm = ({
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         openingDateTime={today}
+        disabled={readOnlyFields.includes('eventDatetime')}
       />
       <TimePicker
         label={EVENT_TIME_LABEL}
         name="eventTime"
-        className={styles['field-layout-footer']}
+        classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('eventTime')}
       />
       <TextInput
