@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { computeOffersUrl } from 'core/Offers/utils'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

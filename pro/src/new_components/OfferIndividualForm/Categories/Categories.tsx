@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
 
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,

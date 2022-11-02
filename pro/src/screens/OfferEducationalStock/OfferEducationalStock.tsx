@@ -14,8 +14,8 @@ import {
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
-import FormLayout from 'new_components/FormLayout'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
+import { FormLayout } from 'new_components/FormLayout'
+import { OfferEducationalActions } from 'new_components/OfferEducationalActions'
 import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'

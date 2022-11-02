@@ -1,1 +1,1 @@
-export { default } from './CollectiveOfferLayout'
+export { default as CollectiveOfferLayout } from './CollectiveOfferLayout'

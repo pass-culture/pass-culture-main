@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
-import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
+import { AccessibilitySummarySection } from 'new_components/AccessibilitySummarySection'
 
 interface ICollectiveOfferParticipantSectionProps {
   offer: CollectiveOfferTemplate | CollectiveOffer

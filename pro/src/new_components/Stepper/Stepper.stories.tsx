@@ -4,7 +4,7 @@ import React from 'react'
 import type { Step } from 'new_components/Breadcrumb'
 import { withRouterDecorator } from 'stories/decorators/withRouter'
 
-import Stepper from '.'
+import Stepper from './Stepper'
 
 export default {
   title: 'components/Stepper',

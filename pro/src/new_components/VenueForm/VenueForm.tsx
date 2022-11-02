@@ -8,7 +8,7 @@ import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 
 import { ButtonVariant } from '../../ui-kit/Button/types'

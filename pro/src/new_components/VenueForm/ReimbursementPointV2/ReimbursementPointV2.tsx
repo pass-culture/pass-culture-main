@@ -6,8 +6,8 @@ import ApplicationBanner from 'components/pages/Offerers/Offerer/VenueV1/fields/
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as IcoWarningGrey } from 'icons/ico-warning-grey.svg'
-import InfoDialog from 'new_components/InfoDialog'
-import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
+import { InfoDialog } from 'new_components/InfoDialog'
+import { ReimbursementPointDialog } from 'new_components/ReimbursementPointDialog'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form'
@@ -168,7 +168,7 @@ const ReimbursementPointV2 = ({
             <p className={styles['or-separator']}>ou</p>
           )}
           {isDmsDialogOpen && (
-            <ReimbursmentPointDialog
+            <ReimbursementPointDialog
               closeDialog={closeDmsDialog}
               dmsToken={venue.dmsToken || ''}
             />

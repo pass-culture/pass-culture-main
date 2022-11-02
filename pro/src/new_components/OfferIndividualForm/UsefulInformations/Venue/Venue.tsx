@@ -3,7 +3,7 @@ import React from 'react'
 
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { Select } from 'ui-kit'
 

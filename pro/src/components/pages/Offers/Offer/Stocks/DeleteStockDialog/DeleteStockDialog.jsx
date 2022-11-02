@@ -4,7 +4,7 @@ import React, { useCallback } from 'react'
 import { api } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as Trash } from 'icons/ico-trash.svg'
-import ConfirmDialog from 'new_components/ConfirmDialog'
+import { ConfirmDialog } from 'new_components/ConfirmDialog'
 
 const DeleteStockDialog = ({ isEvent, onDelete, setIsDeleting, stockId }) => {
   const DIALOG_LABEL_ID = 'DIALOG_LABEL_ID'

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
+import { Breadcrumb, BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 import { STEP_LIST } from './constants'
 import useActiveStep from './hooks/useActiveStep'

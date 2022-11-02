@@ -4,7 +4,8 @@ import { generatePath } from 'react-router'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
-import Breadcrumb, {
+import {
+  Breadcrumb,
   BreadcrumbStyle,
   IStepPattern,
   Step,

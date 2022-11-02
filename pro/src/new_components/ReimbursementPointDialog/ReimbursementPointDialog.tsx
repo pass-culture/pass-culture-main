@@ -1,22 +1,21 @@
 import React from 'react'
 
+import { DialogBox } from 'new_components/DialogBox'
 import { Button } from 'ui-kit/Button'
 import CopyLink from 'ui-kit/CopyLink'
 import Icon from 'ui-kit/Icon/Icon'
 import { REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
 
-import DialogBox from '../DialogBox'
+import styles from './ReimbursementPointDialog.module.scss'
 
-import styles from './ReimbursmentPointDialog.module.scss'
-
-export interface IReimbursmentPointDialog {
+export interface IReimbursementPointDialog {
   closeDialog: () => void
   dmsToken: string
 }
-const ReimbursmentPointDialog = ({
+const ReimbursementPointDialog = ({
   closeDialog,
   dmsToken,
-}: IReimbursmentPointDialog) => {
+}: IReimbursementPointDialog) => {
   const openDmsProcedure = () => {
     window.open(
       REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4,
@@ -61,4 +60,4 @@ const ReimbursmentPointDialog = ({
   )
 }
 
-export default ReimbursmentPointDialog
+export default ReimbursementPointDialog

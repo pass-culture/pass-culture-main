@@ -7,7 +7,7 @@ import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { getProviderInfo } from 'core/Providers/utils'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'

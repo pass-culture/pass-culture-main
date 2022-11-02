@@ -1,12 +1,12 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 
 import { IVenueFormValues } from '..'
 
-import SiretOrCommentFields from './SiretOrCommentFields'
+import { SiretOrCommentFields } from './SiretOrCommentFields'
 
 export interface IInformations {
   isCreatedEntity: boolean

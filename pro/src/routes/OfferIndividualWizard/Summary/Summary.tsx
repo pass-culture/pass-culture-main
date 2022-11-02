@@ -5,7 +5,7 @@ import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
-import PageTitle from 'new_components/PageTitle/PageTitle'
+import { PageTitle } from 'new_components/PageTitle'
 import {
   Summary as SummaryScreen,
   Template as WizardTemplate,

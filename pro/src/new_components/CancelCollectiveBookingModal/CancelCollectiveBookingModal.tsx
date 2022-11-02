@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ReactComponent as Trash } from 'icons/ico-trash.svg'
-import ConfirmDialog from 'new_components/ConfirmDialog'
+import { ConfirmDialog } from 'new_components/ConfirmDialog'
 
 interface IOfferEducationalModalProps {
   onDismiss(): void

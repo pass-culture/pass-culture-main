@@ -6,7 +6,7 @@ import { setDisplayDomainBanner } from 'store/app/actions'
 import { Banner } from 'ui-kit'
 import { parse, stringify } from 'utils/query-string'
 
-export const DomainNameBanner = () => {
+const DomainNameBanner = () => {
   const dispatch = useDispatch()
   const history = useHistory()
   const location = useLocation()
@@ -45,3 +45,5 @@ export const DomainNameBanner = () => {
     </Banner>
   )
 }
+
+export default DomainNameBanner

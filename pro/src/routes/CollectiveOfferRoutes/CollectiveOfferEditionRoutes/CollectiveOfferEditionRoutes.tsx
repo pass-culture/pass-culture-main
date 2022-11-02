@@ -3,7 +3,7 @@ import { Route, Switch, useLocation } from 'react-router-dom'
 
 import { CollectiveOffer } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferEdition from 'routes/CollectiveOfferEdition'
 import CollectiveOfferStockEdition from 'routes/CollectiveOfferStockEdition'
 import CollectiveOfferSummaryEdition from 'routes/CollectiveOfferSummaryEdition'

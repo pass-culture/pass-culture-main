@@ -2,7 +2,8 @@ import React, { useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import useActiveFeature from 'hooks/useActiveFeature'
-import RouteLeavingGuard, {
+import {
+  RouteLeavingGuard,
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
 

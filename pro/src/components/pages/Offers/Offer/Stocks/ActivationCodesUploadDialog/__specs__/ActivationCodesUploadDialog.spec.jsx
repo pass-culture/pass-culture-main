@@ -4,8 +4,9 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import ActivationCodesUploadDialog from 'components/pages/Offers/Offer/Stocks/ActivationCodesUploadDialog/ActivationCodesUploadDialog'
 import { configureTestStore } from 'store/testUtils'
+
+import ActivationCodesUploadDialog from '../ActivationCodesUploadDialog'
 
 const renderActivationCodesUploadDialog = (store, props = {}) => {
   render(<ActivationCodesUploadDialog {...props} />)

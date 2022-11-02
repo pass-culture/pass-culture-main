@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { InfoBox, Select, TextArea } from 'ui-kit'
 
 export interface IActivity {

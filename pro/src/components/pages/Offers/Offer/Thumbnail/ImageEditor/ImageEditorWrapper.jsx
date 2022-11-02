@@ -8,7 +8,7 @@ import {
   CROP_BORDER_HEIGHT,
   CROP_BORDER_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import ImageEditor from 'new_components/ImageEditor/ImageEditor'
+import { ImageEditor } from 'new_components/ImageEditor'
 
 const ImageEditorWrapper = ({
   setCroppingRect,

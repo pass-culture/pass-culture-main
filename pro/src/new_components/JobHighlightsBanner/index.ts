@@ -1,1 +1,1 @@
-export { default } from './JobHighlightsBanner'
+export { default as JobHighlightsBanner } from './JobHighlightsBanner'

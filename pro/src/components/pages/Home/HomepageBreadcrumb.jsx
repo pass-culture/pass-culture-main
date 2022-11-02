@@ -3,7 +3,7 @@ import React from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
+import { Breadcrumb, BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
 

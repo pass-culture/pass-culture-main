@@ -1,1 +1,1 @@
-export { default } from './ActionsBarSticky'
+export { default as ActionsBarSticky } from './ActionsBarSticky'

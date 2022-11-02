@@ -7,7 +7,7 @@ import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers/constants'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useNavigate } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 import { StockFormRow } from 'new_components/StockFormRow'
 import {
@@ -15,8 +15,8 @@ import {
   getValidationSchema,
   buildInitialValues,
   IStockThingFormValues,
+  setFormReadOnlyFields,
 } from 'new_components/StockThingForm'
-import setFormReadOnlyFields from 'new_components/StockThingForm/utils/setFormReadOnlyFields'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'

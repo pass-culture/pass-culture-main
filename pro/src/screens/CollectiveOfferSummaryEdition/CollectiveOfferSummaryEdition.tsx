@@ -16,8 +16,8 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferSummary from 'new_components/CollectiveOfferSummary'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
+import { CollectiveOfferSummary } from 'new_components/CollectiveOfferSummary'
+import { OfferEducationalActions } from 'new_components/OfferEducationalActions'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

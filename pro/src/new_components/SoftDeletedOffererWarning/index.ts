@@ -1,1 +1,1 @@
-export { default } from './SoftDeletedOffererWarning'
+export { default as SoftDeletedOffererWarning } from './SoftDeletedOffererWarning'

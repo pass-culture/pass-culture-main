@@ -1,1 +1,1 @@
-export { default } from './InfoDialog'
+export { default as InfoDialog } from './InfoDialog'

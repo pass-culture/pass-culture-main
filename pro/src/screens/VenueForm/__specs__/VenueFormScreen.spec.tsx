@@ -15,7 +15,7 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { IOfferer } from 'core/Offerers/types'
 import { IVenue } from 'core/Venue'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { IVenueFormValues } from 'new_components/VenueForm'
 import { configureTestStore } from 'store/testUtils'
 

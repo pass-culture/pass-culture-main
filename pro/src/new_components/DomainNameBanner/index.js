@@ -1,3 +1,1 @@
-import { DomainNameBanner } from './DomainNameBanner'
-
-export default DomainNameBanner
+export { default as DomainNameBanner } from './DomainNameBanner'

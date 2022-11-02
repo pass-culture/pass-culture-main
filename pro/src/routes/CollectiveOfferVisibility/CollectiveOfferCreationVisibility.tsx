@@ -7,7 +7,7 @@ import {
   DEFAULT_VISIBILITY_FORM_VALUES,
   Mode,
 } from 'core/OfferEducational'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import { RouteLeavingGuardOfferCreation } from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'

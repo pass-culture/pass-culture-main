@@ -32,7 +32,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import PageTitle from 'new_components/PageTitle/PageTitle'
+import { PageTitle } from 'new_components/PageTitle'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 import {
   searchFiltersSelector,

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import PageTitle from 'new_components/PageTitle/PageTitle'
+import { PageTitle } from 'new_components/PageTitle'
 import { Banner } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 

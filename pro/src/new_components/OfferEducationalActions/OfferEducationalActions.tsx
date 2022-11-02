@@ -1,10 +1,9 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import { CancelCollectiveBookingModal } from 'new_components/CancelCollectiveBookingModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-
-import CancelCollectiveBookingModal from '../CancelCollectiveBookingModal'
 
 import { ReactComponent as IconActive } from './assets/icon-active.svg'
 import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'

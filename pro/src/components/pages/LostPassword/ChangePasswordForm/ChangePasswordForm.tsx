@@ -1,7 +1,7 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { PasswordInput, SubmitButton } from 'ui-kit'
 
 import styles from './ChangePasswordForm.module.scss'

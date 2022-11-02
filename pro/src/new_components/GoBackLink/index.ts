@@ -1,1 +1,1 @@
-export { default } from './GoBackLink'
+export { default as GoBackLink } from './GoBackLink'

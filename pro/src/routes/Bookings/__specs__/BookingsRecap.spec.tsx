@@ -12,7 +12,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'

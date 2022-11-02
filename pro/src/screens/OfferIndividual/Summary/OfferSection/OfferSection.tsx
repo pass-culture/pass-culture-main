@@ -10,7 +10,7 @@ import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
+import { AccessibilitySummarySection } from 'new_components/AccessibilitySummarySection'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 

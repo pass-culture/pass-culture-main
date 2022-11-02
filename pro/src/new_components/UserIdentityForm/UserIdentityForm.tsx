@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 
 import useCurrentUser from 'hooks/useCurrentUser'
 import { BoxFormLayout } from 'new_components/BoxFormLayout'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
 import { setCurrentUser } from 'store/user/actions'
 import { TextInput, Button, SubmitButton } from 'ui-kit'

@@ -11,7 +11,7 @@ import {
   CROP_BORDER_HEIGHT,
   CROP_BORDER_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import CanvasTools from 'new_components/ImageEditor/canvas.js'
+import { CanvasTools } from 'new_components/ImageEditor'
 import { createFile, createImageFile } from 'utils/testFileHelpers'
 
 jest.mock('new_components/ImageEditor/canvas.js')

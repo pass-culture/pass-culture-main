@@ -3,7 +3,7 @@ import './AllocineProviderFormDialog.scss'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import DialogBox from 'new_components/DialogBox/DialogBox'
+import { DialogBox } from 'new_components/DialogBox'
 
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
 

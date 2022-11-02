@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { NBSP } from 'core/shared/constants'
-import Advices from 'new_components/Advices/Advices'
+import { Advices } from 'new_components/Advices'
 import { ImageUploadBrowserForm } from 'new_components/ImageUploadBrowserForm'
 import { IImageUploadBrowserFormValues } from 'new_components/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'

@@ -1,1 +1,1 @@
-export { default } from './FormLayout'
+export { default as FormLayout } from './FormLayout'

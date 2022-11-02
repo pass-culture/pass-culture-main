@@ -10,7 +10,7 @@ import {
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import { RouteLeavingGuardOfferCreation } from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'

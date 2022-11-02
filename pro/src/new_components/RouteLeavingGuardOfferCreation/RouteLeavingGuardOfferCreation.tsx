@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import RouteLeavingGuard, {
+import {
+  RouteLeavingGuard,
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
 

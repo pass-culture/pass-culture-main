@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import ButtonDownloadCSV from 'new_components/ButtonDownloadCSV'
+import { ButtonDownloadCSV } from 'new_components/ButtonDownloadCSV'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { API_URL } from 'utils/config'

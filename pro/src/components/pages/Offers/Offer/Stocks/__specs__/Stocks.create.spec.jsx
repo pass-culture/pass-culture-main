@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 

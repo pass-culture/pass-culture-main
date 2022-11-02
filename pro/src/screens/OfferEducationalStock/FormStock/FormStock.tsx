@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
 import {

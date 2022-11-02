@@ -11,8 +11,8 @@ import {
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
-import BannerAddVenue from 'new_components/Banner/BannerAddVenue'
-import FormLayout from 'new_components/FormLayout'
+import { BannerAddVenue } from 'new_components/Banner'
+import { FormLayout } from 'new_components/FormLayout'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 

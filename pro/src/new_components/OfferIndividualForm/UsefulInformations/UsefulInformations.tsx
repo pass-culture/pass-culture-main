@@ -6,7 +6,7 @@ import { TOffererName } from 'core/Offerers/types'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'

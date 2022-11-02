@@ -4,11 +4,11 @@ import { useParams } from 'react-router-dom'
 import { venueHasCollectiveInformation } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/venueHasCollectiveInformation'
 import { IVenue } from 'core/Venue'
 import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Banner, ButtonLink } from 'ui-kit/index'
 
-import CollectiveData from './CollectiveData'
+import { CollectiveData } from './CollectiveData'
 import styles from './eacInformation.module.scss'
 
 interface IEACInformation {

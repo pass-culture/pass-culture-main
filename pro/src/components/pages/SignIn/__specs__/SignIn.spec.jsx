@@ -11,7 +11,7 @@ import { HTTP_STATUS } from 'apiClient/helpers'
 import { ApiError } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import SignIn from '../SignIn'

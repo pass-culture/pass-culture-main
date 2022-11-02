@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 
 import styles from './contact.module.scss'

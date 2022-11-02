@@ -1,7 +1,8 @@
 import React from 'react'
 
-import HelpLink from 'new_components/HelpLink'
-import OfferBreadcrumb, {
+import { HelpLink } from 'new_components/HelpLink'
+import {
+  OfferBreadcrumb,
   OfferBreadcrumbStep,
 } from 'new_components/OfferBreadcrumb'
 import { Tag, Title } from 'ui-kit'

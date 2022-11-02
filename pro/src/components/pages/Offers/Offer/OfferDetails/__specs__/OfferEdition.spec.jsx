@@ -11,7 +11,7 @@ import { ApiError } from 'apiClient/v1'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import * as computeUrl from 'core/Offers/utils'
 import { getProviderInfo } from 'core/Providers/utils'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import { DEFAULT_FORM_VALUES } from '../_constants'

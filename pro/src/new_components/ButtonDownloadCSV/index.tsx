@@ -1,1 +1,1 @@
-export { default } from './ButtonDownloadCSV'
+export { default as ButtonDownloadCSV } from './ButtonDownloadCSV'

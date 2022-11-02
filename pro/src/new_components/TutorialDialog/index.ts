@@ -1,1 +1,1 @@
-export { default } from './TutorialDialog'
+export { default as TutorialDialog } from './TutorialDialog'

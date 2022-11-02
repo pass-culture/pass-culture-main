@@ -12,7 +12,7 @@ import {
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import {
   RadioGroup,
   Select,

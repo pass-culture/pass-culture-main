@@ -12,7 +12,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
-import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
+import { MultiDownloadButtonsModal } from 'new_components/MultiDownloadButtonsModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

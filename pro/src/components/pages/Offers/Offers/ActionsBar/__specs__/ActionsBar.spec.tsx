@@ -11,7 +11,7 @@ import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import ActionsBar, { IActionBarProps } from '../ActionsBar'

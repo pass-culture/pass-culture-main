@@ -6,7 +6,7 @@ import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import GoBackLink from 'new_components/GoBackLink'
+import { GoBackLink } from 'new_components/GoBackLink'
 import { Title } from 'ui-kit'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

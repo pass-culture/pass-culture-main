@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { IOfferIndividualImage } from 'core/Offers/types'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { ImageUploader } from 'new_components/ImageUploader'
 import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'

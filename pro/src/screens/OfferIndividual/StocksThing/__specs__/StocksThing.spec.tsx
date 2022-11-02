@@ -16,7 +16,7 @@ import {
 } from 'context/OfferIndividualContext'
 import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers'
 import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { InfoBox } from 'ui-kit'
 import { Checkbox, TextArea } from 'ui-kit/form'
 

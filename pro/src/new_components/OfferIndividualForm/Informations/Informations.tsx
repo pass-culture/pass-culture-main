@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { TextArea, TextInput } from 'ui-kit'
 
 import { IOfferIndividualFormValues } from '../types'

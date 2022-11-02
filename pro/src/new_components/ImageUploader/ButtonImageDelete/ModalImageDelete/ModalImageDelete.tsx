@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
-import ConfirmDialog from 'new_components/ConfirmDialog'
+import { ConfirmDialog } from 'new_components/ConfirmDialog'
 
 export interface IModalImageDeleteProps {
   isLoading: boolean

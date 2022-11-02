@@ -3,7 +3,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import { redirectLoggedUser } from 'components/router/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
-import PageTitle from 'new_components/PageTitle/PageTitle'
+import { PageTitle } from 'new_components/PageTitle'
 import Logo from 'ui-kit/Logo/Logo'
 import { parse } from 'utils/query-string'
 

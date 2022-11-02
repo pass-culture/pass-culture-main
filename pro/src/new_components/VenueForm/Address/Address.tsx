@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 import TextInputAutocomplete from 'ui-kit/form/TextInputAutocomplete'
 

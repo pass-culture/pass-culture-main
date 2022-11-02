@@ -1,1 +1,1 @@
-export { default } from './CollectiveOfferSummary'
+export { default as CollectiveOfferSummary } from './CollectiveOfferSummary'

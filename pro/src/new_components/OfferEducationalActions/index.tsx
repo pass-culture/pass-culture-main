@@ -1,1 +1,1 @@
-export { default } from './OfferEducationalActions'
+export { default as OfferEducationalActions } from './OfferEducationalActions'

@@ -4,7 +4,7 @@ import { VenueProviderResponse } from 'apiClient/v1'
 import AddVenueProviderButton from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AddVenueProviderButton'
 import VenueProviderListV2 from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManagerV2/VenueProviderListV2/VenueProviderListV2'
 import { IProviders, IVenue } from 'core/Venue/types'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface IOffersSynchronization {

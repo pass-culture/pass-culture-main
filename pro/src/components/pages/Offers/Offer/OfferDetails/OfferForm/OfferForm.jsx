@@ -18,7 +18,7 @@ import {
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'

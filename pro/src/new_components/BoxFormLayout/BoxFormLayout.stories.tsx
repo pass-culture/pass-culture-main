@@ -2,7 +2,7 @@ import type { Story } from '@storybook/react'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 import { ButtonVariant } from 'ui-kit/Button/types'

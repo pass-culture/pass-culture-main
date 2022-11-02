@@ -8,7 +8,7 @@ import {
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { MultiSelectAutocomplete, Select, TextArea, TextInput } from 'ui-kit'
 
 import {

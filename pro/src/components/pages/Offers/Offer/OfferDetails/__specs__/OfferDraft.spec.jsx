@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router'
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferLayout from '../../OfferLayout'

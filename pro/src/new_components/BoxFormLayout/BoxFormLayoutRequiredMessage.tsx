@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 
 import style from './BoxFormLayout.module.scss'
 

@@ -8,7 +8,7 @@ import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererA
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { BannerReimbursementsInfo } from 'new_components/Banner'
-import PageTitle from 'new_components/PageTitle/PageTitle'
+import { PageTitle } from 'new_components/PageTitle'
 import { ReimbursementsBreadcrumb } from 'new_components/ReimbursementsBreadcrumb'
 import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'

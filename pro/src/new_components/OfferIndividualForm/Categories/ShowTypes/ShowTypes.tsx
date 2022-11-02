@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,

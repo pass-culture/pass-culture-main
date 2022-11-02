@@ -7,7 +7,7 @@ import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import {
   MultiSelectAutocomplete,
   Select,

@@ -1,1 +1,1 @@
-export { default } from './CancelCollectiveBookingModal'
+export { default as CancelCollectiveBookingModal } from './CancelCollectiveBookingModal'

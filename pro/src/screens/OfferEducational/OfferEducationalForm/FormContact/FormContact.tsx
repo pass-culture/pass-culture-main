@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { TextInput } from 'ui-kit'
 
 import { EMAIL_LABEL, PHONE_LABEL } from '../../constants/labels'

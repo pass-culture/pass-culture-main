@@ -11,7 +11,7 @@ import {
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useNotification from 'hooks/useNotification'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import RadioGroup from 'ui-kit/form/RadioGroup'

@@ -3,13 +3,13 @@ import React, { useCallback, useState } from 'react'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
-import FormLayout from 'new_components/FormLayout'
-import ReimbursementPointV2 from 'new_components/VenueForm/ReimbursementPointV2/ReimbursementPointV2'
+import { FormLayout } from 'new_components/FormLayout'
+import { ReimbursementPointV2 } from 'new_components/VenueForm/ReimbursementPointV2'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint/PricingPoint'
 import PricingPointV2 from '../PricingPointV2'
-import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
+import { ReimbursementPoint } from '../ReimbursementPoint'
 
 export interface ReimbursementInterface {
   offerer: GetOffererResponseModel

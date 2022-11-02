@@ -8,9 +8,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import type { Step } from 'new_components/Breadcrumb'
-import Breadcrumb, {
-  BreadcrumbStyle,
-} from 'new_components/Breadcrumb/Breadcrumb'
+import { Breadcrumb, BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 export enum OfferBreadcrumbStep {
   DETAILS = 'details',

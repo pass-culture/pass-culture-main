@@ -1,6 +1,7 @@
 import React from 'react'
 
-import RouteLeavingGuard, {
+import {
+  RouteLeavingGuard,
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
 

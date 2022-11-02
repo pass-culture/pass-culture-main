@@ -5,10 +5,11 @@ import { useGetImageBitmap } from 'hooks/useGetBitmap'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
-import ImageEditor, {
+import {
+  ImageEditor,
   IImageEditorConfig,
-} from 'new_components/ImageEditor/ImageEditor'
-import { coordonateToPosition } from 'new_components/ImageEditor/utils'
+  coordonateToPosition,
+} from 'new_components/ImageEditor'
 import { modeValidationConstraints } from 'new_components/ImageUploadBrowserForm/constants'
 import { UploaderModeEnum } from 'new_components/ImageUploader/types'
 import { Button, Divider } from 'ui-kit'

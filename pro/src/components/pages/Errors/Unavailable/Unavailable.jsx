@@ -1,6 +1,6 @@
 import React from 'react'
 
-import PageTitle from 'new_components/PageTitle/PageTitle'
+import { PageTitle } from 'new_components/PageTitle'
 import Icon from 'ui-kit/Icon/Icon'
 
 const Unavailable = () => {

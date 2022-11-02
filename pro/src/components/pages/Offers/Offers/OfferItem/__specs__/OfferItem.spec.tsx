@@ -19,7 +19,7 @@ import {
 } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 

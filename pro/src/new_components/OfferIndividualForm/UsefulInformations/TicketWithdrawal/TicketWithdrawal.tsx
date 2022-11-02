@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { RadioGroup, Select } from 'ui-kit'
 
 import { IOfferIndividualFormValues } from '../../types'

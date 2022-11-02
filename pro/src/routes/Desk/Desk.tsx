@@ -1,6 +1,6 @@
 import React from 'react'
 
-import PageTitle from 'new_components/PageTitle/PageTitle'
+import { PageTitle } from 'new_components/PageTitle'
 import { DeskScreen } from 'screens/Desk'
 
 import { getBooking, submitInvalidate, submitValidate } from './adapters'

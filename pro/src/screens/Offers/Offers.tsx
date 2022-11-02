@@ -22,9 +22,9 @@ import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
-import NoOffers from 'new_components/NoData'
-import PageTitle from 'new_components/PageTitle/PageTitle'
-import Tabs from 'new_components/Tabs'
+import { NoData } from 'new_components/NoData'
+import { PageTitle } from 'new_components/PageTitle'
+import { Tabs } from 'new_components/Tabs'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Titles from 'ui-kit/Titles/Titles'
@@ -255,7 +255,7 @@ const Offers = ({
         venues={venues}
       />
       {userHasNoOffers ? (
-        <NoOffers audience={audience} page="offers" />
+        <NoData audience={audience} page="offers" />
       ) : (
         <OffersContainer
           applyFilters={applyFilters}

@@ -1,1 +1,1 @@
-export { default } from './CollectiveData'
+export { default as CollectiveData } from './CollectiveData'

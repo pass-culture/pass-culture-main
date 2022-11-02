@@ -7,7 +7,7 @@ import {
   INITIAL_VIRTUAL_VENUE,
 } from 'components/pages/Home/Offerers/_constants'
 import { VenueList } from 'components/pages/Home/Venues/VenueList'
-import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
+import { SoftDeletedOffererWarning } from 'new_components/SoftDeletedOffererWarning'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'

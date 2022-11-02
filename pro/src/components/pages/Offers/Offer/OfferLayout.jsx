@@ -16,7 +16,8 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import OfferBreadcrumb, {
+import {
+  OfferBreadcrumb,
   OfferBreadcrumbStep,
 } from 'new_components/OfferBreadcrumb'
 import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'

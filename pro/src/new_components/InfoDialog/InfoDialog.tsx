@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DialogBox from 'new_components/DialogBox'
+import { DialogBox } from 'new_components/DialogBox'
 import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './InfoDialog.module.scss'

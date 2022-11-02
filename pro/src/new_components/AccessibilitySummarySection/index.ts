@@ -1,1 +1,1 @@
-export { default } from './AccessibilitySummarySection'
+export { default as AccessibilitySummarySection } from './AccessibilitySummarySection'

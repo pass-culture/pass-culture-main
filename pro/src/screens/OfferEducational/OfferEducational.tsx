@@ -10,7 +10,7 @@ import {
   Mode,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
+import { OfferEducationalActions } from 'new_components/OfferEducationalActions'
 
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'

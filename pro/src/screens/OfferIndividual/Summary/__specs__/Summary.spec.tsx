@@ -13,7 +13,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import * as useAnalytics from 'hooks/useAnalytics'
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
 

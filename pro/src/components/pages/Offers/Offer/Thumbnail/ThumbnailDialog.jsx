@@ -3,12 +3,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { IMPORT_TAB_ID } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import Credit from 'components/pages/Offers/Offer/Thumbnail/Credit/Credit'
-import ImageEditorWrapper from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditorWrapper'
+import { ImageEditorWrapper } from 'components/pages/Offers/Offer/Thumbnail/ImageEditor'
 import ImportFromComputer from 'components/pages/Offers/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
 import OfferPreview from 'components/pages/Offers/Offer/Thumbnail/Preview/OfferPreview'
 import { NBSP } from 'core/shared'
-import Advices from 'new_components/Advices/Advices'
-import DialogBox from 'new_components/DialogBox/DialogBox'
+import { Advices } from 'new_components/Advices'
+import { DialogBox } from 'new_components/DialogBox'
 
 const ThumbnailDialog = ({
   offerId,

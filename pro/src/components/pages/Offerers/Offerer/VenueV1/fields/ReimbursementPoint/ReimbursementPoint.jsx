@@ -5,8 +5,8 @@ import { Field } from 'react-final-form'
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import InfoDialog from 'new_components/InfoDialog'
-import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
+import { InfoDialog } from 'new_components/InfoDialog'
+import { ReimbursementPointDialog } from 'new_components/ReimbursementPointDialog'
 import { Title } from 'ui-kit'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -146,7 +146,7 @@ const ReimbursementPoint = ({
             <p className={styles['or-separator']}>ou</p>
           )}
           {isDmsDialogOpen && (
-            <ReimbursmentPointDialog
+            <ReimbursementPointDialog
               closeDialog={closeDmsDialog}
               buttonAction={openDMSApplication}
               dmsToken={venue.dmsToken}

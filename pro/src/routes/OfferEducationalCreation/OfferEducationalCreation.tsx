@@ -13,7 +13,7 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import useNotification from 'hooks/useNotification'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import { RouteLeavingGuardOfferCreation } from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'

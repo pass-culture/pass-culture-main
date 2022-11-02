@@ -9,8 +9,8 @@ import {
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeOffersUrl } from 'core/Offers'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferSummary from 'new_components/CollectiveOfferSummary'
-import FormLayout from 'new_components/FormLayout'
+import { CollectiveOfferSummary } from 'new_components/CollectiveOfferSummary'
+import { FormLayout } from 'new_components/FormLayout'
 import { Banner, Button } from 'ui-kit'
 
 import publishCollectiveOfferAdapter from './adapters/publishCollectiveOfferAdapter'

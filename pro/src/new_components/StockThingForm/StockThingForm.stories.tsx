@@ -2,7 +2,7 @@ import type { ComponentStory } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'

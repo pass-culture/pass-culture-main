@@ -2,9 +2,9 @@ import cn from 'classnames'
 import React from 'react'
 
 import type { Step } from 'new_components/Breadcrumb'
-import StepContent from 'new_components/Stepper/StepContent'
 import { findLastIndex } from 'utils/findLastIndex'
 
+import StepContent from './StepContent'
 import styles from './Stepper.module.scss'
 
 export interface IStepper {

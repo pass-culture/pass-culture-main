@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
-import DialogBox from 'new_components/DialogBox/DialogBox'
+import { DialogBox } from 'new_components/DialogBox'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

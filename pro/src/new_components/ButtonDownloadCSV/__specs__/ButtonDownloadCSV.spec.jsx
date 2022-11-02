@@ -6,7 +6,7 @@ import fetch from 'jest-fetch-mock'
 import React from 'react'
 import { Provider } from 'react-redux'
 
-import Notification from 'new_components/Notification/Notification'
+import { Notification } from 'new_components/Notification'
 
 import { configureTestStore } from '../../../store/testUtils'
 import ButtonDownloadCSV from '../ButtonDownloadCSV'

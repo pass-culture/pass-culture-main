@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { IVenueFormValues } from 'new_components/VenueForm/types'
 import { InfoBox, TextArea, TextInput } from 'ui-kit'
 import Toggle from 'ui-kit/Toggle'

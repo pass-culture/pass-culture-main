@@ -1,1 +1,1 @@
-export { default } from './LeavingGuardDialog'
+export { default as LeavingGuardDialog } from './LeavingGuardDialog'

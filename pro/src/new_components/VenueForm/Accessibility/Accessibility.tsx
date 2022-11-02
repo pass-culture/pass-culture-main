@@ -5,7 +5,7 @@ import React, { useMemo } from 'react'
 import { IAccessibiltyFormValues } from 'core/shared'
 import { accessibilityOptions } from 'core/shared/accessibilityOptions'
 import { useAccessibilityUpdates } from 'hooks'
-import FormLayout from 'new_components/FormLayout'
+import { FormLayout } from 'new_components/FormLayout'
 import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { IVenueFormValues } from '..'
