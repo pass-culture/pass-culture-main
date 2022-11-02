@@ -27,17 +27,12 @@ const Template = ({ title, children, withStepper = true }: ITemplateProps) => {
   return (
     <OfferFormLayout>
       {title !== null && (
-        <>
-          <OfferFormLayout.TitleBlock
-            className={!offer?.name ? styles['title-without-name'] : undefined}
-          >
-            <h1>{title ? title : defaultTitle}</h1>
-          </OfferFormLayout.TitleBlock>
-
-          <OfferFormLayout.TitleBlock>
-            {offer && <h4>{offer.name}</h4>}
-          </OfferFormLayout.TitleBlock>
-        </>
+        <OfferFormLayout.TitleBlock
+          className={!offer?.name ? styles['title-without-name'] : undefined}
+        >
+          <h1>{title ? title : defaultTitle}</h1>
+          {offer && <h4>{offer.name}</h4>}
+        </OfferFormLayout.TitleBlock>
       )}
       {withStepper && (
         <OfferFormLayout.Stepper>

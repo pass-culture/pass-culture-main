@@ -1,7 +1,5 @@
-import cn from 'classnames'
 import React from 'react'
 
-import style from './OfferFormLayout.module.scss'
 import Content from './OfferFormLayoutContent'
 import Stepper from './OfferFormLayoutStepper'
 import TitleBlock from './OfferFormLayoutTitleBlock'
@@ -15,7 +13,7 @@ const OfferFormLayout = ({
   children,
   className,
 }: IOfferFormLayoutProps): JSX.Element => (
-  <div className={cn(style['form-layout'], className)}>{children}</div>
+  <div className={className}>{children}</div>
 )
 
 OfferFormLayout.TitleBlock = TitleBlock
