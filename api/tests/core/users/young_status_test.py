@@ -19,9 +19,13 @@ def _with_age(age):
 
 class UserStatusTest:
     class EligibleTest:
-        @pytest.mark.parametrize("age", [15, 16, 17, 18])
-        def test_eligible_when_age_is_between_15_and_18(self, age):
+        @pytest.mark.parametrize("age", [15, 16, 17])
+        def test_eligible_when_age_is_between_15_and_17(self, age):
             user = users_factories.UserFactory(dateOfBirth=_with_age(age))
+            assert young_status.young_status(user) == young_status.Eligible()
+
+        def test_eligible_when_age_is_18(self):
+            user = users_factories.UserFactory(dateOfBirth=_with_age(18))
             assert young_status.young_status(user) == young_status.Eligible()
 
         def test_eligible_when_19yo_with_pending_dms_application(self):
