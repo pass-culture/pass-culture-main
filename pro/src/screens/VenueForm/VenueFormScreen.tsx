@@ -151,22 +151,26 @@ const VenueFormScreen = ({
           <Title level={1}>
             {isCreatingVenue ? 'Création d’un lieu' : 'Lieu'}
           </Title>
-          <a href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}>
-            <Button
-              variant={ButtonVariant.PRIMARY}
-              onClick={() =>
-                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                  from: OFFER_FORM_NAVIGATION_IN.VENUE,
-                  to: OFFER_FORM_HOMEPAGE,
-                  used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_BUTTON,
-                  isEdition: false,
-                })
-              }
-              Icon={AddOfferSvg}
+          {!isCreatingVenue && (
+            <a
+              href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
             >
-              <span>Créer une offre</span>
-            </Button>
-          </a>
+              <Button
+                variant={ButtonVariant.PRIMARY}
+                onClick={() =>
+                  logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                    from: OFFER_FORM_NAVIGATION_IN.VENUE,
+                    to: OFFER_FORM_HOMEPAGE,
+                    used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_BUTTON,
+                    isEdition: false,
+                  })
+                }
+                Icon={AddOfferSvg}
+              >
+                <span>Créer une offre</span>
+              </Button>
+            </a>
+          )}
         </div>
         <Title level={2}>
           {initialIsVirtual
