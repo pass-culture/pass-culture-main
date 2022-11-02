@@ -16,7 +16,7 @@ import {
 } from '.'
 
 export default {
-  title: 'components/StockThingEventForm',
+  title: 'components/StockEventForm',
   component: StockEventForm,
 }
 
@@ -24,14 +24,14 @@ const today = getLocalDepartementDateTimeFromUtc(getToday(), '75')
 const tomorrow = getLocalDepartementDateTimeFromUtc(getToday(), '75')
 tomorrow.setDate(tomorrow.getDate() + 1)
 
-interface IRenderStockThingEventForm {
+interface IRenderStockEventForm {
   initialValues?: IStockEventFormValues
 }
 
-const renderStockThingEventForm =
+const renderStockEventForm =
   ({
     initialValues,
-  }: IRenderStockThingEventForm): ComponentStory<typeof StockEventForm> =>
+  }: IRenderStockEventForm): ComponentStory<typeof StockEventForm> =>
   args =>
     (
       <Formik
@@ -65,14 +65,14 @@ const renderStockThingEventForm =
     )
 
 const Template: ComponentStory<typeof StockEventForm> =
-  renderStockThingEventForm({})
+  renderStockEventForm({})
 export const Default = Template.bind({})
 Default.args = {
   today,
 }
 
 const TemplateWithInitialValues: ComponentStory<typeof StockEventForm> =
-  renderStockThingEventForm({
+  renderStockEventForm({
     initialValues: {
       beginningDate: new Date(),
       beginningTime: today,

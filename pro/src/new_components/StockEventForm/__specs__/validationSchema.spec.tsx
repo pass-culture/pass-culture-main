@@ -10,7 +10,7 @@ import { SubmitButton } from 'ui-kit'
 import { getToday } from 'utils/date'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
-import StockThingEventForm from '../StockEventForm'
+import StockEventForm from '../StockEventForm'
 import { getValidationSchema } from '../validationSchema'
 
 jest.mock('utils/date', () => ({
@@ -26,7 +26,7 @@ const tomorrow = getToday()
 yesterday.setDate(yesterday.getDate() - 1)
 tomorrow.setDate(tomorrow.getDate() + 1)
 
-const renderStockThingEventForm = ({
+const renderStockEventForm = ({
   minQuantity,
 }: {
   minQuantity?: number | null
@@ -40,7 +40,7 @@ const renderStockThingEventForm = ({
     >
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
-          <StockThingEventForm {...props} />
+          <StockEventForm {...props} />
           <SubmitButton>Submit</SubmitButton>
         </form>
       )}
@@ -48,9 +48,9 @@ const renderStockThingEventForm = ({
   )
 }
 
-describe('StockThingEventForm:validationSchema', () => {
+describe('StockEventForm:validationSchema', () => {
   it('test required fields', async () => {
-    renderStockThingEventForm()
+    renderStockEventForm()
 
     await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
     expect(screen.getByTestId('error-beginningDate')).toBeInTheDocument()
@@ -69,7 +69,7 @@ describe('StockThingEventForm:validationSchema', () => {
   it.each(dataSetbeginningDate)(
     'should not display beginningDate error',
     async beginningDate => {
-      renderStockThingEventForm()
+      renderStockEventForm()
 
       await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
       await userEvent.click(screen.getByText(beginningDate))
@@ -95,7 +95,7 @@ describe('StockThingEventForm:validationSchema', () => {
   it.each(dataSetPriceErrors)(
     'should display price error',
     async ({ price, error }) => {
-      renderStockThingEventForm()
+      renderStockEventForm()
 
       const inputPrice = screen.getByLabelText('Prix')
       await userEvent.type(inputPrice, price)
@@ -108,7 +108,7 @@ describe('StockThingEventForm:validationSchema', () => {
 
   const dataSetPrice = ['0', '100', '299']
   it.each(dataSetPrice)('should not display price error', async price => {
-    renderStockThingEventForm()
+    renderStockEventForm()
 
     const inputPrice = screen.getByLabelText('Prix')
     await userEvent.type(inputPrice, price)
@@ -129,7 +129,7 @@ describe('StockThingEventForm:validationSchema', () => {
   it.each(dataSetQuantityErrors)(
     'should display quantity error',
     async ({ quantity, error }) => {
-      renderStockThingEventForm()
+      renderStockEventForm()
 
       const inputQuantity = screen.getByLabelText('Quantité')
       await userEvent.type(inputQuantity, quantity)
@@ -141,7 +141,7 @@ describe('StockThingEventForm:validationSchema', () => {
   )
 
   it('should display quantity error when min quantity is given', async () => {
-    renderStockThingEventForm({ minQuantity: 10 })
+    renderStockEventForm({ minQuantity: 10 })
 
     const inputQuantity = screen.getByLabelText('Quantité')
     await userEvent.type(inputQuantity, '9')
@@ -155,7 +155,7 @@ describe('StockThingEventForm:validationSchema', () => {
   it.each(dataSetquantity)(
     'should not display quantity error',
     async quantity => {
-      renderStockThingEventForm()
+      renderStockEventForm()
       const inputQuantity = screen.getByLabelText('Quantité')
       await userEvent.type(inputQuantity, quantity)
       await userEvent.tab()
@@ -164,7 +164,7 @@ describe('StockThingEventForm:validationSchema', () => {
   )
 
   it('should display bookingLimitDatetime error when bookingLimitDatetime > beginningDate', async () => {
-    renderStockThingEventForm()
+    renderStockEventForm()
 
     const todayNumber = today.getDate().toString()
     await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
@@ -198,7 +198,7 @@ describe('StockThingEventForm:validationSchema', () => {
   it.each(dataSetBookingLimitDatetimeError)(
     'should not display bookingLimitDatetime error',
     async ({ beginningDate, bookingLimitDatetime }) => {
-      renderStockThingEventForm()
+      renderStockEventForm()
 
       await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
       await userEvent.click(screen.getByText(beginningDate))
