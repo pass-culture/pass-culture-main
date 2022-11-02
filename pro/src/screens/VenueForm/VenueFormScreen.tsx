@@ -103,8 +103,8 @@ const VenueFormScreen = ({
         }
         const apiFieldsMap: Record<string, string> = {
           venue: 'venueId',
-          venueTypeCode: 'venueLabel',
-          venueLabelId: 'venueType',
+          venueTypeCode: 'venueType',
+          venueLabelId: 'venueLabel',
           'contact.email': 'email',
           'contact.phoneNumber': 'phoneNumber',
           'contact.website': 'webSite',
@@ -164,6 +164,7 @@ const VenueFormScreen = ({
             >
               <Button
                 variant={ButtonVariant.PRIMARY}
+                /* istanbul ignore next: DEBT, TO FIX */
                 onClick={() =>
                   logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                     from: OFFER_FORM_NAVIGATION_IN.VENUE,

@@ -37,9 +37,9 @@ const serializeCommunData = (
     visualDisabilityCompliant: formValues.accessibility.visual,
     withdrawalDetails: formValues.withdrawalDetails,
     contact: {
-      email: formValues.email,
-      phoneNumber: formValues.phoneNumber,
-      website: formValues.webSite,
+      email: !formValues.email ? null : formValues.email,
+      phoneNumber: !formValues.phoneNumber ? null : formValues.phoneNumber,
+      website: !formValues.webSite ? null : formValues.webSite,
       socialMedias: null,
     },
   }
@@ -77,7 +77,7 @@ export const serializeEditVenueBodyModel = (
   return {
     ...model,
     // @ts-expect-error string is not assignable to type number
-    venueLabelId: formValues.venueLabel,
+    venueLabelId: !formValues.venueLabel ? null : formValues.venueLabel,
     isEmailAppliedOnAllOffers: true,
     reimbursementPointId: formValues.reimbursementPointId,
   }
