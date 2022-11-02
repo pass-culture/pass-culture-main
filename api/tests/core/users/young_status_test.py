@@ -6,7 +6,6 @@ import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.users import constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import young_status
 
@@ -69,4 +68,4 @@ class UserStatusTest:
     def test_can_not_mutate(self):
         status = young_status.Suspended()
         with pytest.raises(attrs.exceptions.FrozenInstanceError):
-            status.status_type = constants.YoungStatusType.BENEFICIARY
+            status.status_type = young_status.YoungStatusType.BENEFICIARY

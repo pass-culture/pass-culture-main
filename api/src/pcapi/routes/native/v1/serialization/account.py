@@ -121,7 +121,7 @@ class ChangeEmailTokenContent(BaseModel):
 
 
 class YoungStatusResponse(BaseModel):
-    status_type: users_constants.YoungStatusType
+    status_type: young_status.YoungStatusType
 
     class Config:
         alias_generator = to_camel
