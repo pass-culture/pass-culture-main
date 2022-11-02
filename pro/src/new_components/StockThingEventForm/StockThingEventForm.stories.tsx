@@ -20,6 +20,8 @@ export default {
 }
 
 const today = getLocalDepartementDateTimeFromUtc(getToday(), '75')
+const tomorrow = getLocalDepartementDateTimeFromUtc(getToday(), '75')
+tomorrow.setDate(tomorrow.getDate() + 1)
 
 interface IRenderStockThingEventForm {
   initialValues?: IStockThingEventFormValues
@@ -64,8 +66,40 @@ const renderStockThingEventForm =
 const Template: ComponentStory<typeof StockThingEventForm> =
   renderStockThingEventForm({})
 export const Default = Template.bind({})
+Default.args = {
+  today,
+}
 
-// TODO: others templates
-// const TemplateWithInitialValues
-// export const WithInitialValues
-// export const Disabled
+const TemplateWithInitialValues: ComponentStory<typeof StockThingEventForm> =
+  renderStockThingEventForm({
+    initialValues: {
+      eventDatetime: new Date(),
+      eventTime: today,
+      stockId: 'STOCK_ID',
+      remainingQuantity: '7',
+      bookingsQuantity: '5',
+      price: '5',
+      bookingLimitDatetime: getLocalDepartementDateTimeFromUtc(
+        new Date().toISOString(),
+        '75'
+      ),
+      quantity: '10',
+    },
+  })
+
+export const WithInitialValues = TemplateWithInitialValues.bind({})
+WithInitialValues.args = {
+  today,
+}
+
+export const Disabled = TemplateWithInitialValues.bind({})
+Disabled.args = {
+  readOnlyFields: [
+    'eventDatetime',
+    'eventTime',
+    'price',
+    'bookingLimitDatetime',
+    'quantity',
+  ],
+  today,
+}
