@@ -6,7 +6,6 @@ export interface IVenueFormValues {
   accessibility: IAccessibiltyFormValues
   address: string
   addressAutocomplete: string
-  additionalAddress: string
   bannerMeta: IVenueBannerMetaProps | undefined | null
   bannerUrl: string | undefined
   city: string
