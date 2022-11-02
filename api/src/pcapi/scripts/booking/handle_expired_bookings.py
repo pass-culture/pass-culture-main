@@ -169,7 +169,7 @@ def notify_offerers_of_expired_collective_bookings() -> None:
     expired_collective_bookings = educational_repository.find_expired_collective_bookings()
 
     for collective_booking in expired_collective_bookings:
-        transactional_mails.send_education_booking_cancellation_by_institution_email(collective_booking)
+        transactional_mails.send_eac_booking_cancellation_email(collective_booking)
 
     logger.info(
         "[notify_offerers_of_expired_collective_bookings] %d Offerers have been notified",

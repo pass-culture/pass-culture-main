@@ -11,7 +11,6 @@ from pydantic.error_wrappers import ValidationError
 import sqlalchemy as sa
 
 from pcapi import settings
-from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import categories
@@ -24,9 +23,8 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
-import pcapi.core.mails.models as mails_models
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -251,26 +249,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
         },
     )
 
-    booking_emails = collective_booking.collectiveStock.collectiveOffer.bookingEmails
-    if booking_emails:
-        collective_stock = collective_booking.collectiveStock
-        data = mails_models.TransactionalEmailData(
-            template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
-            params={
-                "OFFER_NAME": collective_stock.collectiveOffer.name,
-                "EDUCATIONAL_INSTITUTION_NAME": collective_booking.educationalInstitution.name,
-                "VENUE_NAME": collective_stock.collectiveOffer.venue.name,
-                "EVENT_DATE": collective_stock.beginningDatetime.strftime("%d/%m/%Y"),
-                "EVENT_HOUR": collective_stock.beginningDatetime.strftime("%H:%M"),
-                "REDACTOR_FIRSTNAME": collective_booking.educationalRedactor.firstName,
-                "REDACTOR_LASTNAME": collective_booking.educationalRedactor.lastName,
-                "REDACTOR_EMAIL": collective_booking.educationalRedactor.email,
-                "EDUCATIONAL_INSTITUTION_CITY": collective_booking.educationalInstitution.city,
-                "EDUCATIONAL_INSTITUTION_POSTAL_CODE": collective_booking.educationalInstitution.postalCode,
-            },
-        )
-        main_recipient, bcc_recipients = [booking_emails[0]], booking_emails[1:]
-        mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
+    send_eac_booking_cancellation_email(collective_booking)
 
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
 

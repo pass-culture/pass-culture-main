@@ -388,7 +388,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         assert len(mails_testing.outbox) == 2
         assert (
             mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
+            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value.__dict__
         )
         assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
         assert mails_testing.outbox[0].sent_data["Bcc"] == "test2@mail.com"
@@ -404,6 +404,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             "REDACTOR_EMAIL": redactor.email,
             "EDUCATIONAL_INSTITUTION_CITY": institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
+            "COLLECTIVE_CANCELLATION_REASON": CollectiveBookingCancellationReasons.EXPIRED.value,
         }
 
         second_educational_institution = second_expired_booking.educationalInstitution
@@ -420,4 +421,5 @@ class NotifyOfferersOfExpiredBookingsTest:
             "REDACTOR_EMAIL": redactor.email,
             "EDUCATIONAL_INSTITUTION_CITY": second_educational_institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": second_educational_institution.postalCode,
+            "COLLECTIVE_CANCELLATION_REASON": CollectiveBookingCancellationReasons.EXPIRED.value,
         }

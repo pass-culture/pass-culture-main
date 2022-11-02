@@ -57,7 +57,7 @@ class Returns200Test:
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
+            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value.__dict__
         )
         assert mails_testing.outbox[0].sent_data["To"] == "test_collective@mail.com"
         assert mails_testing.outbox[0].sent_data["Bcc"] == "test2_collective@mail.com"
@@ -73,6 +73,7 @@ class Returns200Test:
             "REDACTOR_EMAIL": redactor.email,
             "EDUCATIONAL_INSTITUTION_CITY": educational_institution.city,
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": educational_institution.postalCode,
+            "COLLECTIVE_CANCELLATION_REASON": collective_booking.cancellationReason.value,
         }
 
     def test_refuse_collective_booking_when_pending(self, client: Any) -> None:
