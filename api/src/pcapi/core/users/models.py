@@ -506,22 +506,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
         )
 
-    @property
-    def young_status(self) -> YoungStatus:
-        if not self.isActive:
-            return Suspended()
-
-        if self.is_beneficiary:  # pylint: disable=using-constant-test
-            if self.deposit_expiration_date and self.deposit_expiration_date < datetime.utcnow():
-                return ExBeneficiary()
-
-            return Beneficiary()
-
-        if self.eligibility is not None:
-            return Eligible()
-
-        return NonEligible()
-
     @hybrid_property
     def has_remaining_credit(self) -> bool:
         today = datetime.combine(date.today(), datetime.min.time())
@@ -601,6 +585,22 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @has_test_role.expression  # type: ignore [no-redef]
     def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
+
+
+def young_status(self: User) -> YoungStatus:
+    if not self.isActive:
+        return Suspended()
+
+    if self.is_beneficiary:
+        if self.deposit_expiration_date and self.deposit_expiration_date < datetime.utcnow():
+            return ExBeneficiary()
+
+        return Beneficiary()
+
+    if self.eligibility is not None:
+        return Eligible()
+
+    return NonEligible()
 
 
 class ExpenseDomain(enum.Enum):

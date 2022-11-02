@@ -125,7 +125,6 @@ class YoungStatusResponse(BaseModel):
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True
-        allow_mutation = False
         orm_mode = True
 
 
@@ -209,6 +208,7 @@ class UserProfileResponse(BaseModel):
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.birth_date)
         user.isBeneficiary = user.is_beneficiary
         user.subscriptionMessage = subscription_api.get_subscription_message(user)
+        user.young_status = users_models.young_status(user)
 
         if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False
