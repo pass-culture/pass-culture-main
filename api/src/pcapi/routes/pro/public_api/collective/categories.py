@@ -1,8 +1,6 @@
 from collections import defaultdict
-from functools import lru_cache
 from typing import cast
 
-from pcapi import settings
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.routes.pro import blueprint
@@ -14,7 +12,6 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprint.pro_public_api_v2.route("/collective/categories", methods=["GET"])
-@lru_cache(maxsize=1 if not (settings.IS_RUNNING_TESTS or settings.IS_DEV) else 0)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
@@ -49,7 +46,6 @@ def list_categories() -> public_api_collective_offers_serialize.CollectiveOffers
 
 
 @blueprint.pro_public_api_v2.route("/collective/subcategories", methods=["GET"])
-@lru_cache(maxsize=1 if not (settings.IS_RUNNING_TESTS or settings.IS_DEV) else 0)
 @spectree_serialize(
     api=blueprint.pro_public_schema_v2,
     tags=["API offres collectives BETA"],
