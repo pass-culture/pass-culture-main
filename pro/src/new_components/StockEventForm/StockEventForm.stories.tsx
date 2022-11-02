@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/named
 import { ComponentStory } from '@storybook/react'
 import { Formik } from 'formik'
+import React from 'react'
 
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
@@ -8,15 +9,15 @@ import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import {
-  StockThingEventForm,
-  STOCK_THING_EVENT_FORM_DEFAULT_VALUES,
+  StockEventForm,
+  STOCK_EVENT_FORM_DEFAULT_VALUES,
   getValidationSchema,
-  IStockThingEventFormValues,
+  IStockEventFormValues,
 } from '.'
 
 export default {
   title: 'components/StockThingEventForm',
-  component: StockThingEventForm,
+  component: StockEventForm,
 }
 
 const today = getLocalDepartementDateTimeFromUtc(getToday(), '75')
@@ -24,18 +25,18 @@ const tomorrow = getLocalDepartementDateTimeFromUtc(getToday(), '75')
 tomorrow.setDate(tomorrow.getDate() + 1)
 
 interface IRenderStockThingEventForm {
-  initialValues?: IStockThingEventFormValues
+  initialValues?: IStockEventFormValues
 }
 
 const renderStockThingEventForm =
   ({
     initialValues,
-  }: IRenderStockThingEventForm): ComponentStory<typeof StockThingEventForm> =>
+  }: IRenderStockThingEventForm): ComponentStory<typeof StockEventForm> =>
   args =>
     (
       <Formik
-        initialValues={initialValues || STOCK_THING_EVENT_FORM_DEFAULT_VALUES}
-        onSubmit={async (values: IStockThingEventFormValues) => {
+        initialValues={initialValues || STOCK_EVENT_FORM_DEFAULT_VALUES}
+        onSubmit={async (values: IStockEventFormValues) => {
           alert(`onSubmit with values: ${JSON.stringify(values)}`)
           return Promise.resolve()
         }}
@@ -52,7 +53,7 @@ const renderStockThingEventForm =
               }}
             >
               <FormLayout.Row inline>
-                <StockThingEventForm {...args} />
+                <StockEventForm {...args} />
               </FormLayout.Row>
             </div>
             <SubmitButton onClick={handleSubmit} isLoading={isSubmitting}>
@@ -63,18 +64,18 @@ const renderStockThingEventForm =
       </Formik>
     )
 
-const Template: ComponentStory<typeof StockThingEventForm> =
+const Template: ComponentStory<typeof StockEventForm> =
   renderStockThingEventForm({})
 export const Default = Template.bind({})
 Default.args = {
   today,
 }
 
-const TemplateWithInitialValues: ComponentStory<typeof StockThingEventForm> =
+const TemplateWithInitialValues: ComponentStory<typeof StockEventForm> =
   renderStockThingEventForm({
     initialValues: {
-      eventDatetime: new Date(),
-      eventTime: today,
+      beginningDate: new Date(),
+      beginningTime: today,
       stockId: 'STOCK_ID',
       remainingQuantity: '7',
       bookingsQuantity: '5',
