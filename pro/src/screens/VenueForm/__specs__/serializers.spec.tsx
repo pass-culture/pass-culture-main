@@ -143,4 +143,203 @@ describe('screen | VenueForm | serializers', () => {
     expect(result.siret).toBeUndefined()
     expect(result.comment).not.toEqual('')
   })
+
+  describe('optional fields', () => {
+    it('User should be able to create a venue without contact info', async () => {
+      const result = serializePostVenueBodyModel(
+        {
+          bannerMeta: undefined,
+          comment: 'Commentaire',
+          description: '',
+          isVenueVirtual: false,
+          bookingEmail: 'em@ail.fr',
+          name: 'MINISTERE DE LA CULTURE',
+          publicName: 'Melodie Sims',
+          siret: '881 457 238 23022',
+          venueType: 'GAMES',
+          venueLabel: 'BM',
+          departmentCode: '',
+          address: 'PARIS',
+          addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
+          'search-addressAutocomplete': 'PARIS',
+          city: 'Saint-Malo',
+          latitude: 48.635699,
+          longitude: -2.006961,
+          postalCode: '35400',
+          accessibility: {
+            visual: false,
+            mental: true,
+            audio: false,
+            motor: true,
+            none: false,
+          },
+          isAccessibilityAppliedOnAllOffers: false,
+          phoneNumber: null,
+          email: null,
+          webSite: null,
+          isPermanent: false,
+          id: '',
+          bannerUrl: '',
+          withdrawalDetails: 'Oui',
+          venueSiret: null,
+          isWithdrawalAppliedOnAllOffers: false,
+          reimbursementPointId: 91,
+        },
+        {
+          hideSiret: false,
+          offererId: 'EA',
+        }
+      )
+
+      expect(result.contact?.email).toBeNull()
+      expect(result.contact?.website).toBeNull()
+      expect(result.contact?.phoneNumber).toBeNull()
+    })
+    it("User should be able to delete a venue's contact info", async () => {
+      const result = serializeEditVenueBodyModel(
+        {
+          bannerMeta: undefined,
+          comment: 'Commentaire',
+          description: '',
+          isVenueVirtual: false,
+          bookingEmail: 'em@ail.fr',
+          name: 'MINISTERE DE LA CULTURE',
+          publicName: 'Melodie Sims',
+          siret: '881 457 238 23022',
+          venueType: 'GAMES',
+          venueLabel: 'BM',
+          departmentCode: '',
+          address: 'PARIS',
+          addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
+          'search-addressAutocomplete': 'PARIS',
+          city: 'Saint-Malo',
+          latitude: 48.635699,
+          longitude: -2.006961,
+          postalCode: '35400',
+          accessibility: {
+            visual: false,
+            mental: true,
+            audio: false,
+            motor: true,
+            none: false,
+          },
+          isAccessibilityAppliedOnAllOffers: false,
+          phoneNumber: '',
+          email: '',
+          webSite: '',
+          isPermanent: false,
+          id: '',
+          bannerUrl: '',
+          withdrawalDetails: 'Oui',
+          venueSiret: null,
+          isWithdrawalAppliedOnAllOffers: false,
+          reimbursementPointId: 91,
+        },
+        {
+          hideSiret: false,
+        }
+      )
+
+      expect(result.contact?.email).toBeNull()
+      expect(result.contact?.website).toBeNull()
+      expect(result.contact?.phoneNumber).toBeNull()
+    })
+
+    it('User should be able to create a venue without a venueLabel', async () => {
+      const result = serializePostVenueBodyModel(
+        {
+          bannerMeta: undefined,
+          comment: 'Commentaire',
+          description: '',
+          isVenueVirtual: false,
+          bookingEmail: 'em@ail.fr',
+          name: 'MINISTERE DE LA CULTURE',
+          publicName: 'Melodie Sims',
+          siret: '881 457 238 23022',
+          venueType: 'GAMES',
+          venueLabel: null,
+          departmentCode: '',
+          address: 'PARIS',
+          addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
+          'search-addressAutocomplete': 'PARIS',
+          city: 'Saint-Malo',
+          latitude: 48.635699,
+          longitude: -2.006961,
+          postalCode: '35400',
+          accessibility: {
+            visual: false,
+            mental: true,
+            audio: false,
+            motor: true,
+            none: false,
+          },
+          isAccessibilityAppliedOnAllOffers: false,
+          phoneNumber: null,
+          email: null,
+          webSite: null,
+          isPermanent: false,
+          id: '',
+          bannerUrl: '',
+          withdrawalDetails: 'Oui',
+          venueSiret: null,
+          isWithdrawalAppliedOnAllOffers: false,
+          reimbursementPointId: 91,
+        },
+        {
+          hideSiret: false,
+          offererId: 'EA',
+        }
+      )
+
+      expect(result.venueLabelId).toBeNull()
+    })
+
+    it("User should be able to delete a venue's venueLabel", async () => {
+      const result = serializeEditVenueBodyModel(
+        {
+          bannerMeta: undefined,
+          comment: 'Commentaire',
+          description: '',
+          isVenueVirtual: false,
+          bookingEmail: 'em@ail.fr',
+          name: 'MINISTERE DE LA CULTURE',
+          publicName: 'Melodie Sims',
+          siret: '881 457 238 23022',
+          venueType: 'GAMES',
+          venueLabel: '',
+          departmentCode: '',
+          address: 'PARIS',
+          addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
+          'search-addressAutocomplete': 'PARIS',
+          city: 'Saint-Malo',
+          latitude: 48.635699,
+          longitude: -2.006961,
+          postalCode: '35400',
+          accessibility: {
+            visual: false,
+            mental: true,
+            audio: false,
+            motor: true,
+            none: false,
+          },
+          isAccessibilityAppliedOnAllOffers: false,
+          phoneNumber: '',
+          email: '',
+          webSite: '',
+          isPermanent: false,
+          id: '',
+          bannerUrl: '',
+          withdrawalDetails: 'Oui',
+          venueSiret: null,
+          isWithdrawalAppliedOnAllOffers: false,
+          reimbursementPointId: 91,
+        },
+        {
+          hideSiret: false,
+        }
+      )
+
+      expect(result.venueLabelId).toBeNull()
+    })
+  })
 })
