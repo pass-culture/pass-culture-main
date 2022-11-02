@@ -71,7 +71,7 @@ describe('StockEventForm:validationSchema', () => {
     async beginningDate => {
       renderStockEventForm()
 
-      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+      await userEvent.click(screen.getByLabelText('Date', { exact: true }))
       await userEvent.click(screen.getByText(beginningDate))
       const errorbeginningDate = screen.queryByTestId('error-beginningDate')
       expect(errorbeginningDate).not.toBeInTheDocument()
@@ -167,13 +167,13 @@ describe('StockEventForm:validationSchema', () => {
     renderStockEventForm()
 
     const todayNumber = today.getDate().toString()
-    await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
     await userEvent.click(screen.getByText(todayNumber))
 
     const errorbeginningDate = screen.queryByTestId('error-beginningDate')
     expect(errorbeginningDate).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
+    await userEvent.click(screen.getByLabelText('Date limite de réservation'))
     await userEvent.click(screen.getByText(tomorrow.getDate().toString()))
 
     const errorBookingLimitDatetime = screen.queryByTestId(
@@ -200,12 +200,12 @@ describe('StockEventForm:validationSchema', () => {
     async ({ beginningDate, bookingLimitDatetime }) => {
       renderStockEventForm()
 
-      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+      await userEvent.click(screen.getByLabelText('Date', { exact: true }))
       await userEvent.click(screen.getByText(beginningDate))
       const errorbeginningDate = screen.queryByTestId('error-beginningDate')
       expect(errorbeginningDate).not.toBeInTheDocument()
 
-      await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
+      await userEvent.click(screen.getByLabelText('Date limite de réservation'))
       await userEvent.click(screen.getByText(bookingLimitDatetime))
 
       const errorBookingLimitDatetime = screen.queryByTestId(
