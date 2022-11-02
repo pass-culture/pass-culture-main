@@ -10,17 +10,12 @@ interface IWithdrawalDetails {
 
 const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
   return (
-    <FormLayout.Section
-      title="Modalités de retrait"
-      description="Les modalités de retrait s’appliqueront par défaut à la création de
-            vos offres. Vous pourrez modifier cette information à l’échelle de
-            l’offre."
-    >
+    <FormLayout.Section title="Informations de retrait de vos offres">
       <FormLayout.Row
         sideComponent={
           <InfoBox
             type="info"
-            text="Cela permet aux jeunes une plus grande autonomie lors de la récupération de leurs offres."
+            text="Indiquez ici tout ce qui peut être utile au jeune pour le retrait de l’offre. Ces indications s’appliqueront par défaut à toutes vos offres. Vous pourrez les modifier à l’échelle de chaque offre."
             link={{
               text: 'En savoir plus',
               to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
@@ -34,7 +29,7 @@ const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
       >
         <TextArea
           name="withdrawalDetails"
-          label="Modalités de retrait"
+          label="Informations de retrait"
           maxLength={500}
           placeholder="Par exemple : Venir récuperer les places au guichet du théâtre…"
           countCharacters
