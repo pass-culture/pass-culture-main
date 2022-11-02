@@ -26,7 +26,6 @@ const renderStockThingEventForm = (props: IStockThingFormProps) => {
   )
 }
 
-//TODO: coverage
 describe('StockThingEventForm', () => {
   let props: IStockThingFormProps
 
@@ -51,6 +50,13 @@ describe('StockThingEventForm', () => {
   })
 
   it('render disabled field in list', () => {
+    props.readOnlyFields = [
+      'eventDatetime',
+      'eventTime',
+      'bookingLimitDatetime',
+      'price',
+      'quantity',
+    ]
     renderStockThingEventForm(props)
 
     expect(
@@ -58,9 +64,7 @@ describe('StockThingEventForm', () => {
     ).toBeDisabled()
     expect(screen.getByLabelText(EVENT_TIME_LABEL)).toBeDisabled()
     expect(screen.getByLabelText('Prix')).toBeDisabled()
-    expect(
-      screen.getByLabelText('Date limite de réservation')
-    ).not.toBeDisabled()
+    expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
     expect(screen.getByLabelText('Quantité')).toBeDisabled()
   })
 })
