@@ -32,7 +32,10 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
         endOfDay(getToday()),
         "La date de l'évènement doit être supérieure à aujourd'hui"
       ),
-    beginningTime: yup.string().required('Veuillez renseigner un horaire'),
+    beginningTime: yup
+      .string()
+      .nullable()
+      .required('Veuillez renseigner un horaire'),
     price: yup
       .number()
       .typeError('Veuillez renseigner un prix')

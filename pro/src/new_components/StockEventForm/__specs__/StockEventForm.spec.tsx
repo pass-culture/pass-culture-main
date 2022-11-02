@@ -30,7 +30,7 @@ describe('StockEventForm', () => {
     renderStockEventForm(props)
 
     expect(screen.getByLabelText('Date', { exact: true })).toBeInTheDocument()
-    expect(screen.getByLabelText('Horraire')).toBeInTheDocument()
+    expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
     expect(screen.getByLabelText('Prix')).toBeInTheDocument()
     expect(
       screen.getByLabelText('Date limite de réservation')
@@ -38,7 +38,7 @@ describe('StockEventForm', () => {
     expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
 
     expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
-    expect(screen.getByLabelText('Horraire')).not.toBeDisabled()
+    expect(screen.getByLabelText('Horaire')).not.toBeDisabled()
     expect(screen.getByLabelText('Prix')).not.toBeDisabled()
     expect(
       screen.getByLabelText('Date limite de réservation')
@@ -57,7 +57,7 @@ describe('StockEventForm', () => {
     renderStockEventForm(props)
 
     expect(screen.getByLabelText('Date', { exact: true })).toBeDisabled()
-    expect(screen.getByLabelText('Horraire')).toBeDisabled()
+    expect(screen.getByLabelText('Horaire')).toBeDisabled()
     expect(screen.getByLabelText('Prix')).toBeDisabled()
     expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
     expect(screen.getByLabelText('Quantité')).toBeDisabled()
