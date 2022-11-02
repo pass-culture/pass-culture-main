@@ -1,6 +1,7 @@
 import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
+  OfferStatus,
 } from 'apiClient/v1'
 import { Offer, Stock, Venue } from 'core/Offers/types'
 
@@ -29,7 +30,8 @@ export const serializeOffers = (
 ): Offer[] =>
   offers.map(offer => ({
     id: offer.id,
-    status: offer.status,
+    // FIX ME: api should send OfferStatus
+    status: offer.status as OfferStatus,
     isActive: offer.isActive,
     hasBookingLimitDatetimesPassed: offer.hasBookingLimitDatetimesPassed,
     thumbUrl: null,
