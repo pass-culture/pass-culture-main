@@ -79,7 +79,6 @@ describe('components | Address', () => {
 
   beforeEach(() => {
     initialValues = {
-      additionalAddress: '',
       address: '',
       addressAutocomplete: '',
       'search-addressAutocomplete': '',
@@ -111,7 +110,6 @@ describe('components | Address', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         {
-          additionalAddress: '',
           address: '12 rue des tournesols',
           addressAutocomplete: '12 rue des tournesols 75003 Paris',
           city: 'Paris',
