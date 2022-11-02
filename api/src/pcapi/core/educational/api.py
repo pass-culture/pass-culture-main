@@ -793,12 +793,10 @@ def get_educational_domains_from_ids(
     return educational_domains
 
 
-def create_collective_offer(
+def get_venue_and_check_access(
     offer_data: PostCollectiveOfferBodyModel,
     user: User,
-    offer_id: int | None = None,
-) -> educational_models.CollectiveOffer:
-
+) -> offerers_models.Venue:
     if offer_data.template_id is not None:
         template = get_collective_offer_template_by_id(dehumanize_or_raise(offer_data.template_id))
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
@@ -807,7 +805,53 @@ def create_collective_offer(
     offerers_api.can_offerer_create_educational_offer(venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id)
+    return venue
+
+
+def create_collective_offer_template(
+    offer_data: PostCollectiveOfferBodyModel,
+    user: User,
+    offer_id: int | None = None,
+) -> educational_models.CollectiveOfferTemplate:
+    venue = get_venue_and_check_access(offer_data, user)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
+    collective_offer_template = educational_models.CollectiveOfferTemplate(
+        venueId=venue.id,
+        name=offer_data.name,
+        offerId=offer_id,
+        description=offer_data.description,
+        domains=educational_domains,
+        durationMinutes=offer_data.duration_minutes,
+        subcategoryId=offer_data.subcategory_id,
+        students=offer_data.students,
+        contactEmail=offer_data.contact_email,
+        contactPhone=offer_data.contact_phone,
+        offerVenue=offer_data.offer_venue.dict(),
+        validation=offer_mixin.OfferValidationStatus.DRAFT,
+        audioDisabilityCompliant=offer_data.audio_disability_compliant,
+        mentalDisabilityCompliant=offer_data.mental_disability_compliant,
+        motorDisabilityCompliant=offer_data.motor_disability_compliant,
+        visualDisabilityCompliant=offer_data.visual_disability_compliant,
+        interventionArea=offer_data.intervention_area or [],
+    )
+    collective_offer_template.bookingEmails = offer_data.booking_emails
+    db.session.add(collective_offer_template)
+    db.session.commit()
+    logger.info(
+        "Collective offer template has been created",
+        extra={"collectiveOfferTemplate": collective_offer_template.id, "offerId": offer_id},
+    )
+    return collective_offer_template
+
+
+def create_collective_offer(
+    offer_data: PostCollectiveOfferBodyModel,
+    user: User,
+    offer_id: int | None = None,
+) -> educational_models.CollectiveOffer:
+    venue = get_venue_and_check_access(offer_data, user)
+    educational_domains = get_educational_domains_from_ids(offer_data.domains)
+
     collective_offer = educational_models.CollectiveOffer(
         venueId=venue.id,
         name=offer_data.name,
@@ -832,8 +876,8 @@ def create_collective_offer(
     db.session.add(collective_offer)
     db.session.commit()
     logger.info(
-        "Collective offer template has been created",
-        extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer_id},
+        "Collective offer has been created",
+        extra={"collectiveOffer": collective_offer.id, "offerId": offer_id},
     )
     return collective_offer
 
