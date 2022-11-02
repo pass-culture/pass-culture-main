@@ -19,6 +19,7 @@ const StockEventForm = ({
         smallLabel
         name="beginningDate"
         label="Date"
+        className={styles['input-beginning-date']}
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         openingDateTime={today}
@@ -26,7 +27,8 @@ const StockEventForm = ({
       />
       <TimePicker
         smallLabel
-        label="Horraire"
+        label="Horaire"
+        className={styles['input-beginning-time']}
         name="beginningTime"
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('eventTime')}
@@ -35,6 +37,7 @@ const StockEventForm = ({
         smallLabel
         name="price"
         label="Prix"
+        className={styles['input-price']}
         placeholder="Ex: 20€"
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
