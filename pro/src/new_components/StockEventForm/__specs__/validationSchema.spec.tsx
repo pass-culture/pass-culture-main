@@ -28,14 +28,16 @@ tomorrow.setDate(tomorrow.getDate() + 1)
 
 const renderStockEventForm = ({
   minQuantity,
+  onSubmit = jest.fn(),
 }: {
   minQuantity?: number | null
+  onSubmit?: () => void
 } = {}) => {
   const props: IStockThingFormProps = { today }
   return render(
     <Formik
       initialValues={STOCK_EVENT_FORM_DEFAULT_VALUES}
-      onSubmit={() => {}}
+      onSubmit={onSubmit}
       validationSchema={getValidationSchema(minQuantity)}
     >
       {({ handleSubmit }) => (

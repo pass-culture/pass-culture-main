@@ -36,6 +36,14 @@ describe('StockEventForm', () => {
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
     expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
+
+    expect(screen.getByLabelText('Date', { exact: true })).not.toBeDisabled()
+    expect(screen.getByLabelText('Horraire')).not.toBeDisabled()
+    expect(screen.getByLabelText('Prix')).not.toBeDisabled()
+    expect(
+      screen.getByLabelText('Date limite de réservation')
+    ).not.toBeDisabled()
+    expect(screen.getByLabelText('Quantité')).not.toBeDisabled()
   })
 
   it('render disabled field in list', () => {

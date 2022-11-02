@@ -1,12 +1,7 @@
+import { endOfDay } from 'date-fns'
 import * as yup from 'yup'
 
 import { getToday } from 'utils/date'
-
-const todayAtMidnight = () => {
-  const today = getToday()
-  today.setHours(0, 0, 0, 0)
-  return today
-}
 
 const isBeforeEventDate = (
   bookingLimitDatetime: Date | undefined,
@@ -34,7 +29,7 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
       .nullable()
       .required('Veuillez renseigner une date')
       .min(
-        todayAtMidnight(),
+        endOfDay(getToday()),
         "La date de l'évènement doit être supérieure à aujourd'hui"
       ),
     beginningTime: yup.string().required('Veuillez renseigner un horaire'),
@@ -48,7 +43,7 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
       .date()
       .notRequired()
       .test({
-        name: 'is-one-true',
+        name: 'bookingLimitDatetime-before-beginningDate',
         message: "Veuillez rentrer une date antérieur à la date de l'évènement",
         test: isBeforeEventDate,
       })
