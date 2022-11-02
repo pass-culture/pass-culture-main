@@ -1,23 +1,23 @@
 import React from 'react'
 
-import { IStockThingFormProps } from 'new_components/StockThingForm/StockThingForm'
 import styles from 'new_components/StockThingForm/StockThingForm.module.scss'
-import {
-  EVENT_DATE_LABEL,
-  EVENT_TIME_LABEL,
-} from 'screens/OfferEducationalStock/constants/labels'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
-const StockThingEventForm = ({
+export interface IStockEventFormProps {
+  today: Date
+  readOnlyFields?: string[]
+}
+
+const StockEventForm = ({
   today,
   readOnlyFields = [],
-}: IStockThingFormProps): JSX.Element => {
+}: IStockEventFormProps): JSX.Element => {
   return (
     <>
       <DatePicker
         smallLabel
-        name="eventDatetime"
-        label={EVENT_DATE_LABEL}
+        name="beginningDate"
+        label="Date"
         classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         openingDateTime={today}
@@ -25,8 +25,8 @@ const StockThingEventForm = ({
       />
       <TimePicker
         smallLabel
-        label={EVENT_TIME_LABEL}
-        name="eventTime"
+        label="Horraire"
+        name="beginningTime"
         classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('eventTime')}
       />
@@ -60,4 +60,4 @@ const StockThingEventForm = ({
   )
 }
 
-export default StockThingEventForm
+export default StockEventForm

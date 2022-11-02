@@ -9,8 +9,8 @@ import { IStockThingFormProps } from 'new_components/StockThingForm/StockThingFo
 import { SubmitButton } from 'ui-kit'
 import { getToday } from 'utils/date'
 
-import { STOCK_THING_EVENT_FORM_DEFAULT_VALUES } from '../constants'
-import StockThingEventForm from '../StockThingEventForm'
+import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
+import StockThingEventForm from '../StockEventForm'
 import { getValidationSchema } from '../validationSchema'
 
 jest.mock('utils/date', () => ({
@@ -34,7 +34,7 @@ const renderStockThingEventForm = ({
   const props: IStockThingFormProps = { today }
   return render(
     <Formik
-      initialValues={STOCK_THING_EVENT_FORM_DEFAULT_VALUES}
+      initialValues={STOCK_EVENT_FORM_DEFAULT_VALUES}
       onSubmit={() => {}}
       validationSchema={getValidationSchema(minQuantity)}
     >
@@ -53,8 +53,8 @@ describe('StockThingEventForm:validationSchema', () => {
     renderStockThingEventForm()
 
     await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    expect(screen.getByTestId('error-eventDatetime')).toBeInTheDocument()
-    expect(screen.getByTestId('error-eventTime')).toBeInTheDocument()
+    expect(screen.getByTestId('error-beginningDate')).toBeInTheDocument()
+    expect(screen.getByTestId('error-beginningTime')).toBeInTheDocument()
     expect(screen.getByTestId('error-price')).toBeInTheDocument()
     expect(
       screen.queryByTestId('error-bookingLimitDatetime')
@@ -62,19 +62,19 @@ describe('StockThingEventForm:validationSchema', () => {
     expect(screen.queryByTestId('error-quantity')).not.toBeInTheDocument()
   })
 
-  const dataSetEventDateTime: Array<number> = [
+  const dataSetbeginningDate: Array<number> = [
     today.getDate(),
     tomorrow.getDate(),
   ]
-  it.each(dataSetEventDateTime)(
-    'should not display eventDatetime error',
-    async eventDateTime => {
+  it.each(dataSetbeginningDate)(
+    'should not display beginningDate error',
+    async beginningDate => {
       renderStockThingEventForm()
 
       await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
-      await userEvent.click(screen.getByText(eventDateTime))
-      const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
-      expect(errorEventDatetime).not.toBeInTheDocument()
+      await userEvent.click(screen.getByText(beginningDate))
+      const errorbeginningDate = screen.queryByTestId('error-beginningDate')
+      expect(errorbeginningDate).not.toBeInTheDocument()
     }
   )
 
@@ -163,15 +163,15 @@ describe('StockThingEventForm:validationSchema', () => {
     }
   )
 
-  it('should display bookingLimitDatetime error when bookingLimitDatetime > eventDatetime', async () => {
+  it('should display bookingLimitDatetime error when bookingLimitDatetime > beginningDate', async () => {
     renderStockThingEventForm()
 
     const todayNumber = today.getDate().toString()
     await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
     await userEvent.click(screen.getByText(todayNumber))
 
-    const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
-    expect(errorEventDatetime).not.toBeInTheDocument()
+    const errorbeginningDate = screen.queryByTestId('error-beginningDate')
+    expect(errorbeginningDate).not.toBeInTheDocument()
 
     await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
     await userEvent.click(screen.getByText(tomorrow.getDate().toString()))
@@ -187,23 +187,23 @@ describe('StockThingEventForm:validationSchema', () => {
 
   const dataSetBookingLimitDatetimeError = [
     {
-      eventDateTime: today.getDate(),
+      beginningDate: today.getDate(),
       bookingLimitDatetime: yesterday.getDate(),
     },
     {
-      eventDateTime: tomorrow.getDate(),
+      beginningDate: tomorrow.getDate(),
       bookingLimitDatetime: tomorrow.getDate(),
     },
   ]
   it.each(dataSetBookingLimitDatetimeError)(
     'should not display bookingLimitDatetime error',
-    async ({ eventDateTime, bookingLimitDatetime }) => {
+    async ({ beginningDate, bookingLimitDatetime }) => {
       renderStockThingEventForm()
 
       await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
-      await userEvent.click(screen.getByText(eventDateTime))
-      const errorEventDatetime = screen.queryByTestId('error-eventDatetime')
-      expect(errorEventDatetime).not.toBeInTheDocument()
+      await userEvent.click(screen.getByText(beginningDate))
+      const errorbeginningDate = screen.queryByTestId('error-beginningDate')
+      expect(errorbeginningDate).not.toBeInTheDocument()
 
       await userEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
       await userEvent.click(screen.getByText(bookingLimitDatetime))
