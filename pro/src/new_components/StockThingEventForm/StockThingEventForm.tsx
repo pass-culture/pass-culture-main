@@ -24,6 +24,7 @@ const StockThingEventForm = ({
         disabled={readOnlyFields.includes('eventDatetime')}
       />
       <TimePicker
+        smallLabel
         label={EVENT_TIME_LABEL}
         name="eventTime"
         classNameFooter={styles['field-layout-footer']}
