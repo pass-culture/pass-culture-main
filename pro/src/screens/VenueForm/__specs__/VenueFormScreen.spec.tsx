@@ -169,7 +169,6 @@ const formValues: IVenueFormValues = {
   venueLabel: 'BM',
   departmentCode: '',
   address: 'PARIS',
-  additionalAddress: '',
   addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
   'search-addressAutocomplete': 'PARIS',
   city: 'Saint-Malo',

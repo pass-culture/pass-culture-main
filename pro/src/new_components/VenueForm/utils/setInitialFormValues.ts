@@ -9,7 +9,6 @@ const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
     address: venue.address,
     addressAutocomplete: `${venue.address} ${venue.postalCode} ${venue.city}`,
     'search-addressAutocomplete': `${venue.address} ${venue.postalCode} ${venue.city}`,
-    additionalAddress: '',
     bannerMeta: venue.bannerMeta,
     bannerUrl: venue.bannerUrl,
     city: venue.city,
