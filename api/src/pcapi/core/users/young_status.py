@@ -3,6 +3,8 @@ import enum
 
 import attrs
 
+from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models
 
 
@@ -14,6 +16,12 @@ class YoungStatusType(enum.Enum):
     SUSPENDED = "suspended"
 
 
+class SubscriptionStatus(enum.Enum):
+    HAS_TO_COMPLETE_SUBSCRIPTION = "has_to_complete_subscription"
+    HAS_SUBSCRIPTION_PENDING = "has_subscription_pending"
+    HAS_SUBSCRIPTION_ISSUES = "has_subscription_issues"
+
+
 @attrs.frozen
 class YoungStatus:
     status_type: YoungStatusType
@@ -21,6 +29,7 @@ class YoungStatus:
 
 @attrs.frozen
 class Eligible(YoungStatus):
+    subscription_status: SubscriptionStatus
     status_type: YoungStatusType = YoungStatusType.ELIGIBLE
 
 
@@ -55,6 +64,18 @@ def young_status(user: models.User) -> YoungStatus:
         return Beneficiary()
 
     if user.eligibility is not None:
-        return Eligible()
+        if (
+            subscription_api.get_identity_check_subscription_status(user, user.eligibility)
+            == subscription_models.SubscriptionItemStatus.PENDING
+        ):
+            return Eligible(subscription_status=SubscriptionStatus.HAS_SUBSCRIPTION_PENDING)
+
+        if subscription_api.has_subscription_issues(user):
+            return Eligible(subscription_status=SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES)
+
+        if subscription_api.get_next_subscription_step(user) is not None:
+            return Eligible(subscription_status=SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION)
+
+        # should never happen
 
     return NonEligible()
