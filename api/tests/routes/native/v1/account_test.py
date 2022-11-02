@@ -33,6 +33,7 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
+from pcapi.core.users import young_status
 from pcapi.core.users.api import create_phone_validation_token
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.email import update as email_update
@@ -133,7 +134,7 @@ class AccountTest:
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
             "subscriptionMessage": None,
-            "youngStatus": {"statusType": users_constants.YoungStatusType.BENEFICIARY.value},
+            "youngStatus": {"statusType": young_status.YoungStatusType.BENEFICIARY.value},
         }
         EXPECTED_DATA.update(USER_DATA)
 
