@@ -9,7 +9,6 @@ from operator import attrgetter
 import typing
 from uuid import UUID
 
-import attrs
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
@@ -168,36 +167,6 @@ class AccountState(enum.Enum):
     @property
     def is_deleted(self) -> bool:
         return self == AccountState.DELETED
-
-
-@attrs.frozen
-class YoungStatus:
-    status_type: constants.YoungStatusType
-
-
-@attrs.frozen
-class Eligible(YoungStatus):
-    status_type: constants.YoungStatusType = constants.YoungStatusType.ELIGIBLE
-
-
-@attrs.frozen
-class NonEligible(YoungStatus):
-    status_type: constants.YoungStatusType = constants.YoungStatusType.NON_ELIGIBLE
-
-
-@attrs.frozen
-class Beneficiary(YoungStatus):
-    status_type: constants.YoungStatusType = constants.YoungStatusType.BENEFICIARY
-
-
-@attrs.frozen
-class ExBeneficiary(YoungStatus):
-    status_type: constants.YoungStatusType = constants.YoungStatusType.EX_BENEFICIARY
-
-
-@attrs.frozen
-class Suspended(YoungStatus):
-    status_type: constants.YoungStatusType = constants.YoungStatusType.SUSPENDED
 
 
 class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
@@ -585,22 +554,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @has_test_role.expression  # type: ignore [no-redef]
     def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
-
-
-def young_status(self: User) -> YoungStatus:
-    if not self.isActive:
-        return Suspended()
-
-    if self.is_beneficiary:
-        if self.deposit_expiration_date and self.deposit_expiration_date < datetime.utcnow():
-            return ExBeneficiary()
-
-        return Beneficiary()
-
-    if self.eligibility is not None:
-        return Eligible()
-
-    return NonEligible()
 
 
 class ExpenseDomain(enum.Enum):

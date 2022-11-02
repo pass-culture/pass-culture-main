@@ -21,6 +21,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import young_status
 import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models.feature import FeatureToggle
@@ -208,7 +209,7 @@ class UserProfileResponse(BaseModel):
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.birth_date)
         user.isBeneficiary = user.is_beneficiary
         user.subscriptionMessage = subscription_api.get_subscription_message(user)
-        user.young_status = users_models.young_status(user)
+        user.young_status = young_status.young_status(user)
 
         if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False
