@@ -12,23 +12,23 @@ const isBeforeEventDate = (
   bookingLimitDatetime: Date | undefined,
   context: yup.TestContext
 ) => {
-  if (!context.parent.eventDatetime || !bookingLimitDatetime) {
+  if (!context.parent.beginningDate || !bookingLimitDatetime) {
     return true
   }
 
   if (
     bookingLimitDatetime.toLocaleDateString() ===
-    context.parent.eventDatetime.toLocaleDateString()
+    context.parent.beginningDate.toLocaleDateString()
   ) {
     return true
   }
 
-  return bookingLimitDatetime < context.parent.eventDatetime
+  return bookingLimitDatetime < context.parent.beginningDate
 }
 
 export const getValidationSchema = (minQuantity: number | null = null) => {
   const validationSchema = {
-    eventDatetime: yup
+    beginningDate: yup
       .date()
       .required()
       .nullable()
@@ -37,7 +37,7 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
         todayAtMidnight(),
         "La date de l'évènement doit être supérieure à aujourd'hui"
       ),
-    eventTime: yup.string().required('Veuillez renseigner un horaire'),
+    beginningTime: yup.string().required('Veuillez renseigner un horaire'),
     price: yup
       .number()
       .typeError('Veuillez renseigner un prix')
@@ -68,11 +68,3 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
 
   return yup.object().shape(validationSchema)
 }
-
-// TODO: For FormikArray if necessary
-// export const getValidationSchemaArray = (minQuantity: number | null = null) => {
-//   const validationSchema = getValidationSchema(minQuantity)
-//   return yup.object().shape({
-//     events: yup.array().of(validationSchema),
-//   })
-// }
