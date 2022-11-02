@@ -131,7 +131,7 @@ export const OfferersToValidate = () => {
       const response = await apiProvider().listOfferersToBeValidated({
         page: page + 1,
         perPage: rowsPerPage,
-        sort: JSON.stringify([{ field: 'name', order: 'asc' }]),
+        sort: JSON.stringify([{ field: 'dateCreated', order: 'desc' }]),
         filter: JSON.stringify(filters),
       })
       if (response && response.data && response.data.length > 0) {
