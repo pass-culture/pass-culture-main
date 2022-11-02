@@ -732,3 +732,7 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
         return subscription_messages.get_generic_ko_message(user.id)
 
     return None
+
+
+def has_subscription_issues(user: users_models.User) -> bool:
+    return get_subscription_message(user) is not None

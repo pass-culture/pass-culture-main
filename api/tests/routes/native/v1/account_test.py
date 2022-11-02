@@ -324,6 +324,10 @@ class AccountTest:
         n_queries += 1  # get feature enable_subscription_limitatin
         n_queries += 1  # has beneficiary_fraud_review (from get_subscription_message)
         n_queries += 1  # get feature enable_native_cultural_survey
+        n_queries += 1  # check pending status get_identity_check_subscription_status
+        n_queries += 1  # check issues has_subscription_issues
+        n_queries += 1  # check issues has_subscription_issues
+        n_queries += 1  # check has to complete step get_next_subscription_step
 
         with testing.assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
