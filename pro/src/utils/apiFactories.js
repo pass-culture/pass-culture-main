@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import { OfferStatus } from 'apiClient/v1'
 import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
 
 let offerId = 1
@@ -24,7 +25,7 @@ export const collectiveOfferFactory = (
     isFullyBooked: false,
     isThing: false,
     nonHumanizedId: currentOfferId,
-    status: 'ACTIVE',
+    status: OfferStatus.ACTIVE,
     stocks,
     venue: customVenue,
     hasBookingLimitDatetimesPassed: false,
@@ -64,7 +65,7 @@ export const offerFactory = (
     isFullyBooked: false,
     isThing: true,
     nonHumanizedId: currentOfferId,
-    status: 'ACTIVE',
+    status: OfferStatus.ACTIVE,
     stocks,
     venue: customVenue,
     hasBookingLimitDatetimesPassed: false,

@@ -40,7 +40,7 @@ export type Stock = {
 
 export type Offer = {
   id: string
-  status: string
+  status: OfferStatus
   isActive: boolean
   hasBookingLimitDatetimesPassed: boolean
   thumbUrl?: string | null

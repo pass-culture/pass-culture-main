@@ -1,3 +1,4 @@
+/* istanbul ignore file : no need to test this file */
 import React from 'react'
 
 import Icon from 'ui-kit/Icon/Icon'
@@ -78,24 +79,6 @@ export const PublicIcons = () => (
           <Icon svg="ico-alert-filled" />
         </td>
         <td>public/icons/ico-alert-filled</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-arrow-down-b" />
-        </td>
-        <td>public/icons/ico-arrow-down-b</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-arrow-down-r" />
-        </td>
-        <td>public/icons/ico-arrow-down-r</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-arrow-up-b" />
-        </td>
-        <td>public/icons/ico-arrow-up-b</td>
       </tr>
       <tr>
         <td>
@@ -183,12 +166,6 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
-          <Icon svg="ico-duo" />
-        </td>
-        <td>public/icons/ico-duo</td>
-      </tr>
-      <tr>
-        <td>
           <Icon svg="ico-email-red" />
         </td>
         <td>public/icons/ico-email-red</td>
@@ -261,12 +238,6 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
-          <Icon svg="ico-guichet-full" />
-        </td>
-        <td>public/icons/ico-guichet-full</td>
-      </tr>
-      <tr>
-        <td>
           <Icon svg="ico-help" />
         </td>
         <td>public/icons/ico-help</td>
@@ -288,12 +259,6 @@ export const PublicIcons = () => (
           <Icon svg="ico-left-arrow" />
         </td>
         <td>public/icons/ico-left-arrow</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-next-S" />
-        </td>
-        <td>public/icons/ico-next-S</td>
       </tr>
       <tr>
         <td>
@@ -387,12 +352,6 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td className={styles['with-background']}>
-          <Icon svg="ico-status-draft" />
-        </td>
-        <td>public/icons/ico-status-draft</td>
-      </tr>
-      <tr>
-        <td className={styles['with-background']}>
           <Icon svg="ico-status-cancelled" />
         </td>
         <td>public/icons/ico-status-cancelled</td>
@@ -404,18 +363,6 @@ export const PublicIcons = () => (
         <td>public/icons/ico-status-double-validated</td>
       </tr>
       <tr>
-        <td className={styles['with-background']}>
-          <Icon svg="ico-status-expired" />
-        </td>
-        <td>public/icons/ico-status-expired</td>
-      </tr>
-      <tr>
-        <td className={styles['with-background']}>
-          <Icon svg="ico-status-inactive" />
-        </td>
-        <td>public/icons/ico-status-inactive</td>
-      </tr>
-      <tr>
         <td>
           <Icon svg="ico-status-pending-tag" />
         </td>
@@ -423,27 +370,9 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td className={styles['with-background']}>
-          <Icon svg="ico-status-pending" />
-        </td>
-        <td>public/icons/ico-status-pending</td>
-      </tr>
-      <tr>
-        <td className={styles['with-background']}>
           <Icon svg="ico-status-reimbursed" />
         </td>
         <td>public/icons/ico-status-reimbursed</td>
-      </tr>
-      <tr>
-        <td className={styles['with-background']}>
-          <Icon svg="ico-status-rejected" />
-        </td>
-        <td>public/icons/ico-status-rejected</td>
-      </tr>
-      <tr>
-        <td className={styles['with-background']}>
-          <Icon svg="ico-status-sold-out" />
-        </td>
-        <td>public/icons/ico-status-sold-out</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
@@ -462,18 +391,6 @@ export const PublicIcons = () => (
           <Icon svg="ico-structure" />
         </td>
         <td>public/icons/ico-structure</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-trash-filled" />
-        </td>
-        <td>public/icons/ico-trash-filled</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-trash" />
-        </td>
-        <td>public/icons/ico-trash</td>
       </tr>
       <tr>
         <td className={styles['with-background']}>
@@ -501,12 +418,6 @@ export const PublicIcons = () => (
       </tr>
       <tr>
         <td>
-          <Icon svg="ico-valid" />
-        </td>
-        <td>public/icons/ico-valid</td>
-      </tr>
-      <tr>
-        <td>
           <Icon svg="ico-validate-green" />
         </td>
         <td>public/icons/ico-validate-green</td>
@@ -522,24 +433,6 @@ export const PublicIcons = () => (
           <Icon svg="ico-validate-purple" />
         </td>
         <td>public/icons/ico-validate-purple</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-venue-r" />
-        </td>
-        <td>public/icons/ico-venue-r</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-venue" />
-        </td>
-        <td>public/icons/ico-venue</td>
-      </tr>
-      <tr>
-        <td>
-          <Icon svg="ico-warning-stocks" />
-        </td>
-        <td>public/icons/ico-warning-stocks</td>
       </tr>
       <tr>
         <td>

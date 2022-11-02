@@ -1,6 +1,7 @@
 import React from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
+import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 
 import styles from './VenueProviderStatus.module.scss'
 
@@ -12,11 +13,19 @@ const VenueProviderStatus = ({
   isActive,
 }: VenueProviderStatusProps): JSX.Element => {
   const statusClassName = isActive ? 'status-active' : 'status-inactive'
-  const statusIcon = isActive ? 'ico-status-validated' : 'ico-status-inactive'
   return (
     <span className={`${styles['venue-provider-status']} ${statusClassName}`}>
-      <Icon svg={statusIcon} />
-      {isActive ? 'Synchronisation activée' : 'Synchronisation en pause'}
+      {isActive ? (
+        <>
+          <StatusValidatedIcon />
+          Synchronisation activée
+        </>
+      ) : (
+        <>
+          <StatusInactiveIcon />
+          Synchronisation en pause
+        </>
+      )}
     </span>
   )
 }

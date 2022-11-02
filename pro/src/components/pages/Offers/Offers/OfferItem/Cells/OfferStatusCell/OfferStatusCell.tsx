@@ -1,10 +1,11 @@
 import React from 'react'
 
-import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
+import { OfferStatus } from 'apiClient/v1'
+import { StatusLabel } from 'new_components/StatusLabel'
 
 import styles from '../../OfferItem.module.scss'
 
-const OfferStatusCell = ({ status }: { status: string }) => (
+const OfferStatusCell = ({ status }: { status: OfferStatus }) => (
   <td className={styles['status-column']}>
     <StatusLabel status={status} />
   </td>

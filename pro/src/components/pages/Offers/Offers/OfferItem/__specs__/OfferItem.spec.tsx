@@ -8,15 +8,9 @@ import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
+import { ApiError, OfferStatus } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import {
-  OFFER_STATUS_ACTIVE,
-  OFFER_STATUS_DRAFT,
-  OFFER_STATUS_PENDING,
-  OFFER_STATUS_REJECTED,
-} from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import Notification from 'new_components/Notification/Notification'
@@ -64,7 +58,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
-      status: 'ACTIVE',
+      status: OfferStatus.ACTIVE,
       stocks: [],
       venue: {
         isVirtual: false,
@@ -124,7 +118,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       describe('draft delete button', () => {
         it('should display a trash icon with a confirm dialog to delete draft offer', async () => {
           // given
-          props.offer.status = 'DRAFT'
+          props.offer.status = OfferStatus.DRAFT
 
           renderOfferItem(props, store)
 
@@ -144,7 +138,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         it('should display a notification in case of draft deletion error', async () => {
           // given
-          props.offer.status = 'DRAFT'
+          props.offer.status = OfferStatus.DRAFT
 
           renderOfferItem(props, store)
           jest.spyOn(api, 'deleteDraftOffers').mockRejectedValue(
@@ -411,7 +405,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           { remainingQuantity: 0 },
           { remainingQuantity: 0 },
         ]
-        eventOffer.status = 'SOLD_OUT'
+        eventOffer.status = OfferStatus.SOLD_OUT
 
         // when
         renderOfferItem(props, store)
@@ -470,10 +464,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       )
     })
 
-    const greyedOfferStatusDataSet = [
-      OFFER_STATUS_REJECTED,
-      OFFER_STATUS_PENDING,
-    ]
+    const greyedOfferStatusDataSet = [OfferStatus.REJECTED, OfferStatus.PENDING]
     it.each(greyedOfferStatusDataSet)(
       'should display the offer greyed when offer is %s',
       status => {
@@ -487,7 +478,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
     )
 
-    const offerStatusDataSet = [OFFER_STATUS_ACTIVE, OFFER_STATUS_DRAFT]
+    const offerStatusDataSet = [OfferStatus.ACTIVE, OfferStatus.DRAFT]
     it.each(offerStatusDataSet)(
       'should not display the offer greyed when offer is %s',
       status => {
@@ -503,7 +494,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should have an edit link to detail page when offer is draft', () => {
       // Given
-      props.offer.status = 'DRAFT'
+      props.offer.status = OfferStatus.DRAFT
 
       // When
       renderOfferItem(props, store)

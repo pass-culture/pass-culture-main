@@ -6,14 +6,11 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import { api } from 'apiClient/api'
-import {
-  OFFER_STATUS_ACTIVE,
-  OFFER_STATUS_INACTIVE,
-} from 'core/Offers/constants'
+import { OfferStatus } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
 import { configureTestStore } from 'store/testUtils'
 
-import StatusToggleButton from '../StatusToggleButton'
+import StatusToggleButton, { IStatusToggleButton } from '../StatusToggleButton'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -22,20 +19,21 @@ jest.mock('react-router-dom', () => ({
   }),
 }))
 
-const renderStatusToggleButton = (offer, store) => {
+const renderStatusToggleButton = (props: IStatusToggleButton) => {
   render(
-    <Provider store={configureTestStore(store)}>
-      <StatusToggleButton offer={offer} reloadOffer={jest.fn()} />
+    <Provider store={configureTestStore({})}>
+      <StatusToggleButton {...props} />
     </Provider>
   )
 }
 describe('StatusToggleButton', () => {
-  let offer
+  let props: IStatusToggleButton
   beforeEach(() => {
-    offer = {
-      id: 'AG3A',
+    props = {
+      offerId: 'AG3A',
       isActive: true,
-      status: OFFER_STATUS_ACTIVE,
+      status: OfferStatus.ACTIVE,
+      reloadOffer: jest.fn(),
     }
   })
 
@@ -47,10 +45,14 @@ describe('StatusToggleButton', () => {
     const notifySuccess = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
+      error: jest.fn(),
+      information: jest.fn(),
+      pending: jest.fn(),
+      close: jest.fn(),
     }))
 
     // when
-    renderStatusToggleButton(offer)
+    renderStatusToggleButton(props)
 
     // then
     await userEvent.click(screen.getByRole('button', { name: /Désactiver/ }))
@@ -66,6 +68,7 @@ describe('StatusToggleButton', () => {
       'L’offre a bien été désactivée.'
     )
   })
+
   it('should activate an offer and confirm', async () => {
     // given
     const toggleFunction = jest
@@ -74,12 +77,17 @@ describe('StatusToggleButton', () => {
     const notifySuccess = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
+      error: jest.fn(),
+      information: jest.fn(),
+      pending: jest.fn(),
+      close: jest.fn(),
     }))
+
     // when
     renderStatusToggleButton({
-      ...offer,
+      ...props,
       isActive: false,
-      status: OFFER_STATUS_INACTIVE,
+      status: OfferStatus.INACTIVE,
     })
 
     // then
@@ -94,17 +102,23 @@ describe('StatusToggleButton', () => {
       'L’offre a bien été publiée.'
     )
   })
+
   it('should display error', async () => {
     // given
     const toggleFunction = jest
       .spyOn(api, 'patchOffersActiveStatus')
-      .mockRejectedValue()
+      .mockRejectedValue({})
     const notifyError = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
+      success: jest.fn(),
+      information: jest.fn(),
+      pending: jest.fn(),
+      close: jest.fn(),
     }))
+
     // when
-    renderStatusToggleButton(offer)
+    renderStatusToggleButton(props)
 
     // then
     await userEvent.click(screen.getByText(/Désactiver/))

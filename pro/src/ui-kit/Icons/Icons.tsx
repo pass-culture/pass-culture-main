@@ -54,7 +54,12 @@ import { ReactComponent as IcoRightCircleArrow } from 'icons/ico-right-circle-ar
 import { ReactComponent as IcoSearchGray } from 'icons/ico-search-gray.svg'
 import { ReactComponent as SignoutIcon } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
+import { ReactComponent as StatusDraftIcon } from 'icons/ico-status-draft.svg'
+import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.svg'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
+import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
+import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
+import { ReactComponent as StatusSoldOutIcon } from 'icons/ico-status-sold-out.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import { ReactComponent as IcoStructure } from 'icons/ico-structure.svg'
 import { ReactComponent as IcoTag } from 'icons/ico-tag.svg'
@@ -588,6 +593,36 @@ export const Icons = () => (
           <ValidateIcon />
         </td>
         <td>validate</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <StatusDraftIcon />
+        </td>
+        <td>StatusDraft</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <StatusExpiredIcon />
+        </td>
+        <td>StatusExpired</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <StatusPendingIcon />
+        </td>
+        <td>StatusPending</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <StatusRejectedIcon />
+        </td>
+        <td>StatusRejected</td>
+      </tr>
+      <tr>
+        <td className={styles['with-background']}>
+          <StatusSoldOutIcon />
+        </td>
+        <td>StatusSoldOut</td>
       </tr>
     </body>
   </table>
