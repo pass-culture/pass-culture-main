@@ -28,7 +28,7 @@ class SubscriptionMessage(BaseModel):
     user_message: str
     call_to_action: CallToActionMessage | None
     pop_over_icon: subscription_models.PopOverIcon | None
-    updated_at: datetime.datetime
+    updated_at: datetime.datetime | None
 
     class Config:
         orm_mode = True
@@ -36,11 +36,6 @@ class SubscriptionMessage(BaseModel):
         allow_population_by_field_name = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-
-    @classmethod
-    def from_orm(cls, subscription_message: subscription_models.SubscriptionMessage):  # type: ignore [no-untyped-def]
-        subscription_message.updated_at = datetime.datetime.utcnow()
-        return super().from_orm(subscription_message)
 
 
 class NextSubscriptionStepResponse(BaseModel):
