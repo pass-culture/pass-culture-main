@@ -64,8 +64,7 @@ const renderStockEventForm =
       </Formik>
     )
 
-const Template: ComponentStory<typeof StockEventForm> =
-  renderStockEventForm({})
+const Template: ComponentStory<typeof StockEventForm> = renderStockEventForm({})
 export const Default = Template.bind({})
 Default.args = {
   today,

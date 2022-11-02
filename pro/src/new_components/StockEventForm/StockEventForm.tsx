@@ -1,7 +1,8 @@
 import React from 'react'
 
-import styles from 'new_components/StockThingForm/StockThingForm.module.scss'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
+
+import styles from './StockEventForm.module.scss'
 
 export interface IStockEventFormProps {
   today: Date
