@@ -70,6 +70,11 @@ jobs:
     needs: read-node-version
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: |
+          git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
+          git update-ref refs/heads/master refs/remotes/origin/master
       - if: ${{ env.use_cache }}
         uses: actions/setup-node@v3
         with:
@@ -97,6 +102,13 @@ jobs:
           SLACK_CHANNEL: shérif
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: Github Actions Bot
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: pro
 #
 #  tests-pro-e2e-tests:
 #    runs-on: ubuntu-latest

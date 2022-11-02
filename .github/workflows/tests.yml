@@ -10,6 +10,7 @@ jobs:
   test-pro:
     name: "[pro] Tests"
     uses: ./.github/workflows/tests-pro.yml
+    secrets: inherit
 
   test-adage:
     name: "[adage] Tests"
