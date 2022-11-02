@@ -13,19 +13,19 @@ from pcapi.core.users import young_status
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+def _with_age(age):
+    return datetime.datetime.utcnow() - relativedelta(years=age)
+
+
 class UserStatusTest:
     class EligibleTest:
         @pytest.mark.parametrize("age", [15, 16, 17, 18])
         def test_eligible_when_age_is_between_15_and_18(self, age):
-            user = users_factories.UserFactory(
-                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age),
-            )
+            user = users_factories.UserFactory(dateOfBirth=_with_age(age))
             assert young_status.young_status(user) == young_status.Eligible()
 
         def test_eligible_when_19yo_with_pending_dms_application(self):
-            user = users_factories.UserFactory(
-                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19),
-            )
+            user = users_factories.UserFactory(dateOfBirth=_with_age(19))
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user,
                 type=fraud_models.FraudCheckType.DMS,
@@ -36,15 +36,11 @@ class UserStatusTest:
             assert young_status.young_status(user) == young_status.Eligible()
 
     def test_non_eligible_when_too_young(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=15) + relativedelta(days=1),
-        )
+        user = users_factories.UserFactory(dateOfBirth=_with_age(15) + relativedelta(days=1))
         assert young_status.young_status(user) == young_status.NonEligible()
 
     def test_non_eligible_when_too_old(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, days=1),
-        )
+        user = users_factories.UserFactory(dateOfBirth=_with_age(19) - relativedelta(days=1))
         assert young_status.young_status(user) == young_status.NonEligible()
 
     def test_beneficiary_when_18yo_and_have_deposit(self):
