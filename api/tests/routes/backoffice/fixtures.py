@@ -41,6 +41,7 @@ __all__ = (
     "collective_venue_booking",
     "offerer_tags",
     "offerers_to_be_validated",
+    "user_offerer_to_be_validated",
 )
 
 
@@ -351,5 +352,35 @@ def offerers_to_be_validated(offerer_tags):
     # Other statuses
     offerers_factories.OffererFactory(name="G")
     offerers_factories.NotValidatedOffererFactory(name="H", validationStatus=offerers_models.ValidationStatus.REJECTED)
+
+    return (no_tag, top, collec, public, top_collec, top_public)
+
+
+@pytest.fixture
+def user_offerer_to_be_validated(offerer_tags):
+    top_tag, collec_tag, public_tag = offerer_tags
+
+    no_tag = offerers_factories.NotValidatedUserOffererFactory(user__email="a@example.com")
+    top = offerers_factories.NotValidatedUserOffererFactory(
+        user__email="b@example.com", validationStatus=offerers_models.ValidationStatus.PENDING
+    )
+    collec = offerers_factories.NotValidatedUserOffererFactory(user__email="c@example.com")
+    public = offerers_factories.NotValidatedUserOffererFactory(
+        user__email="d@example.com", validationStatus=offerers_models.ValidationStatus.PENDING
+    )
+    top_collec = offerers_factories.NotValidatedUserOffererFactory(user__email="e@example.com")
+    top_public = offerers_factories.NotValidatedUserOffererFactory(
+        user__email="f@example.com", validationStatus=offerers_models.ValidationStatus.PENDING
+    )
+
+    for user_offerer in (top, top_collec, top_public):
+        offerers_factories.OffererTagMappingFactory(tagId=top_tag.id, offererId=user_offerer.offererId)
+    for user_offerer in (collec, top_collec):
+        offerers_factories.OffererTagMappingFactory(tagId=collec_tag.id, offererId=user_offerer.offererId)
+    for user_offerer in (public, top_public):
+        offerers_factories.OffererTagMappingFactory(tagId=public_tag.id, offererId=user_offerer.offererId)
+
+    # Other status
+    offerers_factories.UserOffererFactory(user__email="g@example.com")
 
     return (no_tag, top, collec, public, top_collec, top_public)
