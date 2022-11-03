@@ -22,8 +22,10 @@ jest.mock('utils/date', () => ({
 
 const today = getToday()
 const tomorrow = getToday()
+const yesterday = getToday()
 const oneWeekLater = getToday()
 tomorrow.setDate(tomorrow.getDate() + 1)
+yesterday.setDate(yesterday.getDate() - 1)
 oneWeekLater.setDate(oneWeekLater.getDate() + 7)
 
 const renderStockEventForm = ({
@@ -86,6 +88,7 @@ describe('StockEventForm:validationSchema', () => {
   const dataSetbeginningDate: Array<number> = [
     tomorrow.getDate(),
     oneWeekLater.getDate(),
+    yesterday.getDate(),
   ]
   it.each(dataSetbeginningDate)(
     'should not display beginningDate error',
@@ -94,6 +97,7 @@ describe('StockEventForm:validationSchema', () => {
 
       await userEvent.click(screen.getByLabelText('Date', { exact: true }))
       await userEvent.click(screen.getByText(beginningDate))
+      await userEvent.click(screen.getByLabelText('Quantité'))
       const errorbeginningDate = screen.queryByTestId('error-beginningDate')
       expect(errorbeginningDate).not.toBeInTheDocument()
     }
