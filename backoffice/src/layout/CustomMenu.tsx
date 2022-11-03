@@ -117,14 +117,24 @@ export const Menu = ({ dense = false }: MenuProps) => {
             formattedPermissions,
             PermissionsEnum.validateOfferer
           ) && (
-            <MenuItemLink
-              to="/offerers/to_validate"
-              state={{ _scrollToTop: true }}
-              primaryText={translate('menu.offerers', {
-                smart_count: 2,
-              })}
-              dense={dense}
-            />
+            <>
+              <MenuItemLink
+                to="/offerers/to_validate"
+                state={{ _scrollToTop: true }}
+                primaryText={translate('menu.offerers', {
+                  smart_count: 2,
+                })}
+                dense={dense}
+              />
+              <MenuItemLink
+                to="/users_offerers/to_validate"
+                state={{ _scrollToTop: true }}
+                primaryText={translate('menu.users_offerers', {
+                  smart_count: 2,
+                })}
+                dense={dense}
+              />
+            </>
           )}
         </SubMenu>
       )}

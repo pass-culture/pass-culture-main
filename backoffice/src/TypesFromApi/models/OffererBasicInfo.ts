@@ -71,7 +71,7 @@ export interface OffererBasicInfo {
    * @type {string}
    * @memberof OffererBasicInfo
    */
-  siren: string
+  siren?: string | null
   /**
    *
    * @type {ValidationStatus}
@@ -100,7 +100,7 @@ export function OffererBasicInfoFromJSONTyped(
     isCollectiveEligible: json['isCollectiveEligible'],
     name: json['name'],
     region: json['region'],
-    siren: json['siren'],
+    siren: !exists(json, 'siren') ? undefined : json['siren'],
     validationStatus: ValidationStatusFromJSON(json['validationStatus']),
   }
 }
