@@ -103,7 +103,7 @@ export interface OffererToBeValidated {
    * @type {string}
    * @memberof OffererToBeValidated
    */
-  siren: string
+  siren?: string | null
   /**
    *
    * @type {string}
@@ -144,7 +144,7 @@ export function OffererToBeValidatedFromJSONTyped(
     phoneNumber: !exists(json, 'phoneNumber') ? undefined : json['phoneNumber'],
     postalCode: json['postalCode'],
     requestDate: new Date(json['requestDate']),
-    siren: json['siren'],
+    siren: !exists(json, 'siren') ? undefined : json['siren'],
     status: json['status'],
     step: !exists(json, 'step') ? undefined : json['step'],
   }

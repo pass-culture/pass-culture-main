@@ -18,7 +18,7 @@ type Props = {
   onContextMenuChange: () => void
 }
 
-export const OffererUserssToValidateContextTableMenu = ({
+export const OffererUsersToValidateContextTableMenu = ({
   id,
   onContextMenuChange,
 }: Props) => {
