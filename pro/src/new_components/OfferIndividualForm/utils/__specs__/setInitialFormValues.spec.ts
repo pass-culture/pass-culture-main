@@ -18,6 +18,7 @@ describe('setFormReadOnlyFields', () => {
       description: 'Offer description',
       durationMinutes: 140,
       isbn: '',
+      isActive: true,
       isDuo: false,
       isEducational: false,
       isEvent: true,

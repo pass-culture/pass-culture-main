@@ -136,6 +136,7 @@ export const serializeOfferApi = (
     bookingEmail: apiOffer.bookingEmail || '',
     description: apiOffer.description || '',
     durationMinutes: apiOffer.durationMinutes || null,
+    isActive: apiOffer.isActive,
     isDuo: apiOffer.isDuo,
     isEvent: apiOffer.isEvent,
     isDigital: apiOffer.isDigital,
