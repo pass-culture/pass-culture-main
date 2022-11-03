@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { getError } from 'apiClient/helpers'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -18,7 +19,6 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as CircledRightArrow } from 'icons/ico-right-circle-arrow.svg'
 import GoBackLink from 'new_components/GoBackLink'
 import PageTitle from 'new_components/PageTitle/PageTitle'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -98,14 +98,14 @@ const VenueEdition = () => {
   }) => {
     const body = formatVenuePayload(formValues, false, venue.siret !== null)
     try {
-      const response = await pcapi.editVenue(venueId, body)
+      const response = await api.editVenue(venueId, body)
       handleSuccess(response)
     } catch (responseError) {
       handleFail(responseError)
     }
   }
 
-  const handleSubmitRequestFail = ({ payload: { errors } }) => {
+  const handleSubmitRequestFail = errors => {
     let text = 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
     if (errors.global) {
       text = `${text} ${errors.global[0]}`
@@ -240,8 +240,8 @@ const VenueEdition = () => {
 
   const handleFormFail = formResolver => (_state, action) => {
     const { payload } = action
-    const errors = parseSubmitErrors(payload.errors)
-    handleSubmitRequestFail(action)
+    const errors = parseSubmitErrors(getError(payload))
+    handleSubmitRequestFail(getError(payload))
     formResolver(errors)
     setIsRequestPending(false)
   }
