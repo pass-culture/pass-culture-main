@@ -18,7 +18,7 @@ import { getWizardData } from './adapters'
 export interface IOfferIndividualContext {
   offerId: string | null
   offer: IOfferIndividual | null
-  setOffer: React.Dispatch<React.SetStateAction<IOfferIndividual | null>> | null
+  setOffer: ((offer: IOfferIndividual | null) => void) | null
   categories: IOfferCategory[]
   subCategories: IOfferSubCategory[]
   offererNames: TOffererName[]
@@ -59,21 +59,29 @@ export function OfferIndividualContextProvider({
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<TOffererName | null>(null)
 
-  const [offer, setOffer] = useState<IOfferIndividual | null>(null)
+  const [offer, setOfferState] = useState<IOfferIndividual | null>(null)
   const [categories, setCategories] = useState<IOfferCategory[]>([])
   const [subCategories, setSubCategories] = useState<IOfferSubCategory[]>([])
   const [offererNames, setOffererNames] = useState<TOffererName[]>([])
   const [venueList, setVenueList] = useState<TOfferIndividualVenue[]>([])
+
+  const setOffer = (offer: IOfferIndividual | null) => {
+    setOfferState(offer)
+    setOfferOfferer(
+      offer
+        ? {
+            id: offer.venue.offerer.id,
+            name: offer.venue.offerer.name,
+          }
+        : null
+    )
+  }
 
   useEffect(() => {
     async function loadOffer() {
       const response = await getOfferIndividualAdapter(offerId)
       if (response.isOk) {
         setOffer(response.payload)
-        setOfferOfferer({
-          id: response.payload.venue.offerer.id,
-          name: response.payload.venue.offerer.name,
-        })
       } else {
         notify.error(
           'Une erreur est survenue lors de la récupération de votre offre'
@@ -91,6 +99,7 @@ export function OfferIndividualContextProvider({
         queryOffererId,
         isAdmin: isUserAdmin,
       })
+
       if (response.isOk) {
         setCategories(response.payload.categoriesData.categories)
         setSubCategories(response.payload.categoriesData.subCategories)

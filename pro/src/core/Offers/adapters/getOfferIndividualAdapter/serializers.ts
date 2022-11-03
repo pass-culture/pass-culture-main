@@ -50,23 +50,27 @@ export const serializeVenueApi = (
 
 export const serializeStockApi = (
   apiStock: GetOfferStockResponseModel
-): IOfferIndividualStock => ({
-  beginningDatetime: apiStock.beginningDatetime ?? null,
-  bookingLimitDatetime: apiStock.bookingLimitDatetime ?? null,
-  bookingsQuantity: apiStock.bookingsQuantity,
-  dateCreated: new Date(apiStock.dateCreated),
-  hasActivationCode: apiStock.hasActivationCode,
-  id: apiStock.id,
-  isEventDeletable: apiStock.isEventDeletable,
-  isEventExpired: apiStock.isEventExpired,
-  isSoftDeleted: apiStock.isSoftDeleted,
-  offerId: apiStock.offerId,
-  price: apiStock.price,
-  quantity: apiStock.quantity,
-  remainingQuantity: apiStock.remainingQuantity
-    ? parseInt(apiStock.remainingQuantity.toString(), 10)
-    : 0,
-})
+): IOfferIndividualStock => {
+  const remainingQuantity = apiStock.remainingQuantity
+    ? apiStock.remainingQuantity
+    : 'unlimited'
+
+  return {
+    beginningDatetime: apiStock.beginningDatetime ?? null,
+    bookingLimitDatetime: apiStock.bookingLimitDatetime ?? null,
+    bookingsQuantity: apiStock.bookingsQuantity,
+    dateCreated: new Date(apiStock.dateCreated),
+    hasActivationCode: apiStock.hasActivationCode,
+    id: apiStock.id,
+    isEventDeletable: apiStock.isEventDeletable,
+    isEventExpired: apiStock.isEventExpired,
+    isSoftDeleted: apiStock.isSoftDeleted,
+    offerId: apiStock.offerId,
+    price: apiStock.price,
+    quantity: apiStock.quantity,
+    remainingQuantity: remainingQuantity,
+  }
+}
 
 export const serializeOfferApiExtraData = (
   apiOffer: GetIndividualOfferResponseModel
