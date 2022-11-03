@@ -3,6 +3,7 @@ import { Form } from 'react-final-form'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { getError } from 'apiClient/helpers'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -11,7 +12,6 @@ import useNotification from 'hooks/useNotification'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import GoBackLink from 'new_components/GoBackLink'
 import PageTitle from 'new_components/PageTitle/PageTitle'
-import { createVenue } from 'repository/pcapi/pcapi'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Titles from 'ui-kit/Titles/Titles'
 import { getCanSubmit, parseSubmitErrors } from 'utils/react-final-form'
@@ -120,7 +120,7 @@ const VenueCreation = () => {
   }) => {
     const body = formatVenuePayload(formValues, true, isSiretValued)
     try {
-      const response = await createVenue(body)
+      const response = await api.postCreateVenue(body)
       handleSuccess(response)
     } catch (responseError) {
       handleFail(responseError)
@@ -144,8 +144,8 @@ const VenueCreation = () => {
   }
 
   const handleFormFail = formResolver => payload => {
-    const errors = parseSubmitErrors(payload.errors)
-    handleSubmitFailNotification(payload.errors)
+    const errors = parseSubmitErrors(getError(payload))
+    handleSubmitFailNotification(getError(payload))
     formResolver(errors)
   }
 
