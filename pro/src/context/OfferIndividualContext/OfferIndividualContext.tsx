@@ -7,7 +7,10 @@ import {
   IOfferIndividual,
   IOfferSubCategory,
 } from 'core/Offers/types'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { useHomePath, useNavigate } from 'hooks'
+import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getWizardData } from './adapters'
@@ -49,6 +52,10 @@ export function OfferIndividualContextProvider({
   offerId,
   queryOffererId,
 }: IOfferIndividualContextProviderProps) {
+  const homePath = useHomePath()
+  const notify = useNotification()
+  const navigate = useNavigate()
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<TOffererName | null>(null)
 
@@ -67,6 +74,11 @@ export function OfferIndividualContextProvider({
           id: response.payload.venue.offerer.id,
           name: response.payload.venue.offerer.name,
         })
+      } else {
+        notify.error(
+          'Une erreur est survenue lors de la récupération de votre offre'
+        )
+        navigate(homePath)
       }
     }
     offerId ? loadOffer() : setOffer(null)
@@ -89,6 +101,8 @@ export function OfferIndividualContextProvider({
         setSubCategories([])
         setOffererNames([])
         setVenueList([])
+        notify.error(GET_DATA_ERROR_MESSAGE)
+        navigate(homePath)
       }
       setIsLoading(false)
     }

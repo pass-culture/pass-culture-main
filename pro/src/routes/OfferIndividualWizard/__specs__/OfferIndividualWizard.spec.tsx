@@ -225,6 +225,7 @@ describe('test OfferIndividualWisard', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('should display an error when unable to load categories', async () => {
     jest.spyOn(api, 'getCategories').mockRejectedValue(
       new ApiError(
