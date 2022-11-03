@@ -50,6 +50,9 @@ import {
   ListRoleResponseModel,
   ListRoleResponseModelFromJSON,
   ListRoleResponseModelToJSON,
+  ListUserOffererToBeValidatedResponseModel,
+  ListUserOffererToBeValidatedResponseModelFromJSON,
+  ListUserOffererToBeValidatedResponseModelToJSON,
   OffererAttachedUsersResponseModel,
   OffererAttachedUsersResponseModelFromJSON,
   OffererAttachedUsersResponseModelToJSON,
@@ -170,6 +173,13 @@ export interface GetVenueOffersStatsRequest {
 
 export interface GetVenueTotalRevenueRequest {
   venueId: number
+}
+
+export interface ListOfferersAttachmentsToBeValidatedRequest {
+  filter?: string | null
+  page?: number | null
+  perPage?: number | null
+  sort?: string | null
 }
 
 export interface ListOfferersToBeValidatedRequest {
@@ -1300,6 +1310,65 @@ export class DefaultApi extends runtime.BaseAPI {
     requestParameters: GetVenueTotalRevenueRequest
   ): Promise<Response> {
     const response = await this.getVenueTotalRevenueRaw(requestParameters)
+    return await response.value()
+  }
+
+  /**
+   * list_offerers_attachments_to_be_validated <GET>
+   */
+  async listOfferersAttachmentsToBeValidatedRaw(
+    requestParameters: ListOfferersAttachmentsToBeValidatedRequest
+  ): Promise<runtime.ApiResponse<ListUserOffererToBeValidatedResponseModel>> {
+    const queryParameters: runtime.HTTPQuery = {}
+
+    if (requestParameters.filter !== undefined) {
+      queryParameters['filter'] = requestParameters.filter
+    }
+
+    if (requestParameters.page !== undefined) {
+      queryParameters['page'] = requestParameters.page
+    }
+
+    if (requestParameters.perPage !== undefined) {
+      queryParameters['perPage'] = requestParameters.perPage
+    }
+
+    if (requestParameters.sort !== undefined) {
+      queryParameters['sort'] = requestParameters.sort
+    }
+
+    const headerParameters: runtime.HTTPHeaders = {}
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken
+      const tokenString =
+        typeof token === 'function' ? token('backoffice_auth', []) : token
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`
+      }
+    }
+    const response = await this.request({
+      path: `/backoffice/users_offerers/to_be_validated`,
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    })
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      ListUserOffererToBeValidatedResponseModelFromJSON(jsonValue)
+    )
+  }
+
+  /**
+   * list_offerers_attachments_to_be_validated <GET>
+   */
+  async listOfferersAttachmentsToBeValidated(
+    requestParameters: ListOfferersAttachmentsToBeValidatedRequest
+  ): Promise<ListUserOffererToBeValidatedResponseModel> {
+    const response = await this.listOfferersAttachmentsToBeValidatedRaw(
+      requestParameters
+    )
     return await response.value()
   }
 

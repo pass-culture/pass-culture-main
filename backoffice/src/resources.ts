@@ -1,4 +1,5 @@
 import { OfferersToValidate } from './resources/Pro/Offerers/OfferersToValidate'
+import { UserOfferersToValidate } from './resources/Pro/Offerers/UserOfferersToValidate'
 import { ProSearch } from './resources/Pro/ProSearch'
 import { UserSearch } from './resources/PublicUsers/UserSearch'
 import { RolesList } from './resources/Roles/RolesList'
@@ -27,5 +28,9 @@ export const resources: ResourceType[] = [
   {
     name: '/offerers/to_validate',
     list: OfferersToValidate,
+  },
+  {
+    name: '/users_offerers/to_validate',
+    list: UserOfferersToValidate,
   },
 ]

@@ -15,6 +15,7 @@ const messages: TranslationMessages = {
     prosTitle: 'Acteurs Culturels',
     pros: 'Liste des acteurs culturels',
     offerers: 'Liste des structures à valider',
+    users_offerers: 'Liste des rattachements à valider',
     offersCategory: `Catégories et sous-catégories d'Offres`,
     conformity: 'Règles de conformité',
     offerValidation: 'Validation des offres',
