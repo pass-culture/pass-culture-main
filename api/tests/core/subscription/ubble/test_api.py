@@ -821,36 +821,31 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(fraud_check, False) is None
 
     @pytest.mark.parametrize(
-        "reason_codes,expected_message,link",
+        "reason_codes,expected_message",
         [
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
                 "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité.",
-                "passculture://verification-identite/identification",
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
                 "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité.",
-                "passculture://verification-identite/identification",
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
                 "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
-                "passculture://verification-identite",
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
                 "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
-                "passculture://verification-identite/identification",
             ),
             (
                 None,
                 "La vérification de ton identité a échoué. Tu peux réessayer.",
-                "passculture://verification-identite/identification",
             ),
         ],
     )
-    def test_retryable(self, reason_codes, expected_message, link):
+    def test_retryable(self, reason_codes, expected_message):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=FraudCheckStatus.SUSPICIOUS,
@@ -862,7 +857,7 @@ class SubscriptionMessageTest:
             user_message=expected_message,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Réessayer la vérification de mon identité",
-                link=link,
+                link="passculture://verification-identite",
                 icon=subscription_models.CallToActionIcon.RETRY,
             ),
             pop_over_icon=None,
