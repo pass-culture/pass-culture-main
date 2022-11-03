@@ -1067,14 +1067,18 @@ def get_paginated_active_collective_offer_template_ids(limit: int, page: int) ->
 
 def get_active_collective_bookings_for_offerer(offerer_id: int) -> list[educational_models.CollectiveBooking]:
     return (
-        educational_models.CollectiveBooking.query.join(
-            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+        educational_models.CollectiveBooking.query.options(
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+            .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+            .joinedload(educational_models.CollectiveOffer.domains)
         )
-        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
-        .join(educational_models.EducationalDomain, educational_models.CollectiveOffer.domains)
-        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
-        .join(educational_models.EducationalInstitution, educational_models.CollectiveBooking.educationalInstitution)
-        .join(educational_models.EducationalRedactor, educational_models.CollectiveBooking.educationalRedactor)
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+            .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+            .joinedload(educational_models.CollectiveOffer.venue)
+        )
+        .options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution))
+        .options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor))
         .filter(
             educational_models.CollectiveBooking.status.in_(
                 [
