@@ -83,6 +83,10 @@ class OffererToBeValidatedQuery(PaginableQuery, FilterableQuery):
     q: str | None
 
 
+class UserOffererToBeValidatedQuery(PaginableQuery, FilterableQuery):
+    pass
+
+
 class SearchQuery(PaginableQuery):
     q: str
 
@@ -453,3 +457,24 @@ class CommentRequest(BaseModel):
 
 class IsTopActorRequest(BaseModel):
     isTopActor: bool
+
+
+class UserOffererToBeValidated(BaseModel):
+    id: int
+    userId: int
+    email: str | None
+    userName: str
+    status: str
+    requestDate: datetime.datetime | None
+    lastComment: Comment | None
+    phoneNumber: str | None
+    offererId: int
+    offererName: str
+    offererCreatedDate: datetime.datetime
+    ownerId: int | None
+    ownerEmail: str | None
+    siren: str
+
+
+class ListUserOffererToBeValidatedResponseModel(PaginatedResponse):
+    data: list[UserOffererToBeValidated]
