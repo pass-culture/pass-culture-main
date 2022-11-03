@@ -35,7 +35,7 @@ const OfferType = (): JSX.Element => {
     // Offer type is EDUCATIONAL
     if (offerSubtype === OFFER_SUBTYPES.TEMPLATE && isSubtypeChosenAtCreation) {
       return history.push({
-        pathname: '/offre/collective/vitrine/creation',
+        pathname: '/offre/creation/collectif/vitrine',
         search: location.search,
       })
     }
