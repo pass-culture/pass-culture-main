@@ -113,20 +113,13 @@ const CollectiveOfferStockEdition = ({
           return notify.error(stockResponse.message)
         }
         setStock(stockResponse.payload.stock)
-        const initialValuesFromStock = offer.isTemplate
-          ? {
-              ...DEFAULT_EAC_STOCK_FORM_VALUES,
-              priceDetail:
-                stockResponse.payload.stock?.educationalPriceDetail ?? '',
-              educationalOfferType: EducationalOfferType.SHOWCASE,
-            }
-          : extractInitialStockValues(
-              stockResponse.payload.stock,
-              offer,
-              offer.isTemplate
-                ? EducationalOfferType.SHOWCASE
-                : EducationalOfferType.CLASSIC
-            )
+        const initialValuesFromStock = extractInitialStockValues(
+          stockResponse.payload.stock,
+          offer,
+          offer.isTemplate
+            ? EducationalOfferType.SHOWCASE
+            : EducationalOfferType.CLASSIC
+        )
         setInitialValues(initialValuesFromStock)
         setIsReady(true)
       }
