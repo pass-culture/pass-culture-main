@@ -26,15 +26,12 @@ def get_application_pending_message(updated_at: datetime.datetime | None) -> sub
 def get_ubble_retryable_message(
     reason_codes: list[fraud_models.FraudReasonCode], updated_at: datetime.datetime | None
 ) -> subscription_models.SubscriptionMessage:
-    call_to_action = REDIRECT_TO_IDENTIFICATION
-
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
         user_message = "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé."
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
         user_message = "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité."
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
         user_message = "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
-        call_to_action = subscription_messages.REDIRECT_TO_IDENTIFICATION_CHOICE
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
         user_message = "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
     else:
@@ -42,7 +39,7 @@ def get_ubble_retryable_message(
 
     return subscription_models.SubscriptionMessage(
         user_message=user_message,
-        call_to_action=call_to_action,
+        call_to_action=subscription_messages.REDIRECT_TO_IDENTIFICATION_CHOICE,
         pop_over_icon=None,
         updated_at=updated_at,
     )

@@ -1970,7 +1970,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
         )
-        assert message.call_to_action.link == "passculture://verification-identite/identification"
+        assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2037,7 +2037,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité."
         )
-        assert message.call_to_action.link == "passculture://verification-identite/identification"
+        assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
@@ -2279,7 +2279,7 @@ class UbbleWebhookTest:
             message.user_message
             == "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé."
         )
-        assert message.call_to_action.link == "passculture://verification-identite/identification"
+        assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
