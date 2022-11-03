@@ -24,6 +24,7 @@ describe('routes::Summary::serializers', () => {
       description: 'Offer description',
       durationMinutes: 140,
       isbn: '',
+      isActive: true,
       isDuo: false,
       isEducational: false,
       isEvent: true,

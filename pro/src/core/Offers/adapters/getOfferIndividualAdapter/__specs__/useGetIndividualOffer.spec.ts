@@ -179,6 +179,7 @@ describe('useGetOfferIndividual', () => {
       description: 'A passionate description of product 80',
       durationMinutes: null,
       isbn: '',
+      isActive: true,
       isDuo: false,
       isEducational: false,
       accessibility: {
