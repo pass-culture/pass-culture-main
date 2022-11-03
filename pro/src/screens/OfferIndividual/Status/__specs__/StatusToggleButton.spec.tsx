@@ -65,7 +65,8 @@ describe('StatusToggleButton', () => {
 
     expect(notifySuccess).toHaveBeenNthCalledWith(
       1,
-      'L’offre a bien été désactivée.'
+      'L’offre a bien été désactivée.',
+      { withStickyActionBar: false }
     )
   })
 
@@ -99,7 +100,8 @@ describe('StatusToggleButton', () => {
     })
     expect(notifySuccess).toHaveBeenNthCalledWith(
       1,
-      'L’offre a bien été publiée.'
+      'L’offre a bien été publiée.',
+      { withStickyActionBar: false }
     )
   })
 
@@ -125,7 +127,8 @@ describe('StatusToggleButton', () => {
     expect(toggleFunction).toHaveBeenCalledTimes(1)
     expect(notifyError).toHaveBeenNthCalledWith(
       1,
-      'Une erreur est survenue, veuillez réessayer ultérieurement.'
+      'Une erreur est survenue, veuillez réessayer ultérieurement.',
+      { withStickyActionBar: false }
     )
   })
 })

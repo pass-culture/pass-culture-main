@@ -157,6 +157,7 @@ export interface IOfferIndividual {
   description: string
   durationMinutes: number | null
   isbn: string
+  isActive: boolean
   isDuo: boolean
   isEducational: boolean
   isEvent: boolean

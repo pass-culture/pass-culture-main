@@ -446,6 +446,7 @@ describe('serializer', () => {
       durationMinutes: null,
       isbn: '',
       isDuo: false,
+      isActive: true,
       isEducational: false,
       accessibility: {
         none: true,

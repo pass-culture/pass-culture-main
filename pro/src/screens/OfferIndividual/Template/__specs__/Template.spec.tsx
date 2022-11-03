@@ -2,13 +2,16 @@ import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { OfferStatus } from 'apiClient/v1'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { IOfferIndividual } from 'core/Offers/types'
+import { configureTestStore } from 'store/testUtils'
 
 import Template, { ITemplateProps } from '../Template'
 
@@ -34,19 +37,21 @@ const renderTemplate = ({
     ...contextOverride,
   }
   return render(
-    <OfferIndividualContext.Provider value={contextValues}>
-      <MemoryRouter initialEntries={[url]}>
-        <Template {...props}>
-          <div>Template child</div>
-        </Template>
-      </MemoryRouter>
-    </OfferIndividualContext.Provider>
+    <Provider store={configureTestStore({})}>
+      <OfferIndividualContext.Provider value={contextValues}>
+        <MemoryRouter initialEntries={[url]}>
+          <Template {...props}>
+            <div>Template child</div>
+          </Template>
+        </MemoryRouter>
+      </OfferIndividualContext.Provider>
+    </Provider>
   )
 }
 
-describe('test OfferIndividualStepper', () => {
-  it('should render when no offer is given', async () => {
-    await renderTemplate({})
+describe('test OfferIndividualTemplate', () => {
+  it('should render when no offer is given', () => {
+    renderTemplate({})
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Informations')).toBeInTheDocument()
@@ -58,7 +63,7 @@ describe('test OfferIndividualStepper', () => {
       screen.getByRole('heading', { name: 'Créer une offre' })
     ).toBeInTheDocument()
   })
-  it('should render when offer is given', async () => {
+  it('should render when offer is given', () => {
     const offer: Partial<IOfferIndividual> = {
       id: 'AA',
       name: "Titre de l'offre",
@@ -67,7 +72,7 @@ describe('test OfferIndividualStepper', () => {
     const contextOverride = {
       offer: offer as IOfferIndividual,
     }
-    await renderTemplate({ contextOverride })
+    renderTemplate({ contextOverride })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Informations')).toBeInTheDocument()
@@ -81,7 +86,7 @@ describe('test OfferIndividualStepper', () => {
       screen.getByRole('heading', { name: "Titre de l'offre" })
     ).toBeInTheDocument()
   })
-  it('should render when no offer is given on edition mode', async () => {
+  it('should render when no offer is given on edition mode', () => {
     const offer: Partial<IOfferIndividual> = {
       id: 'AA',
       name: "Titre de l'offre",
@@ -90,7 +95,7 @@ describe('test OfferIndividualStepper', () => {
     const contextOverride = {
       offer: offer as IOfferIndividual,
     }
-    await renderTemplate({
+    renderTemplate({
       contextOverride,
       url: '/offre/AA/v3/individuelle/informations',
     })
@@ -109,11 +114,76 @@ describe('test OfferIndividualStepper', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display custom title', async () => {
-    await renderTemplate({ props: { title: 'Custom title' } })
+  it('should display custom title', () => {
+    renderTemplate({ props: { title: 'Custom title' } })
 
     expect(
       screen.getByRole('heading', { name: 'Custom title' })
     ).toBeInTheDocument()
+  })
+
+  describe('Status', () => {
+    it('should display status and button in edition', () => {
+      const offer: Partial<IOfferIndividual> = {
+        id: 'AA',
+        name: "Titre de l'offre",
+        isActive: true,
+        status: OfferStatus.ACTIVE,
+        stocks: [],
+      }
+      const contextOverride = {
+        offer: offer as IOfferIndividual,
+      }
+      renderTemplate({
+        contextOverride,
+        url: '/offre/AA/v3/individuelle/informations',
+      })
+
+      expect(screen.getByTestId('status')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Désactiver' })
+      ).toBeInTheDocument()
+      expect(screen.getByText('publiée')).toBeInTheDocument()
+    })
+
+    it('should display draft status in draft', () => {
+      const offer: Partial<IOfferIndividual> = {
+        id: 'AA',
+        name: "Titre de l'offre",
+        isActive: false,
+        status: OfferStatus.DRAFT,
+        stocks: [],
+      }
+      const contextOverride = {
+        offer: offer as IOfferIndividual,
+      }
+      renderTemplate({
+        contextOverride,
+        url: '/offre/AA/v3/brouillon/individuelle/informations',
+      })
+
+      expect(screen.getByTestId('status')).toBeInTheDocument()
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+      expect(screen.getByText('brouillon')).toBeInTheDocument()
+    })
+
+    it('should display nothing in creation', () => {
+      const offer: Partial<IOfferIndividual> = {
+        id: 'AA',
+        name: "Titre de l'offre",
+        isActive: false,
+        status: OfferStatus.DRAFT,
+        stocks: [],
+      }
+      const contextOverride = {
+        offer: offer as IOfferIndividual,
+      }
+      renderTemplate({
+        contextOverride,
+      })
+
+      expect(screen.queryByTestId('status')).not.toBeInTheDocument()
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    })
   })
 })

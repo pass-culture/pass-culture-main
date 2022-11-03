@@ -26,6 +26,7 @@ const Status = ({
     className={cn(styles['status'], {
       [styles['multiple-columns']]: canDeactivate,
     })}
+    data-testid="status"
   >
     {canDeactivate && (
       <>

@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
@@ -22,23 +23,30 @@ const StatusToggleButton = ({
   reloadOffer,
 }: IStatusToggleButton) => {
   const notification = useNotification()
-  const toggleOfferActiveStatus = useCallback(() => {
-    api
-      // FIX ME: we could send nonHumanizedId and remove dehumanization in api
-      // but this involves to modify EAC too
-      // @ts-expect-error: type string is not assignable to type number
-      .patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
-      .then(() => {
-        reloadOffer()
-        notification.success(
-          `L’offre a bien été ${isActive ? 'désactivée' : 'publiée'}.`
-        )
-      })
-      .catch(() => {
-        notification.error(
-          'Une erreur est survenue, veuillez réessayer ultérieurement.'
-        )
-      })
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+
+  const toggleOfferActiveStatus = useCallback(async () => {
+    try {
+      await api
+        // FIX ME: we could send nonHumanizedId and remove dehumanization in api
+        // but this involves to modify EAC too
+        // @ts-expect-error: type string is not assignable to type number
+        .patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
+      reloadOffer()
+      notification.success(
+        `L’offre a bien été ${isActive ? 'désactivée' : 'publiée'}.`,
+        {
+          withStickyActionBar: isOfferFormV3,
+        }
+      )
+    } catch (error) {
+      notification.error(
+        'Une erreur est survenue, veuillez réessayer ultérieurement.',
+        {
+          withStickyActionBar: isOfferFormV3,
+        }
+      )
+    }
   }, [offerId, isActive, reloadOffer])
 
   return (
