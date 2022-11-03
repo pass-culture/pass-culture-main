@@ -31,7 +31,6 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getOfferer: jest.fn(),
     getVenueStats: jest.fn(),
-    patchProUserRgsSeen: jest.fn(),
     getBusinessUnits: jest.fn(),
   },
 }))
@@ -240,34 +239,6 @@ describe('homepage', () => {
       })
     })
 
-    describe('rGS Banner', () => {
-      it('should close and register when user clicks close button', async () => {
-        const spyRegister = jest
-          .spyOn(api, 'patchProUserRgsSeen')
-          .mockResolvedValue()
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-        await userEvent.click(
-          screen.getByRole('button', { name: /Masquer le bandeau/ })
-        )
-        expect(spyRegister).toHaveBeenCalledTimes(1)
-        expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
-      })
-      it('should not display if user has already seen', async () => {
-        jest.spyOn(api, 'getProfile').mockResolvedValue({ hasSeenProRgs: true })
-        store = configureTestStore({
-          user: {
-            currentUser: {
-              hasSeenProRgs: true,
-            },
-          },
-        })
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-        expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
-      })
-    })
-
     describe('Job Highlights Banner', () => {
       beforeEach(() => {
         store = configureTestStore({
@@ -278,7 +249,6 @@ describe('homepage', () => {
               lastName: 'Do',
               email: 'john.do@dummy.xyz',
               phoneNumber: '01 00 00 00 00',
-              hasSeenProRgs: true,
             },
             initialized: true,
           },
