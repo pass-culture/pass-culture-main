@@ -3,7 +3,6 @@ import React, { useRef, useState } from 'react'
 import { api } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useStats from 'hooks/useStats'
 import { BannerRGS } from 'new_components/Banner'
 import JobHighlightsBanner from 'new_components/JobHighlightsBanner'
 import { Newsletter } from 'new_components/Newsletter'
@@ -23,7 +22,6 @@ const Homepage = (): JSX.Element => {
   const [hasClosedRGSBanner, setHasClosedRGSBanner] = useState<boolean>(
     Boolean(hasSeenProRgs)
   )
-  const canSeeStats = useStats()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const handleCloseRGSBanner = () => {
     api.patchProUserRgsSeen().finally(() => {
@@ -45,14 +43,14 @@ const Homepage = (): JSX.Element => {
       )}
       <HomepageBreadcrumb
         activeStep={STEP_ID_OFFERERS}
-        isOffererStatsActive={isOffererStatsActive && canSeeStats}
+        isOffererStatsActive={isOffererStatsActive}
         profileRef={profileRef}
         statsRef={statsRef}
       />
       <section className="h-section">
         <Offerers />
       </section>
-      {isOffererStatsActive && canSeeStats && (
+      {isOffererStatsActive && (
         <section className="h-section" ref={statsRef}>
           <OffererStats />
         </section>
