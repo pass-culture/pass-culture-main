@@ -4,10 +4,10 @@ import React from 'react'
 import { ImagePreview } from '../ImagePreview'
 import { ImagePreviewsWrapper } from '../ImagePreviewsWrapper'
 
-import homeScreenShell from './home-screen-shell.png'
 import style from './HomeScreenShell.module.scss'
+import offerHomeShell from './offer-home-shell.png'
 import offerPreview from './offer-preview.jpg'
-import offerScreenShell from './offer-screen-shell.png'
+import offerShell from './offer-shell.png'
 
 export default {
   title: 'components/ImagePreview',
@@ -21,11 +21,7 @@ interface Props {
 const Template: Story<Props> = props => (
   <ImagePreviewsWrapper>
     <ImagePreview {...props}>
-      <img
-        alt=""
-        className={style['home-screen-shell']}
-        src={homeScreenShell}
-      />
+      <img alt="" className={style['home-screen-shell']} src={offerHomeShell} />
       <img
         alt=""
         className={style['preview-on-home-screen']}
@@ -38,11 +34,7 @@ const Template: Story<Props> = props => (
         className={style['blurred-preview-on-offer-screen']}
         src={offerPreview}
       />
-      <img
-        alt=""
-        className={style['offer-screen-shell']}
-        src={offerScreenShell}
-      />
+      <img alt="" className={style['offer-screen-shell']} src={offerShell} />
       <img
         alt=""
         className={style['preview-on-offer-screen']}
