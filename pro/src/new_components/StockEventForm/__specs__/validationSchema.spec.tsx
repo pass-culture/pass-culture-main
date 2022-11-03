@@ -57,13 +57,22 @@ describe('StockEventForm:validationSchema', () => {
     renderStockEventForm()
 
     await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    expect(screen.getByTestId('error-beginningDate')).toBeInTheDocument()
-    expect(screen.getByTestId('error-beginningTime')).toBeInTheDocument()
-    expect(screen.getByTestId('error-price')).toBeInTheDocument()
+    const errorBeginningDate = screen.getByTestId('error-beginningDate')
+    const errorBeginningTime = screen.getByTestId('error-beginningTime')
+    const errorPrice = screen.getByTestId('error-price')
+    expect(errorBeginningDate).toBeInTheDocument()
+    expect(errorBeginningTime).toBeInTheDocument()
+    expect(errorPrice).toBeInTheDocument()
     expect(
       screen.queryByTestId('error-bookingLimitDatetime')
     ).not.toBeInTheDocument()
     expect(screen.queryByTestId('error-quantity')).not.toBeInTheDocument()
+
+    expect(errorBeginningDate).toHaveTextContent('Veuillez renseigner une date')
+    expect(errorBeginningTime).toHaveTextContent(
+      'Veuillez renseigner un horaire'
+    )
+    expect(errorPrice).toHaveTextContent('Veuillez renseigner un prix')
   })
 
   const dataSetbeginningDateError = [
