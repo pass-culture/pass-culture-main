@@ -151,7 +151,6 @@
     "stylelint-order": "^4.1.0",
     "testcafe": "^2.0.1",
     "ts-pnp": "^1.2.0",
-    "ts-standard": "^11.0.0",
     "url-loader": "^4.1.1"
   },
   "resolutions": {
