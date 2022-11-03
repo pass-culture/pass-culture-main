@@ -34,7 +34,7 @@ const ActionBar = ({
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
 
   const Left = (): JSX.Element => {
-    if (mode === OFFER_WIZARD_MODE.CREATION)
+    if (mode !== OFFER_WIZARD_MODE.EDITION)
       return (
         <>
           {step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (

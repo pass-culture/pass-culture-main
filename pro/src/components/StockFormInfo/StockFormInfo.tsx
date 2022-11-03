@@ -19,7 +19,9 @@ const StockFormInfo = ({ className }: IStockFormInfoProps): JSX.Element => {
     <div className={cn(styles['stock-form-info'], className)}>
       <TextInput
         name="availableStock"
-        value={remainingQuantity || 'Illimité'}
+        value={
+          remainingQuantity === 'unlimited' ? 'Illimité' : remainingQuantity
+        }
         readOnly
         label="Stock restant"
         smallLabel

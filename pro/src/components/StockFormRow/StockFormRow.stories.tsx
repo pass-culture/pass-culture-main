@@ -141,6 +141,7 @@ Create.args = {
     },
   ],
   actionDisabled: false,
+  showStockInfo: false,
 }
 
 const TemplateWithInitialValues: ComponentStory<typeof StockFormRow> =
@@ -161,6 +162,7 @@ const TemplateWithInitialValues: ComponentStory<typeof StockFormRow> =
 export const Edite = TemplateWithInitialValues.bind({})
 Edite.args = {
   ...Create.args,
+  showStockInfo: true,
 }
 
 export const WithoutActions = Template.bind({})
@@ -168,6 +170,7 @@ WithoutActions.args = {
   Form: <StockThingForm today={today} />,
   actions: [],
   actionDisabled: false,
+  showStockInfo: false,
 }
 
 export const CreateEvent = TemplateEvent.bind({})
