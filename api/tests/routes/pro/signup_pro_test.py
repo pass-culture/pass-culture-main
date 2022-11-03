@@ -62,6 +62,7 @@ class Returns204Test:
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
         assert user_offerer is not None
         assert user_offerer.validationToken is None
+        assert user_offerer.validationStatus == offerers_models.ValidationStatus.VALIDATED
 
         actions_list = history_models.ActionHistory.query.all()
         assert len(actions_list) == 1
@@ -116,6 +117,14 @@ class Returns204Test:
         user_offerer = UserOfferer.query.filter_by(user=pro, offerer=offerer).first()
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
+        assert user_offerer.validationStatus == offerers_models.ValidationStatus.NEW
+
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == pro
+        assert actions_list[0].user == pro
+        assert actions_list[0].offerer == offerer
 
     def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, client):
         # Given
