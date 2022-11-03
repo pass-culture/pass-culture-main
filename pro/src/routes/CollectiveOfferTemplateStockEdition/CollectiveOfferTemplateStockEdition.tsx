@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -15,15 +15,6 @@ import useNotification from 'hooks/useNotification'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
-import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
-
-const getAdapter = (educationalOfferType: EducationalOfferType) => {
-  if (educationalOfferType === EducationalOfferType.CLASSIC) {
-    return patchCollectiveOfferTemplateIntoCollectiveOfferAdapter
-  }
-
-  return patchCollectiveOfferTemplateAdapter
-}
 
 interface CollectiveOfferTemplateStockEditionProps {
   offer: CollectiveOfferTemplate
@@ -37,29 +28,14 @@ const CollectiveOfferTemplateStockEdition = ({
   const history = useHistory()
   const notify = useNotification()
 
-  const [initialValues, setInitialValues] =
-    useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-
   const handleSubmitStock = async (
     offer: CollectiveOfferTemplate,
     values: OfferEducationalStockFormValues
   ) => {
-    const adapter = getAdapter(values.educationalOfferType)
-
-    const stockResponse = await adapter({
+    const stockResponse = await patchCollectiveOfferTemplateAdapter({
       offerId: offer.id,
       values,
-      departmentCode: offer.venue.departementCode ?? '',
     })
-
-    if (
-      stockResponse.isOk &&
-      values.educationalOfferType === EducationalOfferType.CLASSIC
-    ) {
-      return history.push(
-        `/offre/${stockResponse.payload.offerId}/collectif/visibilite/edition`
-      )
-    }
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
@@ -102,19 +78,14 @@ const CollectiveOfferTemplateStockEdition = ({
     reloadCollectiveOffer()
   }
 
-  useEffect(() => {
-    const initialValuesFromStock = {
-      ...DEFAULT_EAC_STOCK_FORM_VALUES,
-      priceDetail: offer.educationalPriceDetail ?? '',
-      educationalOfferType: EducationalOfferType.SHOWCASE,
-    }
-    setInitialValues(initialValuesFromStock)
-  }, [])
-
   return (
     <OfferEducationalStockScreen
       cancelActiveBookings={cancelActiveBookings}
-      initialValues={initialValues}
+      initialValues={{
+        ...DEFAULT_EAC_STOCK_FORM_VALUES,
+        priceDetail: offer.educationalPriceDetail ?? '',
+        educationalOfferType: EducationalOfferType.SHOWCASE,
+      }}
       mode={Mode.EDITION} // a collective offer template is always editable
       offer={offer}
       onSubmit={handleSubmitStock}
