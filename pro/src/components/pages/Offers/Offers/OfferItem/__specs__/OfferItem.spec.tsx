@@ -531,16 +531,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = true
-        const store = configureTestStore({
-          features: {
-            list: [
-              {
-                isActive: true,
-                nameKey: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
-              },
-            ],
-          },
-        })
 
         renderOfferItem(props, store)
 
@@ -559,16 +549,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = true
         Storage.prototype.getItem = jest.fn(() => 'true')
-        const store = configureTestStore({
-          features: {
-            list: [
-              {
-                isActive: true,
-                nameKey: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
-              },
-            ],
-          },
-        })
 
         renderOfferItem(props, store)
 

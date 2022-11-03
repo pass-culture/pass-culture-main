@@ -14,7 +14,6 @@ import {
 import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -140,10 +139,6 @@ const SearchFilters = ({
     ? { 'aria-current': 'page', isDisabled: true }
     : {}
 
-  const isCollectiveOfferDuplicationActive = useActiveFeature(
-    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
-  )
-
   return (
     <>
       {offerer && (
@@ -163,14 +158,7 @@ const SearchFilters = ({
           placeholder={searchByOfferNamePlaceholder}
           value={selectedFilters.nameOrIsbn}
         />
-        <div
-          className={
-            audience === Audience.INDIVIDUAL ||
-            isCollectiveOfferDuplicationActive
-              ? 'form-row'
-              : 'collective-form-row'
-          }
-        >
+        <div className="form-row">
           <Select
             defaultOption={ALL_VENUES_OPTION}
             handleSelection={storeSelectedVenue}
@@ -200,18 +188,17 @@ const SearchFilters = ({
               selectedValue={selectedFilters.creationMode}
             />
           )}
-          {audience === Audience.COLLECTIVE &&
-            isCollectiveOfferDuplicationActive && (
-              <Select
-                defaultOption={DEFAULT_COLLECTIVE_OFFER_TYPE}
-                handleSelection={storeCollectiveOfferType}
-                isDisabled={disableAllFilters}
-                label="Type de l'offre"
-                name="collectiveOfferType"
-                options={COLLECTIVE_OFFER_TYPES_FILTERS}
-                selectedValue={selectedFilters.collectiveOfferType}
-              />
-            )}
+          {audience === Audience.COLLECTIVE && (
+            <Select
+              defaultOption={DEFAULT_COLLECTIVE_OFFER_TYPE}
+              handleSelection={storeCollectiveOfferType}
+              isDisabled={disableAllFilters}
+              label="Type de l'offre"
+              name="collectiveOfferType"
+              options={COLLECTIVE_OFFER_TYPES_FILTERS}
+              selectedValue={selectedFilters.collectiveOfferType}
+            />
+          )}
           <PeriodSelector
             changePeriodBeginningDateValue={changePeriodBeginningDateValue}
             changePeriodEndingDateValue={changePeriodEndingDateValue}

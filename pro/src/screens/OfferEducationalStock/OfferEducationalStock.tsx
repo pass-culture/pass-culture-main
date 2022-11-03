@@ -13,7 +13,6 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
-import useActiveFeature from 'hooks/useActiveFeature'
 import FormLayout from 'new_components/FormLayout'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
@@ -66,10 +65,6 @@ const OfferEducationalStock = <
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
 
-  const isCollectiveOfferDuplicationActive = useActiveFeature(
-    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
-  )
-
   const submitForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
     await onSubmit(offer, values)
@@ -99,14 +94,9 @@ const OfferEducationalStock = <
   }, [initialValues, resetForm])
 
   const shouldDisplayShowcaseScreen =
-    !isCreatingFromTemplate &&
-    (mode == Mode.CREATION ||
-      (mode == Mode.EDITION &&
-        offer.isTemplate &&
-        !isCollectiveOfferDuplicationActive))
+    !isCreatingFromTemplate && mode == Mode.CREATION
 
   const displayElementsForShowcaseOption =
-    (shouldDisplayShowcaseScreen || isCollectiveOfferDuplicationActive) &&
     formik.values.educationalOfferType === EducationalOfferType.SHOWCASE
 
   return (

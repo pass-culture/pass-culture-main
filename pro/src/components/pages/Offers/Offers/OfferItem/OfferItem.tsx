@@ -82,7 +82,6 @@ const OfferItem = ({
           isSelected={isSelected}
           selectOffer={selectOffer}
           editionOfferLink={editionOfferLink}
-          editionStockLink={editionStockLink}
           venue={venue}
           isOfferEditable={Boolean(isOfferEditable)}
         />

@@ -13,7 +13,6 @@ import {
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummary from 'new_components/CollectiveOfferSummary'
@@ -47,10 +46,6 @@ const CollectiveOfferSummaryEdition = ({
   )}/collectif/stocks/edition`
 
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
-
-  const isCollectiveOfferDuplicationActive = useActiveFeature(
-    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
-  )
 
   const cancelActiveBookings = async () => {
     if (offer.isTemplate) {
@@ -100,7 +95,7 @@ const CollectiveOfferSummaryEdition = ({
         isOfferActive={offer.isActive}
         setIsOfferActive={setIsOfferActive}
       />
-      {isCollectiveOfferDuplicationActive && offer.isTemplate && (
+      {offer.isTemplate && (
         <div className={styles['duplicate-offer']}>
           <p className={styles['duplicate-offer-description']}>
             Vous pouvez dupliquer cette offre autant de fois que vous le

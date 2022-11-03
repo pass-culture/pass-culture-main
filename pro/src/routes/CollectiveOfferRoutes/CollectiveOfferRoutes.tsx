@@ -2,7 +2,6 @@ import React from 'react'
 import { useParams, Route, Switch } from 'react-router-dom'
 
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
-import useActiveFeature from 'hooks/useActiveFeature'
 
 import CollectiveOfferCreationFromTemplateRoutes from './CollectiveOfferCreationFromTemplateRoutes/CollectiveOfferCreationFromTemplateRoutes'
 import CollectiveOfferCreationRoutes from './CollectiveOfferCreationRoutes'
@@ -10,10 +9,6 @@ import CollectiveOfferEditionRoutes from './CollectiveOfferEditionRoutes'
 import CollectiveOfferTemplateEditionRoutes from './CollectiveOfferTemplateEditionRoutes'
 
 const CollectiveOfferRoutes = (): JSX.Element => {
-  const isCollectiveOfferDuplicationActive = useActiveFeature(
-    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
-  )
-
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
@@ -25,18 +20,16 @@ const CollectiveOfferRoutes = (): JSX.Element => {
 
   return (
     <Switch>
-      {isCollectiveOfferDuplicationActive && (
-        <Route
-          path={[
-            '/offre/duplication/collectif/:offerId/stocks',
-            '/offre/duplication/collectif/:offerId/visibilite',
-            '/offre/duplication/collectif/:offerId/confirmation',
-            '/offre/duplication/:templateId',
-          ]}
-        >
-          <CollectiveOfferCreationFromTemplateRoutes />
-        </Route>
-      )}
+      <Route
+        path={[
+          '/offre/duplication/collectif/:offerId/stocks',
+          '/offre/duplication/collectif/:offerId/visibilite',
+          '/offre/duplication/collectif/:offerId/confirmation',
+          '/offre/duplication/:templateId',
+        ]}
+      >
+        <CollectiveOfferCreationFromTemplateRoutes />
+      </Route>
       <Route
         path={[
           '/offre/:offerId/collectif/edition',

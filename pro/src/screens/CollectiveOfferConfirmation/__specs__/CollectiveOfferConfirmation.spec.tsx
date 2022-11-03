@@ -8,12 +8,6 @@ import { OfferStatus } from 'apiClient/v1'
 
 import CollectiveOfferConfirmation from '../CollectiveOfferConfirmation'
 
-// TO REMOVE WHEN WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE IS REMOVED
-jest.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(true),
-}))
-
 describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is pending', () => {
     render(
