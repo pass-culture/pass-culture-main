@@ -19,8 +19,6 @@ const StockEventForm = ({
         smallLabel
         name="beginningDate"
         label="Date"
-        className={styles['input-beginning-date']}
-        classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         openingDateTime={today}
         disabled={readOnlyFields.includes('eventDatetime')}
@@ -30,7 +28,6 @@ const StockEventForm = ({
         label="Horaire"
         className={styles['input-beginning-time']}
         name="beginningTime"
-        classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('eventTime')}
       />
       <TextInput
@@ -39,14 +36,12 @@ const StockEventForm = ({
         label="Prix"
         className={styles['input-price']}
         placeholder="Ex: 20€"
-        classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('price')}
       />
       <DatePicker
         smallLabel
         name="bookingLimitDatetime"
         label="Date limite de réservation"
-        classNameFooter={styles['field-layout-footer']}
         minDateTime={today}
         openingDateTime={today}
         disabled={readOnlyFields.includes('bookingLimitDatetime')}
@@ -57,7 +52,6 @@ const StockEventForm = ({
         label="Quantité"
         placeholder="Illimité"
         className={styles['input-quantity']}
-        classNameFooter={styles['field-layout-footer']}
         disabled={readOnlyFields.includes('quantity')}
       />
     </>
