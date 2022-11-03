@@ -6,7 +6,6 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useStats from 'hooks/useStats'
 import { ReactComponent as IconCalendar } from 'icons/ico-calendar.svg'
 import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
@@ -23,7 +22,6 @@ const Header = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-  const canSeeStats = useStats()
 
   const onSignoutClick = useCallback(() => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
@@ -105,7 +103,7 @@ const Header = () => {
             Remboursements
           </NavLink>
 
-          {isOffererStatsActive && canSeeStats && (
+          {isOffererStatsActive && (
             <NavLink
               className="nav-item"
               onClick={() => {
