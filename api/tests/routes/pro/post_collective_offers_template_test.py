@@ -12,6 +12,23 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
 
+base_collective_offer_payload = {
+    "description": "Ma super description",
+    "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+    "durationMinutes": 60,
+    "name": "La pièce de théâtre",
+    "contactEmail": "pouet@example.com",
+    "contactPhone": "01 99 00 25 68",
+    "students": ["Lycée - Seconde", "Lycée - Première"],
+    "audioDisabilityCompliant": False,
+    "mentalDisabilityCompliant": True,
+    "motorDisabilityCompliant": False,
+    "visualDisabilityCompliant": False,
+    "interventionArea": ["75", "92", "93"],
+    "templateId": None,
+}
+
+
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_create_collective_offer_template(self, client):
@@ -24,26 +41,15 @@ class Returns200Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(venue.id),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
@@ -87,27 +93,16 @@ class Returns200Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain.id],
-            "description": "Ma super description",
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "offererVenue",
                 "otherAddress": "",
                 "venueId": "",
             },
-            "students": ["Lycée - Seconde"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
             "interventionArea": [],
-            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -127,27 +122,15 @@ class Returns403Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
             "domains": [educational_factories.EducationalDomainFactory().id],
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(venue.id),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -167,27 +150,15 @@ class Returns403Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
             "domains": [educational_factories.EducationalDomainFactory().id],
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(venue.id),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -208,26 +179,13 @@ class Returns400Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "description": "Ma super description",
-            "name": "La pièce de théâtre",
-            "subcategoryId": "Pouet",
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(125),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -245,26 +203,14 @@ class Returns400Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.OEUVRE_ART.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(125),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -282,26 +228,14 @@ class Returns400Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(125),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -319,27 +253,14 @@ class Returns400Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "domains": [],
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(125),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
@@ -361,27 +282,15 @@ class Returns404Test:
 
         # When
         data = {
+            **base_collective_offer_payload,
             "venueId": humanize(venue.id),
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [0, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
                 "venueId": humanize(venue.id),
                 "otherAddress": "17 rue aléatoire",
             },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
         }
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
