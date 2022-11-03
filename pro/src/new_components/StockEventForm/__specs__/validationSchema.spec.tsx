@@ -17,14 +17,14 @@ jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
   getToday: jest
     .fn()
-    .mockImplementation(() => new Date('2022-12-25T00:00:00Z')),
+    .mockImplementation(() => new Date('2022-12-15T00:00:00Z')),
 }))
 
 const today = getToday()
-const yesterday = getToday()
 const tomorrow = getToday()
-yesterday.setDate(yesterday.getDate() - 1)
+const oneWeekLater = getToday()
 tomorrow.setDate(tomorrow.getDate() + 1)
+oneWeekLater.setDate(oneWeekLater.getDate() + 7)
 
 const renderStockEventForm = ({
   minQuantity,
@@ -64,9 +64,28 @@ describe('StockEventForm:validationSchema', () => {
     expect(screen.queryByTestId('error-quantity')).not.toBeInTheDocument()
   })
 
+  const dataSetbeginningDateError = [
+    {
+      beginningDate: today.getDate(),
+      error: "La date de l'évènement doit être supérieure à aujourd'hui",
+    },
+  ]
+  it.each(dataSetbeginningDateError)(
+    'should display beginningDate error',
+    async ({ beginningDate, error }) => {
+      renderStockEventForm()
+
+      await userEvent.click(screen.getByLabelText('Date', { exact: true }))
+      await userEvent.click(screen.getByText(beginningDate))
+      const errorbeginningDate = screen.queryByTestId('error-beginningDate')
+      expect(errorbeginningDate).toBeInTheDocument()
+      expect(errorbeginningDate).toHaveTextContent(error)
+    }
+  )
+
   const dataSetbeginningDate: Array<number> = [
-    today.getDate(),
     tomorrow.getDate(),
+    oneWeekLater.getDate(),
   ]
   it.each(dataSetbeginningDate)(
     'should not display beginningDate error',
@@ -168,15 +187,14 @@ describe('StockEventForm:validationSchema', () => {
   it('should display bookingLimitDatetime error when bookingLimitDatetime > beginningDate', async () => {
     renderStockEventForm()
 
-    const todayNumber = today.getDate().toString()
     await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(screen.getByText(todayNumber))
+    await userEvent.click(screen.getByText(tomorrow.getDate()))
 
     const errorbeginningDate = screen.queryByTestId('error-beginningDate')
     expect(errorbeginningDate).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByLabelText('Date limite de réservation'))
-    await userEvent.click(screen.getByText(tomorrow.getDate().toString()))
+    await userEvent.click(screen.getByText(oneWeekLater.getDate()))
 
     const errorBookingLimitDatetime = screen.queryByTestId(
       'error-bookingLimitDatetime'
@@ -189,12 +207,12 @@ describe('StockEventForm:validationSchema', () => {
 
   const dataSetBookingLimitDatetimeError = [
     {
-      beginningDate: today.getDate(),
-      bookingLimitDatetime: yesterday.getDate(),
+      beginningDate: oneWeekLater.getDate(),
+      bookingLimitDatetime: tomorrow.getDate(),
     },
     {
-      beginningDate: tomorrow.getDate(),
-      bookingLimitDatetime: tomorrow.getDate(),
+      beginningDate: oneWeekLater.getDate(),
+      bookingLimitDatetime: oneWeekLater.getDate(),
     },
   ]
   it.each(dataSetBookingLimitDatetimeError)(
