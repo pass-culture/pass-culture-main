@@ -22,15 +22,19 @@ import {
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { configureTestStore } from 'store/testUtils'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -257,6 +261,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'deleteThumbnail').mockResolvedValue()
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should submit minimal physical offer and redirect to summary', async () => {
@@ -434,5 +442,30 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     expect(
       screen.queryByRole('button', { name: /Ajouter une image/ })
     ).not.toBeInTheDocument()
+  })
+
+  it('should track when submitting offer', async () => {
+    renderInformationsScreen(props, store, contextOverride)
+    const nameField = screen.getByLabelText("Titre de l'offre")
+    await userEvent.clear(nameField)
+    await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+    await userEvent.click(
+      await screen.findByText('Enregistrer les modifications')
+    )
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: false,
+        isEdition: true,
+        offerId: 'AA',
+        to: 'stocks',
+        used: 'StickyButtons',
+      }
+    )
   })
 })

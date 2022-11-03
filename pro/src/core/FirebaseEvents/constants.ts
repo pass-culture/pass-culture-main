@@ -76,6 +76,8 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   CONFIRMATION_BUTTON_OFFER_LIST = 'ConfirmationButtonOfferList',
   DETAILS_PREVIEW = 'DetailsPreview',
   OFFERS_TRASH_ICON = 'OffersTrashicon',
+  IMAGE_DELETE = 'ImageDelete',
+  IMAGE_CREATION = 'ImageCreation',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
