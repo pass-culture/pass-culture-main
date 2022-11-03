@@ -6,8 +6,6 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
   DEFAULT_PRE_FILTERS,
   GetBookingsCSVFileAdapter,
@@ -27,6 +25,8 @@ import { ReactComponent as UserIcon } from 'icons/user.svg'
 import NoData from 'new_components/NoData'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import Tabs from 'new_components/Tabs'
+import ChoosePreFiltersMessage from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Titles from 'ui-kit/Titles/Titles'
 

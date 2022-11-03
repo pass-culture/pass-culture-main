@@ -1,7 +1,7 @@
 import { BannerMetaModel, GetVenueResponseModel } from 'apiClient/v1'
-import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import { AccessiblityEnum } from 'core/shared'
 import { IVenue } from 'core/Venue'
+import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 
 export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
   const venueAccessibility = {
