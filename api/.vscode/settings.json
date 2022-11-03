@@ -1,5 +1,7 @@
 {
   "python.linting.pylintEnabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.linting.ignorePatterns": ["**/tests/**"],
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
@@ -7,13 +9,10 @@
   "python.testing.unittestEnabled": false,
   "python.testing.nosetestsEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": [
-    "-vv",
-    "-s"
-  ],
+  "python.testing.pytestArgs": ["-vv", "-s"],
   "python.formatting.provider": "black",
   "liveshare.languages.allowGuestCommandControl": true,
   "liveshare.allowGuestDebugControl": true,
   "liveshare.allowGuestTaskControl": true,
-  "liveshare.guestApprovalRequired": true,
+  "liveshare.guestApprovalRequired": true
 }
