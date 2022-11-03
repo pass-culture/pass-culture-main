@@ -4,6 +4,12 @@ import React from 'react'
 
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import {
+  IStockEventFormValues,
+  StockEventForm,
+  STOCK_EVENT_FORM_DEFAULT_VALUES,
+  getValidationSchema as getEventValidationSchema,
+} from 'new_components/StockEventForm'
+import {
   StockThingForm,
   IStockThingFormValues,
   getValidationSchema,
@@ -60,7 +66,47 @@ const renderStockFormRow =
       </Formik>
     )
 
+interface IRenderStockEventFormRow {
+  initialValues?: IStockEventFormValues
+}
+const renderStockEventFormRow =
+  ({
+    initialValues,
+  }: IRenderStockEventFormRow): ComponentStory<typeof StockFormRow> =>
+  args =>
+    (
+      <Formik
+        initialValues={initialValues || STOCK_EVENT_FORM_DEFAULT_VALUES}
+        onSubmit={async (values: IStockEventFormValues) => {
+          alert(`onSubmit with values: ${JSON.stringify(values)}`)
+          return Promise.resolve()
+        }}
+        validationSchema={getEventValidationSchema()}
+        validateOnChange={false}
+      >
+        {({ handleSubmit, isSubmitting }) => (
+          <form onSubmit={handleSubmit}>
+            <div
+              style={{
+                width: '874px',
+                margin: 'auto',
+                background: '#FAFAFA',
+                marginBottom: '24px',
+              }}
+            >
+              <StockFormRow {...args} />
+            </div>
+            <SubmitButton onClick={handleSubmit} isLoading={isSubmitting}>
+              Valider
+            </SubmitButton>
+          </form>
+        )}
+      </Formik>
+    )
+
 const Template: ComponentStory<typeof StockFormRow> = renderStockFormRow({})
+const TemplateEvent: ComponentStory<typeof StockFormRow> =
+  renderStockEventFormRow({})
 
 const actionsCallBack = (name: string) => () => {
   alert(`Action ${name} have been call`)
@@ -121,5 +167,37 @@ export const WithoutActions = Template.bind({})
 WithoutActions.args = {
   Form: <StockThingForm today={today} />,
   actions: [],
+  actionDisabled: false,
+}
+
+export const FormEvent = TemplateEvent.bind({})
+FormEvent.args = {
+  Form: <StockEventForm today={today} />,
+  actions: [
+    {
+      callback: actionsCallBack('one'),
+      label: 'Action one',
+      disabled: false,
+      Icon: TrashFilledIcon,
+    },
+    {
+      callback: actionsCallBack('two'),
+      label: 'Action two',
+      disabled: false,
+      Icon: TrashFilledIcon,
+    },
+    {
+      callback: actionsCallBack('disabled'),
+      label: 'Disabled action',
+      disabled: true,
+      Icon: TrashFilledIcon,
+    },
+    {
+      callback: actionsCallBack('four'),
+      label: 'Action four',
+      disabled: false,
+      Icon: TrashFilledIcon,
+    },
+  ],
   actionDisabled: false,
 }
