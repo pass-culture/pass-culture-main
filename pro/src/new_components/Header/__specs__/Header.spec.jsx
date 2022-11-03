@@ -17,10 +17,6 @@ const mockLogEvent = jest.fn()
 jest.mock('apiClient/api', () => ({
   api: { signout: jest.fn(), listOfferersNames: jest.fn() },
 }))
-jest.mock('hooks/useStats', () => ({
-  __esModule: true,
-  default: () => true,
-}))
 
 const defaultStore = {
   user: {
