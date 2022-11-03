@@ -20,7 +20,7 @@ def deactivate_cultural_partner(siren: str) -> prebooking_serialization.Educatio
     if not offerer:
         raise ApiErrors(errors={"code": "OFFERER_NOT_FOUND"}, status_code=404)
 
-    cancelled_bookings = deactivate_offerer_for_EAC(offerer.id)
+    cancelled_bookings = deactivate_offerer_for_EAC(offerer)
     return prebooking_serialization.EducationalBookingsResponse(
         prebookings=prebooking_serialization.serialize_collective_bookings(cancelled_bookings)
     )

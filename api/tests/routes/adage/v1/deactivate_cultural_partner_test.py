@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
+from pcapi.core.educational.factories import CancelledCollectiveBookingFactory, EducationalDomainFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
@@ -19,25 +19,34 @@ class Returns204Test:
     @mock.patch("pcapi.core.search.unindex_collective_offer_ids")
     @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
     def test_deactivate_cultural_partner(self, mock_1, mock_2, client) -> None:
+        domain = EducationalDomainFactory()
         offerer = offerer_factories.OffererFactory()
         reimbursed_booking = ReimbursedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
+            collectiveStock__collectiveOffer__domains=[domain],
         )
         cancelled_booking = CancelledCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
+            collectiveStock__collectiveOffer__domains=[domain],
         )
         pending_booking = PendingCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
+            collectiveStock__collectiveOffer__domains=[domain],
         )
         confirmed_booking = ConfirmedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
+            collectiveStock__collectiveOffer__domains=[domain],
         )
-        collective_offer = CollectiveStockFactory(collectiveOffer__venue__managingOfferer=offerer).collectiveOffer
-        collective_offer_template = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
+        collective_offer = CollectiveStockFactory(
+            collectiveOffer__venue__managingOfferer=offerer, collectiveOffer__domains=[domain]
+        ).collectiveOffer
+        collective_offer_template = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer, domains=[domain])
 
         siren = offerer.siren
 
         num_queries = 1  # fetch offerer
+        num_queries += 1  # fetch all venues
+        num_queries += 1  # commit update on offerer and venues
         num_queries += 1  # get active bookings
         num_queries += 1  # lock stocks
         num_queries += 1  # commit all bookings cancellation
@@ -46,6 +55,7 @@ class Returns204Test:
         num_queries += 2  # update collective offers and template offers "isActive"
         num_queries += 2  # commit collective offers and template updates
         num_queries += 2  # unindex collective offers and template
+
         with assert_num_queries(num_queries):
             response = client.with_eac_token().post(f"/adage/v1/cultural_partners/{siren}/deactivate")
 
@@ -54,14 +64,18 @@ class Returns204Test:
         reimbursed_booking = educational_models.CollectiveBooking.query.get(reimbursed_booking.id)
         cancelled_booking = educational_models.CollectiveBooking.query.get(cancelled_booking.id)
         pending_booking = (
-            educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
-            .join(educational_models.CollectiveStock.collectiveOffer)
+            educational_models.CollectiveBooking.query.join(
+                educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+            )
+            .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
             .filter(educational_models.CollectiveBooking.id == pending_booking.id)
             .one()
         )
         confirmed_booking = (
-            educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
-            .join(educational_models.CollectiveStock.collectiveOffer)
+            educational_models.CollectiveBooking.query.join(
+                educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+            )
+            .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
             .filter(educational_models.CollectiveBooking.id == confirmed_booking.id)
             .one()
         )
@@ -87,7 +101,6 @@ class Returns204Test:
 
         assert collective_offer.isActive == False
         assert collective_offer_template.isActive == False
-        assert False
 
 
 @pytest.mark.usefixtures("db_session")

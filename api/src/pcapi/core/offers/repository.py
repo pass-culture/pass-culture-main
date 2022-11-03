@@ -215,18 +215,16 @@ def get_collective_offers_by_filters(
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
 ) -> BaseQuery:
-    query = CollectiveOffer.query.filter(CollectiveOffer.validation != OfferValidationStatus.DRAFT)
+    query = (
+        CollectiveOffer.query.filter(CollectiveOffer.validation != OfferValidationStatus.DRAFT)
+        .join(Venue, CollectiveOffer.venue)
+        .join(Offerer, Venue.managingOfferer)
+        .filter(Offerer.isAllowedForEAC == True)
+    )
 
     if not user_is_admin:
-        query = (
-            query.join(Venue)
-            .join(Offerer)
-            .join(UserOfferer)
-            .filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
-        )
+        query = query.join(UserOfferer).filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
     if offerer_id is not None:
-        if user_is_admin:
-            query = query.join(Venue)
         query = query.filter(Venue.managingOffererId == offerer_id)
     if venue_id is not None:
         query = query.filter(CollectiveOffer.venueId == venue_id)
@@ -292,21 +290,19 @@ def get_collective_offers_template_by_filters(
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
 ) -> BaseQuery:
-    query = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT)
+    query = (
+        CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT)
+        .join(Venue, CollectiveOfferTemplate.venue)
+        .join(Offerer, Venue.managingOfferer)
+        .filter(Offerer.isAllowedForEAC == True)
+    )
 
     if period_beginning_date is not None or period_ending_date is not None:
         query = query.filter(false())
 
     if not user_is_admin:
-        query = (
-            query.join(Venue)
-            .join(Offerer)
-            .join(UserOfferer)
-            .filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
-        )
+        query = query.join(UserOfferer).filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
     if offerer_id is not None:
-        if user_is_admin:
-            query = query.join(Venue)
         query = query.filter(Venue.managingOffererId == offerer_id)
     if venue_id is not None:
         query = query.filter(CollectiveOfferTemplate.venueId == venue_id)

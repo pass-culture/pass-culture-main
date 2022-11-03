@@ -1367,7 +1367,15 @@ def notify_pro_users_one_day() -> None:
             )
 
 
-def deactivated_collective_offers_and_collective_offers_template_for_offerer(offerer_id: int) -> None:
+def remove_adage_id_on_offerer_venues_and_mark_offerer_as_forbidden(offerer: offerers_models.Offerer) -> None:
+    offerer.isAllowedForEAC = False
+    venues = offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
+    venues.update({"adageId": None}, synchronize_session=False)
+
+    db.session.commit()
+
+
+def deactivate_collective_offers_and_collective_offers_template_for_offerer(offerer_id: int) -> None:
     from pcapi.core.offers.api import batch_update_collective_offers
     from pcapi.core.offers.api import batch_update_collective_offers_template
 
@@ -1386,13 +1394,15 @@ def deactivated_collective_offers_and_collective_offers_template_for_offerer(off
 
 
 def deactivate_offerer_for_EAC(
-    offerer_id: int,
+    offerer: offerers_models.Offerer,
 ) -> list[educational_models.CollectiveBooking]:
-    active_collective_bookings = educational_repository.get_active_collective_bookings_for_offerer(offerer_id)
+    remove_adage_id_on_offerer_venues_and_mark_offerer_as_forbidden(offerer)
+
+    active_collective_bookings = educational_repository.get_active_collective_bookings_for_offerer(offerer.id)
     cancel_collective_bookings(
         active_collective_bookings, educational_models.CollectiveBookingCancellationReasons.DEACTIVATION
     )
 
-    deactivated_collective_offers_and_collective_offers_template_for_offerer(offerer_id)
+    deactivate_collective_offers_and_collective_offers_template_for_offerer(offerer.id)
 
     return active_collective_bookings
