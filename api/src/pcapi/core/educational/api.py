@@ -793,7 +793,7 @@ def get_educational_domains_from_ids(
     return educational_domains
 
 
-def get_venue_and_check_access(
+def get_venue_and_check_access_for_offer_creation(
     offer_data: PostCollectiveOfferBodyModel,
     user: User,
 ) -> offerers_models.Venue:
@@ -813,7 +813,7 @@ def create_collective_offer_template(
     user: User,
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOfferTemplate:
-    venue = get_venue_and_check_access(offer_data, user)
+    venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
     collective_offer_template = educational_models.CollectiveOfferTemplate(
         venueId=venue.id,
@@ -849,7 +849,7 @@ def create_collective_offer(
     user: User,
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOffer:
-    venue = get_venue_and_check_access(offer_data, user)
+    venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
 
     collective_offer = educational_models.CollectiveOffer(
