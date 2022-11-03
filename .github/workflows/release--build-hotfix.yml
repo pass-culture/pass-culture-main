@@ -1,24 +1,33 @@
 name: "[Deployment] Create a hotfix release"
 
+run-name: Create a hotfix release from ${{ github.ref }}
+
 on:
   workflow_dispatch:
     inputs:
-      releaseNumber:
-        description: "Numéro de la release à hotfix (ex: 200)"
-        required: true
-        type: string
-
       releaseVersion:
         description: "Nom du hotfix (ex: 200.2)"
         required: true
         type: string
 
 jobs:
+  check-worflow-ref:
+    name: Check worflow ref
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check worflow ref
+        run: |
+          if ! [[ ${{ github.ref }} == refs/heads/maint\/\/v* ]]; then
+              echo "This workflow can only be triggered from a maintenance branch (starting with a 'maint/v')"
+              exit 1
+          fi
+
   build-and-tag-version:
+    needs: check-worflow-ref
     name: Build and tag version
     uses: ./.github/workflows/reusable--build-and-tag.yml
     secrets: inherit
     with:
-      base_ref: maint/v${{ github.event.inputs.releaseNumber }}
+      base_ref: ${{ github.ref }}
       tag_number: ${{ github.event.inputs.releaseVersion }}
       base_ref_is_a_branch: true
