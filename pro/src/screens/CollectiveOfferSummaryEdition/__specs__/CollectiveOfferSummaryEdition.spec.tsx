@@ -46,14 +46,6 @@ const renderCollectiveOfferSummaryEdition = (
         roles: [],
       },
     },
-    features: {
-      list: [
-        {
-          isActive: true,
-          nameKey: 'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE',
-        },
-      ],
-    },
   })
   render(
     <Provider store={store}>

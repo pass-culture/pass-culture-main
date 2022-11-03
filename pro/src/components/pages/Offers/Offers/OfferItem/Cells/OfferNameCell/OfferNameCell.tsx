@@ -8,7 +8,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT, OFFER_STATUS_SOLD_OUT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as WarningStocksIcon } from 'icons/ico-warning-stocks.svg'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -38,9 +37,6 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
       offerId: offer.id,
     })
   }
-  const isCollectiveOfferDuplicationActive = useActiveFeature(
-    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
-  )
 
   const getDateInformations = () => {
     const {
@@ -48,13 +44,9 @@ const OfferNameCell = ({ offer, editionOfferLink }: OfferNameCellProps) => {
       venue: { departementCode },
     } = offer
     const { beginningDatetime } = stocks[0] || {}
-    if (offer.isShowcase) {
-      return isCollectiveOfferDuplicationActive
-        ? null
-        : 'Date et prix à définir'
-    }
+
     /* istanbul ignore next: DEBT, TO FIX */
-    if (!beginningDatetime || !departementCode) {
+    if (offer.isShowcase || !beginningDatetime || !departementCode) {
       return null
     }
 
