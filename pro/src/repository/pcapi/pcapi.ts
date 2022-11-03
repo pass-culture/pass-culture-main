@@ -1,7 +1,6 @@
 // This file will be replace by apiClient
 /* istanbul ignore file */
 
-import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
@@ -171,50 +170,4 @@ export const getFilteredCollectiveBookingsCSV = async filters => {
 export const getFilteredCollectiveBookingsXLS = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getExcelFile(`/collective/bookings/excel?${queryParams}`)
-}
-
-//
-// Invoices
-//
-
-const buildInvoicesQuery = ({
-  businessUnitId = DEFAULT_INVOICES_FILTERS.businessUnitId,
-  reimbursementPointId = DEFAULT_INVOICES_FILTERS.businessUnitId,
-  periodBeginningDate = DEFAULT_INVOICES_FILTERS.periodBeginningDate,
-  periodEndingDate = DEFAULT_INVOICES_FILTERS.periodEndingDate,
-}) => {
-  const params = {}
-  if (businessUnitId !== DEFAULT_INVOICES_FILTERS.businessUnitId) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'businessUnitId' does not exist on type '... Remove this comment to see the full error message
-    params.businessUnitId = businessUnitId
-  }
-
-  if (reimbursementPointId !== DEFAULT_INVOICES_FILTERS.businessUnitId) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'reimbursementPointId' does not exist on type '... Remove this comment to see the full error message
-    params.reimbursementPointId = reimbursementPointId
-  }
-
-  if (periodBeginningDate !== DEFAULT_INVOICES_FILTERS.periodBeginningDate) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'periodBeginningDate' does not exist on t... Remove this comment to see the full error message
-    params.periodBeginningDate = formatBrowserTimezonedDateAsUTC(
-      periodBeginningDate,
-      FORMAT_ISO_DATE_ONLY
-    )
-  }
-
-  if (periodEndingDate !== DEFAULT_INVOICES_FILTERS.periodEndingDate) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'periodEndingDate' does not exist on type... Remove this comment to see the full error message
-    params.periodEndingDate = formatBrowserTimezonedDateAsUTC(
-      periodEndingDate,
-      FORMAT_ISO_DATE_ONLY
-    )
-  }
-
-  return stringify(params)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'params' implicitly has an 'any' type.
-export const getInvoices = async params => {
-  const queryParams = buildInvoicesQuery(params)
-  return client.get(`/finance/invoices?${queryParams}`)
 }

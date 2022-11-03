@@ -13,7 +13,6 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import Reimbursements from '../Reimbursements'
@@ -25,15 +24,12 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getInvoices: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
     getBusinessUnits: jest.fn(),
     getReimbursementPoints: jest.fn(),
+    getInvoices: jest.fn(),
   },
 }))
 
@@ -165,7 +161,7 @@ describe('reimbursementsWithFilters', () => {
     venues = BASE_VENUES
     invoices = BASE_INVOICES
     api.getVenues.mockResolvedValue({ venues })
-    pcapi.getInvoices.mockResolvedValue(invoices)
+    api.getInvoices.mockResolvedValue(invoices)
     api.getBusinessUnits.mockResolvedValue([
       { id: 1, name: 'Point de remboursement 1' },
       { id: 2, name: 'Point de remboursement 2' },

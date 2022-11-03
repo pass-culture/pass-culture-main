@@ -7,7 +7,6 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import Reimbursements from '../Reimbursements'
@@ -19,15 +18,12 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getInvoices: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getVenues: jest.fn(),
     getBusinessUnits: jest.fn(),
     getReimbursementPoints: jest.fn(),
+    getInvoices: jest.fn(),
   },
 }))
 
@@ -112,7 +108,7 @@ describe('reimbursementsWithFilters', () => {
     store = configureTestStore(initialStore)
     props = { currentUser: { isAdmin: false } }
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
-    jest.spyOn(pcapi, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    jest.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
     jest.spyOn(api, 'getBusinessUnits').mockResolvedValue([])
     jest.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
   })
@@ -124,12 +120,12 @@ describe('reimbursementsWithFilters', () => {
       name: /Lancer la recherche/i,
     })
     await userEvent.click(button)
-    expect(pcapi.getInvoices).toBeCalledWith({
-      businessUnitId: 'all',
-      periodBeginningDate: new Date('2020-11-15T00:00:00.000Z'),
-      periodEndingDate: new Date('2020-12-15T12:00:00.000Z'),
-      reimbursementPointId: 'all',
-    })
+    expect(api.getInvoices).toBeCalledWith(
+      undefined,
+      '2020-11-15',
+      '2020-12-15',
+      undefined
+    )
     expect(screen.queryAllByRole('row').length).toEqual(4)
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
     const reimbursementCells = screen
