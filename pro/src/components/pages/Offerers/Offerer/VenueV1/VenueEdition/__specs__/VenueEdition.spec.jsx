@@ -30,7 +30,6 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn().mockResolvedValue([]),
-  editVenue: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -44,6 +43,7 @@ jest.mock('apiClient/api', () => ({
     createVenueProvider: jest.fn(),
     listVenueProviders: jest.fn().mockResolvedValue({ venue_providers: [] }),
     getBusinessUnits: jest.fn().mockResolvedValue([]),
+    editVenue: jest.fn(),
   },
 }))
 
@@ -289,7 +289,7 @@ describe('test page : VenueEdition', () => {
       }
 
       await waitFor(() => {
-        expect(pcapi.editVenue).toHaveBeenCalledWith(
+        expect(api.editVenue).toHaveBeenCalledWith(
           'AQ',
           expect.objectContaining(expectedRequestParams)
         )
@@ -370,7 +370,7 @@ describe('test page : VenueEdition', () => {
 
     it('should reset url search params and and track venue modification.', async () => {
       // jest
-      pcapi.editVenue.mockResolvedValue(true)
+      api.editVenue.mockResolvedValue(true)
 
       // when
       await renderVenueEdition({ props })
@@ -414,7 +414,7 @@ describe('test page : VenueEdition', () => {
 
       await userEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
-      expect(pcapi.editVenue).toHaveBeenCalledWith(
+      expect(api.editVenue).toHaveBeenCalledWith(
         'AQ',
         expect.objectContaining({
           reimbursementPointId: null,
@@ -468,7 +468,7 @@ describe('test page : VenueEdition', () => {
         // Then
 
         await waitFor(() =>
-          expect(pcapi.editVenue).toHaveBeenCalledWith(
+          expect(api.editVenue).toHaveBeenCalledWith(
             'AQ',
             expect.objectContaining({
               address: venue.address,
@@ -498,7 +498,7 @@ describe('test page : VenueEdition', () => {
         await userEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
         // Then
-        expect(pcapi.editVenue).not.toHaveBeenCalled()
+        expect(api.editVenue).not.toHaveBeenCalled()
 
         expect(
           await screen.findByText(
@@ -506,7 +506,7 @@ describe('test page : VenueEdition', () => {
           )
         ).toBeInTheDocument()
         await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-        expect(pcapi.editVenue).toHaveBeenCalledTimes(1)
+        expect(api.editVenue).toHaveBeenCalledTimes(1)
       })
 
       it('should not submit data when cancel edition of business unit main venue', async () => {
@@ -549,7 +549,7 @@ describe('test page : VenueEdition', () => {
         await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
         // Then
-        expect(pcapi.editVenue).not.toHaveBeenCalled()
+        expect(api.editVenue).not.toHaveBeenCalled()
       })
 
       it('should not display confirmation dialog when edit business unit not main venue', async () => {
@@ -567,7 +567,7 @@ describe('test page : VenueEdition', () => {
 
         // Then
         await waitFor(() => {
-          expect(pcapi.editVenue).toHaveBeenCalledTimes(1)
+          expect(api.editVenue).toHaveBeenCalledTimes(1)
         })
       })
     })

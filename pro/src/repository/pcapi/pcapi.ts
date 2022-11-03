@@ -14,10 +14,6 @@ import { stringify } from 'utils/query-string'
 // venues
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
-export const editVenue = (venueId, body) =>
-  client.patch(`/venues/${venueId}`, body)
-
 export const postImageToVenue = async ({
   // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'venueId' implicitly has an 'any' ... Remove this comment to see the full error message
   venueId,
