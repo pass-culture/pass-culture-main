@@ -5,6 +5,7 @@ import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
+import CollectiveOfferTemplateCreation from 'pages/CollectiveOfferTemplateCreation'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOfferStockCreation from 'routes/CollectiveOfferStockCreation'
 import CollectiveOfferSummaryCreation from 'routes/CollectiveOfferSummaryCreation'
@@ -60,7 +61,11 @@ const CollectiveOfferCreationRoutes = ({
         {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
       </Route>
       <Route
-        path={['/offre/:offerId/collectif', '/offre/creation/collectif']}
+        path={[
+          '/offre/:offerId/collectif',
+          '/offre/creation/collectif',
+          '/offre/creation/collectif/vitrine',
+        ]}
         exact={false}
       >
         <CollectiveOfferLayout
@@ -72,6 +77,9 @@ const CollectiveOfferCreationRoutes = ({
           }}
         >
           <Switch>
+            <Route path="/offre/creation/collectif/vitrine">
+              <CollectiveOfferTemplateCreation />
+            </Route>
             <Route path="/offre/creation/collectif">
               <OfferEducationalCreation />
             </Route>
