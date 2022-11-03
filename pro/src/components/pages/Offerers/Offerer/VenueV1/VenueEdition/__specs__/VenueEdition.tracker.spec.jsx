@@ -25,7 +25,6 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn().mockResolvedValue([]),
-  editVenue: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -38,6 +37,7 @@ jest.mock('apiClient/api', () => ({
     createVenueProvider: jest.fn(),
     listVenueProviders: jest.fn().mockResolvedValue({ venue_providers: [] }),
     getBusinessUnits: jest.fn().mockResolvedValue([]),
+    editVenue: jest.fn(),
   },
 }))
 
