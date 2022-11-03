@@ -68,10 +68,10 @@ function getStyles(name: string, items: string[], theme: Theme) {
 }
 
 enum UserOffererStatus {
-  NEW = 'NEW',
-  PENDING = 'PENDING',
-  VALIDATED = 'VALIDATED',
-  REJECTED = 'REJECTED',
+  NEW = 'Nouveau',
+  PENDING = 'En attente',
+  VALIDATED = 'Validé',
+  REJECTED = 'Rejeté',
 }
 
 export const UserOfferersToValidate = () => {
@@ -199,7 +199,11 @@ export const UserOfferersToValidate = () => {
                     input={<OutlinedInput label="Status" />}
                     MenuProps={MenuProps}
                   >
-                    {Object.values(UserOffererStatus).map(status => (
+                    {(
+                      Object.keys(
+                        UserOffererStatus
+                      ) as (keyof typeof UserOffererStatus)[]
+                    ).map(status => (
                       <MenuItem
                         key={status}
                         value={status}
@@ -209,7 +213,7 @@ export const UserOfferersToValidate = () => {
                           theme
                         )}
                       >
-                        {status}
+                        {UserOffererStatus[status]}
                       </MenuItem>
                     ))}
                   </Select>

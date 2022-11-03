@@ -71,10 +71,10 @@ function getStyles(name: string, items: string[], theme: Theme) {
 }
 
 enum OffererStatus {
-  NEW = 'NEW',
-  PENDING = 'PENDING',
-  VALIDATED = 'VALIDATED',
-  REJECTED = 'REJECTED',
+  NEW = 'Nouvelle',
+  PENDING = 'En attente',
+  VALIDATED = 'Validée',
+  REJECTED = 'Rejetée',
 }
 
 export const OfferersToValidate = () => {
@@ -267,13 +267,17 @@ export const OfferersToValidate = () => {
                     input={<OutlinedInput label="Status" />}
                     MenuProps={MenuProps}
                   >
-                    {Object.values(OffererStatus).map(status => (
+                    {(
+                      Object.keys(
+                        OffererStatus
+                      ) as (keyof typeof OffererStatus)[]
+                    ).map(status => (
                       <MenuItem
                         key={status}
                         value={status}
                         style={getStyles(status, requestOffererStatus, theme)}
                       >
-                        {status}
+                        {OffererStatus[status]}
                       </MenuItem>
                     ))}
                   </Select>
@@ -282,7 +286,7 @@ export const OfferersToValidate = () => {
             </Stack>
 
             {data.total === 0 && (
-              <>Il n'y a pas de structure à valider pour le moment</>
+              <>Aucune structure ne correspond à la requête</>
             )}
             {data.total > 0 && (
               <>
