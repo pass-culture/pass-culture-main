@@ -1309,6 +1309,24 @@ def get_offerers_stats() -> dict[offerers_models.ValidationStatus, int]:
     return dict(stats)
 
 
+def _filter_on_validation_status(
+    query: sa.orm.Query, filter_dict: dict, cls: typing.Type[offerers_models.ValidationStatusMixin]
+) -> sa.orm.Query:
+    status_list = filter_dict.get("status")
+    if status_list:
+        statuses = []
+        for status in status_list:
+            try:
+                statuses.append(offerers_models.ValidationStatus(status))
+            except ValueError:
+                pass  # ignore wrong value
+        query = query.filter(cls.validationStatus.in_(statuses))
+    else:
+        query = query.filter(cls.isWaitingForValidation)
+
+    return query
+
+
 def list_offerers_to_be_validated(search_query: str | None, filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
     query = offerers_models.Offerer.query.options(
         sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
@@ -1328,17 +1346,7 @@ def list_offerers_to_be_validated(search_query: str | None, filter_: list[dict[s
 
     filter_dict = {f["field"]: f["value"] for f in filter_}
 
-    status_list = filter_dict.get("status")
-    if status_list:
-        statuses = []
-        for status in status_list:
-            try:
-                statuses.append(offerers_models.ValidationStatus(status))
-            except ValueError:
-                pass  # ignore wrong value
-        query = query.filter(offerers_models.Offerer.validationStatus.in_(statuses))
-    else:
-        query = query.filter(offerers_models.Offerer.isWaitingForValidation)
+    query = _filter_on_validation_status(query, filter_dict, offerers_models.Offerer)
 
     tags = filter_dict.get("tags")
     if tags:
@@ -1370,3 +1378,20 @@ def is_top_actor(offerer: offerers_models.Offerer) -> bool:
         if tag.name == "top-acteur":
             return True
     return False
+
+
+def list_users_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
+    query = offerers_models.UserOfferer.query.options(
+        sa.orm.joinedload(offerers_models.UserOfferer.user),
+        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+        .joinedload(offerers_models.Offerer.action_history)
+        .joinedload(history_models.ActionHistory.authorUser),
+        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+        .joinedload(offerers_models.Offerer.UserOfferers)
+        .joinedload(offerers_models.UserOfferer.user),
+    )
+
+    filter_dict = {f["field"]: f["value"] for f in filter_}
+    query = _filter_on_validation_status(query, filter_dict, offerers_models.UserOfferer)
+
+    return query

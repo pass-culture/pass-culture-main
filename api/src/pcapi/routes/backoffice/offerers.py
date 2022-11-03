@@ -294,9 +294,13 @@ def get_offerers_stats() -> serialization.OfferersStatsResponseModel:
     )
 
 
-def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer) -> serialization.Comment | None:
+def _get_serialized_offerer_last_comment(
+    offerer: offerers_models.Offerer, user_id: int | None = None
+) -> serialization.Comment | None:
     if offerer.action_history:
-        actions_with_comment = list(filter(lambda a: bool(a.comment), offerer.action_history))
+        actions_with_comment = list(
+            filter(lambda a: bool(a.comment) and (user_id is None or a.userId == user_id), offerer.action_history)
+        )
         if actions_with_comment:
             last = sorted(actions_with_comment, key=lambda a: a.actionDate, reverse=True)[0]
             return serialization.Comment(
@@ -322,10 +326,10 @@ def _get_offerer_request_date(offerer: offerers_models.Offerer) -> str:
     return format_into_utc_date(offerer.dateCreated)
 
 
-def _get_offerer_status(offerer: offerers_models.Offerer) -> str:
-    if offerer.validationStatus is not None:
-        return offerer.validationStatus.value
-    if offerer.validationToken is None:
+def _get_validation_status(obj: offerers_models.ValidationStatusMixin) -> str:
+    if obj.validationStatus is not None:
+        return obj.validationStatus.value
+    if obj.isValidated:  # validationToken is None
         return offerers_models.ValidationStatus.VALIDATED.value
     return offerers_models.ValidationStatus.NEW.value
 
@@ -372,7 +376,7 @@ def list_offerers_to_be_validated(
                     id=offerer.id,
                     name=offerer.name,
                     requestDate=_get_offerer_request_date(offerer),
-                    status=_get_offerer_status(offerer),
+                    status=_get_validation_status(offerer),
                     step=None,  # TODO
                     siren=offerer.siren,
                     address=offerer.address,
@@ -422,3 +426,83 @@ def toggle_top_actor(offerer_id: int, body: serialization.IsTopActorRequest) -> 
             offerers_models.OffererTagMapping.tagId == tag.id,
         ).delete()
         db.session.commit()
+
+
+def _get_user_offerer_request_date(user_offerer: offerers_models.UserOfferer) -> str | None:
+    if user_offerer.offerer.action_history:
+        actions_new = sorted(
+            [
+                action
+                for action in user_offerer.offerer.action_history
+                if action.actionType == history_models.ActionType.USER_OFFERER_NEW
+                and action.userId == user_offerer.userId
+            ],
+            key=lambda a: a.actionDate,
+            reverse=True,
+        )
+        if actions_new:
+            return format_into_utc_date(actions_new[0].actionDate)
+
+    return None  # No dateCreated in user_offerer table
+
+
+@blueprint.backoffice_blueprint.route("users_offerers/to_be_validated", methods=["GET"])
+@spectree_serialize(
+    response_model=serialization.ListUserOffererToBeValidatedResponseModel, on_success_status=200, api=blueprint.api
+)
+@perm_utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def list_offerers_attachments_to_be_validated(
+    query: serialization.UserOffererToBeValidatedQuery,
+) -> serialization.ListUserOffererToBeValidatedResponseModel:
+    filters = []
+    if query.filter:
+        filters = json.loads(urllib.parse.unquote_plus(query.filter))
+    users_offerers = offerers_api.list_users_offerers_to_be_validated(filters)
+
+    sorts = urllib.parse.unquote_plus(query.sort or "[]")
+    try:
+        sorted_users_offerers = utils.sort_query(
+            users_offerers,
+            db_utils.get_ordering_clauses_from_json(offerers_models.UserOfferer, sorts),
+            default_ordering=offerers_models.UserOfferer.id,
+        )
+    except db_utils.BadSortError as err:
+        raise api_errors.ApiErrors(errors={"sort": f"unable to process provided sorting options: {err}"})
+    paginated_users_offerers = sorted_users_offerers.paginate(
+        page=query.page,
+        per_page=query.perPage,
+    )
+
+    response = typing.cast(
+        serialization.ListUserOffererToBeValidatedResponseModel,
+        utils.build_paginated_response(
+            response_model=serialization.ListUserOffererToBeValidatedResponseModel,
+            pages=paginated_users_offerers.pages,
+            total=paginated_users_offerers.total,
+            page=paginated_users_offerers.page,
+            sort=query.sort,
+            data=[
+                serialization.UserOffererToBeValidated(
+                    id=user_offerer.id,
+                    userId=user_offerer.user.id,
+                    email=user_offerer.user.email,
+                    userName=f"{user_offerer.user.firstName} {user_offerer.user.lastName}",
+                    status=_get_validation_status(user_offerer),
+                    requestDate=_get_user_offerer_request_date(user_offerer),
+                    lastComment=_get_serialized_offerer_last_comment(user_offerer.offerer, user_id=user_offerer.userId),
+                    phoneNumber=user_offerer.user.phoneNumber,
+                    offererId=user_offerer.offerer.id,
+                    offererName=user_offerer.offerer.name,
+                    offererCreatedDate=_get_offerer_request_date(user_offerer.offerer),
+                    ownerId=user_offerer.offerer.UserOfferers[0].userId if user_offerer.offerer.UserOfferers else None,
+                    ownerEmail=(
+                        user_offerer.offerer.UserOfferers[0].user.email if user_offerer.offerer.UserOfferers else None
+                    ),
+                    siren=user_offerer.offerer.siren,
+                )
+                for user_offerer in paginated_users_offerers.items
+            ],
+        ),
+    )
+
+    return response
