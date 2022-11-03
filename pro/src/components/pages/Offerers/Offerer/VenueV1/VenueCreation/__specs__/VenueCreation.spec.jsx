@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import * as pcapi from 'repository/pcapi/pcapi'
+import { ApiError } from 'apiClient/v1'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueType from '../../ValueObjects/VenueType'
@@ -15,7 +15,6 @@ import VenueCreation from '../VenueCreation'
 
 import { setVenueValues } from './helpers'
 
-jest.mock('repository/pcapi/pcapi')
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn(),
@@ -24,6 +23,7 @@ jest.mock('apiClient/api', () => ({
     getVenueTypes: jest.fn(),
     fetchVenueLabels: jest.fn(),
     getBusinessUnits: jest.fn(),
+    postCreateVenue: jest.fn(),
   },
 }))
 
@@ -135,12 +135,12 @@ describe('venue form', () => {
     })
 
     it('should handle success response', async () => {
-      pcapi.createVenue.mockResolvedValue({ id: 'fake_success_id' })
+      api.postCreateVenue.mockResolvedValue({ id: 'fake_success_id' })
       await userEvent.click(submitButton)
       await waitFor(() => {
         expect(submitButton).toBeDisabled()
       })
-      expect(pcapi.createVenue).toHaveBeenCalledWith({
+      expect(api.postCreateVenue).toHaveBeenCalledWith({
         address: formValues['address'],
         audioDisabilityCompliant: false,
         bookingEmail: 'rené@example.com',
@@ -167,11 +167,13 @@ describe('venue form', () => {
       const errors = {
         name: ['error on name'],
       }
-      pcapi.createVenue.mockRejectedValue({ errors })
+      api.postCreateVenue.mockRejectedValue(
+        new ApiError({}, { body: errors }, '')
+      )
       await userEvent.click(submitButton)
       await waitFor(() => {
         expect(submitButton).not.toBeDisabled()
-        expect(pcapi.createVenue).toHaveBeenCalledWith({
+        expect(api.postCreateVenue).toHaveBeenCalledWith({
           address: formValues['address'],
           audioDisabilityCompliant: false,
           bookingEmail: 'rené@example.com',
