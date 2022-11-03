@@ -12,7 +12,6 @@ import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel'
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
 import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
-import type { CollectiveOfferFromTemplateResponseModel } from '../models/CollectiveOfferFromTemplateResponseModel';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
 import type { CollectiveOfferTemplateBodyModel } from '../models/CollectiveOfferTemplateBodyModel';
 import type { CollectiveOfferTemplateResponseIdModel } from '../models/CollectiveOfferTemplateResponseIdModel';
@@ -456,32 +455,6 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * transform_collective_offer_template_into_collective_offer <PATCH>
-   * @param offerId
-   * @param requestBody
-   * @returns CollectiveOfferFromTemplateResponseModel Created
-   * @throws ApiError
-   */
-  public transformCollectiveOfferTemplateIntoCollectiveOffer(
-    offerId: string,
-    requestBody?: CollectiveStockCreationBodyModel,
-  ): CancelablePromise<CollectiveOfferFromTemplateResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/collective/offers-template/{offer_id}/to-collective-offer',
-      path: {
-        'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });
