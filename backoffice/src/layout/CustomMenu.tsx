@@ -52,7 +52,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
       {/*<DashboardMenuItem/>*/}
       <SubMenu
         handleToggle={() => handleToggle('menuJeunes')}
-        isOpen={state.menuJeunes}
+        isOpen={true} // {state.menuJeunes}
         name="menu.usersTitle"
         dense={dense}
         icon={<AccountBoxIcon />}
@@ -100,7 +100,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
       ) && (
         <SubMenu
           handleToggle={() => handleToggle('menuPros')}
-          isOpen={state.menuPros}
+          isOpen={true} // {state.menuPros}
           name="menu.prosTitle"
           dense={dense}
           icon={<AccountBoxIcon />}
