@@ -82,15 +82,15 @@ const renderOfferIndividualStepper = (
 
 describe('test OfferIndividualStepper', () => {
   describe('in creation', () => {
-    it('should render stepper breadcrumb in creation', async () => {
-      await renderOfferIndividualStepper()
+    it('should render stepper breadcrumb in creation', () => {
+      renderOfferIndividualStepper()
 
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
     })
 
     it('should render steps when no offer is given', async () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper()
+        renderOfferIndividualStepper()
 
       expect(tabInformations).toBeInTheDocument()
       expect(tabStocks).toBeInTheDocument()
@@ -118,7 +118,7 @@ describe('test OfferIndividualStepper', () => {
         offer: offer as IOfferIndividual,
       }
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper(contextOverride)
+        renderOfferIndividualStepper(contextOverride)
 
       expect(tabInformations).toBeInTheDocument()
       expect(tabStocks).toBeInTheDocument()
@@ -145,7 +145,7 @@ describe('test OfferIndividualStepper', () => {
         offer: offer as IOfferIndividual,
       }
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper(contextOverride)
+        renderOfferIndividualStepper(contextOverride)
 
       expect(tabInformations).toBeInTheDocument()
       expect(tabStocks).toBeInTheDocument()
@@ -162,9 +162,9 @@ describe('test OfferIndividualStepper', () => {
       expect(screen.getByText('Summary screen')).toBeInTheDocument()
     })
 
-    it('should render steps on Information', async () => {
+    it('should render steps on Information', () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper(
+        renderOfferIndividualStepper(
           undefined,
           '/offre/AA/v3/creation/individuelle/informations'
         )
@@ -176,9 +176,9 @@ describe('test OfferIndividualStepper', () => {
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
     })
 
-    it('should render steps on Stocks', async () => {
+    it('should render steps on Stocks', () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper(
+        renderOfferIndividualStepper(
           undefined,
           '/offre/AA/v3/creation/individuelle/stocks'
         )
@@ -190,9 +190,9 @@ describe('test OfferIndividualStepper', () => {
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })
 
-    it('should render steps on Summary', async () => {
+    it('should render steps on Summary', () => {
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper(
+        renderOfferIndividualStepper(
           undefined,
           '/offre/AA/v3/creation/individuelle/recapitulatif'
         )
@@ -206,7 +206,7 @@ describe('test OfferIndividualStepper', () => {
   })
 
   describe('in edition', () => {
-    it('should render default breadcrumb in edition', async () => {
+    it('should render default breadcrumb in edition', () => {
       const offer: Partial<IOfferIndividual> = {
         id: 'AA',
         stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
@@ -215,7 +215,7 @@ describe('test OfferIndividualStepper', () => {
       const contextOverride: Partial<IOfferIndividualContext> = {
         offer: offer as IOfferIndividual,
       }
-      await renderOfferIndividualStepper(
+      renderOfferIndividualStepper(
         contextOverride,
         '/offre/AA/v3/individuelle/informations'
       )
@@ -224,7 +224,7 @@ describe('test OfferIndividualStepper', () => {
       expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
     })
 
-    it('should render steps on Information', async () => {
+    it('should render steps on Information', () => {
       const offer: Partial<IOfferIndividual> = {
         id: 'AA',
         stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
@@ -235,7 +235,7 @@ describe('test OfferIndividualStepper', () => {
       }
 
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper(
+        renderOfferIndividualStepper(
           contextOverride,
           '/offre/AA/v3/individuelle/informations'
         )
@@ -248,7 +248,7 @@ describe('test OfferIndividualStepper', () => {
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
     })
 
-    it('should render steps on Stocks', async () => {
+    it('should render steps on Stocks', () => {
       const offer: Partial<IOfferIndividual> = {
         id: 'AA',
         stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
@@ -259,7 +259,7 @@ describe('test OfferIndividualStepper', () => {
       }
 
       const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        await renderOfferIndividualStepper(
+        renderOfferIndividualStepper(
           contextOverride,
           '/offre/AA/v3/individuelle/stocks'
         )
