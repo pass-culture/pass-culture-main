@@ -534,6 +534,25 @@
       }
     }
   },
+  "listOfferersAttachmentsToBeValidated": {
+    "200": {
+      "data": [{}],
+      "page": 0,
+      "pages": 0,
+      "size": 0,
+      "sort": "sort",
+      "total": 0
+    },
+    "403": "Forbidden",
+    "422": {
+      "0": {
+        "ctx": {},
+        "loc": ["loc"],
+        "msg": "msg",
+        "type": "type"
+      }
+    }
+  },
   "commentOffererAttachment": {
     "204": "No Content",
     "403": "Forbidden",

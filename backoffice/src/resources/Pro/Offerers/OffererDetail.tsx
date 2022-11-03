@@ -37,7 +37,7 @@ import { StatusBadge } from '../../PublicUsers/Components/StatusBadge'
 import { PermissionsEnum } from '../../PublicUsers/types'
 import { BankAccountStatusBadge } from '../Components/BankAccountStatusBadge'
 import { CommentOfferer } from '../Components/CommentOfferer'
-import { OffererUserssToValidateContextTableMenu } from '../Components/OffererUsersToValidateContextTableMenu'
+import { OffererUsersToValidateContextTableMenu } from '../Components/OffererUsersToValidateContextTableMenu'
 import { ProTypeBadge } from '../Components/ProTypeBadge'
 import { ValidationStatusBadge } from '../Components/ValidationStatusBadge'
 import { ProTypeEnum } from '../types'
@@ -411,7 +411,7 @@ export const OffererDetail = () => {
                           }}
                         >
                           <TableCell>
-                            <OffererUserssToValidateContextTableMenu
+                            <OffererUsersToValidateContextTableMenu
                               id={user.userOffererId}
                               onContextMenuChange={refresh}
                             />
