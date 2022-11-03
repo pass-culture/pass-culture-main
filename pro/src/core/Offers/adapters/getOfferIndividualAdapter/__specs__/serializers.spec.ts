@@ -101,7 +101,7 @@ describe('serializer', () => {
       offerId: 'offer_id',
       price: 150,
       quantity: 20,
-      remainingQuantity: 0,
+      remainingQuantity: 'unlimited',
     }
 
     expect(serializeStockApi(stock)).toEqual(stockSerialized)

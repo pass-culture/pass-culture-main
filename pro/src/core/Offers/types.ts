@@ -101,7 +101,7 @@ export interface IOfferIndividualStock {
   offerId: string
   price: number
   quantity?: number | null
-  remainingQuantity: number | null
+  remainingQuantity: number | string
 }
 
 export interface IOfferIndividualOfferer {

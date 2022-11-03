@@ -53,7 +53,7 @@ const renderStockThingScreen = ({
         <Route path="/offre/:offer_id/v3/creation/individuelle/recapitulatif">
           <div>Next page</div>
         </Route>
-        <Route path="/offres">
+        <Route path="/offre/:offer_id/v3/creation/individuelle/stocks">
           <div>Save draft page</div>
         </Route>
         <Route path="/offre/:offer_id/v3/creation/individuelle/informations">

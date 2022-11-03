@@ -13,9 +13,13 @@ import {
 import setFormReadOnlyFields from 'components/StockThingForm/utils/setFormReadOnlyFields'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
-import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers/constants'
+import {
+  LIVRE_PAPIER_SUBCATEGORY_ID,
+  OFFER_WIZARD_MODE,
+} from 'core/Offers/constants'
 import { IOfferIndividual } from 'core/Offers/types'
-import { useNavigate } from 'hooks'
+import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { useNavigate, useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -28,8 +32,13 @@ export interface IStocksThingProps {
 }
 
 const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
-  const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
-    `/offre/${offer.id}/v3/creation/individuelle/recapitulatif`
+  const mode = useOfferWizardMode()
+  const [afterSubmitUrl, setAfterSubmitUrl] = useState<string | null>(
+    getOfferIndividualUrl({
+      offerId: offer.id,
+      step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      mode,
+    })
   )
   const navigate = useNavigate()
   const notify = useNotification()
@@ -49,7 +58,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
-      navigate(afterSubmitUrl)
+      afterSubmitUrl !== null && navigate(afterSubmitUrl)
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
@@ -68,25 +77,39 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     offer.venue.departmentCode
   )
   const initialValues = buildInitialValues(offer)
-  const { resetForm, ...formik } = useFormik({
+  const formik = useFormik({
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
   })
 
-  const handleNextStep = () => {
-    setAfterSubmitUrl(
-      `/offre/${offer.id}/v3/creation/individuelle/recapitulatif`
-    )
-    formik.handleSubmit()
-  }
+  const handleNextStep =
+    ({ saveDraft = false } = {}) =>
+    () => {
+      // tested but coverage don't see it.
+      /* istanbul ignore next */
+      setAfterSubmitUrl(
+        getOfferIndividualUrl({
+          offerId: offer.id,
+          step: saveDraft
+            ? OFFER_WIZARD_STEP_IDS.STOCKS
+            : OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: saveDraft ? OFFER_WIZARD_MODE.DRAFT : mode,
+        })
+      )
+      formik.handleSubmit()
+    }
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
     formik.handleSubmit()
     /* istanbul ignore next: DEBT, TO FIX */
     setAfterSubmitUrl(
-      `/offre/${offer.id}/v3/creation/individuelle/informations`
+      getOfferIndividualUrl({
+        offerId: offer.id,
+        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        mode,
+      })
     )
   }
 
@@ -111,7 +134,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   }
 
   return (
-    <FormikProvider value={{ ...formik, resetForm }}>
+    <FormikProvider value={formik}>
       <FormLayout>
         <FormLayout.Section title="Stock & Prix" description={description}>
           <form onSubmit={formik.handleSubmit}>
@@ -119,11 +142,13 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               Form={renderStockForm()}
               actions={[]}
               actionDisabled={false}
+              showStockInfo={mode === OFFER_WIZARD_MODE.EDITION}
             />
 
             <ActionBar
-              onClickNext={handleNextStep}
+              onClickNext={handleNextStep()}
               onClickPrevious={handlePreviousStep}
+              onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
             />
           </form>

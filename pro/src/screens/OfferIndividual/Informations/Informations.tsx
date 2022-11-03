@@ -1,6 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -11,6 +10,7 @@ import {
 } from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   createIndividualOffer,
   getOfferIndividualAdapter,
@@ -21,7 +21,7 @@ import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdap
 import { IOfferIndividualImage } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { useOfferWizardMode } from 'hooks'
+import { useNavigate, useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
@@ -39,7 +39,7 @@ const Informations = ({
   readOnlyFields = [],
 }: IInformationsProps): JSX.Element => {
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const {
     offerId,
@@ -56,17 +56,21 @@ const Informations = ({
   const [imageOffer, setImageOffer] = useState<
     IOfferIndividualImage | undefined
   >(offer && offer.image ? offer.image : undefined)
+  const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
 
-  const handleNextStep = () => {
-    if (Object.keys(formik.errors).length !== 0)
-      notify.error(
-        'Une ou plusieurs erreurs sont présentes dans le formulaire',
-        {
-          withStickyActionBar: true,
-        }
-      )
-    formik.handleSubmit()
-  }
+  const handleNextStep =
+    ({ saveDraft = false } = {}) =>
+    () => {
+      setIsSubmittingDraft(saveDraft)
+      if (Object.keys(formik.errors).length !== 0)
+        notify.error(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire',
+          {
+            withStickyActionBar: true,
+          }
+        )
+      formik.handleSubmit()
+    }
 
   // FIXME: find a way to test FileReader
   /* istanbul ignore next: DEBT, TO FIX */
@@ -182,22 +186,31 @@ const Informations = ({
           imageOfferId: payload.id,
         }))
       const response = await getOfferIndividualAdapter(payload.id)
+      // This do not trigger a visal change, it's complicated to test
+      /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
-      notify.success('Vos modifications ont bien été prises en compte')
-      history.replace(
+      notify.success(
+        isSubmittingDraft
+          ? 'Brouillon sauvegardé dans la liste des offres'
+          : 'Vos modifications ont bien été enregistrées'
+      )
+      navigate(
         getOfferIndividualUrl({
           offerId: payload.id,
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode,
-        })
+        }),
+        { replace: true }
       )
-      history.push(
+      navigate(
         getOfferIndividualUrl({
           offerId: payload.id,
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode,
+          step: isSubmittingDraft
+            ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
+            : OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: isSubmittingDraft ? OFFER_WIZARD_MODE.DRAFT : mode,
         })
       )
     } else {
@@ -236,8 +249,8 @@ const Informations = ({
             imageOffer={imageOffer}
           />
           <ActionBar
-            onClickNext={handleNextStep}
-            onClickSaveDraft={() => {}}
+            onClickNext={handleNextStep()}
+            onClickSaveDraft={handleNextStep({ saveDraft: true })}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
           />
         </form>

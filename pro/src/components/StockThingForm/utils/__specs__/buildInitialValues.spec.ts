@@ -41,7 +41,6 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     offer.stocks = [
       {
         id: 'STOCK_ID',
-        remainingQuantity: null,
         bookingsQuantity: 20,
         quantity: null,
         bookingLimitDatetime: null,
@@ -51,7 +50,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({
       stockId: 'STOCK_ID',
-      remainingQuantity: '',
+      remainingQuantity: 'unlimited',
       bookingsQuantity: '20',
       quantity: '',
       bookingLimitDatetime: null,

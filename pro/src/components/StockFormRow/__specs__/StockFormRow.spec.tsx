@@ -54,7 +54,13 @@ describe('StockFormRow', () => {
   })
 
   it('render StockFormRow', () => {
-    renderStockFormRow({ props, initialValues })
+    renderStockFormRow({
+      props: {
+        ...props,
+        showStockInfo: true,
+      },
+      initialValues,
+    })
 
     expect(screen.getByLabelText('Prix')).toBeInTheDocument()
     expect(
@@ -72,7 +78,13 @@ describe('StockFormRow', () => {
 
   it('should not render actions', () => {
     props.actions = []
-    renderStockFormRow({ props, initialValues })
+    renderStockFormRow({
+      props: {
+        ...props,
+        showStockInfo: true,
+      },
+      initialValues,
+    })
 
     expect(screen.getByLabelText('Prix')).toBeInTheDocument()
     expect(
