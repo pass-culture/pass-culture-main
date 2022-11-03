@@ -3,3 +3,15 @@
 .input-quantity, .input-beginning-time, .input-price {
     flex: 1 0 rem.torem(112px);
 }
+
+.input-bookingLimitDatetime {
+    min-width: rem.torem(208px);
+}
+
+.field-layout-footer {
+    min-height: rem.torem(32px);
+}
+
+.field-layout-align-self {
+    align-self: flex-start;
+}
