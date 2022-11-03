@@ -635,6 +635,16 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             ]
         else:
             user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)
+            objects_to_save += [
+                history_api.log_action(
+                    history_models.ActionType.USER_OFFERER_NEW,
+                    new_pro_user,
+                    user=new_pro_user,
+                    offerer=existing_offerer,
+                    save=False,
+                    comment="Demande de rattachement à la création de compte pro",
+                ),
+            ]
         offerer = existing_offerer
     else:
         offerer = _generate_offerer(pro_user.dict(by_alias=True))
