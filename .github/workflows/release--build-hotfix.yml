@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Check worflow ref
         run: |
-          if ! [[ ${{ github.ref }} == refs/heads/maint\/\/v* ]]; then
-              echo "This workflow can only be triggered from a maintenance branch (starting with a 'maint/v')"
+          if ! [[ ${{ github.ref }} == refs/heads/maint/v* ]]; then
+              echo "This workflow can only be triggered from a maintenance branch (starting with 'maint/v')"
               exit 1
           fi
 
@@ -30,8 +30,8 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0 # Fetch all history to get all tags
-      - id: find-hotfix-tag-number
-
+      - name: Find hotfix tag number
+        id: find-hotfix-tag-number
         run: |
           GITHUB_REF=${{ github.ref }}
           MAJOR_NUMBER=(${GITHUB_REF//refs\/heads\/maint\/v/ })
