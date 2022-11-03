@@ -25,7 +25,6 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
   const validationSchema = {
     beginningDate: yup
       .date()
-      .required()
       .nullable()
       .required('Veuillez renseigner une date')
       .min(
