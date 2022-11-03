@@ -170,8 +170,8 @@ WithoutActions.args = {
   actionDisabled: false,
 }
 
-export const FormEvent = TemplateEvent.bind({})
-FormEvent.args = {
+export const CreateEvent = TemplateEvent.bind({})
+CreateEvent.args = {
   Form: <StockEventForm today={today} />,
   actions: [
     {
