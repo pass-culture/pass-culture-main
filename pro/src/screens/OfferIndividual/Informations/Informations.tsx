@@ -11,6 +11,10 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   createIndividualOffer,
@@ -23,6 +27,7 @@ import { IOfferIndividualImage } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useNavigate, useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
@@ -42,6 +47,7 @@ const Informations = ({
   const notify = useNotification()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
+  const { logEvent } = useAnalytics()
   const {
     offerId,
     offer,
@@ -140,6 +146,14 @@ const Informations = ({
             : undefined,
         })
       })
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: undefined,
+      })
     } else {
       submitImage({
         imageOfferId: offerId,
@@ -149,6 +163,14 @@ const Informations = ({
       })
         .then(() => {
           notify.success('Brouillon sauvegardé dans la liste des offres')
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            offerId: offerId,
+          })
         })
         .catch(() => {
           notify.error(
@@ -166,9 +188,25 @@ const Informations = ({
       setImageOffer(undefined)
       /* istanbul ignore next: DEBT, TO FIX */
       setImageOfferCreationArgs(undefined)
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: undefined,
+      })
     } else {
       const response = await deleteThumbnailAdapter({ offerId })
       if (response.isOk) {
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
+          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          offerId: offerId,
+        })
         setImageOffer(undefined)
       } else {
         notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
@@ -182,15 +220,22 @@ const Informations = ({
       offerId === null
         ? await createIndividualOffer(formValues)
         : await updateIndividualOffer({ offerId, formValues })
-    let nextStep = OFFER_WIZARD_STEP_IDS.INFORMATIONS
+
+    const nextStep =
+      mode === OFFER_WIZARD_MODE.EDITION
+        ? OFFER_WIZARD_STEP_IDS.SUMMARY
+        : isSubmittingDraft
+        ? OFFER_WIZARD_STEP_IDS.INFORMATIONS
+        : OFFER_WIZARD_STEP_IDS.STOCKS
 
     if (isOk) {
+      const receivedOfferId = payload.id
       // FIXME: find a way to test FileReader
       /* istanbul ignore next: DEBT, TO FIX */
       imageOfferCreationArgs &&
         (await submitImage({
           ...imageOfferCreationArgs,
-          imageOfferId: payload.id,
+          imageOfferId: receivedOfferId,
         }))
       const response = await getOfferIndividualAdapter(payload.id)
       // This do not trigger a visal change, it's complicated to test
@@ -204,30 +249,32 @@ const Informations = ({
           : 'Brouillon sauvegardé dans la liste des offres'
       )
       if (!isSubmittingFromRouteLeavingGuard) {
+        // replace url to fix back button
         navigate(
           getOfferIndividualUrl({
-            offerId: payload.id,
-            step: nextStep,
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            offerId: receivedOfferId,
             mode,
           }),
           { replace: true }
         )
 
-        if (!isSubmittingDraft) {
-          nextStep =
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_STEP_IDS.SUMMARY
-              : OFFER_WIZARD_STEP_IDS.STOCKS
-        }
-
         navigate(
           getOfferIndividualUrl({
-            offerId: payload.id,
+            offerId: receivedOfferId,
             step: nextStep,
             mode,
           })
         )
       }
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: nextStep,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: receivedOfferId,
+      })
     } else {
       formik.setErrors(payload.errors)
     }
