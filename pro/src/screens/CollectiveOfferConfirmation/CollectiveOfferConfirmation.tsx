@@ -3,7 +3,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { Banner, Title } from 'ui-kit'
@@ -93,10 +92,6 @@ const CollectiveOfferConfirmation = ({
     institutionDisplayName
   )
 
-  const isCollectiveOfferDuplicationActive = useActiveFeature(
-    'WIP_CREATE_COLLECTIVE_OFFER_FROM_TEMPLATE'
-  )
-
   return (
     <div className={styles['confirmation-wrapper']}>
       <div className={styles['confirmation']}>
@@ -126,42 +121,40 @@ const CollectiveOfferConfirmation = ({
           </Link>
         </div>
       </div>
-      {isCollectiveOfferDuplicationActive && (
-        <Banner
-          type="notification-info"
-          className={styles['confirmation-banner']}
-          links={[
-            {
-              href: `https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-mon-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement`,
-              linkTitle:
-                'Quel est le cycle de vie d’une offre collective, de sa création à son remboursement',
-            },
-          ]}
-        >
-          <h2 className={styles['confirmation-banner-title']}>
-            Quelle est la prochaine étape ?
-          </h2>
-          {isShowcase ? (
-            <>
-              Les enseignants intéressés par votre offre vitrine vous
-              contacterons par mail ou téléphone. <br />
-              Après un accord mutuel, vous pourrez créer une offre réservable en
-              complétant la date, le prix et l’établissement convenus avec
-              l’enseignant. <br />
-              Cette nouvelle offre apparaitra sur ADAGE et pourra être
-              pré-réservée par l’enseignant.
-            </>
-          ) : (
-            <>
-              L’enseignant doit préréserver votre offre depuis son compte ADAGE.
-              <br />
-              Une fois la préréservation faite, vous verrez une réservation
-              portant le statut préréservé qui, dans un second temps, devra être
-              officiellement réservée par le chef d’établissement.
-            </>
-          )}
-        </Banner>
-      )}
+      <Banner
+        type="notification-info"
+        className={styles['confirmation-banner']}
+        links={[
+          {
+            href: `https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-mon-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement`,
+            linkTitle:
+              'Quel est le cycle de vie d’une offre collective, de sa création à son remboursement',
+          },
+        ]}
+      >
+        <h2 className={styles['confirmation-banner-title']}>
+          Quelle est la prochaine étape ?
+        </h2>
+        {isShowcase ? (
+          <>
+            Les enseignants intéressés par votre offre vitrine vous contacterons
+            par mail ou téléphone. <br />
+            Après un accord mutuel, vous pourrez créer une offre réservable en
+            complétant la date, le prix et l’établissement convenus avec
+            l’enseignant. <br />
+            Cette nouvelle offre apparaitra sur ADAGE et pourra être
+            pré-réservée par l’enseignant.
+          </>
+        ) : (
+          <>
+            L’enseignant doit préréserver votre offre depuis son compte ADAGE.
+            <br />
+            Une fois la préréservation faite, vous verrez une réservation
+            portant le statut préréservé qui, dans un second temps, devra être
+            officiellement réservée par le chef d’établissement.
+          </>
+        )}
+      </Banner>
     </div>
   )
 }
