@@ -1,9 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
-import * as pcapi from 'repository/pcapi/pcapi'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { getToday } from 'utils/date'
+import {
+  formatBrowserTimezonedDateAsUTC,
+  FORMAT_ISO_DATE_ONLY,
+  getToday,
+} from 'utils/date'
+
+import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
 import InvoicesAdminMustFilter from './InvoicesAdminMustFilter'
 import InvoicesFilters from './InvoicesFilters'
@@ -81,14 +87,32 @@ const ReimbursementsInvoices = ({
       if (shouldReset) {
         setHasSearchedOnce(false)
       }
-      const invoicesFilters = {
-        reimbursementPointId: filters.reimbursementPoint,
-        businessUnitId: filters.reimbursementPoint,
-        periodBeginningDate: filters.periodStart,
-        periodEndingDate: filters.periodEnd,
-      }
-      pcapi
-        .getInvoices(shouldReset ? INITIAL_FILTERS : invoicesFilters)
+      const reimbursmentPoint = shouldReset
+        ? INITIAL_FILTERS.reimbursementPoint
+        : filters.reimbursementPoint
+      const periodStart = shouldReset
+        ? INITIAL_FILTERS.periodStart
+        : filters.periodStart
+      const periodEnd = shouldReset
+        ? INITIAL_FILTERS.periodEnd
+        : filters.periodEnd
+
+      api
+        .getInvoices(
+          // @ts-expect-error type string is not assignable to type number
+          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.businessUnitId
+            ? reimbursmentPoint
+            : undefined,
+          periodStart !== DEFAULT_INVOICES_FILTERS.periodBeginningDate
+            ? formatBrowserTimezonedDateAsUTC(periodStart, FORMAT_ISO_DATE_ONLY)
+            : undefined,
+          periodEnd !== DEFAULT_INVOICES_FILTERS.periodEndingDate
+            ? formatBrowserTimezonedDateAsUTC(periodEnd, FORMAT_ISO_DATE_ONLY)
+            : undefined,
+          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.businessUnitId
+            ? reimbursmentPoint
+            : undefined
+        )
         .then(invoices => {
           setInvoices(invoices)
           setIsLoading(false)
