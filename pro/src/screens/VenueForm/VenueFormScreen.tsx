@@ -103,9 +103,16 @@ const VenueFormScreen = ({
         }
         const apiFieldsMap: Record<string, string> = {
           venue: 'venueId',
+          venueTypeCode: 'venueLabel',
+          venueLabelId: 'venueType',
           'contact.email': 'email',
           'contact.phoneNumber': 'phoneNumber',
           'contact.website': 'webSite',
+          address: 'search-addressAutocomplete',
+          visualDisabilityCompliant: 'accessibility.visual',
+          mentalDisabilityCompliant: 'accessibility.mental',
+          motorDisabilityCompliant: 'accessibility.motor',
+          audioDisabilityCompliant: 'accessibility.audio',
         }
 
         if (!formErrors || Object.keys(formErrors).length === 0) {
