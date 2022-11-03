@@ -625,6 +625,8 @@ class Offerer(
 
     tags: list["OffererTag"] = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
+    isAllowedForEAC = Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+
     thumb_path_component = "offerers"
 
     @property
