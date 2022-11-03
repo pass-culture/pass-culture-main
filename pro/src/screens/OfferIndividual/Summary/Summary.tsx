@@ -2,9 +2,6 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
-import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -26,6 +23,9 @@ import {
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
+import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
+import OfferStatusBanner from 'pages/Offers/Offer/OfferDetails/OfferStatusBanner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 

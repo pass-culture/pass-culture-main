@@ -3,12 +3,12 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { VenueProviderResponse } from 'apiClient/v1'
-import ReimbursementFields from 'components/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import FormLayout from 'new_components/FormLayout'
+import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 
 import { ButtonVariant } from '../../ui-kit/Button/types'

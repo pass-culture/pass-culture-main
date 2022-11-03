@@ -12,7 +12,7 @@
 
 ## [HOCS](./components/hocs/README.md) (DEPRECATED : utiliser les hooks)
 
-## [PAGES](./components/pages/README.md) (DEPRECATED : à migrer dans screens et routes)
+## [PAGES](./pages/README.md)
 
 ## [ROUTER](./components/router/README.md) (DEPRECATED? : à migrer déterminer si migration complète dans routes)
 

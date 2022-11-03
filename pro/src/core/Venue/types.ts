@@ -5,8 +5,8 @@ import {
   LegalStatusResponseModel,
   StudentLevels,
 } from 'apiClient/v1'
-import { IVenueBannerMetaProps } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import { IAccessibiltyFormValues } from 'core/shared'
+import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 
 export type TOfferIndividualVenue = {
   id: string
