@@ -321,6 +321,27 @@ export class DefaultService {
   }
 
   /**
+   * create_collective_offer_template <POST>
+   * @param requestBody
+   * @returns CollectiveOfferResponseIdModel Created
+   * @throws ApiError
+   */
+  public createCollectiveOfferTemplate(
+    requestBody?: PostCollectiveOfferBodyModel,
+  ): CancelablePromise<CollectiveOfferResponseIdModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/collective/offers-template',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * patch_collective_offers_template_active_status <PATCH>
    * @param requestBody
    * @returns void
