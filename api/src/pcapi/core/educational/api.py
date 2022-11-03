@@ -920,27 +920,6 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
     return educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
 
 
-def transform_collective_offer_template_into_collective_offer(
-    user: User, body: CollectiveStockCreationBodyModel
-) -> educational_models.CollectiveOffer:
-    collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(id=body.offer_id).one()
-    collective_offer_template_id = collective_offer_template.id
-
-    offer_validation.check_validation_status(collective_offer_template)
-    collective_offer = educational_models.CollectiveOffer.create_from_collective_offer_template(
-        collective_offer_template
-    )
-
-    db.session.delete(collective_offer_template)
-    db.session.add(collective_offer)
-    db.session.commit()
-
-    search.unindex_collective_offer_template_ids([collective_offer_template_id])
-
-    create_collective_stock(stock_data=body, user=user, offer_id=collective_offer.id)
-    return collective_offer
-
-
 def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
     return educational_repository.get_query_for_collective_offers_by_ids_for_user(user=user, ids=ids)
 

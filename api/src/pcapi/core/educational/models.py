@@ -235,39 +235,6 @@ class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, Accessibility
             return False
         return self.collectiveStock.is_cancellable_from_offerer
 
-    @classmethod
-    def create_from_collective_offer_template(
-        cls, collective_offer_template: "CollectiveOfferTemplate"
-    ) -> "CollectiveOffer":
-        list_of_common_attributes = [
-            "isActive",
-            "venue",
-            "name",
-            "description",
-            "durationMinutes",
-            "dateCreated",
-            "domains",
-            "subcategoryId",
-            "dateUpdated",
-            "bookingEmails",
-            "lastValidationDate",
-            "validation",
-            "audioDisabilityCompliant",
-            "mentalDisabilityCompliant",
-            "motorDisabilityCompliant",
-            "visualDisabilityCompliant",
-            "contactEmail",
-            "contactPhone",
-            "offerVenue",
-            "students",
-            "interventionArea",
-        ]
-        offer_mapping = {x: getattr(collective_offer_template, x) for x in list_of_common_attributes}
-        return cls(
-            **offer_mapping,
-            offerId=collective_offer_template.offerId,
-        )
-
 
 class CollectiveOfferTemplate(
     PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Base, Model
