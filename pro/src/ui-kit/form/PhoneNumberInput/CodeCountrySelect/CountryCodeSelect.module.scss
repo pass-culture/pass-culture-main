@@ -10,8 +10,8 @@ $icon-padding-left: rem.torem(16px);
 $space-icon-text: rem.torem(8px);
 $focus-border-width: rem.torem(2px);
 $input-height: calc(
-  #{size.$input-min-height} - 2px
-); //input height - 2 * input-border-width
+  #{size.$input-min-height} - (2 * #{size.$input-border-width})
+);
 $input-width: rem.torem(86px);
 $text-padding-left: calc(
   #{$icon-width} + #{$icon-padding-left} + #{$space-icon-text}
@@ -22,7 +22,7 @@ $text-padding-left: calc(
   border-color: transparent;
   border-radius: rem.torem(forms.$input-border-radius) 0 0
     rem.torem(forms.$input-border-radius);
-  border-width: 1px;
+  border-width: size.$input-border-width;
   border-style: solid;
 
   &:focus,
