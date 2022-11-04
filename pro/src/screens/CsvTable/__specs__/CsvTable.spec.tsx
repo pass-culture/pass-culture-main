@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import * as csvService from 'routes/CsvTable/adapters/getCsvData'
+import * as csvService from 'pages/CsvTable/adapters/getCsvData'
 import { configureTestStore } from 'store/testUtils'
 
 import CsvTable, { ICsvTableProps } from '../CsvTable'

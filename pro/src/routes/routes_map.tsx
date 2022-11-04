@@ -2,6 +2,14 @@
 /* istanbul ignore file */
 import { Redirect, useLocation } from 'react-router-dom'
 
+import Bookings from 'pages/Bookings'
+import BusinessUnitList from 'pages/BusinessUnitList'
+import CollectiveBookings from 'pages/CollectiveBookings'
+import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
+import CollectiveOffers from 'pages/CollectiveOffers'
+import CsvTable from 'pages/CsvTable'
+import Desk from 'pages/Desk'
+import { EmailChangeValidation } from 'pages/EmailChangeValidation'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import LostPassword from 'pages/LostPassword/LostPassword'
@@ -11,30 +19,21 @@ import VenueV1Creation from 'pages/Offerers/Offerer/VenueV1/VenueCreation/VenueC
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import VenueV1Edition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdition'
 import OffererCreation from 'pages/Offerers/OffererCreation'
+import { OffererStats } from 'pages/OffererStats'
+import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
+import OffersRoute from 'pages/Offers'
 import OfferLayout from 'pages/Offers/Offer/OfferLayout'
+import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
 import SetPassword from 'pages/SetPassword/SetPassword'
 import SetPasswordConfirm from 'pages/SetPasswordConfirm/SetPasswordConfirm'
 import SignIn from 'pages/SignIn/SignIn'
 import Signup from 'pages/Signup/Signup'
-import Bookings from 'routes/Bookings'
-import BusinessUnitList from 'routes/BusinessUnitList'
-import CollectiveBookings from 'routes/CollectiveBookings'
-import CollectiveOffers from 'routes/CollectiveOffers'
-import CsvTable from 'routes/CsvTable'
-import Desk from 'routes/Desk'
-import { EmailChangeValidation } from 'routes/EmailChangeValidation'
-import { OfferIndividualWizard } from 'routes/OfferIndividualWizard'
-import Offers from 'routes/Offers'
-import OfferType from 'routes/OfferType'
-import SignUpValidation from 'routes/SignUpValidation'
-import { UserProfile } from 'routes/User'
-import { VenueCreation } from 'routes/VenueCreation'
-import { VenueEdition } from 'routes/VenueEdition'
+import SignUpValidation from 'pages/SignUpValidation'
+import { UserProfile } from 'pages/User'
+import { VenueCreation } from 'pages/VenueCreation'
+import { VenueEdition } from 'pages/VenueEdition'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
-
-import CollectiveOfferRoutes from './CollectiveOfferRoutes'
-import { OffererStats } from './OffererStats'
 
 interface ILayoutConfig {
   pageName?: string
@@ -258,7 +257,7 @@ const routes: IRoute[] = [
     title: 'Offre',
   },
   {
-    component: Offers,
+    component: OffersRoute,
     exact: true,
     path: '/offres',
     title: 'Offres',

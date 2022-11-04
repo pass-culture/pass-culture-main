@@ -3,7 +3,7 @@ import React from 'react'
 
 import { BoxFormLayout } from 'new_components/BoxFormLayout'
 import FormLayout from 'new_components/FormLayout'
-import { PostPasswordAdapter } from 'routes/User/adapters/postPasswordAdapter'
+import { PostPasswordAdapter } from 'pages/User/adapters/postPasswordAdapter'
 import { Button, SubmitButton, PasswordInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

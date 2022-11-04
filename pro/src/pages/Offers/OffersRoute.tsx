@@ -20,7 +20,7 @@ import { sortByDisplayName } from 'utils/strings'
 
 import { getFilteredOffersAdapter } from './adapters'
 
-const Offers = (): JSX.Element => {
+const OffersRoute = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
   const notify = useNotification()
   const history = useHistory()
@@ -182,4 +182,4 @@ const Offers = (): JSX.Element => {
   )
 }
 
-export default Offers
+export default OffersRoute

@@ -20,7 +20,7 @@ import OfferBreadcrumb, {
 import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import Confirmation from 'pages/Offers/Offer/Confirmation/Confirmation'
-import { OfferV2Summary as OfferV2SummaryRoute } from 'routes/OfferV2Summary'
+import { OfferV2Summary as OfferV2SummaryRoute } from 'pages/OfferV2Summary'
 import { Status } from 'screens/OfferIndividual/Status'
 import { Title } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'

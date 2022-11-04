@@ -18,6 +18,7 @@ module.exports = {
     'src/api/v2/gen/*',
     '**/*.svg',
     '**/*.scss',
+    '**/*.md',
   ],
   parserOptions: {
     sourceType: 'module',

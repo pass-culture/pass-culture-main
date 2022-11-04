@@ -1,6 +1,6 @@
 import { BoxFormLayout } from 'new_components/BoxFormLayout'
 import { UserPasswordForm } from 'new_components/UserPasswordForm'
-import postPasswordAdapter from 'routes/User/adapters/postPasswordAdapter'
+import postPasswordAdapter from 'pages/User/adapters/postPasswordAdapter'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'

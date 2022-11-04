@@ -9,7 +9,7 @@ import {
 } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
-import postCollectiveStockAdapter from 'routes/CollectiveOfferStockCreation/adapters/postCollectiveStock'
+import postCollectiveStockAdapter from 'pages/CollectiveOfferStockCreation/adapters/postCollectiveStock'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 interface CollectiveOfferStockCreationFromTemplateProps {
