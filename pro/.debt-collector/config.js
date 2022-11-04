@@ -34,15 +34,6 @@ module.exports = {
         isImportingFrom('ui-kit/form_rff'),
     },
     {
-      title:
-        'should follow ui-kit / components / screen / route directory structure',
-      id: 'DIRECTORY_STRUCTURE',
-      description: 'see documentation here',
-      debtScore: 1,
-      tags: ['directory structure', 'new workshop rules'],
-      matchGlob: './src/components/**/*.{ts,tsx,js,jsx}',
-    },
-    {
       title: 'should migrate js and jsx files to typescript',
       id: 'TYPESCRIPT_MIGRATION',
       description: 'see documentation here',
@@ -66,24 +57,6 @@ module.exports = {
         find(`className={cn('`),
     },
     {
-      title: 'should not use redux-saga anymore',
-      id: 'DEPRECATED_REDUX_SAGA',
-      description: '',
-      debtScore: 3,
-      tags: ['state', 'old debt'],
-      matchGlob: '**/*.{ts,tsx,js,jsx}',
-      matchRule: ({ isImportingFrom }) => isImportingFrom('redux-saga'),
-    },
-    {
-      title: 'should migrate from enzyme to RTL',
-      id: 'DEPRECATED_ENZYME_TO_RTL',
-      description: '',
-      debtScore: 3,
-      tags: ['tests', 'old debt'],
-      matchGlob: ['**/*.spec.{ts,tsx,js,jsx}', '**/*.specs.{ts,tsx,js,jsx}'],
-      matchRule: ({ isImportingFrom }) => isImportingFrom('enzyme'),
-    },
-    {
       title: 'should use functional components instead of classes',
       id: 'FUNCTIONAL_COMPONENTS',
       description: '',
@@ -96,17 +69,7 @@ module.exports = {
         find('extends PureComponent') +
         find('extends React.PureComponent'),
     },
-    {
-      title: 'should not use act() or await render() in tests',
-      id: 'CORRECT_ASYNC_TESTING',
-      description:
-        'use await waitFor, await findBy.., await waitForElementToBeRemoved instead',
-      debtScore: 0.25,
-      tags: ['tests', 'new workshop rules'],
-      matchGlob: ['**/*.spec.{ts,tsx,js,jsx}', '**/*.specs.{ts,tsx,js,jsx}'],
-      matchRule: ({ find }) => find('await act') + find('await render('),
-    },
-    {
+   {
       title: 'should not use withQueryRouter or withRouter',
       id: 'DEPRECATED_WITH_QUERY_ROUTER',
       description:
@@ -114,17 +77,7 @@ module.exports = {
       debtScore: 2,
       tags: ['functional', 'old debt'],
       matchGlob: '**/*.{ts,tsx,js,jsx}',
-      matchRule: ({ find }) => find('withQueryRouter') + find('withRouter'),
-    },
-    {
-      title: 'should not use connect hoc',
-      id: 'DEPRECATED_REDUX_CONNECT_HOC',
-      description:
-        'prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)',
-      debtScore: 3,
-      tags: ['functional', 'state', 'old debt'],
-      matchGlob: '**/*.{ts,tsx,js,jsx}',
-      matchRule: ({ find }) => find('import { connect'),
+      matchRule: ({ find }) => find('withRouter'),
     },
     {
       title: 'should not be too deep into the directory structure',
@@ -138,14 +91,6 @@ module.exports = {
     },
     {
       title:
-        'should migrate everything in hoc directory and create hooks instead',
-      id: 'REMOVE_HOC_DIRECTORY',
-      debtScore: 3,
-      tags: ['functional', 'state', 'old debt'],
-      matchGlob: './src/components/hocs/**/*.*',
-    },
-    {
-      title:
         'should migrate all global SCSS files within the components as scss modules',
       id: 'REMOVE_GLOBAL_SCSS',
       debtScore: 1,
@@ -154,21 +99,6 @@ module.exports = {
         './src/styles/components/**/*.scss',
         './src/styles/global/**/*.scss',
       ],
-    },
-    {
-      title:
-        'should use the ui-kit Title component instead of h1 h2 etc. directly',
-      id: 'USE_TITLE_COMPONENT',
-      debtScore: 0.25,
-      tags: ['design system', 'new workshop rules'],
-      matchGlob: './src/**/*.{tsx,jsx,}',
-      matchRule: ({ find }) =>
-        find('<h1') +
-        find('<h2') +
-        find('<h3') +
-        find('<h4') +
-        find('<h5') +
-        find('<h6'),
     },
     {
       title:
