@@ -3,10 +3,11 @@ from unittest import mock
 
 import pytest
 
-from pcapi.core.educational.factories import CancelledCollectiveBookingFactory, EducationalDomainFactory
+from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
+from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.factories import PendingCollectiveBookingFactory
 from pcapi.core.educational.factories import ReimbursedCollectiveBookingFactory
 import pcapi.core.educational.models as educational_models
@@ -45,16 +46,17 @@ class Returns204Test:
         siren = offerer.siren
 
         num_queries = 1  # fetch offerer
+        num_queries += 1  # update offerer
         num_queries += 1  # fetch all venues
         num_queries += 1  # commit update on offerer and venues
         num_queries += 1  # get active bookings
         num_queries += 1  # lock stocks
-        num_queries += 1  # commit all bookings cancellation
-        num_queries += 1  # release lock
+        num_queries += 1  # update all bookings cancellation
+        num_queries += 1  # commit
         num_queries += 2  # get collective offers and template offers
         num_queries += 2  # update collective offers and template offers "isActive"
         num_queries += 2  # commit collective offers and template updates
-        num_queries += 2  # unindex collective offers and template
+        num_queries += 1  # refetch active bookings
 
         with assert_num_queries(num_queries):
             response = client.with_eac_token().post(f"/adage/v1/cultural_partners/{siren}/deactivate")

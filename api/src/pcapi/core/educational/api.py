@@ -1389,20 +1389,20 @@ def deactivate_collective_offers_and_collective_offers_template_for_offerer(offe
     ).filter(offerers_models.Venue.managingOffererId == offerer_id)
     batch_update_collective_offers_template(collective_offer_template_query, {"isActive": False})
 
-    search.unindex_collective_offer_ids([offer.id for offer in collective_offer_query.all()])
-    search.unindex_collective_offer_template_ids([offer.id for offer in collective_offer_template_query.all()])
-
 
 def deactivate_offerer_for_EAC(
     offerer: offerers_models.Offerer,
 ) -> list[educational_models.CollectiveBooking]:
+    offerer_id = offerer.id
     remove_adage_id_on_offerer_venues_and_mark_offerer_as_forbidden(offerer)
 
-    active_collective_bookings = educational_repository.get_active_collective_bookings_for_offerer(offerer.id)
+    active_collective_bookings = educational_repository.get_active_collective_bookings_for_offerer(offerer_id)
     cancel_collective_bookings(
         active_collective_bookings, educational_models.CollectiveBookingCancellationReasons.DEACTIVATION
     )
 
-    deactivate_collective_offers_and_collective_offers_template_for_offerer(offerer.id)
+    deactivate_collective_offers_and_collective_offers_template_for_offerer(offerer_id)
+
+    active_collective_bookings = educational_repository.get_active_collective_booking_for_offerer(offerer_id)
 
     return active_collective_bookings
