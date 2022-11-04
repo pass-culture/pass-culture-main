@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { redirectLoggedUser } from 'components/router/helpers'
-import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
+import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import Hero from 'ui-kit/Hero'
 import Logo from 'ui-kit/Logo/Logo'
@@ -19,17 +18,12 @@ const LostPassword = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState('')
   const [passwordSent, setPasswordSent] = useState(false)
   const [passwordChanged, setPasswordChanged] = useState(false)
-  const history = useHistory()
   const location = useLocation()
   const { search } = location
   const { token } = parse(search)
-  const { currentUser } = useCurrentUser()
+  useRedirectLoggedUser()
 
   const notification = useNotification()
-
-  useEffect(() => {
-    redirectLoggedUser(history, location, currentUser)
-  }, [currentUser])
 
   useEffect(() => {
     const gcaptchaScript = initReCaptchaScript()

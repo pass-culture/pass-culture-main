@@ -1,20 +1,16 @@
 import React, { Fragment } from 'react'
-import { Link, useHistory, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
-import { redirectLoggedUser } from 'components/router/helpers'
-import useCurrentUser from 'hooks/useCurrentUser'
+import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import Logo from 'ui-kit/Logo/Logo'
 import { parse } from 'utils/query-string'
 
 const SetPasswordConfirm = () => {
-  const { currentUser } = useCurrentUser()
-  const history = useHistory()
   const location = useLocation()
   const { error } = parse(location.search)
   const displayErrorMessage = error === 'unvalid-link'
-
-  redirectLoggedUser(history, location, currentUser)
+  useRedirectLoggedUser()
 
   return (
     <Fragment>
