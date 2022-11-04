@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { STOCK_THING_FORM_DEFAULT_VALUES } from 'new_components/StockThingForm'
+import { STOCK_THING_FORM_DEFAULT_VALUES } from 'components/StockThingForm'
 
 import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
 

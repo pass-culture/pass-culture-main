@@ -2,7 +2,7 @@ import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import {
   IStockThingFormValues,
   STOCK_THING_FORM_DEFAULT_VALUES,
-} from 'new_components/StockThingForm'
+} from 'components/StockThingForm'
 
 import { serializeStockThingList } from '../serializers'
 

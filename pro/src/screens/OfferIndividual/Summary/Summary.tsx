@@ -2,6 +2,14 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { BannerSummary } from 'components/Banner'
+import {
+  IOfferAppPreviewProps,
+  OfferAppPreview,
+} from 'components/OfferAppPreview'
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { SummaryLayout } from 'components/SummaryLayout'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -15,14 +23,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
-import { BannerSummary } from 'new_components/Banner'
-import {
-  IOfferAppPreviewProps,
-  OfferAppPreview,
-} from 'new_components/OfferAppPreview'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
-import { SummaryLayout } from 'new_components/SummaryLayout'
 import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
 import OfferStatusBanner from 'pages/Offers/Offer/OfferDetails/OfferStatusBanner'

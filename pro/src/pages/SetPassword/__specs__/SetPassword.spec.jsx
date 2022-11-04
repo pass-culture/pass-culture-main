@@ -9,7 +9,7 @@ import { Route, Router } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
-import Notification from 'new_components/Notification/Notification'
+import Notification from 'components/Notification/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import SetPassword from '../SetPassword'

@@ -16,7 +16,7 @@ module.exports = {
         message: 'Which design level?',
         choices: [
           'ui-kit',
-          'new_components',
+          'components',
           'screens',
           'templates',
           'pages',

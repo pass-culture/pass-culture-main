@@ -1,5 +1,5 @@
-import { BoxFormLayout } from 'new_components/BoxFormLayout'
-import { UserPasswordForm } from 'new_components/UserPasswordForm'
+import { BoxFormLayout } from 'components/BoxFormLayout'
+import { UserPasswordForm } from 'components/UserPasswordForm'
 import postPasswordAdapter from 'pages/User/adapters/postPasswordAdapter'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 

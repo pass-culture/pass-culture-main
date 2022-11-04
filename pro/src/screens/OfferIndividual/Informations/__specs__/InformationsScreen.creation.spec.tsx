@@ -10,6 +10,7 @@ import { api } from 'apiClient/api'
 import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { FORM_DEFAULT_VALUES } from 'components/OfferIndividualForm'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -17,7 +18,6 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { FORM_DEFAULT_VALUES } from 'new_components/OfferIndividualForm'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { configureTestStore } from 'store/testUtils'

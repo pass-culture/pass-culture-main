@@ -2,6 +2,9 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { SummaryLayout } from 'components/SummaryLayout'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -12,9 +15,6 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as ArrowIcon } from 'icons/ico-arrow-up-b.svg'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
-import { SummaryLayout } from 'new_components/SummaryLayout'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

@@ -1,7 +1,7 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
 import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
+import { IVenueFormValues } from 'components/VenueForm'
 import { unhumanizeSiret } from 'core/Venue'
-import { IVenueFormValues } from 'new_components/VenueForm'
 
 interface VenueBodyModelParams {
   hideSiret: boolean

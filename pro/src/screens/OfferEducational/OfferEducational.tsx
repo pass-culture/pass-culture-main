@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   CanOffererCreateCollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
@@ -10,7 +11,6 @@ import {
   Mode,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
 
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'

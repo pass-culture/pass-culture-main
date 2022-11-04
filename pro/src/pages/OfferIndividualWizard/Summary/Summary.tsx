@@ -1,9 +1,9 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
+import PageTitle from 'components/PageTitle/PageTitle'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { IOfferIndividual } from 'core/Offers/types'
-import PageTitle from 'new_components/PageTitle/PageTitle'
 import {
   Summary as SummaryScreen,
   Template as WizardTemplate,

@@ -1,8 +1,8 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import FormLayout from 'components/FormLayout'
 import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
-import FormLayout from 'new_components/FormLayout'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
 import {

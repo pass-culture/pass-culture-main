@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import FormLayout from 'components/FormLayout'
+import ReimbursementPointV2 from 'components/VenueForm/ReimbursementPointV2/ReimbursementPointV2'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
-import FormLayout from 'new_components/FormLayout'
-import ReimbursementPointV2 from 'new_components/VenueForm/ReimbursementPointV2/ReimbursementPointV2'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint/PricingPoint'

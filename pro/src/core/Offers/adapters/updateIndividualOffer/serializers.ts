@@ -1,7 +1,7 @@
 import { PatchOfferBodyModel } from 'apiClient/v1'
+import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 export const serializeExtraData = (
   formValues: IOfferIndividualFormValues

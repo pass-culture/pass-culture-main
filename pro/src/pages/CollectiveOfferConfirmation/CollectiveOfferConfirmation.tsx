@@ -1,7 +1,7 @@
 import React from 'react'
 
+import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 
 interface CollectiveOfferConfirmationProps {

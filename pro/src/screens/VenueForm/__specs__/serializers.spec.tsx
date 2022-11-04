@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { IVenueFormValues } from 'new_components/VenueForm'
+import { IVenueFormValues } from 'components/VenueForm'
 
 import {
   serializeEditVenueBodyModel,

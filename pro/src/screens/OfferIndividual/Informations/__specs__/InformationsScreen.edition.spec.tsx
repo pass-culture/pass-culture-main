@@ -12,6 +12,8 @@ import {
   OfferStatus,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
+import Notification from 'components/Notification/Notification'
+import { setInitialFormValues } from 'components/OfferIndividualForm'
 import {
   IOfferIndividualContext,
   OfferIndividualContext,
@@ -21,8 +23,6 @@ import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import Notification from 'new_components/Notification/Notification'
-import { setInitialFormValues } from 'new_components/OfferIndividualForm'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { configureTestStore } from 'store/testUtils'

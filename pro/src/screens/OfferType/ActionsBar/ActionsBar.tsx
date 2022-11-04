@@ -1,8 +1,8 @@
 import React from 'react'
 
+import ActionsBarSticky from 'components/ActionsBarSticky'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
-import ActionsBarSticky from 'new_components/ActionsBarSticky'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 

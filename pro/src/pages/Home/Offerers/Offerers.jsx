@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
+import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
 import {
   INITIAL_PHYSICAL_VENUES,
   INITIAL_VIRTUAL_VENUE,

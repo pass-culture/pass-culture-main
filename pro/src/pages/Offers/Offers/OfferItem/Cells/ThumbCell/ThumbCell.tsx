@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -9,7 +10,6 @@ import {
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import Thumb from 'ui-kit/Thumb'
 
 import styles from '../../OfferItem.module.scss'

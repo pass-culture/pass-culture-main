@@ -1,12 +1,12 @@
 import React from 'react'
 
+import { OfferFormLayout } from 'components/OfferFormLayout'
+import { OfferIndividualStepper } from 'components/OfferIndividualStepper'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
-import { OfferIndividualStepper } from 'new_components/OfferIndividualStepper'
 
 import { Status } from '../Status'
 

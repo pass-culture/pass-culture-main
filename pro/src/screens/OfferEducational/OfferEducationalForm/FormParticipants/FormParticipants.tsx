@@ -1,8 +1,8 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import FormLayout from 'new_components/FormLayout'
 import { CheckboxGroup } from 'ui-kit'
 
 import { participantsOptions } from './participantsOptions'

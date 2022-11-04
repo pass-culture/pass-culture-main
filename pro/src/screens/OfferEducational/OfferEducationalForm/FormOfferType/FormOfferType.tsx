@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import FormLayout from 'components/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IEducationalCategory,
@@ -8,7 +9,6 @@ import {
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
-import FormLayout from 'new_components/FormLayout'
 import { MultiSelectAutocomplete, Select, TextArea, TextInput } from 'ui-kit'
 
 import {

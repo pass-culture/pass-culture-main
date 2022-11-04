@@ -5,6 +5,8 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import { api } from 'apiClient/api'
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_NAVIGATION_OUT,
@@ -19,8 +21,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import PageTitle from 'new_components/PageTitle/PageTitle'
 import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {

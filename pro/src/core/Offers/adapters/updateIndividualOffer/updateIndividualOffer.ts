@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
+import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 
 import { serializePatchOffer } from './serializers'
 

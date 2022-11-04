@@ -19,6 +19,8 @@ module.exports = {
     '**/*.svg',
     '**/*.scss',
     '**/*.md',
+    '**/*.jpg',
+    '**/*.png',
   ],
   parserOptions: {
     sourceType: 'module',

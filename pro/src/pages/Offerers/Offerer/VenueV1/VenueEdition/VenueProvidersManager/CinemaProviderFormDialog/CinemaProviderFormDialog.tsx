@@ -2,7 +2,7 @@ import './CinemaProviderFormDialog.scss'
 
 import React from 'react'
 
-import DialogBox from 'new_components/DialogBox'
+import DialogBox from 'components/DialogBox'
 
 import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
 

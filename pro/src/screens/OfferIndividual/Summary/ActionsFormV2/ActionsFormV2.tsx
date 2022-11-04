@@ -3,6 +3,7 @@ import cn from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -13,7 +14,6 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import {
   searchFiltersSelector,
   searchPageNumberSelector,

@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
+import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
+import FormLayout from 'components/FormLayout'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -9,8 +11,6 @@ import {
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeOffersUrl } from 'core/Offers'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferSummary from 'new_components/CollectiveOfferSummary'
-import FormLayout from 'new_components/FormLayout'
 import { Banner, Button } from 'ui-kit'
 
 import publishCollectiveOfferAdapter from './adapters/publishCollectiveOfferAdapter'

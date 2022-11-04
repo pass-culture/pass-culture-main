@@ -3,10 +3,10 @@ import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, Redirect } from 'react-router-dom'
 
+import { RedirectToMaintenance } from 'components/RedirectToMaintenance'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useLogNavigation from 'hooks/useLogNavigation'
-import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 
 import { useIsRoutePublic } from './hooks'

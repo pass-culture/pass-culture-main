@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
+import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
-import PageTitle from 'new_components/PageTitle/PageTitle'
 import Logo from 'ui-kit/Logo/Logo'
 import { parse } from 'utils/query-string'
 

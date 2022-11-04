@@ -4,7 +4,7 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import FormLayout from 'new_components/FormLayout'
+import FormLayout from 'components/FormLayout'
 import { Checkbox, SubmitButton } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
 

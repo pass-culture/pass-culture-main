@@ -2,6 +2,14 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
+import FormLayout from 'components/FormLayout'
+import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import {
+  IOfferIndividualFormValues,
+  OfferIndividualForm,
+  validationSchema,
+} from 'components/OfferIndividualForm'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   createIndividualOffer,
@@ -15,14 +23,6 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import FormLayout from 'new_components/FormLayout'
-import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import {
-  IOfferIndividualFormValues,
-  OfferIndividualForm,
-  validationSchema,
-} from 'new_components/OfferIndividualForm'
-import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 
 import { ActionBar } from '../ActionBar'
 

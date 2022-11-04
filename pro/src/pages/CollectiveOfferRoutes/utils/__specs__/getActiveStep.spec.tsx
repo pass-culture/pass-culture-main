@@ -1,4 +1,4 @@
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 
 import { getActiveStep } from '../getActiveStep'
 

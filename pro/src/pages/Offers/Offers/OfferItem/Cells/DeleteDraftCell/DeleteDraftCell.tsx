@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 
+import ConfirmDialog from 'components/ConfirmDialog'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -10,7 +11,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
-import ConfirmDialog from 'new_components/ConfirmDialog'
 import { Button } from 'ui-kit'
 import { IconPositionEnum, ButtonVariant } from 'ui-kit/Button/types'
 
