@@ -30,7 +30,6 @@ import {
   useAuthenticated,
   useNotify,
   usePermissions,
-  useRedirect,
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
@@ -93,7 +92,6 @@ enum OffererStatus {
 export const OfferersToValidate = () => {
   useAuthenticated()
   const notify = useNotify()
-  const redirect = useRedirect()
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState({
     offerers: [] as OffererToBeValidated[],
@@ -164,7 +162,6 @@ export const OfferersToValidate = () => {
           type: 'error',
         })
       }
-      redirect('/pro/search')
       captureException(error)
     }
   }
