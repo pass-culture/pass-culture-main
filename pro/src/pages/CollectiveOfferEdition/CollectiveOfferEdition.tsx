@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
@@ -7,7 +7,6 @@ import {
   IOfferEducationalFormValues,
   Mode,
   cancelCollectiveBookingAdapter,
-  extractOfferIdAndOfferTypeFromRouteParams,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
   setInitialFormValues,
@@ -36,9 +35,6 @@ const CollectiveOfferEdition = ({
   offer: CollectiveOffer | CollectiveOfferTemplate
   reloadCollectiveOffer: () => void
 }): JSX.Element => {
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
-  const { offerId, isShowcase } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const history = useHistory()
 
   const [isReady, setIsReady] = useState<boolean>(false)
@@ -51,11 +47,11 @@ const CollectiveOfferEdition = ({
   const editOffer = useCallback(
     async (offerFormValues: IOfferEducationalFormValues) => {
       if (offer) {
-        const patchAdapter = isShowcase
+        const patchAdapter = offer.isTemplate
           ? patchCollectiveOfferTemplateAdapter
           : patchCollectiveOfferAdapter
         const offerResponse = await patchAdapter({
-          offerId,
+          offerId: offer.id,
           offer: offerFormValues,
           initialValues,
         })
@@ -78,12 +74,12 @@ const CollectiveOfferEdition = ({
   )
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchAdapter = isShowcase
+    const patchAdapter = offer.isTemplate
       ? patchIsTemplateOfferActiveAdapter
       : patchIsCollectiveOfferActiveAdapter
     const { isOk, message } = await patchAdapter({
       isActive,
-      offerId,
+      offerId: offer.id,
     })
 
     if (!isOk) {
@@ -96,7 +92,7 @@ const CollectiveOfferEdition = ({
 
   const cancelActiveBookings = async () => {
     const { isOk, message } = await cancelCollectiveBookingAdapter({
-      offerId,
+      offerId: offer.id,
     })
 
     if (!isOk) {
@@ -151,7 +147,7 @@ const CollectiveOfferEdition = ({
     if (!isReady) {
       loadData(offer)
     }
-  }, [isReady, offerId, loadData, history, isShowcase])
+  }, [isReady, offer.id, loadData, history, offer.isTemplate])
 
   if (!isReady || !screenProps || !offer) {
     return <Spinner />
