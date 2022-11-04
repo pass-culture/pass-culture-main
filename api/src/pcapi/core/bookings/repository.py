@@ -793,6 +793,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
             Offer.venue,
         )
         .outerjoin(Booking.activationCode)
+        .outerjoin(Offer.criteria)
         .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
         .filter(Offer.isEvent)
         .filter(not_(Offer.isDigital))
@@ -803,7 +804,10 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
             contains_eager(IndividualBooking.booking)
             .contains_eager(Booking.stock)
             .contains_eager(Stock.offer)
-            .contains_eager(Offer.venue)
+            .options(
+                contains_eager(Offer.venue),
+                contains_eager(Offer.criteria),
+            )
         )
         .all()
     )

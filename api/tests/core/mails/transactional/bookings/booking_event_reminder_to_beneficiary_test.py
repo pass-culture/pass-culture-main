@@ -4,6 +4,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import IndividualBookingFactory
+import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     get_booking_event_reminder_to_beneficiary_email_data,
@@ -62,6 +63,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
             "EVENT_HOUR": "14h48",
             "IS_DUO_EVENT": False,
             "OFFER_NAME": "Product",
+            "OFFER_TAGS": "",
             "OFFER_TOKEN": "N2XPV5",
             "OFFER_WITHDRAWAL_DELAY": None,
             "OFFER_WITHDRAWAL_DETAILS": None,
@@ -94,6 +96,17 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
         email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
 
         assert email_data.params["OFFER_WITHDRAWAL_DETAILS"] == withdrawal_details
+
+    def test_should_return_offer_tags(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__criteria=[criteria_factories.CriterionFactory(name="Tagged_offer")]
+            )
+        )
+
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+
+        assert email_data.params["OFFER_TAGS"] == "Tagged_offer"
 
     def should_use_venue_public_name_when_available(self):
         booking = IndividualBookingFactory(

@@ -57,6 +57,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "EVENT_HOUR": formatted_event_beginning_time,
             "IS_DUO_EVENT": individual_booking.booking.quantity == 2,
             "OFFER_NAME": individual_booking.booking.stock.offer.name,
+            "OFFER_TAGS": ",".join([criterion.name for criterion in individual_booking.booking.stock.offer.criteria]),
             "OFFER_TOKEN": booking_token,
             "OFFER_WITHDRAWAL_DELAY": offer_withdrawal_delay_in_days,
             "OFFER_WITHDRAWAL_DETAILS": individual_booking.booking.stock.offer.withdrawalDetails or None,
