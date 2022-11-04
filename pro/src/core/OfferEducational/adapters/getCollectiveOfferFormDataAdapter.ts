@@ -19,7 +19,7 @@ type Payload = {
   categories: EducationalCategories
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
-  initialValues: Omit<IOfferEducationalFormValues, 'offererId' | 'venueId'>
+  initialValues: IOfferEducationalFormValues
 }
 
 type Param = {
@@ -58,10 +58,8 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
       const [categories, domains, offerers] = responses
 
       let offerersOptions = offerers.payload
-      let initialFormValues: Omit<
-        IOfferEducationalFormValues,
-        'offererId' | 'venueId'
-      > = DEFAULT_EAC_FORM_VALUES
+      let initialFormValues: IOfferEducationalFormValues =
+        DEFAULT_EAC_FORM_VALUES
 
       if (offer) {
         const { userOfferers, initialValues } = getInitialValuesAndUserOfferers(

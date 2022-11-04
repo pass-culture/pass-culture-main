@@ -25,7 +25,7 @@ export const computeInitialValuesFromOffer = (
   offer: CollectiveOffer | CollectiveOfferTemplate,
   category: string,
   subCategory: SubcategoryIdEnum
-): Omit<IOfferEducationalFormValues, 'offererId' | 'venueId'> => {
+): IOfferEducationalFormValues => {
   const eventAddress = offer?.offerVenue
 
   const participants = {
@@ -70,5 +70,7 @@ export const computeInitialValuesFromOffer = (
     domains,
     interventionArea:
       offer.interventionArea ?? DEFAULT_EAC_FORM_VALUES.interventionArea,
+    venueId: offer.venueId,
+    offererId: offer.venue.managingOffererId,
   }
 }
