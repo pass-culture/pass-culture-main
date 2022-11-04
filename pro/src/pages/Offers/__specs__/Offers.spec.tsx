@@ -31,7 +31,7 @@ import { Audience } from 'core/shared'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 
-import Offers from '../Offers'
+import OffersRoute from '../../../pages/Offers/OffersRoute'
 
 const renderOffers = async (
   store: Store,
@@ -46,7 +46,7 @@ const renderOffers = async (
   render(
     <Provider store={store}>
       <Router history={history}>
-        <Offers />
+        <OffersRoute />
       </Router>
     </Provider>
   )

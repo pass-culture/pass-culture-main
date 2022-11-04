@@ -7,7 +7,7 @@ import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndVal
 import useCurrentUser from 'hooks/useCurrentUser'
 import { BoxFormLayout } from 'new_components/BoxFormLayout'
 import FormLayout from 'new_components/FormLayout'
-import { PatchPhoneAdapter } from 'routes/User/adapters/patchPhoneAdapter'
+import { PatchPhoneAdapter } from 'pages/User/adapters/patchPhoneAdapter'
 import { setCurrentUser } from 'store/user/actions'
 import { TextInput, Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'

@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import { OfferIndividualContextProvider } from 'context/OfferIndividualContext'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { Summary } from 'routes/OfferIndividualWizard/Summary'
+import { Summary } from 'pages/OfferIndividualWizard/Summary'
 import { parse } from 'utils/query-string'
 
 const OfferV2Summary = (): JSX.Element | null => {
