@@ -38,6 +38,7 @@ export enum Events {
   CLICKED_VIEW_ALL_OFFERER_STATS = 'hasClickedViewAllOffererStats',
   CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS = 'hasClickedExpandCollectiveBookingDetails',
   CLICKED_DUPLICATE_TEMPLATE_OFFER = 'hasClickedDuplicateTemplateOffer',
+  CLICKED_BEST_PRACTICES_STUDIES = 'hasClickedBestPracticesAndStudies',
   FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
   SIGNUP_FORM_ABORT = 'signupFormAbort',
