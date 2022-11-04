@@ -22,7 +22,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import StockFormRow from './StockFormRow'
 
 export default {
-  title: 'components/StockFormRow',
+  title: 'components/stocks/StockFormRow',
   component: StockFormRow,
 }
 
