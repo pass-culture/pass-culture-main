@@ -81,7 +81,7 @@ const CollectiveOfferCreationRoutes = ({
               <CollectiveOfferTemplateCreation />
             </Route>
             <Route path="/offre/creation/collectif">
-              <OfferEducationalCreation />
+              <OfferEducationalCreation offer={collectiveOffer} />
             </Route>
             <Route path="/offre/:offerId/collectif/stocks">
               {collectiveOffer ? (
