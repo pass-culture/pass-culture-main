@@ -15,6 +15,7 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
@@ -64,6 +65,9 @@ const OfferEducationalStock = <
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
+  const isSubtypeChosenAtCreation = useActiveFeature(
+    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
+  )
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
@@ -171,8 +175,17 @@ const OfferEducationalStock = <
               </FormLayout.Row>
             </FormLayout.Section>
             <FormLayout.Actions>
-              <Link className="secondary-link" to={computeOffersUrl({})}>
-                Annuler et quitter
+              <Link
+                className="secondary-link"
+                to={
+                  isSubtypeChosenAtCreation
+                    ? `/offre/collectif/${offer.id}/creation`
+                    : computeOffersUrl({})
+                }
+              >
+                {isSubtypeChosenAtCreation
+                  ? 'Étape précédente'
+                  : 'Annuler et quitter'}
               </Link>
               <SubmitButton
                 className=""

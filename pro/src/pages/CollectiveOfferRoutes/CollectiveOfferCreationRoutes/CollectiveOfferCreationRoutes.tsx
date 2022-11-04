@@ -5,6 +5,7 @@ import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import useActiveFeature from 'hooks/useActiveFeature'
 import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
@@ -27,6 +28,10 @@ const CollectiveOfferCreationRoutes = ({
   const [collectiveOffer, setCollectiveOffer] = useState<CollectiveOffer>()
   const [collectiveOfferTemplate, setCollectiveOfferTemplate] =
     useState<CollectiveOfferTemplate>()
+
+  const isSubtypeChosenAtCreation = useActiveFeature(
+    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
+  )
 
   useEffect(() => {
     if (!offerId) return
@@ -64,7 +69,7 @@ const CollectiveOfferCreationRoutes = ({
         path={[
           '/offre/:offerId/collectif',
           '/offre/creation/collectif',
-          '/offre/creation/collectif/vitrine',
+          '/offre/collectif/:offerId/creation',
         ]}
         exact={false}
       >
@@ -81,8 +86,23 @@ const CollectiveOfferCreationRoutes = ({
               <CollectiveOfferTemplateCreation />
             </Route>
             <Route path="/offre/creation/collectif">
-              <CollectiveOfferCreation offer={collectiveOffer} />
+              <CollectiveOfferCreation
+                offer={collectiveOffer}
+                setOffer={setCollectiveOffer}
+              />
             </Route>
+            {isSubtypeChosenAtCreation && (
+              <Route path="/offre/collectif/:offerId/creation">
+                {collectiveOffer ? (
+                  <CollectiveOfferCreation
+                    offer={collectiveOffer}
+                    setOffer={setCollectiveOffer}
+                  />
+                ) : (
+                  <Spinner />
+                )}
+              </Route>
+            )}
             <Route path="/offre/:offerId/collectif/stocks">
               {collectiveOffer ? (
                 <CollectiveOfferStockCreation offer={collectiveOffer} />

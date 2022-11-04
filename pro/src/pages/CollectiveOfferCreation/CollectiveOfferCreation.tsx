@@ -25,10 +25,16 @@ type AsyncScreenProps = Pick<
 
 interface CollectiveOfferCreationProps {
   offer?: CollectiveOffer
+  setOffer: (offer: CollectiveOffer) => void
 }
+
+const payloadIsCollectiveOfferType = (
+  payload: CollectiveOffer | null | { id: null | string }
+): payload is CollectiveOffer => Boolean(payload && 'isTemplate' in payload)
 
 const CollectiveOfferCreation = ({
   offer,
+  setOffer,
 }: CollectiveOfferCreationProps): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
@@ -59,6 +65,10 @@ const CollectiveOfferCreation = ({
 
     if (!isOk) {
       return notify.error(message)
+    }
+
+    if (offer && payloadIsCollectiveOfferType(payload)) {
+      setOffer(payload)
     }
 
     history.push(`/offre/${payload.id}/collectif/stocks`)
