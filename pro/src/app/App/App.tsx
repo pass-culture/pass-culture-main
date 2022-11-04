@@ -6,8 +6,9 @@ import { useLocation, Redirect } from 'react-router-dom'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
-import { useIsRoutePublic } from 'routes/hooks'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
+
+import { useIsRoutePublic } from './hooks'
 
 interface IAppProps {
   children: JSX.Element
