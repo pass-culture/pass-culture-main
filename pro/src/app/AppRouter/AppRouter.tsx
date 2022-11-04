@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux'
 import { Redirect, Route, Switch } from 'react-router'
 
 import AppLayout from 'app/AppLayout'
+import routes, { routesWithoutLayout } from 'app/AppRouter/routes_map'
 import useActiveFeature from 'hooks/useActiveFeature'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { Logout } from 'pages/Logout'
-import routes, { routesWithoutLayout } from 'routes/routes_map'
 import { selectActiveFeatures } from 'store/features/selectors'
 
 const AppRouter = (): JSX.Element => {
