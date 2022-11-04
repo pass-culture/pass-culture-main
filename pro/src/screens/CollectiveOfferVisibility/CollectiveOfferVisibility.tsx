@@ -12,7 +12,7 @@ import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extr
 import { computeOffersUrl } from 'core/Offers/utils'
 import useNotification from 'hooks/useNotification'
 import FormLayout from 'new_components/FormLayout'
-import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
+import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import Spinner from 'ui-kit/Spinner/Spinner'
