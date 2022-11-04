@@ -30,6 +30,9 @@ function TextField(props) {
     formOnBlur(e)
     if (props.onBlur) props.onBlur(e)
   }
+  const handleOnKeyPress = e => {
+    if (props.onKeyPress) props.onKeyPress(e)
+  }
 
   return (
     <Field
@@ -69,6 +72,7 @@ function TextField(props) {
                 )}
               >
                 <input
+                  onKeyPress={e => handleOnKeyPress(e)}
                   id={props.name}
                   {...input}
                   autoComplete={props.autoComplete}
@@ -121,6 +125,7 @@ TextField.defaultProps = {
   title: '',
   type: 'text',
   validate: null,
+  onKeyPress: undefined,
 }
 
 TextField.propTypes = {
@@ -144,6 +149,7 @@ TextField.propTypes = {
   title: PropTypes.string,
   type: PropTypes.string,
   validate: PropTypes.func,
+  onKeyPress: PropTypes.func,
 }
 
 export default TextField
