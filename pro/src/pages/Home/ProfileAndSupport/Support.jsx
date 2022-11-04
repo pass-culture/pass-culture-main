@@ -39,6 +39,25 @@ const Support = () => {
             <li>
               <ButtonLink
                 link={{
+                  to: 'https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0',
+                  isExternal: true,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                }}
+                Icon={LinkIcon}
+                onClick={() =>
+                  logEvent?.(Events.CLICKED_BEST_PRACTICES_STUDIES, {
+                    from: location.pathname,
+                  })
+                }
+              >
+                Bonnes pratiques et études
+              </ButtonLink>
+            </li>
+
+            <li>
+              <ButtonLink
+                link={{
                   to: 'mailto:support-pro@passculture.app',
                   isExternal: true,
                   target: '_blank',
