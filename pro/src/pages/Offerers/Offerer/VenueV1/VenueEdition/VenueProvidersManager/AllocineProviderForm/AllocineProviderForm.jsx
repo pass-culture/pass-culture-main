@@ -77,6 +77,9 @@ const AllocineProviderForm = ({
                   </span>
                 </div>
                 <NumberField
+                  onKeyPress={e =>
+                    (e.key === 'e' || e.key === 'E') && e.preventDefault()
+                  }
                   className="field-text price-field"
                   min="0"
                   name="price"
