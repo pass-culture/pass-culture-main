@@ -1,5 +1,6 @@
 import {
   Backdrop,
+  Button,
   Card,
   CircularProgress,
   FormControl,
@@ -22,13 +23,16 @@ import {
 } from '@mui/material'
 import { captureException } from '@sentry/react'
 import { format } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
+  Form,
+  TextInput,
   useAuthenticated,
   useNotify,
   usePermissions,
   useRedirect,
 } from 'react-admin'
+import { FieldValues } from 'react-hook-form'
 
 import { searchPermission } from '../../../helpers/functions'
 import { Colors } from '../../../layout/Colors'
@@ -59,6 +63,15 @@ const MenuProps = {
       width: 250,
     },
   },
+}
+
+function stopTypingOnSearch(event: {
+  key: string
+  stopPropagation: () => void
+}) {
+  if (event.key === 'Enter') {
+    event.stopPropagation()
+  }
 }
 
 function getStyles(name: string, items: string[], theme: Theme) {
@@ -96,6 +109,7 @@ export const OfferersToValidate = () => {
     PermissionsEnum.validateOfferer
   )
 
+  const [searchParameter, setSearchParameter] = useState<string | undefined>()
   const [offererTags, setOffererTags] = useState([] as OffererTagItem[])
   const [requestOffererTags, setRequestOffererTags] = useState([] as string[])
   const [requestOffererStatus, setRequestOffererStatus] = useState(
@@ -133,8 +147,9 @@ export const OfferersToValidate = () => {
         perPage: rowsPerPage,
         sort: JSON.stringify([{ field: 'dateCreated', order: 'desc' }]),
         filter: JSON.stringify(filters),
+        q: searchParameter || undefined,
       })
-      if (response && response.data && response.data.length > 0) {
+      if (response && response.data) {
         setData({
           offerers: response.data,
           total: response.total,
@@ -192,25 +207,39 @@ export const OfferersToValidate = () => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setCurrentPage(0)
   }
-  const offererToValidateManagement = async () => {
+  const offererToValidateManagement = useCallback(async () => {
     setIsLoading(true)
 
     await getOfferersToBeValidated(currentPage)
     setIsLoading(false)
-  }
+  }, [setIsLoading, getOfferersToBeValidated])
 
-  const offererTagsList = async () => {
+  const offererTagsList = useCallback(async () => {
     await getOffererTags()
-  }
+  }, [getOffererTags])
 
-  const onContextMenuChange = () => {
+  const formSubmit = useCallback(
+    async (params: FieldValues) => {
+      setSearchParameter(params.search)
+      await offererToValidateManagement()
+    },
+    [setSearchParameter, offererToValidateManagement]
+  )
+
+  const onContextMenuChange = useCallback(() => {
     offererToValidateManagement()
-  }
+  }, [offererToValidateManagement])
 
   useEffect(() => {
     offererToValidateManagement()
     offererTagsList()
-  }, [rowsPerPage, requestOffererTags, requestOffererStatus, currentPage])
+  }, [
+    rowsPerPage,
+    searchParameter,
+    requestOffererTags,
+    requestOffererStatus,
+    currentPage,
+  ])
 
   return (
     <div>
@@ -226,6 +255,34 @@ export const OfferersToValidate = () => {
             <Typography variant={'h4'} color={Colors.GREY}>
               Structures à valider
             </Typography>
+            <Form onSubmit={formSubmit}>
+              <Stack direction="row" spacing={2} style={{ marginTop: 10 }}>
+                <FormControl sx={{ m: 1, width: 350 }}>
+                  <TextInput
+                    helperText={false}
+                    source={'q'}
+                    name={'search'}
+                    type={'text'}
+                    label={'Rechercher des structures par nom, SIREN'}
+                    variant={'outlined'}
+                    style={{
+                      marginLeft: 0,
+                      marginRight: 5,
+                      width: 'auto',
+                    }}
+                    onKeyUp={stopTypingOnSearch}
+                    InputProps={{}}
+                  />
+                </FormControl>
+                <Button
+                  type={'submit'}
+                  variant="contained"
+                  style={{ height: '2.5rem', marginTop: 8, marginBottom: 20 }}
+                >
+                  Chercher
+                </Button>
+              </Stack>
+            </Form>
             <Stack direction="row" spacing={2}>
               <div>
                 <FormControl sx={{ m: 1, width: 300 }}>
