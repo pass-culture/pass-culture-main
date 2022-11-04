@@ -50,7 +50,9 @@ const TimePicker = ({
         dropdownMode="scroll"
         locale="fr"
         onChange={time => {
+          /* istanbul ignore next: DEBT, TO FIX */
           helpers.setTouched(true)
+          /* istanbul ignore next: DEBT, TO FIX */
           helpers.setValue(time)
         }}
         placeholderText="HH:MM"
