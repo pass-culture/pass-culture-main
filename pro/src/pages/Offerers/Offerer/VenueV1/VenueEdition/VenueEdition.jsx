@@ -5,6 +5,8 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError } from 'apiClient/helpers'
+import GoBackLink from 'components/GoBackLink'
+import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -17,8 +19,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as CircledRightArrow } from 'icons/ico-right-circle-arrow.svg'
-import GoBackLink from 'new_components/GoBackLink'
-import PageTitle from 'new_components/PageTitle/PageTitle'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'

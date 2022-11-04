@@ -1,6 +1,7 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
+import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import {
   CollectiveOffer,
   DEFAULT_EAC_STOCK_FORM_VALUES,
@@ -10,7 +11,6 @@ import {
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'

@@ -10,6 +10,12 @@ import {
   VenueResponseModel,
 } from 'apiClient/v1'
 import {
+  IVenueFormValues,
+  validationSchema,
+  VenueForm,
+} from 'components/VenueForm'
+import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
+import {
   Events,
   OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_IN,
@@ -22,12 +28,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-import {
-  IVenueFormValues,
-  validationSchema,
-  VenueForm,
-} from 'new_components/VenueForm'
-import { generateSiretValidationSchema } from 'new_components/VenueForm/Informations/SiretOrCommentFields'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

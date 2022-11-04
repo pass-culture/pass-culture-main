@@ -1,5 +1,5 @@
+import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IOfferIndividualImage } from 'core/Offers/types'
-import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 interface Params extends IOnImageUploadArgs {

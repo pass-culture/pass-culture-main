@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useRef, useState } from 'react'
 
-import DialogBox from 'new_components/DialogBox/DialogBox'
+import DialogBox from 'components/DialogBox/DialogBox'
 
 import { ReactComponent as ActivationCodeErrorIcon } from '../assets/add-activation-code-error.svg'
 import { ReactComponent as AddActivationCodeIcon } from '../assets/add-activation-code-light.svg'

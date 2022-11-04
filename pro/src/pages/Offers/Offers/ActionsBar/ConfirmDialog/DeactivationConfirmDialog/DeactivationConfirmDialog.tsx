@@ -1,11 +1,11 @@
 import React from 'react'
 import { useLocation } from 'react-router'
 
+import ConfirmDialog from 'components/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { NBSP } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
-import ConfirmDialog from 'new_components/ConfirmDialog'
 
 interface IDeactivationConfirmDialogProps {
   areAllOffersSelected: boolean

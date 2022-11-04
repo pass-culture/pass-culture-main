@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { StockIdResponseModel } from 'apiClient/v1'
-import { IStockThingFormValues } from 'new_components/StockThingForm'
+import { IStockThingFormValues } from 'components/StockThingForm'
 
 import { serializeStockThingList } from './serializers'
 

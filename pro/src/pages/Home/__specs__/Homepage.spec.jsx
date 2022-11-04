@@ -11,10 +11,10 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { CLOSE_JOB_HIGHLIGHTS_BANNER_KEY } from 'components/JobHighlightsBanner/constants'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { CLOSE_JOB_HIGHLIGHTS_BANNER_KEY } from 'new_components/JobHighlightsBanner/constants'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 

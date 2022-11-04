@@ -18,9 +18,9 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { ApiError } from 'apiClient/v2'
+import Notification from 'components/Notification/Notification'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import Notification from 'new_components/Notification/Notification'
 import { configureTestStore } from 'store/testUtils'
 
 import { OfferIndividualWizard } from '..'

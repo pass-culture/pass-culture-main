@@ -2,7 +2,7 @@ import React from 'react'
 
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
-} from 'new_components/RouteLeavingGuard'
+} from 'components/RouteLeavingGuard'
 
 export interface RouteLeavingGuardOfferCreationProps {
   isFormDirty: boolean

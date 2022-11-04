@@ -2,8 +2,8 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import FormLayout from 'new_components/FormLayout'
 import { Banner, Select } from 'ui-kit'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'

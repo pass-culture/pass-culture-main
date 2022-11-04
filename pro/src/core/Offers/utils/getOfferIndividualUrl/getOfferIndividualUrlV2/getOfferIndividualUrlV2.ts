@@ -1,6 +1,6 @@
 /* istanbul ignore file: not needed */
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 
 interface IGetOfferIndividualUrlArgs {
   offerId?: string

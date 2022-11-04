@@ -1,6 +1,9 @@
 import React from 'react'
 
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
+import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { SummaryLayout } from 'components/SummaryLayout'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -10,9 +13,6 @@ import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import AccessibilitySummarySection from 'new_components/AccessibilitySummarySection'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { SummaryLayout } from 'new_components/SummaryLayout'
 
 import humanizeDelay from './utils'
 

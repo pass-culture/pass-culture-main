@@ -1,9 +1,9 @@
 import { FieldArray, useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
 
+import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
-import FormLayout from 'new_components/FormLayout'
 import { Button, Checkbox } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

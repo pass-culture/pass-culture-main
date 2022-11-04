@@ -1,8 +1,8 @@
 import React from 'react'
 
+import useIsCompletingDraft from 'components/OfferIndividualStepper/hooks/useIsCompletingDraft'
+import useIsCreation from 'components/OfferIndividualStepper/hooks/useIsCreation'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
-import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { SubmitButton } from 'ui-kit'
 import { Button, ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

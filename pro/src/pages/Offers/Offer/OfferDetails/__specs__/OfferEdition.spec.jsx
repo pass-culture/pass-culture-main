@@ -8,9 +8,9 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
+import Notification from 'components/Notification/Notification'
 import * as computeUrl from 'core/Offers/utils'
 import { getProviderInfo } from 'core/Providers/utils'
-import Notification from 'new_components/Notification/Notification'
 import OfferLayout from 'pages/Offers/Offer/OfferLayout'
 import { configureTestStore } from 'store/testUtils'
 

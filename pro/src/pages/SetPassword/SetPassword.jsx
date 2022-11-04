@@ -4,10 +4,10 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
+import LegalInfos from 'components/LegalInfos/LegalInfos'
+import PageTitle from 'components/PageTitle/PageTitle'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
-import LegalInfos from 'new_components/LegalInfos/LegalInfos'
-import PageTitle from 'new_components/PageTitle/PageTitle'
 import PasswordField from 'ui-kit/form_rff/fields/PasswordField'
 import Logo from 'ui-kit/Logo/Logo'
 

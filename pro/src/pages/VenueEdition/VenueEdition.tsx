@@ -1,13 +1,13 @@
 import React from 'react'
 import { useParams, Redirect } from 'react-router'
 
+import { setInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenue } from 'core/Venue'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import { setInitialFormValues } from 'new_components/VenueForm'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

@@ -1,5 +1,7 @@
 import React from 'react'
 
+import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
+import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
@@ -15,8 +17,6 @@ import {
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferSummary from 'new_components/CollectiveOfferSummary'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

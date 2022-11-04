@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { UserRole } from 'apiClient/v1'
+import NoOffers from 'components/NoData'
+import PageTitle from 'components/PageTitle/PageTitle'
+import Tabs from 'components/Tabs'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -20,9 +23,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
-import NoOffers from 'new_components/NoData'
-import PageTitle from 'new_components/PageTitle/PageTitle'
-import Tabs from 'new_components/Tabs'
 import ActionsBar from 'pages/Offers/Offers/ActionsBar'
 import OffersContainer from 'pages/Offers/Offers/Offers'
 import { ButtonLink } from 'ui-kit'

@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import {
   DEFAULT_PRE_FILTERS,
   TPreFilters,
@@ -12,7 +13,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
-import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

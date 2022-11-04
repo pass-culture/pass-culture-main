@@ -1,22 +1,22 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
+import FormLayout from 'components/FormLayout'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { StockFormRow } from 'components/StockFormRow'
+import {
+  StockThingForm,
+  getValidationSchema,
+  buildInitialValues,
+  IStockThingFormValues,
+} from 'components/StockThingForm'
+import setFormReadOnlyFields from 'components/StockThingForm/utils/setFormReadOnlyFields'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { LIVRE_PAPIER_SUBCATEGORY_ID } from 'core/Offers/constants'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useNavigate } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import FormLayout from 'new_components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
-import { StockFormRow } from 'new_components/StockFormRow'
-import {
-  StockThingForm,
-  getValidationSchema,
-  buildInitialValues,
-  IStockThingFormValues,
-} from 'new_components/StockThingForm'
-import setFormReadOnlyFields from 'new_components/StockThingForm/utils/setFormReadOnlyFields'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'

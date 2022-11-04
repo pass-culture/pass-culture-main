@@ -10,6 +10,10 @@ import React, {
   useState,
 } from 'react'
 
+import { OfferRefundWarning, WithdrawalReminder } from 'components/Banner'
+import FormLayout from 'components/FormLayout'
+import useIsCompletingDraft from 'components/OfferIndividualStepper/hooks/useIsCompletingDraft'
+import useIsCreation from 'components/OfferIndividualStepper/hooks/useIsCreation'
 import {
   OFFER_WITHDRAWAL_TYPE_OPTIONS,
   EXTRA_DATA_FIELDS,
@@ -17,10 +21,6 @@ import {
 } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
-import { OfferRefundWarning, WithdrawalReminder } from 'new_components/Banner'
-import FormLayout from 'new_components/FormLayout'
-import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
-import useIsCreation from 'new_components/OfferIndividualStepper/hooks/useIsCreation'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 import CheckboxInput from 'ui-kit/form_raw/CheckboxInput'

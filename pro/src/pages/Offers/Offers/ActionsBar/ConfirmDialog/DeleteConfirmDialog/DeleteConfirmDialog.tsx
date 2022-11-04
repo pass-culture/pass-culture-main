@@ -1,7 +1,7 @@
 import React from 'react'
 
+import ConfirmDialog from 'components/ConfirmDialog'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
-import ConfirmDialog from 'new_components/ConfirmDialog'
 
 interface IDeleteConfirmDialogProps {
   onCancel: () => void

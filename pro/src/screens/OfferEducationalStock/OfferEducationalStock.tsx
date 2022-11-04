@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as yup from 'yup'
 
+import FormLayout from 'components/FormLayout'
+import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -13,8 +15,6 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
-import FormLayout from 'new_components/FormLayout'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'

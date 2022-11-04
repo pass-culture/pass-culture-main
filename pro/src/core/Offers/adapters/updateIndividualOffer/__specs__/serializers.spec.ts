@@ -1,8 +1,8 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PatchOfferBodyModel } from 'apiClient/v1'
+import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import {
   serializeDurationMinutes,

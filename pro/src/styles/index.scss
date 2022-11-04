@@ -7,10 +7,10 @@
 @import 'components/index';
 
 // Components scoped imports.
-@import 'src/new_components/DialogBox/DialogBox.module';
-@import 'src/new_components/ImagePreview/ImagePreview.module';
+@import 'src/components/DialogBox/DialogBox.module';
+@import 'src/components/ImagePreview/ImagePreview.module';
 @import 'src/ui-kit/form_raw/DurationInput/DurationInput';
-@import 'src/new_components/Header/Header';
+@import 'src/components/Header/Header';
 @import 'src/pages/Bookings/BookingsRecap';
 @import 'src/screens/Bookings/PreFilters/PreFilters';
 @import 'src/screens/Bookings/BookingsRecapTable/components/Filters/Filters';
@@ -36,6 +36,6 @@
 @import 'src/pages/Offers/Offer/OfferDetails/OfferThumbnail/OfferThumbnail';
 @import 'src/pages/Offers/Offer/OfferDetails/OfferPreview/OfferPreview';
 @import 'src/pages/Offers/Offer/Thumbnail/ThumbnailDialog';
-@import 'src/new_components/LegalInfos/LegalInfos';
+@import 'src/components/LegalInfos/LegalInfos';
 @import 'src/pages/SetPassword/SetPassword';
 @import 'src/pages/SetPasswordConfirm/SetPasswordConfirm';

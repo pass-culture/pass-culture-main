@@ -3,8 +3,8 @@ import '@testing-library/jest-dom'
 
 import { api } from 'apiClient/api'
 import { PatchOfferBodyModel, WithdrawalTypeEnum } from 'apiClient/v1'
+import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { AccessiblityEnum } from 'core/shared'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import { updateIndividualOffer } from '..'
 

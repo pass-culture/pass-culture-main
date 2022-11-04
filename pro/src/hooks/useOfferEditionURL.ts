@@ -1,7 +1,7 @@
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { OFFER_STATUS_DRAFT, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
 
 export const useOfferEditionURL = (
   isOfferEducational: boolean,

@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -8,7 +9,6 @@ import {
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

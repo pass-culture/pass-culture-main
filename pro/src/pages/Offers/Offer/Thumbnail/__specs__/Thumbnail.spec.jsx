@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import CanvasTools from 'new_components/ImageEditor/canvas.js'
+import CanvasTools from 'components/ImageEditor/canvas.js'
 import { renderThumbnail } from 'pages/Offers/Offer/Thumbnail/__specs__/setup'
 import {
   CANVAS_HEIGHT,
@@ -14,7 +14,7 @@ import {
 } from 'pages/Offers/Offer/Thumbnail/_constants'
 import { createFile, createImageFile } from 'utils/testFileHelpers'
 
-jest.mock('new_components/ImageEditor/canvas.js')
+jest.mock('components/ImageEditor/canvas.js')
 
 describe('thumbnail edition', () => {
   describe('when thumbnail exists', () => {

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import { CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import CollectiveOfferLayout from 'new_components/CollectiveOfferLayout'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferTemplateStockEdition from 'pages/CollectiveOfferTemplateStockEdition'
 import CollectiveOfferTemplateSummaryEdition from 'pages/CollectiveOfferTemplateSummaryEdition'
