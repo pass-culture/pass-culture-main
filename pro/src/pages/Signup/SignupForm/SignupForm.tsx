@@ -1,15 +1,14 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useRef, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { redirectLoggedUser } from 'components/router/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import useAnalytics from 'hooks/useAnalytics'
-import useCurrentUser from 'hooks/useCurrentUser'
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
 import useNotification from 'hooks/useNotification'
+import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { BannerInvisibleSiren, BannerRGS } from 'new_components/Banner'
 import FormLayout from 'new_components/FormLayout'
 import LegalInfos from 'new_components/LegalInfos/LegalInfos'
@@ -26,14 +25,9 @@ import { validationSchema } from './validationSchema'
 const SignupForm = (): JSX.Element => {
   const history = useHistory()
   const notification = useNotification()
-  const { currentUser } = useCurrentUser()
   const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
-  const location = useLocation()
   const { logEvent } = useAnalytics()
-
-  useEffect(() => {
-    redirectLoggedUser(history, location, currentUser)
-  }, [currentUser])
+  useRedirectLoggedUser()
 
   useEffect(() => {
     const script = document.createElement('script')

@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useHistory, useLocation } from 'react-router'
+import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
-import { redirectLoggedUser } from 'components/router/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
+import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { BannerRGS } from 'new_components/Banner'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import { setCurrentUser } from 'store/user/actions'
@@ -23,19 +22,13 @@ import { PasswordInput } from './PasswordInput'
 const SignIn = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState<string>('')
   const [passwordValue, setPasswordValue] = useState<string>('')
-
-  const { currentUser } = useCurrentUser()
-  const history = useHistory()
   const location = useLocation()
   const { logEvent } = useAnalytics()
   const dispatch = useDispatch()
   const notification = useNotification()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const isSubmitButtonDisabled = emailValue === '' || passwordValue === ''
-
-  useEffect(() => {
-    redirectLoggedUser(history, location, currentUser)
-  }, [currentUser])
+  useRedirectLoggedUser()
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription'
@@ -47,10 +40,6 @@ const SignIn = (): JSX.Element => {
 
   const handleOnChangePassword = (newPassword: string) => {
     setPasswordValue(newPassword)
-  }
-
-  const onHandleSuccessRedirect = () => {
-    redirectLoggedUser(history, location, currentUser)
   }
 
   const onHandleFail = (payload: {
@@ -75,7 +64,6 @@ const SignIn = (): JSX.Element => {
       .signin({ identifier: emailValue, password: passwordValue })
       .then(user => {
         dispatch(setCurrentUser(user ? user : null))
-        onHandleSuccessRedirect()
       })
       .catch(payload => {
         setCurrentUser(null)

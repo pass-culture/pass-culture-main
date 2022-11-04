@@ -1,12 +1,11 @@
 import React, { Fragment, useCallback, useState } from 'react'
 import { Field, Form } from 'react-final-form'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
-import { redirectLoggedUser } from 'components/router/helpers'
-import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
+import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import LegalInfos from 'new_components/LegalInfos/LegalInfos'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import PasswordField from 'ui-kit/form_rff/fields/PasswordField'
@@ -20,14 +19,12 @@ const DIFFERENT_PASSWORDS_ERROR_MESSAGE =
   'Les deux mots de passe ne sont pas identiques'
 
 const SetPassword = () => {
-  const { currentUser } = useCurrentUser()
   const notification = useNotification()
 
   const history = useHistory()
-  const location = useLocation()
   const match = useRouteMatch()
 
-  redirectLoggedUser(history, location, currentUser)
+  useRedirectLoggedUser()
 
   const redirectOnTokenError = useCallback(() => {
     history.push('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
