@@ -3,8 +3,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import routes from 'app/AppRouter/routes_map'
 import OfferLayout from 'pages/Offers/Offer/OfferLayout'
-import routes from 'routes/routes_map'
 import { configureTestStore } from 'store/testUtils'
 
 export const renderOffer = (initialEntries, store) => {
