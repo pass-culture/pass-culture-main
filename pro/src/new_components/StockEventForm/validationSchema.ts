@@ -3,7 +3,7 @@ import * as yup from 'yup'
 
 import { getToday } from 'utils/date'
 
-const isBeforeEventDate = (
+const isBeforeBeginningDate = (
   bookingLimitDatetime: Date | undefined,
   context: yup.TestContext
 ) => {
@@ -11,14 +11,7 @@ const isBeforeEventDate = (
     return true
   }
 
-  if (
-    bookingLimitDatetime.toLocaleDateString() ===
-    context.parent.beginningDate.toLocaleDateString()
-  ) {
-    return true
-  }
-
-  return bookingLimitDatetime < context.parent.beginningDate
+  return bookingLimitDatetime <= context.parent.beginningDate
 }
 
 export const getValidationSchema = (minQuantity: number | null = null) => {
@@ -47,7 +40,7 @@ export const getValidationSchema = (minQuantity: number | null = null) => {
       .test({
         name: 'bookingLimitDatetime-before-beginningDate',
         message: "Veuillez rentrer une date antérieur à la date de l'évènement",
-        test: isBeforeEventDate,
+        test: isBeforeBeginningDate,
       })
       .nullable(),
     quantity: yup

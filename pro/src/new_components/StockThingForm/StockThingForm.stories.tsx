@@ -15,7 +15,7 @@ import {
 } from '.'
 
 export default {
-  title: 'components/StockThingForm',
+  title: 'components/stocks/StockThingForm',
   component: StockThingForm,
 }
 
