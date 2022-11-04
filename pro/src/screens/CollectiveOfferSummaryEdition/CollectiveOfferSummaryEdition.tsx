@@ -135,7 +135,7 @@ const CollectiveOfferSummaryEdition = ({
       />
       <ButtonLink
         variant={ButtonVariant.PRIMARY}
-        link={{ isExternal: false, to: '/offers/collective' }}
+        link={{ isExternal: false, to: '/offres/collectives' }}
       >
         Retour à la liste des offres
       </ButtonLink>
