@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import {
   CollectiveOffer,
   DEFAULT_VISIBILITY_FORM_VALUES,
   Mode,
 } from 'core/OfferEducational'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'

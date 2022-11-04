@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import ConfirmDialog from 'new_components/ConfirmDialog'
+import ConfirmDialog from 'components/ConfirmDialog'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

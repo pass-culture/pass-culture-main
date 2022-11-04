@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import FormLayout from 'components/FormLayout'
 import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
 import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
-import FormLayout from 'new_components/FormLayout'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import ActionsBarLegacy from './ActionsBar/ActionsBarLegacy'

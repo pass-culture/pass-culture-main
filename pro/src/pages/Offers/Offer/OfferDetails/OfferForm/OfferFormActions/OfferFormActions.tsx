@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -10,7 +11,6 @@ import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'custom_types/offer'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

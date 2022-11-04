@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 
-import { ButtonLinkNewWindow } from 'new_components/ButtonLinkNewWindow'
+import { ButtonLinkNewWindow } from 'components/ButtonLinkNewWindow'
 import { SharedButtonProps } from 'ui-kit/Button/types'
 import { WEBAPP_URL } from 'utils/config'
 

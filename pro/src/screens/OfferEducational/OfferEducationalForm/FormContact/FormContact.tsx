@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'new_components/FormLayout'
+import FormLayout from 'components/FormLayout'
 import { TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 

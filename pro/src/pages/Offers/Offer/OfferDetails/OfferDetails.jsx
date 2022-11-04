@@ -4,6 +4,8 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -14,8 +16,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import PageTitle from 'new_components/PageTitle/PageTitle'
 import { isOfferDisabled } from 'pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
 import * as pcapi from 'repository/pcapi/pcapi'

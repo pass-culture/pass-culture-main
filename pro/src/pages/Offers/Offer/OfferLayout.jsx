@@ -9,16 +9,16 @@ import {
 } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import OfferBreadcrumb, {
+  OfferBreadcrumbStep,
+} from 'components/OfferBreadcrumb'
+import useIsCompletingDraft from 'components/OfferIndividualStepper/hooks/useIsCompletingDraft'
+import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import {
   Events,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import OfferBreadcrumb, {
-  OfferBreadcrumbStep,
-} from 'new_components/OfferBreadcrumb'
-import useIsCompletingDraft from 'new_components/OfferIndividualStepper/hooks/useIsCompletingDraft'
-import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import Confirmation from 'pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferV2Summary as OfferV2SummaryRoute } from 'pages/OfferV2Summary'
 import { Status } from 'screens/OfferIndividual/Status'

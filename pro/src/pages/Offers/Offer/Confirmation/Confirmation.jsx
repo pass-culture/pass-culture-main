@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -12,7 +13,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { DisplayOfferInAppLink } from 'pages/Offers/Offer/DisplayOfferInAppLink'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

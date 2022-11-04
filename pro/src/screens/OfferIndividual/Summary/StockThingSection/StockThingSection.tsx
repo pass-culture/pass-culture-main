@@ -1,6 +1,8 @@
 import { format } from 'date-fns-tz'
 import React from 'react'
 
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
+import { SummaryLayout } from 'components/SummaryLayout'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -9,8 +11,6 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { SummaryLayout } from 'new_components/SummaryLayout'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
 
 export interface IStockThingSectionProps {

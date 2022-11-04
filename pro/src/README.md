@@ -2,13 +2,11 @@
 
 ## [UI_KIT](./ui-kit/README.md)
 
-## [COMPONENTS](./new_components/README.md)
+## [COMPONENTS](./components/README.md)
 
 ## [SCREENS](./screens/README.md)
 
 ## [REPOSITORY](./repository/README.md)
-
-## [HOCS](./components/hocs/README.md) (DEPRECATED : utiliser les hooks)
 
 ## [PAGES](./pages/README.md)
 

@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import Notification from 'new_components/Notification/Notification'
+import Notification from 'components/Notification/Notification'
 import OfferLayout from 'pages/Offers/Offer/OfferLayout'
 import { configureTestStore } from 'store/testUtils'
 

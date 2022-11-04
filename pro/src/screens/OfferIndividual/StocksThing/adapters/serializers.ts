@@ -1,7 +1,7 @@
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { IStockThingFormValues } from 'new_components/StockThingForm'
+import { IStockThingFormValues } from 'components/StockThingForm'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 

@@ -35,7 +35,7 @@ module.exports = {
     },
     {
       title:
-        'should follow ui-kit / new_components / screen / route directory structure',
+        'should follow ui-kit / components / screen / route directory structure',
       id: 'DIRECTORY_STRUCTURE',
       description: 'see documentation here',
       debtScore: 1,

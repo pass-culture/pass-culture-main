@@ -1,10 +1,10 @@
 import * as PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
-import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
-import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
-import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
+import { ConstraintCheck } from 'components/ConstraintCheck/ConstraintCheck'
+import { imageConstraints } from 'components/ConstraintCheck/imageConstraints'
+import { useCheckAndSetImage } from 'components/ConstraintCheck/useCheckAndSetImage'
+import { PreferredOrientation } from 'components/PreferredOrientation/PreferredOrientation'
 import {
   IMAGE_TYPE,
   MAX_IMAGE_SIZE,

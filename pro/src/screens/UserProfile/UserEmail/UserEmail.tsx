@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { BannerPendingEmailValidation } from 'new_components/Banner'
-import { BoxFormLayout } from 'new_components/BoxFormLayout'
-import { UserEmailForm } from 'new_components/UserEmailForm'
+import { BannerPendingEmailValidation } from 'components/Banner'
+import { BoxFormLayout } from 'components/BoxFormLayout'
+import { UserEmailForm } from 'components/UserEmailForm'
 import { getPendingEmailValidationAdapter } from 'pages/User/adapters/getPendingEmailValidationAdapter'
 import postEmailAdapter from 'pages/User/adapters/postEmailAdapter'
 import { BoxRounded } from 'ui-kit/BoxRounded'

@@ -6,7 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { OFFER_WIZARD_STEP_IDS } from 'new_components/OfferIndividualStepper'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
 import { configureTestStore } from 'store/testUtils'
 
 import { ActionBar } from '..'

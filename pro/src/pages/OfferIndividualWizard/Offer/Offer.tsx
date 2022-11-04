@@ -1,18 +1,18 @@
 import React from 'react'
 import { useLocation } from 'react-router'
 
-import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { useOfferWizardMode } from 'hooks'
-import useCurrentUser from 'hooks/useCurrentUser'
-import { BannerCreateOfferAdmin } from 'new_components/Banner'
+import { BannerCreateOfferAdmin } from 'components/Banner'
 import {
   setInitialFormValues,
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
   setDefaultInitialFormValues,
   setFormReadOnlyFields,
-} from 'new_components/OfferIndividualForm'
+} from 'components/OfferIndividualForm'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
+import useCurrentUser from 'hooks/useCurrentUser'
 import {
   Informations as InformationsScreen,
   Template as WizardTemplate,

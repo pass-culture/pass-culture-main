@@ -1,3 +1,4 @@
+import { IOfferAppPreviewProps } from 'components/OfferAppPreview'
 import {
   musicOptionsTree,
   showOptionsTree,
@@ -7,7 +8,6 @@ import {
   IOfferSubCategory,
   IOfferIndividual,
 } from 'core/Offers/types'
-import { IOfferAppPreviewProps } from 'new_components/OfferAppPreview'
 import {
   IOfferSectionProps,
   IStockEventItemProps,

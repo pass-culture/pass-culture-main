@@ -6,13 +6,13 @@ import {
   GetEducationalOffererVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
+import FormLayout from 'components/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
-import FormLayout from 'new_components/FormLayout'
 import {
   RadioGroup,
   Select,

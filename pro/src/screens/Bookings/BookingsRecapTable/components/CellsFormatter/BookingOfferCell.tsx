@@ -6,6 +6,7 @@ import {
   BookingRecapResponseStockModel,
   CollectiveBookingCollectiveStockResponseModel,
 } from 'apiClient/v1'
+import { OfferBreadcrumbStep } from 'components/OfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -14,7 +15,6 @@ import {
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 
 interface IBookingOfferCellProps {

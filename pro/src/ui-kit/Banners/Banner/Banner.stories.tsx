@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as BannerImage } from 'new_components/JobHighlightsBanner/assets/job_highlights_banner.svg'
+import { ReactComponent as BannerImage } from 'components/JobHighlightsBanner/assets/job_highlights_banner.svg'
 
 import Banner, { IBannerProps } from './Banner'
 

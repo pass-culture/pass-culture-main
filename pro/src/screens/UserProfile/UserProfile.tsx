@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
-import PageTitle from 'new_components/PageTitle/PageTitle'
-import { IUserIdentityFormValues } from 'new_components/UserIdentityForm/types'
+import PageTitle from 'components/PageTitle/PageTitle'
+import { IUserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'
 import UserEmail, { IUserEmailInitialValues } from './UserEmail/UserEmail'

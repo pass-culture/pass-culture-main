@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useRef } from 'react'
 
-import ImageEditor from 'new_components/ImageEditor/ImageEditor'
+import ImageEditor from 'components/ImageEditor/ImageEditor'
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,

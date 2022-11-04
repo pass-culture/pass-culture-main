@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { ImageUploader } from 'new_components/ImageUploader'
-import { IOnImageUploadArgs } from 'new_components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { UploaderModeEnum } from 'new_components/ImageUploader/types'
+import { ImageUploader } from 'components/ImageUploader'
+import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import styles from './ImageVenueUploaderSection.module.scss'

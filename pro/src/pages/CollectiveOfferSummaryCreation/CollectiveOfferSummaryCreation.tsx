@@ -1,5 +1,6 @@
 import React from 'react'
 
+import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import {
   getEducationalCategoriesAdapter,
   CollectiveOffer,
@@ -7,7 +8,6 @@ import {
 } from 'core/OfferEducational'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import CollectiveOfferSummaryCreationScreen from 'screens/CollectiveOfferSummaryCreation'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

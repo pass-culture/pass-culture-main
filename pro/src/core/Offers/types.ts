@@ -3,8 +3,8 @@ import {
   WithdrawalTypeEnum,
   OfferStatus,
 } from 'apiClient/v1'
+import { ICropParams } from 'components/ImageUploader'
 import { IAccessibiltyFormValues } from 'core/shared'
-import { ICropParams } from 'new_components/ImageUploader'
 
 import { CATEGORY_STATUS } from '.'
 

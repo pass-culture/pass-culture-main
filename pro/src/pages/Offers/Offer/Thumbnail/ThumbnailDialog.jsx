@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import Advices from 'components/Advices/Advices'
+import DialogBox from 'components/DialogBox/DialogBox'
 import { NBSP } from 'core/shared'
-import Advices from 'new_components/Advices/Advices'
-import DialogBox from 'new_components/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'pages/Offers/Offer/Thumbnail/_constants'
 import Credit from 'pages/Offers/Offer/Thumbnail/Credit/Credit'
 import ImageEditorWrapper from 'pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditorWrapper'
