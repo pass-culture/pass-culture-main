@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import {
   CollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
@@ -12,8 +13,7 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import useNotification from 'hooks/useNotification'
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
-import patchCollectiveOfferAdapter from 'routes/CollectiveOfferEdition/adapters/patchCollectiveOfferAdapter'
+import patchCollectiveOfferAdapter from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferAdapter'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -27,7 +27,7 @@ interface CollectiveOfferCreationProps {
   offer?: CollectiveOffer
 }
 
-const OfferEducationalCreation = ({
+const CollectiveOfferCreation = ({
   offer,
 }: CollectiveOfferCreationProps): JSX.Element => {
   const history = useHistory()
@@ -116,4 +116,4 @@ const OfferEducationalCreation = ({
   )
 }
 
-export default OfferEducationalCreation
+export default CollectiveOfferCreation
