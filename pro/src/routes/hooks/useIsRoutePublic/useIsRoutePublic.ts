@@ -1,6 +1,6 @@
 import { matchPath, useLocation } from 'react-router'
 
-import routes, { routesWithoutLayout } from 'routes/routes_map'
+import routes, { routesWithoutLayout } from 'app/AppRouter/routes_map'
 
 const useIsRoutePublic = (): [boolean, string] => {
   const location = useLocation()
