@@ -73,6 +73,7 @@ jobs:
       - if: ${{ env.use_cache }}
         uses: actions/setup-node@v3
         with:
+          fetch-depth: 0
           cache: yarn
           cache-dependency-path: pro/yarn.lock
           node-version: ${{ needs.read-node-version.outputs.node_version }}
