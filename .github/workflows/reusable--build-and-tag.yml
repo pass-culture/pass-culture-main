@@ -13,7 +13,8 @@ on:
         type: string
 
       tag_number:
-        # 200.0.2 for example.
+        # Full tag name.
+        # v200.0.2 for example.
         required: true
         type: string
 
