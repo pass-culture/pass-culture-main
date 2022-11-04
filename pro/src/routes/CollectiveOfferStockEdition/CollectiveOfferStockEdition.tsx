@@ -5,7 +5,6 @@ import { CollectiveStockResponseModel } from 'apiClient/v1'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
-  EducationalOfferType,
   Mode,
   OfferEducationalStockFormValues,
   cancelCollectiveBookingAdapter,
@@ -115,10 +114,7 @@ const CollectiveOfferStockEdition = ({
         setStock(stockResponse.payload.stock)
         const initialValuesFromStock = extractInitialStockValues(
           stockResponse.payload.stock,
-          offer,
-          offer.isTemplate
-            ? EducationalOfferType.SHOWCASE
-            : EducationalOfferType.CLASSIC
+          offer
         )
         setInitialValues(initialValuesFromStock)
         setIsReady(true)
