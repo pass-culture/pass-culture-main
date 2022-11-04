@@ -12,8 +12,6 @@
 
 ## [PAGES](./pages/README.md)
 
-## [ROUTER](./components/router/README.md) (DEPRECATED? : à migrer déterminer si migration complète dans routes)
-
 ## Architecture générale :
 
 La structure des composants visuels suit une organisation par couches :

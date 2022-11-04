@@ -8,11 +8,15 @@ import { MemoryRouter, Route } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import * as useAnalytics from 'hooks/useAnalytics'
+import useLogNavigation from 'hooks/useLogNavigation'
 import { configureTestStore } from 'store/testUtils'
 
-import NavigationLogger from '../NavigationLogger'
-
 const mockLogEvent = jest.fn()
+
+const NavigationLogger = (): null => {
+  useLogNavigation()
+  return null
+}
 
 describe('useLogNavigation', () => {
   it('should log an event on location changes', async () => {

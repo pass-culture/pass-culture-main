@@ -11,7 +11,11 @@ import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 import { App } from '../App'
 
-jest.mock('hooks/useAnalytics')
+jest.mock('hooks/useAnalytics', () => ({
+  useConfigureFirebase: jest.fn(),
+}))
+
+jest.mock('hooks/useLogNavigation', () => jest.fn())
 
 const renderApp = ({ props, store: storeOverride, initialEntries = '/' }) => {
   const store = configureTestStore(storeOverride)

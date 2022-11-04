@@ -4,14 +4,19 @@ import { render, waitFor } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router'
 
-import NavigationLogger from 'components/router/NavigationLogger'
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
+import useLogNavigation from 'hooks/useLogNavigation'
 
 import { useConfigureFirebase } from '../useAnalytics'
 
 const mockSetLogEvent = jest.fn()
+
+const NavigationLogger = (): null => {
+  useLogNavigation()
+  return null
+}
 
 jest.mock('@firebase/analytics', () => {
   return {
