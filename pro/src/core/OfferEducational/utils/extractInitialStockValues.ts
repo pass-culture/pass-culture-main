@@ -1,8 +1,4 @@
-import {
-  CollectiveOfferFromTemplateResponseModel,
-  CollectiveStockResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
+import { CollectiveStockResponseModel } from 'apiClient/v1'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -13,53 +9,40 @@ import {
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (
-  stock:
-    | CollectiveOfferFromTemplateResponseModel
-    | GetCollectiveOfferTemplateResponseModel
-    | CollectiveStockResponseModel
-    | null,
-  offer: CollectiveOffer | CollectiveOfferTemplate,
-  offerType: EducationalOfferType
+  stock: CollectiveStockResponseModel | null,
+  offer: CollectiveOffer | CollectiveOfferTemplate
 ): OfferEducationalStockFormValues => {
   if (!stock) {
     return DEFAULT_EAC_STOCK_FORM_VALUES
   }
 
-  if (offerType === EducationalOfferType.CLASSIC) {
-    const typedStock = stock as CollectiveOfferFromTemplateResponseModel
-    return {
-      eventDate:
-        getLocalDepartementDateTimeFromUtc(
-          typedStock.beginningDatetime,
-          offer.venue.departementCode
-        ) ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
-      eventTime:
-        getLocalDepartementDateTimeFromUtc(
-          typedStock.beginningDatetime,
-          offer.venue.departementCode
-        ) ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventTime,
-      numberOfPlaces:
-        typedStock.numberOfTickets ??
-        DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces,
-      totalPrice: typedStock.price,
-      bookingLimitDatetime:
-        getLocalDepartementDateTimeFromUtc(typedStock.bookingLimitDatetime) ??
-        DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime,
-      priceDetail:
-        typedStock.educationalPriceDetail ??
-        DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
-      educationalOfferType: offer.isTemplate
-        ? EducationalOfferType.SHOWCASE
-        : EducationalOfferType.CLASSIC,
-    }
-  }
+  const eventDate = stock.beginningDatetime
+    ? getLocalDepartementDateTimeFromUtc(
+        stock.beginningDatetime,
+        offer.venue.departementCode
+      )
+    : null
+  const eventTime = stock.beginningDatetime
+    ? getLocalDepartementDateTimeFromUtc(
+        stock.beginningDatetime,
+        offer.venue.departementCode
+      )
+    : null
+  const bookingLimitDatetime = stock.bookingLimitDatetime
+    ? getLocalDepartementDateTimeFromUtc(stock.bookingLimitDatetime)
+    : null
 
   return {
-    ...DEFAULT_EAC_STOCK_FORM_VALUES,
+    eventDate: eventDate ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
+    eventTime: eventTime ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventTime,
+    numberOfPlaces:
+      stock.numberOfTickets ?? DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces,
+    totalPrice: stock.price,
+    bookingLimitDatetime:
+      bookingLimitDatetime ??
+      DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime,
     priceDetail:
       stock.educationalPriceDetail ?? DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
-    educationalOfferType: offer.isTemplate
-      ? EducationalOfferType.SHOWCASE
-      : EducationalOfferType.CLASSIC,
+    educationalOfferType: EducationalOfferType.CLASSIC,
   }
 }
