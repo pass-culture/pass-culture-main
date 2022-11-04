@@ -39,7 +39,7 @@ const CollectiveOfferCreationFromTemplate = () => {
     if (!isOk) {
       return notify.error(message)
     }
-    history.push(`/offre/duplication/collectif/${payload.offerId}/stocks`)
+    history.push(`/offre/duplication/collectif/${payload.id}/stocks`)
   }
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
 import {
+  CollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
@@ -12,8 +12,8 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
 import useNotification from 'hooks/useNotification'
-// @debt deprecated "Mathilde: should not import utility from legacy page"
-import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
+import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
+import patchCollectiveOfferAdapter from 'routes/CollectiveOfferEdition/adapters/patchCollectiveOfferAdapter'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -23,7 +23,13 @@ type AsyncScreenProps = Pick<
   'categories' | 'userOfferers' | 'domainsOptions'
 >
 
-const OfferEducationalCreation = (): JSX.Element => {
+interface CollectiveOfferCreationProps {
+  offer?: CollectiveOffer
+}
+
+const OfferEducationalCreation = ({
+  offer,
+}: CollectiveOfferCreationProps): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
 
@@ -37,28 +43,40 @@ const OfferEducationalCreation = (): JSX.Element => {
 
   const notify = useNotification()
 
-  const createOffer = async (offer: IOfferEducationalFormValues) => {
-    const { payload, isOk, message } = await postCollectiveOfferAdapter({
-      offer,
-    })
+  const createOrPatchDraftOffer = async (
+    offerValues: IOfferEducationalFormValues
+  ) => {
+    const adapter = offer
+      ? () =>
+          patchCollectiveOfferAdapter({
+            offer: offerValues,
+            initialValues,
+            offerId: offer.id,
+          })
+      : () => postCollectiveOfferAdapter({ offer: offerValues })
+
+    const { payload, isOk, message } = await adapter()
 
     if (!isOk) {
       return notify.error(message)
     }
 
-    history.push(`/offre/${payload.collectiveOfferId}/collectif/stocks`)
+    history.push(`/offre/${payload.id}/collectif/stocks`)
   }
 
   useEffect(() => {
     if (!isReady) {
       const loadData = async () => {
-        const result = await getCollectiveOfferFormDataApdater({ offererId })
+        const result = await getCollectiveOfferFormDataApdater({
+          offererId,
+          offer,
+        })
 
         if (!result.isOk) {
           notify.error(result.message)
         }
 
-        const { categories, offerers, domains } = result.payload
+        const { categories, offerers, domains, initialValues } = result.payload
 
         setScreenProps({
           categories: categories,
@@ -67,7 +85,12 @@ const OfferEducationalCreation = (): JSX.Element => {
         })
 
         setInitialValues(values =>
-          setInitialFormValues(values, offerers, offererId, venueId)
+          setInitialFormValues(
+            { ...values, ...initialValues },
+            offerers,
+            initialValues.offererId ?? offererId,
+            initialValues.venueId ?? venueId
+          )
         )
 
         setIsReady(true)
@@ -84,7 +107,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
         initialValues={initialValues}
         mode={Mode.CREATION}
-        onSubmit={createOffer}
+        onSubmit={createOrPatchDraftOffer}
       />
       <RouteLeavingGuardOfferCreation />
     </>
