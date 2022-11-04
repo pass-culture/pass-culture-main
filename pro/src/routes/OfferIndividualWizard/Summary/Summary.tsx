@@ -2,9 +2,7 @@
 import React from 'react'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
-import { useOfferWizardMode } from 'hooks'
 import PageTitle from 'new_components/PageTitle/PageTitle'
 import {
   Summary as SummaryScreen,
@@ -18,7 +16,6 @@ interface ISummaryProps {
 }
 
 const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
-  const mode = useOfferWizardMode()
   const {
     offer: contextOffer,
     categories,
@@ -41,7 +38,7 @@ const Summary = ({ isOfferV2 = false }: ISummaryProps): JSX.Element | null => {
   return (
     <WizardTemplate
       title={isOfferV2 ? null : 'Récapitulatif'}
-      withStepper={false}
+      withStepper={!isOfferV2}
     >
       <PageTitle title="Récapitulatif" />
       <SummaryScreen
