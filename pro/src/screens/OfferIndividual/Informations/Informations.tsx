@@ -186,6 +186,13 @@ const Informations = ({
         setOffer && setOffer(response.payload)
       }
       notify.success('Vos modifications ont bien été prises en compte')
+      history.replace(
+        getOfferIndividualUrl({
+          offerId: payload.id,
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode,
+        })
+      )
       history.push(
         getOfferIndividualUrl({
           offerId: payload.id,
