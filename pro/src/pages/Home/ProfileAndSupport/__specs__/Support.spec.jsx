@@ -27,10 +27,12 @@ describe('homepage: ProfileAndSupport: Support', () => {
       const contactLink = screen.getByText('Contacter le support')
       const cguLink = screen.getByText('Conditions Générales d’Utilisation')
       const helpCenterLink = screen.getByText('Centre d’aide')
+      const bestPracticesLink = screen.getByText('Bonnes pratiques et études')
 
       expect(contactLink).toBeInTheDocument()
       expect(cguLink).toBeInTheDocument()
       expect(helpCenterLink).toBeInTheDocument()
+      expect(bestPracticesLink).toBeInTheDocument()
 
       expect(contactLink.getAttribute('href')).toBe(
         'mailto:support-pro@passculture.app'
@@ -40,6 +42,9 @@ describe('homepage: ProfileAndSupport: Support', () => {
       )
       expect(helpCenterLink.getAttribute('href')).toBe(
         'https://aide.passculture.app'
+      )
+      expect(bestPracticesLink.getAttribute('href')).toBe(
+        'https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0'
       )
     })
 
@@ -51,12 +56,14 @@ describe('homepage: ProfileAndSupport: Support', () => {
       const contactLink = screen.getByText('Contacter le support')
       const cguLink = screen.getByText('Conditions Générales d’Utilisation')
       const helpCenterLink = screen.getByText('Centre d’aide')
+      const bestPracticesLink = screen.getByText('Bonnes pratiques et études')
 
       await userEvent.click(contactLink)
       await userEvent.click(cguLink)
       await userEvent.click(helpCenterLink)
+      await userEvent.click(bestPracticesLink)
 
-      expect(mockLogEvent).toHaveBeenCalledTimes(3)
+      expect(mockLogEvent).toHaveBeenCalledTimes(4)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
         Events.CLICKED_CONSULT_SUPPORT,
@@ -70,6 +77,11 @@ describe('homepage: ProfileAndSupport: Support', () => {
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         3,
         Events.CLICKED_HELP_CENTER,
+        { from: '/accueil' }
+      )
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        4,
+        Events.CLICKED_BEST_PRACTICES_STUDIES,
         { from: '/accueil' }
       )
     })
