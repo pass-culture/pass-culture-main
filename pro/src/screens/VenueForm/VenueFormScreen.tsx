@@ -185,13 +185,22 @@ const VenueFormScreen = ({
             ? `${offerer.name} (Offre numérique)`
             : publicName || initialName}
         </Title>
-        {!isCreatingVenue && isNewBankInformationCreation && (
-          <p className={style['identifier']}>
-            {venue && venue.dmsToken
-              ? `N° d'identifiant du lieu : ${venue.dmsToken}`
-              : ''}
-          </p>
-        )}
+        {!isCreatingVenue &&
+          isNewBankInformationCreation &&
+          venue &&
+          venue.dmsToken && (
+            <>
+              {/* For the screen reader to spell-out the id, we add a
+                visually hidden span with a space between each character.
+                The other span will be hidden from the screen reader. */}
+              <span className={style['identifier-hidden']}>
+                N° d'identifiant du lieu : {venue.dmsToken.split('').join(' ')}
+              </span>
+              <span aria-hidden={true}>
+                N° d'identifiant du lieu : {venue.dmsToken}
+              </span>
+            </>
+          )}
       </div>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
