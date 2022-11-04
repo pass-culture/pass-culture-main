@@ -1691,6 +1691,23 @@ class ListOfferersToBeValidatedTest:
         assert data[0]["name"] == "D"
 
     @override_features(ENABLE_BACKOFFICE_API=True)
+    @pytest.mark.parametrize("siren", ["12345678", "1234567890"])
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_list_search_by_invalid_siren(self, client, siren):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.list_offerers_to_be_validated", q=siren)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["q"] == "Le SIREN doit faire 9 caractères"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(
         "search_filter, expected_offerer_names",
         (
