@@ -376,7 +376,20 @@ export const OfferersToValidate = () => {
                         <TableCell>
                           {offerer.lastComment && offerer.lastComment.content}
                         </TableCell>
-                        <TableCell>{offerer.siren}</TableCell>
+                        <TableCell>
+                          {offerer.siren && (
+                            <Link
+                              role={'link'}
+                              href={`https://www.societe.com/cgi-bin/fiche?rncs=${encodeURIComponent(
+                                offerer.siren
+                              )}`}
+                              target={'_blank'}
+                              color={Colors.GREY}
+                            >
+                              {offerer.siren}
+                            </Link>
+                          )}
+                        </TableCell>
                         <TableCell>{offerer.email}</TableCell>
                         <TableCell>
                           {offerer.ownerId && (

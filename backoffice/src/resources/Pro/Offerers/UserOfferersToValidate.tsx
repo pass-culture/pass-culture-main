@@ -310,7 +310,20 @@ export const UserOfferersToValidate = () => {
                             </>
                           )}
                         </TableCell>
-                        <TableCell>{userOfferer.siren}</TableCell>
+                        <TableCell>
+                          {userOfferer.siren && (
+                            <Link
+                              role={'link'}
+                              href={`https://www.societe.com/cgi-bin/fiche?rncs=${encodeURIComponent(
+                                userOfferer.siren
+                              )}`}
+                              target={'_blank'}
+                              color={Colors.GREY}
+                            >
+                              {userOfferer.siren}
+                            </Link>
+                          )}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
