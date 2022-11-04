@@ -347,7 +347,11 @@ def list_offerers_to_be_validated(
     filters = []
     if query.filter:
         filters = json.loads(urllib.parse.unquote_plus(query.filter))
-    offerers = offerers_api.list_offerers_to_be_validated(query.q, filters)
+
+    try:
+        offerers = offerers_api.list_offerers_to_be_validated(query.q, filters)
+    except offerers_exceptions.InvalidSiren as err:
+        raise api_errors.ApiErrors(errors={"q": str(err)})
 
     sorts = urllib.parse.unquote_plus(query.sort or "[]")
     try:
