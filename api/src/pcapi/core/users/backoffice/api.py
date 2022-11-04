@@ -16,8 +16,11 @@ def upsert_roles(
     if not user.backoffice_profile.roles:
         user.backoffice_profile.roles = []
 
-    concrete_roles = perm_api.get_concrete_roles(roles)
-    user.backoffice_profile.roles.extend(concrete_roles)
+    current_roles = {perm_models.Roles.from_role(role) for role in user.backoffice_profile.roles}
+    new_roles = current_roles | set(roles)
+    concrete_roles = perm_api.get_concrete_roles(new_roles)
+
+    user.backoffice_profile.roles = concrete_roles
 
     return user.backoffice_profile
 

@@ -100,6 +100,10 @@ def user_not_found():  # type: ignore
 def fetch_user_permissions_from_google_workspace(user: users_models.User) -> list[perm_models.Permission]:
     groups = auth_api.get_groups_from_google_workspace(user.email)
     backoffice_roles = auth_api.extract_roles_from_google_workspace_groups(groups)
+
+    roles = [perm_models.Roles.from_role_name(role_name) for role_name in backoffice_roles]
+    backoffice_api.upsert_roles(user, roles)
+
     return auth_api.get_permissions_from_roles(backoffice_roles)
 
 

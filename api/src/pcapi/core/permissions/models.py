@@ -99,12 +99,20 @@ class Roles(enum.Enum):
     ADMIN = "admin"
     SUPPORT_N1 = "support-N1"
     SUPPORT_N2 = "support-N2"
-    SUPPORT_PRO = "support-PRO"
+    SUPPORT_PRO = "support-pro"
     FRAUDE_CONFORMITE = "fraude-conformite"
     DAF = "daf"
     BIZDEV = "bizdev"
     PROGRAMMATION = "programmation"
     PRODUCT_MANAGEMENT = "product-management"
+
+    @classmethod
+    def from_role(cls, role: "Role") -> "Roles":
+        return cls.from_role_name(role.name)
+
+    @classmethod
+    def from_role_name(cls, role_name: str) -> "Roles":
+        return cls[role_name.upper().replace("-", "_")]
 
 
 role_backoffice_profile_table = sa.Table(

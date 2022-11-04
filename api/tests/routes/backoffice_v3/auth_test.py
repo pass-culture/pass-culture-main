@@ -9,6 +9,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.routes.backoffice_v3 import auth
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -130,3 +131,15 @@ class UserNotFoundPageTest:
     def test_renders(self, client):  # type: ignore
         response = client.get(url_for("backoffice_v3_web.user_not_found"))
         assert response.status_code == 200
+
+
+class FetchUserPermissionsFromGoogleWorkspaceTest:
+    @patch("pcapi.core.auth.api.get_groups_from_google_workspace")
+    def test_admin(self, mock_get_groups, roles_with_permissions):
+        user = users_factories.UserFactory()
+        mock_get_groups.return_value = {"groups": [{"name": "backoffice-admin"}]}
+
+        assert auth.fetch_user_permissions_from_google_workspace(user)
+
+        assert {role.name for role in user.backoffice_profile.roles} == {"admin"}
+        assert user.backoffice_profile.permissions
