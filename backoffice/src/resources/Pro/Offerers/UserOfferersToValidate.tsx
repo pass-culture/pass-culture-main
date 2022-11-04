@@ -22,12 +22,7 @@ import {
 import { captureException } from '@sentry/react'
 import { format } from 'date-fns'
 import React, { useCallback, useEffect, useState } from 'react'
-import {
-  useAuthenticated,
-  useNotify,
-  usePermissions,
-  useRedirect,
-} from 'react-admin'
+import { useAuthenticated, useNotify, usePermissions } from 'react-admin'
 
 import { searchPermission } from '../../../helpers/functions'
 import { Colors } from '../../../layout/Colors'
@@ -77,7 +72,6 @@ enum UserOffererStatus {
 export const UserOfferersToValidate = () => {
   useAuthenticated()
   const notify = useNotify()
-  const redirect = useRedirect()
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState({
     userOfferers: [] as UserOffererToBeValidated[],
@@ -126,7 +120,6 @@ export const UserOfferersToValidate = () => {
           type: 'error',
         })
       }
-      redirect('/pro/search')
       captureException(error)
     }
   }
