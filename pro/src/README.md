@@ -6,8 +6,6 @@
 
 ## [SCREENS](./screens/README.md)
 
-## [ROUTES](./routes/README.md)
-
 ## [REPOSITORY](./repository/README.md)
 
 ## [HOCS](./components/hocs/README.md) (DEPRECATED : utiliser les hooks)
