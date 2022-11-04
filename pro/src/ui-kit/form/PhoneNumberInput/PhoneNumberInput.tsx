@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
-import React, { ChangeEvent, FocusEvent, useState } from 'react'
+import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
 
 import { BaseInput, FieldLayout } from '../shared'
 
@@ -18,12 +18,10 @@ export interface PhoneNumberInputProps {
 const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
   const [field, meta, helpers] = useField({ name })
 
-  const { inputValue, countryCode: computedCountryCode } =
-    getPhoneNumberInputAndCountryCode(field.value)
-
-  const [countryCode, setCountryCode] =
-    useState<CountryCode>(computedCountryCode)
-  const [phoneInutValue, setPhoneInputValue] = useState<string>(inputValue)
+  const [countryCode, setCountryCode] = useState<CountryCode>(
+    PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
+  )
+  const [phoneInutValue, setPhoneInputValue] = useState<string>()
 
   const validatePhoneNumber = (phoneNumberInputValue: string) => {
     const phoneNumber = parsePhoneNumberFromString(
@@ -58,6 +56,13 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
 
     validatePhoneNumber(event.target.value)
   }
+
+  useEffect(() => {
+    const { inputValue, countryCode: computedCountryCode } =
+      getPhoneNumberInputAndCountryCode(field.value)
+    setCountryCode(computedCountryCode)
+    setPhoneInputValue(inputValue)
+  }, [])
 
   return (
     <FieldLayout
