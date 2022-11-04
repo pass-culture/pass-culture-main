@@ -30,6 +30,7 @@ const TimePicker = ({
   const [field, meta, helpers] = useField({ name, type: 'text' })
   const ref = createRef<HTMLInputElement>()
 
+  /* istanbul ignore next: DEBT, TO FIX */
   return (
     <FieldLayout
       className={className}
