@@ -445,7 +445,7 @@ describe('Summary trackers', () => {
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'recapitulatif',
-          isEdition: false,
+          isEdition: true,
           to: 'details',
           used: 'RecapLink',
           isDraft: true,
@@ -468,7 +468,7 @@ describe('Summary trackers', () => {
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'recapitulatif',
-          isEdition: false,
+          isEdition: true,
           to: 'stocks',
           used: 'RecapLink',
           isDraft: true,
@@ -491,7 +491,7 @@ describe('Summary trackers', () => {
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'recapitulatif',
-          isEdition: false,
+          isEdition: true,
           to: 'stocks',
           used: 'StickyButtons',
           isDraft: true,
@@ -539,7 +539,7 @@ describe('Summary trackers', () => {
         Events.CLICKED_OFFER_FORM_NAVIGATION,
         {
           from: 'recapitulatif',
-          isEdition: false,
+          isEdition: true,
           to: 'Offers',
           used: 'DraftButtons',
           isDraft: true,
