@@ -115,7 +115,7 @@ def put_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) -
     token = cinema_details.token if check_token_validity(cinema_details) else login(cinema_details)
     assert token  # for typing
     response = requests.put(
-        url=build_url(cinema_details.cinema_url, resource), headers=headers(token), data=body.json(by_alias=True)
+        url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token), data=body.json(by_alias=True)
     )
 
     _check_response_is_ok(response, token, f"PUT {resource}")
@@ -131,7 +131,7 @@ def post_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) 
     token = cinema_details.token if check_token_validity(cinema_details) else login(cinema_details)
     assert token  # for typing
     response = requests.post(
-        url=build_url(cinema_details.cinema_url, resource), headers=headers(token), data=body.json(by_alias=True)
+        url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token), data=body.json(by_alias=True)
     )
 
     _check_response_is_ok(response, token, f"POST {resource}")

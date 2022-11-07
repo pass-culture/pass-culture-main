@@ -6,6 +6,7 @@ import pytest
 from pcapi.connectors import boost
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.providers.factories as providers_factories
+from pcapi.routes.serialization import BaseModel
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -143,5 +144,207 @@ class BoostGetResourceTest:
         assert "token" not in str(exc.value)
         assert (
             "Error on Boost API on GET ResourceBoost.EXAMPLE : Expectation failed - Why must you fail me so often ?"
+            == str(exc.value)
+        )
+
+
+class BoostPostResourceTest:
+    def test_with_valid_stored_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="dG90bw==",
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        resource = boost.ResourceBoost.EXAMPLE
+        adapter_response_data = {"message": "OK"}
+        requests_mock.post(
+            "https://cinema.example.com/example",
+            status_code=204,
+            json=adapter_response_data,
+            headers={"Content-Type": "application/json"},
+        )
+
+        body = BaseModel(key=1)
+        response = boost.post_resource(cinema_str_id, resource, body)
+
+        assert requests_mock.last_request.url == "https://cinema.example.com/example"
+        assert response == adapter_response_data
+
+    def test_without_valid_stored_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="old-token",
+            tokenExpirationDate=datetime.datetime(2022, 10, 1),
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        adapter_response_data = {"key": "value"}
+        post_adapter = requests_mock.post(
+            "https://cinema.example.com/example",
+            status_code=204,
+            json=adapter_response_data,
+            headers={"Content-Type": "application/json"},
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        body = BaseModel(key=1)
+        response = boost.post_resource(cinema_str_id, resource, body)
+
+        assert login_adapter.call_count == 1
+        assert post_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert response == adapter_response_data
+
+    def test_without_stored_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token=None,
+            tokenExpirationDate=None,
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        adapter_response_data = {"key": "value"}
+        post_adapter = requests_mock.post(
+            "https://cinema.example.com/example",
+            status_code=204,
+            json=adapter_response_data,
+            headers={"Content-Type": "application/json"},
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        body = BaseModel(key=1)
+        response = boost.post_resource(cinema_str_id, resource, body)
+
+        assert login_adapter.call_count == 1
+        assert post_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert response == adapter_response_data
+
+    def test_should_raise_if_error(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="token",
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        requests_mock.post(
+            "https://cinema.example.com/example",
+            status_code=417,
+            reason="Expectation failed",
+            json={"message": "Why must you fail me so often ?"},
+        )
+
+        with pytest.raises(boost_exceptions.BoostAPIException) as exc:
+            body = BaseModel(key=1)
+            boost.post_resource(cinema_str_id, resource, body)
+
+        assert requests_mock.last_request.url == "https://cinema.example.com/example"
+        assert requests_mock.last_request.headers["Authorization"] == "Bearer token"
+        assert isinstance(exc.value, boost_exceptions.BoostAPIException)
+        assert "token" not in str(exc.value)
+        assert (
+            "Error on Boost API on POST ResourceBoost.EXAMPLE : Expectation failed - Why must you fail me so often ?"
+            == str(exc.value)
+        )
+
+
+class BoostPutResourceTest:
+    def test_with_valid_stored_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="dG90bw==",
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        resource = boost.ResourceBoost.EXAMPLE
+
+        requests_mock.put(
+            "https://cinema.example.com/example",
+            status_code=204,
+            json={"message": "OK"},
+            headers={"Content-Type": "application/json"},
+        )
+
+        body = BaseModel(key=1)
+        response = boost.put_resource(cinema_str_id, resource, body)
+
+        assert requests_mock.last_request.url == "https://cinema.example.com/example"
+        assert response == {"message": "OK"}
+
+    def test_without_valid_stored_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="old-token",
+            tokenExpirationDate=datetime.datetime(2022, 10, 1),
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        adapter_response_data = {"key": "value"}
+        put_adapter = requests_mock.put(
+            "https://cinema.example.com/example",
+            status_code=204,
+            json=adapter_response_data,
+            headers={"Content-Type": "application/json"},
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        body = BaseModel(key=1)
+        response = boost.put_resource(cinema_str_id, resource, body)
+
+        assert login_adapter.call_count == 1
+        assert put_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert response == adapter_response_data
+
+    def test_without_stored_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token=None,
+            tokenExpirationDate=None,
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        adapter_response_data = {"key": "value"}
+        put_adapter = requests_mock.put(
+            "https://cinema.example.com/example",
+            status_code=204,
+            json=adapter_response_data,
+            headers={"Content-Type": "application/json"},
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        body = BaseModel(key=1)
+        response = boost.put_resource(cinema_str_id, resource, body)
+
+        assert login_adapter.call_count == 1
+        assert put_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert response == adapter_response_data
+
+    def test_should_raise_if_error(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="token",
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        requests_mock.put(
+            "https://cinema.example.com/example",
+            status_code=417,
+            reason="Expectation failed",
+            json={"message": "Why must you fail me so often ?"},
+        )
+
+        with pytest.raises(boost_exceptions.BoostAPIException) as exc:
+            body = BaseModel(key=1)
+            boost.put_resource(cinema_str_id, resource, body)
+
+        assert requests_mock.last_request.url == "https://cinema.example.com/example"
+        assert requests_mock.last_request.headers["Authorization"] == "Bearer token"
+        assert isinstance(exc.value, boost_exceptions.BoostAPIException)
+        assert "token" not in str(exc.value)
+        assert (
+            "Error on Boost API on PUT ResourceBoost.EXAMPLE : Expectation failed - Why must you fail me so often ?"
             == str(exc.value)
         )
