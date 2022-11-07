@@ -4,12 +4,13 @@
     - [x] ajouter la div help
     - [x] relier la div help à l'input: ajouter les attributs aria
     - [x] créer un champ select caché
-    - [ ] creer une liste pour le menu déroulant
-    - [ ] gérer le hovered (l'appeler focused ?)
-- [ ] vérifier si on peut remplacer le style par l'attribut `hidden`
+    - [x] creer une liste pour le menu déroulant
+    - [x] gérer le hovered (l'appeler focused ?)
+- [x] vérifier si on peut remplacer le style par l'attribut `hidden`
 - [x] réaligner les éléments
-- [ ] gérer le multi-select et le simple-select dans le même composant
-- [ ] ajouter la nav clavier
+- [x] gérer le multi-select et le simple-select dans le même composant
+- [x] ajouter la nav clavier
+- [ ] styler la liste pour le menu déroulant
 - [ ] remplacer le composant SelectAutocomplete
 - [ ] remplacer le composant MultiSelectAutocomplete
 - [ ] remplacer le composant TextInputAutocomplete
