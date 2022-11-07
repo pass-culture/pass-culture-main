@@ -8,6 +8,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
+import { hasProperty } from 'utils/types'
 
 export type IEducationalCategory = {
   id: string
@@ -96,10 +97,20 @@ export type CollectiveOffer = GetCollectiveOfferResponseModel & {
   isTemplate: false
 }
 
+export const isCollectiveOffer = (value: unknown): value is CollectiveOffer =>
+  // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
+  hasProperty(value, 'isTemplate') && value.isTemplate === false
+
 export type CollectiveOfferTemplate =
   GetCollectiveOfferTemplateResponseModel & {
     isTemplate: true
   }
+
+export const isCollectiveOfferTemplate = (
+  value: unknown
+): value is CollectiveOffer =>
+  // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
+  hasProperty(value, 'isTemplate') && value.isTemplate === true
 
 export type VisibilityFormValues = {
   visibility: 'all' | 'one'

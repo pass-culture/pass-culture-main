@@ -8,7 +8,7 @@ import {
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 
 export const offerFactory = (
-  offerExtend: Partial<CollectiveOffer>
+  offerExtend?: Partial<CollectiveOffer>
 ): CollectiveOffer => ({
   id: 'OFFER_ID',
   isActive: true,
@@ -56,7 +56,7 @@ export const offerFactory = (
   venueId: 'VENUE_ID',
   isBookable: true,
   isVisibilityEditable: true,
-  ...offerExtend,
+  ...(offerExtend ?? {}),
 })
 
 export const collectiveOfferStockFactory = (
@@ -70,7 +70,7 @@ export const collectiveOfferStockFactory = (
 })
 
 export const collectiveOfferTemplateFactory = (
-  offerExtend: Partial<CollectiveOfferTemplate>
+  offerExtend?: Partial<CollectiveOfferTemplate>
 ): CollectiveOfferTemplate => ({
   id: 'OFFER_ID',
   isActive: true,
@@ -116,5 +116,5 @@ export const collectiveOfferTemplateFactory = (
   students: [StudentLevels.COLL_GE_3E],
   subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
   venueId: 'VENUE_ID',
-  ...offerExtend,
+  ...(offerExtend ?? {}),
 })
