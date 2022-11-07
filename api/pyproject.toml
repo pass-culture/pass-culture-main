@@ -136,7 +136,12 @@ max-line-length = 120
 
 
 [tool.pytest.ini_options]
-addopts = ["--verbose", "--tb=short"]
+addopts = [
+    "--verbose",
+    "--tb=short",
+    "--disable-socket",
+    "--allow-hosts=127.0.0.1",  # allow connections to local Redis
+]
 filterwarnings = [
     # Mark warnings as errors
     "error",
