@@ -26,6 +26,7 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
     attributes = {
         "date(u.date_created)": _format_date(user_attributes.date_created),
         "date(u.date_of_birth)": _format_date(user_attributes.date_of_birth),
+        "date(u.deposit_activation_date)": _format_date(user_attributes.deposit_activation_date),
         "date(u.deposit_expiration_date)": _format_date(user_attributes.deposit_expiration_date),
         "date(u.last_booking_date)": _format_date(user_attributes.last_booking_date),
         "u.credit": int(user_attributes.domains_credit.all.remaining * 100) if user_attributes.domains_credit else None,
