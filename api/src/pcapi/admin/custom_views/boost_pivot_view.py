@@ -1,7 +1,6 @@
 import typing
 
 from flask import flash
-from flask_admin.form import SecureForm
 from werkzeug.exceptions import Forbidden
 from wtforms import Form
 from wtforms import IntegerField
@@ -10,13 +9,14 @@ from wtforms.validators import DataRequired
 from wtforms.validators import URL
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.base_configuration import FlaskWTFSecureForm
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models import db
 
 
-class BoostPivotForm(SecureForm):
+class BoostPivotForm(FlaskWTFSecureForm):
     venue_id = IntegerField("Identifiant numérique du lieu (pass Culture)", [DataRequired()])
     cinema_id = StringField("Identifiant Cinéma (Boost)", [DataRequired()])
     username = StringField("Nom d'utilisateur (Boost)", [DataRequired()])

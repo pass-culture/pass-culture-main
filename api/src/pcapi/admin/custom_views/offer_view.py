@@ -12,7 +12,6 @@ from flask_admin.actions import action
 from flask_admin.base import expose
 from flask_admin.contrib.sqla import fields
 from flask_admin.contrib.sqla import filters
-from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
 from flask_admin.helpers import get_redirect_target
 from flask_admin.helpers import is_form_submitted
@@ -34,6 +33,7 @@ import yaml
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.base_configuration import BaseSuperAdminView
+from pcapi.admin.base_configuration import FlaskWTFSecureForm
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.categories import categories
@@ -398,7 +398,7 @@ def _venue_link(view: BaseAdminView, context: Context, model: models.Offer, name
     return link.format(url=escape(url), name=escape(model.venue.publicName or model.venue.name))
 
 
-class OfferValidationForm(SecureForm):
+class OfferValidationForm(FlaskWTFSecureForm):
     validation = wtforms.SelectField(
         "validation",
         choices=[(choice.name, choice.value) for choice in models.OfferValidationStatus if choice.name != "DRAFT"],
@@ -651,7 +651,7 @@ def date_formatter(view, context, model, name) -> datetime:  # type: ignore [no-
     return config_date.strftime("%Y-%m-%d %H:%M:%S")
 
 
-class OfferValidationConfigForm(SecureForm):
+class OfferValidationConfigForm(FlaskWTFSecureForm):
     specs = wtforms.TextAreaField("Configuration", [InputRequired()])
 
 
