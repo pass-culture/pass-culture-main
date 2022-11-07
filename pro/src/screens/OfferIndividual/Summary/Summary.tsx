@@ -34,8 +34,9 @@ import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
 import { ActionsFormV2 } from './ActionsFormV2'
 import { IOfferSectionProps, OfferSection } from './OfferSection'
-import { IStockEventItemProps, StockEventSection } from './StockEventSection'
-import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
+import { StockSection } from './StockSection'
+import { IStockEventItemProps } from './StockSection/StockEventSection'
+import { IStockThingSectionProps } from './StockSection/StockThingSection'
 import styles from './Summary.module.scss'
 
 export interface ISummaryProps {
@@ -183,13 +184,11 @@ const Summary = (
       <SummaryLayout>
         <SummaryLayout.Content>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
-          {stockThing && (
-            <StockThingSection {...stockThing} offerId={offerId} />
-          )}
-          {stockEventList && (
-            <StockEventSection stocks={stockEventList} offerId={offerId} />
-          )}
-
+          <StockSection
+            stockThing={stockThing}
+            stockEventList={stockEventList}
+            offerId={offerId}
+          />
           {formOfferV2 ? (
             <ActionsFormV2
               offerId={offerId}
