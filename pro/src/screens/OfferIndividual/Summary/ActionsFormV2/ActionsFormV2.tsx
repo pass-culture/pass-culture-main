@@ -66,7 +66,7 @@ const ActionsFormV2 = ({
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
               isDraft: true,
               offerId: offerId,
-              isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+              isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             })
           }
         >
@@ -83,7 +83,7 @@ const ActionsFormV2 = ({
                 from: OfferBreadcrumbStep.SUMMARY,
                 to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
-                isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+                isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
                 isDraft: true,
                 offerId: offerId,
               })
@@ -125,8 +125,8 @@ const ActionsFormV2 = ({
               from: OfferBreadcrumbStep.SUMMARY,
               to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-              isEdition: mode === OFFER_WIZARD_MODE.EDITION,
-              isDraft: mode === OFFER_WIZARD_MODE.DRAFT,
+              isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+              isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
               offerId: offerId,
             })
           }

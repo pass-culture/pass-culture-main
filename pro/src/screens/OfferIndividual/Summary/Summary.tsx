@@ -111,7 +111,7 @@ const Summary = (
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.CONFIRMATION,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
     })
     history.push(
       getOfferIndividualUrl({
@@ -128,7 +128,7 @@ const Summary = (
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
     })
     history.push(
       getOfferIndividualUrl({

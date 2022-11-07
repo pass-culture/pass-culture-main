@@ -87,7 +87,7 @@ const OfferSummary = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
       offerId: offer.id,
-      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
     })
   }
 
