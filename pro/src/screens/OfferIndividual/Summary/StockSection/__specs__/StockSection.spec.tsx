@@ -6,6 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import { OfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
 import { configureTestStore } from 'store/testUtils'
@@ -71,6 +72,59 @@ describe('Summary stock section', () => {
       setLogEvent: null,
     }))
   })
+  describe('for general case', () => {
+    it('should render sold out warning', async () => {
+      props = {
+        stockThing: {
+          quantity: 0,
+          price: 20,
+          bookingLimitDatetime: null,
+        },
+        offerId: 'TEST_OFFER_ID',
+        offerStatus: OfferStatus.SOLD_OUT,
+      }
+      renderStockSection({ props, url: '/creation/recapitulatif' })
+      expect(
+        screen.getByRole('heading', { name: /Stocks et prix/ })
+      ).toBeInTheDocument()
+      expect(screen.getByText('Votre stock est épuisé.')).toBeInTheDocument()
+      expect(screen.getByText(/Quantité/)).toBeInTheDocument()
+      expect(screen.getByText('0')).toBeInTheDocument()
+    })
+
+    it('should render expired warning', async () => {
+      props = {
+        stockThing: {
+          quantity: 0,
+          price: 20,
+          bookingLimitDatetime: '12/02/2018',
+        },
+        offerId: 'TEST_OFFER_ID',
+        offerStatus: OfferStatus.EXPIRED,
+      }
+      renderStockSection({ props, url: '/creation/recapitulatif' })
+      expect(
+        screen.getByRole('heading', { name: /Stocks et prix/ })
+      ).toBeInTheDocument()
+      expect(screen.getByText('Votre stock est expiré.')).toBeInTheDocument()
+      expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
+    })
+
+    it('should render no stock warning', async () => {
+      props = {
+        offerId: 'TEST_OFFER_ID',
+        offerStatus: OfferStatus.SOLD_OUT,
+      }
+      renderStockSection({ props, url: '/creation/recapitulatif' })
+      expect(
+        screen.getByRole('heading', { name: /Stocks et prix/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Vous n’avez aucun stock renseigné.')
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/Quantité/)).not.toBeInTheDocument()
+    })
+  })
 
   describe('for stock thing', () => {
     beforeEach(() => {
@@ -81,6 +135,7 @@ describe('Summary stock section', () => {
           bookingLimitDatetime: null,
         },
         offerId: 'TEST_OFFER_ID',
+        offerStatus: OfferStatus.ACTIVE,
       }
     })
 
@@ -188,12 +243,6 @@ describe('Summary stock section', () => {
     it.each([null, undefined])(
       'should render quantity as "Illimité" when quantity is null or undefined',
       async quantity => {
-        const storeOverride = {
-          features: {
-            initialized: true,
-            list: [{ isActive: true, nameKey: 'OFFER_FORM_V3' }],
-          },
-        }
         props = {
           ...props,
           stockThing: {
@@ -203,7 +252,7 @@ describe('Summary stock section', () => {
           },
         }
 
-        renderStockSection({ props, storeOverride })
+        renderStockSection({ props })
         expect(screen.getByText('Illimité')).toBeInTheDocument()
       }
     )
@@ -229,6 +278,7 @@ describe('Summary stock section', () => {
           },
         ],
         offerId: 'TEST_OFFER_ID',
+        offerStatus: OfferStatus.ACTIVE,
       }
     })
 

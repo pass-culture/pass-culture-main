@@ -29,7 +29,7 @@ const StockThingSection = ({
       )}
       <SummaryLayout.Row
         title="Quantité"
-        description={quantity || 'Illimité'}
+        description={quantity ?? 'Illimité'}
       />
     </>
   )
