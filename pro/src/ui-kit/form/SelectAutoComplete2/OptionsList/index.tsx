@@ -1,6 +1,9 @@
 import cx from 'classnames'
 import React, { Ref } from 'react'
 
+import BaseCheckbox from 'ui-kit/form/shared/BaseCheckbox'
+import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.module.scss'
+
 import styles from './OptionsList.module.scss'
 
 type SelectOption = { value: string; label: string }
@@ -15,6 +18,7 @@ export interface OptionsListProps {
   listRef: Ref<HTMLUListElement>
   hovered: number | null
   selectOption: (value: string) => void
+  multi: boolean
 }
 
 const OptionsList = ({
@@ -27,6 +31,7 @@ const OptionsList = ({
   listRef,
   hovered,
   selectOption,
+  multi,
 }: OptionsListProps): JSX.Element => {
   return (
     <div
@@ -54,28 +59,46 @@ const OptionsList = ({
         role="listbox"
       >
         {filteredOptions.map(
-          ({ value, label }: SelectOption, index: number) => (
-            <li
-              aria-selected={selectedValues.includes(value) ? 'true' : 'false'}
-              aria-posinset={index + 1}
-              aria-setsize={filteredOptions.length}
-              className={`${
-                selectedValues.includes(value) ? styles['option-selected'] : ''
-              } ${hovered === index ? styles['option-hovered'] : ''}`}
-              data-value={value}
-              data-selected={selectedValues.includes(value)}
-              id={`option-display-${value}`}
-              key={`option-display-${value}`}
-              onClick={() => {
-                selectOption(value)
-              }}
-              onMouseEnter={() => setHovered(index)}
-              role="option"
-              tabIndex={-1}
-            >
-              {label}
-            </li>
-          )
+          ({ value, label }: SelectOption, index: number) => {
+            const isSelected = selectedValues.includes(value)
+            return (
+              <li
+                aria-selected={isSelected ? 'true' : 'false'}
+                aria-posinset={index + 1}
+                aria-setsize={filteredOptions.length}
+                className={hovered === index ? styles['option-hovered'] : ''}
+                data-value={value}
+                data-selected={isSelected}
+                id={`option-display-${value}`}
+                key={`option-display-${value}`}
+                onMouseEnter={() => setHovered(index)}
+                role="option"
+                tabIndex={-1}
+              >
+                {multi ? (
+                  <BaseCheckbox
+                    label={label}
+                    checked={isSelected}
+                    onChange={() => {
+                      selectOption(value)
+                    }}
+                  />
+                ) : (
+                  <span
+                    onClick={() => {
+                      selectOption(value)
+                    }}
+                    className={cx(
+                      baseCheckboxStyles['base-checkbox-label'],
+                      styles['label']
+                    )}
+                  >
+                    {label}
+                  </span>
+                )}
+              </li>
+            )
+          }
         )}
       </ul>
     </div>
