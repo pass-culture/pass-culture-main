@@ -13,8 +13,6 @@ import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { IVenueFormValues } from '../types'
 
-import styles from './ImageUploaderVenue.module.scss'
-
 /* istanbul ignore next: DEBT, TO FIX */
 const buildInitialValues = (
   bannerUrl?: string,
@@ -89,13 +87,11 @@ const ImageUploaderVenue = () => {
   }
 
   return (
-    <FormLayout.Section title="Image du lieu">
-      <p className={styles['explanatory-text']}>
-        Vous pouvez ajouter une image qui sera visible sur l’application pass
-        Culture.
-        <br />
-        Elle permettra au public de mieux identifier votre lieu.
-      </p>
+    <FormLayout.Section
+      title="Image du lieu"
+      description={`Vous pouvez ajouter une image qui sera visible sur l’application pass Culture.
+      Elle permettra au public de mieux identifier votre lieu.`}
+    >
       <FormLayout.Row>
         <ImageUploader
           onImageUpload={handleOnImageUpload}
