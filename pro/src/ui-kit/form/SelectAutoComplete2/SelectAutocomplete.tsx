@@ -103,6 +103,7 @@ const SelectAutocomplete = ({
         option => searchField.value === '' || option.label.match(regExp)
       )
     )
+    setHovered(null)
   }, [searchField.value])
 
   /* istanbul ignore next */
@@ -288,6 +289,7 @@ const SelectAutocomplete = ({
               listRef={listRef}
               hovered={hovered}
               selectOption={selectOption}
+              multi={multi}
             />
           )}
         </div>
