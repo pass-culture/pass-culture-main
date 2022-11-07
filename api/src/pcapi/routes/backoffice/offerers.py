@@ -348,6 +348,7 @@ def list_offerers_to_be_validated(
         )
     except db_utils.BadSortError as err:
         raise api_errors.ApiErrors(errors={"sort": f"unable to process provided sorting options: {err}"})
+
     paginated_offerers = sorted_offerers.paginate(
         page=query.page,
         per_page=query.perPage,

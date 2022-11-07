@@ -1623,6 +1623,45 @@ class ListOfferersToBeValidatedTest:
             offerer__name="C",
             offerer__dateCreated=datetime.datetime.utcnow() - datetime.timedelta(hours=2),
         ).offerer
+        reviewer = users_factories.AdminFactory()
+
+        # Add history to check sorting by requestDate
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=reviewer,
+            offerer=offerer_1,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow(),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=reviewer,
+            offerer=offerer_2,
+            comment=None,
+        )
+        # We make sure that the latest actionDate with OFFERER_NEW is the one used in the sort
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=reviewer,
+            offerer=offerer_3,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=3),
+            actionType=history_models.ActionType.OFFERER_REJECTED,
+            authorUser=reviewer,
+            offerer=offerer_3,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() + datetime.timedelta(hours=4),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=reviewer,
+            offerer=offerer_3,
+            comment=None,
+        )
 
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
@@ -1636,12 +1675,19 @@ class ListOfferersToBeValidatedTest:
                 "backoffice_blueprint.list_offerers_to_be_validated", sort='[{"field": "dateCreated", "order": "desc"}]'
             )
         )
+        request_date_desc = client.with_explicit_token(auth_token).get(
+            url_for(
+                "backoffice_blueprint.list_offerers_to_be_validated", sort='[{"field": "requestDate", "order": "desc"}]'
+            )
+        )
 
         # then
         assert name_asc.status_code == 200
         assert [o["id"] for o in name_asc.json["data"]] == [o.id for o in (offerer_1, offerer_2, offerer_3)]
         assert creation_date_desc.status_code == 200
         assert [o["id"] for o in creation_date_desc.json["data"]] == [o.id for o in (offerer_2, offerer_1, offerer_3)]
+        assert request_date_desc.status_code == 200
+        assert [o["id"] for o in request_date_desc.json["data"]] == [o.id for o in (offerer_3, offerer_1, offerer_2)]
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     @pytest.mark.parametrize(
