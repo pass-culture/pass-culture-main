@@ -3,13 +3,13 @@ from flask import request
 from flask.helpers import flash
 from flask.helpers import url_for
 from flask_admin import expose
-from flask_admin.form import SecureForm
 from sqlalchemy.orm import joinedload
 import werkzeug
 from wtforms import StringField
 from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
+from pcapi.admin.base_configuration import FlaskWTFSecureForm
 from pcapi.core.bookings import models as booking_models
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
@@ -28,7 +28,7 @@ def _get_error_msg(error: Exception) -> str:
     return BOOKING_ERRORS_MSG.get(type(error), str(error))
 
 
-class SearchForm(SecureForm):
+class SearchForm(FlaskWTFSecureForm):
     token = StringField(
         "Code de contremarque",
         validators=[validators.DataRequired()],
@@ -36,11 +36,11 @@ class SearchForm(SecureForm):
     )
 
 
-class MarkAsUsedForm(SecureForm):
+class MarkAsUsedForm(FlaskWTFSecureForm):
     pass
 
 
-class CancelForm(SecureForm):
+class CancelForm(FlaskWTFSecureForm):
     pass
 
 

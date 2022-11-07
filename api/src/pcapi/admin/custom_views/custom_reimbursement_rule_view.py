@@ -3,7 +3,6 @@ import datetime
 from decimal import Decimal
 import typing
 
-from flask_admin.form import SecureForm
 from flask_login import current_user
 from jinja2.runtime import Context
 import markupsafe
@@ -18,6 +17,7 @@ from pcapi.admin import fields
 from pcapi.admin import permissions
 from pcapi.admin import widgets
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.base_configuration import FlaskWTFSecureForm
 from pcapi.core.categories.categories import ALL_CATEGORIES_DICT
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
@@ -54,8 +54,8 @@ def get_offerers(offerer_ids: list) -> list[dict[str, str]]:
     ]
 
 
-class AddForm(SecureForm):
-    class Meta(SecureForm.Meta):
+class AddForm(FlaskWTFSecureForm):
+    class Meta(FlaskWTFSecureForm.Meta):
         # Specify locale to use the comma as the decimal separator for
         # the `rate` field.
         locales = ["fr"]
@@ -98,7 +98,7 @@ class AddForm(SecureForm):
     )
 
 
-class EditForm(SecureForm):
+class EditForm(FlaskWTFSecureForm):
     end_date = wtf_fields.DateField(
         "Date de fin d'application",
         validators=[wtf_validators.DataRequired()],
