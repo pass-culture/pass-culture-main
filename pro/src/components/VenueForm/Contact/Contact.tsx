@@ -3,17 +3,16 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 
-import styles from './contact.module.scss'
-
 const Contact = () => {
   return (
     <>
-      <FormLayout.Section title="Contact">
-        <p className={styles['explanatory-text']}>
-          Ces informations seront affichées dans votre page lieu, sur
-          l’application pass Culture. Elles permettront aux bénéficiaires de
-          vous contacter en cas de besoin.
-        </p>
+      <FormLayout.Section
+        title="Contact"
+        description={
+          'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture.' +
+          'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
+        }
+      >
         <FormLayout.Row>
           <TextInput
             name="phoneNumber"
