@@ -236,7 +236,7 @@ const SelectAutocomplete = ({
         <div
           aria-live="polite"
           aria-relevant="text"
-          className={styles['visually-hidden']}
+          className={styles.hidden}
           id={`help-${fieldName}`}
         >
           {multi && `${field.value.length} options sélectionnées`}
@@ -253,7 +253,7 @@ const SelectAutocomplete = ({
             : 'saisissez du texte pour afficher et filtrer les options'}
         </div>
         <select
-          className={styles.hidden}
+          hidden
           {...(multi && { multiple: true })}
           {...field}
           data-testid="select"
