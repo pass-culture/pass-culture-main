@@ -1,4 +1,6 @@
 @use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/variables/_colors.scss' as colors;
 
 .stock-event-item {
   margin-bottom: rem.torem(24px);
@@ -16,4 +18,10 @@
       }
     }
   }
+}
+
+.stock-section-warning {
+  @include fonts.body-important;
+
+  color: colors.$red-warning;
 }

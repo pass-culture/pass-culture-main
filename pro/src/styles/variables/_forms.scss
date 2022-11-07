@@ -3,7 +3,7 @@
 
 $input-border-color: colors.$grey-medium;
 $input-border-color-focus: colors.$black;
-$input-border-color-error: #b60025;
+$input-border-color-error: colors.$red-warning;
 $input-border-color-disabled: colors.$grey-light;
 
 $input-focus-shadow: 0 rem.torem(3px) rem.torem(4px) 0 #67686b1a;
@@ -15,7 +15,7 @@ $input-text-color: #161617;
 $input-text-color-disabled: colors.$grey-dark;
 $input-border-radius: rem.torem(20px);
 
-$error-text-color: #b60025;
+$error-text-color: colors.$red-warning;
 $placeholder-text-color: #67686b;
 
 $input-right-icon-padding: rem.torem(32px);

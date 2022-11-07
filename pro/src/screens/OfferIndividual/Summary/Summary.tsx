@@ -188,6 +188,7 @@ const Summary = (
             stockThing={stockThing}
             stockEventList={stockEventList}
             offerId={offerId}
+            offerStatus={offer.status}
           />
           {formOfferV2 ? (
             <ActionsFormV2
