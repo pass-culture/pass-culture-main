@@ -444,6 +444,14 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
         offerers_factories.VenueFactory(managingOfferer=offerer_with_virtual_offer)
         offers_factories.OfferFactory(venue=virtual_venue)
 
+        # Rejected offerer => venue should not ve returned
+        rejected_offerer = offerers_factories.RejectedOffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=rejected_offerer)
+
+        # Rejected offerer with validation date => venue should not ve returned
+        rejected_offerer_after_validation = offerers_factories.RejectedOffererFactory(dateValidated=five_days_ago)
+        offerers_factories.VenueFactory(managingOfferer=rejected_offerer_after_validation)
+
         venues = (
             repository.find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(5)
             .order_by(models.Venue.id)

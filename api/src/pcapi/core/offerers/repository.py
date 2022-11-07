@@ -295,6 +295,7 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
     validated_x_days_ago_with_physical_venue_offerers_ids_subquery = (
         sqla.select(models.Offerer.id)
         .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)
+        .filter(models.Offerer.isValidated)
         .filter(sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=days)))
         .filter(~models.Venue.isVirtual)
         .distinct()
