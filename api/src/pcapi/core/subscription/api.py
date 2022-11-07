@@ -480,7 +480,9 @@ def _get_activable_identity_check(
         [
             check
             for check in user.beneficiaryFraudChecks
-            if check.type in fraud_models.IDENTITY_CHECK_TYPES and check.status == fraud_models.FraudCheckStatus.OK
+            if check.type in fraud_models.IDENTITY_CHECK_TYPES
+            and check.status == fraud_models.FraudCheckStatus.OK
+            and check.resultContent is not None
         ],
         key=lambda fraud_check: fraud_check.dateCreated,
         reverse=True,

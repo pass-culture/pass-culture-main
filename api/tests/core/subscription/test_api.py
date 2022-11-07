@@ -1259,6 +1259,40 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
+    def test_activation_fails_when_no_result_content(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            resultContent=None,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        is_success = subscription_api.activate_beneficiary_if_no_missing_step(user)
+        assert not is_success
+
     def test_admin_review_ko(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18),
