@@ -180,7 +180,7 @@ const VenueFormScreen = ({
             </a>
           )}
         </div>
-        <Title level={2}>
+        <Title level={2} className={style['venueName']}>
           {initialIsVirtual
             ? `${offerer.name} (Offre numérique)`
             : publicName || initialName}

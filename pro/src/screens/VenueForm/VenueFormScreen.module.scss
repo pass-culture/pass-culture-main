@@ -7,9 +7,10 @@
   display: flex;
   justify-content: space-between;
 }
+.venueName {
+  margin-bottom: rem.torem(8px)
+}
 .identifier {
-  margin-top: rem.torem(8px);
-
   &-hidden {
     position: absolute;
     width: 0px;
