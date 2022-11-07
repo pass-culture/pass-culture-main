@@ -18,13 +18,20 @@ from sqlalchemy.sql.selectable import Exists
 from sqlalchemy.sql.sqltypes import Boolean
 from sqlalchemy.sql.sqltypes import Numeric
 
+from pcapi import settings
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
+from pcapi.core.object_storage import delete_public_object
+from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import ImageRatio
+from pcapi.utils.image_conversion import process_original_image
+from pcapi.utils.image_conversion import standardize_image
 
 
 if typing.TYPE_CHECKING:
@@ -73,6 +80,87 @@ class CollectiveBookingStatusFilter(enum.Enum):
     BOOKED = "booked"
     VALIDATED = "validated"
     REIMBURSED = "reimbursed"
+
+
+@sa.orm.declarative_mixin
+class HasImageMixin:
+    BASE_URL = f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}"
+    FOLDER = settings.THUMBS_FOLDER_NAME
+
+    id: sa.orm.Mapped[int]
+    imageCrop: dict | None = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True)
+    imageCredit = sa.Column(sa.Text, nullable=True)
+    # Whether or not we also stored the original image in the storage bucket.
+    imageHasOriginal = sa.Column(sa.Boolean, nullable=True)
+
+    @sa.ext.hybrid.hybrid_property
+    def hasImage(self) -> bool:
+        return self.imageCrop is not None
+
+    @hasImage.expression  # type: ignore[no-redef]
+    def hasImage(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.imageCrop != None
+
+    def _get_image_storage_id(self, original: bool = False) -> str:
+        original_suffix = "_original" if original else ""
+        if self.id is None:
+            raise ValueError("Trying to get image_storage_id for an unsaved object")
+        return f"{type(self).__name__.lower()}/{self.id}{original_suffix}.jpg"
+
+    @property
+    def imageUrl(self) -> str | None:
+        return self._image_url(original=False)
+
+    @property
+    def imageOriginalUrl(self) -> str | None:
+        return self._image_url(original=True)
+
+    def _image_url(self, original: bool = False) -> str | None:
+        if not self.hasImage:
+            return None
+        return f"{self.BASE_URL}/{self._get_image_storage_id(original=original)}"
+
+    def set_image(
+        self,
+        image: bytes,
+        credit: str,
+        crop_params: CropParams,
+        ratio: ImageRatio = ImageRatio.PORTRAIT,
+        keep_original: bool = False,
+    ) -> None:
+        if self.hasImage:  # pylint: disable=using-constant-test
+            self.delete_image()
+        self.imageCrop = crop_params.__dict__
+        self.imageCredit = credit
+        self.imageHasOriginal = keep_original
+
+        store_public_object(
+            folder=self.FOLDER,
+            object_id=self._get_image_storage_id(),
+            blob=standardize_image(content=image, ratio=ratio, crop_params=crop_params),
+            content_type="image/jpeg",
+        )
+        if keep_original:
+            store_public_object(
+                folder=self.FOLDER,
+                object_id=self._get_image_storage_id(original=True),
+                blob=process_original_image(content=image, resize=False),
+                content_type="image/jpeg",
+            )
+
+    def delete_image(self) -> None:
+        delete_public_object(
+            folder=self.FOLDER,
+            object_id=self._get_image_storage_id(),
+        )
+        if self.imageHasOriginal:
+            delete_public_object(
+                folder=self.FOLDER,
+                object_id=self._get_image_storage_id(original=True),
+            )
+        self.imageCrop = None
+        self.imageCredit = None
+        self.imageHasOriginal = None
 
 
 class CollectiveOffer(PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Model):
@@ -353,7 +441,7 @@ class CollectiveOfferTemplate(
 
     @classmethod
     def create_from_collective_offer(
-        cls, collective_offer: CollectiveOffer, price_detail: str = None
+        cls, collective_offer: CollectiveOffer, price_detail: str | None = None
     ) -> "CollectiveOfferTemplate":
         list_of_common_attributes = [
             "isActive",
