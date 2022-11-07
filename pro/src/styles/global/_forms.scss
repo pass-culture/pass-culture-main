@@ -95,7 +95,7 @@
 .field-textarea {
   @include fonts.body-important();
 
-  border: rem.torem(1px) solid colors.$grey-medium;
+  border: rem.torem(1px) solid colors.$grey-semi-dark;
   border-radius: rem.torem(18px);
   flex: 1;
   outline: none !important;
@@ -282,7 +282,7 @@
 
   align-items: center;
   appearance: none;
-  border: rem.torem(1px) solid colors.$grey-medium;
+  border: rem.torem(1px) solid colors.$grey-semi-dark;
   border-radius: rem.torem(20px);
   box-shadow: none;
   display: inline-flex;

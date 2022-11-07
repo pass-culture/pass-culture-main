@@ -36,7 +36,7 @@
   .it-input {
     @include fonts.body();
 
-    border: rem.torem(1px) solid colors.$grey-medium;
+    border: rem.torem(1px) solid colors.$grey-semi-dark;
     border-radius: rem.torem(22px);
     box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 colors.$black-shadow;
     color: colors.$black;
