@@ -1673,6 +1673,109 @@ class ListOfferersToBeValidatedTest:
         assert sorted(o["name"] for o in data) == sorted(expected_offerer_names)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_list_filtering_by_request_date(self, client):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        # Created before requested range but registered again within date range:
+        user_offerer_1 = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 11, 2, 1)
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 11, 2, 1),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=user_offerer_1.user,
+            offerer=user_offerer_1.offerer,
+            user=user_offerer_1.user,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 11, 3, 2),
+            actionType=history_models.ActionType.OFFERER_REJECTED,
+            offerer=user_offerer_1.offerer,
+            user=user_offerer_1.user,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 11, 5, 3),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=user_offerer_1.user,
+            offerer=user_offerer_1.offerer,
+            user=user_offerer_1.user,
+        )
+        # Created before requested range, excluded from results:
+        user_offerer_2 = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 11, 4, 4)
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 11, 4, 4),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=user_offerer_2.user,
+            offerer=user_offerer_2.offerer,
+            user=user_offerer_2.user,
+        )
+        # Created within requested range:
+        user_offerer_3 = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 11, 6, 5)
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 11, 6, 5),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=user_offerer_3.user,
+            offerer=user_offerer_3.offerer,
+            user=user_offerer_3.user,
+        )
+        # No history, in requested range:
+        user_offerer_4 = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 11, 8, 6)
+        )
+        # No history, excluded from results:
+        offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 10, 7))
+
+        # when
+        with assert_num_queries(ListOfferersToBeValidatedTest.N_QUERIES):
+            response = client.with_explicit_token(auth_token).get(
+                url_for(
+                    "backoffice_blueprint.list_offerers_to_be_validated",
+                    filter=json.dumps(
+                        [{"field": "fromDate", "value": "2022-11-05"}, {"field": "toDate", "value": "2022-11-08"}]
+                    ),
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        assert {o["id"] for o in response.json["data"]} == {
+            uo.offerer.id for uo in (user_offerer_1, user_offerer_3, user_offerer_4)
+        }
+
+    @pytest.mark.parametrize(
+        "dates_filter",
+        [
+            '[{"field": "fromDate", "value": "05/11/2022"}, {"field": "toDate", "value": "2022-11-08"}]',
+            '[{"field": "fromDate", "value": "2022-11-05"}, {"field": "toDate", "value": "08/11/2022"}]',
+            '[{"field": "fromDate", "value": "2022-11-05T12:34:56"}, {"field": "toDate", "value": "2022-11-08T01:23:45"}]',
+        ],
+    )
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_list_filtering_by_invalid_request_date(self, client, dates_filter):
+        # given
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.VALIDATE_OFFERER])
+
+        response = client.with_explicit_token(auth_token).get(
+            url_for(
+                "backoffice_blueprint.list_offerers_to_be_validated",
+                filter=json.dumps(
+                    [{"field": "fromDate", "value": "05/11/2022"}, {"field": "toDate", "value": "08/11/2022"}]
+                ),
+            )
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["filter"] == "Le format de date est invalide"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_list_search_by_siren(self, client, offerers_to_be_validated):
         # given
         admin = users_factories.UserFactory()
