@@ -1,7 +1,6 @@
 import typing
 
 from flask import flash
-from flask_admin.form import SecureForm
 from werkzeug.exceptions import Forbidden
 from wtforms import Form
 from wtforms import IntegerField
@@ -9,13 +8,14 @@ from wtforms import StringField
 from wtforms.validators import DataRequired
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.base_configuration import FlaskWTFSecureForm
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models import db
 
 
-class CineOfficePivotForm(SecureForm):
+class CineOfficePivotForm(FlaskWTFSecureForm):
     venue_id = IntegerField("Identifiant numérique du lieu (pass Culture)", [DataRequired()])
     account_id = StringField("Nom de compte (CDS)", [DataRequired()])
     cinema_id = StringField("Identifiant cinéma (CDS)", [DataRequired()])

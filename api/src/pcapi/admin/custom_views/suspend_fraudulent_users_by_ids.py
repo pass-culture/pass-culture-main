@@ -7,12 +7,12 @@ from flask import redirect
 from flask import request
 from flask import url_for
 from flask_admin import expose
-from flask_admin.form import SecureForm
 from flask_login import current_user
 from werkzeug import Response
 from wtforms import FileField
 
 from pcapi.admin.base_configuration import BaseCustomSuperAdminView
+from pcapi.admin.base_configuration import FlaskWTFSecureForm
 from pcapi.workers.suspend_fraudulent_beneficiary_users_by_ids_job import (
     suspend_fraudulent_beneficiary_users_by_ids_job,
 )
@@ -25,7 +25,7 @@ def allowed_file(filename):  # type: ignore [no-untyped-def]
     return pathlib.Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 
-class SuspendFraudulentUsersByIdsForm(SecureForm):
+class SuspendFraudulentUsersByIdsForm(FlaskWTFSecureForm):
     user_ids_csv = FileField("Importer un fichier CSV contenant une seule colonne des utilisateurs à suspendre")
 
 
