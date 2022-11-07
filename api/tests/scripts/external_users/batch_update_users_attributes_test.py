@@ -80,6 +80,7 @@ def test_format_batch_user():
     assert res[0].attributes == {
         "date(u.date_created)": user.dateCreated.strftime(BATCH_DATETIME_FORMAT),
         "date(u.date_of_birth)": user.dateOfBirth.strftime(BATCH_DATETIME_FORMAT),
+        "date(u.deposit_activation_date)": user.deposit_activation_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.last_booking_date)": booking.dateCreated.strftime(BATCH_DATETIME_FORMAT),
         "u.city": "Paris",
