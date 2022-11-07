@@ -30,6 +30,10 @@ class NotValidatedOffererFactory(OffererFactory):
     validationStatus = models.ValidationStatus.NEW
 
 
+class RejectedOffererFactory(OffererFactory):
+    validationStatus = models.ValidationStatus.REJECTED
+
+
 class CollectiveOffererFactory(OffererFactory):
     name = factory.Sequence("[EAC] La structure de Moz'Art {}".format)
 

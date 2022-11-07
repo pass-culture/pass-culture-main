@@ -656,6 +656,7 @@ def reject_offerer(offerer_id: int, author_user: users_models.User, comment: str
 
     was_validated = offerer.isValidated
     offerer.validationStatus = models.ValidationStatus.REJECTED
+    offerer.dateValidated = None
     db.session.add(offerer)
     db.session.add(
         history_api.log_action(
