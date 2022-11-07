@@ -19,6 +19,7 @@ class FormatUserAttributesTest:
         assert formatted_attributes == {
             "date(u.date_of_birth)": "2003-05-06T00:00:00",
             "date(u.date_created)": "2021-02-06T00:00:00",
+            "date(u.deposit_activation_date)": None,
             "date(u.deposit_expiration_date)": None,
             "date(u.last_booking_date)": "2021-05-06T00:00:00",
             "date(u.product_brut_x_use)": "2021-05-06T00:00:00",
