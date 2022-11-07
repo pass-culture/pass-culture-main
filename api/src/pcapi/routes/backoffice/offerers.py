@@ -302,7 +302,7 @@ def _get_serialized_offerer_last_comment(
             filter(lambda a: bool(a.comment) and (user_id is None or a.userId == user_id), offerer.action_history)
         )
         if actions_with_comment:
-            last = sorted(actions_with_comment, key=lambda a: a.actionDate, reverse=True)[0]
+            last = max(actions_with_comment, key=lambda a: a.actionDate)
             return serialization.Comment(
                 date=format_into_utc_date(last.actionDate) if last.actionDate else None,
                 author=f"{last.authorUser.firstName} {last.authorUser.lastName}" if last.authorUser else None,
@@ -310,20 +310,6 @@ def _get_serialized_offerer_last_comment(
             )
 
     return None
-
-
-def _get_offerer_request_date(offerer: offerers_models.Offerer) -> str:
-    # Offerer may have been registered, rejected, then registered again, get the last 'NEW' date
-    if offerer.action_history:
-        actions_new = sorted(
-            [action for action in offerer.action_history if action.actionType == history_models.ActionType.OFFERER_NEW],
-            key=lambda a: a.actionDate,
-            reverse=True,
-        )
-        if actions_new:
-            return format_into_utc_date(actions_new[0].actionDate)
-
-    return format_into_utc_date(offerer.dateCreated)
 
 
 def _get_validation_status(obj: offerers_models.ValidationStatusMixin) -> str:
@@ -379,7 +365,7 @@ def list_offerers_to_be_validated(
                 serialization.OffererToBeValidated(
                     id=offerer.id,
                     name=offerer.name,
-                    requestDate=_get_offerer_request_date(offerer),
+                    requestDate=format_into_utc_date(offerer.requestDate),
                     status=_get_validation_status(offerer),
                     step=None,  # TODO
                     siren=offerer.siren,
@@ -497,7 +483,7 @@ def list_offerers_attachments_to_be_validated(
                     phoneNumber=user_offerer.user.phoneNumber,
                     offererId=user_offerer.offerer.id,
                     offererName=user_offerer.offerer.name,
-                    offererCreatedDate=_get_offerer_request_date(user_offerer.offerer),
+                    offererCreatedDate=format_into_utc_date(user_offerer.offerer.requestDate),
                     ownerId=user_offerer.offerer.UserOfferers[0].userId if user_offerer.offerer.UserOfferers else None,
                     ownerEmail=(
                         user_offerer.offerer.UserOfferers[0].user.email if user_offerer.offerer.UserOfferers else None

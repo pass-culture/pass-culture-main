@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import logging
 import secrets
@@ -1382,6 +1383,22 @@ def list_offerers_to_be_validated(search_query: str | None, filter_: list[dict[s
         query = query.join(tagged_offerers, tagged_offerers.c.id == offerers_models.Offerer.id).filter(
             sa.and_(*(tagged_offerers.c.tags.any(tag) for tag in tags))
         )
+
+    from_date = filter_dict.get("fromDate")
+    if from_date:
+        try:
+            min_datetime = datetime.combine(date.fromisoformat(from_date), datetime.min.time())
+        except ValueError:
+            raise ApiErrors({"filter": "Le format de date est invalide"})
+        query = query.filter(offerers_models.Offerer.requestDate >= min_datetime)  # type: ignore [operator]
+
+    to_date = filter_dict.get("toDate")
+    if to_date:
+        try:
+            max_datetime = datetime.combine(date.fromisoformat(to_date), datetime.max.time())
+        except ValueError:
+            raise ApiErrors({"filter": "Le format de date est invalide"})
+        query = query.filter(offerers_models.Offerer.requestDate <= max_datetime)  # type: ignore [operator]
 
     return query
 
