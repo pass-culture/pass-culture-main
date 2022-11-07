@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from unittest import mock
 
 import pytest
 
@@ -9,9 +10,12 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
+from pcapi.core.educational.models import HasImageMixin
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import ImageRatio
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -308,3 +312,213 @@ class CollectiveStockIsCancellableFromOfferer:
         stock: CollectiveStock = factories.CollectiveStockFactory.build()
         factories.ReimbursedCollectiveBookingFactory.build(collectiveStock=stock)
         assert not stock.is_cancellable_from_offerer
+
+
+class HasImageMixinTest:
+    def test_basic_methods(self):
+        class Image(HasImageMixin):
+            pass
+
+        image = Image()
+        image.id = 1
+        image.imageCrop = {}
+        image.imageCredit = "toto"
+        image.hasOriginal = True
+
+        assert image.imageUrl == "http://localhost/storage/thumbs/image/1.jpg"
+        assert image.imageOriginalUrl == "http://localhost/storage/thumbs/image/1_original.jpg"
+        assert image._get_image_storage_id() == "image/1.jpg"
+        assert image._get_image_storage_id(original=True) == "image/1_original.jpg"
+
+    @mock.patch("pcapi.core.educational.models.store_public_object")
+    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch(
+        "pcapi.core.educational.models.process_original_image", return_value=b"processed original image contents"
+    )
+    @mock.patch("pcapi.core.educational.models.standardize_image", return_value=b"standardized image contents")
+    def test_set_new_image(self, standardize_image, process_original_image, delete_public_object, store_public_object):
+        class Image(HasImageMixin):
+            pass
+
+        image = Image()
+        image.id = 1
+        image.hasOriginal = False
+        image.imageCrop = None
+        image_data = b"unprocessed image"
+        ratio = ImageRatio.PORTRAIT
+        credit = "credit on image"
+        crop_data = CropParams(
+            x_crop_percent=0.5,
+            y_crop_percent=0.10,
+            height_crop_percent=0.60,
+            width_crop_percent=0.33,
+        )
+        image.set_image(
+            image=image_data,
+            credit=credit,
+            crop_params=crop_data,
+            ratio=ratio,
+            keep_original=False,
+        )
+        assert image.imageCrop == crop_data.__dict__
+        assert image.imageCredit == credit
+        assert image.imageHasOriginal == False
+        standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
+        process_original_image.assert_not_called()
+        store_public_object.assert_called_once_with(
+            folder=image.FOLDER,
+            object_id=image._get_image_storage_id(),
+            blob=b"standardized image contents",
+            content_type="image/jpeg",
+        )
+        delete_public_object.assert_not_called()
+
+    @mock.patch("pcapi.core.educational.models.store_public_object")
+    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch(
+        "pcapi.core.educational.models.process_original_image", return_value=b"processed original image contents"
+    )
+    @mock.patch("pcapi.core.educational.models.standardize_image", return_value=b"standardized image contents")
+    def test_set_replace_image(
+        self, standardize_image, process_original_image, delete_public_object, store_public_object
+    ):
+        class Image(HasImageMixin):
+            pass
+
+        image = Image()
+        image.id = 1
+        image.imageCrop = {
+            "x_crop_percent": 0.1,
+            "y_crop_percent": 0.5,
+            "height_crop_percent": 0.12,
+            "width_crop_percent": 0.97,
+        }
+        image.imageCredit = "toto"
+        image.imageHasOriginal = True
+
+        image_data = b"unprocessed image"
+        ratio = ImageRatio.PORTRAIT
+        credit = "credit on image"
+        crop_data = CropParams(
+            x_crop_percent=0.5,
+            y_crop_percent=0.10,
+            height_crop_percent=0.60,
+            width_crop_percent=0.33,
+        )
+        image.set_image(
+            image=image_data,
+            credit=credit,
+            crop_params=crop_data,
+            ratio=ratio,
+            keep_original=False,
+        )
+        assert image.imageCrop == crop_data.__dict__
+        assert image.imageCredit == credit
+        assert image.imageHasOriginal == False
+        standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
+        process_original_image.assert_not_called()
+        store_public_object.assert_called_once_with(
+            folder=image.FOLDER,
+            object_id=image._get_image_storage_id(),
+            blob=b"standardized image contents",
+            content_type="image/jpeg",
+        )
+        assert delete_public_object.call_count == 2
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id=image._get_image_storage_id())
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id=image._get_image_storage_id(original=True))
+
+    @mock.patch("pcapi.core.educational.models.store_public_object")
+    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    @mock.patch(
+        "pcapi.core.educational.models.process_original_image", return_value=b"processed original image contents"
+    )
+    @mock.patch("pcapi.core.educational.models.standardize_image", return_value=b"standardized image contents")
+    def test_set_new_image_keep_original(
+        self, standardize_image, process_original_image, delete_public_object, store_public_object
+    ):
+        class Image(HasImageMixin):
+            pass
+
+        image = Image()
+        image.id = 1
+        image.imageCrop = None
+        image_data = b"unprocessed image"
+        ratio = ImageRatio.PORTRAIT
+        credit = "credit on image"
+        crop_data = CropParams(
+            x_crop_percent=0.5,
+            y_crop_percent=0.10,
+            height_crop_percent=0.60,
+            width_crop_percent=0.33,
+        )
+        image.set_image(
+            image=image_data,
+            credit=credit,
+            crop_params=crop_data,
+            ratio=ratio,
+            keep_original=True,
+        )
+        assert image.imageCrop == crop_data.__dict__
+        assert image.imageCredit == credit
+        assert image.imageHasOriginal == True
+        standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
+        process_original_image.assert_called_once_with(content=image_data, resize=False)
+        assert store_public_object.call_count == 2
+        store_public_object.assert_any_call(
+            folder=image.FOLDER,
+            object_id=image._get_image_storage_id(original=True),
+            blob=b"processed original image contents",
+            content_type="image/jpeg",
+        )
+        store_public_object.assert_any_call(
+            folder=image.FOLDER,
+            object_id=image._get_image_storage_id(),
+            blob=b"standardized image contents",
+            content_type="image/jpeg",
+        )
+
+        delete_public_object.assert_not_called()
+
+    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    def test_delete_image(self, delete_public_object):
+        class Image(HasImageMixin):
+            pass
+
+        image = Image()
+        image.id = 1
+        image.imageCrop = {
+            "x_crop_percent": 0.1,
+            "y_crop_percent": 0.5,
+            "height_crop_percent": 0.12,
+            "width_crop_percent": 0.97,
+        }
+        image.imageCredit = "toto"
+        image.imageHasOriginal = False
+        image.delete_image()
+        assert image.imageCrop == None
+        assert image.imageCredit == None
+        assert image.imageHasOriginal == None
+        delete_public_object.assert_called_once_with(folder=image.FOLDER, object_id="image/1.jpg")
+
+    @mock.patch("pcapi.core.educational.models.delete_public_object")
+    def test_delete_image_with_original(self, delete_public_object):
+        class Image(HasImageMixin):
+            pass
+
+        image = Image()
+        image.id = 1
+        image.imageCrop = {
+            "x_crop_percent": 0.1,
+            "y_crop_percent": 0.5,
+            "height_crop_percent": 0.12,
+            "width_crop_percent": 0.97,
+        }
+        image.imageCredit = "toto"
+        image.imageHasOriginal = True
+        image.delete_image()
+        assert image.imageCrop == None
+        assert image.imageCredit == None
+        assert image.imageHasOriginal == None
+        assert delete_public_object.call_count == 2
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/1.jpg")
+        delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/1_original.jpg")

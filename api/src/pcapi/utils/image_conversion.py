@@ -99,7 +99,7 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams
     return _post_process_image(resized_image)
 
 
-def process_original_image(content: bytes) -> PIL.Image:
+def process_original_image(content: bytes, resize: bool = True) -> PIL.Image:
     """
     Process steps are:
         * transpose image
@@ -108,7 +108,8 @@ def process_original_image(content: bytes) -> PIL.Image:
         * convert to jpeg using predefined values
     """
     image = _pre_process_image(content)
-    image = _shrink_image(image)
+    if resize:
+        image = _shrink_image(image)
     return _post_process_image(image)
 
 
