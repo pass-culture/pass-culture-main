@@ -52,6 +52,7 @@ pytest-flask
 pytest-flask-sqlalchemy
 pytest-mock
 pytest-dotenv
+pytest-socket
 python-dotenv==0.14.0
 pyyaml==6.0
 requests==2.26.0
