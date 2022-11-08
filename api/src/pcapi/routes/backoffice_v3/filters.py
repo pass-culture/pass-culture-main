@@ -50,9 +50,14 @@ def format_date(data: datetime.date | datetime.datetime, strformat: str = "%d/%m
     return data.strftime(strformat)
 
 
+def format_amount(amount: float) -> str:
+    return f"{amount:,.2f} €".replace(",", "&#8239;").replace(".", ",")
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_phone_number"] = format_phone_number
+    app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_date"] = format_date
