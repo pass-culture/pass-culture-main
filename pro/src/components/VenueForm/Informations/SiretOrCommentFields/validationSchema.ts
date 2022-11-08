@@ -13,7 +13,7 @@ const generateSiretValidationSchema = (
       .required('Veuillez renseigner un SIRET')
       .test(
         'len',
-        'Le SIRET doit comporter 14 charactères',
+        'Le SIRET doit comporter 14 caractères',
         siret => !!siret && unhumanizeSiret(siret).length === 14
       )
       .test(
