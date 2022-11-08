@@ -877,7 +877,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
 )
 def test_synchronize_adage_ids_on_venues(db_session):
-    venue1 = offerers_factories.VenueFactory()
+    venue1 = offerers_factories.VenueFactory(managingOfferer__isAllowedForEAC=False)
     venue2 = offerers_factories.VenueFactory()
     venue3 = offerers_factories.VenueFactory()
     venue4 = offerers_factories.VenueFactory()
@@ -929,6 +929,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert venue2.adageId == "128029"
     assert venue3.adageId is None
     assert venue4.adageId is None
+    assert venue1.managingOfferer.isAllowedForEAC == True
 
 
 @freeze_time("2020-01-05 10:00:00")

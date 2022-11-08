@@ -17,9 +17,7 @@ from pcapi.core.testing import assert_num_queries
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    @mock.patch("pcapi.core.search.unindex_collective_offer_ids")
-    @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
-    def test_deactivate_cultural_partner(self, mock_1, mock_2, client) -> None:
+    def test_deactivate_cultural_partner(self, client) -> None:
         domain = EducationalDomainFactory()
         offerer = offerer_factories.OffererFactory()
         reimbursed_booking = ReimbursedCollectiveBookingFactory(

@@ -1183,6 +1183,14 @@ def synchronize_adage_ids_on_venues() -> None:
 
         venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
 
+    offerers = (
+        offerers_models.Offerer.query.filter(offerers_models.Offerer.isAllowedForEAC.is_(False))
+        .join(offerers_models.Offerer.managedVenues)
+        .filter(offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys()))
+    )
+
+    offerers.update({"isAllowedForEAC": False}, synchronize_session=False)
+
     db.session.commit()
 
 
@@ -1403,6 +1411,6 @@ def deactivate_offerer_for_EAC(
 
     deactivate_collective_offers_and_collective_offers_template_for_offerer(offerer_id)
 
-    active_collective_bookings = educational_repository.get_active_collective_booking_for_offerer(offerer_id)
+    active_collective_bookings = educational_repository.get_active_collective_bookings_for_offerer(offerer_id)
 
     return active_collective_bookings
