@@ -6,8 +6,6 @@ import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.mod
 
 import styles from './OptionsList.module.scss'
 
-type SelectOption = { value: string; label: string }
-
 export interface OptionsListProps {
   className?: string
   fieldName: string
@@ -63,7 +61,7 @@ const OptionsList = ({
             const isSelected = selectedValues.includes(value)
             return (
               <li
-                aria-selected={isSelected ? 'true' : 'false'}
+                aria-selected={isSelected}
                 aria-posinset={index + 1}
                 aria-setsize={filteredOptions.length}
                 className={

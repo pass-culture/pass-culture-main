@@ -28,6 +28,7 @@ const Toggle = ({
       <Icon
         svg="open-dropdown"
         alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
+        className={styles['dropdown-indicator-icon']}
       />
     </button>
   )

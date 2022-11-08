@@ -10,8 +10,6 @@ import styles from './SelectAutocomplete.module.scss'
 import Tags from './Tags'
 import Toggle from './Toggle'
 
-type SelectOption = { value: string; label: string }
-
 export interface SelectAutocompleteProps {
   className?: string
   disabled?: boolean
