@@ -1,12 +1,14 @@
-from datetime import date
+import datetime
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
+import freezegun
 import pytest
 from requests.auth import _basic_auth_str
 
 from pcapi import settings
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
+from pcapi.admin.custom_views.beneficiary_user_view import _update_underage_beneficiary_deposit_expiration_date
 from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_and_unsuspension
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
@@ -23,8 +25,86 @@ from tests.conftest import TestClient
 from tests.conftest import clean_database
 
 
+@pytest.mark.usefixtures("db_session")
+class BeneficiaryUserViewUnitTest:
+    def test_update_underage_beneficiary_deposit_expiration_date_when_both_dates_in_the_past(self):
+        three_month_in_the_past = datetime.date.today() - relativedelta(months=3)
+        six_month_in_the_past = datetime.date.today() - relativedelta(months=6)
+
+        user_previous_18th_birth_day = six_month_in_the_past
+        user_new_18th_birth_day = three_month_in_the_past
+
+        user = users_factories.UnderageBeneficiaryFactory(
+            deposit__expirationDate=user_previous_18th_birth_day,
+            validatedBirthDate=user_new_18th_birth_day - relativedelta(years=18),
+        )
+
+        _update_underage_beneficiary_deposit_expiration_date(user)
+
+        assert user.deposit.expirationDate == datetime.datetime.combine(
+            user_previous_18th_birth_day, datetime.datetime.min.time()
+        )
+
+    def test_update_underage_beneficiary_deposit_expiration_date_when_new_expiration_date_after_previous_one(self):
+        three_month_in_the_past = datetime.date.today() - relativedelta(months=3)
+        six_month_in_the_future = datetime.date.today() + relativedelta(months=6)
+
+        user_previous_18th_birth_day = three_month_in_the_past
+        user_new_18th_birth_day = six_month_in_the_future
+
+        user = users_factories.UnderageBeneficiaryFactory(
+            deposit__expirationDate=user_previous_18th_birth_day,
+            validatedBirthDate=user_new_18th_birth_day - relativedelta(years=18),
+        )
+
+        _update_underage_beneficiary_deposit_expiration_date(user)
+
+        assert user.deposit.expirationDate == datetime.datetime.combine(
+            six_month_in_the_future, datetime.datetime.min.time()
+        )
+
+    @freezegun.freeze_time("2020-01-01 12:03:27")
+    def test_update_underage_beneficiary_deposit_expiration_date_when_new_expiration_date_before_previous_one_and_in_the_past(
+        self,
+    ):
+        three_month_in_the_past = datetime.date.today() - relativedelta(months=3)
+        six_month_in_the_future = datetime.date.today() + relativedelta(months=6)
+
+        user_previous_18th_birth_day = six_month_in_the_future
+        user_new_18th_birth_day = three_month_in_the_past
+
+        user = users_factories.UnderageBeneficiaryFactory(
+            deposit__expirationDate=user_previous_18th_birth_day,
+            validatedBirthDate=user_new_18th_birth_day - relativedelta(years=18),
+        )
+
+        _update_underage_beneficiary_deposit_expiration_date(user)
+
+        assert user.deposit.expirationDate == datetime.datetime.utcnow()
+
+    def test_update_underage_beneficiary_deposit_expiration_date_when_new_expiration_date_before_previous_one_and_in_the_future(
+        self,
+    ):
+        three_month_in_the_future = datetime.date.today() + relativedelta(months=3)
+        six_month_in_the_future = datetime.date.today() + relativedelta(months=6)
+
+        user_previous_18th_birth_day = six_month_in_the_future
+        user_new_18th_birth_day = three_month_in_the_future
+
+        user = users_factories.UnderageBeneficiaryFactory(
+            deposit__expirationDate=user_previous_18th_birth_day,
+            validatedBirthDate=user_new_18th_birth_day - relativedelta(years=18),
+        )
+
+        _update_underage_beneficiary_deposit_expiration_date(user)
+
+        assert user.deposit.expirationDate == datetime.datetime.combine(
+            user_new_18th_birth_day, datetime.datetime.min.time()
+        )
+
+
 class BeneficiaryUserViewTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = date.today() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.date.today() - relativedelta(years=18, months=4)
 
     @clean_database
     @patch("flask_wtf.csrf.validate_csrf")
@@ -343,3 +423,29 @@ class BeneficiaryUserUpdateTest:
         )
 
         assert user_to_update.ineHash is None
+
+    @patch("flask_wtf.csrf.validate_csrf")
+    def test_deposit_expiration_date_updated_when_user_is_underage_beneficiary(self, token, client):
+        super_admin = users_factories.AdminFactory(email="superadmin@example.com")
+        client.with_session_auth(super_admin.email)
+
+        user_to_update = users_factories.UnderageBeneficiaryFactory(departementCode="92", postalCode="92700")
+
+        old_deposit_expiration_date = user_to_update.deposit.expirationDate
+        old_user_birth_date = user_to_update.validatedBirthDate
+        new_user_birth_date = old_user_birth_date + relativedelta(months=1)
+
+        client.post(
+            f"/pc/back-office/beneficiary_users/edit/?id={user_to_update.id}",
+            form={
+                "id": user_to_update.id,
+                "validatedBirthDate": new_user_birth_date,
+                "departementCode": user_to_update.departementCode,
+                "csrf_token": "token",
+                "email": user_to_update.email,
+                "postalCode": user_to_update.postalCode,
+            },
+        )
+
+        assert user_to_update.validatedBirthDate == new_user_birth_date
+        assert user_to_update.deposit.expirationDate == old_deposit_expiration_date + relativedelta(months=1)
