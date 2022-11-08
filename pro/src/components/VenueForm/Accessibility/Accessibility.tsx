@@ -48,7 +48,7 @@ const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
         <CheckboxGroup
           group={accessibilityOptions}
           groupName="accessibility"
-          legend="Cette offre est accessible au public en situation de handicap :"
+          legend="Ce lieu est accessible au public en situation de handicap :"
         />
       </FormLayout.Row>
       {hasChangedSinceLastSubmit && !isCreatingVenue && (
