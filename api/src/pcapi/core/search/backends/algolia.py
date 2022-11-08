@@ -344,7 +344,7 @@ class AlgoliaBackend(base.SearchBackend):
         distinct += extra_data.get("diffusionVersion", "")
 
         music_type_label = None
-        music_type = extra_data.get("musicType", "").strip()
+        music_type = (extra_data.get("musicType") or "").strip()
         if music_type:
             try:
                 music_type_label = MUSIC_TYPES_DICT[int(music_type)]
@@ -352,19 +352,28 @@ class AlgoliaBackend(base.SearchBackend):
                 logger.warning("bad music type encountered", extra={"offer": offer.id, "music_type": music_type})
 
         show_type_label = None
-        show_type = extra_data.get("showType", "").strip()
+        show_type = (extra_data.get("showType") or "").strip()
         if show_type:
             try:
                 show_type_label = SHOW_TYPES_DICT[int(show_type)]
             except (ValueError, KeyError, TypeError):
                 logger.warning("bad show type encountered", extra={"offer": offer.id, "show_type": show_type})
 
+        macro_section = None
+        section = (extra_data.get("rayon") or "").strip()
+        if section:
+            macro_section = (
+                offers_models.BookMacroSection.query.filter(offers_models.BookMacroSection.section == section)
+                .with_entities(offers_models.BookMacroSection.macroSection)
+                .scalar()
+            )
+
         object_to_index = {
             "distinct": distinct,
             "objectID": offer.id,
             "offer": {
                 "artist": artist.strip() or None,
-                "rankingWeight": offer.rankingWeight,
+                "bookMacroSection": macro_section,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
@@ -381,6 +390,7 @@ class AlgoliaBackend(base.SearchBackend):
                 # TODO(jeremieb): keep searchGroupNamev2 and remove
                 # remove searchGroupName once the search group name &
                 # home page label migration is over.
+                "rankingWeight": offer.rankingWeight,
                 "searchGroupName": offer.subcategory.search_group_name,
                 "searchGroupNamev2": offer.subcategory_v2.search_group_name,
                 "showType": show_type_label,
