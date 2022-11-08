@@ -217,7 +217,7 @@ describe('components | SiretOrCommentFields', () => {
       await userEvent.click(buttonSubmit)
 
       const errorMessage = await screen.findByText(
-        'Le SIRET doit comporter 14 charactères'
+        'Le SIRET doit comporter 14 caractères'
       )
       expect(errorMessage).toBeInTheDocument()
     })
