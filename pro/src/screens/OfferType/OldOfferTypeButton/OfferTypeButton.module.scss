@@ -1,0 +1,62 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
+.button {
+  background-color: transparent;
+  border: rem.torem(1px) solid colors.$black;
+  border-radius: rem.torem(8px);
+  padding: rem.torem(32px) rem.torem(16px) rem.torem(16px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: rem.torem(231px);
+  font-size: rem.torem(15px);
+
+  &-radio {
+    z-index: -1;
+  }
+
+  &-check-mark {
+    position: absolute;
+    top: rem.torem(16px);
+    left: rem.torem(16px);
+    fill: colors.$primary;
+  }
+
+  &-icon {
+    fill: colors.$black;
+    margin-bottom: rem.torem(12px);
+  }
+
+  &.is-selected {
+    border: rem.torem(1px) solid colors.$primary;
+    font-weight: 700;
+    color: colors.$primary;
+
+    .button-icon {
+      fill: colors.$primary;
+    }
+  }
+
+  &.is-disabled {
+    background-color: colors.$grey-light;
+    color: colors.$grey-dark;
+    border-color: colors.$grey-dark;
+
+    .button-icon {
+      fill: colors.$grey-dark;
+    }
+
+    .button-check-mark {
+      fill: colors.$grey-dark;
+    }
+  }
+}
+
+.button.is-selected:focus-within {
+  border-width: rem.torem(2px);
+  padding: rem.torem(31px) rem.torem(15px) rem.torem(15px);
+}
