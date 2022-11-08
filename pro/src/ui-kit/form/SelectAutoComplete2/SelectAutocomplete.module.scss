@@ -1,4 +1,5 @@
 @use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_a11y.scss' as a11y;
 @use 'styles/mixins/_forms.scss' as forms;
 @use 'styles/mixins/_rem.scss' as rem;
 
@@ -34,13 +35,12 @@
     justify-content: center;
     padding: rem.torem(6px);
     position: absolute;
-    left: rem.torem(12.8px);
-    top: rem.torem(-28.8px);
+    left: rem.torem(13px);
+    top: rem.torem(-29px);
     width: rem.torem(18px);
   }
 }
 
-.hidden {
-  position: absolute;
-  margin: -5000px;
+.visually-hidden {
+  @include a11y.visuallyHidden()
 }
