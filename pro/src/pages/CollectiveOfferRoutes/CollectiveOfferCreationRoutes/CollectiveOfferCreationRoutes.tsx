@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
@@ -25,6 +25,10 @@ const CollectiveOfferCreationRoutes = ({
   offerId,
   isTemplate,
 }: CollectiveOfferCreationRoutesProps): JSX.Element => {
+  const location = useLocation()
+  const shouldRenderTemplateOffer =
+    isTemplate || location.pathname.includes('vitrine')
+
   const [collectiveOffer, setCollectiveOffer] = useState<CollectiveOffer>()
   const [collectiveOfferTemplate, setCollectiveOfferTemplate] =
     useState<CollectiveOfferTemplate>()
@@ -50,19 +54,26 @@ const CollectiveOfferCreationRoutes = ({
       }
     }
 
-    if (isTemplate) {
+    if (shouldRenderTemplateOffer) {
       loadCollectiveOfferTemplate(offerId)
     } else {
       loadCollectiveOffer(offerId)
     }
   }, [offerId])
 
-  const offer = isTemplate ? collectiveOfferTemplate : collectiveOffer
+  const offer = shouldRenderTemplateOffer
+    ? collectiveOfferTemplate
+    : collectiveOffer
   const activeStep = getActiveStep(location.pathname)
 
   return (
     <Switch>
-      <Route path="/offre/:offerId/collectif/confirmation">
+      <Route
+        path={[
+          '/offre/:offerId/collectif/confirmation',
+          '/offre/:offerId/collectif/vitrine/confirmation',
+        ]}
+      >
         {offer ? <CollectiveOfferConfirmation offer={offer} /> : <Spinner />}
       </Route>
       <Route
