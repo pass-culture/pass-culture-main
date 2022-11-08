@@ -97,7 +97,7 @@ describe('components | Address', () => {
       initialValues,
       onSubmit,
     })
-    const adressInput = screen.getByLabelText('Adresse')
+    const adressInput = screen.getByLabelText('Adresse postale')
 
     await userEvent.type(adressInput, '12 rue ')
     const suggestion = await screen.findByText(
@@ -127,14 +127,14 @@ describe('components | Address', () => {
       initialValues,
       onSubmit,
     })
-    const adressInput = screen.getByLabelText('Adresse')
+    const adressInput = screen.getByLabelText('Adresse postale')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
     await userEvent.click(buttonSubmit)
 
     expect(
       await screen.findByText(
-        'Veuillez sélectionner une adresse parmi les propositions'
+        'Veuillez sélectionner une adresse parmi les suggestions'
       )
     ).toBeInTheDocument()
   })
@@ -146,7 +146,7 @@ describe('components | Address', () => {
       initialValues,
       onSubmit,
     })
-    const adressInput = screen.getByLabelText('Adresse')
+    const adressInput = screen.getByLabelText('Adresse postale')
 
     await userEvent.type(adressInput, '12 rue')
     expect(

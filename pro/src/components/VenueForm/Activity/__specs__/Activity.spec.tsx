@@ -75,7 +75,7 @@ describe('components | Activity', () => {
     const venueTypeSelect = screen.getByLabelText('Type de lieu')
     await userEvent.selectOptions(
       venueTypeSelect,
-      'Sélectionner celui qui correspond à votre lieu'
+      'Sélectionnez celui qui correspond à votre lieu'
     )
     await userEvent.tab()
     expect(

@@ -35,7 +35,7 @@ const Activity = ({ venueTypes, venueLabels }: IActivity) => {
             options={[
               {
                 value: '',
-                label: 'Sélectionner celui qui correspond à votre lieu',
+                label: 'Sélectionnez celui qui correspond à votre lieu',
               },
               ...venueTypes,
             ]}
