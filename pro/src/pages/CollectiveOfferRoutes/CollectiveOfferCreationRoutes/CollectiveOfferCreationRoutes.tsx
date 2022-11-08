@@ -119,7 +119,12 @@ const CollectiveOfferCreationRoutes = ({
                 <Spinner />
               )}
             </Route>
-            <Route path="/offre/:offerId/collectif/creation/recapitulatif">
+            <Route
+              path={[
+                '/offre/:offerId/collectif/creation/recapitulatif',
+                '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
+              ]}
+            >
               {offer ? (
                 <CollectiveOfferSummaryCreation offer={offer} />
               ) : (

@@ -21,7 +21,7 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_VISIBILITY]:
     /\/offre(\/([A-Z0-9]+|duplication))\/collectif(\/[A-Z,0-9]+)?\/visibilite/g,
   [STEP_RECAP]:
-    /\/offre(\/(((T-){0,1}[A-Z0-9]+)|duplication))\/collectif(\/[A-Z,0-9]+)?(\/creation)?\/recapitulatif/g,
+    /\/offre(\/(((T-){0,1}[A-Z0-9]+)|duplication))\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?(\/creation)?\/recapitulatif/g,
   [STEP_CONFIRMATION]:
     /\/offre\/(((T-){0,1}[A-Z0-9]+)|duplication)\/collectif(\/[A-Z,0-9]+)?\/confirmation/g,
 }
