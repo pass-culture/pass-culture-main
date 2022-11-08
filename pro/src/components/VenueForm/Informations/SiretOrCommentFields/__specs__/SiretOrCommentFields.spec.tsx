@@ -68,6 +68,7 @@ describe('components | SiretOrCommentFields', () => {
   beforeEach(() => {
     const setIsFieldNameFrozen = jest.fn()
     const updateIsSiretValued = jest.fn()
+    const setIsSiretValued = jest.fn()
     validationSchema = generateSiretValidationSchema('012345678', true)
     initialValues = { comment: '', siret: '' }
     props = {
@@ -75,6 +76,7 @@ describe('components | SiretOrCommentFields', () => {
       setIsFieldNameFrozen: setIsFieldNameFrozen,
       readOnly: false,
       updateIsSiretValued: updateIsSiretValued,
+      setIsSiretValued: setIsSiretValued,
     }
   })
 

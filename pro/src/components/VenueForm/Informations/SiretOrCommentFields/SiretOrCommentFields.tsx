@@ -15,6 +15,7 @@ export interface SiretOrCommentInterface {
   readOnly: boolean
   setIsFieldNameFrozen: (isNameFrozen: boolean) => void
   updateIsSiretValued: (isSiretValued: boolean) => void
+  setIsSiretValued: (isSiretValued: boolean) => void
 }
 
 const SiretOrCommentFields = ({
@@ -24,6 +25,7 @@ const SiretOrCommentFields = ({
   setIsFieldNameFrozen,
   readOnly,
   updateIsSiretValued,
+  setIsSiretValued,
 }: SiretOrCommentInterface): JSX.Element => {
   const [isSiretSelected, setIsSiretSelected] = useState(
     !isToggleDisabled || initialSiret.length > 0
@@ -37,6 +39,7 @@ const SiretOrCommentFields = ({
     if (isSiretSelected) {
       setIsFieldNameFrozen(false)
     }
+    setIsSiretValued(!isSiretSelected)
     updateIsSiretValued(!isSiretSelected)
     setIsSiretSelected(!isSiretSelected)
   }
