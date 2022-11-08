@@ -22,11 +22,11 @@
         </h6>
 
         <div class="fs-6">
-            <p class="mb-1"><span class="fw-bold">mail:</span> {{ row.email }} </p>
-            <p><span class="fw-bold">tel:</span> {{ row.phoneNumber | format_phone_number }} </p>
+            <p class="mb-1"><span class="fw-bold">email :</span> {{ row.email }} </p>
+            <p><span class="fw-bold">tél :</span> {{ row.phoneNumber | format_phone_number }} </p>
         </div>
 
-        <a href={{ get_link_to_detail(row.id) }} class="card-link">
+        <a href="{{ get_link_to_detail(row.id) }}" class="card-link">
             <button class="btn lead px-0 fw-bold mt-1">
                 CONSULTER CE PROFIL
             </button>

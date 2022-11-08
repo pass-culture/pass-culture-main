@@ -8,7 +8,7 @@
 </p>
 
 <!-- this frame wrap errors in case the error call was made inside a turbo frame -->
-<turbo-frame id={{ turbo_frame_id }}>
+<turbo-frame id="{{ turbo_frame_id }}">
 
     {% for error_key, error_details in errors.items() %}
         {% for error_detail in error_details %}
