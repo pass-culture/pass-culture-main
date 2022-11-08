@@ -111,31 +111,29 @@ def get_error_not_updatable_message(
 ) -> models.SubscriptionMessage:
     user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé"
     pop_over_icon: models.PopOverIcon | None = models.PopOverIcon.ERROR
-    call_to_action = None
+    call_to_action: models.CallToActionMessage | None = subscription_messages.compute_support_call_to_action(user.id)
 
     if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
         user_message = subscription_messages.build_duplicate_error_message(
             user, fraud_models.FraudReasonCode.DUPLICATE_USER, application_content
         )
-        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
         pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         user_message = subscription_messages.build_duplicate_error_message(
             user, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, application_content
         )
-        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
         pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:
         user_message += " : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans."
+        call_to_action = None
 
     elif (
         fraud_models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER in reason_codes
         or fraud_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER in reason_codes
     ):
         user_message += " : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations."
-        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
         pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.ERROR_IN_DATA in reason_codes or (
@@ -153,12 +151,13 @@ def get_error_not_updatable_message(
         else:
             user_message += " : il y a une erreur dans les données de ton dossier."
         user_message += " Tu peux contacter le support pour mettre à jour ton dossier."
-        call_to_action = subscription_messages.compute_support_call_to_action(user.id)
         pop_over_icon = None
     elif fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR in reason_codes:
         user_message += " : tu n'es malheureusement pas éligible au pass Culture."
+        call_to_action = None
     else:
         user_message += "."
+        call_to_action = None
 
     return models.SubscriptionMessage(
         user_message=user_message,
