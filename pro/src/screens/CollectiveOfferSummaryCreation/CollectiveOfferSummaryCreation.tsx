@@ -10,6 +10,7 @@ import {
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeOffersUrl } from 'core/Offers'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Banner, Button } from 'ui-kit'
 
@@ -28,12 +29,18 @@ const CollectiveOfferSummaryCreation = ({
 }: CollectiveOfferSummaryCreationProps) => {
   const notify = useNotification()
   const history = useHistory()
+  const isSubtypeChosenAtCreation = useActiveFeature(
+    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
+  )
 
   const publishOffer = async () => {
-    const confirmationUrl = `/offre/${computeURLCollectiveOfferId(
-      offer.id,
-      offer.isTemplate
-    )}/collectif/confirmation`
+    const confirmationUrl =
+      isSubtypeChosenAtCreation && offer.isTemplate
+        ? `/offre/${offer.id}/collectif/vitrine/confirmation`
+        : `/offre/${computeURLCollectiveOfferId(
+            offer.id,
+            offer.isTemplate
+          )}/collectif/confirmation`
 
     if (offer.isTemplate) {
       const response = await publishCollectiveOfferTemplateAdapter(offer.id)
