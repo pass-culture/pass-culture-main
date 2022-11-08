@@ -57,6 +57,12 @@ exclude = """
 # FIXME (dbaty, 2022-11-08): this is temporary until we fix typing
 # annotations that break with the new default value (true).
 no_implicit_optional = false
+# FIXME (dbaty, 2022-11-08): this is temporary until we find a
+# solution to type hybrid_property-decorated methods. Otherwise, mypy
+# reports a "truthy-function" error on code that uses these methods.
+disable_error_code = [
+    "truthy-function",
+]
 
 
 [tool.pylint.MASTER]
