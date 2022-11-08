@@ -5,12 +5,15 @@ import { OFFER_SUBTYPES, OFFER_TYPES } from 'core/Offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
 import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
+import { ReactComponent as LibraryIcon } from 'icons/library.svg'
+import { ReactComponent as UserIcon } from 'icons/user.svg'
 import FormLayout from 'new_components/FormLayout'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import ActionsBarLegacy from './ActionsBar/ActionsBarLegacy'
 import styles from './OfferType.module.scss'
 import OfferTypeButton from './OfferTypeButton'
+import OldOfferTypeButton from './OldOfferTypeButton'
 
 const OfferType = (): JSX.Element => {
   const history = useHistory()
@@ -65,24 +68,45 @@ const OfferType = (): JSX.Element => {
       <FormLayout>
         <FormLayout.Section title="À qui destinez-vous cette offre ? ">
           <FormLayout.Row inline>
-            <OfferTypeButton
-              name="offer-type"
-              Icon={PhoneIcon}
-              isSelected={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
-              label="Au grand public"
-              onChange={handleOfferTypeChange}
-              value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
-              className={styles['offer-type-button']}
-            />
-            <OfferTypeButton
-              name="offer-type"
-              Icon={CaseIcon}
-              isSelected={offerType === OFFER_TYPES.EDUCATIONAL}
-              label="À un groupe scolaire"
-              onChange={handleOfferTypeChange}
-              value={OFFER_TYPES.EDUCATIONAL}
-              className={styles['offer-type-button']}
-            />
+            {isSubtypeChosenAtCreation ? (
+              <>
+                <OfferTypeButton
+                  name="offer-type"
+                  Icon={PhoneIcon}
+                  isSelected={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                  label="Au grand public"
+                  onChange={handleOfferTypeChange}
+                  value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                  className={styles['offer-type-button']}
+                />
+                <OfferTypeButton
+                  name="offer-type"
+                  Icon={CaseIcon}
+                  isSelected={offerType === OFFER_TYPES.EDUCATIONAL}
+                  label="À un groupe scolaire"
+                  onChange={handleOfferTypeChange}
+                  value={OFFER_TYPES.EDUCATIONAL}
+                  className={styles['offer-type-button']}
+                />
+              </>
+            ) : (
+              <>
+                <OldOfferTypeButton
+                  Icon={UserIcon}
+                  isSelected={offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                  label="Au grand public"
+                  onChange={handleOfferTypeChange}
+                  value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
+                />
+                <OldOfferTypeButton
+                  Icon={LibraryIcon}
+                  isSelected={offerType === OFFER_TYPES.EDUCATIONAL}
+                  label="À un groupe scolaire"
+                  onChange={handleOfferTypeChange}
+                  value={OFFER_TYPES.EDUCATIONAL}
+                />
+              </>
+            )}
           </FormLayout.Row>
         </FormLayout.Section>
 
