@@ -56,7 +56,6 @@ const SelectAutocomplete = ({
   const [optionsLabelById, setOptionsLabelById] = useState<
     Record<string, string>
   >({})
-
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -191,10 +190,10 @@ const SelectAutocomplete = ({
     setFieldTouched(fieldName, true)
   }
 
-  const placeholderDisplay = multi
+  const placeholderDisplay = Array.isArray(field.value)
     ? placeholder ??
       (field.value.length > 1 && pluralLabel ? pluralLabel : label)
-    : ''
+    : placeholder ?? optionsLabelById[field.value]
 
   return (
     <FieldLayout
