@@ -14,9 +14,9 @@ export interface OptionsListProps {
   maxHeight?: number
   selectedValues: string | string[]
   filteredOptions: SelectOption[]
-  setHovered: (value: number | null) => void
+  setHoveredOptionIndex: (value: number | null) => void
   listRef: Ref<HTMLUListElement>
-  hovered: number | null
+  hoveredOptionIndex: number | null
   selectOption: (value: string) => void
   multi: boolean
 }
@@ -27,9 +27,9 @@ const OptionsList = ({
   maxHeight,
   selectedValues,
   filteredOptions,
-  setHovered,
+  setHoveredOptionIndex,
   listRef,
-  hovered,
+  hoveredOptionIndex,
   selectOption,
   multi,
 }: OptionsListProps): JSX.Element => {
@@ -66,12 +66,14 @@ const OptionsList = ({
                 aria-selected={isSelected ? 'true' : 'false'}
                 aria-posinset={index + 1}
                 aria-setsize={filteredOptions.length}
-                className={hovered === index ? styles['option-hovered'] : ''}
+                className={
+                  hoveredOptionIndex === index ? styles['option-hovered'] : ''
+                }
                 data-value={value}
                 data-selected={isSelected}
                 id={`option-display-${value}`}
                 key={`option-display-${value}`}
-                onMouseEnter={() => setHovered(index)}
+                onMouseEnter={() => setHoveredOptionIndex(index)}
                 role="option"
                 tabIndex={-1}
               >
