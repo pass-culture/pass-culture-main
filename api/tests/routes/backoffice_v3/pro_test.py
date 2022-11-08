@@ -34,9 +34,9 @@ class SearchProTest(search_helpers.SearchHelper):
     @pytest.mark.parametrize(
         "pro_builder,pro_type",
         [
-            (build_pro_user, "USER"),
-            (build_offerer, "OFFERER"),
-            (build_venue, "VENUE"),
+            (build_pro_user, "user"),
+            (build_offerer, "offerer"),
+            (build_venue, "venue"),
         ],
     )
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
