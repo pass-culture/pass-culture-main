@@ -52,7 +52,9 @@ const SelectAutocomplete = ({
   const [field, meta] = useField<string | string[]>(fieldName)
   const [searchField, searchMeta] = useField(`search-${fieldName}`)
 
-  const [hovered, setHovered] = useState<number | null>(null)
+  const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
+    null
+  )
   const [optionsLabelById, setOptionsLabelById] = useState<
     Record<string, string>
   >({})
@@ -103,49 +105,49 @@ const SelectAutocomplete = ({
         option => searchField.value === '' || option.label.match(regExp)
       )
     )
-    setHovered(null)
+    setHoveredOptionIndex(null)
   }, [searchField.value])
 
   /* istanbul ignore next */
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
     switch (event.key) {
       case 'ArrowUp':
-        if (hovered === null) {
-          setHovered(filteredOptions.length - 1)
-        } else if (hovered <= 0) {
-          setHovered(null)
-        } else {
-          setHovered(hovered - 1)
+        if (hoveredOptionIndex !== null) {
+          if (hoveredOptionIndex <= 0) {
+            setHoveredOptionIndex(null)
+          } else {
+            setHoveredOptionIndex(hoveredOptionIndex - 1)
+          }
         }
         if (!isOpen) setIsOpen(true)
         listRef.current?.focus()
         break
       case 'ArrowDown':
-        if (hovered === null) {
-          setHovered(0)
-        } else if (hovered >= filteredOptions.length - 1) {
-          setHovered(null)
+        if (hoveredOptionIndex === null) {
+          setHoveredOptionIndex(0)
+        } else if (hoveredOptionIndex >= filteredOptions.length - 1) {
+          setHoveredOptionIndex(filteredOptions.length - 1)
         } else {
-          setHovered(hovered + 1)
+          setHoveredOptionIndex(hoveredOptionIndex + 1)
         }
         if (!isOpen) setIsOpen(true)
         listRef.current?.focus()
         break
       case 'Space':
-        if (!isOpen) setIsOpen(true)
+        openField()
         listRef.current?.focus()
         break
       case 'Enter':
-        if (isOpen && hovered !== null) {
-          selectOption(filteredOptions[hovered].value)
+        if (isOpen && hoveredOptionIndex !== null) {
+          selectOption(filteredOptions[hoveredOptionIndex].value)
         }
         break
       case 'Escape':
-        setHovered(null)
+        setHoveredOptionIndex(null)
         setIsOpen(false)
         break
       case 'Tab':
-        setHovered(null)
+        setHoveredOptionIndex(null)
         setIsOpen(false)
         break
       default:
@@ -165,7 +167,7 @@ const SelectAutocomplete = ({
     } else {
       updatedSelection = value
       setIsOpen(false)
-      setHovered(null)
+      setHoveredOptionIndex(null)
       setFieldValue(
         `search-${fieldName}`,
         optionsLabelById[updatedSelection],
@@ -214,8 +216,8 @@ const SelectAutocomplete = ({
         ref={containerRef}
       >
         <BaseInput
-          {...(hovered !== null && {
-            'aria-activedescendant': `option-display-${filteredOptions[hovered]?.value}`,
+          {...(hoveredOptionIndex !== null && {
+            'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
           })}
           onFocus={openField}
           placeholder={placeholderDisplay}
@@ -285,9 +287,9 @@ const SelectAutocomplete = ({
               maxHeight={maxHeight}
               selectedValues={field.value}
               filteredOptions={filteredOptions}
-              setHovered={setHovered}
+              setHoveredOptionIndex={setHoveredOptionIndex}
               listRef={listRef}
-              hovered={hovered}
+              hoveredOptionIndex={hoveredOptionIndex}
               selectOption={selectOption}
               multi={multi}
             />
