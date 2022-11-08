@@ -39,7 +39,7 @@ def filter_email(value: str | None) -> str | None:
 
 
 class FilterByDepositTypeEqual(BaseSQLAFilter):
-    def apply(self, query: Query, value: typing.Any, alias: str = None) -> Query:
+    def apply(self, query: Query, value: typing.Any, alias: str | None = None) -> Query:
         aliased_deposit = aliased(finance_models.Deposit)
         current_deposit_by_user = (
             finance_models.Deposit.query.outerjoin(
@@ -62,7 +62,7 @@ class FilterByDepositTypeEqual(BaseSQLAFilter):
 
 
 class FilterByDepositTypeNotEqual(BaseSQLAFilter):
-    def apply(self, query: Query, value: typing.Any, alias: str = None) -> Query:
+    def apply(self, query: Query, value: typing.Any, alias: str | None = None) -> Query:
         aliased_deposit = aliased(finance_models.Deposit)
         current_deposit_by_user = (
             finance_models.Deposit.query.outerjoin(
@@ -291,7 +291,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         ineHash=dict(label="INE (hash)"),
     )
 
-    def get_create_form(self):  # type: ignore [no-untyped-def]
+    def get_create_form(self) -> Form:
         form_class = super().scaffold_form()
 
         if not settings.IS_PROD:
