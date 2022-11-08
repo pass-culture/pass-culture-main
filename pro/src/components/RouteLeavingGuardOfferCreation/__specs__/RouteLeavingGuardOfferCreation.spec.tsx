@@ -65,7 +65,7 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not display confirmation modal when following template creation flow', async () => {
+    it('should not display confirmation modal when following template creation flow - FF OFF', async () => {
       history.push('/offre/creation/collectif')
       renderRouteLeavingGuardOfferCreation(props, history)
 
@@ -80,6 +80,31 @@ describe('components | RouteLeavingGuardOfferCreation', () => {
       ).not.toBeInTheDocument()
 
       history.push('/offre/T-AE/collectif/confirmation')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display confirmation modal when following template creation flow - FF ON', async () => {
+      history.push('/offre/creation/collectif')
+      const store = configureTestStore({
+        features: {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION',
+            },
+          ],
+        },
+      })
+      renderRouteLeavingGuardOfferCreation(props, history, store)
+
+      history.push('/offre/AE/collectif/vitrine/creation/recapitulatif')
+      expect(
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      ).not.toBeInTheDocument()
+
+      history.push('/offre/AE/collectif/vitrine/confirmation')
       expect(
         screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
