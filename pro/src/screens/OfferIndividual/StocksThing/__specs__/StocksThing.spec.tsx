@@ -203,7 +203,7 @@ describe('screens:StocksThing', () => {
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
-  it('should submit stock form when click on "Étape précédente"', async () => {
+  it('should not submit stock form when click on "Étape précédente"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stockIds: [{ id: 'CREATED_STOCK_ID' }],
     })
@@ -214,21 +214,12 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
-    expect(api.upsertStocks).toHaveBeenCalledWith({
-      humanizedOfferId: 'OFFER_ID',
-      stocks: [
-        {
-          bookingLimitDatetime: null,
-          price: 20,
-          quantity: null,
-        },
-      ],
-    })
-    expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
     expect(screen.getByText('Previous page')).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
+    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(
+      screen.queryByText('Brouillon sauvegardé dans la liste des offres')
+    ).not.toBeInTheDocument()
+    expect(api.getOffer).not.toHaveBeenCalledWith('OFFER_ID')
   })
 
   it('should display api errors', async () => {

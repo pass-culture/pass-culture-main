@@ -1,4 +1,5 @@
 export { Informations } from './Informations'
 export { StocksThing } from './StocksThing'
+export { StocksEvent } from './StocksEvent'
 export { Summary } from './Summary'
 export { Template } from './Template'

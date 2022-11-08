@@ -84,6 +84,7 @@ const TemplateWithInitialValues: ComponentStory<typeof StockEventForm> =
         '75'
       ),
       quantity: '10',
+      isDeletable: true,
     },
   })
 
