@@ -4,7 +4,7 @@ import pytest
 
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
-from pcapi.core.external_bookings.models import Movie
+import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 
 from . import fixtures
@@ -29,7 +29,7 @@ class GetVenueMoviesTest:
         movies = boost.get_venue_movies(per_page=2)
 
         assert movies == [
-            Movie(
+            external_bookings_models.Movie(
                 id="52",
                 title="#JESUISLA",
                 duration=1,
@@ -37,7 +37,7 @@ class GetVenueMoviesTest:
                 posterpath="http://example.com/images/147956.jpg",
                 visa="147956",
             ),
-            Movie(
+            external_bookings_models.Movie(
                 id="62",
                 title="10 JOURS SANS MAMAN",
                 duration=1,
@@ -45,7 +45,7 @@ class GetVenueMoviesTest:
                 posterpath="http://example.com/images/151172.jpg",
                 visa="151172",
             ),
-            Movie(
+            external_bookings_models.Movie(
                 id="134",
                 title="100 % LOUP",
                 duration=1,
@@ -53,7 +53,7 @@ class GetVenueMoviesTest:
                 posterpath="http://example.com/images/2020002189.jpg",
                 visa="2020002189",
             ),
-            Movie(
+            external_bookings_models.Movie(
                 id="40",
                 title="1917",
                 duration=1,
