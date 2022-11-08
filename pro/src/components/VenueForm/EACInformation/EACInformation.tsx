@@ -36,7 +36,7 @@ const EACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
         {collectiveDataIsNotEmpty ? (
           <CollectiveData venue={venue} />
         ) : isCreatingVenue ? (
-          <Banner className={styles['eac-banner-light']} type="light">
+          <Banner type="notification-info">
             Une fois votre lieu créé, vous pourrez renseigner des informations
             pour les enseignants en revenant sur cette page.
           </Banner>
