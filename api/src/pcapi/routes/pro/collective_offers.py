@@ -378,6 +378,9 @@ def patch_collective_offers_template_active_status(
 def patch_collective_offers_educational_institution(
     offer_id: str, body: collective_offers_serialize.PatchCollectiveOfferEducationalInstitution
 ) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
+    # it seems that sometimes we send extra data that we shouldnt send
+    if len(body.__dict__) > 1:
+        logger.error("Extra data unexcepted in request body", extra={"request body": body})
     dehumanized_id = dehumanize_or_raise(offer_id)
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_id)
