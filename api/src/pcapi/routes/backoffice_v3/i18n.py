@@ -11,6 +11,12 @@ def i18n_public_account(term: str) -> str:
             return "Pass 15-17"
         case "age-18":
             return "Pass 18"
+        case "offerer":  # pro
+            return "Structure"
+        case "venue":  # pro
+            return "Lieu"
+        case "user":  # pro
+            return "Compte pro"
         case _:
             return term.replace("_", " ").capitalize()
 

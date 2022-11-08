@@ -126,10 +126,10 @@ def search_pro() -> str | tuple[str, int]:
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_pro(pro_type: str, row_id: int):  # type: ignore
     try:
-        formatted_pro_type = search.TypeOptions[pro_type.upper()]
+        formatted_pro_type = search.TypeOptions(pro_type)
         context = get_context(formatted_pro_type)
     except KeyError:
-        raise ApiErrors(errors={"url": ["Type de compte pro non trouvé"]})
+        raise ApiErrors(errors={"url": ["Type de compte pro inconnu"]})
 
     query = context.get_item_base_query(row_id)
     row = query.one_or_none()
