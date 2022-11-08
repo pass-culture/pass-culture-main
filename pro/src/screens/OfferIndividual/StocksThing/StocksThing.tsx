@@ -9,9 +9,9 @@ import {
   StockThingForm,
   getValidationSchema,
   buildInitialValues,
+  setFormReadOnlyFields,
   IStockThingFormValues,
 } from 'components/StockThingForm'
-import setFormReadOnlyFields from 'components/StockThingForm/utils/setFormReadOnlyFields'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import {
@@ -108,9 +108,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    formik.handleSubmit()
-    /* istanbul ignore next: DEBT, TO FIX */
-    setAfterSubmitUrl(
+    navigate(
       getOfferIndividualUrl({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,

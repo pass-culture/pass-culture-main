@@ -83,6 +83,10 @@ describe('screens:Stocks', () => {
       isEvent: true,
     } as IOfferIndividual
     renderStocksScreen({ storeOverride, contextOverride })
-    expect(screen.getByText('TODO Stock Event screen')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
+      )
+    ).toBeInTheDocument()
   })
 })

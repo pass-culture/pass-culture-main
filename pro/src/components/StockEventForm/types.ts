@@ -7,4 +7,5 @@ export interface IStockEventFormValues {
   price: string
   beginningDate: Date | '' | null
   beginningTime: Date | '' | null
+  isDeletable: boolean
 }
