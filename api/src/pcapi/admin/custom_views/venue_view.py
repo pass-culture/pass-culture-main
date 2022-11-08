@@ -18,6 +18,7 @@ from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
+from werkzeug import Response
 from werkzeug.exceptions import abort
 from wtforms import Form
 from wtforms.fields import BooleanField
@@ -405,12 +406,12 @@ class VenueView(BaseAdminView):
         return self.index_view()
 
     @expose("/update/", methods=["POST"])
-    def update_view(self):  # type: ignore [no-untyped-def]
+    def update_view(self) -> Response:
         url = get_redirect_target() or self.get_url(".index_view")
         change_form = VenueChangeForm(request.form)
         if change_form.validate():
 
-            venue_ids: list[str] = change_form.ids.data.split(",")
+            venue_ids: list[int] = list(map(int, change_form.ids.data.split(",")))
             is_permanent: bool = change_form.is_permanent.data
             criteria: list[criteria_models.VenueCriterion] = change_form.data["tags"]
             remove_other_tags = change_form.data["remove_other_tags"]

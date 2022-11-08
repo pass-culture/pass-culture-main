@@ -741,3 +741,10 @@ class OfferReport(PcObject, Base, Model):
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.when}"
+
+
+class BookMacroSection(PcObject, Base, Model):
+    __tablename__ = "book_macro_section"
+
+    macroSection: str = sa.Column(sa.Text, nullable=False)
+    section: str = sa.Column(sa.Text, nullable=False, unique=True)

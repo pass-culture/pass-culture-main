@@ -45,6 +45,7 @@ def test_serialize_offer():
         "objectID": offer.id,
         "offer": {
             "artist": "Author Performer Speaker Stage Director",
+            "bookMacroSection": None,
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",
@@ -83,23 +84,29 @@ def test_serialize_offer():
 
 
 @pytest.mark.parametrize(
-    "extra_data, expected_music_style, expected_show_type, expected_movie_genres",
+    "extra_data, expected_music_style, expected_show_type, expected_movie_genres, expected_macro_section",
     (
-        ({"musicType": "501"}, "Jazz", None, None),
-        ({"musicType": "600"}, "Classique", None, None),
-        ({"musicType": "-1"}, "Autre", None, None),
-        ({"musicType": " "}, None, None, None),
-        ({"showType": "100"}, None, "Arts de la rue", None),
-        ({"showType": "1200"}, None, "Spectacle Jeunesse", None),
-        ({"showType": "-1"}, None, "Autre", None),
-        ({"showType": " "}, None, None, None),
-        ({"genres": ["DRAMA"]}, None, None, ["DRAMA"]),
-        ({"genres": ["ADVENTURE", "DRAMA", "FAMILY"]}, None, None, ["ADVENTURE", "DRAMA", "FAMILY"]),
-        ({"genres": []}, None, None, []),
-        ({"genres": None}, None, None, None),
+        ({"musicType": "501"}, "Jazz", None, None, None),
+        ({"musicType": "600"}, "Classique", None, None, None),
+        ({"musicType": "-1"}, "Autre", None, None, None),
+        ({"musicType": " "}, None, None, None, None),
+        ({"showType": "100"}, None, "Arts de la rue", None, None),
+        ({"showType": "1200"}, None, "Spectacle Jeunesse", None, None),
+        ({"showType": "-1"}, None, "Autre", None, None),
+        ({"showType": " "}, None, None, None, None),
+        ({"genres": ["DRAMA"]}, None, None, ["DRAMA"], None),
+        ({"genres": ["ADVENTURE", "DRAMA", "FAMILY"]}, None, None, ["ADVENTURE", "DRAMA", "FAMILY"], None),
+        ({"genres": []}, None, None, [], None),
+        ({"genres": None}, None, None, None, None),
+        ({"rayon": "documentaire jeunesse histoire"}, None, None, None, "Jeunesse"),
+        ({"rayon": "petits prix"}, None, None, None, "Littérature française"),
+        ({"rayon": "ce rayon n'existe pas"}, None, None, None, None),
+        ({"rayon": None}, None, None, None, None),
     ),
 )
-def test_serialize_offer_extra_data(extra_data, expected_music_style, expected_show_type, expected_movie_genres):
+def test_serialize_offer_extra_data(
+    extra_data, expected_music_style, expected_show_type, expected_movie_genres, expected_macro_section
+):
     # given
     offer = offers_factories.OfferFactory(extraData=extra_data)
 
@@ -110,6 +117,7 @@ def test_serialize_offer_extra_data(extra_data, expected_music_style, expected_s
     assert serialized["offer"]["musicType"] == expected_music_style
     assert serialized["offer"]["showType"] == expected_show_type
     assert serialized["offer"]["movieGenres"] == expected_movie_genres
+    assert serialized["offer"]["bookMacroSection"] == expected_macro_section
 
 
 def test_serialize_offer_event():
