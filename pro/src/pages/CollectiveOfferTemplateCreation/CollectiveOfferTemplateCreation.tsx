@@ -48,7 +48,7 @@ const CollectiveOfferTemplateCreation = () => {
       return notify.error(message)
     }
 
-    history.push(`/offre/${payload.offerId}/collectif/stocks`)
+    history.push(`offre/collective/vitrine/${payload.offerId}/recapitulatif`)
   }
 
   useEffect(() => {
