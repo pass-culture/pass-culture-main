@@ -18,7 +18,7 @@ get_offerer_blueprint = utils.child_backoffice_blueprint(
 
 
 @get_offerer_blueprint.route("", methods=["GET"])
-def get_offerer(offerer_id: int):  # type: ignore
+def get_offerer(offerer_id: int) -> utils.Response:
     offerer_basic_info = offerers_api.get_offerer_basic_info(offerer_id)
 
     if not offerer_basic_info:
@@ -32,7 +32,7 @@ def get_offerer(offerer_id: int):  # type: ignore
 
 
 @get_offerer_blueprint.route("/stats", methods=["GET"])
-def get_offerer_stats(offerer_id: int):  # type: ignore
+def get_offerer_stats(offerer_id: int) -> utils.Response:
     total_revenue = offerers_api.get_offerer_total_revenue(offerer_id)
     offers_stats = offerers_api.get_offerer_offers_stats(offerer_id)
 
@@ -57,7 +57,7 @@ def get_offerer_stats(offerer_id: int):  # type: ignore
 
 
 @get_offerer_blueprint.route("/history", methods=["GET"])
-def get_offerer_history(offerer_id: int):  # type: ignore
+def get_offerer_history(offerer_id: int) -> utils.Response:
     actions = history_repository.find_all_actions_by_offerer(offerer_id)
 
     return render_template("offerer/get/history.html", history={"actions": actions})
