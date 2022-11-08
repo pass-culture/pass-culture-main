@@ -61,7 +61,7 @@ describe('Accessibility', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Cette offre est accessible au public en situation de handicap :'
+        'Ce lieu est accessible au public en situation de handicap :'
       )
     ).toBeInTheDocument()
 
