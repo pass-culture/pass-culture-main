@@ -31,8 +31,7 @@
     text-overflow: ellipsis;
 
     &:focus {
-      border-color: colors.$primary;
-      box-shadow: 0 0 0 rem.torem(1px) colors.$primary inset;
+      border-color: rem.torem(2px) solid colors.$focus-black;
     }
 
     &:disabled {

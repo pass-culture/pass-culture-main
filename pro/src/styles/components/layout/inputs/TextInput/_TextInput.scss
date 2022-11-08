@@ -47,8 +47,7 @@
     width: 100%;
 
     &:focus {
-      border: rem.torem(1px) solid colors.$primary;
-      box-shadow: 0 0 0 rem.torem(1px) colors.$primary inset;
+      border: rem.torem(2px) solid colors.$focus-black;
       outline: none;
       outline-offset: 0;
     }
