@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from typing import List
 
 from flask import abort
 from flask import flash
@@ -202,14 +201,14 @@ class OfferView(BaseAdminView):
         return self.index_view()
 
     @expose("/update/", methods=["POST"])
-    def update_view(self):  # type: ignore [no-untyped-def]
+    def update_view(self) -> Response:
         url = get_redirect_target() or self.get_url(".index_view")
         if request.method != "POST":
             return redirect(url)
         change_form = OfferChangeForm(request.form)
         if change_form.validate():
-            offer_ids: List[str] = change_form.ids.data.split(",")
-            criteria: List[criteria_models.OfferCriterion] = change_form.data["tags"]
+            offer_ids: list[int] = list(map(int, change_form.ids.data.split(",")))
+            criteria: list[criteria_models.OfferCriterion] = change_form.data["tags"]
             remove_other_tags = change_form.data["remove_other_tags"]
 
             criteria_ids = [crit.id for crit in criteria]
