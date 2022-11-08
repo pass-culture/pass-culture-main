@@ -165,3 +165,4 @@ class TransactionalEmail(Enum):
         id_prod=754, id_not_prod=99, tags=["pro_reinit_mdp_when_connected"]
     )
     WELCOME_TO_PRO = models.TemplatePro(id_prod=481, id_not_prod=57, tags=["pro-bienvenue-pass"])
+    VENUE_NEEDS_PICTURE = models.TemplatePro(id_prod=782, id_not_prod=113, tags=["pro_lieu_permanent"])

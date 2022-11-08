@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import logging
 import re
 from unittest.mock import patch
@@ -11,6 +12,8 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.finance.factories as finance_factories
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
@@ -18,6 +21,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users.factories import AdminFactory
 import pcapi.core.users.testing as external_testing
+from pcapi.utils.urls import build_pc_pro_venue_link
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -431,6 +435,104 @@ class EditVenueTest:
         mocked_reindex_venue_ids.assert_called_once_with([venue.id])
         mocked_async_index_venue_ids.assert_not_called()
         mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_venue_user_receives_permanent_venue_email(self, mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory(isPermanent=False)
+
+        data = dict(
+            name=venue.name,
+            siret=venue.siret,
+            city=venue.city,
+            postalCode=venue.postalCode,
+            address=venue.address,
+            publicName=venue.publicName,
+            latitude=venue.latitude,
+            longitude=venue.longitude,
+            isPermanent=True,
+            adageId=venue.adageId,
+        )
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        assert response.status_code == 302
+
+        venue = Venue.query.get(venue.id)
+        assert venue.isPermanent
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "VENUE_FORM_URL": build_pc_pro_venue_link(venue),
+            "VENUE_NAME": venue.publicName or venue.name,
+        }
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.VENUE_NEEDS_PICTURE.value)
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @pytest.mark.parametrize("prev_is_permanent, new_is_permanent", [(True, True), (False, False), (True, False)])
+    def test_venue_user_does_not_receives_permanent_venue_email_if_disabled_or_not_changed(
+        self, mocked_validate_csrf_token, app, prev_is_permanent, new_is_permanent
+    ):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory(isPermanent=prev_is_permanent)
+
+        data = dict(
+            name=venue.name,
+            siret=venue.siret,
+            city=venue.city,
+            postalCode=venue.postalCode,
+            address=venue.address,
+            publicName=venue.publicName,
+            latitude=venue.latitude,
+            longitude=venue.longitude,
+            adageId=venue.adageId,
+        )
+
+        if new_is_permanent:
+            data["isPermanent"] = new_is_permanent
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        venue = Venue.query.get(venue.id)
+        assert venue.isPermanent is new_is_permanent
+
+        assert response.status_code == 302
+
+        assert not mails_testing.outbox
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @pytest.mark.parametrize("booking_email_value", [None, ""])
+    def test_venue_user_does_not_receives_permanent_without_booking_email(
+        self, mocked_validate_csrf_token, app, booking_email_value
+    ):
+        AdminFactory(email="user@example.com")
+        venue = offerers_factories.VenueFactory(isPermanent=False, bookingEmail=None)
+
+        data = dict(
+            name=venue.name,
+            siret=venue.siret,
+            city=venue.city,
+            postalCode=venue.postalCode,
+            address=venue.address,
+            publicName=venue.publicName,
+            latitude=venue.latitude,
+            longitude=venue.longitude,
+            adageId=venue.adageId,
+            isPermanent=True,
+        )
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        venue = Venue.query.get(venue.id)
+
+        assert response.status_code == 302
+
+        assert not mails_testing.outbox
 
 
 class DeleteVenueTest:
