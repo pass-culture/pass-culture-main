@@ -24,10 +24,10 @@
   .label {
     display: flex;
     padding: rem.torem(11.2px) rem.torem(16px);
-    cursor: pointer;
   }
 
-  input[type='checkbox'] {
+  /* override cursor: default defined by browser */
+  label, .label, input[type='checkbox'] {
     cursor: pointer;
   }
 
@@ -37,6 +37,6 @@
   }
 
   .option-hovered {
-    background: #f5f5f5;
+    background: colors.$grey-light;
   }
 }
