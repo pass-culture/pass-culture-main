@@ -239,7 +239,7 @@ const SelectAutocomplete = ({
         <div
           aria-live="polite"
           aria-relevant="text"
-          className={styles.hidden}
+          className={styles['visually-hidden']}
           id={`help-${fieldName}`}
         >
           {multi && `${field.value.length} options sélectionnées`}
