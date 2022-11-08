@@ -7,7 +7,7 @@
 
 {% macro menuItem(label, url) %}
     <a
-        href={{ url }}
+        href="{{ url }}"
         class="mdc-deprecated-list-item {{ "mdc-deprecated-list-item--activated" if url == request.path else "" }}"
     >
         <span class="mdc-deprecated-list-item__ripple"></span>
@@ -27,7 +27,7 @@
     {% set url = url_for(path) %}
     {% set is_active = "active" if request.path == url else "" %}
 
-    <a class="nav-link ps-5 g-0 {{ is_active }} rounded-0 text-reset" href={{ url }}>
+    <a class="nav-link ps-5 g-0 {{ is_active }} rounded-0 text-reset" href="{{ url }}">
         {{ title }}
     </a>
 {% endmacro %}
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="col-3 bg-white g-0 shadow border-end border-1">
                 <div class="d-flex flex-column align-items-center text-black min-vh-100">
-                    <a href="/" class="w-100 p-3 text-black text-decoration-none border-bottom">
+                    <a href="{{ url_for('backoffice_v3_web.home') }}" class="w-100 p-3 text-black text-decoration-none border-bottom">
                         <span class="fs-5">Menu</span>
                     </a>
 
@@ -45,7 +45,7 @@
                         <nav class="nav nav-pills flex-column">
 
                             {% call menu_section("Jeunes et grand public") %}
-                                {{ menu_section_item("Jeune bénéficiaires ou à venir", "backoffice_v3_web.search_public_accounts") }}
+                                {{ menu_section_item("Jeunes bénéficiaires ou à venir", "backoffice_v3_web.search_public_accounts") }}
                                 {{ menu_section_item("Utilisateurs grand public", "backoffice_v3_web.home") }}
                                 {{ menu_section_item("Feature flipping", "backoffice_v3_web.home") }}
                                 {{ menu_section_item("Catégories et sous-catégories", "backoffice_v3_web.home") }}
@@ -77,7 +77,7 @@
                         Backoffice
                     </p>
 
-                    <form action="{{ url_for("backoffice_v3_web.logout") }}" method="POST">
+                    <form action="{{ url_for('backoffice_v3_web.logout') }}" method="POST">
                         {{ logout_csrf_token }}
 
                         <button type="submit" class="btn btn-link text-white">
