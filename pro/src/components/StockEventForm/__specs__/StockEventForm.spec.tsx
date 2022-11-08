@@ -48,8 +48,8 @@ describe('StockEventForm', () => {
 
   it('render disabled field in list', () => {
     props.readOnlyFields = [
-      'eventDatetime',
-      'eventTime',
+      'beginningDate',
+      'beginningTime',
       'bookingLimitDatetime',
       'price',
       'quantity',

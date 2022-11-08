@@ -7,6 +7,7 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useNavigate } from 'hooks'
 import {
+  StocksEvent as StocksEventScreen,
   StocksThing as StocksThingScreen,
   Template as WizardTemplate,
 } from 'screens/OfferIndividual'
@@ -31,7 +32,7 @@ const Stocks = (): JSX.Element | null => {
   return (
     <WizardTemplate>
       {offer.isEvent ? (
-        <div>TODO Stock Event screen</div>
+        <StocksEventScreen offer={offer as IOfferIndividual} />
       ) : (
         <StocksThingScreen offer={offer as IOfferIndividual} />
       )}

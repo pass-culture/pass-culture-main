@@ -22,6 +22,7 @@ interface IDatePickerProps {
   openingDateTime?: Date
   smallLabel?: boolean
   isOptional?: boolean
+  onChange?: (name: string, date: Date | null) => void
 }
 
 const DatePicker = ({
@@ -35,6 +36,7 @@ const DatePicker = ({
   label,
   smallLabel,
   isOptional = false,
+  onChange,
 }: IDatePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'date' })
   const ref = createRef<HTMLInputElement>()
@@ -76,6 +78,7 @@ const DatePicker = ({
           ) {
             newDate = maxDateTime
           }
+          onChange && onChange(name, newDate)
 
           helpers.setTouched(true)
           helpers.setValue(newDate, true)
