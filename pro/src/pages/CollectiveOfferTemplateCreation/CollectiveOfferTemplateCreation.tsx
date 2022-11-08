@@ -48,7 +48,9 @@ const CollectiveOfferTemplateCreation = () => {
       return notify.error(message)
     }
 
-    history.push(`offre/collective/vitrine/${payload.offerId}/recapitulatif`)
+    history.push(
+      `/offre/${payload.offerId}/collectif/vitrine/creation/recapitulatif`
+    )
   }
 
   useEffect(() => {

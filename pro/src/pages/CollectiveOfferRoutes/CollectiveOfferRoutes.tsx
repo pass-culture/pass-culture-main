@@ -52,6 +52,7 @@ const CollectiveOfferRoutes = (): JSX.Element => {
           '/offre/:offerId/collectif/visibilite',
           '/offre/:offerId/collectif/confirmation',
           '/offre/:offerId/collectif/creation/recapitulatif',
+          '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
         ]}
       >
         <CollectiveOfferCreationRoutes
