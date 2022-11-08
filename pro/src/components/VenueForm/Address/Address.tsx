@@ -40,7 +40,8 @@ const Address = () => {
         <FormLayout.Row>
           <TextInputAutocomplete
             fieldName="addressAutocomplete"
-            label="Adresse"
+            label="Adresse postale"
+            placeholder={'Entrez votre adresse et sélectionnez une suggestion'}
             getSuggestions={getSuggestions}
             onSelectCustom={handleSelect}
             useDebounce
