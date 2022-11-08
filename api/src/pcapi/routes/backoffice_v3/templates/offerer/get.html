@@ -7,7 +7,7 @@
 
 
         <p>
-            <a href={{ url_for("backoffice_v3_web.search_pro") }}>
+            <a href="{{ url_for('backoffice_v3_web.search_pro') }}">
                 &lt; Page de recherche (pro) </a>
         </p>
     </div>
@@ -25,7 +25,7 @@
 
             <p class="card-text">
                 <label>SIREN :</label>
-                <sapn class="fw-light">
+                <span class="fw-light">
                     {{ offerer.siren }}
                     </span>
             </p>
@@ -37,7 +37,7 @@
             </p>
             <p class="card-text">
                 <label>Présence de CB dans les lieux :</label>
-                <sapn class="fw-light">
+                <span class="fw-light">
                     {{ offerer.bank_informations.ok }} OK / {{ offerer.bank_informations.ko }} KO
                     </span>
             </p>
@@ -45,7 +45,7 @@
     </div>
 
     <div class="mt-4">
-        <turbo-frame id="total_revenue_frame" src={{ url_for(".get_offerer_stats", offerer_id=offerer.id) }}>
+        <turbo-frame id="total_revenue_frame" src="{{ url_for('.get_offerer_stats', offerer_id=offerer.id) }}">
             <p class="text-center">
                 <span class="spinner-grow spinner-grow-sm" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -56,7 +56,7 @@
     </div>
 
     <div class="mt-4">
-        <turbo-frame id="offerer_history_frame" src={{ url_for(".get_offerer_history", offerer_id=offerer.id) }}>
+        <turbo-frame id="offerer_history_frame" src="{{ url_for('.get_offerer_history', offerer_id=offerer.id) }}">
             <p class="text-center">
                 <span class="spinner-grow spinner-grow-sm" role="status">
                     <span class="visually-hidden">Loading...</span>

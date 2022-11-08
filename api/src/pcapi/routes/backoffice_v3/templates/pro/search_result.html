@@ -2,7 +2,7 @@
 
 {% block pro_main_content %}
 
-    <form action={{ dst }} method="GET" class="row row-cols-lg-auto g-3 align-items-center mb-5">
+    <form action="{{ dst }}" method="GET" class="row row-cols-lg-auto g-3 align-items-center mb-5">
         {% for form_field in form %}
             {{ form_field }}
         {% endfor %}

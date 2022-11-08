@@ -24,17 +24,17 @@
 
 
                         <div class="fs-6">
-                            <p class="mb-1"><span class="fw-bold">email:</span> {{ user.email }} </p>
-                            <p class="mb-1"><span class="fw-bold">tel:</span> {{ user.phoneNumber | format_phone_number }} </p>
+                            <p class="mb-1"><span class="fw-bold">Email :</span> {{ user.email }} </p>
+                            <p class="mb-1"><span class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number }} </p>
                         </div>
                     </div>
 
                     <div class="col-4">
-                        <p><span class="fw-bold">compte crédit le:</span> {{ user.deposit_activation_date | format_date }} </p>
+                        <p><span class="fw-bold">Compte crédité le :</span> {{ user.deposit_activation_date | format_date }} </p>
                     </div>
 
                     <div class="col-4">
-                        <a href={{ url_for(".edit_public_account_review", user_id=user.id) }} class="card-link">
+                        <a href="{{ url_for('.edit_public_account_review', user_id=user.id) }}" class="card-link">
                             <button class="btn btn-outline-primary lead fw-bold mt-2">
                                 Confirmer manuellement
                             </button>
