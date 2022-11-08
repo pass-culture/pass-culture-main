@@ -251,7 +251,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
         Booking.venueId == venue_id,
         Booking.status == BookingStatus.CONFIRMED,
-        Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+        Booking.isConfirmed.is_(False),
     )
 
     n_active_bookings = active_bookings_query.with_entities(coalesce(func.sum(Booking.quantity), 0)).one()[0]

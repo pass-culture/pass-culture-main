@@ -10,7 +10,6 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext import mutable as sa_mutable
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
@@ -34,6 +33,7 @@ from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
+from pcapi.utils.typing import hybrid_property
 
 
 logger = logging.getLogger(__name__)
@@ -209,8 +209,8 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def _bookable(self) -> bool:
         return not self.isExpired and not self.isSoldOut
 
-    @_bookable.expression  # type: ignore [no-redef]
-    def _bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @_bookable.expression
+    def _bookable(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
     @property
@@ -223,7 +223,10 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def hasBookingLimitDatetimePassed(self) -> bool:
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
 
-    @hasBookingLimitDatetimePassed.expression  # type: ignore [no-redef]
+    # FIXME: DEBUG ONLY: try to see if BooleanClauseList is better
+    # understood by mypy than `sa.sql.ColumnElement[sa.Boolean]`.
+    # Otherwise, use the latter like everywhere else.
+    @hasBookingLimitDatetimePassed.expression
     def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.bookingLimitDatetime.is_not(None), cls.bookingLimitDatetime <= sa.func.now())
 
@@ -232,7 +235,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def remainingQuantity(self) -> int | str:
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
-    @remainingQuantity.expression  # type: ignore [no-redef]
+    @remainingQuantity.expression
     def remainingQuantity(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case((cls.quantity.is_(None), None), else_=(cls.quantity - cls.dnBookedQuantity))
 
@@ -250,16 +253,16 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def isEventExpired(self) -> bool:
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
 
-    @isEventExpired.expression  # type: ignore [no-redef]
-    def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return sa.and_(cls.beginningDatetime.is_not(None), cls.beginningDatetime <= sa.func.now())
+    @isEventExpired.expression
+    def isEventExpired(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
+        return sa.and_(cls.beginningDatetime.is_not(None), cls.beginningDatetime <= sa.func.now(),)
 
     @hybrid_property
     def isExpired(self) -> bool:
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
-    @isExpired.expression  # type: ignore [no-redef]
-    def isExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @isExpired.expression
+    def isExpired(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return sa.or_(cls.isEventExpired, cls.hasBookingLimitDatetimePassed)
 
     @property
@@ -278,8 +281,8 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
             or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
         )
 
-    @isSoldOut.expression  # type: ignore [no-redef]
-    def isSoldOut(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @isSoldOut.expression
+    def isSoldOut(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return sa.or_(
             cls.isSoftDeleted,
             sa.and_(sa.not_(cls.beginningDatetime.is_(None)), cls.beginningDatetime <= sa.func.now()),
@@ -506,7 +509,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
                 return False
         return True
 
-    @isSoldOut.expression  # type: ignore [no-redef]
+    # FIXME: DEBUG ONLY: try to see if UnaryExpression is better
+    # understood by mypy than `sa.sql.ColumnElement[sa.Boolean]`.
+    # Otherwise, use the latter like everywhere else.
+    @isSoldOut.expression
     def isSoldOut(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return (
             ~sa.exists()
@@ -526,9 +532,15 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def canExpire(self) -> bool:
         return self.subcategoryId in subcategories_v2.EXPIRABLE_SUBCATEGORIES
 
+<<<<<<< HEAD
     @canExpire.expression  # type: ignore [no-redef]
     def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.EXPIRABLE_SUBCATEGORIES)
+=======
+    @canExpire.expression
+    def canExpire(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
+        return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
+>>>>>>> 647024618b (___ wip: fix typing of hybrid_property)
 
     @property
     def isReleased(self) -> bool:
@@ -539,25 +551,37 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def _released(self) -> bool:
         return self.isActive and self.validation == OfferValidationStatus.APPROVED
 
-    @_released.expression  # type: ignore [no-redef]
-    def _released(cls) -> bool:  # pylint: disable=no-self-argument
+    @_released.expression
+    def _released(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
 
     @hybrid_property
     def isPermanent(self) -> bool:
         return self.subcategoryId in subcategories_v2.PERMANENT_SUBCATEGORIES
 
+<<<<<<< HEAD
     @isPermanent.expression  # type: ignore [no-redef]
     def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.PERMANENT_SUBCATEGORIES)
+=======
+    @isPermanent.expression
+    def isPermanent(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
+        return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
+>>>>>>> 647024618b (___ wip: fix typing of hybrid_property)
 
     @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
+<<<<<<< HEAD
     @isEvent.expression  # type: ignore [no-redef]
     def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.EVENT_SUBCATEGORIES)
+=======
+    @isEvent.expression
+    def isEvent(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
+        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+>>>>>>> 647024618b (___ wip: fix typing of hybrid_property)
 
     @property
     def isThing(self) -> bool:
@@ -567,9 +591,15 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def isDigital(self) -> bool:
         return self.url is not None and self.url != ""
 
+<<<<<<< HEAD
     @isDigital.expression  # type: ignore [no-redef]
     def isDigital(cls) -> bool:  # pylint: disable=no-self-argument
         return sa.and_(cls.url.is_not(None), cls.url != "")
+=======
+    @isDigital.expression
+    def isDigital(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
+        return sa.and_(cls.url != None, cls.url != "")
+>>>>>>> 647024618b (___ wip: fix typing of hybrid_property)
 
     @property
     def isEditable(self) -> bool:
@@ -601,8 +631,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def is_eligible_for_search(self) -> bool:
         return self.isReleased and self.isBookable
 
-    @is_eligible_for_search.expression  # type: ignore [no-redef]
-    def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @is_eligible_for_search.expression
+    def is_eligible_for_search(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return sa.and_(cls._released, Stock._bookable)
 
     @hybrid_property
@@ -619,8 +649,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
         return False
 
-    @hasBookingLimitDatetimesPassed.expression  # type: ignore [no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @hasBookingLimitDatetimesPassed.expression
+    def hasBookingLimitDatetimesPassed(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
         return sa.and_(
             sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
             ~sa.exists()
@@ -636,7 +666,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         ]
         return min(stocks_with_date) if stocks_with_date else None
 
-    @firstBeginningDatetime.expression  # type: ignore [no-redef]
+    @firstBeginningDatetime.expression
     def firstBeginningDatetime(cls) -> datetime.datetime | None:  # pylint: disable=no-self-argument
         return (
             sa.select(sa.func.min(Stock.beginningDatetime))
