@@ -1,3 +1,5 @@
+import datetime
+import logging
 import typing
 
 from flask_admin.contrib.sqla import tools
@@ -17,12 +19,17 @@ from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import ResendValidationEmailMixin
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
+from pcapi.core.finance.api import compute_underage_deposit_expiration_datetime
 import pcapi.core.finance.models as finance_models
 import pcapi.core.users.api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.utils.email import sanitize_email
+
+
+logger = logging.getLogger(__name__)
 
 
 def filter_email(value: str | None) -> str | None:
@@ -110,6 +117,44 @@ def beneficiary_digital_remaining_formatter(view, context, model, name) -> Marku
     amount = users_api.get_domains_credit(model)
     digital_remaining = amount.digital.remaining if amount and amount.digital else "Pas de plafond"
     return Markup("<span>{digital_remaining}&nbsp;&euro;</span>").format(digital_remaining=digital_remaining)
+
+
+def _has_underage_deposit(user: User) -> bool:
+    return user.deposit is not None and user.deposit.type == finance_models.DepositType.GRANT_15_17
+
+
+def _update_underage_beneficiary_deposit_expiration_date(user: User) -> None:
+    if user.birth_date is None:
+        raise ValueError("User has no birth_date")
+    assert user.deposit and user.deposit.expirationDate  # helps mypy
+
+    current_deposit_expiration_datetime = user.deposit.expirationDate
+    new_deposit_expiration_datetime = compute_underage_deposit_expiration_datetime(user.birth_date)
+
+    if current_deposit_expiration_datetime == new_deposit_expiration_datetime:
+        return
+
+    logger.info(
+        "Updating deposit expiration date for underage beneficiary %s",
+        user.id,
+        extra={
+            "user": user.id,
+            "deposit": user.deposit.id,
+            "current_expiration_date": current_deposit_expiration_datetime,
+            "new_expiration_date": new_deposit_expiration_datetime,
+        },
+    )
+
+    if new_deposit_expiration_datetime > datetime.datetime.utcnow():
+        user.deposit.expirationDate = new_deposit_expiration_datetime
+    else:
+        if current_deposit_expiration_datetime < datetime.datetime.utcnow():
+            # no need to update the deposit expirationDate because it is already passed
+            return
+        # Else, reduce to now and not to the theoretical new date in case there are bookings made between these dates
+        user.deposit.expirationDate = datetime.datetime.utcnow()
+
+    db.session.add(user.deposit)
 
 
 class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
@@ -272,6 +317,8 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
+        if _has_underage_deposit(model):
+            _update_underage_beneficiary_deposit_expiration_date(model)
         update_external_user(model)
         super().after_model_change(form, model, is_created)
 
