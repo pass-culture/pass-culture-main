@@ -3,7 +3,9 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { TextArea, TextInput } from 'ui-kit'
+import DurationInput from 'ui-kit/form/DurationInput'
 
+import styles from '../OfferIndividualForm.module.scss'
 import { IOfferIndividualFormValues } from '../types'
 
 export interface IInformationsProps {
@@ -99,12 +101,20 @@ const Informations = ({
 
       {hasDurationMinutes && (
         <FormLayout.Row>
-          <TextInput
+          <DurationInput
             isOptional
             label={'Durée'}
             name="durationMinutes"
+            className={styles['input-durationMinutes']}
             placeholder="HH:MM"
           />
+          {/* <TextInput
+            isOptional
+            label={'Durée'}
+            name="durationMinutes"
+            className={styles['input-durationMinutes']}
+            placeholder="HH:MM"
+          /> */}
         </FormLayout.Row>
       )}
     </FormLayout.Section>
