@@ -153,8 +153,7 @@ def get_error_not_updatable_message(
         user_message += " Tu peux contacter le support pour mettre à jour ton dossier."
         pop_over_icon = None
     elif fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR in reason_codes:
-        user_message += " : tu n'es malheureusement pas éligible au pass Culture."
-        call_to_action = None
+        user_message += ". Tu peux contacter le support pour plus d’informations."
     else:
         user_message += "."
         call_to_action = None
