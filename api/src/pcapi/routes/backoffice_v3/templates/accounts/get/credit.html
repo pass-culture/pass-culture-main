@@ -4,7 +4,7 @@
             {% if credit is not none %}
                 <div class="card-body">
                     <h5 class="card-title fs-1 mb-3">
-                        {{ credit.all.remaining.to_integral() }}
+                        {{ credit.all.remaining.to_integral() | format_amount }}
                     </h5>
 
                     <div class="d-flex">
@@ -13,7 +13,7 @@
                         </h6>
 
                         <h6 class="card-subtitle text-muted ms-auto">
-                            {{ credit.all.initial.to_integral() }}
+                            {{ credit.all.initial.to_integral() | format_amount }}
                         </h6>
                     </div>
 
@@ -41,7 +41,7 @@
             {% if credit is not none %}
                 <div class="card-body">
                     <h5 class="card-title fs-1 mb-3">
-                        {{ credit.digital.remaining.to_integral() }}
+                        {{ credit.digital.remaining.to_integral() | format_amount }}
                     </h5>
 
                     <div class="d-flex">
@@ -50,7 +50,7 @@
                         </h6>
 
                         <h6 class="card-subtitle text-muted ms-auto">
-                            {{ credit.digital.initial.to_integral() }}
+                            {{ credit.digital.initial.to_integral() | format_amount }}
                         </h6>
                     </div>
 
