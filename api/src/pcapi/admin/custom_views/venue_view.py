@@ -32,6 +32,7 @@ import pcapi.core.criteria.api as criteria_api
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.validation as finance_validation
+from pcapi.core.mails.transactional.pro.permanent_venue_needs_picture import send_permanent_venue_needs_picture
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.exceptions as offerers_exception
 from pcapi.core.offerers.models import Offerer
@@ -404,6 +405,12 @@ class VenueView(BaseAdminView):
         self._template_args["modal_title"] = f"Éditer des Lieux - {len(ids)} lieu(x) sélectionné(s)"
 
         return self.index_view()
+
+    def on_model_change(self, form: Form, venue: Venue, is_created: bool = False) -> None:
+        previous_value = form._fields["isPermanent"].object_data
+        new_value = venue.isPermanent
+        if venue.bookingEmail and new_value and previous_value != new_value:
+            send_permanent_venue_needs_picture(venue.bookingEmail, venue)
 
     @expose("/update/", methods=["POST"])
     def update_view(self) -> Response:
