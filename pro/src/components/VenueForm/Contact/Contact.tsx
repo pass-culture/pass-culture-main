@@ -9,7 +9,7 @@ const Contact = () => {
       <FormLayout.Section
         title="Contact"
         description={
-          'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture.' +
+          'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture. ' +
           'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
         }
       >

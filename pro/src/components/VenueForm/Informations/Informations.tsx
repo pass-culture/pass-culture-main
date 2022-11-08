@@ -12,6 +12,7 @@ export interface IInformations {
   isCreatedEntity: boolean
   readOnly: boolean
   updateIsSiretValued: (value: boolean) => void
+  setIsSiretValued: (value: boolean) => void
   venueIsVirtual: boolean
 }
 
@@ -20,6 +21,7 @@ const Informations = ({
   readOnly,
   updateIsSiretValued,
   venueIsVirtual,
+  setIsSiretValued,
 }: IInformations) => {
   const { initialValues } = useFormikContext<IVenueFormValues>()
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
@@ -35,6 +37,7 @@ const Informations = ({
               isToggleDisabled={!isCreatedEntity}
               isCreatedEntity={isCreatedEntity}
               setIsFieldNameFrozen={setIsFieldNameFrozen}
+              setIsSiretValued={setIsSiretValued}
               updateIsSiretValued={updateIsSiretValued}
             />
           )}

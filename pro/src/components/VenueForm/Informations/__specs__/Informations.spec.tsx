@@ -83,11 +83,13 @@ describe('components | Informations', () => {
 
   beforeEach(() => {
     const updateIsSiretValued = jest.fn()
+    const setIsSiretValued = jest.fn()
     initialValues = { ...DEFAULT_INFORMATIONS_FORM_VALUES }
     props = {
       isCreatedEntity: true,
       readOnly: false,
       updateIsSiretValued,
+      setIsSiretValued,
       venueIsVirtual: false,
     }
   })

@@ -1,9 +1,10 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { VenueProviderResponse } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
@@ -55,6 +56,18 @@ const VenueForm = ({
   const { currentUser } = useCurrentUser()
   const location = useLocation()
 
+  const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
+    useState(false)
+  const [isSiretValued, setIsSiretValued] = useState(true)
+
+  useEffect(() => {
+    canOffererCreateCollectiveOfferAdapter(offerer.id).then(response =>
+      setCanOffererCreateCollectiveOffer(
+        response.payload.isOffererEligibleToEducationalOffer
+      )
+    )
+  }, [])
+
   return (
     <div>
       <FormLayout fullWidthActions>
@@ -71,6 +84,7 @@ const VenueForm = ({
           readOnly={!isCreatingVenue}
           updateIsSiretValued={updateIsSiretValued}
           venueIsVirtual={false}
+          setIsSiretValued={setIsSiretValued}
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */
@@ -81,7 +95,10 @@ const VenueForm = ({
         <Accessibility isCreatingVenue={isCreatingVenue} />
         <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
         <Contact />
-        <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
+        {canOffererCreateCollectiveOffer &&
+          ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
+            <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
+          )}
         {!isCreatingVenue && venue && (
           <ReimbursementFields
             offerer={offerer}
