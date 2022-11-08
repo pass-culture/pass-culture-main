@@ -394,8 +394,14 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon == subscription_models.PopOverIcon.ERROR
         assert (
             message.user_message
-            == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : tu n'es malheureusement pas éligible au pass Culture."
+            == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé. Tu peux contacter le support pour plus d’informations."
         )
+        assert (
+            message.call_to_action.link
+            == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
+        )
+        assert message.call_to_action.title == "Contacter le support"
+
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")

@@ -696,7 +696,7 @@ class DmsSubscriptionMessageTest:
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_refused_by_operator(self, mock_send_user_message):
-        users_factories.UserFactory(email=self.user_email)
+        user = users_factories.UserFactory(email=self.user_email)
         refused_application = make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
@@ -708,8 +708,13 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : tu n'es malheureusement pas éligible au pass Culture.",
-            call_to_action=None,
+            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé. Tu peux contacter le support pour plus d’informations.",
+            call_to_action=subscription_models.CallToActionMessage(
+                title="Contacter le support",
+                link=subscription_messages.MAILTO_SUPPORT
+                + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id),
+                icon=subscription_models.CallToActionIcon.EMAIL,
+            ),
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
             updated_at=fraud_check.updatedAt,
         )
