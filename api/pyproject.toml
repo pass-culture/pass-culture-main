@@ -54,7 +54,9 @@ exclude = """
     | src/pcapi/alembic/.*
   )
 """
-
+# FIXME (dbaty, 2022-11-08): this is temporary until we fix typing
+# annotations that break with the new default value (true).
+no_implicit_optional = false
 
 
 [tool.pylint.MASTER]
