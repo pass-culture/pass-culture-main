@@ -222,7 +222,7 @@ const SelectAutocomplete = ({
             paddingLeft: multi && field.value.length > 0 ? '2.2rem' : '1rem',
           }}
           className={styles['multi-select-autocomplete-placeholder-input']}
-          hasError={searchMeta.touched && !!searchMeta.error}
+          hasError={searchMeta.touched && !!meta.error}
           type="text"
           disabled={disabled}
           {...searchField}
