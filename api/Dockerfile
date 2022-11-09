@@ -15,6 +15,8 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt ./
 
+ARG CACHE_DATE=2022-12-07:11:11:00
+
 RUN pip install --user \
 	--requirement ./requirements.txt
 
