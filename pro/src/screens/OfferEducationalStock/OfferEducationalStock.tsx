@@ -2,7 +2,6 @@
 
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import * as yup from 'yup'
 
 import FormLayout from 'components/FormLayout'
@@ -16,7 +15,8 @@ import {
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
+import { Banner, ButtonLink, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'
@@ -177,18 +177,19 @@ const OfferEducationalStock = <
               </FormLayout.Row>
             </FormLayout.Section>
             <FormLayout.Actions>
-              <Link
-                className="secondary-link"
-                to={
-                  isSubtypeChosenAtCreation
+              <ButtonLink
+                variant={ButtonVariant.SECONDARY}
+                link={{
+                  to: isSubtypeChosenAtCreation
                     ? `/offre/collectif/${offer.id}/creation`
-                    : computeOffersUrl({})
-                }
+                    : computeOffersUrl({}),
+                  isExternal: false,
+                }}
               >
                 {isSubtypeChosenAtCreation
                   ? 'Étape précédente'
                   : 'Annuler et quitter'}
-              </Link>
+              </ButtonLink>
               <SubmitButton
                 className=""
                 disabled={offerIsDisabled || mode === Mode.READ_ONLY}
