@@ -94,7 +94,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-04-30T12:15:00+02:00",
+                        "date": "2022-03-12T11:15:00+01:00",
                     },
                 ],
             }
@@ -208,7 +208,7 @@ class Returns200Test:
             },
             {
                 "status": "confirmed",
-                "date": "2022-04-30T22:00:00+02:00",
+                "date": "2022-03-12T13:15:00+01:00",
             },
             {
                 "status": "validated",
@@ -256,7 +256,7 @@ class Returns200Test:
             },
             {
                 "status": "confirmed",
-                "date": "2022-04-30T22:00:00+02:00",
+                "date": "2022-03-12T13:15:00+01:00",
             },
             {
                 "status": "cancelled",
@@ -350,7 +350,7 @@ class Returns200Test:
             },
             {
                 "status": "confirmed",
-                "date": "2022-04-30T22:00:00+02:00",
+                "date": "2022-03-12T13:15:00+01:00",
             },
             {
                 "status": "validated",
@@ -468,7 +468,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-04-30T12:15:00+02:00",
+                        "date": "2022-03-12T11:15:00+01:00",
                     },
                 ],
             }
@@ -547,7 +547,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-04-30T12:15:00+02:00",
+                        "date": "2022-03-12T11:15:00+01:00",
                     },
                 ],
             }
@@ -628,7 +628,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-02-23T11:15:00+01:00",  # la date limite d'annulation est automatiquement calculée en db et écrase celle fournie. Dans notre cas : 15 jours avant date evènement.
+                        "date": "2022-02-12T11:15:00+01:00",  # la date limite d'annulation est automatiquement calculée en db et écrase celle fournie. Dans notre cas : 15 jours avant date evènement.
                     },
                     {
                         "status": "validated",
