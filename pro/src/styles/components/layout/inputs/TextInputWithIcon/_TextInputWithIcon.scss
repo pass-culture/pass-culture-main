@@ -25,7 +25,7 @@
   }
 
   &:focus-within {
-    border: rem.torem(2px) solid colors.$focus-black;
+    border: rem.torem(2px) solid colors.$black-medium;
   }
 
   &.disabled {

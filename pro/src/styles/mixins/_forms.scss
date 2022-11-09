@@ -21,13 +21,13 @@
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
 
-  &:focus,
-  &:hover {
-    border-color: forms.$input-border-color-focus;
-  }
-
   &:focus {
+    border-color: forms.$input-border-color-focus;
     box-shadow: forms.$input-focus-shadow;
+  }
+  
+  &:hover {
+    box-shadow: forms.$input-hover-shadow;
   }
 
   &:disabled {

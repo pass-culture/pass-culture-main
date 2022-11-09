@@ -7,11 +7,11 @@ $input-border-color-error: #b60025;
 $input-border-color-disabled: colors.$grey-light;
 
 $input-focus-shadow: 0 rem.torem(3px) rem.torem(4px) 0 #67686b1a;
-
+$input-hover-shadow: 0px 3px 4px rgba(103, 104, 107, 0.16);
 $input-bg-color: colors.$white;
 $input-bg-color-disabled: colors.$grey-light;
 
-$input-text-color: #161617;
+$input-text-color: colors.$black-medium;
 $input-text-color-disabled: colors.$grey-dark;
 $input-border-radius: rem.torem(20px);
 
