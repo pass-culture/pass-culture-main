@@ -106,15 +106,7 @@ const Informations = ({
             label={'Durée'}
             name="durationMinutes"
             className={styles['input-durationMinutes']}
-            placeholder="HH:MM"
           />
-          {/* <TextInput
-            isOptional
-            label={'Durée'}
-            name="durationMinutes"
-            className={styles['input-durationMinutes']}
-            placeholder="HH:MM"
-          /> */}
         </FormLayout.Row>
       )}
     </FormLayout.Section>
