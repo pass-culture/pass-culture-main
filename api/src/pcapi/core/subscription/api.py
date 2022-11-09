@@ -735,6 +735,12 @@ def get_subscription_message(user: users_models.User) -> models.SubscriptionMess
 
 
 def has_subscription_issues(user: users_models.User) -> bool:
+    if (
+        get_phone_validation_subscription_item(user=user, eligibility=user.eligibility).status
+        == models.SubscriptionItemStatus.KO
+    ):
+        return True
+
     return get_identity_check_subscription_status(user, user.eligibility) in [
         models.SubscriptionItemStatus.SUSPICIOUS,
         models.SubscriptionItemStatus.KO,
