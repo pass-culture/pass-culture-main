@@ -15,10 +15,10 @@ import { IOfferEducationalProps } from '../OfferEducational'
 
 import FormAccessibility from './FormAccessibility'
 import FormContact from './FormContact'
-import FormEventAddress from './FormEventAddress'
 import FormNotifications from './FormNotifications'
 import FormOfferType from './FormOfferType'
 import FormParticipants from './FormParticipants'
+import FormPracticalInformation from './FormPracticalInformation'
 import FormVenue from './FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
@@ -125,7 +125,7 @@ const OfferEducationalForm = ({
             domainsOptions={domainsOptions}
             disableForm={mode === Mode.READ_ONLY}
           />
-          <FormEventAddress
+          <FormPracticalInformation
             currentOfferer={currentOfferer}
             venuesOptions={venuesOptions}
             disableForm={mode === Mode.READ_ONLY}
