@@ -1486,7 +1486,7 @@ def test_public_api(client):
                         "recreditAmountToShow": {"nullable": True, "title": "Recreditamounttoshow", "type": "integer"},
                         "roles": {"items": {"$ref": "#/components/schemas/UserRole"}, "type": "array"},
                         "showEligibleCard": {"title": "Showeligiblecard", "type": "boolean"},
-                        "youngStatus": {"$ref": "#/components/schemas/YoungStatusResponse"},
+                        "status": {"$ref": "#/components/schemas/YoungStatusResponse"},
                         "subscriptionMessage": {
                             "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessage"}],
                             "nullable": True,
@@ -1504,7 +1504,7 @@ def test_public_api(client):
                         "roles",
                         "showEligibleCard",
                         "subscriptions",
-                        "youngStatus",
+                        "status",
                     ],
                     "title": "UserProfileResponse",
                     "type": "object",
