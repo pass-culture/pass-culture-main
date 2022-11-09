@@ -124,7 +124,7 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
     # assert_num_queries context manager.
     if not hasattr(flask._app_ctx_stack, "_assert_num_queries"):
         return
-    flask._app_ctx_stack._assert_num_queries.append(  # type: ignore [attr-defined]
+    flask._app_ctx_stack._assert_num_queries.append(
         {
             "statement": statement,
             "parameters": parameters,
@@ -273,7 +273,7 @@ class override_features(TestContextDecorator):
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
-                flask.request._cached_features = {}  # type: ignore [attr-defined]
+                flask.request._cached_features = {}
 
     def disable(self) -> None:
         for name, status in self.apply_to_revert.items():
@@ -282,7 +282,7 @@ class override_features(TestContextDecorator):
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
-                flask.request._cached_features = {}  # type: ignore [attr-defined]
+                flask.request._cached_features = {}
 
 
 def clean_temporary_files(test_function: typing.Callable) -> typing.Callable:
