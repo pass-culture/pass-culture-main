@@ -23,7 +23,9 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
   )
   const [phoneInutValue, setPhoneInputValue] = useState<string>()
 
-  const validatePhoneNumber = (phoneNumberInputValue: string) => {
+  const validatePhoneNumber = (
+    phoneNumberInputValue: string
+  ): string | undefined => {
     const phoneNumber = parsePhoneNumberFromString(
       phoneNumberInputValue,
       countryCode
@@ -35,9 +37,11 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
 
     if (!phoneNumber || !phoneNumber.isValid()) {
       helpers.setError('Veuillez entrer un numéro de téléphone valide')
-    } else {
-      helpers.setError(undefined)
+      return phoneNumberInputValue
     }
+
+    helpers.setError(undefined)
+    return phoneNumber?.nationalNumber
   }
 
   const onPhoneNumberChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +58,8 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
       helpers.setTouched(true, false)
     }
 
-    validatePhoneNumber(event.target.value)
+    const phoneNumberInputValue = validatePhoneNumber(event.target.value)
+    setPhoneInputValue(phoneNumberInputValue)
   }
 
   useEffect(() => {
