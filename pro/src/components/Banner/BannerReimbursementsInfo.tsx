@@ -1,30 +1,29 @@
 import React from 'react'
 
 import { Banner } from 'ui-kit'
-import Icon from 'ui-kit/Icon/Icon'
 
 const BannerReimbursementsInfo = (): JSX.Element => {
   return (
-    <Banner type="notification-info" className="banner">
-      En savoir plus sur
-      <a
-        className="bi-link tertiary-link"
-        href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <Icon svg="ico-external-site" className="banner-icon" />
-        Les prochains remboursements
-      </a>
-      <a
-        className="bi-link tertiary-link"
-        href="https://passculture.zendesk.com/hc/fr/articles/4412007300369"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <Icon svg="ico-external-site" className="banner-icon" />
-        Les modalités de remboursement
-      </a>
+    <Banner
+      type="notification-info"
+      className="banner"
+      links={[
+        {
+          href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
+          linkTitle: 'En savoir plus sur les prochains remboursements',
+        },
+        {
+          href: 'https://passculture.zendesk.com/hc/fr/articles/4412007300369',
+          linkTitle: 'Connaître les modalités de remboursement',
+        },
+      ]}
+    >
+      <p>
+        Les remboursements s’effectuent tous les 15 jours, rétroactivement suite
+        à la validation d’une contremarque dans le guichet ou à la validation
+        automatique des contremarques d’évènements. Cette page est
+        automatiquement mise à jour à chaque remboursement.
+      </p>
     </Banner>
   )
 }
