@@ -21,6 +21,7 @@ import {
   Theme,
   Typography,
 } from '@mui/material'
+import { DateRange } from '@mui/x-date-pickers-pro/DateRangePicker'
 import { captureException } from '@sentry/react'
 import { format } from 'date-fns'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -49,6 +50,7 @@ import {
   ValidationStatus,
 } from '../../../TypesFromApi'
 import { PermissionsEnum } from '../../PublicUsers/types'
+import MinMaxDateRangePicker from '../Components/MinMaxDateRangePicker'
 import { OfferersToValidateContextTableMenu } from '../Components/OfferersToValidateContextTableMenu'
 import { ValidationStatusBadge } from '../Components/ValidationStatusBadge'
 import { ProTypeEnum } from '../types'
@@ -100,6 +102,10 @@ export const OfferersToValidate = () => {
   })
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
+  const [dateValues, setDateValues] = React.useState<DateRange<Date>>([
+    null,
+    null,
+  ])
   const { permissions } = usePermissions()
   const formattedAuthorizations: PermissionsEnum[] = permissions
   const permissionGranted = !!searchPermission(
@@ -135,10 +141,20 @@ export const OfferersToValidate = () => {
 
   async function getOfferersToBeValidated(page: number) {
     try {
-      const filters: { field: string; value: string[] }[] = []
+      const filters: { field: string; value: string[] | string }[] = []
 
       filters.push({ field: 'tags', value: requestOffererTags })
       filters.push({ field: 'status', value: requestOffererStatus })
+      if (dateValues[0] !== null && dateValues[1] !== null) {
+        filters.push({
+          field: 'fromDate',
+          value: format(dateValues[0], 'yyyy-MM-dd').toString(),
+        })
+        filters.push({
+          field: 'toDate',
+          value: format(dateValues[1], 'yyyy-MM-dd').toString(),
+        })
+      }
 
       const response = await apiProvider().listOfferersToBeValidated({
         page: page + 1,
@@ -181,7 +197,6 @@ export const OfferersToValidate = () => {
       target: { value },
     } = event
     await setRequestOffererTags(
-      // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value
     )
   }
@@ -193,9 +208,12 @@ export const OfferersToValidate = () => {
       target: { value },
     } = event
     await setRequestOffererStatus(
-      // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value
     )
+  }
+
+  const handleNewDateValue = (newDateValues: DateRange<Date>) => {
+    setDateValues(newDateValues)
   }
 
   const onChangeRowsPerPage = (
@@ -236,6 +254,7 @@ export const OfferersToValidate = () => {
     requestOffererTags,
     requestOffererStatus,
     currentPage,
+    dateValues,
   ])
 
   return (
@@ -335,6 +354,14 @@ export const OfferersToValidate = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                </FormControl>
+              </div>
+              <div>
+                <FormControl sx={{ m: 1, width: 300 }}>
+                  <MinMaxDateRangePicker
+                    value={dateValues}
+                    setNewValue={handleNewDateValue}
+                  />
                 </FormControl>
               </div>
             </Stack>
