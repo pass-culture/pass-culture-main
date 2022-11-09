@@ -1,0 +1,21 @@
+name: Deploy a specific version of image resizing on production
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        required: true
+        type: string
+
+jobs:
+  deploy-image-resizing:
+    name: "Deploy image-resizing"
+    needs: check-resizing-image-folder-changes
+    uses: ./.github/workflows/deploy-app-engine-image-resizing-master.yaml
+    with:
+      environment: production
+      google_project: passculture-metier-prod
+      base_ref: ${{ inputs.ref }}
+    secrets:
+      workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      service_account: ${{ secrets.APP_ENGINE_IMAGE_RESIZING_PROD_SERVICE_ACCOUNT }}
