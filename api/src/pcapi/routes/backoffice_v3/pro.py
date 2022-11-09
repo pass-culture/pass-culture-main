@@ -10,7 +10,6 @@ import pydantic
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
-from pcapi.models.api_errors import ApiErrors
 
 from . import blueprint
 from . import search_utils
@@ -42,7 +41,7 @@ class UserContext(Context):
 
     @classmethod
     def get_pro_link(cls, row_id: int) -> str:
-        return url_for(".get_pro", row_id=row_id, pro_type="user")
+        return url_for(".pro_user.get", user_id=row_id)
 
 
 class OffererContext(Context):
@@ -51,7 +50,7 @@ class OffererContext(Context):
 
     @classmethod
     def get_pro_link(cls, row_id: int) -> str:
-        return url_for(".get_pro", row_id=row_id, pro_type="offerer")
+        return url_for(".offerer.get", offerer_id=row_id)
 
 
 class VenueContext(Context):
@@ -60,7 +59,7 @@ class VenueContext(Context):
 
     @classmethod
     def get_pro_link(cls, row_id: int) -> str:
-        return url_for(".get_pro", row_id=row_id, pro_type="venue")
+        return url_for(".venue.get", venue_id=row_id)
 
 
 def render_search_template(form: search_forms.ProSearchForm | None = None) -> str:
@@ -72,7 +71,7 @@ def render_search_template(form: search_forms.ProSearchForm | None = None) -> st
 
 @blueprint.backoffice_v3_web.route("/pro/search", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.SEARCH_PRO_ACCOUNT)
-def search_pro() -> utils.Response:
+def search_pro() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
     the one of the results.
@@ -119,24 +118,6 @@ def search_pro() -> utils.Response:
         order_by=search_model.order_by,
         per_page=search_model.per_page,
     )
-
-
-# TODO à suppr pour que ça ne gère que les Venue ou les users
-@blueprint.backoffice_v3_web.route("/pro/<string:pro_type>/<int:row_id>", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
-def get_pro(pro_type: str, row_id: int):  # type: ignore
-    try:
-        formatted_pro_type = search.TypeOptions(pro_type)
-        context = get_context(formatted_pro_type)
-    except KeyError:
-        raise ApiErrors(errors={"url": ["Type de compte pro inconnu"]})
-
-    query = context.get_item_base_query(row_id)
-    row = query.one_or_none()
-    if not row:
-        raise ApiErrors(errors={"url": ["Compte pro non trouvé"]})
-
-    return render_template("pro/get.html", row=row, pro_type=pro_type)
 
 
 def get_context(pro_type: search.TypeOptions) -> typing.Type[Context]:

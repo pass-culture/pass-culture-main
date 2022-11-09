@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
+import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -20,6 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class SearchPublicAccountsUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
     endpoint = "backoffice_v3_web.search_public_accounts"
+    needed_permission = perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT
 
 
 class SearchPublicAccountsAuthorizedTest(search_helpers.SearchHelper):
@@ -49,6 +51,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
     class GetPublicAccountUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.get_public_account"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
 
 class EditPublicAccountTest(accounts_helpers.PageRendersHelper):
@@ -57,6 +60,7 @@ class EditPublicAccountTest(accounts_helpers.PageRendersHelper):
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.edit_public_account"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
 
 class UpdatePublicAccountTest:
@@ -131,10 +135,12 @@ class ResendValidationEmailTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         endpoint = "backoffice_v3_web.resend_validation_email"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.resend_validation_email"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_resend_validation_email(self, client, legit_user):
@@ -176,10 +182,12 @@ class SendValidationCodeTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         endpoint = "backoffice_v3_web.send_validation_code"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.send_validation_code"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_send_validation_code(self, client, legit_user):
@@ -234,16 +242,19 @@ class EditPublicAccountReviewTest(accounts_helpers.PageRendersHelper):
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.edit_public_account_review"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
 
 class UpdatePublicAccountReviewTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         endpoint = "backoffice_v3_web.review_public_account"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.review_public_account"
         endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_add_new_fraud_review_to_account(self, client, legit_user):
