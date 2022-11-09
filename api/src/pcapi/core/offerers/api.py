@@ -2,9 +2,11 @@ from datetime import date
 from datetime import datetime
 import logging
 import secrets
+import time
 import typing
 
 from flask_sqlalchemy import BaseQuery
+import jwt
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -1426,3 +1428,24 @@ def list_users_offerers_to_be_validated(filter_: list[dict[str, typing.Any]]) ->
     query = _filter_on_validation_status(query, filter_dict, offerers_models.UserOfferer)
 
     return query
+
+
+def get_metabase_stats_iframe_url(
+    offerer: models.Offerer,
+    venues: typing.Sequence[models.Venue],
+) -> str:
+    """Generate a JWT-secured URL to a Metabase dashboard that shows
+    statistics about one or more venues.
+    """
+    if not {venue.managingOffererId for venue in venues}.issubset({offerer.id}):
+        raise ValueError("Cannot specify venue of another offerer")
+    payload = {
+        "resource": {"dashboard": settings.METABASE_DASHBOARD_ID},
+        "params": {"siren": [offerer.siren], "venueid": [str(venue.id) for venue in venues]},
+        # The dashboard token expires after 10 min. After that delay,
+        # the user has to refresh their page to interact with the
+        # dashbord (e.g to export content).
+        "exp": round(time.time()) + (60 * 10),
+    }
+    token = jwt.encode(payload, settings.METABASE_SECRET_KEY, algorithm="HS256")
+    return f"{settings.METABASE_SITE_URL}/embed/dashboard/{token}#bordered=false&titled=false"
