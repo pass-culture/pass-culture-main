@@ -9,6 +9,7 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
   id: string;
   isBooked: boolean;
   isCancellable: boolean;
+  isEducationalStockEditable: boolean;
   numberOfTickets?: number | null;
   price: number;
 };

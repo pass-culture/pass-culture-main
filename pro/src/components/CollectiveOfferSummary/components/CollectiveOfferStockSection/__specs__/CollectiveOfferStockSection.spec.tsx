@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
+import { collectiveOfferStockFactory } from 'screens/OfferEducationalStock/__tests-utils__'
 import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
 
 import CollectiveOfferStockSection, {
@@ -16,24 +17,10 @@ const renderCollectiveOfferStockSection = (
 }
 
 describe('CollectiveOfferStockSection', () => {
-  let props: ICollectiveOfferStockSectionProps
-  beforeEach(() => {
-    props = {
-      stock: {
-        beginningDatetime: '2022-10-10T13:51:29.098191Z',
-        bookingLimitDatetime: '2001-03-01T13:51:29.098191Z',
-        educationalPriceDetail: null,
-        id: 'STOCK_ID',
-        isBooked: true,
-        isCancellable: false,
-        numberOfTickets: 10,
-        price: 200,
-      },
-      venueDepartmentCode: '75',
-    }
-  })
-
   it('render component', () => {
+    const props = {
+      stock: collectiveOfferStockFactory(),
+    }
     renderCollectiveOfferStockSection(props)
 
     expect(screen.getByText('Date :')).toBeInTheDocument()
