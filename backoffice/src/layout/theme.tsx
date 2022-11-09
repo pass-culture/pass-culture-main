@@ -62,6 +62,15 @@ export const theme = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          '&.MuiPickersPopper-paper > div:first-of-type > div:first-of-type': {
+            display: 'none',
+          },
+        },
+      },
+    },
     MuiButtonBase: {
       defaultProps: {
         LinkComponent: LinkBehavior,
