@@ -26,6 +26,11 @@ jobs:
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
 
+  check-resizing-image:
+    name: "[resizing-images] Check if deployment needed"
+    if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/tests-resizing-images.yml
+    secrets: inherit
 
   deploy-testing:
     name: "[testing] Deployment"
