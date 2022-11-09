@@ -13,9 +13,14 @@ import { getPhoneNumberInputAndCountryCode } from './utils/getPhoneNumberInputAn
 export interface PhoneNumberInputProps {
   name: string
   disabled?: boolean
+  isOptional?: boolean
 }
 
-const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
+const PhoneNumberInput = ({
+  name,
+  disabled,
+  isOptional = false,
+}: PhoneNumberInputProps) => {
   const [field, meta, helpers] = useField({ name })
 
   const [countryCode, setCountryCode] = useState<CountryCode>(
@@ -76,6 +81,7 @@ const PhoneNumberInput = ({ name, disabled }: PhoneNumberInputProps) => {
     <FieldLayout
       label="Téléphone"
       name={name}
+      isOptional={isOptional}
       showError={meta.touched && !!meta.error}
       error={meta.error}
     >
