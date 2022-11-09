@@ -11,6 +11,7 @@ import {
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { computeOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
@@ -54,6 +55,10 @@ const CollectiveOfferVisibility = ({
 }: CollectiveOfferVisibilityProps) => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
+
+  const isSubtypeChosenAtCreation = useActiveFeature(
+    'WIP_CHOOSE_COLLECTIVE_OFFER_TYPE_AT_CREATION'
+  )
 
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
@@ -195,8 +200,17 @@ const CollectiveOfferVisibility = ({
           </FormLayout.Section>
 
           <FormLayout.Actions className={styles['actions-layout']}>
-            <Link className="secondary-link" to={computeOffersUrl({})}>
-              Annuler et quitter
+            <Link
+              className="secondary-link"
+              to={
+                isSubtypeChosenAtCreation
+                  ? `/offre/${offerId}/collectif/stocks`
+                  : computeOffersUrl({})
+              }
+            >
+              {isSubtypeChosenAtCreation
+                ? 'Étape précédente'
+                : 'Annuler et quitter'}
             </Link>
             <SubmitButton
               className=""

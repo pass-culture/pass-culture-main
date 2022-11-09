@@ -105,7 +105,10 @@ const CollectiveOfferCreationRoutes = ({
             )}
             <Route path="/offre/:offerId/collectif/stocks">
               {collectiveOffer ? (
-                <CollectiveOfferStockCreation offer={collectiveOffer} />
+                <CollectiveOfferStockCreation
+                  offer={collectiveOffer}
+                  setOffer={setCollectiveOffer}
+                />
               ) : (
                 <Spinner />
               )}

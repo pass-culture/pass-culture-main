@@ -19,10 +19,12 @@ import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 
 interface OfferEducationalStockCreationProps {
   offer: CollectiveOffer
+  setOffer: (offer: CollectiveOffer) => void
 }
 
 const CollectiveOfferStockCreation = ({
   offer,
+  setOffer,
 }: OfferEducationalStockCreationProps): JSX.Element | null => {
   const notify = useNotification()
   const history = useHistory()
@@ -65,6 +67,16 @@ const CollectiveOfferStockCreation = ({
       isOk = response.isOk
       message = response.message
       payload = response.payload
+
+      if (offer.collectiveStock && payload !== null) {
+        setOffer({
+          ...offer,
+          collectiveStock: {
+            ...offer.collectiveStock,
+            ...payload,
+          },
+        })
+      }
     }
 
     if (!isOk) {
