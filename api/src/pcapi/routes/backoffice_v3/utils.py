@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 # perhaps one day we will be able to define it as str | tuple[str, int]
-Response = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse]
+BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse]
 
 
 def _check_permission(permission: perm_models.Permissions) -> None:

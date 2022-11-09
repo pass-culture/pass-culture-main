@@ -1,12 +1,9 @@
 <div class="card shadow">
     <div class="card-body">
         <h5 class="card-title mb-3">
-            <span class="badge rounded-pill text-bg-primary">
-                {{ row.isActive | format_state }}
-            </span>
-            <span class="badge rounded-pill text-bg-secondary">
-                Structure
-            </span>
+            {% with offerer=row %}
+                {% include "components/offerer/badges.html" %}
+            {% endwith %}
         </h5>
 
         <h5 class="card-title">
@@ -14,16 +11,21 @@
         </h5>
 
         <h6 class="card-subtitle mt-4 mb-3 text-muted">
-            Offerer ID : {{ row.id }}
+            ID : {{ row.id }}
         </h6>
 
         <h6 class="card-subtitle mb-4 text-muted">
-            SIREN : {{ row.siren }}
+            SIREN : {{ row.siren | empty_string_if_null }}
         </h6>
 
         <div class="fs-6">
-            <p class="mb-1"><span class="fw-bold">email :</span> {{ row.email }} </p>
-            <p><span class="fw-bold">tél :</span> {{ row.phoneNumber | format_phone_number }} </p>
+            {% if row.email %}
+                <p class="mb-1"><span class="fw-bold">Email :</span> {{ row.email }} </p>
+            {% endif %}
+
+            {% if row.phoneNumber %}
+                <p><span class="fw-bold">Tél :</span> {{ row.phoneNumber | format_phone_number }} </p>
+            {% endif %}
         </div>
 
         <a href="{{ get_link_to_detail(row.id) }}" class="card-link">

@@ -4,7 +4,7 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h6 class="display-6 card-title">
-                        {{ stats["total_revenue"] | format_amount }}
+                        {{ total_revenue | format_amount }}
                     </h6>
                     <p class="card-text fw-lighter small">
                         de CA
@@ -17,28 +17,26 @@
                 <div class="card-body row">
                     <div class="col-6">
                         <h6 class="display-6 card-title">
-                            {{ stats["active_individual_offers"] + stats["active_collective_offers"] }}
+                            {{ stats.active.individual + stats.active.collective }}
                         </h6>
                         <p class="card-text fw-lighter small mb-0">
                             offres actives
                         </p>
                         <p class="card-text fw-lighter small">
-                            ({{ stats["active_individual_offers"] }} IND et {{
-                            stats["active_collective_offers"]
-                            }} EAC)
+                            ({{ stats.active.individual }} IND
+                            / {{ stats.active.collective }} EAC)
                         </p>
                     </div>
                     <div class="col-6">
                         <h6 class="display-6 card-title">
-                            {{ stats["inactive_individual_offers"] + stats["inactive_collective_offers"] }}
+                            {{ stats.inactive.individual + stats.inactive.collective }}
                         </h6>
                         <p class="card-text fw-lighter small mb-0">
                             offres inactives
                         </p>
                         <p class="card-text fw-lighter small">
-                            ({{ stats["inactive_individual_offers"] }} IND et {{
-                            stats["inactive_collective_offers"]
-                            }} EAC)
+                            ({{ stats.inactive.individual }} IND
+                            / {{ stats.inactive.collective }} EAC)
                         </p>
                     </div>
                 </div>
@@ -47,7 +45,6 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    Remboursement TBD
                 </div>
             </div>
         </div>
