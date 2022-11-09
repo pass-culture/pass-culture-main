@@ -4,6 +4,7 @@ import typing
 
 from pydantic import Field
 from pydantic import validator
+from pydantic.types import constr
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOffer
@@ -400,6 +401,17 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("intervention_area must have at least one value")
 
         return intervention_area
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
+    if typing.TYPE_CHECKING:
+        price_detail: str | None
+    else:
+        price_detail: constr(max_length=1000) | None
 
     class Config:
         alias_generator = to_camel

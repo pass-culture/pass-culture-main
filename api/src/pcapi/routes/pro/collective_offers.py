@@ -434,7 +434,7 @@ def patch_collective_offer_template_publication(
     api=blueprint.pro_private_schema,
 )
 def create_collective_offer_template(
-    body: collective_offers_serialize.PostCollectiveOfferBodyModel,
+    body: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel,
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
     # sometimes offerer_id is sent in body but it should not be there
     if body.offerer_id is not None:
