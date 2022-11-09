@@ -268,7 +268,7 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type):  # type: i
     return None, None
 
 
-def get_infos_from_data_line(elts: []) -> dict:  # type: ignore [misc]
+def get_infos_from_data_line(elts: list) -> dict:
     infos = {}
     infos["ean13"] = elts[0]
     infos["isbn"] = elts[1]
