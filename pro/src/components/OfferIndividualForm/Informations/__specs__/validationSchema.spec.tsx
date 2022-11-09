@@ -161,54 +161,5 @@ describe('OfferIndividual section: UsefulInformations', () => {
         ).not.toBeInTheDocument()
       }
     )
-
-    const durationMinutesFormatErrorDataSet = [
-      'ABCD',
-      '-1:40',
-      '12:120',
-      '12:AB',
-      'AB:CD',
-    ]
-    it.each(durationMinutesFormatErrorDataSet)(
-      'testing format error (durationMinutes="%s")',
-      async durationMinutesValue => {
-        initialValues.subCategoryFields = ['durationMinutes']
-        const { buttonSubmit } = await renderInformations({
-          props,
-          initialValues,
-          onSubmit,
-        })
-
-        const durationMinutesInput = screen.getByLabelText('Durée', {
-          exact: false,
-        })
-        await userEvent.type(durationMinutesInput, durationMinutesValue)
-        await userEvent.click(buttonSubmit)
-        expect(
-          await screen.findByText(
-            'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
-          )
-        ).toBeInTheDocument()
-      }
-    )
-    it('should not allow more than 59 minutes', async () => {
-      initialValues.subCategoryFields = ['durationMinutes']
-      const { buttonSubmit } = await renderInformations({
-        props,
-        initialValues,
-        onSubmit,
-      })
-
-      const durationMinutesInput = screen.getByLabelText('Durée', {
-        exact: false,
-      })
-      await userEvent.type(durationMinutesInput, '12:60')
-      await userEvent.click(buttonSubmit)
-      expect(
-        await screen.findByText(
-          'Une heure ne peut pas avoir plus de 59 minutes'
-        )
-      ).toBeInTheDocument()
-    })
   })
 })

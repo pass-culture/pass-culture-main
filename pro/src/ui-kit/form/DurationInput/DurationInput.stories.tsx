@@ -15,7 +15,7 @@ interface Args extends IDurationInputProps {
 }
 
 const args = {
-  initialValues: { durationMinutes: null },
+  initialValues: { durationMinutes: '' },
   name: 'durationMinutes',
 }
 
