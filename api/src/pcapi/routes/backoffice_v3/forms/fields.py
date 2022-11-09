@@ -13,7 +13,7 @@ def widget(field: wtforms.Field, template: str, *args: typing.Any, **kwargs: typ
 class PCOptStringField(wtforms.StringField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [
-        validators.Optional("Information obligatoire"),
+        validators.Optional(""),
         validators.Length(min=3, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
@@ -35,6 +35,11 @@ class PCEmailField(wtforms.EmailField):
 
 class PCSelectField(wtforms.SelectField):
     widget = partial(widget, template="components/forms/select_field.html")
+    validators = [validators.InputRequired("Information obligatoire")]
+
+
+class PCSelectWithPlaceholderValueField(wtforms.SelectField):
+    widget = partial(widget, template="components/forms/select_with_placeholder_value_field.html")
     validators = [validators.InputRequired("Information obligatoire")]
 
 

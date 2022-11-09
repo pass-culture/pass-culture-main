@@ -286,6 +286,29 @@ class UpdatePublicAccountReviewTest:
         assert not user.deposits
 
     @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
+    def test_reason_not_compulsory(self, client, legit_user):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        base_form = {
+            "status": fraud_models.FraudReviewStatus.KO.name,
+            "eligibility": users_models.EligibilityType.AGE18.name,
+        }
+
+        response = self.add_new_review(client, legit_user, user, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        user = users_models.User.query.get(user.id)
+
+        assert len(user.deposits) == 1
+        assert len(user.beneficiaryFraudReviews) == 1
+
+        fraud_review = user.beneficiaryFraudReviews[0]
+        assert fraud_review.reason == None
+
+    @override_features(WIP_ENABLE_BACKOFFICE_V3=True)
     def test_missing_identity_fraud_check_filled(self, client, legit_user):
         # not a beneficiary, does not have any identity fraud check
         # filled by default.

@@ -5,14 +5,16 @@
                 <h5 class="card-title">
                     {{ user.firstName }} {{ user.lastName | upper }}
 
-                    <span class="ms-5 me-2 badge rounded-pill text-bg-primary align-middle">
-                        {{ user.isActive | format_state }}
-                    </span>
-                        {% for role in user.roles %}
-                            <span class="badge rounded-pill text-bg-secondary align-middle">
-                                {{ role | format_role }}
-                            </span>
-                        {% endfor %}
+                    {% for role in user.roles %}
+                        <span class="ms-5 me-2 badge rounded-pill text-bg-secondary align-middle">
+                            {{ role | format_role }}
+                        </span>
+                    {% endfor %}
+                    {% if not user.isActive %}
+                        <span class="badge rounded-pill text-bg-primary align-middle">
+                            {{ user.isActive | format_state }}
+                        </span>
+                    {% endif %}
                 </h5>
 
                 <h6 class="card-subtitle text-muted">
@@ -24,13 +26,15 @@
 
 
                         <div class="fs-6">
-                            <p class="mb-1"><span class="fw-bold">Email :</span> {{ user.email }} </p>
-                            <p class="mb-1"><span class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number }} </p>
+                            <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ user.email }} </p>
+                            <p class="mb-1"><span class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number
+                                }} </p>
                         </div>
                     </div>
 
                     <div class="col-4">
-                        <p><span class="fw-bold">Compte crédité le :</span> {{ user.deposit_activation_date | format_date }} </p>
+                        <p><span class="fw-bold">Crédité le : </span> {{ user.deposit_activation_date | format_date
+                            }} </p>
                     </div>
 
                     <div class="col-4">

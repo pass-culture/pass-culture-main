@@ -9,7 +9,7 @@
             <h5 class="lead fs-1 my-4">Revue manuelle</h5>
 
             <div class="mt-5 text-center">
-                <form action="{{ url_for('.review_public_account', user_id=user.id) }}" method="POST">
+                <form action="{{ url_for(".review_public_account", user_id=user.id) }}" method="POST">
                     {% for form_field in form %}
                         <div class="w-100 my-4">
                             {% for error in form_field.errors %}
@@ -20,12 +20,15 @@
                         {{ form_field }}
                     {% endfor %}
 
-                    <div class="col-12 text-start py-4">
+                    <div class="col-12 text-end py-4">
+                        <a href="{{ url_for(".get_public_account", user_id=user.id) }}"" class="btn btn-outline-primary"
+                            role="button">
+                            Annuler la modification
+                        </a>
                         <button type="submit" class="btn btn-primary">
                             Modifier le statut
                         </button>
                     </div>
-
                 </form>
             </div>
         </div>

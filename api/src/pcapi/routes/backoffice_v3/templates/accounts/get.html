@@ -2,6 +2,13 @@
 
 {% block accounts_main_content %}
 
+    {% if request.referrer is not none %}
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="{{ request.referrer }}">
+                <i class="bi bi-chevron-left"></i>
+                Retour à la recherche</a>
+        </div>
+    {% endif %}
     {% include "accounts/get/general.html" %}
     {% include "accounts/get/credit.html" %}
     {% include "accounts/get/details.html" %}

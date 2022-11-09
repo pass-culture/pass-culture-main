@@ -38,7 +38,7 @@
 
     <div class="col">
         <div class="card">
-            {% if credit is not none %}
+            {% if credit is not none and credit.digital is not none %}
                 <div class="card-body">
                     <h5 class="card-title fs-1 mb-3">
                         {{ credit.digital.remaining.to_integral() | format_amount }}
@@ -46,7 +46,7 @@
 
                     <div class="d-flex">
                         <h6 class="card-subtitle text-muted me-auto">
-                            Crédit numérique restant
+                            Crédit digital restant
                         </h6>
 
                         <h6 class="card-subtitle text-muted ms-auto">
@@ -92,4 +92,3 @@
         </div>
     </div>
 </div>
-
