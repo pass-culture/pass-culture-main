@@ -134,7 +134,7 @@ class AccountTest:
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
             "subscriptionMessage": None,
-            "youngStatus": {"statusType": young_status.YoungStatusType.BENEFICIARY.value},
+            "status": {"statusType": young_status.YoungStatusType.BENEFICIARY.value},
         }
         EXPECTED_DATA.update(USER_DATA)
 

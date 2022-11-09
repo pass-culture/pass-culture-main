@@ -154,7 +154,7 @@ class UserProfileResponse(BaseModel):
     show_eligible_card: bool
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     subscriptionMessage: subscription_serialization.SubscriptionMessage | None
-    young_status: YoungStatusResponse
+    status: YoungStatusResponse
 
     _convert_recredit_amount_to_show = validator("recreditAmountToShow", pre=True, allow_reuse=True)(convert_to_cent)
 
@@ -209,7 +209,7 @@ class UserProfileResponse(BaseModel):
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.birth_date)
         user.isBeneficiary = user.is_beneficiary
         user.subscriptionMessage = subscription_api.get_subscription_message(user)
-        user.young_status = young_status.young_status(user)
+        user.status = young_status.young_status(user)
 
         if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False
