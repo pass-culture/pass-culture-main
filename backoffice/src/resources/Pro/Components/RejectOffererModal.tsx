@@ -102,9 +102,7 @@ export const RejectOffererModal = ({
                 multiline
                 rows={4}
                 onKeyDown={e => {
-                  if (e.key === 'r') {
-                    e.stopPropagation()
-                  }
+                  e.stopPropagation()
                 }}
               />
             </Stack>
