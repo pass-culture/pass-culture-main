@@ -61,6 +61,7 @@ import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActive
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
+import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
@@ -326,7 +327,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveOfferTemplate(
-    requestBody?: PostCollectiveOfferBodyModel,
+    requestBody?: PostCollectiveOfferTemplateBodyModel,
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
