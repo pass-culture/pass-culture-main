@@ -29,6 +29,7 @@ export interface IOfferEducationalProps {
   isOfferActive?: boolean
   isOfferCancellable?: boolean
   domainsOptions: SelectOption[]
+  isTemplate: boolean
 }
 
 const OfferEducational = ({
@@ -44,6 +45,7 @@ const OfferEducational = ({
   isOfferCancellable = false,
   isOfferActive = false,
   domainsOptions,
+  isTemplate,
 }: IOfferEducationalProps): JSX.Element => {
   const { resetForm, ...formik } = useFormik({
     initialValues,
@@ -119,6 +121,7 @@ const OfferEducational = ({
             mode={mode}
             userOfferers={userOfferers}
             domainsOptions={domainsOptions}
+            isTemplate={isTemplate}
           />
         </form>
       </FormikProvider>

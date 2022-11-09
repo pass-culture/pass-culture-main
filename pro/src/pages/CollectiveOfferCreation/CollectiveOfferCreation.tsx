@@ -120,6 +120,7 @@ const CollectiveOfferCreation = ({
         initialValues={initialValues}
         mode={Mode.CREATION}
         onSubmit={createOrPatchDraftOffer}
+        isTemplate={false}
       />
       <RouteLeavingGuardOfferCreation />
     </>

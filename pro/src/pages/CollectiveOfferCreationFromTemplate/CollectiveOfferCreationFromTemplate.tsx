@@ -98,6 +98,7 @@ const CollectiveOfferCreationFromTemplate = () => {
         initialValues={initialValues}
         onSubmit={handleSubmit}
         mode={Mode.CREATION}
+        isTemplate={false}
       />
       <RouteLeavingGuardOfferCreation />
     </>
