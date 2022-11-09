@@ -97,7 +97,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     educational_models.EducationalYear.query.delete()
     educational_models.EducationalRedactor.query.delete()
     Feature.query.delete()
-    db.session.execute(f"DELETE FROM {perm_models.role_permission_table.name};")
+    perm_models.RolePermission.query.delete()
     perm_models.Permission.query.delete()
     perm_models.Role.query.delete()
     history_models.ActionHistory.query.delete()

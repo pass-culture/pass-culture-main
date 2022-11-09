@@ -71,13 +71,14 @@ def sync_db_permissions(session: sa.orm.Session) -> None:
     return sync_enum_with_db_field(session, Permissions, Permission.name)
 
 
-role_permission_table = sa.Table(
-    "role_permission",
-    Base.metadata,
-    sa.Column("roleId", sa.ForeignKey("role.id", ondelete="CASCADE")),
-    sa.Column("permissionId", sa.ForeignKey("permission.id", ondelete="CASCADE")),
-    sa.UniqueConstraint("roleId", "permissionId"),
-)
+class RolePermission(PcObject, Base, Model):
+    """
+    An association table between roles and permission for their
+    many-to-many relationship
+    """
+
+    roleId: int = sa.Column(sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"))
+    permissionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"))
 
 
 class Permission(PcObject, Base, Model):
@@ -86,7 +87,7 @@ class Permission(PcObject, Base, Model):
     name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
     roles = sa.orm.relationship(  # type: ignore [misc]
-        "Role", secondary=role_permission_table, back_populates="permissions"
+        "Role", secondary="role_permission", back_populates="permissions"
     )
 
 
@@ -121,7 +122,7 @@ class Role(PcObject, Base, Model):
 
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
     permissions = sa.orm.relationship(  # type: ignore [misc]
-        Permission, secondary=role_permission_table, back_populates="roles"
+        Permission, secondary="role_permission", back_populates="roles"
     )
     profiles = sa.orm.relationship("BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles")  # type: ignore
 
