@@ -90,3 +90,41 @@ class ShowTime(BaseModel):
 class ShowTimeDetails(BaseModel):
     message: str
     data: ShowTime
+
+
+class BasketItem(BaseModel):
+    idShowtimePricing: int
+    quantity: int
+
+
+class SaleRequest(BaseModel):
+    codePayment: str
+    basketItems: list[BasketItem]
+
+
+# FIXME(fseguin, 2022-11-08: waiting for the specs)
+class Seat(BaseModel):
+    id: int | None
+    code: str
+    line: int
+    numLine: int
+
+
+class TicketResponse4(BaseModel):
+    id: int
+    idCnc: int
+    seat: Seat | None
+    ticketReference: str
+
+
+class SaleResponse3(BaseModel):
+    id: int
+    code: str | None
+    type: str
+    amountTaxesIncluded: float | None
+    tickets: list[TicketResponse4]
+
+
+class SaleConfirmationResponse(BaseModel):
+    message: str
+    data: SaleResponse3
