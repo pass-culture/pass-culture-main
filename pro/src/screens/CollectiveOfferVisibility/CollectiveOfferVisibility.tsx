@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
@@ -14,7 +14,8 @@ import { computeOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
-import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
+import { Banner, ButtonLink, SelectAutocomplete, SubmitButton } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -200,18 +201,19 @@ const CollectiveOfferVisibility = ({
           </FormLayout.Section>
 
           <FormLayout.Actions className={styles['actions-layout']}>
-            <Link
-              className="secondary-link"
-              to={
-                isSubtypeChosenAtCreation
+            <ButtonLink
+              variant={ButtonVariant.SECONDARY}
+              link={{
+                to: isSubtypeChosenAtCreation
                   ? `/offre/${offerId}/collectif/stocks`
-                  : computeOffersUrl({})
-              }
+                  : computeOffersUrl({}),
+                isExternal: false,
+              }}
             >
               {isSubtypeChosenAtCreation
                 ? 'Étape précédente'
                 : 'Annuler et quitter'}
-            </Link>
+            </ButtonLink>
             <SubmitButton
               className=""
               disabled={nextStepDisabled}
