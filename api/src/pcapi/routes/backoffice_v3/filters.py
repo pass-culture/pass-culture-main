@@ -1,5 +1,7 @@
 import datetime
 import typing
+from urllib.parse import urlparse
+from urllib.parse import urlunparse
 
 from flask import Flask
 
@@ -54,6 +56,18 @@ def format_amount(amount: float) -> str:
     return f"{amount:,.2f} €".replace(",", "&#8239;").replace(".", ",")
 
 
+def parse_referrer(url: str) -> str:
+    """
+    Ensure that a relative is used which, will be understand.
+    Referrer can be modified by the client, therefore cannot be trusted.
+    """
+    try:
+        parsed = urlparse(url)
+        return urlunparse(("", "", parsed.path, parsed.params, parsed.query, parsed.fragment))
+    except Exception:  # pylint: disable=broad-except
+        return "/"
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_role"] = format_role
@@ -61,3 +75,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["parse_referrer"] = parse_referrer
