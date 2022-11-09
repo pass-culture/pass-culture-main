@@ -7,6 +7,22 @@ export interface IShouldBlockNavigationReturnValue {
   redirectPath?: string | null
   shouldBlock: boolean
 }
+
+export enum BUTTON_ACTION {
+  QUIT_WITHOUT_SAVING = 'QUIT_WITHOUT_SAVING',
+  CANCEL = 'CANCEL',
+}
+
+interface IButtonDefault {
+  text: string
+  actionType?: BUTTON_ACTION.CANCEL | BUTTON_ACTION.QUIT_WITHOUT_SAVING
+  action?: never
+}
+interface IButtonWithCustomAction {
+  text: string
+  action: () => void
+  actionType?: never
+}
 export interface IRouteLeavingGuardProps {
   children: ReactNode | ReactNode[]
   extraClassNames?: string
@@ -16,6 +32,8 @@ export interface IRouteLeavingGuardProps {
   when: boolean
   dialogTitle: string
   tracking?: (p: string) => void
+  rightButton?: IButtonDefault | IButtonWithCustomAction
+  leftButton?: IButtonDefault | IButtonWithCustomAction
 }
 
 const RouteLeavingGuard = ({
@@ -25,16 +43,16 @@ const RouteLeavingGuard = ({
   when,
   dialogTitle,
   tracking,
+  rightButton = {
+    text: 'Quitter',
+  },
+  leftButton = { text: 'Annuler' },
 }: IRouteLeavingGuardProps): JSX.Element => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   // @ts-ignore next FIX ME no any
   const [nextLocation, setNextLocation] = useState<any>('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
   const history = useHistory()
-
-  const closeModal = useCallback(() => {
-    setIsModalVisible(false)
-  }, [])
 
   const handleBlockedNavigation = useCallback(
     (chosenLocation: any) => {
@@ -54,6 +72,10 @@ const RouteLeavingGuard = ({
     [isConfirmedNavigation, history, shouldBlockNavigation]
   )
 
+  const closeModal = useCallback(() => {
+    setIsModalVisible(false)
+  }, [])
+
   const handleConfirmNavigationClick = useCallback(() => {
     setIsModalVisible(false)
     setIsConfirmedNavigation(true)
@@ -68,6 +90,30 @@ const RouteLeavingGuard = ({
       )
   }
 
+  const rightButtonAction = () => {
+    if (typeof rightButton.action === 'function') {
+      return () => {
+        rightButton.action && rightButton.action()
+        handleConfirmNavigationClick()
+      }
+    } else if (rightButton.actionType === BUTTON_ACTION.CANCEL) {
+      return closeModal
+    }
+    return handleConfirmNavigationClick
+  }
+
+  const leftButtonAction = () => {
+    if (typeof leftButton.action === 'function') {
+      return () => {
+        leftButton.action && leftButton.action()
+        handleConfirmNavigationClick()
+      }
+    } else if (leftButton.actionType === BUTTON_ACTION.QUIT_WITHOUT_SAVING) {
+      return handleConfirmNavigationClick
+    }
+    return closeModal
+  }
+
   return isConfirmedNavigation && nextLocation ? (
     <Redirect push to={nextLocation} />
   ) : (
@@ -77,10 +123,11 @@ const RouteLeavingGuard = ({
         <ConfirmDialog
           extraClassNames={extraClassNames}
           onCancel={closeModal}
-          onConfirm={handleConfirmNavigationClick}
+          onConfirm={rightButtonAction()}
           title={dialogTitle}
-          confirmText="Quitter"
-          cancelText="Annuler"
+          confirmText={rightButton.text}
+          cancelText={leftButton.text}
+          leftButtonAction={leftButtonAction()}
         >
           {children}
         </ConfirmDialog>
