@@ -243,6 +243,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     price: float
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
+    isEditable: bool = Field(alias="isEducationalStockEditable")
 
     _humanize_id = humanize_field("id")
 
