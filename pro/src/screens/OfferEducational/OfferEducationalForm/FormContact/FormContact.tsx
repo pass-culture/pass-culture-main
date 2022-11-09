@@ -5,6 +5,7 @@ import { TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import { EMAIL_LABEL } from '../../constants/labels'
+import styles from '../OfferEducationalForm.module.scss'
 
 const FormContact = ({
   disableForm,
@@ -15,7 +16,7 @@ const FormContact = ({
     description={`Ces informations sont affichées sur votre offre.\n Elles permettent aux enseignants et aux chefs d’établissement scolaires de vous contacter.`}
     title="Contact"
   >
-    <FormLayout.Row>
+    <FormLayout.Row className={styles['phone-number-row']}>
       <PhoneNumberInput name="phone" disabled={disableForm} />
     </FormLayout.Row>
     <FormLayout.Row>
