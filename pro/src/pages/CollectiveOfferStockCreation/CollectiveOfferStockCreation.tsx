@@ -1,7 +1,7 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
+import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
   EducationalOfferType,
@@ -103,7 +103,7 @@ const CollectiveOfferStockCreation = ({
         offer={offer}
         onSubmit={handleSubmitStock}
       />
-      <RouteLeavingGuardOfferCreation />
+      <RouteLeavingGuardCollectiveOfferCreation />
     </>
   )
 }

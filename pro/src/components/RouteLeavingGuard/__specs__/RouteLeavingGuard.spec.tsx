@@ -43,7 +43,7 @@ const renderRouteLeavingGuard = async (
   )
 }
 
-describe('components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', () => {
+describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGuard', () => {
   let props: IRouteLeavingGuardProps
   const history = createBrowserHistory()
 
