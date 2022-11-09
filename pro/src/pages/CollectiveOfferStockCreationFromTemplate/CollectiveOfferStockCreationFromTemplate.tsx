@@ -1,7 +1,7 @@
 import React from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
+import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
   DEFAULT_EAC_STOCK_FORM_VALUES,
@@ -46,7 +46,7 @@ const CollectiveOfferStockCreationFromTemplate = ({
         offer={offer}
         onSubmit={handleSubmitStock}
       />
-      <RouteLeavingGuardOfferCreation />
+      <RouteLeavingGuardCollectiveOfferCreation />
     </>
   )
 }

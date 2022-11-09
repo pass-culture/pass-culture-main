@@ -13,7 +13,7 @@ import OfferBreadcrumb, {
   OfferBreadcrumbStep,
 } from 'components/OfferBreadcrumb'
 import useIsCompletingDraft from 'components/OfferIndividualStepper/hooks/useIsCompletingDraft'
-import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
+import { RouteLeavingGuardOfferIndividualV2 } from 'components/RouteLeavingGuardOfferIndividualV2'
 import {
   Events,
   OFFER_FORM_NAVIGATION_OUT,
@@ -165,7 +165,7 @@ const OfferLayout = () => {
             ]}
           >
             {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
-            {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
+            {/* There is a concurrency run between the RouteLeavingGuardCollectiveOfferCreation and the reloadOffer call */}
             {/* in OfferDetails as the offer is loaded in the stock edition page */}
             <OfferDetails
               isCreatingOffer={isCreatingOffer}
@@ -218,7 +218,7 @@ const OfferLayout = () => {
           ></Route>
         </Switch>
       </div>
-      <RouteLeavingGuardOfferIndividual
+      <RouteLeavingGuardOfferIndividualV2
         when={isCreatingOffer}
         tracking={nextLocation =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {

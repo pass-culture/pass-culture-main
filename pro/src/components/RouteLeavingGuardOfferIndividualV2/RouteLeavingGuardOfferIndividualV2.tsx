@@ -21,15 +21,15 @@ const urlPatterns: { [key: string]: RegExp } = {
     /\/offre\/([A-Z0-9]+)\/individuel\/creation\/confirmation/g,
 }
 
-export interface RouteLeavingGuardOfferIndividualProps {
+export interface RouteLeavingGuardOfferIndividualV2Props {
   when: boolean
   tracking?: (p: string) => void
 }
 
-const RouteLeavingGuardOfferIndividual = ({
+const RouteLeavingGuardOfferIndividualV2 = ({
   when,
   tracking,
-}: RouteLeavingGuardOfferIndividualProps): JSX.Element => {
+}: RouteLeavingGuardOfferIndividualV2Props): JSX.Element => {
   const location = useLocation()
   const isDraftEnabled = useActiveFeature('OFFER_DRAFT_ENABLED')
   const shouldBlockNavigation = useCallback(
@@ -77,7 +77,7 @@ const RouteLeavingGuardOfferIndividual = ({
       // going from confirmation to summary
       if (from === STEP_CONFIRMATION) {
         if (to === STEP_SUMMARY) {
-          redirectPath = '/offres' // TODO go to edition recapitulatif
+          redirectPath = '/offres'
         }
         return { redirectPath, shouldBlock: false }
       }
@@ -114,4 +114,4 @@ const RouteLeavingGuardOfferIndividual = ({
   )
 }
 
-export default RouteLeavingGuardOfferIndividual
+export default RouteLeavingGuardOfferIndividualV2

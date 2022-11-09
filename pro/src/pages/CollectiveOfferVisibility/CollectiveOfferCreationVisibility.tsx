@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import RouteLeavingGuardOfferCreation from 'components/RouteLeavingGuardOfferCreation'
+import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
   DEFAULT_VISIBILITY_FORM_VALUES,
@@ -68,7 +68,7 @@ const CollectiveOfferVisibility = ({
         institutions={institutions}
         isLoadingInstitutions={isLoadingInstitutions}
       />
-      <RouteLeavingGuardOfferCreation />
+      <RouteLeavingGuardCollectiveOfferCreation />
     </>
   )
 }
