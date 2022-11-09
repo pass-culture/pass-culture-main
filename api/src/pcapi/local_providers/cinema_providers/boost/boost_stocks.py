@@ -8,6 +8,7 @@ from sqlalchemy.sql.schema import Sequence
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
+from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
@@ -19,17 +20,6 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
 import pcapi.utils.date as utils_date
-
-
-BOOST_PASS_CULTURE_PRICING_CODE = "PCU"
-
-
-def get_pcu_pricing_if_exists(
-    showtime_pricing_list: list[boost_serializers.ShowtimePricing],
-) -> boost_serializers.ShowtimePricing | None:
-    return next(
-        (pricing for pricing in showtime_pricing_list if pricing.pricingCode == BOOST_PASS_CULTURE_PRICING_CODE), None
-    )
 
 
 class BoostStocks(LocalProvider):

@@ -6,20 +6,56 @@ from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.external_bookings.models as external_bookings_models
 
+from . import constants
+from . import exceptions
+
+
+def get_pcu_pricing_if_exists(
+    showtime_pricing_list: list[boost_serializers.ShowtimePricing],
+) -> boost_serializers.ShowtimePricing | None:
+    return next(
+        (
+            pricing
+            for pricing in showtime_pricing_list
+            if pricing.pricingCode == constants.BOOST_PASS_CULTURE_PRICING_CODE
+        ),
+        None,
+    )
+
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_str_id: str):
         self.cinema_str_id = cinema_str_id
 
     # FIXME: define those later
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
+    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:  # type: ignore [empty-body]
         pass
 
     def cancel_booking(self, barcodes: list[str]) -> None:
         pass
 
     def book_ticket(self, show_id: int, quantity: int) -> list[external_bookings_models.Ticket]:
-        pass
+        showtime = self.get_showtime(show_id)
+        pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
+        if not pcu_pricing:
+            raise exceptions.BoostAPIException("No Pass Culture pricing was found")
+
+        basket_items = [boost_serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
+        sale_body = boost_serializers.SaleRequest(
+            codePayment=pcu_pricing.pricingCode,
+            basketItems=basket_items,
+        )
+        sale_response = boost.post_resource(self.cinema_str_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
+        sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
+
+        # FIXME(fseguin, 2022-11-08: waiting for the seat specs)
+        tickets = []
+        for ticket_response in sale_confirmation_response.data.tickets:
+            seat_number = str(ticket_response.seat.id) if ticket_response.seat else None
+            tickets.append(
+                external_bookings_models.Ticket(barcode=ticket_response.ticketReference, seat_number=seat_number)
+            )
+        return tickets
 
     def get_collection_items(
         self,
