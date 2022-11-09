@@ -323,6 +323,28 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
+    expect(api.postOffer).toHaveBeenCalledWith({
+      audioDisabilityCompliant: false,
+      bookingEmail: null,
+      description: null,
+      durationMinutes: null,
+      externalTicketOfficeUrl: null,
+      extraData: {},
+      isDuo: true,
+      isEducational: false,
+      isNational: false,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+      name: 'Le nom de mon offre',
+      offererId: 'A',
+      subcategoryId: 'physical',
+      url: null,
+      venueId: 'AA',
+      visualDisabilityCompliant: false,
+      withdrawalDelay: null,
+      withdrawalDetails: null,
+      withdrawalType: null,
+    })
     expect(
       screen.getByText(
         'Tous les champs sont obligatoires sauf mention contraire.'

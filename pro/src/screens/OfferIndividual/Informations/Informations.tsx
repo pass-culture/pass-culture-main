@@ -9,6 +9,7 @@ import {
   validationSchema,
 } from 'components/OfferIndividualForm'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualStepper'
+import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
@@ -57,10 +58,17 @@ const Informations = ({
     IOfferIndividualImage | undefined
   >(offer && offer.image ? offer.image : undefined)
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
+  const [
+    isSubmittingFromRouteLeavingGuard,
+    setIsSubmittingFromRouteLeavingGuard,
+  ] = useState<boolean>(false)
+  const [isClickingFromActionBar, setIsClickingFromActionBar] =
+    useState<boolean>(false)
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     () => {
+      setIsClickingFromActionBar(true)
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
         /* istanbul ignore next: DEBT, TO FIX */
@@ -194,38 +202,43 @@ const Informations = ({
           ? 'Brouillon sauvegardé dans la liste des offres'
           : 'Vos modifications ont bien été enregistrées'
       )
-      navigate(
-        getOfferIndividualUrl({
-          offerId: payload.id,
-          step: nextStep,
-          mode,
-        }),
-        { replace: true }
-      )
+      if (!isSubmittingFromRouteLeavingGuard) {
+        navigate(
+          getOfferIndividualUrl({
+            offerId: payload.id,
+            step: nextStep,
+            mode,
+          }),
+          { replace: true }
+        )
 
-      if (!isSubmittingDraft) {
-        nextStep =
-          mode === OFFER_WIZARD_MODE.EDITION
-            ? OFFER_WIZARD_STEP_IDS.SUMMARY
-            : OFFER_WIZARD_STEP_IDS.STOCKS
+        if (!isSubmittingDraft) {
+          nextStep =
+            mode === OFFER_WIZARD_MODE.EDITION
+              ? OFFER_WIZARD_STEP_IDS.SUMMARY
+              : OFFER_WIZARD_STEP_IDS.STOCKS
+        }
+
+        navigate(
+          getOfferIndividualUrl({
+            offerId: payload.id,
+            step: nextStep,
+            mode,
+          })
+        )
       }
-
-      navigate(
-        getOfferIndividualUrl({
-          offerId: payload.id,
-          step: nextStep,
-          mode,
-        })
-      )
     } else {
       formik.setErrors(payload.errors)
     }
+    setIsClickingFromActionBar(false)
   }
 
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmitOffer,
     validationSchema,
+    // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
+    enableReinitialize: true,
   })
 
   const initialVenue: TOfferIndividualVenue | undefined = venueList.find(
@@ -260,6 +273,17 @@ const Informations = ({
           />
         </form>
       </FormLayout>
+      {formik.dirty && !isClickingFromActionBar && (
+        <RouteLeavingGuardOfferIndividual
+          saveForm={formik.handleSubmit}
+          setIsSubmittingFromRouteLeavingGuard={
+            setIsSubmittingFromRouteLeavingGuard
+          }
+          mode={mode}
+          hasOfferBeenCreated={!!offerId}
+          isFormValid={formik.isValid}
+        />
+      )}
     </FormikProvider>
   )
 }

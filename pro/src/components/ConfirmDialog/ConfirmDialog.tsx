@@ -19,6 +19,7 @@ interface IConfirmDialogProps {
   icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   hideIcon?: boolean
   extraClassNames?: string
+  leftButtonAction?: () => void
 }
 
 const ConfirmDialog = ({
@@ -33,6 +34,7 @@ const ConfirmDialog = ({
   icon,
   hideIcon = false,
   extraClassNames,
+  leftButtonAction = onCancel,
 }: IConfirmDialogProps): JSX.Element => {
   const Icon = icon ?? AlertSvg
 
@@ -54,7 +56,7 @@ const ConfirmDialog = ({
       <div className={styles['confirm-dialog-actions']}>
         <Button
           className="secondary-button"
-          onClick={onCancel}
+          onClick={leftButtonAction}
           type="submit"
           data-testid="confirm-dialog-button-cancel"
           variant={ButtonVariant.SECONDARY}
