@@ -34,7 +34,7 @@ import {
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
-interface IFormEventAddressProps {
+interface IFormPracticalInformationProps {
   venuesOptions: SelectOptions
   currentOfferer: GetEducationalOffererResponseModel | null
   disableForm: boolean
@@ -56,12 +56,12 @@ const adressTypeRadios = [
   },
 ]
 
-const FormEventAddress = ({
+const FormPracticalInformation = ({
   venuesOptions,
   currentOfferer,
   disableForm,
   isTemplate,
-}: IFormEventAddressProps): JSX.Element => {
+}: IFormPracticalInformationProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
 
@@ -227,4 +227,4 @@ const FormEventAddress = ({
   )
 }
 
-export default FormEventAddress
+export default FormPracticalInformation
